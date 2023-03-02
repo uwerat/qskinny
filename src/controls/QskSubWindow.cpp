@@ -22,7 +22,7 @@ namespace
 {
     inline QskAspect aspectDecoration()
     {
-        return QskSubWindow::TitleBarPanel | QskAspect::Flag | QskAspect::Style;
+        return QskSubWindow::TitleBarPanel | QskAspect::NoType | QskAspect::Style;
     }
 }
 
@@ -81,7 +81,7 @@ void QskSubWindow::setDecoration( Decoration decoration, bool on )
 
 void QskSubWindow::resetDecorations()
 {
-    if ( resetFlagHint( aspectDecoration() ) )
+    if ( resetSkinHint( aspectDecoration() ) )
         Q_EMIT decorationsChanged( decorations() );
 }
 

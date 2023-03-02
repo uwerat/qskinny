@@ -350,7 +350,7 @@ void Editor::setupPopup()
     using A = QskAspect;
     using Q = QskPopup;
 
-    setFlagHint( Q::Overlay | A::Style, true );
+    setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, stateLayerColor( m_pal.outline, 0.8 ) );
 }
 
@@ -359,7 +359,7 @@ void Editor::setupMenu()
     using A = QskAspect;
     using Q = QskMenu;
 
-    setFlagHint( Q::Overlay | A::Style, false );
+    setHint( Q::Overlay | A::Style, false );
     setGradient( Q::Overlay, stateLayerColor( m_pal.outline, 0.8 ) );
 
     setBoxShape( Q::Panel, 4_dp );
@@ -651,7 +651,7 @@ void Editor::setupPushButton()
     using Q = QskPushButton;
     using M3 = QskMaterial3Skin;
 
-    setFlagHint( Q::Panel | QskAspect::Direction, Qsk::LeftToRight );
+    setHint( Q::Panel | QskAspect::Direction, Qsk::LeftToRight );
     setStrutSize( Q::Panel, -1, 40_dp );
     setSpacing( Q::Panel, 8_dp );
     setPadding( Q::Panel, { 24_dp, 0, 24_dp, 0 } );
@@ -873,7 +873,7 @@ void Editor::setupSpinBox()
 {
     using Q = QskSpinBox;
 
-    setFlagHint( Q::Panel | QskAspect::Style, Q::Buttons );
+    setHint( Q::Panel | QskAspect::Style, Q::Buttons );
     setSpacing( Q::Panel, 4_dp );
 
     setStrutSize( Q::TextPanel, 80_dp, 40_dp );
@@ -1083,7 +1083,7 @@ void Editor::setupTabBar()
     setGradient( Q::Panel, m_pal.secondaryContainer );
     setPadding( Q::Panel, 0 );
 
-    setFlagHint( Q::Panel | A::Style, Qt::BottomEdge );
+    setHint( Q::Panel | A::Style, Qt::BottomEdge );
 
     // when flicking
     setAnimation( Q::Panel | A::Metric, QskAnimationHint( 200, QEasingCurve::InCubic ) );
@@ -1195,7 +1195,7 @@ void Editor::setupSubWindow()
     // TitleBarPanel
     setBoxShape( Q::TitleBarPanel, { 28_dp, 28_dp, 0, 0 } );
     setPadding( Q::TitleBarPanel, { 24_dp, 24_dp, 24_dp, 16_dp } );
-    setFlagHint( Q::TitleBarPanel | QskAspect::Style,
+    setHint( Q::TitleBarPanel | QskAspect::Style,
         Q::TitleBar | Q::Title | Q::Symbol );
 
     setGradient( Q::TitleBarPanel, m_pal.secondaryContainer );

@@ -105,7 +105,7 @@ void QskMenu::setCascading( bool on )
 
 void QskMenu::resetCascading()
 {
-    if ( resetFlagHint( QskMenu::Panel | QskAspect::Style ) )
+    if ( resetSkinHint( QskMenu::Panel | QskAspect::Style ) )
         Q_EMIT cascadingChanged( isCascading() );
 }
 

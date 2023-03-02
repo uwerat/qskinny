@@ -178,12 +178,12 @@ bool QskSkinHintTableEditor::removeHint(
 void QskSkinHintTableEditor::setFlag(
     QskAspect aspect, int flag, QskStateCombination combination )
 {
-    setFlagHint( aspect, flag, combination );
+    setHint( aspect, flag, combination );
 }
 
 int QskSkinHintTableEditor::flag( QskAspect aspect ) const
 {
-    return flagHint< int >( aspect );
+    return hint< int >( aspect );
 }
 
 void QskSkinHintTableEditor::setMetric(
@@ -372,53 +372,52 @@ qreal QskSkinHintTableEditor::spacing( QskAspect aspect ) const
 void QskSkinHintTableEditor::setAlignment(
     QskAspect aspect, Qt::Alignment alignment, QskStateCombination combination )
 {
-    setFlagHint( aspectAlignment( aspect ),
-        static_cast< int >( alignment ), combination );
+    setHint( aspectAlignment( aspect ), alignment, combination );
 }
 
 bool QskSkinHintTableEditor::removeAlignment(
     QskAspect aspect, QskStateCombination combination )
 {
-    return removeFlagHint( aspectAlignment( aspect ), combination );
+    return removeHint( aspectAlignment( aspect ), combination );
 }
 
 Qt::Alignment QskSkinHintTableEditor::alignment( QskAspect aspect ) const
 {
-    return flagHint< Qt::Alignment >( aspectAlignment( aspect ) );
+    return hint< Qt::Alignment >( aspectAlignment( aspect ) );
 }
 
 void QskSkinHintTableEditor::setFontRole(
     QskAspect aspect, int fontRole, QskStateCombination combination )
 {
-    setFlagHint( aspectFontRole( aspect ), fontRole, combination );
+    setHint( aspectFontRole( aspect ), fontRole, combination );
 }
 
 bool QskSkinHintTableEditor::removeFontRole(
     QskAspect aspect, QskStateCombination combination )
 {
-    return removeFlagHint( aspectFontRole( aspect ), combination );
+    return removeHint( aspectFontRole( aspect ), combination );
 }
 
 int QskSkinHintTableEditor::fontRole( QskAspect aspect ) const
 {
-    return flagHint< int >( aspectFontRole( aspect ) );
+    return hint< int >( aspectFontRole( aspect ) );
 }
 
 void QskSkinHintTableEditor::setGraphicRole(
     QskAspect aspect, int graphicRole, QskStateCombination combination )
 {
-    setFlagHint( aspectGraphicRole( aspect ), graphicRole, combination );
+    setHint( aspectGraphicRole( aspect ), graphicRole, combination );
 }
 
 bool QskSkinHintTableEditor::removeGraphicRole(
     QskAspect aspect, QskStateCombination combination )
 {
-    return removeFlagHint( aspectGraphicRole( aspect ), combination );
+    return removeHint( aspectGraphicRole( aspect ), combination );
 }
 
 int QskSkinHintTableEditor::graphicRole( QskAspect aspect ) const
 {
-    return flagHint< int >( aspectGraphicRole( aspect ) );
+    return hint< int >( aspectGraphicRole( aspect ) );
 }
 
 void QskSkinHintTableEditor::setBoxShape(
@@ -603,16 +602,16 @@ void QskSkinHintTableEditor::setTextOptions( QskAspect aspect,
 void QskSkinHintTableEditor::setTextOptions( QskAspect aspect,
         const QskTextOptions& textOptions, QskStateCombination combination )
 {
-    setFlagHint( aspectOption( aspect ), textOptions, combination );
+    setHint( aspectOption( aspect ), textOptions, combination );
 }
 
 bool QskSkinHintTableEditor::removeTextOptions(
     QskAspect aspect, QskStateCombination combination )
 {
-    return removeFlagHint( aspectOption( aspect ), combination );
+    return removeHint( aspectOption( aspect ), combination );
 }
 
 QskTextOptions QskSkinHintTableEditor::textOptions( QskAspect aspect ) const
 {
-    return flagHint< QskTextOptions >( aspectOption( aspect ) );
+    return hint< QskTextOptions >( aspectOption( aspect ) );
 }

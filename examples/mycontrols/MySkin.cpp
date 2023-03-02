@@ -117,7 +117,7 @@ class MySkinEditor : public QskSkinHintTableEditor
             setGraphicRole( subControl, role1 );
             setGraphicRole( subControl | Q::Checked, role2 );
 
-            setAnimation( subControl | A::Flag, animator() );
+            setAnimation( subControl, animator() );
         }
 
         setGradient( Q::Panel, baseColor );

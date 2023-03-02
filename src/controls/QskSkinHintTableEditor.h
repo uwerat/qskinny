@@ -57,19 +57,6 @@ class QSK_EXPORT QskSkinHintTableEditor
 
     QskAnimationHint animation( QskAspect ) const;
 
-    // flag
-
-    void setFlagHint( QskAspect, const QVariant&,
-        QskStateCombination = QskStateCombination() );
-
-    template< typename T > void setFlagHint( QskAspect, const T&,
-        QskStateCombination = QskStateCombination() );
-
-    bool removeFlagHint( QskAspect, QskStateCombination = QskStateCombination() );
-
-    QVariant flagHint( QskAspect ) const;
-    template< typename T > T flagHint( QskAspect ) const;
-
     // metric
 
     void setMetricHint( QskAspect, const QVariant&,
@@ -320,38 +307,6 @@ inline QVariant QskSkinHintTableEditor::takeHint( QskAspect aspect )
 inline bool QskSkinHintTableEditor::hasHint( QskAspect aspect ) const
 {
     return m_table->hasHint( aspect );
-}
-
-// --- flag ---
-
-inline void QskSkinHintTableEditor::setFlagHint(
-    QskAspect aspect, const QVariant& hint, QskStateCombination combination )
-{
-    setHint( aspect | QskAspect::Flag, hint, combination );
-}
-
-template< typename T >
-inline void QskSkinHintTableEditor::setFlagHint(
-    QskAspect aspect, const T& hint, QskStateCombination combination )
-{
-    setHint( aspect | QskAspect::Flag, hint, combination );
-}
-
-inline bool QskSkinHintTableEditor::removeFlagHint(
-    QskAspect aspect, QskStateCombination combination )
-{
-    return removeHint( aspect | QskAspect::Flag, combination );
-}
-
-inline QVariant QskSkinHintTableEditor::flagHint( QskAspect aspect ) const
-{
-    return hint( aspect | QskAspect::Flag );
-}
-
-template< typename T >
-inline T QskSkinHintTableEditor::flagHint( QskAspect aspect ) const
-{
-    return hint< T >( aspect | QskAspect::Flag );
 }
 
 // --- metric ---

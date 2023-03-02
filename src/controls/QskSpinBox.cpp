@@ -41,12 +41,12 @@ namespace
 
     inline QskAspect aspectDecoration()
     {
-        return QskSpinBox::Panel | QskAspect::Flag | QskAspect::Style;
+        return QskSpinBox::Panel | QskAspect::NoType | QskAspect::Style;
     }
 
     inline QskAspect aspectTextAlignment()
     {
-        return QskSpinBox::TextPanel | QskAspect::Flag | QskAspect::Alignment;
+        return QskSpinBox::TextPanel | QskAspect::NoType | QskAspect::Alignment;
     }
 }
 
@@ -167,7 +167,7 @@ void QskSpinBox::setDecoration( Decoration decoration )
 
 void QskSpinBox::resetDecoration()
 {
-    if ( resetFlagHint( aspectDecoration() ) )
+    if ( resetSkinHint( aspectDecoration() ) )
         Q_EMIT decorationChanged( decoration() );
 }
 
@@ -186,7 +186,7 @@ void QskSpinBox::setTextAlignment( Qt::Alignment alignment )
 
 void QskSpinBox::resetTextAlignment()
 {
-    if ( resetFlagHint( aspectTextAlignment() ) )
+    if ( resetSkinHint( aspectTextAlignment() ) )
         Q_EMIT textAlignmentChanged( textAlignment() );
 }
 

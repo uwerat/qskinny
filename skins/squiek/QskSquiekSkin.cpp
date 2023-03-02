@@ -328,7 +328,7 @@ void Editor::setupCheckBox()
 
     setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
 
-    setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
+    setHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
 
@@ -340,7 +340,7 @@ void Editor::setupPopup()
     using A = QskAspect;
     using Q = QskPopup;
 
-    setFlagHint( Q::Overlay | A::Style, true );
+    setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, QColor( 220, 220, 220, 150 ) );
 }
 
@@ -349,7 +349,7 @@ void Editor::setupMenu()
     using A = QskAspect;
     using Q = QskMenu;
 
-    setFlagHint( Q::Overlay | A::Style, true );
+    setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, QColor( 220, 220, 220, 100 ) );
 
     setBoxShape( Q::Panel, qskDpiScaled( 4 ) );
@@ -359,7 +359,7 @@ void Editor::setupMenu()
     setGradient( Q::Panel, m_pal.lighter110 );
 
     const bool isCascading = qskMaybeDesktopPlatform();
-    setFlagHint( Q::Panel | A::Style, isCascading );
+    setHint( Q::Panel | A::Style, isCascading );
 
     setMetric( Q::Separator | A::Size, qskDpiScaled( 2 ) );
     setSeparator( Q::Separator );
@@ -585,7 +585,7 @@ void Editor::setupPushButton()
     using Q = QskPushButton;
 
     // Panel
-    setFlagHint( Q::Panel | QskAspect::Direction, Qsk::TopToBottom );
+    setHint( Q::Panel | QskAspect::Direction, Qsk::TopToBottom );
     setStrutSize( Q::Panel, qskDpiScaled( 75.0 ), qskDpiScaled( 23.0 ) );
 
     setMargin( Q::Panel, 0 );
@@ -611,7 +611,7 @@ void Editor::setupPushButton()
 
     setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
 
-    setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
+    setHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
 
     setAlignment( Q::Text, Qt::AlignCenter );
 
@@ -1000,7 +1000,7 @@ void Editor::setupSubWindow()
 
     // TitleBarPanel
 
-    setFlagHint( Q::TitleBarPanel | QskAspect::Style,
+    setHint( Q::TitleBarPanel | QskAspect::Style,
         Q::TitleBar | Q::Title | Q::Symbol );
 
     setGradient( Q::TitleBarPanel | Q::Focused, m_pal.highlighted );
@@ -1028,7 +1028,7 @@ void Editor::setupSpinBox()
     using A = QskAspect;
     using Q = QskSpinBox;
 
-    setFlagHint( Q::Panel | A::Style, Q::UpDownControl );
+    setHint( Q::Panel | A::Style, Q::UpDownControl );
     setSpacing( Q::Panel, 2 );
 
     setPadding( Q::TextPanel, 5 );

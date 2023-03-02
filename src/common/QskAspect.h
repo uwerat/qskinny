@@ -19,7 +19,8 @@ class QSK_EXPORT QskAspect
 
     enum Type : quint8
     {
-        Flag   = 0,
+        NoType = 0,
+
         Metric = 1,
         Color  = 2,
     };
@@ -169,7 +170,6 @@ class QSK_EXPORT QskAspect
 
     constexpr bool isMetric() const noexcept;
     constexpr bool isColor() const noexcept;
-    constexpr bool isFlag() const noexcept;
 
     constexpr Variation variation() const noexcept;
     void setVariation( Variation ) noexcept;
@@ -188,7 +188,6 @@ class QSK_EXPORT QskAspect
     void setPrimitive( Type, Primitive primitive ) noexcept;
     void clearPrimitive() noexcept;
 
-    constexpr Primitive flagPrimitive() const noexcept;
     constexpr Primitive colorPrimitive() const noexcept;
     constexpr Primitive metricPrimitive() const noexcept;
 
@@ -250,17 +249,17 @@ constexpr inline QskAspect::State operator>>( QskAspect::State a, const int b ) 
 }
 
 inline constexpr QskAspect::QskAspect() noexcept
-    : QskAspect( NoSubcontrol, Body, Flag, NoVariation )
+    : QskAspect( NoSubcontrol, Body, NoType, NoVariation )
 {
 }
 
 inline constexpr QskAspect::QskAspect( Subcontrol subControl ) noexcept
-    : QskAspect( subControl, Body, Flag, NoVariation )
+    : QskAspect( subControl, Body, NoType, NoVariation )
 {
 }
 
 inline constexpr QskAspect::QskAspect( Section section ) noexcept
-    : QskAspect( NoSubcontrol, section, Flag, NoVariation )
+    : QskAspect( NoSubcontrol, section, NoType, NoVariation )
 {
 }
 
@@ -270,7 +269,7 @@ inline constexpr QskAspect::QskAspect( Type type ) noexcept
 }
 
 inline constexpr QskAspect::QskAspect( Variation variation ) noexcept
-    : QskAspect( NoSubcontrol, Body, Flag, variation )
+    : QskAspect( NoSubcontrol, Body, NoType, variation )
 {
 }
 
@@ -456,11 +455,6 @@ inline constexpr bool QskAspect::isColor() const noexcept
     return type() == Color;
 }
 
-inline constexpr bool QskAspect::isFlag() const noexcept
-{
-    return type() == Flag;
-}
-
 inline constexpr QskAspect::States QskAspect::states() const noexcept
 {
     return static_cast< States >( m_bits.states );
@@ -500,12 +494,6 @@ inline void QskAspect::setPrimitive( Type type, QskAspect::Primitive primitive )
 {
     m_bits.type = type;
     m_bits.primitive = primitive;
-}
-
-inline constexpr QskAspect::Primitive QskAspect::flagPrimitive() const noexcept
-{
-    return ( m_bits.type == Flag )
-        ? static_cast< Primitive >( m_bits.primitive ) : NoPrimitive;
 }
 
 inline constexpr QskAspect::Primitive QskAspect::colorPrimitive() const noexcept

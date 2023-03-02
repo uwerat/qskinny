@@ -43,13 +43,13 @@ static inline bool qskIsControl( const QskSkinnable* skinnable )
 static inline bool qskSetFlag( QskSkinnable* skinnable,
     const QskAspect aspect, int flag )
 {
-    return skinnable->setSkinHint( aspect | QskAspect::Flag, QVariant( flag ) );
+    return skinnable->setSkinHint( aspect, QVariant( flag ) );
 }
 
 static inline int qskFlag( const QskSkinnable* skinnable,
     const QskAspect aspect, QskSkinHintStatus* status = nullptr )
 {
-    return skinnable->effectiveSkinHint( aspect | QskAspect::Flag, status ).toInt();
+    return skinnable->effectiveSkinHint( aspect, status ).toInt();
 }
 
 static inline bool qskSetMetric( QskSkinnable* skinnable,
@@ -161,9 +161,9 @@ static inline void qskTriggerUpdates( QskAspect aspect, QskControl* control )
             break;
         }
 
-        case A::Flag:
+        case A::NoType:
         {
-            switch( aspect.flagPrimitive() )
+            switch( aspect.primitive() )
             {
                 case A::GraphicRole:
                 case A::FontRole:
@@ -356,11 +356,6 @@ bool QskSkinnable::setFlagHint( const QskAspect aspect, int flag )
     return qskSetFlag( this, aspect, flag );
 }
 
-int QskSkinnable::flagHint( const QskAspect aspect ) const
-{
-    return effectiveSkinHint( aspect ).toInt();
-}
-
 bool QskSkinnable::setAlignmentHint( const QskAspect aspect, Qt::Alignment alignment )
 {
     return qskSetFlag( this, aspect | QskAspect::Alignment, alignment );
@@ -368,7 +363,7 @@ bool QskSkinnable::setAlignmentHint( const QskAspect aspect, Qt::Alignment align
 
 bool QskSkinnable::resetAlignmentHint( const QskAspect aspect )
 {
-    return resetFlagHint( aspect | QskAspect::Alignment );
+    return resetSkinHint( aspect | QskAspect::Alignment );
 }
 
 bool QskSkinnable::setColor( const QskAspect aspect, const QColor& color )
@@ -655,20 +650,20 @@ qreal QskSkinnable::spacingHint(
 bool QskSkinnable::setTextOptionsHint(
     const QskAspect aspect, const QskTextOptions& options )
 {
-    return setSkinHint( aspect | QskAspect::Flag | QskAspect::Option,
+    return setSkinHint( aspect | QskAspect::NoType | QskAspect::Option,
         QVariant::fromValue( options ) );
 }
 
 bool QskSkinnable::resetTextOptionsHint( const QskAspect aspect )
 {
-    return resetFlagHint( aspect | QskAspect::Option );
+    return resetSkinHint( aspect | QskAspect::Option );
 }
 
 QskTextOptions QskSkinnable::textOptionsHint(
     const QskAspect aspect, QskSkinHintStatus* status ) const
 {
     return effectiveSkinHint(
-        aspect | QskAspect::Flag | QskAspect::Option, status ).value< QskTextOptions >();
+        aspect | QskAspect::NoType | QskAspect::Option, status ).value< QskTextOptions >();
 }
 
 bool QskSkinnable::setFontRoleHint( const QskAspect aspect, int role )
@@ -678,7 +673,7 @@ bool QskSkinnable::setFontRoleHint( const QskAspect aspect, int role )
 
 bool QskSkinnable::resetFontRoleHint( const QskAspect aspect )
 {
-    return resetFlagHint( aspect | QskAspect::FontRole );
+    return resetSkinHint( aspect | QskAspect::FontRole );
 }
 
 int QskSkinnable::fontRoleHint(
@@ -705,7 +700,7 @@ bool QskSkinnable::setGraphicRoleHint( const QskAspect aspect, int role )
 
 bool QskSkinnable::resetGraphicRoleHint( const QskAspect aspect )
 {
-    return resetFlagHint( aspect | QskAspect::GraphicRole );
+    return resetSkinHint( aspect | QskAspect::GraphicRole );
 }
 
 int QskSkinnable::graphicRoleHint(
@@ -1242,7 +1237,8 @@ void QskSkinnable::startHintTransition( QskAspect aspect, int index,
     auto v1 = from;
     auto v2 = to;
 
-    if ( aspect.flagPrimitive() == QskAspect::GraphicRole )
+    if ( aspect.type() == QskAspect::NoType &&
+        aspect.primitive() == QskAspect::GraphicRole )
     {
         const auto skin = effectiveSkin();
 

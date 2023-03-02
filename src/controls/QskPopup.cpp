@@ -419,7 +419,7 @@ void QskPopup::setOverlay( bool on )
 
 void QskPopup::resetOverlay()
 {
-    if ( resetFlagHint( Overlay | QskAspect::Style ) )
+    if ( resetSkinHint( Overlay | QskAspect::Style ) )
         Q_EMIT overlayChanged( hasOverlay() );
 }
 
