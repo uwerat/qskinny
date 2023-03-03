@@ -144,7 +144,7 @@ QSizeF QskCheckBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
 {
     using Q = QskCheckBox;
 
-    if ( which == Qt::MaximumSize )
+    if ( which != Qt::PreferredSize )
         return QSizeF();
 
     auto checkBox = static_cast< const QskCheckBox* >( skinnable );
