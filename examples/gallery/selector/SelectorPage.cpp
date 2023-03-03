@@ -69,6 +69,8 @@ void SelectorPage::populate()
     auto* horizontalButtonsBox = new Box( Qt::Vertical, this );
 
     auto* comboBoxBox = new QskLinearBox( Qt::Horizontal, horizontalButtonsBox );
+    comboBoxBox->setExtraSpacingAt( Qt::BottomEdge );
+
     auto* comboBox1 = new QskComboBox( comboBoxBox );
     comboBox1->setLabel( "label" );
     comboBox1->addOption( {}, "airport" );
