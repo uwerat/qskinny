@@ -635,33 +635,30 @@ void Editor::setupRadioBox()
 {
     using Q = QskRadioBox;
 
-    setSpacing(Q::Panel, qskDpiScaled( 10 ) );
+    setSpacing( Q::Panel, qskDpiScaled( 10 ) );
+    setStrutSize( Q::Button, qskDpiScaled( 20 ), qskDpiScaled( 20 ) );
 
-    setStrutSize( Q::Button, { qskDpiScaled( 20 ), qskDpiScaled( 20 ) } );
-    setStrutSize( Q::Symbol, { qskDpiScaled( 9 ), qskDpiScaled( 9 ) });
+    for ( auto subControl : { Q::Button, Q::Indicator, Q::Ripple } )
+        setBoxShape( subControl, 100, Qt::RelativeSize ); // circular
 
-    setBoxShape( Q::Button, qskDpiScaled( 20 ) );
-    setBoxShape( Q::Ripple, qskDpiScaled( 40 ) );
     setBoxBorderMetrics( Q::Button, qskDpiScaled( 1 ) );
 
     setBoxBorderColors( Q::Button, m_pal.darker125 );
     setBoxBorderColors( Q::Button | Q::Disabled, m_pal.theme );
 
+    setPadding( Q::Button, qskDpiScaled( 5 ) );
+
     setColor( Q::Text, m_pal.themeForeground );
-    setColor( Q::Symbol, m_pal.themeForeground );
+    setColor( Q::Text | Q::Disabled, m_pal.darker200 );
+
     setColor( Q::Panel, m_pal.lighter125 );
     setColor( Q::Panel | Q::Disabled, m_pal.lighter125 );
 
     setColor( Q::Button | Q::Disabled, m_pal.lighter110 );
 
-    setColor( Q::Text | Q::Disabled, m_pal.darker200 );
-
-    setColor( Q::Symbol | Q::Disabled, m_pal.darker200 );
-
-    setMargin( Q::Text, QskMargins( qskDpiScaled( 10 ), 0, qskDpiScaled( 10 ), 0 ) );
-
-    setAlignment( Q::Symbol, Qt::AlignCenter );
-    setAlignment( Q::Text, Qt::AlignBottom );
+    setColor( Q::Indicator, Qt::transparent);
+    setColor( Q::Indicator | Q::Selected, m_pal.themeForeground );
+    setColor( Q::Indicator | Q::Selected | Q::Disabled, m_pal.darker200 );
 }
 
 void Editor::setupDialogButtonBox()

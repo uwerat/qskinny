@@ -166,10 +166,12 @@ namespace
         RadioButtonBox( QQuickItem* parent = nullptr )
             : ButtonBox( Qt::Horizontal, parent )
         {
-            new QskRadioBox( { "One", "Two", "Three" }, this );
+            auto radioBox1 = new QskRadioBox( { "One", "Two", "Three" }, this );
+            radioBox1->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
 
-            auto radioBox = new QskRadioBox( { "One", "Two", "Three" }, this );
-            radioBox->setLayoutMirroring( true );
+            auto radioBox2 = new QskRadioBox( { "One", "Two", "Three" }, this );
+            radioBox2->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+            radioBox2->setLayoutMirroring( true );
         }
     };
 }

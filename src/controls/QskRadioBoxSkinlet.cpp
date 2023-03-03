@@ -5,15 +5,9 @@
 
 #include "QskRadioBoxSkinlet.h"
 
-#include "QskAspect.h"
 #include "QskRadioBox.h"
-
 #include "QskSkinStateChanger.h"
-#include "QskStandardSymbol.h"
-#include "QskColorFilter.h"
-#include "QskGraphic.h"
 #include "QskFunctions.h"
-#include "QskSkin.h"
 
 #include <qfontmetrics.h>
 
@@ -51,11 +45,48 @@ namespace
 
         return qMax( strutHight, fontHeight );
     }
+
+    QRectF lineRect( const QskRadioBox* radioBox, const QRectF& rect, int index )
+    {
+        using Q = QskRadioBox;
+
+        auto h = lineHeight( radioBox );
+
+        auto y = rect.top();
+        if ( index > 0 )
+        {
+            const auto spacing = radioBox->spacingHint( Q::Panel );
+            y += index * ( h + spacing );
+        }
+
+        return QRectF( rect.x(), y, rect.width(), h );
+    }
+
+    inline qreal maxTextWidth( const QskRadioBox* radioBox )
+    {
+        qreal w = 0.0;
+
+        const QFontMetrics fm( radioBox->effectiveFont( QskRadioBox::Text ) );
+
+        const auto options = radioBox->options();
+        for( const auto& option : options )
+            w = std::max( w, qskHorizontalAdvance( fm, option ) );
+
+        return w;
+    }
+
+#if 1
+    inline qreal lineSpacing( const QskRadioBox* )
+    {
+        // skinHint TODO ...
+        return 10;
+    }
+#endif
 }
 
 QskRadioBoxSkinlet::QskRadioBoxSkinlet( QskSkin* )
 {
-    setNodeRoles( { PanelRole, ButtonRole, SymbolRole, TextRole, RippleRole } );
+    setNodeRoles( { PanelRole, ButtonRole, IndicatorRole, TextRole, RippleRole } );
 }
 
 QskRadioBoxSkinlet::~QskRadioBoxSkinlet()
@@ -65,40 +96,14 @@ QskRadioBoxSkinlet::~QskRadioBoxSkinlet()
 QRectF QskRadioBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subcontrol ) const
 {
-    auto radioBox = static_cast< const QskRadioBox* >( skinnable );
-
-    if( subcontrol == QskRadioBox::Ripple )
-        return rippleRect( radioBox, contentsRect );
-
-    return contentsRect;
-}
-
-QSizeF QskRadioBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
-    Qt::SizeHint, const QSizeF& ) const
-{
     using Q = QskRadioBox;
 
     auto radioBox = static_cast< const QskRadioBox* >( skinnable );
 
-    const auto font = skinnable->effectiveFont( Q::Text );
-    const auto textMargins = skinnable->marginHint( Q::Text );
-    const auto buttonMargins = skinnable->marginHint( Q::Button );
-    const auto symbolMargins = skinnable->marginHint( Q::Symbol );
+    if( subcontrol == Q::Ripple )
+        return rippleRect( radioBox, contentsRect );
 
-    qreal maxTextWidth = 0;
-    for( const auto& item : radioBox->items() )
-        maxTextWidth = std::max( maxTextWidth, qskHorizontalAdvance( font, item ) );
-
-    auto buttonWidth = radioBox->strutSizeHint( Q::Button ).width();
-    auto symbolWidth = radioBox->strutSizeHint( Q::Symbol ).width();
-
-    maxTextWidth += textMargins.left() + textMargins.right();
-    buttonWidth += buttonMargins.left() + buttonMargins.right();
-    symbolWidth += symbolMargins.left() + symbolMargins.right();
-
-    auto spacing = radioBox->spacingHint( Q::Panel );
-    return QSizeF( maxTextWidth + qMax( buttonWidth, symbolWidth ),
-        ( lineHeight( radioBox ) + spacing ) * radioBox->items().size() - spacing );
+    return contentsRect;
 }
 
 QSGNode* QskRadioBoxSkinlet::updateSubNode( const QskSkinnable* skinnable,
@@ -114,8 +119,8 @@ QSGNode* QskRadioBoxSkinlet::updateSubNode( const QskSkinnable* skinnable,
         case ButtonRole:
             return updateSeriesNode( skinnable, Q::Button, node );
 
-        case SymbolRole:
-            return updateSeriesNode( skinnable, Q::Symbol, node );
+        case IndicatorRole:
+            return updateSeriesNode( skinnable, Q::Indicator, node );
 
         case TextRole:
             return updateSeriesNode( skinnable, Q::Text, node );
@@ -124,9 +129,11 @@ QSGNode* QskRadioBoxSkinlet::updateSubNode( const QskSkinnable* skinnable,
         {
             auto radioBox = static_cast< const QskRadioBox* >( skinnable );
 
+#if 1
             QskSkinStateChanger changer( radioBox );
             auto ripplePosition = radioBox->positionHint( Q::Ripple );
             changer.setStates( statesForIndex( radioBox, ripplePosition ) );
+#endif
 
             return updateBoxNode( radioBox, node, Q::Ripple );
         }
@@ -139,21 +146,7 @@ int QskRadioBoxSkinlet::sampleCount(
     const QskSkinnable* skinnable, QskAspect::Subcontrol ) const
 {
     const auto radioBox = static_cast< const QskRadioBox* >( skinnable );
-    return radioBox->items().count();
-}
-
-QSizeF QskRadioBoxSkinlet::buttonSymbolSize( const QskRadioBox* radioBox ) const
-{
-    using Q = QskRadioBox;
-
-    auto buttonStrut = radioBox->strutSizeHint( Q::Button );
-    auto symbolStrut = radioBox->strutSizeHint( Q::Symbol );
-
-    buttonStrut = buttonStrut.grownBy( radioBox->marginHint( Q::Button ) );
-    symbolStrut = symbolStrut.grownBy( radioBox->marginHint( Q::Symbol ) );
-
-    return QSizeF( qMax( buttonStrut.width(), symbolStrut.width() ),
-        qMax( buttonStrut.height(), symbolStrut.height() ) );
+    return radioBox->options().count();
 }
 
 QRectF QskRadioBoxSkinlet::rippleRect(
@@ -161,64 +154,39 @@ QRectF QskRadioBoxSkinlet::rippleRect(
 {
     using Q = QskRadioBox;
 
-    auto ripplePosition = radioBox->positionHint( Q::Ripple );
-
-    if( ripplePosition < 0 )
+    auto index = radioBox->positionHint( Q::Ripple );
+    if( index < 0 )
         return QRectF();
 
-    auto rippleSize = radioBox->strutSizeHint( Q::Ripple );
+    QRectF r;
+    r.setSize( radioBox->strutSizeHint( Q::Ripple ) );
 
-    auto r = buttonRect( radioBox, Q::Button, rect, ripplePosition );
-
-    r.moveLeft( r.x() - ( rippleSize.width() - r.width() ) / 2 );
-    r.moveTop( r.y() - ( rippleSize.height() - r.height() ) / 2 );
-    r.setSize( rippleSize );
+    if ( !r.isEmpty() )
+    {
+        const auto buttonRect = sampleRect( radioBox, rect, Q::Button, index );
+        r.moveCenter( buttonRect.center() );
+    }
 
     return r;
 }
 
 QRectF QskRadioBoxSkinlet::buttonRect( const QskRadioBox* radioBox,
-    const QskAspect::Subcontrol target, const QRectF& rect, double index ) const
+    const QRectF& rect, int index ) const
 {
     using Q = QskRadioBox;
 
-    if( index < 0 )
-        return QRectF();
+    auto r = lineRect( radioBox, rect, index );
+    r = r.marginsRemoved( radioBox->paddingHint( Q::Panel ) );
 
-    auto result = rect;
-    result.setSize( radioBox->strutSizeHint( target ) );
+    auto alignment = radioBox->alignmentHint( Q::Button, Qt::AlignCenter );
 
-    auto spacing = radioBox->spacingHint( Q::Panel );
-    result.moveTop( ( lineHeight( radioBox ) + spacing ) * index );
+    alignment &= Qt::AlignVertical_Mask;
+    alignment |= radioBox->layoutMirroring() ? Qt::AlignRight : Qt::AlignLeft;
 
-    auto margins = radioBox->marginHint( target );
-    auto withMargins = result.size().grownBy( margins );
+    auto size = radioBox->strutSizeHint( Q::Button );
+    size = size.grownBy( radioBox->marginHint( Q::Button ) );
 
-    auto maxSize = buttonSymbolSize( radioBox );
-    auto alignment = radioBox->alignmentHint( target );
-
-    // Vertical positioning
-    const auto alignHeight = maxSize.height() - withMargins.height();
-    if( alignment.testFlag( Qt::AlignVCenter ) )
-        result.moveTop( result.top() + alignHeight / 2 );
-    else if( alignment.testFlag( Qt::AlignBottom ) )
-        result.moveTop( result.top() + alignHeight );
-
-    result.moveTop( result.top() + margins.top() );
-
-    // Horizontal positioning
-    auto alignWidth = 0;
-    if( alignment.testFlag( Qt::AlignHCenter ) )
-        alignWidth = ( maxSize.width() - withMargins.width() ) / 2;
-    else if ( alignment.testFlag( Qt::AlignRight ) )
-        alignWidth = maxSize.width() - withMargins.width();
-
-    if( radioBox->layoutMirroring() )
-        result.moveRight( rect.width() - ( alignWidth + margins.right() ) );
-    else
-        result.moveLeft( margins.left() + alignWidth );
-
-    return result;
+    return qskAlignedRectF( r, size.width(), size.height(), alignment );
 }
 
 QRectF QskRadioBoxSkinlet::textRect( const QskRadioBox* radioBox,
@@ -226,50 +194,42 @@ QRectF QskRadioBoxSkinlet::textRect( const QskRadioBox* radioBox,
 {
     using Q = QskRadioBox;
 
-    const auto text = radioBox->items()[ index ];
-    if( text.isEmpty() )
-        return QRectF();
+    auto r = lineRect( radioBox, rect, index );
+    r = r.marginsRemoved( radioBox->paddingHint( Q::Panel ) );
 
-    QRectF result = rect;
-    auto spacing = radioBox->spacingHint( Q::Panel );
-    auto lh = lineHeight( radioBox );
-    const auto textMargins = radioBox->marginHint( Q::Text );
-    const auto font = radioBox->effectiveFont( Q::Text );
+    const auto buttonRect = sampleRect( radioBox, rect, Q::Button, index );
+    const auto spacing = lineSpacing( radioBox );
 
-    result.moveTop( index * ( lh + spacing )
-        + lh - QFontMetricsF( font ).height() + textMargins.top() );
-
-    result.setHeight( lh );
-    result.setWidth( qskHorizontalAdvance( font, text ) );
-
-    const auto button = buttonRect( radioBox, Q::Button, rect, index );
-    const auto buttonsMargins = radioBox->marginHint( Q::Button );
-    const auto buttonWidth = button.marginsAdded( buttonsMargins ).width();
-
-    if( radioBox->layoutMirroring() )
-    {
-        result.moveLeft( rect.width() - textMargins.right()
-            - result.width() - buttonWidth);
-    }
+    if ( !radioBox->layoutMirroring() )
+        r.setLeft( buttonRect.right() + spacing );
     else
-    {
-        result.moveLeft( buttonWidth + textMargins.left() );
-    }
+        r.setRight( buttonRect.left() - spacing );
 
-    return result;
+    return r;
 }
 
 QRectF QskRadioBoxSkinlet::sampleRect( const QskSkinnable* skinnable,
-    const QRectF& rect, QskAspect::Subcontrol subcontrol, int index ) const
+    const QRectF& rect, QskAspect::Subcontrol subControl, int index ) const
 {
     using Q = QskRadioBox;
 
     auto radioBox = static_cast< const QskRadioBox* >( skinnable );
 
-    if( subcontrol == Q::Text )
+    if( subControl == Q::Text )
         return textRect( radioBox, rect, index );
 
-    return buttonRect( radioBox, subcontrol, rect, index);
+    if( subControl == Q::Button )
+        return buttonRect( radioBox, rect, index);
+
+    if( subControl == Q::Indicator )
+    {
+        auto r = sampleRect( radioBox, rect, Q::Button, index );
+        r = r.marginsRemoved( radioBox->paddingHint( Q::Button ) );
+
+        return r;
+    }
+
+    return QRectF();
 }
 
 QskAspect::States QskRadioBoxSkinlet::sampleStates( const QskSkinnable* skinnable,
@@ -292,42 +252,57 @@ QSGNode* QskRadioBoxSkinlet::updateSampleNode( const QskSkinnable* skinnable,
 
     if( subcontrol == Q::Text )
     {
-        return QskSkinlet::updateTextNode( radioBox, node, rect, Qt::AlignLeft,
-            radioBox->items()[ index ], subcontrol );
+        Qt::Alignment alignment = Qt::AlignVCenter;
+        alignment |= ( radioBox->layoutMirroring() ? Qt::AlignRight : Qt::AlignLeft );
+
+        alignment = radioBox->alignmentHint( Q::Text, Qt::AlignCenter );
+        alignment &= Qt::AlignVertical_Mask;
+        alignment |= radioBox->layoutMirroring() ? Qt::AlignRight : Qt::AlignLeft;
+
+        return updateTextNode( radioBox, node, rect,
+            alignment, radioBox->option( index ), subcontrol );
     }
-    else if ( subcontrol == Q::Button )
-    {
-        return QskSkinlet::updateBoxNode( radioBox, node, rect, subcontrol );
-    }
-    else if( subcontrol == Q::Symbol )
-    {
-        auto symbol = QskStandardSymbol::NoSymbol;
-        auto color = radioBox->color( subcontrol ).rgb();
 
-        if( radioBox->selectedIndex() == index )
-        {
-            symbol = QskStandardSymbol::Bullet;
-            color = radioBox->color( subcontrol | Q::Selected ).rgb();
-        }
-
-        auto graphic = radioBox->effectiveSkin()->symbol( symbol );
-
-        /*
-            Our default skins do not have the concept of colorRoles
-            implemented. Until then we do the recoloring manually here
-         */
-        QskColorFilter filter;
-        filter.addColorSubstitution( Qt::black, color );
-
-        auto colorSub = radioBox->color( subcontrol | statesForIndex( radioBox, index ) );
-        filter.addColorSubstitution( Qt::black, colorSub.rgb() );
-
-        QskGraphic::fromGraphic( graphic, filter );
-
-        return updateGraphicNode( radioBox, node, graphic, filter, rect );
-    }
+    if ( subcontrol == Q::Button || subcontrol == Q::Indicator )
+        return updateBoxNode( radioBox, node, rect, subcontrol );
 
     return node;
+}
+
+QSizeF QskRadioBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    using Q = QskRadioBox;
+
+    const auto radioBox = static_cast< const QskRadioBox* >( skinnable );
+
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    if ( constraint.width() >= 0.0 )
+    {
+        // heightForWidth would make sense when word wrapping is enabled TODO ...
+    }
+
+    QSizeF textSize( maxTextWidth( radioBox ), 0.0 );
+
+    textSize = textSize.expandedTo( skinnable->strutSizeHint( Q::Text ) );
+    textSize = textSize.grownBy( skinnable->marginHint( Q::Text ) );
+
+    QSizeF buttonSize = skinnable->strutSizeHint( Q::Button );
+    buttonSize = buttonSize.grownBy( skinnable->marginHint( Q::Button ) );
+
+    const auto count = std::max( ( int )radioBox->options().count(), 1 );
+
+    const qreal w = textSize.width() + lineSpacing( radioBox ) + buttonSize.width();
+    const qreal h = count * std::max( textSize.height(), buttonSize.height() )
+        + ( count - 1 ) * skinnable->spacingHint( Q::Panel );
+
+    QSizeF hint( w, h );
+    hint = hint.grownBy( skinnable->paddingHint( Q::Panel ) );
+    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Panel ) );
+
+    return hint;
 }
 
 #include "moc_QskRadioBoxSkinlet.cpp"
