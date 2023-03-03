@@ -19,6 +19,9 @@ class QSK_EXPORT QskComboBox : public QskControl
 
     Q_PROPERTY( int count READ count NOTIFY countChanged )
 
+    Q_PROPERTY( QString placeholderText READ placeholderText
+        WRITE setPlaceholderText NOTIFY placeholderTextChanged )
+
     using Inherited = QskControl;
 
   public:
@@ -50,8 +53,8 @@ class QSK_EXPORT QskComboBox : public QskControl
 
     QVariantList optionAt( int ) const;
 
-    QString label() const;
-    void setLabel( const QString& );
+    QString placeholderText() const;
+    void setPlaceholderText( const QString& );
 
     QString text() const;
 
@@ -60,7 +63,6 @@ class QSK_EXPORT QskComboBox : public QskControl
     virtual void openPopup();
     virtual void closePopup();
 
-    void click();
     void setCurrentIndex( int );
 
   Q_SIGNALS:
@@ -73,6 +75,8 @@ class QSK_EXPORT QskComboBox : public QskControl
 
     void pressedChanged( bool );
     void popupOpenChanged( bool );
+
+    void placeholderTextChanged( const QString& );
 
   protected:
     virtual void updateLayout() override;

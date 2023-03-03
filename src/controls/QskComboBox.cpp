@@ -9,8 +9,6 @@
 #include "QskMenu.h"
 #include "QskTextOptions.h"
 
-#include <QGuiApplication>
-
 QSK_SUBCONTROL( QskComboBox, Panel )
 QSK_SUBCONTROL( QskComboBox, Graphic )
 QSK_SUBCONTROL( QskComboBox, Text )
@@ -27,10 +25,19 @@ class QskComboBox::PrivateData
         : menu( new QskMenu( box ) )
     {
         menu->setPopupFlag( QskPopup::DeleteOnClose, false );
+
+#if 1
+        /*
+            CloseOnPressOutside catches all mouse events in the parent
+            what is the comboBox in our case. However we need to handle
+            events for the complete window to make the CloseOnPressOutside
+            work like expected. TODO ...
+         */
+#endif
     }
 
-    QskMenu* const menu;
-    QString label;
+    QskMenu* menu;
+    QString placeholderText;
 };
 
 QskComboBox::QskComboBox( QQuickItem* parent )
@@ -47,10 +54,14 @@ QskComboBox::QskComboBox( QQuickItem* parent )
 
     setAcceptHoverEvents( true );
 
-    connect( m_data->menu, &QskMenu::currentIndexChanged, this, &QskComboBox::currentIndexChanged );
-    connect( m_data->menu, &QskMenu::currentIndexChanged, this, &QQuickItem::update );
+    connect( m_data->menu, &QskMenu::currentIndexChanged,
+        this, &QskComboBox::currentIndexChanged );
 
-    connect( m_data->menu, &QskMenu::countChanged, this, &QskComboBox::countChanged );
+    connect( m_data->menu, &QskMenu::currentIndexChanged,
+        this, &QQuickItem::update );
+
+    connect( m_data->menu, &QskMenu::countChanged,
+        this, &QskComboBox::countChanged );
 
     connect( this, &QskComboBox::currentIndexChanged,
         this, &QskControl::focusIndicatorRectChanged );
@@ -109,17 +120,14 @@ bool QskComboBox::isPopupOpen() const
 
 QskGraphic QskComboBox::graphic() const
 {
-    const int index = m_data->menu->currentIndex();
-
+    const int index = currentIndex();
     if( index >= 0 )
     {
         const auto option = m_data->menu->optionAt( index );
         return option.at( 0 ).value< QskGraphic >();
     }
-    else
-    {
-        return {};
-    }
+
+    return QskGraphic();
 }
 
 void QskComboBox::setTextOptions( const QskTextOptions& textOptions )
@@ -142,29 +150,36 @@ QVariantList QskComboBox::optionAt( int index ) const
     return m_data->menu->optionAt( index );
 }
 
-QString QskComboBox::label() const
+QString QskComboBox::placeholderText() const
 {
-    return m_data->label;
+    return m_data->placeholderText;
 }
 
-void QskComboBox::setLabel( const QString& label )
+void QskComboBox::setPlaceholderText( const QString& text )
 {
-    m_data->label = label;
+    if ( m_data->placeholderText == text )
+        return;
+
+    m_data->placeholderText = text;
+
+    resetImplicitSize();
+
+    if ( currentIndex() < 0 )
+        update();
+
+    Q_EMIT placeholderTextChanged( text );
 }
 
 QString QskComboBox::text() const
 {
-    const int index = m_data->menu->currentIndex();
-
+    const int index = currentIndex();
     if( index >= 0 )
     {
-        const auto option = m_data->menu->optionAt( index );
+        const auto option = optionAt( index );
         return option.at( 1 ).toString();
     }
-    else
-    {
-        return label();
-    }
+
+    return placeholderText();
 }
 
 void QskComboBox::togglePopup()
@@ -192,15 +207,13 @@ void QskComboBox::updateLayout()
     m_data->menu->setFixedWidth( contentsRect().width() );
 }
 
-void QskComboBox::mousePressEvent( QMouseEvent* event )
+void QskComboBox::mousePressEvent( QMouseEvent* )
 {
-    Q_UNUSED( event )
     setPressed( true );
 }
 
-void QskComboBox::mouseReleaseEvent( QMouseEvent* event )
+void QskComboBox::mouseReleaseEvent( QMouseEvent* )
 {
-    Q_UNUSED( event )
     releaseButton();
 }
 
@@ -238,12 +251,6 @@ void QskComboBox::clear()
     m_data->menu->clear();
 
     update();
-}
-
-void QskComboBox::click()
-{
-    setPressed( true );
-    releaseButton();
 }
 
 void QskComboBox::setCurrentIndex( int index )
