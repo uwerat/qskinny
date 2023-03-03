@@ -42,15 +42,18 @@ namespace
 
     QskGraphic graphicAt( const QskSegmentedBar* bar, const int index )
     {
-        // note: It is a Material 3 peculiarity that the selected element
-        // always has the checkmark symbol. If we ever have another style
-        // implementing this control we should put this code into a
-        // subclass.
-        const auto graphic = ( bar->selectedIndex() == index )
-                ? bar->effectiveSkin()->symbol( QskStandardSymbol::SegmentedBarCheckMark )
-                : qskValueAt< QskGraphic >( bar, index );
+        using Q = QskSegmentedBar;
 
-        return graphic;
+        if ( bar->selectedIndex() == index )
+        {
+            // f.e Material 3 replaces the icon of the selected element by a checkmark
+
+            const auto graphic = bar->symbolHint( Q::Graphic | Q::Selected );
+            if ( !graphic.isNull() )
+                return graphic;
+        }
+
+        return qskValueAt< QskGraphic >( bar, index );
     }
 
     class LayoutEngine : public QskSubcontrolLayoutEngine
@@ -79,8 +82,8 @@ namespace
 QskSegmentedBarSkinlet::QskSegmentedBarSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { CursorRole, PanelRole, SegmentRole,
-                    SeparatorRole, TextRole, GraphicRole  } );
+    setNodeRoles( { PanelRole, SegmentRole,
+        SeparatorRole, CursorRole, TextRole, GraphicRole  } );
 }
 
 QskSegmentedBarSkinlet::~QskSegmentedBarSkinlet() = default;
@@ -227,15 +230,16 @@ QSizeF QskSegmentedBarSkinlet::segmentSizeHint(
 
     QSizeF sizeMax;
 
+    const auto graphic0 = bar->symbolHint( Q::Graphic | Q::Selected );
+
     for ( int i = 0; i < bar->count(); i++ )
     {
         LayoutEngine layoutEngine( bar, i );
 
-        const auto graphic = bar->effectiveSkin()->symbol(
-            QskStandardSymbol::SegmentedBarCheckMark );
+        auto graphic = qskValueAt< QskGraphic >( bar, i );
+        if ( graphic.isNull() )
+            graphic = graphic0;
 
-        // We want to know how big the element can grow when it is selected,
-        // i.e. when it has the checkmark symbol:
         layoutEngine.setGraphicTextElements( bar,
             Q::Text, qskValueAt< QString >( bar, i ),
             Q::Graphic, graphic.defaultSize() );
@@ -243,9 +247,7 @@ QSizeF QskSegmentedBarSkinlet::segmentSizeHint(
         const auto size = layoutEngine.sizeHint( which, QSizeF() );
 
         if( size.width() > sizeMax.width() )
-        {
             sizeMax = size;
-        }
     }
 
     sizeMax = bar->outerBoxSize( Q::Segment, sizeMax );

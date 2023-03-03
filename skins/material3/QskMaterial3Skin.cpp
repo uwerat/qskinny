@@ -561,8 +561,8 @@ void Editor::setupSegmentedBar()
         setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
         setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
         setGradient( Q::Segment, Qt::transparent );
-        setPadding( Q::Segment | A::Horizontal, { 12_dp, 0, 12_dp, 0 } );
-        setPadding( Q::Segment | A::Vertical, { 0, 12_dp, 0, 12_dp } );
+        setPadding( Q::Segment | A::Horizontal, 12_dp, 0, 12_dp, 0 );
+        setPadding( Q::Segment | A::Vertical, 0, 12_dp, 0, 12_dp );
     }
 
     {
@@ -597,6 +597,9 @@ void Editor::setupSegmentedBar()
 
         setGradient( Q::Cursor, m_pal.secondaryContainer );
         setGradient( Q::Cursor | Q::Disabled, m_pal.onSurface12 );
+
+        setBoxBorderMetrics( Q::Cursor, 1_dp );
+        setBoxBorderColors( Q::Cursor, Qt::transparent );
     }
 
     {
@@ -614,6 +617,8 @@ void Editor::setupSegmentedBar()
 
     {
         // Graphic
+
+        setSymbol( Q::Graphic, symbol( QskStandardSymbol::SegmentedBarCheckMark ) );
 
         setPadding( Q::Graphic, 0_dp );
         setStrutSize( Q::Graphic, 18_dp, 18_dp );
