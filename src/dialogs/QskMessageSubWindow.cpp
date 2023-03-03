@@ -7,7 +7,7 @@
 #include "QskGraphic.h"
 #include "QskGraphicLabel.h"
 #include "QskLinearBox.h"
-#include "QskSkin.h"
+#include "QskStandardSymbol.h"
 #include "QskTextLabel.h"
 
 #include <qfontmetrics.h>
@@ -130,7 +130,13 @@ void QskMessageSubWindow::setSymbolSource( const QUrl& url )
 
 void QskMessageSubWindow::setSymbolType( int symbolType )
 {
-    setSymbol( effectiveSkin()->symbol( symbolType ) );
+#if 1
+    const auto graphic = QskStandardSymbol::graphic(
+        static_cast< QskStandardSymbol::Type >( symbolType ) );
+#else
+    const auto graphic = symbolHint( ... ); // TODO
+#endif
+    setSymbol( graphic );
 }
 
 QUrl QskMessageSubWindow::symbolSource() const

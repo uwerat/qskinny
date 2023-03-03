@@ -126,8 +126,6 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
     QskMaterial3Skin( const QskMaterial3Theme&, QObject* parent = nullptr );
     ~QskMaterial3Skin() override;
 
-    virtual QskGraphic symbol( int symbolType ) const override;
-
     enum GraphicRole
     {
         GraphicRoleOnError,

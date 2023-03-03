@@ -326,13 +326,6 @@ const std::unordered_map< int, QskColorFilter >& QskSkin::graphicFilters() const
     return m_data->graphicFilters;
 }
 
-QskGraphic QskSkin::symbol( int symbolType ) const
-{
-    // should this one be somehow related to the platform icons ???
-    return QskStandardSymbol::graphic(
-        static_cast< QskStandardSymbol::Type >( symbolType ) );
-}
-
 void QskSkin::addGraphicProvider(
     const QString& providerId, QskGraphicProvider* provider )
 {

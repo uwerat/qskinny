@@ -130,8 +130,6 @@ namespace
         void setup();
 
       private:
-        QskGraphic symbol( int type ) const { return m_skin->symbol( type ); }
-
         void setupBox();
         void setupCheckBox();
         void setupComboBox();
@@ -158,6 +156,23 @@ namespace
         void setupTabView();
         void setupTextInput();
         void setupTextLabel();
+
+        QskGraphic symbol( const char* url ) const
+        {
+            const auto provider = m_skin->graphicProvider( {} );
+
+            auto graphic = provider->requestGraphic( url );
+            if ( graphic )
+                return *graphic;
+
+            return QskGraphic();
+        }
+
+        void setStandardSymbol( QskAspect aspect,
+            QskStandardSymbol::Type symbolType )
+        {
+            setSymbol( aspect, QskStandardSymbol::graphic( symbolType ) );
+        }
 
         const QskSkin* m_skin;
         const QskMaterial3Theme& m_pal;
@@ -253,11 +268,12 @@ void Editor::setupCheckBox()
 
     setGraphicRole( Q::Indicator | Q::Error, QskMaterial3Skin::GraphicRoleOnError );
 
+    const auto checkMark = symbol( "check_small" );
     for ( auto state : { QskAspect::NoState, Q::Disabled } )
     {
         const auto aspect = Q::Indicator | Q::Checked | state;
-        setSymbol( aspect, symbol( QskStandardSymbol::CheckMark ) );
-        setSymbol( aspect | Q::Error, symbol( QskStandardSymbol::CheckMark ) );
+        setSymbol( aspect, checkMark );
+        setSymbol( aspect | Q::Error, checkMark );
     }
 
     setStrutSize( Q::Ripple, 40_dp, 40_dp );
@@ -346,11 +362,8 @@ void Editor::setupComboBox()
 
     setGraphicRole( Q::OpenMenuGraphic, QskMaterial3Skin::GraphicRoleOnSurface38 );
 
-    setSymbol( Q::OpenMenuGraphic,
-        symbol( QskStandardSymbol::TriangleDown ) );
-
-    setSymbol( Q::OpenMenuGraphic | Q::PopupOpen,
-        symbol( QskStandardSymbol::TriangleUp ) );
+    setSymbol( Q::OpenMenuGraphic, symbol( "combo-box-arrow-closed" ) );
+    setSymbol( Q::OpenMenuGraphic | Q::PopupOpen, symbol( "combo-box-arrow-open" ) );
 }
 
 void Editor::setupBox()
@@ -618,7 +631,7 @@ void Editor::setupSegmentedBar()
     {
         // Graphic
 
-        setSymbol( Q::Graphic, symbol( QskStandardSymbol::SegmentedBarCheckMark ) );
+        setSymbol( Q::Graphic, symbol( "segmented-button-check" ) );
 
         setPadding( Q::Graphic, 0_dp );
         setStrutSize( Q::Graphic, 18_dp, 18_dp );
@@ -925,8 +938,8 @@ void Editor::setupSpinBox()
         setGradient( Q::UpPanel | Q::Increasing, focusColor );
     }
 
-    setSymbol( Q::UpIndicator, symbol( QskStandardSymbol::TriangleUp ) );
-    setSymbol( Q::DownIndicator, symbol( QskStandardSymbol::TriangleDown ) );
+    setSymbol( Q::UpIndicator, symbol( "combo-box-arrow-open" ) );
+    setSymbol( Q::DownIndicator, symbol( "combo-box-arrow-closed" ) );
 
     for( const auto subControl : { Q::DownIndicator, Q::UpIndicator } )
     {
@@ -1377,29 +1390,6 @@ QskMaterial3Skin::QskMaterial3Skin( const QskMaterial3Theme& palette, QObject* p
 
 QskMaterial3Skin::~QskMaterial3Skin()
 {
-}
-
-QskGraphic QskMaterial3Skin::symbol( int symbolType ) const
-{
-    const auto provider = graphicProvider( {} );
-
-    switch ( symbolType )
-    {
-        case QskStandardSymbol::CheckMark:
-            return *( provider->requestGraphic( "check_small" ) );
-
-        case QskStandardSymbol::SegmentedBarCheckMark:
-            return *( provider->requestGraphic( "segmented-button-check" ) );
-
-        case QskStandardSymbol::TriangleDown:
-            return *( provider->requestGraphic( "combo-box-arrow-closed" ) );
-
-        case QskStandardSymbol::TriangleUp:
-            return *( provider->requestGraphic( "combo-box-arrow-open" ) );
-
-        default:
-            return Inherited::symbol( symbolType );
-    }
 }
 
 void QskMaterial3Skin::setupFonts()
