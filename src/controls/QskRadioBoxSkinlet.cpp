@@ -6,31 +6,12 @@
 #include "QskRadioBoxSkinlet.h"
 
 #include "QskRadioBox.h"
-#include "QskSkinStateChanger.h"
 #include "QskFunctions.h"
 
 #include <qfontmetrics.h>
 
 namespace
 {
-    QskAspect::States statesForIndex( const QskRadioBox* radioBox, int index )
-    {
-        using Q = QskRadioBox;
-
-        auto states = radioBox->skinStates();
-
-        if( radioBox->selectedIndex() == index )
-            states |= Q::Selected;
-
-        if( radioBox->pressedIndex() == index )
-            states |= Q::Pressed;
-
-        if( radioBox->positionHint( Q::Ripple ) == index )
-            states |= Q::Focused;
-
-        return states;
-    }
-
     qreal lineHeight( const QskRadioBox* radioBox )
     {
         using Q = QskRadioBox;
@@ -126,17 +107,7 @@ QSGNode* QskRadioBoxSkinlet::updateSubNode( const QskSkinnable* skinnable,
             return updateSeriesNode( skinnable, Q::Text, node );
 
         case RippleRole:
-        {
-            auto radioBox = static_cast< const QskRadioBox* >( skinnable );
-
-#if 1
-            QskSkinStateChanger changer( radioBox );
-            auto ripplePosition = radioBox->positionHint( Q::Ripple );
-            changer.setStates( statesForIndex( radioBox, ripplePosition ) );
-#endif
-
-            return updateBoxNode( radioBox, node, Q::Ripple );
-        }
+            return updateBoxNode( skinnable, node, Q::Ripple );
     };
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
@@ -232,13 +203,29 @@ QRectF QskRadioBoxSkinlet::sampleRect( const QskSkinnable* skinnable,
     return QRectF();
 }
 
-QskAspect::States QskRadioBoxSkinlet::sampleStates( const QskSkinnable* skinnable,
-    QskAspect::Subcontrol subControl, int index ) const
+QskAspect::States QskRadioBoxSkinlet::sampleStates(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol, int index ) const
 {
-    auto radioBox = static_cast< const QskRadioBox* >( skinnable );
-    auto states = Inherited::sampleStates( skinnable, subControl, index );
+    using Q = QskRadioBox;
 
-    return states | statesForIndex( radioBox, index );
+    auto radioBox = static_cast< const QskRadioBox* >( skinnable );
+
+    auto states = radioBox->skinStates();
+
+    if( radioBox->selectedIndex() == index )
+        states |= Q::Selected;
+
+    if( radioBox->pressedIndex() == index )
+        states |= Q::Pressed;
+
+#if 1
+    if( radioBox->positionHint( Q::Ripple ) == index )
+        states |= Q::Focused;
+    else
+        states &= ~Q::Focused;
+#endif
+
+    return states;
 }
 
 QSGNode* QskRadioBoxSkinlet::updateSampleNode( const QskSkinnable* skinnable,
