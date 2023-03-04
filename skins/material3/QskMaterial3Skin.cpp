@@ -1408,7 +1408,7 @@ void QskMaterial3Skin::setGraphicColor( GraphicRole role, QRgb rgb )
 {
     QskColorFilter colorFilter;
     colorFilter.setMask( QskRgb::RGBAMask );
-    colorFilter.addColorSubstitution( QskRgb::White, rgb );
+    colorFilter.addColorSubstitution( QskRgb::Black, rgb );
 
     setGraphicFilter( role, colorFilter );
 }

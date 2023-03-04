@@ -181,7 +181,8 @@ namespace
 
     enum ColorRole
     {
-        DisabledColor = 1
+        DisabledSymbol = 1,
+        CursorSymbol
     };
 }
 
@@ -383,6 +384,10 @@ void Editor::setupMenu()
     setColor( Q::Text | Q::Selected, m_pal.highlightedText );
     setFontRole( Q::Text, QskSkin::SmallFont );
 
+    setStrutSize( Q::Graphic, 16, 16 );
+    setGraphicRole( Q::Graphic | Q::Disabled, DisabledSymbol );
+    setGraphicRole( Q::Graphic | Q::Selected, CursorSymbol );
+
     setPosition( Q::Panel, 0 );
     setPosition( Q::Panel | QskPopup::Closed, 1 );
 
@@ -559,8 +564,9 @@ void Editor::setupSegmentedBar()
     {
         // Graphic
 
+        setGraphicRole( Q::Graphic | Q::Disabled, DisabledSymbol );
+        setGraphicRole( Q::Graphic | Q::Selected, CursorSymbol );
 #if 0
-        setGraphicRole( Q::Graphic, ... );
         setStrutSize( Q::Graphic, ... );
 #endif
     }
@@ -1074,7 +1080,7 @@ void Editor::setupSpinBox()
 
     for ( auto subControl : { Q::UpIndicator, Q::DownIndicator } )
     {
-        setGraphicRole( subControl | Q::Disabled, DisabledColor );
+        setGraphicRole( subControl | Q::Disabled, DisabledSymbol );
         setAlignment( subControl, Qt::AlignCenter );
 
         setAnimation( subControl | A::Color, 100 );
@@ -1137,9 +1143,12 @@ QskSquiekSkin::QskSquiekSkin( QObject* parent )
 {
     setupFonts( QStringLiteral( "DejaVuSans" ) );
 
-    addGraphicRole( DisabledColor, m_data->palette.lighter150 );
+    const auto& pal = m_data->palette;
 
-    Editor editor( &hintTable(), m_data->palette );
+    addGraphicRole( DisabledSymbol, pal.lighter150 );
+    addGraphicRole( CursorSymbol, pal.highlightedText );
+
+    Editor editor( &hintTable(), pal );
     editor.setup();
 }
 
