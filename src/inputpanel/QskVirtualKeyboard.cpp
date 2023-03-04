@@ -237,7 +237,7 @@ QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent )
     , m_data( new PrivateData )
 {
     setPolishOnResize( true );
-    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Constrained );
+    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
 
     m_data->keyButtons.reserve( RowCount * ColumnCount );
 
