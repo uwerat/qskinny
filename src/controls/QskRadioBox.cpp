@@ -207,12 +207,22 @@ void QskRadioBox::mousePressEvent( QMouseEvent* event )
     update();
 }
 
+void QskRadioBox::mouseUngrabEvent()
+{
+    if ( m_data->pressedIndex >= 0 )
+    {
+        m_data->pressedIndex = -1;
+        update();
+    }
+}
+
 void QskRadioBox::mouseReleaseEvent( QMouseEvent* event )
 {
     const auto index = indexAt( qskMousePosition( event ) );
     if( index == m_data->pressedIndex )
         setSelectedIndex( index );
 
+    m_data->pressedIndex = -1;
     update();
 }
 
@@ -247,6 +257,9 @@ int QskRadioBox::indexAt( const QPointF& pos ) const
 
 void QskRadioBox::setFocusedIndex( int index )
 {
+    if ( m_data->focusedIndex == index )
+        return;
+
     m_data->focusedIndex = index;
     setPositionHint( Ripple, index );
 

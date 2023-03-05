@@ -53,6 +53,7 @@ class QSK_EXPORT QskRadioBox : public QskControl
 
     void mousePressEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;
+    void mouseUngrabEvent() override;
 
     void focusInEvent( QFocusEvent* ) override;
     void focusOutEvent( QFocusEvent* ) override;
