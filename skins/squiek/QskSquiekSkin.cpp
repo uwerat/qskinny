@@ -9,6 +9,7 @@
 
 #include <QskBox.h>
 #include <QskCheckBox.h>
+#include <QskComboBox.h>
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
 #include <QskInputPanelBox.h>
@@ -148,6 +149,7 @@ namespace
 
         void setupBox();
         void setupCheckBox();
+        void setupComboBox();
         void setupDialogButtonBox();
         void setupFocusIndicator();
         void setupInputPanel();
@@ -271,6 +273,7 @@ void Editor::setup()
 
     setupBox();
     setupCheckBox();
+    setupComboBox();
     setupDialogButtonBox();
     setupFocusIndicator();
     setupInputPanel();
@@ -355,6 +358,41 @@ void Editor::setupCheckBox()
     setAnimation( Q::Box | A::Color, qskDuration );
 }
 
+void Editor::setupComboBox()
+{
+    using Q = QskComboBox;
+
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignHCenter );
+    setColor( Q::Text, m_pal.themeForeground );
+    setColor( Q::Text | Q::Disabled, m_pal.darker200 );
+
+    setPadding( Q::Panel, 5 );
+    setBoxBorderMetrics( Q::Panel, 2 );
+    setBoxShape( Q::Panel, 4 );
+
+    const QColor c = m_pal.theme.lighter( 120 );
+
+    const QskBoxBorderColors borderColors(
+        c.darker( 170 ), c.darker( 170 ),
+        c.darker( 105 ), c.darker( 105 ) );
+
+    setBoxBorderColors( Q::Panel, borderColors );
+    setGradient( Q::Panel, c );
+
+    setStrutSize( Q::Graphic, 24_dp, 24_dp );
+    setGraphicRole( Q::Graphic | Q::Disabled, DisabledSymbol );
+
+    setStrutSize( Q::OpenMenuGraphic, 15_dp, 15_dp );
+    setGraphicRole( Q::OpenMenuGraphic | Q::Disabled, DisabledSymbol );
+
+    setAlignment( Q::OpenMenuGraphic, Qt::AlignRight | Qt::AlignVCenter );
+
+    setSymbol( Q::OpenMenuGraphic,
+        QskStandardSymbol::graphic( QskStandardSymbol::TriangleDown ) );
+    setSymbol( Q::OpenMenuGraphic | Q::PopupOpen,
+        QskStandardSymbol::graphic( QskStandardSymbol::TriangleUp ) );
+}
+
 void Editor::setupPopup()
 {
     using A = QskAspect;
@@ -392,7 +430,6 @@ void Editor::setupMenu()
 
     setColor( Q::Text, m_pal.contrastedText );
     setColor( Q::Text | Q::Selected, m_pal.highlightedText );
-    setFontRole( Q::Text, QskSkin::SmallFont );
 
     setStrutSize( Q::Graphic, 16, 16 );
     setGraphicRole( Q::Graphic | Q::Disabled, DisabledSymbol );
@@ -1155,7 +1192,7 @@ QskSquiekSkin::QskSquiekSkin( QObject* parent )
 
     const auto& pal = m_data->palette;
 
-    addGraphicRole( DisabledSymbol, pal.lighter150 );
+    addGraphicRole( DisabledSymbol, pal.darker200 );
     addGraphicRole( CursorSymbol, pal.highlightedText );
 
     Editor editor( &hintTable(), pal );
