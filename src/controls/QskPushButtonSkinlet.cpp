@@ -39,16 +39,10 @@ namespace
                 QskPushButton::Text, button->text(),
                 QskPushButton::Graphic, button->graphic().defaultSize() );
 
-            const auto textOptions = button->textOptions();
+            const auto alignment = button->alignmentHint(
+                QskPushButton::Panel, Qt::AlignCenter );
 
-            if ( ( textOptions.elideMode() == Qt::ElideNone )
-                && ( textOptions.wrapMode() == QskTextOptions::NoWrap ) )
-            {
-                const auto alignment = button->alignmentHint(
-                    QskPushButton::Panel, Qt::AlignCenter );
-
-                setFixedContent( QskPushButton::Text, Qt::Horizontal, alignment );
-            }
+            setFixedContent( QskPushButton::Text, Qt::Horizontal, alignment );
         }
     };
 }
