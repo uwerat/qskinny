@@ -655,7 +655,7 @@ void Editor::setupSeparator()
         setMetric( aspect | A::Size, 1_dp );
         setBoxShape( Q::Panel, 0 );
         setBoxBorderMetrics( Q::Panel, 0 );
-        setGradient( aspect, m_pal.outline );
+        setGradient( aspect, m_pal.outlineVariant );
     }
 }
 
@@ -1296,6 +1296,7 @@ QskMaterial3Theme::QskMaterial3Theme( Lightness lightness,
         surfaceVariant = m_palettes[ NeutralVariant ].toned( 90 ).rgb();
         onSurfaceVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
         outline = m_palettes[ NeutralVariant ].toned( 50 ).rgb();
+        outlineVariant = m_palettes[ NeutralVariant ].toned( 80 ).rgb();
 
         shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }
@@ -1329,6 +1330,7 @@ QskMaterial3Theme::QskMaterial3Theme( Lightness lightness,
         surfaceVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
         onSurfaceVariant = m_palettes[ NeutralVariant ].toned( 80 ).rgb();
         outline = m_palettes[ NeutralVariant ].toned( 60 ).rgb();
+        outlineVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
 
         shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }
