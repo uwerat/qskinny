@@ -251,7 +251,7 @@ void QskSkin::setupFonts( const QString& family, int weight, bool italic )
 
     for ( int i = TinyFont; i <= HugeFont; i++ )
     {
-        font.setPixelSize( qskDpiScaled( sizes[i - 1] ) );
+        font.setPixelSize( qskDpToPixels( sizes[i - 1] ) );
         m_data->fonts[ i ] = font;
     }
 

@@ -11,23 +11,6 @@ QSK_QT_PRIVATE_END
 #include <qpa/qplatformintegration.h>
 #include <qpa/qplatformscreen.h>
 
-qreal qskDpiScaled( qreal value )
-{
-    static qreal factor = 0.0;
-
-    if ( factor <= 0.0 )
-    {
-        if ( const auto screen = QGuiApplication::primaryScreen() )
-            factor = screen->logicalDotsPerInchX();
-        else
-            factor = 100.0;
-
-        factor /= 96.0;
-    }
-
-    return value * factor;
-}
-
 qreal qskGlobalScaleFactor()
 {
     // The value of QT_SCALE_FACTOR
@@ -58,4 +41,35 @@ QRect qskPlatformScreenGeometry( const QScreen* screen )
     return screen->handle()->geometry();
 }
 
+static inline qreal qskRoundedDpi( qreal dpi )
+{   
+    // see https://developer.android.com/training/multiscreen/screendensities
+    
+    if( dpi <= 140.0 )
+        return 120.0; // ldpi
+    
+    if( dpi <= 200.0 )
+        return 160.0; // mdpi
+    
+    if( dpi <= 280.0 )
+        return 240.0; // hdpi
+    
+    if( dpi <= 400.0 )
+        return 320.0; // xhdpi
+    
+    if( dpi <= 560.0 )
+        return 480.0; // xxhdpi
+    
+    return 640.0; // xxxhdpi
+}   
 
+qreal qskDpToPixelsFactor()
+{
+    if ( const auto screen = QGuiApplication::primaryScreen() )
+    {
+        // see: https://en.wikipedia.org/wiki/Device-independent_pixel
+        return qskRoundedDpi( screen->physicalDotsPerInch() ) / 160.0;
+    }
+
+    return 1.0;
+}

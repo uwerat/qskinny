@@ -59,61 +59,14 @@ static const int qskDuration = 150;
 
 namespace
 {
-    // see: https://en.wikipedia.org/wiki/Device-independent_pixel
-    inline qreal dpToPixels( long double value )
-    {
-        static qreal factor = -1.0;
-
-        if ( factor < 0.0 )
-        {
-            factor = 1.0;
-
-            if ( const auto screen = QGuiApplication::primaryScreen() )
-            {
-                const qreal pdpi = screen->physicalDotsPerInch();
-                qreal dpi;
-
-                // calculate buckets according to https://developer.android.com/training/multiscreen/screendensities
-                if( pdpi <= 140.0 )
-                {
-                    dpi = 120.0; // ldpi
-                }
-                else if( pdpi <= 200.0 )
-                {
-                    dpi = 160.0; // mdpi
-                }
-                else if( pdpi <= 280.0 )
-                {
-                    dpi = 240.0; // hdpi
-                }
-                else if( pdpi <= 400.0 )
-                {
-                    dpi = 320.0; // xhdpi
-                }
-                else if( pdpi <= 560.0 )
-                {
-                    dpi = 480.0; // xxhdpi
-                }
-                else
-                {
-                    dpi = 640.0; // xxxhdpi
-                }
-
-                factor = dpi / 160.0;
-            }
-        }
-
-        return value * factor;
-    }
-
     inline double operator ""_dp( long double value )
     {
-        return dpToPixels( value );
+        return qskDpToPixels( static_cast< qreal >( value ) );
     }
 
-    inline double operator ""_dp( unsigned long long int value )
+    inline double operator ""_dp( unsigned long long value )
     {
-        return dpToPixels( value );
+        return qskDpToPixels( value );
     }
 
     class Editor : private QskSkinHintTableEditor

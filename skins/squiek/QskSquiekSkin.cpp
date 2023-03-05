@@ -52,6 +52,16 @@ static const int qskDuration = 200;
 
 namespace
 {
+    inline double operator ""_dp( long double value )
+    {
+        return qskDpToPixels( static_cast< qreal >( value ) );
+    }
+
+    inline double operator ""_dp( unsigned long long value )
+    {
+        return qskDpToPixels( value );
+    }
+
     class ColorPalette
     {
       public:
@@ -309,15 +319,15 @@ void Editor::setupCheckBox()
     using A = QskAspect;
     using Q = QskCheckBox;
 
-    const qreal size = qskDpiScaled( 26 );
+    const qreal size = 26_dp;
 
-    setSpacing( Q::Panel, qskDpiScaled( 5 ) );
+    setSpacing( Q::Panel, 5_dp );
 
     setStrutSize( Q::Box, size, size );
 
-    setPadding( Q::Box, qskDpiScaled( 5 ) );
-    setBoxShape( Q::Box, qskDpiScaled( 3 ) );
-    setBoxBorderMetrics( Q::Box, qskDpiScaled( 1 ) );
+    setPadding( Q::Box, 5_dp );
+    setBoxShape( Q::Box, 3_dp );
+    setBoxBorderMetrics( Q::Box, 1_dp );
 
     setBoxBorderColors( Q::Box, m_pal.darker125 );
     setGradient( Q::Box, m_pal.lighter135 );
@@ -362,8 +372,8 @@ void Editor::setupMenu()
     setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, QColor( 220, 220, 220, 100 ) );
 
-    setBoxShape( Q::Panel, qskDpiScaled( 4 ) );
-    setBoxBorderMetrics( Q::Panel, qskDpiScaled( 1 ) );
+    setBoxShape( Q::Panel, 4_dp );
+    setBoxBorderMetrics( Q::Panel, 1_dp );
     setBoxBorderColors( Q::Panel, m_pal.darker125 );
 
     setGradient( Q::Panel, m_pal.lighter110 );
@@ -371,7 +381,7 @@ void Editor::setupMenu()
     const bool isCascading = qskMaybeDesktopPlatform();
     setHint( Q::Panel | A::Style, isCascading );
 
-    setMetric( Q::Separator | A::Size, qskDpiScaled( 2 ) );
+    setMetric( Q::Separator | A::Size, 2_dp );
     setSeparator( Q::Separator );
 
     setPadding( Q::Segment, QskMargins( 2, 10, 2, 10 ) );
@@ -520,7 +530,7 @@ void Editor::setupSegmentedBar()
 
         setBoxBorderColors( Q::Panel, borderColors );
 
-        const QSize strutSize( qskDpiScaled( 100 ), qskDpiScaled( 50 ) );
+        const QSize strutSize( 100_dp, 50_dp );
 
         setStrutSize( Q::Panel | A::Horizontal, strutSize );
         setStrutSize( Q::Panel | A::Vertical, strutSize.transposed() );
@@ -576,7 +586,7 @@ void Editor::setupPageIndicator()
 {
     using Q = QskPageIndicator;
 
-    const auto extent = qskDpiScaled( 8 );
+    const auto extent = 8_dp;
     setStrutSize( Q::Bullet, extent, extent );
 
     // circles, without border
@@ -584,7 +594,7 @@ void Editor::setupPageIndicator()
     setBoxBorderMetrics( Q::Bullet, 0 );
 
     setGradient( Q::Bullet, m_pal.darker150 );
-    setMargin( Q::Bullet, qskDpiScaled( 1 ) );
+    setMargin( Q::Bullet, 1_dp );
 
     setGradient( Q::Bullet | Q::Selected, m_pal.lighter150 );
     setMargin( Q::Bullet | Q::Selected, 0 );
@@ -601,7 +611,7 @@ void Editor::setupPushButton()
 
     // Panel
     setHint( Q::Panel | QskAspect::Direction, Qsk::TopToBottom );
-    setStrutSize( Q::Panel, qskDpiScaled( 75.0 ), qskDpiScaled( 23.0 ) );
+    setStrutSize( Q::Panel, 75_dp, 23_dp );
 
     setMargin( Q::Panel, 0 );
     setPadding( Q::Panel, 10 );
@@ -641,18 +651,18 @@ void Editor::setupRadioBox()
 {
     using Q = QskRadioBox;
 
-    setSpacing( Q::Panel, qskDpiScaled( 10 ) );
-    setStrutSize( Q::Button, qskDpiScaled( 20 ), qskDpiScaled( 20 ) );
+    setSpacing( Q::Panel, 10_dp );
+    setStrutSize( Q::Button, 20_dp, 20_dp );
 
     for ( auto subControl : { Q::Button, Q::Indicator, Q::Ripple } )
         setBoxShape( subControl, 100, Qt::RelativeSize ); // circular
 
-    setBoxBorderMetrics( Q::Button, qskDpiScaled( 1 ) );
+    setBoxBorderMetrics( Q::Button, 1_dp );
 
     setBoxBorderColors( Q::Button, m_pal.darker125 );
     setBoxBorderColors( Q::Button | Q::Disabled, m_pal.theme );
 
-    setPadding( Q::Button, qskDpiScaled( 5 ) );
+    setPadding( Q::Button, 5_dp );
 
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
@@ -897,7 +907,7 @@ void Editor::setupInputPredictionBar()
     setButton( Q::ButtonPanel, Flat );
     setButton( Q::ButtonPanel | QskPushButton::Pressed, Sunken );
 
-    setStrutSize( Q::ButtonPanel, qskDpiScaled( 30.0 ), qskDpiScaled( 23.0 ) );
+    setStrutSize( Q::ButtonPanel, 30_dp, 23_dp );
 
     setColor( Q::ButtonText, m_pal.themeForeground );
     setColor( Q::ButtonText | QskPushButton::Disabled, m_pal.darker200 );
@@ -944,7 +954,7 @@ void Editor::setupScrollView()
     // scroll bars
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
-        setMetric( subControl | A::Size, qskDpiScaled( 12 ) );
+        setMetric( subControl | A::Size, 12_dp );
         setPadding( subControl, 0 );
         setMargin( subControl, 0 );
     }
@@ -956,7 +966,7 @@ void Editor::setupScrollView()
 
         setButton( subControl, Raised, bw );
 
-        const auto extent = qskDpiScaled( 40.0 );
+        const auto extent = 40_dp;
 
         if ( subControl == Q::HorizontalScrollHandle )
         {
@@ -1092,7 +1102,7 @@ void Editor::setupSwitchButton()
     using A = QskAspect;
     using Q = QskSwitchButton;
 
-    const qreal radius = qskDpiScaled( 12 );
+    const qreal radius = 15_dp;
     const qreal handleSize = 2 * ( radius - 2 );
 
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
