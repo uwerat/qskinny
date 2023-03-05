@@ -75,6 +75,9 @@ class Thumbnail : public QskPushButton
         setGraphic( thumbnailGraphic( color, shape, size ) );
         setFixedSize( size );
 
+        setBoxShapeHint( QskPushButton::Panel, QskBoxShapeMetrics( 20, Qt::RelativeSize ) );
+        setStrutSizeHint( QskPushButton::Graphic, -1, -1 );
+
         setSection( QskAspect::Header ); // to make them flat
     }
 
