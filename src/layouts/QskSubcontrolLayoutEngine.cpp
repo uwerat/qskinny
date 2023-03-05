@@ -413,7 +413,7 @@ void QskSubcontrolLayoutEngine::setFixedContent(
 {
     if( auto* e = element( subcontrol ) )
     {
-        e->setSizePolicy( QskSizePolicy::Fixed, e->sizePolicy().verticalPolicy() );
+        e->setSizePolicy( QskSizePolicy::Maximum, e->sizePolicy().verticalPolicy() );
     }
 
     Qt::Edges extraSpacing;
