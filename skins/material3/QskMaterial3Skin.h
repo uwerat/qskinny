@@ -84,6 +84,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QRgb surfaceVariant12;
     QRgb onSurfaceVariant;
     QRgb outline;
+    QRgb outlineVariant;
 
     QRgb shadow;
 
