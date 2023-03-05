@@ -22,7 +22,7 @@ class QSK_EXPORT QskRadioBox : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Button, Indicator, Text, Ripple )
+    QSK_SUBCONTROLS( Panel, Button, CheckIndicatorPanel, CheckIndicator, Text, Ripple )
     QSK_STATES( Selected, Pressed )
 
     QskRadioBox( QQuickItem* parent = nullptr );
@@ -34,7 +34,7 @@ class QSK_EXPORT QskRadioBox : public QskControl
     QRectF focusIndicatorRect() const override;
 
     QStringList options() const;
-    QString option( int ) const;
+    QString optionAt( int ) const;
 
     int selectedIndex() const;
     int pressedIndex() const;

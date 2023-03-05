@@ -458,16 +458,19 @@ void Editor::setupRadioBox()
     using A = QskAspect;
 
     setSpacing( Q::Panel, 10_dp );
+    setSpacing( Q::Button, 10_dp );
 
-    setStrutSize( Q::Button, 20_dp, 20_dp );
+    setStrutSize( Q::CheckIndicatorPanel, 20_dp, 20_dp );
     setStrutSize( Q::Ripple, 40_dp, 40_dp );
 
-    for ( auto subControl : { Q::Button, Q::Indicator, Q::Ripple } )
+    for ( auto subControl : { Q::CheckIndicatorPanel, Q::CheckIndicator, Q::Ripple } )
         setBoxShape( subControl, 100, Qt::RelativeSize ); // circular
 
-    setBoxBorderMetrics( Q::Button, 2_dp );
-    setBoxBorderColors( Q::Button, m_pal.onBackground );
-    setPadding( Q::Button, 5_dp );
+    setBoxBorderMetrics( Q::CheckIndicatorPanel, 2_dp );
+    setBoxBorderColors( Q::CheckIndicatorPanel, m_pal.onBackground );
+    setPadding( Q::CheckIndicatorPanel, 5_dp );
+
+    setGradient( Q::Button, QskGradient() );
 
     setColor( Q::Text, m_pal.onBackground );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
@@ -476,15 +479,16 @@ void Editor::setupRadioBox()
     setColor( Q::Ripple | Q::Selected,
         stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
 
-    setColor( Q::Indicator, Qt::transparent);
-    setColor( Q::Indicator | Q::Selected, m_pal.primary );
-    setColor( Q::Indicator | Q::Selected | Q::Disabled, m_pal.onSurface38 );
+    setColor( Q::CheckIndicator, Qt::transparent);
+    setColor( Q::CheckIndicator | Q::Selected, m_pal.primary );
+    setColor( Q::CheckIndicator | Q::Selected | Q::Disabled, m_pal.onSurface38 );
 
     // Selected
 
-    setBoxBorderColors( Q::Button | Q::Selected, m_pal.primary );
-    setBoxBorderColors( Q::Button | Q::Disabled, m_pal.onSurface38 );
-    setBoxBorderColors( Q::Button | Q::Disabled | Q::Selected, m_pal.onSurface38 );
+    setBoxBorderColors( Q::CheckIndicatorPanel | Q::Selected, m_pal.primary );
+    setBoxBorderColors( Q::CheckIndicatorPanel | Q::Disabled, m_pal.onSurface38 );
+    setBoxBorderColors(
+        Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, m_pal.onSurface38 );
 
     setAnimation( Q::Ripple | A::Metric | A::Position, qskDuration );
 }

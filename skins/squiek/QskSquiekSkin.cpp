@@ -689,17 +689,21 @@ void Editor::setupRadioBox()
     using Q = QskRadioBox;
 
     setSpacing( Q::Panel, 10_dp );
-    setStrutSize( Q::Button, 20_dp, 20_dp );
+    setSpacing( Q::Button, 10_dp );
 
-    for ( auto subControl : { Q::Button, Q::Indicator, Q::Ripple } )
+    setStrutSize( Q::CheckIndicatorPanel, 20_dp, 20_dp );
+
+    for ( auto subControl : { Q::CheckIndicatorPanel, Q::CheckIndicator, Q::Ripple } )
         setBoxShape( subControl, 100, Qt::RelativeSize ); // circular
 
-    setBoxBorderMetrics( Q::Button, 1_dp );
+    setBoxBorderMetrics( Q::CheckIndicatorPanel, 1_dp );
 
-    setBoxBorderColors( Q::Button, m_pal.darker125 );
-    setBoxBorderColors( Q::Button | Q::Disabled, m_pal.theme );
+    setBoxBorderColors( Q::CheckIndicatorPanel, m_pal.darker125 );
+    setBoxBorderColors( Q::CheckIndicatorPanel | Q::Disabled, m_pal.theme );
 
-    setPadding( Q::Button, 5_dp );
+    setPadding( Q::CheckIndicatorPanel, 5_dp );
+
+    setGradient( Q::Button, QskGradient() );
 
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
@@ -707,11 +711,11 @@ void Editor::setupRadioBox()
     setColor( Q::Panel, m_pal.lighter125 );
     setColor( Q::Panel | Q::Disabled, m_pal.lighter125 );
 
-    setColor( Q::Button | Q::Disabled, m_pal.lighter110 );
+    setColor( Q::CheckIndicatorPanel | Q::Disabled, m_pal.lighter110 );
 
-    setColor( Q::Indicator, Qt::transparent);
-    setColor( Q::Indicator | Q::Selected, m_pal.themeForeground );
-    setColor( Q::Indicator | Q::Selected | Q::Disabled, m_pal.darker200 );
+    setColor( Q::CheckIndicator, Qt::transparent);
+    setColor( Q::CheckIndicator | Q::Selected, m_pal.themeForeground );
+    setColor( Q::CheckIndicator | Q::Selected | Q::Disabled, m_pal.darker200 );
 }
 
 void Editor::setupDialogButtonBox()

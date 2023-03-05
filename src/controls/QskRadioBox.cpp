@@ -8,37 +8,10 @@
 #include "QskAnimationHint.h"
 #include "QskSkinlet.h"
 
-#if 1
-/*
-    Maybe we should have the following subControls:
-
-    - Text
-    - IndicatorPanel
-    - Indicator
-    - Button: IndicatorPanel + Text ( a complete line )
-    - Ripple
-    - Panel
-
-    Then we can define spacings/margins for Button and
-    optional borders/colors - even if radio buttons usually don't have this
-
-    Then selection can then be done by:
-
-        effectiveSkinlet()->sampleIndexAt( this,
-            contentsRect(), QskRadioBox::Button, pos );
-
-    The focusRectangle can be found by:
-
-        effectiveSkinlet()->sampleRect( this,
-            contentsRect(), QskRadioBox::Button, index );
-
-    TODO ...
- */
-#endif
-
 QSK_SUBCONTROL( QskRadioBox, Panel )
 QSK_SUBCONTROL( QskRadioBox, Button )
-QSK_SUBCONTROL( QskRadioBox, Indicator )
+QSK_SUBCONTROL( QskRadioBox, CheckIndicatorPanel )
+QSK_SUBCONTROL( QskRadioBox, CheckIndicator )
 QSK_SUBCONTROL( QskRadioBox, Text )
 QSK_SUBCONTROL( QskRadioBox, Ripple )
 
@@ -94,19 +67,19 @@ QRectF QskRadioBox::focusIndicatorRect() const
 
     auto skinlet = effectiveSkinlet();
 
-    auto buttonRect = skinlet->sampleRect( this,
-        rect, QskRadioBox::Button, m_data->focusedIndex );
+    const auto panelRect = skinlet->sampleRect( this,
+        rect, QskRadioBox::CheckIndicatorPanel, m_data->focusedIndex );
 
-    auto y = buttonRect.y();
-    auto h = buttonRect.height();
+    auto y = panelRect.y();
+    auto h = panelRect.height();
 
-    auto textRect = skinlet->sampleRect( this,
+    const auto textRect = skinlet->sampleRect( this,
         rect, QskRadioBox::Text, m_data->focusedIndex );
 
     if( textRect.height() > 0.0 )
     {
-        y = std::min( y, textRect.y() );
-        h = std::max( h, textRect.height() );
+        y = qMin( y, textRect.y() );
+        h = qMax( h, textRect.height() );
     }
 
     return QRectF( rect.x(), y, rect.width(), h );
@@ -122,7 +95,7 @@ QStringList QskRadioBox::options() const
     return m_data->options;
 }
 
-QString QskRadioBox::option( int index ) const
+QString QskRadioBox::optionAt( int index ) const
 {
     return m_data->options.value( index );
 }
@@ -268,17 +241,8 @@ void QskRadioBox::focusOutEvent( QFocusEvent* event )
 
 int QskRadioBox::indexAt( const QPointF& pos ) const
 {
-    const auto skinlet = effectiveSkinlet();
-    const auto cr = contentsRect();
-
-    for ( int i = 0; i < m_data->options.size(); i++ )
-    {
-        const auto r = skinlet->sampleRect( this, cr, QskRadioBox::Button, i );
-        if ( r.top() <= pos.y() && r.bottom() >= pos.y() )
-            return i;
-    }
-
-    return -1;
+    return effectiveSkinlet()->sampleIndexAt( this,
+        contentsRect(), QskRadioBox::Button, pos );
 }
 
 void QskRadioBox::setFocusedIndex( int index )
