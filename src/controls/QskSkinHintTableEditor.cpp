@@ -378,7 +378,7 @@ qreal QskSkinHintTableEditor::spacing( QskAspect aspect ) const
 void QskSkinHintTableEditor::setAlignment(
     QskAspect aspect, Qt::Alignment alignment, QskStateCombination combination )
 {
-    setHint( aspectAlignment( aspect ), alignment, combination );
+    setFlag( aspectAlignment( aspect ), alignment, combination );
 }
 
 bool QskSkinHintTableEditor::removeAlignment(
