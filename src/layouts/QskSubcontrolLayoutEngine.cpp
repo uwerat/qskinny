@@ -198,6 +198,17 @@ QSizeF QskSubcontrolLayoutEngine::TextElement::implicitSize( const QSizeF& const
         hint = QskTextRenderer::textSize( m_text, font, textOptions );
     }
 
+#if 1
+    if ( hint.width() > 0.0 )
+    {
+        /*
+            workaround for a rounding problem that might lead to
+            seeing dots, when being in elide mode. TODO ...
+         */
+        hint.rwidth() += 1;
+    }
+#endif
+
     return hint;
 }
 
@@ -222,8 +233,8 @@ QSizeF QskSubcontrolLayoutEngine::GraphicElement::effectiveStrutSize() const
     return size;
 }
 
-
-QSizeF QskSubcontrolLayoutEngine::GraphicElement::implicitSize( const QSizeF& constraint ) const
+QSizeF QskSubcontrolLayoutEngine::GraphicElement::implicitSize(
+    const QSizeF& constraint ) const
 {
     auto hint = m_sourceSize;
 
@@ -246,8 +257,8 @@ QSizeF QskSubcontrolLayoutEngine::GraphicElement::implicitSize( const QSizeF& co
     return hint;
 }
 
-
-static QskLayoutChain::CellData qskCell( const QskSubcontrolLayoutEngine::LayoutElement* element,
+static QskLayoutChain::CellData qskCell(
+    const QskSubcontrolLayoutEngine::LayoutElement* element,
     Qt::Orientation orientation, bool isLayoutOrientation, qreal constraint )
 {
     QskLayoutChain::CellData cell;
@@ -411,16 +422,15 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
 void QskSubcontrolLayoutEngine::setFixedContent(
     QskAspect::Subcontrol subcontrol, Qt::Orientation orientation, Qt::Alignment alignment )
 {
-    if( auto* e = element( subcontrol ) )
-    {
+    if( auto e = element( subcontrol ) )
         e->setSizePolicy( QskSizePolicy::Maximum, e->sizePolicy().verticalPolicy() );
-    }
 
     Qt::Edges extraSpacing;
 
     switch( orientation )
     {
         case Qt::Horizontal:
+        {
             extraSpacing |= ( extraSpacingAt() & ( Qt::TopEdge | Qt::BottomEdge ) );
 
             if( alignment & Qt::AlignLeft )
@@ -436,7 +446,9 @@ void QskSubcontrolLayoutEngine::setFixedContent(
                 extraSpacing |= Qt::LeftEdge | Qt::RightEdge;
             }
             break;
+        }
         case Qt::Vertical:
+        {
             extraSpacing |= ( extraSpacingAt() & ( Qt::LeftEdge | Qt::RightEdge ) );
 
             if( alignment & Qt::AlignTop )
@@ -452,6 +464,7 @@ void QskSubcontrolLayoutEngine::setFixedContent(
                 extraSpacing |= Qt::TopEdge | Qt::BottomEdge;
             }
             break;
+        }
     }
 
     setExtraSpacingAt( extraSpacing );

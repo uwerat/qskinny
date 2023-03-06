@@ -589,8 +589,6 @@ void Editor::setupSegmentedBar()
         // Graphic
 
         setSymbol( Q::Graphic, symbol( "segmented-button-check" ) );
-
-        setPadding( Q::Graphic, 0_dp );
         setStrutSize( Q::Graphic, 18_dp, 18_dp );
 
         setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface );

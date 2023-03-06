@@ -362,13 +362,17 @@ void Editor::setupComboBox()
 {
     using Q = QskComboBox;
 
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignHCenter );
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
+
+    setStrutSize( Q::Panel,  -1.0, 56_dp );
 
     setPadding( Q::Panel, 5 );
     setBoxBorderMetrics( Q::Panel, 2 );
     setBoxShape( Q::Panel, 4 );
+
+    setSpacing( Q::Panel, 8_dp );
 
     const QColor c = m_pal.theme.lighter( 120 );
 
@@ -613,9 +617,7 @@ void Editor::setupSegmentedBar()
 
         setGraphicRole( Q::Graphic | Q::Disabled, DisabledSymbol );
         setGraphicRole( Q::Graphic | Q::Selected, CursorSymbol );
-#if 0
-        setStrutSize( Q::Graphic, ... );
-#endif
+        setStrutSize( Q::Graphic, -1, 30_dp );
     }
 }
 
