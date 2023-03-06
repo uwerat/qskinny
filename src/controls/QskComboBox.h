@@ -59,7 +59,6 @@ class QSK_EXPORT QskComboBox : public QskControl
     void setCurrentIndex( int );
 
   Q_SIGNALS:
-    void activated( int );
     void currentIndexChanged( int );
 
     void countChanged();
@@ -78,10 +77,6 @@ class QSK_EXPORT QskComboBox : public QskControl
     virtual void closePopup();
 
   private:
-    void showOption( int );
-    void releaseButton();
-    void increment( int );
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

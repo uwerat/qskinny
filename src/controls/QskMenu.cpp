@@ -247,6 +247,8 @@ void QskMenu::keyPressEvent( QKeyEvent* event )
 
         case Qt::Key_Select:
         case Qt::Key_Space:
+        case Qt::Key_Return:
+        case Qt::Key_Enter: 
         {
             m_data->isPressed = true;
             return;

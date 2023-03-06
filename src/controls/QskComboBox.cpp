@@ -19,11 +19,29 @@ QSK_SUBCONTROL( QskComboBox, PopupIndicator )
 
 QSK_SYSTEM_STATE( QskComboBox, PopupOpen, QskAspect::FirstSystemState << 1 )
 
+static inline void qskIncrement( QskComboBox* comboBox, int steps )
+{
+    const auto count = comboBox->count();
+    if ( count == 0 )
+        return;
+
+    const int index = comboBox->currentIndex();
+
+    if ( index == -1 && steps < 0 )
+        steps++;
+
+    int nextIndex = ( index + steps ) % count;
+    if ( nextIndex < 0 )
+        nextIndex += count;
+    
+    if ( nextIndex != index )
+        comboBox->setCurrentIndex( nextIndex ); 
+}
+
 class QskComboBox::PrivateData
 {
   public:
-    PrivateData( QskComboBox* const box )
-        : menu( new QskMenu( box ) )
+    PrivateData( QskComboBox* comboBox )
     {
         menu = new QskMenu();
 
@@ -33,12 +51,14 @@ class QskComboBox::PrivateData
             So we set the box as QObject parent only, so that it gets
             destroyed properly.
          */
-        menu->setParent( box );
+        menu->setParent( comboBox );
         menu->setPopupFlag( QskPopup::DeleteOnClose, false );
     }
 
     QskMenu* menu;
     QString placeholderText;
+
+    int currentIndex = -1;
 };
 
 QskComboBox::QskComboBox( QQuickItem* parent )
@@ -56,10 +76,7 @@ QskComboBox::QskComboBox( QQuickItem* parent )
     setAcceptHoverEvents( true );
 
     connect( m_data->menu, &QskMenu::triggered,
-        this, &QskComboBox::activated );
-
-    connect( m_data->menu, &QskMenu::currentIndexChanged,
-        this, &QskComboBox::showOption );
+        this, &QskComboBox::setCurrentIndex );
 
     connect( m_data->menu, &QskMenu::countChanged,
         this, &QskComboBox::countChanged );
@@ -92,10 +109,9 @@ bool QskComboBox::isPopupOpen() const
 
 QskGraphic QskComboBox::graphic() const
 {
-    const int index = currentIndex();
-    if( index >= 0 )
+    if( m_data->currentIndex >= 0 )
     {
-        const auto option = m_data->menu->optionAt( index );
+        const auto option = optionAt( m_data->currentIndex );
         return option.at( 0 ).value< QskGraphic >();
     }
 
@@ -133,10 +149,9 @@ void QskComboBox::setPlaceholderText( const QString& text )
         return;
 
     m_data->placeholderText = text;
-
     resetImplicitSize();
 
-    if ( currentIndex() < 0 )
+    if ( m_data->currentIndex < 0 )
         update();
 
     Q_EMIT placeholderTextChanged( text );
@@ -144,10 +159,9 @@ void QskComboBox::setPlaceholderText( const QString& text )
 
 QString QskComboBox::currentText() const
 {
-    const int index = currentIndex();
-    if( index >= 0 )
+    if( m_data->currentIndex >= 0 )
     {
-        const auto option = optionAt( index );
+        const auto option = optionAt( m_data->currentIndex );
         return option.at( 1 ).toString();
     }
 
@@ -205,13 +219,13 @@ void QskComboBox::keyPressEvent( QKeyEvent* event )
         case Qt::Key_Up:
         case Qt::Key_PageUp:
         {
-            increment( -1 );
+            qskIncrement( this, -1 );
             return;
         }
         case Qt::Key_Down:
         case Qt::Key_PageDown:
         {
-            increment( 1 );
+            qskIncrement( this, 1 );
             return;
         }
         case Qt::Key_Home:
@@ -242,53 +256,38 @@ void QskComboBox::keyReleaseEvent( QKeyEvent* event )
 
 void QskComboBox::wheelEvent( QWheelEvent* event )
 {
-    increment( -qRound( qskWheelSteps( event ) ) );
+    if ( !isPopupOpen() )
+    {
+        const auto steps = -qRound( qskWheelSteps( event ) );
+        qskIncrement( this, steps );
+    }
 }
 
 void QskComboBox::clear()
 {
     m_data->menu->clear();
-    update();
+    setCurrentIndex( -1 );
 }
 
 void QskComboBox::setCurrentIndex( int index )
 {
-    m_data->menu->setCurrentIndex( index );
+    if ( m_data->currentIndex != index )
+    {
+        m_data->currentIndex = index;
+        update();
+
+        Q_EMIT currentIndexChanged( index );
+    }
 }
 
 int QskComboBox::currentIndex() const
 {
-    return m_data->menu->currentIndex();
+    return m_data->currentIndex;
 }
 
 int QskComboBox::count() const
 {
     return m_data->menu->count();
-}
-
-void QskComboBox::showOption( int index )
-{
-    update();
-    Q_EMIT currentIndexChanged( index );
-}
-
-void QskComboBox::increment( int steps )
-{
-    if ( count() == 0 )
-        return;
-
-    if ( currentIndex() == -1 && steps < 0 )
-        steps++;
-
-    int nextIndex = ( currentIndex() + steps ) % count();
-    if ( nextIndex < 0 )
-        nextIndex += count();
-
-    if ( nextIndex != currentIndex() )
-    {
-        m_data->menu->setCurrentIndex( nextIndex );
-        Q_EMIT activated( nextIndex );
-    }
 }
 
 #include "moc_QskComboBox.cpp"
