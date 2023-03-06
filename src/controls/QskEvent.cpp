@@ -8,7 +8,7 @@
 
 #include <qevent.h>
 
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 4, 0 )
 
     QSK_QT_PRIVATE_BEGIN
     #include <private/qguiapplication_p.h>
@@ -136,7 +136,7 @@ bool qskIsStandardKeyInput( const QKeyEvent* event, QKeySequence::StandardKey ke
 
 bool qskIsButtonPressKey( const QKeyEvent* event )
 {
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 4, 0 )
 
     const auto hint = QGuiApplicationPrivate::platformTheme()->themeHint(
         QPlatformTheme::ButtonPressKeys );
