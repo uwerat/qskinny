@@ -100,7 +100,7 @@ QRectF QskRadioBoxSkinlet::rippleRect(
 {
     using Q = QskRadioBox;
 
-    auto index = radioBox->positionHint( Q::Ripple );
+    const auto index = radioBox->positionHint( Q::Ripple );
     if( index < 0 )
         return QRectF();
 

@@ -37,7 +37,7 @@ QskRadioBox::QskRadioBox( QQuickItem* parent )
     setFocusPolicy( Qt::StrongFocus );
     setAcceptedMouseButtons( Qt::LeftButton );
 
-    setFocusedIndex( -1 );
+    setPositionHint( Ripple, -1 );
 }
 
 QskRadioBox::QskRadioBox( const QStringList& options, QQuickItem* parent )
@@ -129,7 +129,7 @@ void QskRadioBox::setOptions( const QStringList& options )
     setSelectedIndex( m_data->selectedIndex );
 
     if( m_data->focusedIndex > options.size() )
-        setFocusedIndex( 0 );
+        setFocusedIndex( options.size() - 1 );
 }
 
 void QskRadioBox::keyPressEvent( QKeyEvent* event )
@@ -262,6 +262,8 @@ void QskRadioBox::setFocusedIndex( int index )
 
     m_data->focusedIndex = index;
     setPositionHint( Ripple, index );
+
+    update();
 
     Q_EMIT focusIndicatorRectChanged();
 }
