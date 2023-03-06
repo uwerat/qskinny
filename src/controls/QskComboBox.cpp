@@ -12,12 +12,6 @@
 
 #include <qquickwindow.h>
 
-QSK_QT_PRIVATE_BEGIN
-#include <private/qguiapplication_p.h>
-QSK_QT_PRIVATE_END
-
-#include <qpa/qplatformtheme.h>
-
 QSK_SUBCONTROL( QskComboBox, Panel )
 QSK_SUBCONTROL( QskComboBox, Graphic )
 QSK_SUBCONTROL( QskComboBox, Text )
@@ -25,28 +19,6 @@ QSK_SUBCONTROL( QskComboBox, PopupIndicator )
 QSK_SUBCONTROL( QskComboBox, Splash )
 
 QSK_SYSTEM_STATE( QskComboBox, PopupOpen, QskAspect::FirstSystemState << 1 )
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-
-static inline QList< Qt::Key > qskButtonPressKeys()
-{
-    const auto hint = QGuiApplicationPrivate::platformTheme()->themeHint(
-        QPlatformTheme::ButtonPressKeys );
-
-    return hint.value< QList< Qt::Key > >();
-}
-
-#else
-
-static inline QList< Qt::Key > qskButtonPressKeys()
-{
-    static const QList< Qt::Key > keys =
-        { Qt::Key_Space, Qt::Key_Enter, Qt::Key_Return, Qt::Key_Select };
-
-    return keys;
-}
-
-#endif
 
 class QskComboBox::PrivateData
 {
@@ -212,7 +184,7 @@ void QskComboBox::mouseReleaseEvent( QMouseEvent* )
 
 void QskComboBox::keyPressEvent( QKeyEvent* event )
 {
-    if ( qskButtonPressKeys().contains( event->key() ) )
+    if ( qskIsButtonPressKey( event ) )
     {
         if ( !event->isAutoRepeat() )
         {

@@ -10,36 +10,8 @@
 
 #include <qbasictimer.h>
 
-QSK_QT_PRIVATE_BEGIN
-#include <private/qguiapplication_p.h>
-QSK_QT_PRIVATE_END
-
-#include <qpa/qplatformtheme.h>
-
 QSK_SYSTEM_STATE( QskAbstractButton, Checked, QskAspect::LastSystemState >> 3 )
 QSK_SYSTEM_STATE( QskAbstractButton, Pressed, QskAspect::LastSystemState >> 2 )
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-
-static inline QList< Qt::Key > qskButtonPressKeys()
-{
-    const auto hint = QGuiApplicationPrivate::platformTheme()->themeHint(
-        QPlatformTheme::ButtonPressKeys );
-
-    return hint.value< QList< Qt::Key > >();
-}
-
-#else
-
-static inline QList< Qt::Key > qskButtonPressKeys()
-{
-    static const QList< Qt::Key > keys =
-        { Qt::Key_Space, Qt::Key_Enter, Qt::Key_Return, Qt::Key_Select };
-        
-    return keys;
-}   
-
-#endif
 
 static QskAbstractButton* qskCheckedSibling( const QskAbstractButton * button )
 {
@@ -292,7 +264,7 @@ bool QskAbstractButton::event( QEvent* event )
 
 void QskAbstractButton::keyPressEvent( QKeyEvent* event )
 {
-    if ( qskButtonPressKeys().contains( event->key() ) )
+    if ( qskIsButtonPressKey( event ) )
     {
         if ( !event->isAutoRepeat() )
             setPressed( true );
@@ -306,7 +278,7 @@ void QskAbstractButton::keyPressEvent( QKeyEvent* event )
 
 void QskAbstractButton::keyReleaseEvent( QKeyEvent* event )
 {
-    if ( qskButtonPressKeys().contains( event->key() ) )
+    if ( qskIsButtonPressKey( event ) )
     {
         releaseButton();
         return;
