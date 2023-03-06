@@ -83,6 +83,10 @@ QskMenu::QskMenu( QQuickItem* parent )
     setSubcontrolProxy( Inherited::Overlay, Overlay );
 
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+
+    // we hide the focus indicator while fading
+    connect( this, &QskMenu::fadingChanged, this,
+        &QskControl::focusIndicatorRectChanged );
 }
 
 QskMenu::~QskMenu()
@@ -209,6 +213,7 @@ void QskMenu::setCurrentIndex( int index )
         update();
 
         Q_EMIT currentIndexChanged( index );
+        Q_EMIT focusIndicatorRectChanged();
     }
 }
 
@@ -359,6 +364,9 @@ void QskMenu::aboutToShow()
 
 QRectF QskMenu::focusIndicatorRect() const
 {
+    if ( isFading() )
+        return QRectF();
+
     if( currentIndex() >= 0 )
     {
         return effectiveSkinlet()->sampleRect( this,
