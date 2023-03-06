@@ -27,7 +27,7 @@ class QSK_EXPORT QskComboBox : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Graphic, Text, PopupIndicator, Splash )
+    QSK_SUBCONTROLS( Panel, Graphic, Text, PopupIndicator )
     QSK_STATES( PopupOpen )
 
     QskComboBox( QQuickItem* parent = nullptr );

@@ -66,8 +66,7 @@ namespace
 QskComboBoxSkinlet::QskComboBoxSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, SplashRole,
-        GraphicRole, TextRole, PopupIndicatorRole } );
+    setNodeRoles( { PanelRole, GraphicRole, TextRole, PopupIndicatorRole } );
 }
 
 QskComboBoxSkinlet::~QskComboBoxSkinlet() = default;
@@ -81,9 +80,6 @@ QRectF QskComboBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
 
     if ( subControl == Q::Panel )
         return contentsRect;
-
-    if ( subControl == Q::Splash )
-        return splashRect( box, contentsRect );
 
     if ( subControl == Q::Text || subControl == Q::Graphic )
     {
@@ -131,28 +127,6 @@ QSGNode* QskComboBoxSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QRectF QskComboBoxSkinlet::splashRect(
-    const QskComboBox* box, const QRectF& contentsRect ) const
-{
-    using Q = QskComboBox;
-
-    QRectF rect;
-
-    const auto ratio = box->metric( Q::Splash | QskAspect::Size );
-    if ( ratio > 0.0 )
-    {
-        rect = subControlRect( box, contentsRect, Q::Panel );
-
-        const auto pos = box->positionHint( Q::Splash );
-        const qreal w = 2.0 * rect.width() * ratio;
-
-        rect.setX( pos - 0.5 * w );
-        rect.setWidth( w );
-    }
-
-    return rect;
-}
-
 QSGNode* QskComboBoxSkinlet::updateTextNode(
     const QskComboBox* box, QSGNode* node ) const
 {
@@ -168,34 +142,6 @@ QSGNode* QskComboBoxSkinlet::updateTextNode(
 
     return QskSkinlet::updateTextNode( box, node, rect,
         alignment, box->currentText(), Q::Text );
-}
-
-QSGNode* QskComboBoxSkinlet::updateSplashNode(
-    const QskComboBox* box, QSGNode* node ) const
-{
-    using Q = QskComboBox;
-
-    const auto splashRect = box->subControlRect( Q::Splash );
-    if ( splashRect.isEmpty() )
-        return nullptr;
-
-    auto clipNode = updateBoxClipNode( box, node,
-        box->subControlRect( Q::Panel ), Q::Panel );
-
-    if ( clipNode )
-    {
-        auto boxNode = QskSGNode::findChildNode( clipNode, SplashRole );
-        boxNode = updateBoxNode( box, boxNode, splashRect, Q::Splash );
-
-        if ( boxNode == nullptr )
-            return nullptr;
-
-        QskSGNode::setNodeRole( boxNode, SplashRole );
-        if ( boxNode->parent() != clipNode )
-            clipNode->appendChildNode( boxNode );
-    }
-
-    return clipNode;
 }
 
 QSizeF QskComboBoxSkinlet::sizeHint( const QskSkinnable* skinnable,

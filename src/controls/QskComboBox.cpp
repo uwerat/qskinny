@@ -16,7 +16,6 @@ QSK_SUBCONTROL( QskComboBox, Panel )
 QSK_SUBCONTROL( QskComboBox, Graphic )
 QSK_SUBCONTROL( QskComboBox, Text )
 QSK_SUBCONTROL( QskComboBox, PopupIndicator )
-QSK_SUBCONTROL( QskComboBox, Splash )
 
 QSK_SYSTEM_STATE( QskComboBox, PopupOpen, QskAspect::FirstSystemState << 1 )
 
