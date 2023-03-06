@@ -382,14 +382,14 @@ void Editor::setupComboBox()
     setStrutSize( Q::Graphic, 24_dp, 24_dp );
     setGraphicRole( Q::Graphic | Q::Disabled, DisabledSymbol );
 
-    setStrutSize( Q::OpenMenuGraphic, 15_dp, 15_dp );
-    setGraphicRole( Q::OpenMenuGraphic | Q::Disabled, DisabledSymbol );
+    setStrutSize( Q::PopupIndicator, 15_dp, 15_dp );
+    setGraphicRole( Q::PopupIndicator | Q::Disabled, DisabledSymbol );
 
-    setAlignment( Q::OpenMenuGraphic, Qt::AlignRight | Qt::AlignVCenter );
+    setAlignment( Q::PopupIndicator, Qt::AlignRight | Qt::AlignVCenter );
 
-    setSymbol( Q::OpenMenuGraphic,
+    setSymbol( Q::PopupIndicator,
         QskStandardSymbol::graphic( QskStandardSymbol::TriangleDown ) );
-    setSymbol( Q::OpenMenuGraphic | Q::PopupOpen,
+    setSymbol( Q::PopupIndicator | Q::PopupOpen,
         QskStandardSymbol::graphic( QskStandardSymbol::TriangleUp ) );
 }
 

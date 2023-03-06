@@ -22,7 +22,7 @@ class QSK_EXPORT QskComboBoxSkinlet : public QskSkinlet
         PanelRole,
         GraphicRole,
         TextRole,
-        OpenMenuGraphicRole,
+        PopupIndicatorRole,
         SplashRole,
 
         RoleCount

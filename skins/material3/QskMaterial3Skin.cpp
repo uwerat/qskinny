@@ -290,9 +290,9 @@ void Editor::setupComboBox()
         m_pal.surfaceVariant, m_pal.focusOpacity );
     setGradient( Q::Panel | Q::Focused, focusColor );
 
-    const auto pressedColor = flattenedColor( m_pal.onSurfaceVariant,
+    const auto activeColor = flattenedColor( m_pal.onSurfaceVariant,
         m_pal.surfaceVariant, m_pal.pressedOpacity );
-    setGradient( Q::Panel | Q::Pressed, pressedColor );
+    setGradient( Q::Panel | Q::PopupOpen, activeColor );
 
     setStrutSize( Q::Graphic, 24_dp, 24_dp );
     setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface );
@@ -300,9 +300,9 @@ void Editor::setupComboBox()
     setColor( Q::Text, m_pal.onSurface );
     setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
 
-    setStrutSize( Q::OpenMenuGraphic, 12_dp, 12_dp );
-    setGraphicRole( Q::OpenMenuGraphic, QskMaterial3Skin::GraphicRoleOnSurface );
-    setAlignment( Q::OpenMenuGraphic, Qt::AlignRight | Qt::AlignVCenter );
+    setStrutSize( Q::PopupIndicator, 12_dp, 12_dp );
+    setGraphicRole( Q::PopupIndicator, QskMaterial3Skin::GraphicRoleOnSurface );
+    setAlignment( Q::PopupIndicator, Qt::AlignRight | Qt::AlignVCenter );
 
 
     const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
@@ -313,10 +313,10 @@ void Editor::setupComboBox()
 
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
-    setGraphicRole( Q::OpenMenuGraphic, QskMaterial3Skin::GraphicRoleOnSurface38 );
+    setGraphicRole( Q::PopupIndicator, QskMaterial3Skin::GraphicRoleOnSurface38 );
 
-    setSymbol( Q::OpenMenuGraphic, symbol( "combo-box-arrow-closed" ) );
-    setSymbol( Q::OpenMenuGraphic | Q::PopupOpen, symbol( "combo-box-arrow-open" ) );
+    setSymbol( Q::PopupIndicator, symbol( "combo-box-arrow-closed" ) );
+    setSymbol( Q::PopupIndicator | Q::PopupOpen, symbol( "combo-box-arrow-open" ) );
 }
 
 void Editor::setupBox()

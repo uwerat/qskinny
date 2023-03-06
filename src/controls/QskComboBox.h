@@ -17,6 +17,8 @@ class QSK_EXPORT QskComboBox : public QskControl
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
+    Q_PROPERTY( QString currentText READ currentText )
+
     Q_PROPERTY( int count READ count NOTIFY countChanged )
 
     Q_PROPERTY( QString placeholderText READ placeholderText
@@ -25,17 +27,14 @@ class QSK_EXPORT QskComboBox : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Graphic, Text, OpenMenuGraphic, Splash )
-    QSK_STATES( Pressed, PopupOpen )
+    QSK_SUBCONTROLS( Panel, Graphic, Text, PopupIndicator, Splash )
+    QSK_STATES( PopupOpen )
 
     QskComboBox( QQuickItem* parent = nullptr );
 
     ~QskComboBox() override;
 
-    void setPressed( bool on );
-    bool isPressed() const;
-
-    void setPopupOpen( bool on );
+    void setPopupOpen( bool );
     bool isPopupOpen() const;
 
     QskGraphic graphic() const;
@@ -48,46 +47,40 @@ class QSK_EXPORT QskComboBox : public QskControl
     void clear();
 
     int currentIndex() const;
+    QString currentText() const;
 
     int count() const;
-
     QVariantList optionAt( int ) const;
 
     QString placeholderText() const;
     void setPlaceholderText( const QString& );
 
-    QString text() const;
-
   public Q_SLOTS:
-    void togglePopup();
-    virtual void openPopup();
-    virtual void closePopup();
-
     void setCurrentIndex( int );
 
   Q_SIGNALS:
+    void activated( int );
     void currentIndexChanged( int );
+
     void countChanged();
-
-    void pressed();
-    void released();
-    void clicked();
-
-    void pressedChanged( bool );
-    void popupOpenChanged( bool );
-
     void placeholderTextChanged( const QString& );
 
   protected:
     void mousePressEvent( QMouseEvent* ) override;
-    void mouseUngrabEvent() override;
     void mouseReleaseEvent( QMouseEvent* ) override;
 
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
 
+    void wheelEvent( QWheelEvent* ) override;
+
+    virtual void openPopup();
+    virtual void closePopup();
+
   private:
+    void showOption( int );
     void releaseButton();
+    void increment( int );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
