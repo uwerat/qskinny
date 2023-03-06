@@ -1103,8 +1103,22 @@ void Editor::setupVirtualKeyboard()
 
     // key panel
     setMargin( Q::ButtonPanel, 5_dp );
-    setGradient( Q::ButtonPanel, m_pal.background );
+    setGradient( Q::ButtonPanel, m_pal.surface2 );
+    setGradient( Q::ButtonPanel | QskPushButton::Pressed, m_pal.surface );
+    setColor( Q::ButtonText | QskPushButton::Pressed, m_pal.outlineVariant );
     setBoxShape( Q::ButtonPanel, 6_dp );
+
+    setBoxShape( Q::ButtonPanel | A::Huge, 100, Qt::RelativeSize );
+    setGradient( Q::ButtonPanel | A::Huge, m_pal.primary );
+    setColor( Q::ButtonText | A::Huge, m_pal.onPrimary );
+
+    setGradient( Q::ButtonPanel | A::Large, m_pal.outlineVariant );
+
+    setBoxShape( Q::ButtonPanel | A::Small, 100, Qt::RelativeSize );
+    setGradient( Q::ButtonPanel | A::Small, m_pal.secondary );
+    setColor( Q::ButtonText | A::Small, m_pal.onSecondary );
+
+    setGradient( Q::ButtonPanel | A::Tiny, m_pal.outlineVariant );
 
     for ( auto state : { A::NoState, Q::Focused } )
         setBoxBorderColors( Q::ButtonPanel | QskPushButton::Pressed | state,
@@ -1117,7 +1131,7 @@ void Editor::setupVirtualKeyboard()
     setFontRole( Q::ButtonText, QskMaterial3Skin::M3HeadlineSmall );
 
     // panel
-    setGradient( Q::Panel, m_pal.surfaceVariant );
+    setGradient( Q::Panel, m_pal.background );
     setPadding( Q::Panel, { 3_dp, 25_dp, 3_dp, 5_dp } );
 }
 
