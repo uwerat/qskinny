@@ -14,98 +14,172 @@
 #include <QskTextInput.h>
 
 #include <QskAspect.h>
-#include <QskWindow.h>
 #include <QskFunctions.h>
-
+#include <QskInputPanelBox.h>
 #include <QskObjectCounter.h>
+#include <QskVirtualKeyboard.h>
+#include <QskWindow.h>
 
 #include <QFontMetricsF>
 #include <QGuiApplication>
 
-static inline QString nativeLocaleString( const QLocale& locale )
+namespace
 {
-    switch ( locale.language() )
+    class Keyboard final : public QskVirtualKeyboard
     {
-        case QLocale::Bulgarian:
-            return QStringLiteral( "български език" );
+        using Inherited = QskVirtualKeyboard;
 
-        case QLocale::Czech:
-            return QStringLiteral( "Čeština" );
-
-        case QLocale::German:
-            return QStringLiteral( "Deutsch" );
-
-        case QLocale::Danish:
-            return QStringLiteral( "Dansk" );
-
-        case QLocale::Greek:
-            return QStringLiteral( "Eλληνικά" );
-
-        case QLocale::English:
-        {
-            switch ( locale.country() )
+        public:
+            Keyboard( QQuickItem* parentItem = nullptr ):
+                QskVirtualKeyboard( parentItem )
             {
-                case QLocale::Canada:
-                case QLocale::UnitedStates:
-                case QLocale::UnitedStatesMinorOutlyingIslands:
-                case QLocale::UnitedStatesVirginIslands:
-                    return QStringLiteral( "English (US)" );
-
-                default:
-                    return QStringLiteral( "English (UK)" );
+                // here rearrange keyboard layouts if necessary
             }
+    };
+
+    class Panel : public QskInputPanel
+    {
+        public:
+        Panel( QQuickItem* parentItem = nullptr )
+            : QskInputPanel( parentItem )
+        {
+            setAutoLayoutChildren( true );
+            setLayoutAlignmentHint( Qt::AlignHCenter | Qt::AlignBottom );
+
+            m_box = new QskInputPanelBox( this );
+            m_box->setKeyboard( new Keyboard() );
+
+            connect( m_box, &QskInputPanelBox::keySelected,
+                this, &QskInputPanel::keySelected );
+
+            connect( m_box, &QskInputPanelBox::predictiveTextSelected,
+                this, &QskInputPanel::predictiveTextSelected );
         }
 
-        case QLocale::Spanish:
-            return QStringLiteral( "Español" );
+        void attachItem( QQuickItem* item ) override
+        {
+            m_box->attachInputItem( item );
+        }
 
-        case QLocale::Finnish:
-            return QStringLiteral( "Suomi" );
+        QQuickItem* inputProxy() const override
+        {
+            return m_box->inputProxy();
+        }
 
-        case QLocale::French:
-            return QStringLiteral( "Français" );
+        void setPrompt( const QString& prompt ) override
+        {
+            m_box->setInputPrompt( prompt );
+        }
 
-        case QLocale::Hungarian:
-            return QStringLiteral( "Magyar" );
+        void setPredictionEnabled( bool on ) override
+        {
+            m_box->setPanelHint( QskInputPanelBox::Prediction, on );
+        }
 
-        case QLocale::Italian:
-            return QStringLiteral( "Italiano" );
+        void setPrediction( const QStringList& prediction ) override
+        {
+            QskInputPanel::setPrediction( prediction );
+            m_box->setPrediction( prediction );
+        }
 
-        case QLocale::Japanese:
-            return QStringLiteral( "日本語" );
 
-        case QLocale::Latvian:
-            return QStringLiteral( "Latviešu" );
+      private:
+        QskInputPanelBox* m_box;
+    };
 
-        case QLocale::Lithuanian:
-            return QStringLiteral( "Lietuvių" );
+    class InputContextFactory : public QskInputContextFactory
+    {
+        QskInputPanel* createPanel() const override
+        {
+            return new Panel;
+        }
+    };
 
-        case QLocale::Dutch:
-            return QStringLiteral( "Nederlands" );
+    QString nativeLocaleString( const QLocale& locale )
+    {
+        switch ( locale.language() )
+        {
+            case QLocale::Bulgarian:
+                return QStringLiteral( "български език" );
 
-        case QLocale::Portuguese:
-            return QStringLiteral( "Português" );
+            case QLocale::Czech:
+                return QStringLiteral( "Čeština" );
 
-        case QLocale::Romanian:
-            return QStringLiteral( "Română" );
+            case QLocale::German:
+                return QStringLiteral( "Deutsch" );
 
-        case QLocale::Russian:
-            return QStringLiteral( "Русский" );
+            case QLocale::Danish:
+                return QStringLiteral( "Dansk" );
 
-        case QLocale::Slovenian:
-            return QStringLiteral( "Slovenščina" );
+            case QLocale::Greek:
+                return QStringLiteral( "Eλληνικά" );
 
-        case QLocale::Slovak:
-            return QStringLiteral( "Slovenčina" );
+            case QLocale::English:
+            {
+                switch ( locale.country() )
+                {
+                    case QLocale::Canada:
+                    case QLocale::UnitedStates:
+                    case QLocale::UnitedStatesMinorOutlyingIslands:
+                    case QLocale::UnitedStatesVirginIslands:
+                        return QStringLiteral( "English (US)" );
 
-        case QLocale::Turkish:
-            return QStringLiteral( "Türkçe" );
+                    default:
+                        return QStringLiteral( "English (UK)" );
+                }
+            }
 
-        case QLocale::Chinese:
-            return QStringLiteral( "中文" );
+            case QLocale::Spanish:
+                return QStringLiteral( "Español" );
 
-        default:
-            return QLocale::languageToString( locale.language() );
+            case QLocale::Finnish:
+                return QStringLiteral( "Suomi" );
+
+            case QLocale::French:
+                return QStringLiteral( "Français" );
+
+            case QLocale::Hungarian:
+                return QStringLiteral( "Magyar" );
+
+            case QLocale::Italian:
+                return QStringLiteral( "Italiano" );
+
+            case QLocale::Japanese:
+                return QStringLiteral( "日本語" );
+
+            case QLocale::Latvian:
+                return QStringLiteral( "Latviešu" );
+
+            case QLocale::Lithuanian:
+                return QStringLiteral( "Lietuvių" );
+
+            case QLocale::Dutch:
+                return QStringLiteral( "Nederlands" );
+
+            case QLocale::Portuguese:
+                return QStringLiteral( "Português" );
+
+            case QLocale::Romanian:
+                return QStringLiteral( "Română" );
+
+            case QLocale::Russian:
+                return QStringLiteral( "Русский" );
+
+            case QLocale::Slovenian:
+                return QStringLiteral( "Slovenščina" );
+
+            case QLocale::Slovak:
+                return QStringLiteral( "Slovenčina" );
+
+            case QLocale::Turkish:
+                return QStringLiteral( "Türkçe" );
+
+            case QLocale::Chinese:
+                return QStringLiteral( "中文" );
+
+            default:
+                return QLocale::languageToString( locale.language() );
+        }
     }
 }
 
@@ -306,6 +380,7 @@ int main( int argc, char* argv[] )
     window2.show();
 #endif
 
+    QskInputContext::instance()->setFactory( new InputContextFactory() );
     return app.exec();
 }
 

@@ -9,6 +9,7 @@
 #include "QskBox.h"
 
 class QskInputEngine;
+class QskVirtualKeyboard;
 
 class QString;
 class QLocale;
@@ -51,6 +52,8 @@ class QSK_EXPORT QskInputPanelBox : public QskBox
     QQuickItem* inputProxy() const;
 
     QString inputPrompt() const;
+
+    void setKeyboard( QskVirtualKeyboard* );
 
   Q_SIGNALS:
     void panelHintsChanged();

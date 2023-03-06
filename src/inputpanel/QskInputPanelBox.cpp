@@ -218,6 +218,20 @@ void QskInputPanelBox::setPrediction( const QStringList& prediction )
     m_data->predictionBar->setPrediction( prediction );
 }
 
+void QskInputPanelBox::setKeyboard( QskVirtualKeyboard* keyboard )
+{
+    if( m_data->keyboard )
+    {
+        m_data->keyboard->deleteLater();
+    }
+
+    m_data->keyboard = keyboard;
+    m_data->layout->addItem( m_data->keyboard );
+
+    connect( m_data->keyboard, &QskVirtualKeyboard::keySelected,
+        this, &QskInputPanelBox::keySelected );
+}
+
 void QskInputPanelBox::keyPressEvent( QKeyEvent* event )
 {
     int keyCode = -1;
