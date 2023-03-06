@@ -9,6 +9,8 @@
 #include "QskMenu.h"
 #include "QskTextOptions.h"
 
+#include <qquickwindow.h>
+
 QSK_SUBCONTROL( QskComboBox, Panel )
 QSK_SUBCONTROL( QskComboBox, Graphic )
 QSK_SUBCONTROL( QskComboBox, Text )
@@ -24,16 +26,16 @@ class QskComboBox::PrivateData
     PrivateData( QskComboBox* const box )
         : menu( new QskMenu( box ) )
     {
-        menu->setPopupFlag( QskPopup::DeleteOnClose, false );
+        menu = new QskMenu();
 
-#if 1
         /*
-            CloseOnPressOutside catches all mouse events in the parent
-            what is the comboBox in our case. However we need to handle
-            events for the complete window to make the CloseOnPressOutside
-            work like expected. TODO ...
+            The popup menu is supposed to be modal for the window and
+            therefore needs the root item of the window as parent item.
+            So we set the box as QObject parent only, so that it gets
+            destroyed properly.
          */
-#endif
+        menu->setParent( box );
+        menu->setPopupFlag( QskPopup::DeleteOnClose, false );
     }
 
     QskMenu* menu;
@@ -189,7 +191,15 @@ void QskComboBox::togglePopup()
 
 void QskComboBox::openPopup()
 {
-    m_data->menu->open();
+    const auto cr = contentsRect();
+
+    auto menu = m_data->menu;
+
+    menu->setParentItem( window()->contentItem() );
+    menu->setOrigin( mapToScene( cr.bottomLeft() ) );
+    menu->setFixedWidth( cr.width() );
+
+    menu->open();
 }
 
 void QskComboBox::closePopup()
@@ -197,19 +207,14 @@ void QskComboBox::closePopup()
     m_data->menu->close();
 }
 
-void QskComboBox::updateLayout()
-{
-    Inherited::updateLayout();
-
-    auto origin = contentsRect().bottomLeft();
-    m_data->menu->setOrigin( origin );
-
-    m_data->menu->setFixedWidth( contentsRect().width() );
-}
-
 void QskComboBox::mousePressEvent( QMouseEvent* )
 {
     setPressed( true );
+}
+
+void QskComboBox::mouseUngrabEvent()
+{
+    setPressed( false );
 }
 
 void QskComboBox::mouseReleaseEvent( QMouseEvent* )
@@ -233,7 +238,6 @@ void QskComboBox::keyPressEvent( QKeyEvent* event )
                 releaseButton();
             }
 
-            // always accepting
             return;
         }
     }
@@ -249,7 +253,6 @@ void QskComboBox::keyReleaseEvent( QKeyEvent* event )
 void QskComboBox::clear()
 {
     m_data->menu->clear();
-
     update();
 }
 

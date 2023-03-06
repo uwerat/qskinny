@@ -79,9 +79,8 @@ class QSK_EXPORT QskComboBox : public QskControl
     void placeholderTextChanged( const QString& );
 
   protected:
-    virtual void updateLayout() override;
-
     void mousePressEvent( QMouseEvent* ) override;
+    void mouseUngrabEvent() override;
     void mouseReleaseEvent( QMouseEvent* ) override;
 
     void keyPressEvent( QKeyEvent* ) override;
