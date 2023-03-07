@@ -92,7 +92,7 @@ namespace
 class QskComboBox::PrivateData
 {
   public:
-    QPointer < QskPopup > menu;
+    QPointer < QskMenu > menu;
 
     QVector< Option > options;
     QString placeholderText;
@@ -244,6 +244,12 @@ QString QskComboBox::currentText() const
 
 void QskComboBox::openPopup()
 {
+    /*
+        maybe we should implement an alternative implementation
+        using a QskSelectionDialog, that could be en/disabled
+        by setting a mode TODO ...
+     */
+
     if ( m_data->menu )
         return;
 
@@ -260,6 +266,9 @@ void QskComboBox::openPopup()
 
     for ( const auto& option : m_data->options )
         menu->addOption( option.graphic, option.text );
+
+    connect( menu, &QskMenu::currentIndexChanged,
+        this, &QskComboBox::indexInPopupChanged );
 
     connect( menu, &QskMenu::triggered,
         this, &QskComboBox::setCurrentIndex );
@@ -406,6 +415,14 @@ int QskComboBox::currentIndex() const
 int QskComboBox::count() const
 {
     return m_data->options.count();
+}
+
+int QskComboBox::indexInPopup() const
+{
+    if ( m_data->menu )
+        return m_data->menu->currentIndex();
+
+    return -1;
 }
 
 #include "moc_QskComboBox.cpp"

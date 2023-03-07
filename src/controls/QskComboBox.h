@@ -17,12 +17,16 @@ class QSK_EXPORT QskComboBox : public QskControl
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
-    Q_PROPERTY( QString currentText READ currentText )
+    Q_PROPERTY( QString currentText READ currentText
+        NOTIFY currentIndexChanged )
 
     Q_PROPERTY( int count READ count NOTIFY countChanged )
 
     Q_PROPERTY( QString placeholderText READ placeholderText
         WRITE setPlaceholderText NOTIFY placeholderTextChanged )
+
+    Q_PROPERTY( int indexInPopup READ indexInPopup
+        NOTIFY indexInPopupChanged )
 
     using Inherited = QskControl;
 
@@ -52,6 +56,9 @@ class QSK_EXPORT QskComboBox : public QskControl
     int currentIndex() const;
     QString currentText() const;
 
+    // "highlightedIndex" ( see Qt's combo boxes ) is not very intuitive
+    virtual int indexInPopup() const;
+
     int count() const;
     QVariantList optionAt( int ) const;
     QString textAt( int ) const;
@@ -64,6 +71,7 @@ class QSK_EXPORT QskComboBox : public QskControl
 
   Q_SIGNALS:
     void currentIndexChanged( int );
+    void indexInPopupChanged( int );
 
     void countChanged( int );
     void placeholderTextChanged( const QString& );
@@ -77,6 +85,10 @@ class QSK_EXPORT QskComboBox : public QskControl
 
     void wheelEvent( QWheelEvent* ) override;
 
+    /*
+        open/close a menu - needs to be overloaded when using a custom popup
+        don't forget to modify indexInPopup/indexInPopupChanged as well
+     */
     virtual void openPopup();
     virtual void closePopup();
 
