@@ -32,6 +32,12 @@ namespace
     class Option
     {
       public:
+        Option( const QskGraphic& graphic, const QString& text )
+            : text( text )
+            , graphic( graphic )
+        {
+        }
+
         Option( const QUrl& graphicSource, const QString& text )
             : graphicSource( graphicSource )
             , text( text )
@@ -129,9 +135,25 @@ QPointF QskMenu::origin() const
     return m_data->origin;
 }
 
+void QskMenu::addOption( const QString& text )
+{
+    addOption( QUrl(), text );
+}
+
 void QskMenu::addOption( const QUrl& graphicSource, const QString& text )
 {
     m_data->options += Option( graphicSource, text );
+
+    resetImplicitSize();
+    update();
+
+    if ( isComponentComplete() )
+        Q_EMIT countChanged( count() );
+}
+
+void QskMenu::addOption( const QskGraphic& graphic, const QString& text )
+{
+    m_data->options += Option( graphic, text );
 
     resetImplicitSize();
     update();
@@ -170,8 +192,14 @@ int QskMenu::separatorCount() const
 
 void QskMenu::clear()
 {
-    m_data->options.clear();
     m_data->separators.clear();
+
+    if ( !m_data->options.isEmpty() )
+    {
+        m_data->options.clear();
+        if ( isComponentComplete() )
+            Q_EMIT countChanged( count() );
+    }
 }
 
 QVariantList QskMenu::optionAt( int index ) const
@@ -225,9 +253,7 @@ int QskMenu::currentIndex() const
 void QskMenu::keyPressEvent( QKeyEvent* event )
 {
     if( m_data->currentIndex < 0 )
-    {
         return;
-    }
 
     int key = event->key();
 
@@ -248,7 +274,7 @@ void QskMenu::keyPressEvent( QKeyEvent* event )
         case Qt::Key_Select:
         case Qt::Key_Space:
         case Qt::Key_Return:
-        case Qt::Key_Enter: 
+        case Qt::Key_Enter:
         {
             m_data->isPressed = true;
             return;

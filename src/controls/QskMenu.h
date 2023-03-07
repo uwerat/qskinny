@@ -48,9 +48,11 @@ class QSK_EXPORT QskMenu : public QskPopup
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
-    // insert, remove, functors, actions, QskGraphic ...
+    // insert, remove, functors, actions
     void addOption( const QUrl& graphicSource, const QString& text );
     void addOption( const QString& graphicSource, const QString& text );
+    void addOption( const QskGraphic&, const QString& text );
+    void addOption( const QString& text );
 
     QVariantList optionAt( int ) const;
     int count() const;
