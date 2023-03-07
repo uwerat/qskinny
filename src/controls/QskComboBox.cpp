@@ -356,7 +356,18 @@ void QskComboBox::wheelEvent( QWheelEvent* event )
     if ( isPopupOpen() )
     {
         if ( m_data->menu )
-            QCoreApplication::postEvent( m_data->menu, event->clone() );
+        {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+            auto wheelEvent = new QWheelEvent(
+                event->position(), event->globalPosition(),
+                event->pixelDelta(), event->angleDelta(),
+                event->buttons(), event->modifiers(),
+                event->phase(), event->inverted(), event->source() );
+#else
+            auto wheelEvent = event->clone();
+#endif
+            QCoreApplication::postEvent( m_data->menu, wheelEvent );
+        }
     }
     else
     {
