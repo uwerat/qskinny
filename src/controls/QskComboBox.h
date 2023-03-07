@@ -42,7 +42,10 @@ class QSK_EXPORT QskComboBox : public QskControl
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
-    void addOption( const QUrl&, const QString& );
+    void addOption( const QString& text );
+    void addOption( const QUrl& graphicSource, const QString& text );
+    void addOption( const QString& graphicSource, const QString& text );
+    void addOption( const QskGraphic&, const QString& text );
 
     void clear();
 
@@ -61,7 +64,7 @@ class QSK_EXPORT QskComboBox : public QskControl
   Q_SIGNALS:
     void currentIndexChanged( int );
 
-    void countChanged();
+    void countChanged( int );
     void placeholderTextChanged( const QString& );
 
   protected:

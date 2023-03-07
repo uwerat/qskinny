@@ -5,11 +5,13 @@
 
 #include "QskComboBox.h"
 
+#include "QskGraphicProvider.h"
 #include "QskGraphic.h"
 #include "QskMenu.h"
 #include "QskTextOptions.h"
 #include "QskEvent.h"
 
+#include <qpointer.h>
 #include <qquickwindow.h>
 
 QSK_SUBCONTROL( QskComboBox, Panel )
@@ -19,7 +21,7 @@ QSK_SUBCONTROL( QskComboBox, PopupIndicator )
 
 QSK_SYSTEM_STATE( QskComboBox, PopupOpen, QskAspect::FirstSystemState << 1 )
 
-static inline void qskIncrement( QskComboBox* comboBox, int steps )
+static inline void qskTraverseOptions( QskComboBox* comboBox, int steps )
 {
     const auto count = comboBox->count();
     if ( count == 0 )
@@ -33,29 +35,46 @@ static inline void qskIncrement( QskComboBox* comboBox, int steps )
     int nextIndex = ( index + steps ) % count;
     if ( nextIndex < 0 )
         nextIndex += count;
-    
+
     if ( nextIndex != index )
-        comboBox->setCurrentIndex( nextIndex ); 
+        comboBox->setCurrentIndex( nextIndex );
+}
+
+namespace
+{
+    class Option
+    {
+      public:
+        Option( const QskGraphic& graphic, const QString& text )
+            : text( text )
+            , graphic( graphic )
+        {
+        }
+
+        Option( const QUrl& graphicSource, const QString& text )
+            : graphicSource( graphicSource )
+            , text( text )
+        {
+#if 1
+            // lazy loading TODO ...
+            if( !graphicSource.isEmpty() )
+                graphic = Qsk::loadGraphic( graphicSource );
+#endif
+        }
+
+        QUrl graphicSource;
+        QString text;
+
+        QskGraphic graphic;
+    };
 }
 
 class QskComboBox::PrivateData
 {
   public:
-    PrivateData( QskComboBox* comboBox )
-    {
-        menu = new QskMenu();
+    QPointer < QskPopup > menu;
 
-        /*
-            The popup menu is supposed to be modal for the window and
-            therefore needs the root item of the window as parent item.
-            So we set the box as QObject parent only, so that it gets
-            destroyed properly.
-         */
-        menu->setParent( comboBox );
-        menu->setPopupFlag( QskPopup::DeleteOnClose, false );
-    }
-
-    QskMenu* menu;
+    QVector< Option > options;
     QString placeholderText;
 
     int currentIndex = -1;
@@ -63,7 +82,7 @@ class QskComboBox::PrivateData
 
 QskComboBox::QskComboBox( QQuickItem* parent )
     : Inherited( parent )
-    , m_data( new PrivateData( this ) )
+    , m_data( new PrivateData() )
 {
     initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
 
@@ -75,14 +94,6 @@ QskComboBox::QskComboBox( QQuickItem* parent )
 
     setAcceptHoverEvents( true );
 
-    connect( m_data->menu, &QskMenu::triggered,
-        this, &QskComboBox::setCurrentIndex );
-
-    connect( m_data->menu, &QskMenu::countChanged,
-        this, &QskComboBox::countChanged );
-
-    connect( m_data->menu, &QskMenu::closed, this,
-        [ this ]() { setPopupOpen( false ); setFocus( true ); } );
 }
 
 QskComboBox::~QskComboBox()
@@ -128,14 +139,52 @@ QskTextOptions QskComboBox::textOptions() const
     return textOptionsHint( Text );
 }
 
+void QskComboBox::addOption( const QString& text )
+{
+    addOption( QUrl(), text );
+}
+
+void QskComboBox::addOption( const QskGraphic& graphic, const QString& text )
+{
+    m_data->options += Option( graphic, text );
+
+    resetImplicitSize();
+    update();
+
+    if ( isComponentComplete() )
+        Q_EMIT countChanged( count() );
+}
+
+void QskComboBox::addOption( const QString& graphicSource, const QString& text )
+{
+    addOption( QUrl( graphicSource ), text );
+}
+
 void QskComboBox::addOption( const QUrl& graphicSource, const QString& text )
 {
-    m_data->menu->addOption( graphicSource, text );
+    m_data->options += Option( graphicSource, text );
+
+    resetImplicitSize();
+    update();
+
+    if ( isComponentComplete() )
+        Q_EMIT countChanged( count() );
 }
 
 QVariantList QskComboBox::optionAt( int index ) const
 {
-    return m_data->menu->optionAt( index );
+    const auto& options = m_data->options;
+
+    if( index < 0 || index >= options.count() )
+        return QVariantList();
+
+    const auto& option = options[ index ];
+
+    QVariantList list;
+    list += QVariant::fromValue( option.graphic );
+    list += QVariant::fromValue( option.text );
+
+    return list;
 }
 
 QString QskComboBox::placeholderText() const
@@ -170,20 +219,37 @@ QString QskComboBox::currentText() const
 
 void QskComboBox::openPopup()
 {
+    if ( m_data->menu )
+        return;
+
     const auto cr = contentsRect();
 
-    auto menu = m_data->menu;
+    auto menu = new QskMenu();
 
+    menu->setParent( this );
     menu->setParentItem( window()->contentItem() );
+    menu->setPopupFlag( QskPopup::DeleteOnClose, true );
+
     menu->setOrigin( mapToScene( cr.bottomLeft() ) );
     menu->setFixedWidth( cr.width() );
 
+    for ( const auto& option : m_data->options )
+        menu->addOption( option.graphic, option.text );
+
+    connect( menu, &QskMenu::triggered,
+        this, &QskComboBox::setCurrentIndex );
+
+    connect( menu, &QskMenu::closed, this,
+        [ this ]() { setPopupOpen( false ); setFocus( true ); } );
+
+    m_data->menu = menu;
     menu->open();
 }
 
 void QskComboBox::closePopup()
 {
-    m_data->menu->close();
+    if ( m_data->menu )
+        m_data->menu->close();
 }
 
 void QskComboBox::mousePressEvent( QMouseEvent* )
@@ -219,13 +285,13 @@ void QskComboBox::keyPressEvent( QKeyEvent* event )
         case Qt::Key_Up:
         case Qt::Key_PageUp:
         {
-            qskIncrement( this, -1 );
+            qskTraverseOptions( this, -1 );
             return;
         }
         case Qt::Key_Down:
         case Qt::Key_PageDown:
         {
-            qskIncrement( this, 1 );
+            qskTraverseOptions( this, 1 );
             return;
         }
         case Qt::Key_Home:
@@ -256,17 +322,27 @@ void QskComboBox::keyReleaseEvent( QKeyEvent* event )
 
 void QskComboBox::wheelEvent( QWheelEvent* event )
 {
-    if ( !isPopupOpen() )
+    if ( isPopupOpen() )
+    {
+        if ( m_data->menu )
+            QCoreApplication::postEvent( m_data->menu, event->clone() );
+    }
+    else
     {
         const auto steps = -qRound( qskWheelSteps( event ) );
-        qskIncrement( this, steps );
+        qskTraverseOptions( this, steps );
     }
 }
 
 void QskComboBox::clear()
 {
-    m_data->menu->clear();
-    setCurrentIndex( -1 );
+    if ( !m_data->options.isEmpty() )
+    {
+        m_data->options.clear();
+
+        if ( isComponentComplete() )
+            Q_EMIT countChanged( count() );
+    }
 }
 
 void QskComboBox::setCurrentIndex( int index )
@@ -287,7 +363,7 @@ int QskComboBox::currentIndex() const
 
 int QskComboBox::count() const
 {
-    return m_data->menu->count();
+    return m_data->options.count();
 }
 
 #include "moc_QskComboBox.cpp"

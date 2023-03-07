@@ -73,16 +73,16 @@ void SelectorPage::populate()
 
     auto* comboBox1 = new QskComboBox( comboBoxBox );
     comboBox1->setPlaceholderText( "< options >" );
-    comboBox1->addOption( {}, "airport" );
-    comboBox1->addOption( {}, "flight" );
-    comboBox1->addOption( {}, "pizza" );
-    comboBox1->addOption( {}, "soccer" );
+    comboBox1->addOption( "airport" );
+    comboBox1->addOption( "flight" );
+    comboBox1->addOption( "pizza" );
+    comboBox1->addOption( "soccer" );
 
     auto* comboBox2 = new QskComboBox( comboBoxBox );
-    comboBox2->addOption( { "airport_shuttle" }, "airport" );
-    comboBox2->addOption( { "flight" }, "flight" );
-    comboBox2->addOption( { "local_pizza" }, "pizza" );
-    comboBox2->addOption( { "sports_soccer" }, "soccer" );
+    comboBox2->addOption( "airport_shuttle", "airport" );
+    comboBox2->addOption( "flight", "flight" );
+    comboBox2->addOption( "local_pizza", "pizza" );
+    comboBox2->addOption( "sports_soccer", "soccer" );
     comboBox2->setCurrentIndex( 2 );
 
     setStretchFactor( 0, 0 );
