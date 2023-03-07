@@ -29,6 +29,8 @@ class QSK_EXPORT QskMenu : public QskPopup
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
+    Q_PROPERTY( QString currentText READ currentText )
+
     using Inherited = QskPopup;
 
   public:
@@ -55,6 +57,8 @@ class QSK_EXPORT QskMenu : public QskPopup
     void addOption( const QString& text );
 
     QVariantList optionAt( int ) const;
+    QString textAt( int ) const;
+
     int count() const;
 
     void addSeparator();
@@ -65,6 +69,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     void clear();
 
     int currentIndex() const;
+    QString currentText() const;
 
     QRectF focusIndicatorRect() const override;
 

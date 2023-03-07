@@ -54,6 +54,7 @@ class QSK_EXPORT QskComboBox : public QskControl
 
     int count() const;
     QVariantList optionAt( int ) const;
+    QString textAt( int ) const;
 
     QString placeholderText() const;
     void setPlaceholderText( const QString& );

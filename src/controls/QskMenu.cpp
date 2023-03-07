@@ -218,6 +218,19 @@ QVariantList QskMenu::optionAt( int index ) const
     return list;
 }
 
+QString QskMenu::textAt( int index ) const
+{
+    if ( index >= 0 && index < m_data->options.count() )
+        return m_data->options[ index ].text;
+
+    return QString();
+}
+
+QString QskMenu::currentText() const
+{
+    return textAt( m_data->currentIndex );
+}
+
 void QskMenu::setTextOptions( const QskTextOptions& textOptions )
 {
     setTextOptionsHint( Text, textOptions );

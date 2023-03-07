@@ -40,6 +40,26 @@ static inline void qskTraverseOptions( QskComboBox* comboBox, int steps )
         comboBox->setCurrentIndex( nextIndex );
 }
 
+static inline int qskFindOption( QskComboBox* comboBox, const QString& key )
+{
+    if ( !key.isEmpty() )
+    {
+        const int currentIndex = comboBox->currentIndex();
+        const int count = comboBox->count();
+
+        for ( int i = 1; i < count; i++ )
+        {
+            const int index = ( currentIndex + i ) % count;
+            const auto text = comboBox->textAt( index );
+
+            if ( text.startsWith( key ) )
+                return index;
+        }
+    }
+
+    return -1;
+}
+
 namespace
 {
     class Option
@@ -206,15 +226,20 @@ void QskComboBox::setPlaceholderText( const QString& text )
     Q_EMIT placeholderTextChanged( text );
 }
 
+QString QskComboBox::textAt( int index ) const
+{
+    if ( index >= 0 && index < m_data->options.count() )
+        return m_data->options[ index ].text;
+
+    return QString();
+}
+
 QString QskComboBox::currentText() const
 {
     if( m_data->currentIndex >= 0 )
-    {
-        const auto option = optionAt( m_data->currentIndex );
-        return option.at( 1 ).toString();
-    }
+        return m_data->options[ m_data->currentIndex ].text;
 
-    return placeholderText();
+    return m_data->placeholderText;
 }
 
 void QskComboBox::openPopup()
@@ -308,8 +333,14 @@ void QskComboBox::keyPressEvent( QKeyEvent* event )
         }
 
         default:
-            // searching option by key TODO ...
-            break;
+        {
+            const int index = qskFindOption( this, event->text() );
+            if ( index >= 0 )
+            {
+                setCurrentIndex( index );
+                return;
+            }
+        }
     }
 
     Inherited::keyPressEvent( event );
