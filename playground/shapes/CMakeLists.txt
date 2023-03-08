@@ -1,3 +1,6 @@
+list(APPEND TARGET_RESSOURCES
+    shapes.qrc)
+
 list(APPEND TARGET_HEADERS
     ShapeItem.h
     GeometricShape.h
@@ -21,8 +24,7 @@ target_link_libraries(${TARGET_NAME}
     PRIVATE
         qskinny
         qskqmlexport
-        qsktestsupport
-        Qt::QuickShapesPrivate)
+        qsktestsupport)
 
 set_target_properties(${TARGET_NAME}
     PROPERTIES
