@@ -21,7 +21,7 @@ QSK_SUBCONTROL( QskSegmentedBar, Segment )
 QSK_SUBCONTROL( QskSegmentedBar, Separator )
 QSK_SUBCONTROL( QskSegmentedBar, Cursor )
 QSK_SUBCONTROL( QskSegmentedBar, Text )
-QSK_SUBCONTROL( QskSegmentedBar, Graphic )
+QSK_SUBCONTROL( QskSegmentedBar, Icon )
 
 QSK_SYSTEM_STATE( QskSegmentedBar, Selected, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskSegmentedBar, Minimum, QskAspect::FirstSystemState << 2 )

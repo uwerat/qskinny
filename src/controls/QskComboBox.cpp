@@ -15,9 +15,9 @@
 #include <qquickwindow.h>
 
 QSK_SUBCONTROL( QskComboBox, Panel )
-QSK_SUBCONTROL( QskComboBox, Graphic )
+QSK_SUBCONTROL( QskComboBox, Icon )
 QSK_SUBCONTROL( QskComboBox, Text )
-QSK_SUBCONTROL( QskComboBox, PopupIndicator )
+QSK_SUBCONTROL( QskComboBox, StatusIndicator )
 
 QSK_SYSTEM_STATE( QskComboBox, PopupOpen, QskAspect::FirstSystemState << 1 )
 
@@ -138,7 +138,7 @@ bool QskComboBox::isPopupOpen() const
     return hasSkinState( PopupOpen );
 }
 
-QskGraphic QskComboBox::graphic() const
+QskGraphic QskComboBox::icon() const
 {
     if( m_data->currentIndex >= 0 )
     {

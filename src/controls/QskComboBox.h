@@ -31,7 +31,7 @@ class QSK_EXPORT QskComboBox : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Graphic, Text, PopupIndicator )
+    QSK_SUBCONTROLS( Panel, Icon, Text, StatusIndicator )
     QSK_STATES( PopupOpen )
 
     QskComboBox( QQuickItem* parent = nullptr );
@@ -41,14 +41,14 @@ class QSK_EXPORT QskComboBox : public QskControl
     void setPopupOpen( bool );
     bool isPopupOpen() const;
 
-    QskGraphic graphic() const;
+    QskGraphic icon() const;
 
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
     void addOption( const QString& text );
-    void addOption( const QUrl& graphicSource, const QString& text );
-    void addOption( const QString& graphicSource, const QString& text );
+    void addOption( const QUrl& iconSource, const QString& text );
+    void addOption( const QString& iconSource, const QString& text );
     void addOption( const QskGraphic&, const QString& text );
 
     void clear();

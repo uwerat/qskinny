@@ -107,9 +107,9 @@ void Skin::initHints( const Palette& palette )
     ed.setFontRole( MenuButton::Text, QskSkin::SmallFont );
     ed.setAlignment( MenuButton::Text, Qt::AlignLeft | Qt::AlignVCenter );
 
-    ed.setPadding( MenuButton::Graphic, { 30, 0, 0, 0 } );
-    ed.setStrutSize( MenuButton::Graphic, { 14, -1 } );
-    ed.setAlignment( MenuButton::Graphic, Qt::AlignCenter );
+    ed.setPadding( MenuButton::Icon, { 30, 0, 0, 0 } );
+    ed.setStrutSize( MenuButton::Icon, { 14, -1 } );
+    ed.setAlignment( MenuButton::Icon, Qt::AlignCenter );
 
 
     // top bar:

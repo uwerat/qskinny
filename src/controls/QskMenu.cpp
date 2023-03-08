@@ -22,7 +22,7 @@ QSK_SUBCONTROL( QskMenu, Panel )
 QSK_SUBCONTROL( QskMenu, Segment )
 QSK_SUBCONTROL( QskMenu, Cursor )
 QSK_SUBCONTROL( QskMenu, Text )
-QSK_SUBCONTROL( QskMenu, Graphic )
+QSK_SUBCONTROL( QskMenu, Icon )
 QSK_SUBCONTROL( QskMenu, Separator )
 
 QSK_SYSTEM_STATE( QskMenu, Selected, QskAspect::FirstSystemState << 2 )

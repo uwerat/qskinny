@@ -19,7 +19,7 @@ RoundedIcon::RoundedIcon( bool isBright, QQuickItem* parent )
 
     setPale( false );
 
-    setSubcontrolProxy( QskPushButton::Graphic, Graphic );
+    setSubcontrolProxy( QskPushButton::Icon, Icon );
 }
 
 void RoundedIcon::setPale( bool on )

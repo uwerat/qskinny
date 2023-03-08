@@ -7,11 +7,11 @@
 
 #include <QTimer>
 
-QSK_SUBCONTROL( MenuBarTopLabel, Graphic )
+QSK_SUBCONTROL( MenuBarTopLabel, Icon )
 
 QSK_SUBCONTROL( MenuButton, Panel )
 QSK_SUBCONTROL( MenuButton, Text )
-QSK_SUBCONTROL( MenuButton, Graphic )
+QSK_SUBCONTROL( MenuButton, Icon )
 
 QSK_SUBCONTROL( MenuBar, Panel )
 
@@ -23,9 +23,9 @@ MenuButton::MenuButton( const QString& name, QQuickItem* parent )
 
     setSubcontrolProxy( QskPushButton::Panel, MenuButton::Panel );
     setSubcontrolProxy( QskPushButton::Text, MenuButton::Text );
-    setSubcontrolProxy( QskPushButton::Graphic, MenuButton::Graphic );
+    setSubcontrolProxy( QskPushButton::Icon, MenuButton::Icon );
 
-    setGraphicSource( name );
+    setIconSource( name );
 }
 
 MenuBar::MenuBar( QQuickItem* parent )

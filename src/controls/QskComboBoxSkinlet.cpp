@@ -54,7 +54,7 @@ namespace
 
             setGraphicTextElements( box,
                 QskComboBox::Text, qskValueAt< QString >( box ),
-                QskComboBox::Graphic, qskValueAt< QskGraphic >( box ).defaultSize() );
+                QskComboBox::Icon, qskValueAt< QskGraphic >( box ).defaultSize() );
 
             const auto alignment = box->alignmentHint(
                 QskComboBox::Panel, Qt::AlignLeft );
@@ -66,7 +66,7 @@ namespace
 QskComboBoxSkinlet::QskComboBoxSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, GraphicRole, TextRole, PopupIndicatorRole } );
+    setNodeRoles( { PanelRole, IconRole, TextRole, StatusIndicatorRole } );
 }
 
 QskComboBoxSkinlet::~QskComboBoxSkinlet() = default;
@@ -81,7 +81,7 @@ QRectF QskComboBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     if ( subControl == Q::Panel )
         return contentsRect;
 
-    if ( subControl == Q::Text || subControl == Q::Graphic )
+    if ( subControl == Q::Text || subControl == Q::Icon )
     {
         const auto r = box->subControlContentsRect( contentsRect, Q::Panel );
 
@@ -91,10 +91,10 @@ QRectF QskComboBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
         return layoutEngine.subControlRect( subControl );
     }
 
-    if( subControl == Q::PopupIndicator )
+    if( subControl == Q::StatusIndicator )
     {
         auto rect = box->innerBox( Q::Panel, contentsRect );
-        const auto size = box->strutSizeHint( Q::PopupIndicator );
+        const auto size = box->strutSizeHint( Q::StatusIndicator );
         rect.setLeft( rect.right() - size.width() );
         return rect;
     }
@@ -114,14 +114,14 @@ QSGNode* QskComboBoxSkinlet::updateSubNode(
         case PanelRole:
             return updateBoxNode( box, node, Q::Panel );
 
-        case GraphicRole:
-            return updateGraphicNode( box, node, box->graphic(), Q::Graphic );
+        case IconRole:
+            return updateGraphicNode( box, node, box->icon(), Q::Icon );
 
         case TextRole:
             return updateTextNode( box, node );
 
-        case PopupIndicatorRole:
-            return updateSymbolNode( box, node, Q::PopupIndicator );
+        case StatusIndicatorRole:
+            return updateSymbolNode( box, node, Q::StatusIndicator );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
@@ -158,7 +158,7 @@ QSizeF QskComboBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
     auto size = layoutEngine.sizeHint( which, QSizeF() );
 
     const auto spacingHint = box->spacingHint( Q::Panel );
-    const auto menuGraphicHint = box->strutSizeHint( Q::PopupIndicator );
+    const auto menuGraphicHint = box->strutSizeHint( Q::StatusIndicator );
 
     size.rwidth() += spacingHint + menuGraphicHint.width();
 

@@ -16,8 +16,8 @@ QSK_SUBCONTROL( MyToggleButton, CheckedPanel )
 QSK_SUBCONTROL( MyToggleButton, CheckedText )
 QSK_SUBCONTROL( MyToggleButton, UncheckedPanel )
 QSK_SUBCONTROL( MyToggleButton, UncheckedText )
-QSK_SUBCONTROL( MyToggleButton, CheckedGraphic )
-QSK_SUBCONTROL( MyToggleButton, UncheckedGraphic )
+QSK_SUBCONTROL( MyToggleButton, CheckedIcon )
+QSK_SUBCONTROL( MyToggleButton, UncheckedIcon )
 
 class MyToggleButton::PrivateData
 {

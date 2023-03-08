@@ -20,9 +20,9 @@ class QSK_EXPORT QskComboBoxSkinlet : public QskSkinlet
     enum NodeRole
     {
         PanelRole,
-        GraphicRole,
+        IconRole,
         TextRole,
-        PopupIndicatorRole,
+        StatusIndicatorRole,
 
         RoleCount
     };

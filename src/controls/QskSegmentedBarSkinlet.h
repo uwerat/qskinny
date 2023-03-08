@@ -25,7 +25,7 @@ class QSK_EXPORT QskSegmentedBarSkinlet : public QskSkinlet
         CursorRole,
 
         TextRole,
-        GraphicRole,
+        IconRole,
 
         RoleCount
     };

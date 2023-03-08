@@ -40,7 +40,7 @@ namespace
     }
 #endif
 
-    QskGraphic graphicAt( const QskSegmentedBar* bar, const int index )
+    QskGraphic iconAt( const QskSegmentedBar* bar, const int index )
     {
         using Q = QskSegmentedBar;
 
@@ -48,9 +48,9 @@ namespace
         {
             // f.e Material 3 replaces the icon of the selected element by a checkmark
 
-            const auto graphic = bar->symbolHint( Q::Graphic | Q::Selected );
-            if ( !graphic.isNull() )
-                return graphic;
+            const auto icon = bar->symbolHint( Q::Icon | Q::Selected );
+            if ( !icon.isNull() )
+                return icon;
         }
 
         return qskValueAt< QskGraphic >( bar, index );
@@ -68,7 +68,7 @@ namespace
 
             setGraphicTextElements( bar,
                 Q::Text, qskValueAt< QString >( bar, index ),
-                Q::Graphic, graphicAt( bar, index ).defaultSize() );
+                Q::Icon, iconAt( bar, index ).defaultSize() );
 
             if( bar->orientation() == Qt::Horizontal )
             {
@@ -83,7 +83,7 @@ QskSegmentedBarSkinlet::QskSegmentedBarSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
     setNodeRoles( { PanelRole, SegmentRole,
-        SeparatorRole, CursorRole, TextRole, GraphicRole  } );
+        SeparatorRole, CursorRole, TextRole, IconRole  } );
 }
 
 QskSegmentedBarSkinlet::~QskSegmentedBarSkinlet() = default;
@@ -216,8 +216,8 @@ QSGNode* QskSegmentedBarSkinlet::updateSubNode(
         case TextRole:
             return updateSeriesNode( skinnable, Q::Text, node );
 
-        case GraphicRole:
-            return updateSeriesNode( skinnable, Q::Graphic, node );
+        case IconRole:
+            return updateSeriesNode( skinnable, Q::Icon, node );
     }
 
     return nullptr;
@@ -230,7 +230,7 @@ QSizeF QskSegmentedBarSkinlet::segmentSizeHint(
 
     QSizeF sizeMax;
 
-    const auto graphic0 = bar->symbolHint( Q::Graphic | Q::Selected );
+    const auto graphic0 = bar->symbolHint( Q::Icon | Q::Selected );
 
     for ( int i = 0; i < bar->count(); i++ )
     {
@@ -242,7 +242,7 @@ QSizeF QskSegmentedBarSkinlet::segmentSizeHint(
 
         layoutEngine.setGraphicTextElements( bar,
             Q::Text, qskValueAt< QString >( bar, i ),
-            Q::Graphic, graphic.defaultSize() );
+            Q::Icon, graphic.defaultSize() );
 
         const auto size = layoutEngine.sizeHint( which, QSizeF() );
 
@@ -318,7 +318,7 @@ QRectF QskSegmentedBarSkinlet::sampleRect( const QskSkinnable* skinnable,
         return separatorRect( bar, contentsRect, index );
     }
 
-    if ( subControl == Q::Text || subControl == Q::Graphic )
+    if ( subControl == Q::Text || subControl == Q::Icon )
     {
         const auto rect = sampleRect( skinnable, contentsRect, Q::Segment, index );
 
@@ -337,7 +337,7 @@ QskAspect::States QskSegmentedBarSkinlet::sampleStates(
 
     auto states = Inherited::sampleStates( skinnable, subControl, index );
 
-    if ( subControl == Q::Segment || subControl == Q::Graphic || subControl == Q::Text )
+    if ( subControl == Q::Segment || subControl == Q::Icon || subControl == Q::Text )
     {
         const auto bar = static_cast< const QskSegmentedBar* >( skinnable );
 
@@ -384,14 +384,14 @@ QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable
         return nullptr;
     }
 
-    if ( subControl == Q::Graphic )
+    if ( subControl == Q::Icon )
     {
-        const auto graphic = graphicAt( bar, index );
+        const auto graphic = iconAt( bar, index );
 
         if( !graphic.isEmpty() )
         {
             const auto filter = bar->effectiveGraphicFilter( subControl );
-            const auto padding = bar->paddingHint( Q::Graphic );
+            const auto padding = bar->paddingHint( Q::Icon );
             const auto graphicRect = rect.marginsRemoved( padding );
 
             return QskSkinlet::updateGraphicNode(

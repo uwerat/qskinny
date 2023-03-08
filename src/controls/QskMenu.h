@@ -34,7 +34,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     using Inherited = QskPopup;
 
   public:
-    QSK_SUBCONTROLS( Overlay, Panel, Segment, Cursor, Text, Graphic, Separator )
+    QSK_SUBCONTROLS( Overlay, Panel, Segment, Cursor, Text, Icon, Separator )
     QSK_STATES( Selected )
 
     QskMenu( QQuickItem* parentItem = nullptr );
@@ -51,8 +51,8 @@ class QSK_EXPORT QskMenu : public QskPopup
     QskTextOptions textOptions() const;
 
     // insert, remove, functors, actions
-    void addOption( const QUrl& graphicSource, const QString& text );
-    void addOption( const QString& graphicSource, const QString& text );
+    void addOption( const QUrl& iconSource, const QString& text );
+    void addOption( const QString& iconSource, const QString& text );
     void addOption( const QskGraphic&, const QString& text );
     void addOption( const QString& text );
 

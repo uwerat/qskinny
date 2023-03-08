@@ -87,7 +87,7 @@ Qsk.Window
         TestButton
         {
             text: "Check Me"
-            graphicSource: "image://shapes/Ring/Khaki"
+            iconSource: "image://shapes/Ring/Khaki"
 
             checkable: true
         }
@@ -117,11 +117,11 @@ Qsk.Window
 
         TestButton
         {
-            graphicSource: "image://shapes/Diamond/SandyBrown"
+            iconSource: "image://shapes/Diamond/SandyBrown"
 
-            graphicStrutSize
+            iconStrutSize
             {
-                // no strutSize, so that the graphic is adjustd
+                // no strutSize, so that the icon is adjustd
                 width: -1
                 height : -1
             }

@@ -55,11 +55,11 @@ QRectF MyToggleButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
         const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
         return sectionRect( r, button->isInverted() ? 0 : 1 );
     }
-    else if( subControl == Q::CheckedText || subControl == Q::CheckedGraphic )
+    else if( subControl == Q::CheckedText || subControl == Q::CheckedIcon )
     {
         return button->subControlContentsRect( contentsRect, Q::CheckedPanel );
     }
-    else if( subControl == Q::UncheckedText || subControl == Q::UncheckedGraphic )
+    else if( subControl == Q::UncheckedText || subControl == Q::UncheckedIcon )
     {
         return button->subControlContentsRect( contentsRect, Q::UncheckedPanel );
     }
@@ -109,13 +109,13 @@ QSGNode* MyToggleButtonSkinlet::updateSubNode(
         case CheckedGraphicRole:
         {
             return updateGraphicNode(
-                button, node, button->graphic( true ), Q::CheckedGraphic );
+                button, node, button->graphic( true ), Q::CheckedIcon );
         }
 
         case UncheckedGraphicRole:
         {
             return updateGraphicNode(
-                button, node, button->graphic( false ), Q::UncheckedGraphic );
+                button, node, button->graphic( false ), Q::UncheckedIcon );
         }
 
         case CursorRole:

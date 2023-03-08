@@ -23,15 +23,15 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
         WRITE setTextOptions RESET resetTextOptions NOTIFY textOptionsChanged )
 
-    Q_PROPERTY( QUrl graphicSource READ graphicSource
-        WRITE setGraphicSource NOTIFY graphicSourceChanged FINAL )
+    Q_PROPERTY( QUrl iconSource READ iconSource
+        WRITE setIconSource NOTIFY iconSourceChanged FINAL )
 
-    Q_PROPERTY( QskGraphic graphic READ graphic
-        WRITE setGraphic NOTIFY graphicChanged FINAL )
+    Q_PROPERTY( QskGraphic icon READ icon
+        WRITE setIcon NOTIFY iconChanged FINAL )
 
-    Q_PROPERTY( QSizeF graphicStrutSize READ graphicStrutSize
-        WRITE setGraphicStrutSize RESET resetGraphicStrutSize
-        NOTIFY graphicStrutSizeChanged FINAL )
+    Q_PROPERTY( QSizeF iconStrutSize READ iconStrutSize
+        WRITE setIconStrutSize RESET resetIconStrutSize
+        NOTIFY iconStrutSizeChanged FINAL )
 
     Q_PROPERTY( bool checkable READ isCheckable
         WRITE setCheckable NOTIFY checkableChanged FINAL )
@@ -45,7 +45,7 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     using Inherited = QskAbstractButton;
 
   public:
-    QSK_SUBCONTROLS( Panel, Splash, Text, Graphic )
+    QSK_SUBCONTROLS( Panel, Splash, Text, Icon )
 
     enum Emphasis
     {
@@ -78,13 +78,13 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     QskTextOptions textOptions() const;
     void resetTextOptions();
 
-    void setGraphicStrutSize( const QSizeF& );
-    QSizeF graphicStrutSize() const;
-    void resetGraphicStrutSize();
+    void setIconStrutSize( const QSizeF& );
+    QSizeF iconStrutSize() const;
+    void resetIconStrutSize();
 
-    QUrl graphicSource() const;
-    QskGraphic graphic() const;
-    bool hasGraphic() const;
+    QUrl iconSource() const;
+    QskGraphic icon() const;
+    bool hasIcon() const;
 
     QFont font() const;
 
@@ -93,9 +93,9 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
 
   public Q_SLOTS:
     void setText( const QString& );
-    void setGraphicSource( const QUrl& );
-    void setGraphicSource( const QString& );
-    void setGraphic( const QskGraphic& );
+    void setIconSource( const QUrl& );
+    void setIconSource( const QString& );
+    void setIcon( const QskGraphic& );
 
   Q_SIGNALS:
     void checkableChanged( bool );
@@ -105,16 +105,16 @@ class QSK_EXPORT QskPushButton : public QskAbstractButton
     void textChanged();
     void textOptionsChanged();
 
-    void graphicChanged();
-    void graphicSourceChanged();
-    void graphicStrutSizeChanged();
+    void iconChanged();
+    void iconSourceChanged();
+    void iconStrutSizeChanged();
 
   protected:
     void changeEvent( QEvent* ) override;
     void mousePressEvent( QMouseEvent* ) override;
 
     void updateResources() override;
-    virtual QskGraphic loadGraphic( const QUrl& ) const;
+    virtual QskGraphic loadIcon( const QUrl& ) const;
 
   private:
     class PrivateData;

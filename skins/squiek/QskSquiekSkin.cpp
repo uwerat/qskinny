@@ -383,17 +383,17 @@ void Editor::setupComboBox()
     setBoxBorderColors( Q::Panel, borderColors );
     setGradient( Q::Panel, c );
 
-    setStrutSize( Q::Graphic, 24_dp, 24_dp );
-    setGraphicRole( Q::Graphic | Q::Disabled, DisabledSymbol );
+    setStrutSize( Q::Icon, 24_dp, 24_dp );
+    setGraphicRole( Q::Icon | Q::Disabled, DisabledSymbol );
 
-    setStrutSize( Q::PopupIndicator, 15_dp, 15_dp );
-    setGraphicRole( Q::PopupIndicator | Q::Disabled, DisabledSymbol );
+    setStrutSize( Q::StatusIndicator, 15_dp, 15_dp );
+    setGraphicRole( Q::StatusIndicator | Q::Disabled, DisabledSymbol );
 
-    setAlignment( Q::PopupIndicator, Qt::AlignRight | Qt::AlignVCenter );
+    setAlignment( Q::StatusIndicator, Qt::AlignRight | Qt::AlignVCenter );
 
-    setSymbol( Q::PopupIndicator,
+    setSymbol( Q::StatusIndicator,
         QskStandardSymbol::graphic( QskStandardSymbol::TriangleDown ) );
-    setSymbol( Q::PopupIndicator | Q::PopupOpen,
+    setSymbol( Q::StatusIndicator | Q::PopupOpen,
         QskStandardSymbol::graphic( QskStandardSymbol::TriangleUp ) );
 }
 
@@ -435,9 +435,9 @@ void Editor::setupMenu()
     setColor( Q::Text, m_pal.contrastedText );
     setColor( Q::Text | Q::Selected, m_pal.highlightedText );
 
-    setStrutSize( Q::Graphic, 16, 16 );
-    setGraphicRole( Q::Graphic | Q::Disabled, DisabledSymbol );
-    setGraphicRole( Q::Graphic | Q::Selected, CursorSymbol );
+    setStrutSize( Q::Icon, 16, 16 );
+    setGraphicRole( Q::Icon | Q::Disabled, DisabledSymbol );
+    setGraphicRole( Q::Icon | Q::Selected, CursorSymbol );
 
     setPosition( Q::Panel, 0 );
     setPosition( Q::Panel | QskPopup::Closed, 1 );
@@ -613,11 +613,11 @@ void Editor::setupSegmentedBar()
     }
 
     {
-        // Graphic
+        // Icon
 
-        setGraphicRole( Q::Graphic | Q::Disabled, DisabledSymbol );
-        setGraphicRole( Q::Graphic | Q::Selected, CursorSymbol );
-        setStrutSize( Q::Graphic, -1, 30_dp );
+        setGraphicRole( Q::Icon | Q::Disabled, DisabledSymbol );
+        setGraphicRole( Q::Icon | Q::Selected, CursorSymbol );
+        setStrutSize( Q::Icon, -1, 30_dp );
     }
 }
 
@@ -682,8 +682,8 @@ void Editor::setupPushButton()
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
 
-    // Graphic
-    setAlignment( Q::Graphic, Qt::AlignCenter );
+    // Icon
+    setAlignment( Q::Icon, Qt::AlignCenter );
 }
 
 void Editor::setupRadioBox()

@@ -17,7 +17,7 @@ class MenuBarTopLabel final : public QskGraphicLabel
     Q_OBJECT
 
   public:
-    QSK_SUBCONTROLS( Graphic )
+    QSK_SUBCONTROLS( Icon )
 
     MenuBarTopLabel( const QString& icon, QQuickItem* parent = nullptr )
         : QskGraphicLabel( icon, parent )
@@ -31,7 +31,7 @@ class MenuButton final : public QskPushButton
     Q_OBJECT
 
   public:
-    QSK_SUBCONTROLS( Panel, Text, Graphic )
+    QSK_SUBCONTROLS( Panel, Text, Icon )
 
     MenuButton( const QString& name, QQuickItem* parent );
 };

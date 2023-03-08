@@ -18,7 +18,7 @@
 QSK_SUBCONTROL( QskPushButton, Panel )
 QSK_SUBCONTROL( QskPushButton, Splash )
 QSK_SUBCONTROL( QskPushButton, Text )
-QSK_SUBCONTROL( QskPushButton, Graphic )
+QSK_SUBCONTROL( QskPushButton, Icon )
 
 class QskPushButton::PrivateData
 {
@@ -26,29 +26,29 @@ class QskPushButton::PrivateData
     PrivateData( const QString& txt )
         : text( txt )
         , isCheckable( false )
-        , isGraphicSourceDirty( false )
+        , isIconSourceDirty( false )
         , emphasis( NoEmphasis )
     {
     }
 
-    void ensureGraphic( const QskPushButton* button )
+    void ensureIcon( const QskPushButton* button )
     {
-        if ( isGraphicSourceDirty )
+        if ( isIconSourceDirty )
         {
-            if ( !graphicSource.isEmpty() )
-                graphic = button->loadGraphic( graphicSource );
+            if ( !iconSource.isEmpty() )
+                icon = button->loadIcon( iconSource );
 
-            isGraphicSourceDirty = false;
+            isIconSourceDirty = false;
         }
     }
 
     QString text;
 
-    QUrl graphicSource;
-    QskGraphic graphic;
+    QUrl iconSource;
+    QskGraphic icon;
 
     bool isCheckable : 1;
-    bool isGraphicSourceDirty : 1;
+    bool isIconSourceDirty : 1;
     int emphasis : 4;
 };
 
@@ -153,13 +153,13 @@ QFont QskPushButton::font() const
     return effectiveFont( Text );
 }
 
-void QskPushButton::resetGraphicStrutSize()
+void QskPushButton::resetIconStrutSize()
 {
-    if ( resetStrutSizeHint( Graphic ) )
-        Q_EMIT graphicStrutSizeChanged();
+    if ( resetStrutSizeHint( Icon ) )
+        Q_EMIT iconStrutSizeChanged();
 }
 
-void QskPushButton::setGraphicStrutSize( const QSizeF& size )
+void QskPushButton::setIconStrutSize( const QSizeF& size )
 {
     auto newSize = size;
     if ( newSize.width() < 0.0 )
@@ -168,57 +168,57 @@ void QskPushButton::setGraphicStrutSize( const QSizeF& size )
     if ( newSize.height() < 0.0 )
         newSize.setHeight( -1.0 );
 
-    if ( setStrutSizeHint( Graphic, newSize ) )
-        Q_EMIT graphicStrutSizeChanged();
+    if ( setStrutSizeHint( Icon, newSize ) )
+        Q_EMIT iconStrutSizeChanged();
 }
 
-QSizeF QskPushButton::graphicStrutSize() const
+QSizeF QskPushButton::iconStrutSize() const
 {
-    return strutSizeHint( Graphic );
+    return strutSizeHint( Icon );
 }
 
-void QskPushButton::setGraphicSource( const QUrl& url )
+void QskPushButton::setIconSource( const QUrl& url )
 {
-    if ( m_data->graphicSource == url )
+    if ( m_data->iconSource == url )
         return;
 
-    m_data->graphicSource = url;
-    m_data->graphic.reset();
+    m_data->iconSource = url;
+    m_data->icon.reset();
 
-    m_data->isGraphicSourceDirty = true;
+    m_data->isIconSourceDirty = true;
 
     resetImplicitSize();
     polish();
     update();
 
-    Q_EMIT graphicSourceChanged();
+    Q_EMIT iconSourceChanged();
 }
 
-void QskPushButton::setGraphicSource( const QString& source )
+void QskPushButton::setIconSource( const QString& source )
 {
-    setGraphicSource( QUrl( source ) );
+    setIconSource( QUrl( source ) );
 }
 
-QUrl QskPushButton::graphicSource() const
+QUrl QskPushButton::iconSource() const
 {
-    return m_data->graphicSource;
+    return m_data->iconSource;
 }
 
-void QskPushButton::setGraphic( const QskGraphic& graphic )
+void QskPushButton::setIcon( const QskGraphic& icon )
 {
-    if ( graphic != m_data->graphic )
+    if ( icon != m_data->icon )
     {
-        m_data->graphic = graphic;
+        m_data->icon = icon;
 
-        if ( !m_data->graphicSource.isEmpty() )
+        if ( !m_data->iconSource.isEmpty() )
         {
-            m_data->graphicSource = QString();
-            m_data->isGraphicSourceDirty = false;
+            m_data->iconSource = QString();
+            m_data->isIconSourceDirty = false;
 
-            Q_EMIT graphicSourceChanged();
+            Q_EMIT iconSourceChanged();
         }
 
-        Q_EMIT graphicChanged();
+        Q_EMIT iconChanged();
 
         resetImplicitSize();
         polish();
@@ -226,20 +226,20 @@ void QskPushButton::setGraphic( const QskGraphic& graphic )
     }
 }
 
-QskGraphic QskPushButton::graphic() const
+QskGraphic QskPushButton::icon() const
 {
-    m_data->ensureGraphic( this );
-    return m_data->graphic;
+    m_data->ensureIcon( this );
+    return m_data->icon;
 }
 
-bool QskPushButton::hasGraphic() const
+bool QskPushButton::hasIcon() const
 {
-    return !( graphic().isEmpty() && graphicSource().isEmpty() );
+    return !( icon().isEmpty() && iconSource().isEmpty() );
 }
 
 void QskPushButton::updateResources()
 {
-    m_data->ensureGraphic( this );
+    m_data->ensureIcon( this );
 }
 
 QskAspect::Variation QskPushButton::effectiveVariation() const
@@ -274,11 +274,11 @@ void QskPushButton::changeEvent( QEvent* event )
     {
         case QEvent::StyleChange:
         {
-            if ( !m_data->graphicSource.isEmpty() &&
+            if ( !m_data->iconSource.isEmpty() &&
                 qskSetup->skin()->hasGraphicProvider() )
             {
                 // we might need to reload from a different skin
-                m_data->isGraphicSourceDirty = true;
+                m_data->isIconSourceDirty = true;
             }
             break;
         }
@@ -313,7 +313,7 @@ void QskPushButton::mousePressEvent( QMouseEvent* event )
     }
 }
 
-QskGraphic QskPushButton::loadGraphic( const QUrl& url ) const
+QskGraphic QskPushButton::loadIcon( const QUrl& url ) const
 {
     return Qsk::loadGraphic( url );
 }

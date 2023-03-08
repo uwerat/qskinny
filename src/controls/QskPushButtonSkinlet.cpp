@@ -37,7 +37,7 @@ namespace
 
             setGraphicTextElements( button,
                 QskPushButton::Text, button->text(),
-                QskPushButton::Graphic, button->graphic().defaultSize() );
+                QskPushButton::Icon, button->icon().defaultSize() );
 
             const auto alignment = button->alignmentHint(
                 QskPushButton::Panel, Qt::AlignCenter );
@@ -50,7 +50,7 @@ namespace
 QskPushButtonSkinlet::QskPushButtonSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, SplashRole, GraphicRole, TextRole } );
+    setNodeRoles( { PanelRole, SplashRole, IconRole, TextRole } );
 }
 
 QskPushButtonSkinlet::~QskPushButtonSkinlet() = default;
@@ -68,7 +68,7 @@ QRectF QskPushButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
     if ( subControl == Q::Splash )
         return splashRect( button, contentsRect );
 
-    if ( ( subControl == Q::Text ) || ( subControl == Q::Graphic ) )
+    if ( ( subControl == Q::Text ) || ( subControl == Q::Icon ) )
     {
         const auto r = button->subControlContentsRect( contentsRect, Q::Panel );
 
@@ -99,8 +99,8 @@ QSGNode* QskPushButtonSkinlet::updateSubNode(
         case TextRole:
             return updateTextNode( button, node );
 
-        case GraphicRole:
-            return updateGraphicNode( button, node, button->graphic(), Q::Graphic );
+        case IconRole:
+            return updateGraphicNode( button, node, button->icon(), Q::Icon );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );

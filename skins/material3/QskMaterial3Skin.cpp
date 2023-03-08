@@ -294,29 +294,29 @@ void Editor::setupComboBox()
         m_pal.surfaceVariant, m_pal.pressedOpacity );
     setGradient( Q::Panel | Q::PopupOpen, activeColor );
 
-    setStrutSize( Q::Graphic, 24_dp, 24_dp );
-    setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface );
+    setStrutSize( Q::Icon, 24_dp, 24_dp );
+    setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnSurface );
 
     setColor( Q::Text, m_pal.onSurface );
     setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
 
-    setStrutSize( Q::PopupIndicator, 12_dp, 12_dp );
-    setGraphicRole( Q::PopupIndicator, QskMaterial3Skin::GraphicRoleOnSurface );
-    setAlignment( Q::PopupIndicator, Qt::AlignRight | Qt::AlignVCenter );
+    setStrutSize( Q::StatusIndicator, 12_dp, 12_dp );
+    setGraphicRole( Q::StatusIndicator, QskMaterial3Skin::GraphicRoleOnSurface );
+    setAlignment( Q::StatusIndicator, Qt::AlignRight | Qt::AlignVCenter );
 
 
     const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
     setGradient( Q::Panel | Q::Disabled, disabledPanelColor );
     setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
 
-    setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface38 );
+    setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnSurface38 );
 
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
-    setGraphicRole( Q::PopupIndicator, QskMaterial3Skin::GraphicRoleOnSurface38 );
+    setGraphicRole( Q::StatusIndicator, QskMaterial3Skin::GraphicRoleOnSurface38 );
 
-    setSymbol( Q::PopupIndicator, symbol( "combo-box-arrow-closed" ) );
-    setSymbol( Q::PopupIndicator | Q::PopupOpen, symbol( "combo-box-arrow-open" ) );
+    setSymbol( Q::StatusIndicator, symbol( "combo-box-arrow-closed" ) );
+    setSymbol( Q::StatusIndicator | Q::PopupOpen, symbol( "combo-box-arrow-open" ) );
 }
 
 void Editor::setupBox()
@@ -369,9 +369,9 @@ void Editor::setupMenu()
 
     setGradient( Q::Cursor, m_pal.primary12 );
 
-    setPadding( Q::Graphic, 7_dp );
-    setStrutSize( Q::Graphic, 24_dp, 24_dp );
-    setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface );
+    setPadding( Q::Icon, 7_dp );
+    setStrutSize( Q::Icon, 24_dp, 24_dp );
+    setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnSurface );
 
     setColor( Q::Text, m_pal.onSurface );
     setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
@@ -586,15 +586,15 @@ void Editor::setupSegmentedBar()
     }
 
     {
-        // Graphic
+        // Icon
 
-        setSymbol( Q::Graphic, symbol( "segmented-button-check" ) );
-        setStrutSize( Q::Graphic, 18_dp, 18_dp );
+        setSymbol( Q::Icon, symbol( "segmented-button-check" ) );
+        setStrutSize( Q::Icon, 18_dp, 18_dp );
 
-        setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnSurface );
-        setGraphicRole( Q::Graphic | Q::Selected,
+        setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnSurface );
+        setGraphicRole( Q::Icon | Q::Selected,
             QskMaterial3Skin::GraphicRoleOnSecondaryContainer );
-        setGraphicRole( Q::Graphic | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
+        setGraphicRole( Q::Icon | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
     }
 }
 
@@ -647,9 +647,9 @@ void Editor::setupPushButton()
     setPadding( Q::Panel, { 24_dp, 0, 24_dp, 0 } );
     setBoxShape( Q::Panel, 100, Qt::RelativeSize );
 
-    setStrutSize( Q::Graphic, 18_dp, 18_dp );
-    setPadding( Q::Graphic, { 0, 0, 8_dp, 0 } );
-    setGraphicRole( Q::Graphic, QskMaterial3Skin::GraphicRoleOnPrimary );
+    setStrutSize( Q::Icon, 18_dp, 18_dp );
+    setPadding( Q::Icon, { 0, 0, 8_dp, 0 } );
+    setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnPrimary );
 
     setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
     setPadding( Q::Text, 0 );
@@ -664,14 +664,14 @@ void Editor::setupPushButton()
     setGradient( Q::Panel | M3::Elevated, m_pal.surface1 );
     setShadowMetrics( Q::Panel | M3::Elevated, m_pal.elevation1 );
     setColor( Q::Text | M3::Elevated, m_pal.primary );
-    setGraphicRole( Q::Graphic | M3::Elevated, QskMaterial3Skin::GraphicRolePrimary );
+    setGraphicRole( Q::Icon | M3::Elevated, QskMaterial3Skin::GraphicRolePrimary );
     setGradient( Q::Splash | M3::Elevated,
         stateLayerColor( m_pal.primary, m_pal.pressedOpacity ) );
 
     setGradient( Q::Panel | M3::Elevated | Q::Disabled, m_pal.onSurface12 );
     setShadowMetrics( Q::Panel | M3::Elevated | Q::Disabled, m_pal.elevation0 );
     setColor( Q::Text | M3::Elevated | Q::Disabled, m_pal.onSurface38 );
-    setGraphicRole( Q::Graphic | M3::Elevated | Q::Disabled,
+    setGraphicRole( Q::Icon | M3::Elevated | Q::Disabled,
         QskMaterial3Skin::GraphicRoleOnSurface38 );
 
     const auto elevatedHoverColor =
@@ -707,7 +707,7 @@ void Editor::setupPushButton()
 
     setColor( Q::Text, m_pal.onPrimary );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
-    setGraphicRole( Q::Graphic | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
+    setGraphicRole( Q::Icon | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
 
     setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
 
@@ -717,13 +717,13 @@ void Editor::setupPushButton()
     setGradient( Q::Panel | M3::Tonal, m_pal.secondaryContainer );
     setShadowMetrics( Q::Panel | M3::Tonal, m_pal.elevation0 );
     setColor( Q::Text | M3::Tonal, m_pal.onSecondaryContainer );
-    setGraphicRole( Q::Graphic | M3::Tonal, QskMaterial3Skin::GraphicRoleOnSecondaryContainer );
+    setGraphicRole( Q::Icon | M3::Tonal, QskMaterial3Skin::GraphicRoleOnSecondaryContainer );
     setGradient( Q::Splash | M3::Tonal,
         stateLayerColor( m_pal.onSecondaryContainer, m_pal.pressedOpacity ) );
 
     setGradient( Q::Panel | M3::Tonal | Q::Disabled, m_pal.onSurface12 );
     setColor( Q::Text | M3::Tonal | Q::Disabled, m_pal.onSurface38 );
-    setGraphicRole( Q::Graphic | M3::Tonal | Q::Disabled,
+    setGraphicRole( Q::Icon | M3::Tonal | Q::Disabled,
         QskMaterial3Skin::GraphicRoleOnSurface38 );
 
     const auto tonalHoverColor = flattenedColor( m_pal.onSecondaryContainer,
@@ -748,13 +748,13 @@ void Editor::setupPushButton()
     setShadowMetrics( Q::Panel | M3::Outlined, m_pal.elevation0 );
 
     setColor( Q::Text | M3::Outlined, m_pal.primary );
-    setGraphicRole( Q::Graphic | M3::Outlined, QskMaterial3Skin::GraphicRolePrimary );
+    setGraphicRole( Q::Icon | M3::Outlined, QskMaterial3Skin::GraphicRolePrimary );
     setGradient( Q::Splash | M3::Outlined,
         stateLayerColor( m_pal.outline, m_pal.pressedOpacity ) );
 
     setBoxBorderColors( Q::Panel | M3::Outlined | Q::Disabled, m_pal.onSurface12 );
     setColor( Q::Text | M3::Outlined | Q::Disabled, m_pal.onSurface38 );
-    setGraphicRole( Q::Graphic | M3::Outlined | Q::Disabled,
+    setGraphicRole( Q::Icon | M3::Outlined | Q::Disabled,
         QskMaterial3Skin::GraphicRoleOnSurface38 );
 
     setBoxBorderColors( Q::Panel | M3::Outlined | Q::Hovered, m_pal.outline );
@@ -778,12 +778,12 @@ void Editor::setupPushButton()
 
     setShadowMetrics( Q::Panel | M3::Text, m_pal.elevation0 );
     setColor( Q::Text | M3::Text, m_pal.primary );
-    setGraphicRole( Q::Graphic | M3::Text, QskMaterial3Skin::GraphicRolePrimary );
+    setGraphicRole( Q::Icon | M3::Text, QskMaterial3Skin::GraphicRolePrimary );
     setGradient( Q::Splash | M3::Text,
         stateLayerColor( m_pal.primary, m_pal.pressedOpacity ) );
 
     setColor( Q::Text | M3::Text | Q::Disabled, m_pal.onSurface38 );
-    setGraphicRole( Q::Graphic | M3::Text | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
+    setGraphicRole( Q::Icon | M3::Text | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
 
     setGradient( Q::Panel | M3::Text | Q::Hovered, m_pal.primary8 );
 

@@ -22,7 +22,7 @@ class QSK_EXPORT QskPushButtonSkinlet : public QskSkinlet
         PanelRole,
         SplashRole,
         TextRole,
-        GraphicRole,
+        IconRole,
 
         RoleCount
     };
