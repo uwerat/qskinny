@@ -1,10 +1,12 @@
 add_subdirectory(anchors)
 add_subdirectory(dials)
 add_subdirectory(dialogbuttons)
+add_subdirectory(gradients)
 add_subdirectory(invoker)
 add_subdirectory(inputpanel)
 add_subdirectory(images)
 add_subdirectory(shadows)
+add_subdirectory(shapes)
 
 if (QT_VERSION_MAJOR VERSION_EQUAL "6")
     if(TARGET Qt::WebEngineCore)
