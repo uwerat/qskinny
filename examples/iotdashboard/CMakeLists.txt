@@ -4,26 +4,31 @@ list(APPEND TARGET_SOURCES
     CircularProgressBar.cpp
     CircularProgressBarSkinlet.cpp
     DashboardPage.cpp
+    DevicesPage.cpp
     Diagram.cpp
     DiagramSkinlet.cpp
+    EnergyMeter.cpp
     GraphicProvider.cpp
     GridBox.cpp
     LightDisplaySkinlet.cpp
     LightDisplay.cpp
     MainItem.cpp
+    MainWindow.cpp
     MenuBar.cpp
+    MembersPage.cpp
     MyDevices.cpp
-    PieChart.cpp
-    PieChartPainted.cpp
-    PieChartSkinlet.cpp
     RoomsPage.cpp
     RoundedIcon.cpp
     Skin.cpp
+    StatisticsPage.cpp
     TopBar.cpp
     RoundButton.cpp
     UsageBox.cpp
     UsageDiagram.cpp
-    MainWindow.cpp
+    StoragePage.cpp
+    StorageMeter.cpp
+    StorageBar.cpp
+    StorageBarSkinlet.cpp
     main.cpp)
 
 list(APPEND TARGET_SOURCES
@@ -38,25 +43,30 @@ list(APPEND TARGET_HEADERS
     CircularProgressBarSkinlet.h
     Diagram.h
     DiagramSkinlet.h
+    EnergyMeter.h
     GraphicProvider.h
     GridBox.h
     LightDisplaySkinlet.h
     LightDisplay.h
     DashboardPage.h
+    DevicesPage.h
     MainItem.h
     MainWindow.h
+    MembersPage.h
     MenuBar.h
     MyDevices.h
-    PieChart.h
-    PieChartPainted.h
-    PieChartSkinlet.h
     RoomsPage.h
     RoundedIcon.h
     Skin.h
+    StatisticsPage.h
     TopBar.h
     RoundButton.h
     UsageBox.h
-    UsageDiagram.h)
+    UsageDiagram.h
+    StoragePage.h
+    StorageMeter.h
+    StorageBar.h
+    StorageBarSkinlet.h)
 
 list(APPEND TARGET_HEADERS
     nodes/DiagramDataNode.h
@@ -86,14 +96,12 @@ if(TARGET Qsk::qskinny)
     # - qskinny has a namespace Qsk
     target_link_libraries(${TARGET_NAME}
         PRIVATE
-            Qsk::qskinny
-            Qt::Svg)
+            Qsk::qskinny)
 else()
     target_link_libraries(${TARGET_NAME}
         PRIVATE
             qskinny
-            qsktestsupport
-            Qt::Svg)
+            qsktestsupport)
 
     target_compile_definitions(${TARGET_NAME}
         PRIVATE
