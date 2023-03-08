@@ -29,9 +29,11 @@ namespace
             , m_row( row )
             , m_column( column )
         {
+#if 0
             QskTextOptions options;
             options.setFontSizeMode( QskTextOptions::VerticalFit );
             setTextOptions( options );
+#endif
 
             setFocusPolicy( Qt::TabFocus );
         }
@@ -237,7 +239,7 @@ QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent )
     , m_data( new PrivateData )
 {
     setPolishOnResize( true );
-    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Constrained );
+    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
 
     m_data->keyButtons.reserve( RowCount * ColumnCount );
 
@@ -277,15 +279,6 @@ QskAspect::Subcontrol QskVirtualKeyboard::substitutedSubcontrol(
 {
     if ( subControl == QskBox::Panel )
         return QskVirtualKeyboard::Panel;
-
-#if 1
-    // TODO ...
-    if ( subControl == QskVirtualKeyboard::ButtonPanel )
-        return QskPushButton::Panel;
-
-    if ( subControl == QskVirtualKeyboard::ButtonText )
-        return QskPushButton::Text;
-#endif
 
     return Inherited::substitutedSubcontrol( subControl );
 }

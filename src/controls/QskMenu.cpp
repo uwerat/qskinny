@@ -22,7 +22,7 @@ QSK_SUBCONTROL( QskMenu, Panel )
 QSK_SUBCONTROL( QskMenu, Segment )
 QSK_SUBCONTROL( QskMenu, Cursor )
 QSK_SUBCONTROL( QskMenu, Text )
-QSK_SUBCONTROL( QskMenu, Graphic )
+QSK_SUBCONTROL( QskMenu, Icon )
 QSK_SUBCONTROL( QskMenu, Separator )
 
 QSK_SYSTEM_STATE( QskMenu, Selected, QskAspect::FirstSystemState << 2 )
@@ -32,6 +32,12 @@ namespace
     class Option
     {
       public:
+        Option( const QskGraphic& graphic, const QString& text )
+            : text( text )
+            , graphic( graphic )
+        {
+        }
+
         Option( const QUrl& graphicSource, const QString& text )
             : graphicSource( graphicSource )
             , text( text )
@@ -83,6 +89,10 @@ QskMenu::QskMenu( QQuickItem* parent )
     setSubcontrolProxy( Inherited::Overlay, Overlay );
 
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+
+    // we hide the focus indicator while fading
+    connect( this, &QskMenu::fadingChanged, this,
+        &QskControl::focusIndicatorRectChanged );
 }
 
 QskMenu::~QskMenu()
@@ -105,7 +115,7 @@ void QskMenu::setCascading( bool on )
 
 void QskMenu::resetCascading()
 {
-    if ( resetFlagHint( QskMenu::Panel | QskAspect::Style ) )
+    if ( resetSkinHint( QskMenu::Panel | QskAspect::Style ) )
         Q_EMIT cascadingChanged( isCascading() );
 }
 
@@ -125,9 +135,25 @@ QPointF QskMenu::origin() const
     return m_data->origin;
 }
 
+void QskMenu::addOption( const QString& text )
+{
+    addOption( QUrl(), text );
+}
+
 void QskMenu::addOption( const QUrl& graphicSource, const QString& text )
 {
     m_data->options += Option( graphicSource, text );
+
+    resetImplicitSize();
+    update();
+
+    if ( isComponentComplete() )
+        Q_EMIT countChanged( count() );
+}
+
+void QskMenu::addOption( const QskGraphic& graphic, const QString& text )
+{
+    m_data->options += Option( graphic, text );
 
     resetImplicitSize();
     update();
@@ -166,8 +192,14 @@ int QskMenu::separatorCount() const
 
 void QskMenu::clear()
 {
-    m_data->options.clear();
     m_data->separators.clear();
+
+    if ( !m_data->options.isEmpty() )
+    {
+        m_data->options.clear();
+        if ( isComponentComplete() )
+            Q_EMIT countChanged( count() );
+    }
 }
 
 QVariantList QskMenu::optionAt( int index ) const
@@ -184,6 +216,19 @@ QVariantList QskMenu::optionAt( int index ) const
     list += QVariant::fromValue( option.text );
 
     return list;
+}
+
+QString QskMenu::textAt( int index ) const
+{
+    if ( index >= 0 && index < m_data->options.count() )
+        return m_data->options[ index ].text;
+
+    return QString();
+}
+
+QString QskMenu::currentText() const
+{
+    return textAt( m_data->currentIndex );
 }
 
 void QskMenu::setTextOptions( const QskTextOptions& textOptions )
@@ -209,6 +254,7 @@ void QskMenu::setCurrentIndex( int index )
         update();
 
         Q_EMIT currentIndexChanged( index );
+        Q_EMIT focusIndicatorRectChanged();
     }
 }
 
@@ -220,9 +266,7 @@ int QskMenu::currentIndex() const
 void QskMenu::keyPressEvent( QKeyEvent* event )
 {
     if( m_data->currentIndex < 0 )
-    {
         return;
-    }
 
     int key = event->key();
 
@@ -242,6 +286,8 @@ void QskMenu::keyPressEvent( QKeyEvent* event )
 
         case Qt::Key_Select:
         case Qt::Key_Space:
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
         {
             m_data->isPressed = true;
             return;
@@ -359,6 +405,9 @@ void QskMenu::aboutToShow()
 
 QRectF QskMenu::focusIndicatorRect() const
 {
+    if ( isFading() )
+        return QRectF();
+
     if( currentIndex() >= 0 )
     {
         return effectiveSkinlet()->sampleRect( this,

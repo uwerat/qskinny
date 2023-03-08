@@ -31,10 +31,13 @@ namespace QskStandardSymbol
         CrossMark,
 
         SegmentedBarCheckMark,
-        ComboBoxSymbolPopupClosed,
-        ComboBoxSymbolPopupOpen,
 
         Bullet,
+
+        TriangleUp,
+        TriangleDown,
+        TriangleLeft,
+        TriangleRight,
 
         SymbolTypeCount
     };

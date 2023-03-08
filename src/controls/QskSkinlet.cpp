@@ -632,14 +632,22 @@ QSGNode* QskSkinlet::updateTextNode(
         rect, alignment, text, subControl );
 }
 
+QSGNode* QskSkinlet::updateSymbolNode(
+    const QskSkinnable* skinnable, QSGNode* node,
+    QskAspect::Subcontrol subControl ) const
+{
+    return updateGraphicNode( skinnable, node,
+        skinnable->symbolHint( subControl ), subControl );
+}
+
 QSGNode* QskSkinlet::updateGraphicNode(
     const QskSkinnable* skinnable, QSGNode* node,
-    const QskGraphic& graphic, QskAspect::Subcontrol subcontrol,
+    const QskGraphic& graphic, QskAspect::Subcontrol subControl,
     Qt::Orientations mirrored ) const
 {
-    const auto rect = qskSubControlRect( this, skinnable, subcontrol );
-    const auto alignment = skinnable->alignmentHint( subcontrol, Qt::AlignCenter );
-    const auto colorFilter = skinnable->effectiveGraphicFilter( subcontrol );
+    const auto rect = qskSubControlRect( this, skinnable, subControl );
+    const auto alignment = skinnable->alignmentHint( subControl, Qt::AlignCenter );
+    const auto colorFilter = skinnable->effectiveGraphicFilter( subControl );
 
     return updateGraphicNode( skinnable, node,
         graphic, colorFilter, rect, alignment, mirrored );

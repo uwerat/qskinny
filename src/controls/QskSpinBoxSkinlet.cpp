@@ -92,15 +92,13 @@ QSGNode* QskSpinBoxSkinlet::updateSubNode(
         case UpIndicator:
         {
             stateChanger.setStates( qskButtonStates( skinnable, Q::UpIndicator ) );
-            return updateTextNode( skinnable, node,
-                QStringLiteral( "+" ), Q::UpIndicator );
+            return updateSymbolNode( skinnable, node, Q::UpIndicator );
         }
 
         case DownIndicator:
         {
             stateChanger.setStates( qskButtonStates( skinnable, Q::DownIndicator ) );
-            return updateTextNode( skinnable, node,
-                QStringLiteral( "-" ), Q::DownIndicator );
+            return updateSymbolNode( skinnable, node, Q::DownIndicator );
         }
 
         case TextPanel:
@@ -272,3 +270,4 @@ QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
     return hint;
 }
 
+#include "moc_QskSpinBoxSkinlet.cpp"

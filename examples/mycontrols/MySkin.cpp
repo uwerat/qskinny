@@ -106,18 +106,18 @@ class MySkinEditor : public QskSkinHintTableEditor
             setAnimation( subControl | A::Color, animator() );
         }
 
-        for( auto subControl : { Q::UncheckedGraphic, Q::CheckedGraphic } )
+        for( auto subControl : { Q::UncheckedIcon, Q::CheckedIcon } )
         {
             int role1 = MySkin::GraphicRoleInverted;
             int role2 = MySkin::GraphicRoleNormal;
 
-            if( subControl == Q::CheckedGraphic )
+            if( subControl == Q::CheckedIcon )
                 std::swap( role1, role2 );
 
             setGraphicRole( subControl, role1 );
             setGraphicRole( subControl | Q::Checked, role2 );
 
-            setAnimation( subControl | A::Flag, animator() );
+            setAnimation( subControl, animator() );
         }
 
         setGradient( Q::Panel, baseColor );

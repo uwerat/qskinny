@@ -264,17 +264,13 @@ bool QskAbstractButton::event( QEvent* event )
 
 void QskAbstractButton::keyPressEvent( QKeyEvent* event )
 {
-    switch ( event->key() )
+    if ( qskIsButtonPressKey( event ) )
     {
-        case Qt::Key_Select:
-        case Qt::Key_Space:
-        {
-            if ( !event->isAutoRepeat() )
-                setPressed( true );
+        if ( !event->isAutoRepeat() )
+            setPressed( true );
 
-            // always accepting
-            return;
-        }
+        // always accepting
+        return;
     }
 
     Inherited::keyPressEvent( event );
@@ -282,19 +278,10 @@ void QskAbstractButton::keyPressEvent( QKeyEvent* event )
 
 void QskAbstractButton::keyReleaseEvent( QKeyEvent* event )
 {
-    if ( !event->isAutoRepeat() )
+    if ( qskIsButtonPressKey( event ) )
     {
-        switch ( event->key() )
-        {
-            case Qt::Key_Select:
-            case Qt::Key_Space:
-            {
-                releaseButton();
-                return;
-            }
-            default:
-                break;
-        }
+        releaseButton();
+        return;
     }
 
     Inherited::keyReleaseEvent( event );

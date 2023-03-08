@@ -44,14 +44,14 @@ static void qskAddCandidates( const QskSkinTransition::Type mask,
 
         switch( aspect.type() )
         {
-            case QskAspect::Flag:
+            case QskAspect::NoType:
             {
-                if ( aspect.flagPrimitive() == QskAspect::GraphicRole )
+                if ( aspect.primitive() == QskAspect::GraphicRole )
                 {
                     isCandidate = mask & QskSkinTransition::Color;
                 }
 #if 0
-                else if ( aspect.flagPrimitive() == QskAspect::FontRole )
+                else if ( aspect.primitive() == QskAspect::FontRole )
                 {
                     isCandidate = mask & QskSkinTransition::Metric;
                 }

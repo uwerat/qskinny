@@ -26,8 +26,8 @@ namespace
 
             auto icon = new RoundedIcon( isBright, this );
             icon->setPale( true );
-            icon->setGraphicSource( name );
-            icon->setGraphicStrutSize( { 36, 36 } );
+            icon->setIconSource( name );
+            icon->setIconStrutSize( { 36, 36 } );
             icon->setFixedSize( 68, 68 );
             icon->setCheckable( true );
 

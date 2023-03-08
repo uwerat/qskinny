@@ -68,8 +68,6 @@ class QSK_EXPORT QskSkin : public QObject
     void setupFonts( const QString& family,
         int weight = -1, bool italic = false );
 
-    virtual QskGraphic symbol( int symbolType ) const;
-
     void addGraphicProvider( const QString& providerId, QskGraphicProvider* );
     QskGraphicProvider* graphicProvider( const QString& providerId ) const;
     bool hasGraphicProvider() const;

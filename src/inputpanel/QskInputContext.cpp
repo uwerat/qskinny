@@ -38,7 +38,7 @@ namespace
             : QskInputPanel( parent )
         {
             setAutoLayoutChildren( true );
-            setLayoutAlignmentHint( Qt::AlignCenter );
+            setLayoutAlignmentHint( Qt::AlignHCenter | Qt::AlignBottom );
 
             m_box = new QskInputPanelBox( this );
 

@@ -22,6 +22,7 @@ class QSK_SQUIEK_EXPORT QskSquiekSkin : public QskSkin
 
   private:
     void resetColors( const QColor& accent ) override;
+    void addGraphicRole( int role, const QColor& );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

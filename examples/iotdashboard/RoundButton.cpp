@@ -19,14 +19,14 @@ RoundButton::RoundButton( Qt::Edge edge, QQuickItem* parent )
     if( edge == Qt::TopEdge )
     {
         setSkinStateFlag( Top );
-        setGraphicSource( "up" );
+        setIconSource( "up" );
     }
     else
     {
-        setGraphicSource( "down" );
+        setIconSource( "down" );
     }
 
-    setGraphicStrutSize( graphic().defaultSize() * 1.2 );
+    setIconStrutSize( icon().defaultSize() * 1.2 );
 }
 
 #include "moc_RoundButton.cpp"

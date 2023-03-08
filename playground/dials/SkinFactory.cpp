@@ -20,7 +20,7 @@ namespace
     inline QFont qskFont( qreal pointSize )
     {
         QFont font( "Roboto" );
-        font.setPointSizeF( pointSize / qskDpiScaled( 1.0 ) );
+        font.setPointSizeF( pointSize / qskDpToPixels( 1.0 ) );
         return font;
     }
 

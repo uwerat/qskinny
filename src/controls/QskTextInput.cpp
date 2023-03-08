@@ -314,7 +314,7 @@ QskTextInput::QskTextInput( QQuickItem* parent )
     setAcceptedMouseButtons( m_data->textInput->acceptedMouseButtons() );
     m_data->textInput->setAcceptedMouseButtons( Qt::NoButton );
 
-    initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Fixed );
+    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
 }
 
 QskTextInput::QskTextInput( const QString& text, QQuickItem* parent )

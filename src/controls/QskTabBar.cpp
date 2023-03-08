@@ -336,7 +336,7 @@ void QskTabBar::setEdge( Qt::Edge edge )
 
 void QskTabBar::resetEdge()
 {
-    if ( resetFlagHint( Panel | QskAspect::Style ) )
+    if ( resetSkinHint( Panel | QskAspect::Style ) )
         Q_EMIT edgeChanged( edge() );
 }
 

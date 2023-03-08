@@ -17,75 +17,82 @@ class QSK_EXPORT QskComboBox : public QskControl
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
+    Q_PROPERTY( QString currentText READ currentText
+        NOTIFY currentIndexChanged )
+
     Q_PROPERTY( int count READ count NOTIFY countChanged )
+
+    Q_PROPERTY( QString placeholderText READ placeholderText
+        WRITE setPlaceholderText NOTIFY placeholderTextChanged )
+
+    Q_PROPERTY( int indexInPopup READ indexInPopup
+        NOTIFY indexInPopupChanged )
 
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Graphic, Text, OpenMenuGraphic, Splash )
-    QSK_STATES( Pressed, PopupOpen )
+    QSK_SUBCONTROLS( Panel, Icon, Text, StatusIndicator )
+    QSK_STATES( PopupOpen )
 
     QskComboBox( QQuickItem* parent = nullptr );
 
     ~QskComboBox() override;
 
-    void setPressed( bool on );
-    bool isPressed() const;
-
-    void setPopupOpen( bool on );
+    void setPopupOpen( bool );
     bool isPopupOpen() const;
 
-    QskGraphic graphic() const;
+    QskGraphic icon() const;
 
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
-    void addOption( const QUrl&, const QString& );
+    void addOption( const QString& text );
+    void addOption( const QUrl& iconSource, const QString& text );
+    void addOption( const QString& iconSource, const QString& text );
+    void addOption( const QskGraphic&, const QString& text );
 
     void clear();
 
     int currentIndex() const;
+    QString currentText() const;
+
+    // "highlightedIndex" ( see Qt's combo boxes ) is not very intuitive
+    virtual int indexInPopup() const;
 
     int count() const;
-
     QVariantList optionAt( int ) const;
+    QString textAt( int ) const;
 
-    QString label() const;
-    void setLabel( const QString& );
-
-    QString text() const;
+    QString placeholderText() const;
+    void setPlaceholderText( const QString& );
 
   public Q_SLOTS:
-    void togglePopup();
-    virtual void openPopup();
-    virtual void closePopup();
-
-    void click();
     void setCurrentIndex( int );
 
   Q_SIGNALS:
     void currentIndexChanged( int );
-    void countChanged();
+    void indexInPopupChanged( int );
 
-    void pressed();
-    void released();
-    void clicked();
-
-    void pressedChanged( bool );
-    void popupOpenChanged( bool );
+    void countChanged( int );
+    void placeholderTextChanged( const QString& );
 
   protected:
-    virtual void updateLayout() override;
-
     void mousePressEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;
 
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
 
-  private:
-    void releaseButton();
+    void wheelEvent( QWheelEvent* ) override;
 
+    /*
+        open/close a menu - needs to be overloaded when using a custom popup
+        don't forget to modify indexInPopup/indexInPopupChanged as well
+     */
+    virtual void openPopup();
+    virtual void closePopup();
+
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

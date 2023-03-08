@@ -84,6 +84,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QRgb surfaceVariant12;
     QRgb onSurfaceVariant;
     QRgb outline;
+    QRgb outlineVariant;
 
     QRgb shadow;
 
@@ -125,8 +126,6 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
   public:
     QskMaterial3Skin( const QskMaterial3Theme&, QObject* parent = nullptr );
     ~QskMaterial3Skin() override;
-
-    virtual QskGraphic symbol( int symbolType ) const override;
 
     enum GraphicRole
     {

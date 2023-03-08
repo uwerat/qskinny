@@ -251,7 +251,7 @@ void QskSkin::setupFonts( const QString& family, int weight, bool italic )
 
     for ( int i = TinyFont; i <= HugeFont; i++ )
     {
-        font.setPixelSize( qskDpiScaled( sizes[i - 1] ) );
+        font.setPixelSize( qskDpToPixels( sizes[i - 1] ) );
         m_data->fonts[ i ] = font;
     }
 
@@ -324,13 +324,6 @@ const std::unordered_map< int, QFont >& QskSkin::fonts() const
 const std::unordered_map< int, QskColorFilter >& QskSkin::graphicFilters() const
 {
     return m_data->graphicFilters;
-}
-
-QskGraphic QskSkin::symbol( int symbolType ) const
-{
-    // should this one be somehow related to the platform icons ???
-    return QskStandardSymbol::graphic(
-        static_cast< QskStandardSymbol::Type >( symbolType ) );
 }
 
 void QskSkin::addGraphicProvider(

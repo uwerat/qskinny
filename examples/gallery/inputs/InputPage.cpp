@@ -48,12 +48,14 @@ namespace
             {
                 auto input = new QskTextInput( "Only Read Me", this );
                 input->setReadOnly( true );
+                input->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
             }
 
             {
                 auto input = new QskTextInput( "12345", this );
                 input->setMaxLength( 5 );
                 input->setEchoMode( QskTextInput::PasswordEchoOnEdit );
+                input->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
             }
 
             {

@@ -5,36 +5,10 @@
 
 #pragma once
 
-#include <QskGraphicLabel.h>
 #include <QskLinearBox.h>
-#include <QskPushButton.h>
-#include <QskTextLabel.h>
-
 #include "MainItem.h"
 
-class MenuBarTopLabel final : public QskGraphicLabel
-{
-    Q_OBJECT
-
-  public:
-    QSK_SUBCONTROLS( Graphic )
-
-    MenuBarTopLabel( const QString& icon, QQuickItem* parent = nullptr )
-        : QskGraphicLabel( icon, parent )
-    {
-        setSubcontrolProxy( QskGraphicLabel::Graphic, Graphic );
-    }
-};
-
-class MenuButton final : public QskPushButton
-{
-    Q_OBJECT
-
-  public:
-    QSK_SUBCONTROLS( Panel, Text, Graphic )
-
-    MenuButton( const QString& name, QQuickItem* parent );
-};
+class QskPushButton;
 
 class MenuBar final : public QskLinearBox
 {
@@ -52,6 +26,8 @@ class MenuBar final : public QskLinearBox
     void setActivePage( const int index );
 
   private:
-    MenuButton* m_buttons[ Cube::NumPositions ];
+    void populate();
+
+    QskPushButton* m_buttons[ Cube::NumPositions ];
     uint m_currentIndex;
 };

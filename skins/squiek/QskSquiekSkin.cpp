@@ -9,6 +9,7 @@
 
 #include <QskBox.h>
 #include <QskCheckBox.h>
+#include <QskComboBox.h>
 #include <QskDialogButtonBox.h>
 #include <QskFocusIndicator.h>
 #include <QskInputPanelBox.h>
@@ -44,11 +45,24 @@
 #include <QskMargins.h>
 #include <QskNamespace.h>
 #include <QskRgbValue.h>
+#include <QskColorFilter.h>
+#include <QskGraphic.h>
+#include <QskStandardSymbol.h>
 
 static const int qskDuration = 200;
 
 namespace
 {
+    inline double operator ""_dp( long double value )
+    {
+        return qskDpToPixels( static_cast< qreal >( value ) );
+    }
+
+    inline double operator ""_dp( unsigned long long value )
+    {
+        return qskDpToPixels( value );
+    }
+
     class ColorPalette
     {
       public:
@@ -135,6 +149,7 @@ namespace
 
         void setupBox();
         void setupCheckBox();
+        void setupComboBox();
         void setupDialogButtonBox();
         void setupFocusIndicator();
         void setupInputPanel();
@@ -174,6 +189,12 @@ namespace
         void setPanel( QskAspect, PanelStyle );
 
         const ColorPalette& m_pal;
+    };
+
+    enum ColorRole
+    {
+        DisabledSymbol = 1,
+        CursorSymbol
     };
 }
 
@@ -252,6 +273,7 @@ void Editor::setup()
 
     setupBox();
     setupCheckBox();
+    setupComboBox();
     setupDialogButtonBox();
     setupFocusIndicator();
     setupInputPanel();
@@ -300,15 +322,15 @@ void Editor::setupCheckBox()
     using A = QskAspect;
     using Q = QskCheckBox;
 
-    const qreal size = qskDpiScaled( 26 );
+    const qreal size = 26_dp;
 
-    setSpacing( Q::Panel, qskDpiScaled( 5 ) );
+    setSpacing( Q::Panel, 5_dp );
 
     setStrutSize( Q::Box, size, size );
 
-    setPadding( Q::Box, qskDpiScaled( 5 ) );
-    setBoxShape( Q::Box, qskDpiScaled( 3 ) );
-    setBoxBorderMetrics( Q::Box, qskDpiScaled( 1 ) );
+    setPadding( Q::Box, 5_dp );
+    setBoxShape( Q::Box, 3_dp );
+    setBoxBorderMetrics( Q::Box, 1_dp );
 
     setBoxBorderColors( Q::Box, m_pal.darker125 );
     setGradient( Q::Box, m_pal.lighter135 );
@@ -317,16 +339,62 @@ void Editor::setupCheckBox()
     setGradient( Q::Box | Q::Disabled, m_pal.lighter110 );
     setBoxBorderColors( Q::Box, m_pal.theme );
 
-    setColor( Q::Indicator, m_pal.darker200 );
-    setColor( Q::Indicator | Q::Checked, m_pal.lighter135 );
+    for ( auto state : { A::NoState, Q::Disabled } )
+    {
+        const auto symbol = QskStandardSymbol::graphic( QskStandardSymbol::CheckMark );
+
+        const auto aspect = Q::Indicator | Q::Checked | state;
+
+        setSymbol( aspect, symbol );
+        setSymbol( aspect | Q::Error, symbol );
+    }
 
     setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
 
-    setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
+    setHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
 
     setAnimation( Q::Box | A::Color, qskDuration );
+}
+
+void Editor::setupComboBox()
+{
+    using Q = QskComboBox;
+
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+    setColor( Q::Text, m_pal.themeForeground );
+    setColor( Q::Text | Q::Disabled, m_pal.darker200 );
+
+    setStrutSize( Q::Panel,  -1.0, 56_dp );
+
+    setPadding( Q::Panel, 5 );
+    setBoxBorderMetrics( Q::Panel, 2 );
+    setBoxShape( Q::Panel, 4 );
+
+    setSpacing( Q::Panel, 8_dp );
+
+    const QColor c = m_pal.theme.lighter( 120 );
+
+    const QskBoxBorderColors borderColors(
+        c.darker( 170 ), c.darker( 170 ),
+        c.darker( 105 ), c.darker( 105 ) );
+
+    setBoxBorderColors( Q::Panel, borderColors );
+    setGradient( Q::Panel, c );
+
+    setStrutSize( Q::Icon, 24_dp, 24_dp );
+    setGraphicRole( Q::Icon | Q::Disabled, DisabledSymbol );
+
+    setStrutSize( Q::StatusIndicator, 15_dp, 15_dp );
+    setGraphicRole( Q::StatusIndicator | Q::Disabled, DisabledSymbol );
+
+    setAlignment( Q::StatusIndicator, Qt::AlignRight | Qt::AlignVCenter );
+
+    setSymbol( Q::StatusIndicator,
+        QskStandardSymbol::graphic( QskStandardSymbol::TriangleDown ) );
+    setSymbol( Q::StatusIndicator | Q::PopupOpen,
+        QskStandardSymbol::graphic( QskStandardSymbol::TriangleUp ) );
 }
 
 void Editor::setupPopup()
@@ -334,7 +402,7 @@ void Editor::setupPopup()
     using A = QskAspect;
     using Q = QskPopup;
 
-    setFlagHint( Q::Overlay | A::Style, true );
+    setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, QColor( 220, 220, 220, 150 ) );
 }
 
@@ -343,19 +411,19 @@ void Editor::setupMenu()
     using A = QskAspect;
     using Q = QskMenu;
 
-    setFlagHint( Q::Overlay | A::Style, true );
+    setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, QColor( 220, 220, 220, 100 ) );
 
-    setBoxShape( Q::Panel, qskDpiScaled( 4 ) );
-    setBoxBorderMetrics( Q::Panel, qskDpiScaled( 1 ) );
+    setBoxShape( Q::Panel, 4_dp );
+    setBoxBorderMetrics( Q::Panel, 1_dp );
     setBoxBorderColors( Q::Panel, m_pal.darker125 );
 
     setGradient( Q::Panel, m_pal.lighter110 );
 
     const bool isCascading = qskMaybeDesktopPlatform();
-    setFlagHint( Q::Panel | A::Style, isCascading );
+    setHint( Q::Panel | A::Style, isCascading );
 
-    setMetric( Q::Separator | A::Size, qskDpiScaled( 2 ) );
+    setMetric( Q::Separator | A::Size, 2_dp );
     setSeparator( Q::Separator );
 
     setPadding( Q::Segment, QskMargins( 2, 10, 2, 10 ) );
@@ -366,7 +434,10 @@ void Editor::setupMenu()
 
     setColor( Q::Text, m_pal.contrastedText );
     setColor( Q::Text | Q::Selected, m_pal.highlightedText );
-    setFontRole( Q::Text, QskSkin::SmallFont );
+
+    setStrutSize( Q::Icon, 16, 16 );
+    setGraphicRole( Q::Icon | Q::Disabled, DisabledSymbol );
+    setGraphicRole( Q::Icon | Q::Selected, CursorSymbol );
 
     setPosition( Q::Panel, 0 );
     setPosition( Q::Panel | QskPopup::Closed, 1 );
@@ -500,7 +571,7 @@ void Editor::setupSegmentedBar()
 
         setBoxBorderColors( Q::Panel, borderColors );
 
-        const QSize strutSize( qskDpiScaled( 100 ), qskDpiScaled( 50 ) );
+        const QSize strutSize( 100_dp, 50_dp );
 
         setStrutSize( Q::Panel | A::Horizontal, strutSize );
         setStrutSize( Q::Panel | A::Vertical, strutSize.transposed() );
@@ -542,12 +613,11 @@ void Editor::setupSegmentedBar()
     }
 
     {
-        // Graphic
+        // Icon
 
-#if 0
-        setGraphicRole( Q::Graphic, ... );
-        setStrutSize( Q::Graphic, ... );
-#endif
+        setGraphicRole( Q::Icon | Q::Disabled, DisabledSymbol );
+        setGraphicRole( Q::Icon | Q::Selected, CursorSymbol );
+        setStrutSize( Q::Icon, -1, 30_dp );
     }
 }
 
@@ -555,7 +625,7 @@ void Editor::setupPageIndicator()
 {
     using Q = QskPageIndicator;
 
-    const auto extent = qskDpiScaled( 8 );
+    const auto extent = 8_dp;
     setStrutSize( Q::Bullet, extent, extent );
 
     // circles, without border
@@ -563,7 +633,7 @@ void Editor::setupPageIndicator()
     setBoxBorderMetrics( Q::Bullet, 0 );
 
     setGradient( Q::Bullet, m_pal.darker150 );
-    setMargin( Q::Bullet, qskDpiScaled( 1 ) );
+    setMargin( Q::Bullet, 1_dp );
 
     setGradient( Q::Bullet | Q::Selected, m_pal.lighter150 );
     setMargin( Q::Bullet | Q::Selected, 0 );
@@ -579,8 +649,8 @@ void Editor::setupPushButton()
     using Q = QskPushButton;
 
     // Panel
-    setFlagHint( Q::Panel | QskAspect::Direction, Qsk::TopToBottom );
-    setStrutSize( Q::Panel, qskDpiScaled( 75.0 ), qskDpiScaled( 23.0 ) );
+    setHint( Q::Panel | QskAspect::Direction, Qsk::TopToBottom );
+    setStrutSize( Q::Panel, 75_dp, 23_dp );
 
     setMargin( Q::Panel, 0 );
     setPadding( Q::Panel, 10 );
@@ -605,48 +675,49 @@ void Editor::setupPushButton()
 
     setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
 
-    setFlagHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
+    setHint( Q::Text | Q::Disabled | A::Style, Qsk::Sunken );
 
     setAlignment( Q::Text, Qt::AlignCenter );
 
     setColor( Q::Text, m_pal.themeForeground );
     setColor( Q::Text | Q::Disabled, m_pal.darker200 );
 
-    // Graphic
-    setAlignment( Q::Graphic, Qt::AlignCenter );
+    // Icon
+    setAlignment( Q::Icon, Qt::AlignCenter );
 }
 
 void Editor::setupRadioBox()
 {
     using Q = QskRadioBox;
 
-    setSpacing(Q::Panel, qskDpiScaled( 10 ) );
+    setSpacing( Q::Panel, 10_dp );
+    setSpacing( Q::Button, 10_dp );
 
-    setStrutSize( Q::Button, { qskDpiScaled( 20 ), qskDpiScaled( 20 ) } );
-    setStrutSize( Q::Symbol, { qskDpiScaled( 9 ), qskDpiScaled( 9 ) });
+    setStrutSize( Q::CheckIndicatorPanel, 20_dp, 20_dp );
 
-    setBoxShape( Q::Button, qskDpiScaled( 20 ) );
-    setBoxShape( Q::Ripple, qskDpiScaled( 40 ) );
-    setBoxBorderMetrics( Q::Button, qskDpiScaled( 1 ) );
+    for ( auto subControl : { Q::CheckIndicatorPanel, Q::CheckIndicator, Q::Ripple } )
+        setBoxShape( subControl, 100, Qt::RelativeSize ); // circular
 
-    setBoxBorderColors( Q::Button, m_pal.darker125 );
-    setBoxBorderColors( Q::Button | Q::Disabled, m_pal.theme );
+    setBoxBorderMetrics( Q::CheckIndicatorPanel, 1_dp );
+
+    setBoxBorderColors( Q::CheckIndicatorPanel, m_pal.darker125 );
+    setBoxBorderColors( Q::CheckIndicatorPanel | Q::Disabled, m_pal.theme );
+
+    setPadding( Q::CheckIndicatorPanel, 5_dp );
+
+    setGradient( Q::Button, QskGradient() );
 
     setColor( Q::Text, m_pal.themeForeground );
-    setColor( Q::Symbol, m_pal.themeForeground );
+    setColor( Q::Text | Q::Disabled, m_pal.darker200 );
+
     setColor( Q::Panel, m_pal.lighter125 );
     setColor( Q::Panel | Q::Disabled, m_pal.lighter125 );
 
-    setColor( Q::Button | Q::Disabled, m_pal.lighter110 );
+    setColor( Q::CheckIndicatorPanel | Q::Disabled, m_pal.lighter110 );
 
-    setColor( Q::Text | Q::Disabled, m_pal.darker200 );
-
-    setColor( Q::Symbol | Q::Disabled, m_pal.darker200 );
-
-    setMargin( Q::Text, QskMargins( qskDpiScaled( 10 ), 0, qskDpiScaled( 10 ), 0 ) );
-
-    setAlignment( Q::Symbol, Qt::AlignCenter );
-    setAlignment( Q::Text, Qt::AlignBottom );
+    setColor( Q::CheckIndicator, Qt::transparent);
+    setColor( Q::CheckIndicator | Q::Selected, m_pal.themeForeground );
+    setColor( Q::CheckIndicator | Q::Selected | Q::Disabled, m_pal.darker200 );
 }
 
 void Editor::setupDialogButtonBox()
@@ -879,7 +950,7 @@ void Editor::setupInputPredictionBar()
     setButton( Q::ButtonPanel, Flat );
     setButton( Q::ButtonPanel | QskPushButton::Pressed, Sunken );
 
-    setStrutSize( Q::ButtonPanel, qskDpiScaled( 30.0 ), qskDpiScaled( 23.0 ) );
+    setStrutSize( Q::ButtonPanel, 30_dp, 23_dp );
 
     setColor( Q::ButtonText, m_pal.themeForeground );
     setColor( Q::ButtonText | QskPushButton::Disabled, m_pal.darker200 );
@@ -926,7 +997,7 @@ void Editor::setupScrollView()
     // scroll bars
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
-        setMetric( subControl | A::Size, qskDpiScaled( 12 ) );
+        setMetric( subControl | A::Size, 12_dp );
         setPadding( subControl, 0 );
         setMargin( subControl, 0 );
     }
@@ -938,7 +1009,7 @@ void Editor::setupScrollView()
 
         setButton( subControl, Raised, bw );
 
-        const auto extent = qskDpiScaled( 40.0 );
+        const auto extent = 40_dp;
 
         if ( subControl == Q::HorizontalScrollHandle )
         {
@@ -994,7 +1065,7 @@ void Editor::setupSubWindow()
 
     // TitleBarPanel
 
-    setFlagHint( Q::TitleBarPanel | QskAspect::Style,
+    setHint( Q::TitleBarPanel | QskAspect::Style,
         Q::TitleBar | Q::Title | Q::Symbol );
 
     setGradient( Q::TitleBarPanel | Q::Focused, m_pal.highlighted );
@@ -1022,7 +1093,7 @@ void Editor::setupSpinBox()
     using A = QskAspect;
     using Q = QskSpinBox;
 
-    setFlagHint( Q::Panel | A::Style, Q::UpDownControl );
+    setHint( Q::Panel | A::Style, Q::UpDownControl );
     setSpacing( Q::Panel, 2 );
 
     setPadding( Q::TextPanel, 5 );
@@ -1041,7 +1112,7 @@ void Editor::setupSpinBox()
     for ( auto subControl : { Q::UpPanel, Q::DownPanel } )
     {
         setButton( subControl, Raised, 1.0 );
-        setPadding( subControl, 0.0 );
+        setPadding( subControl, 4 );
         setStrutSize( subControl, 20, 10 );
         setBoxShape( subControl, 0 );
 
@@ -1054,14 +1125,17 @@ void Editor::setupSpinBox()
         setAnimation( subControl | A::Color, 100 );
     }
 
+    setSymbol( Q::UpIndicator,
+        QskStandardSymbol::graphic( QskStandardSymbol::TriangleUp ) );
+
+    setSymbol( Q::DownIndicator,
+        QskStandardSymbol::graphic( QskStandardSymbol::TriangleDown ) );
+
     for ( auto subControl : { Q::UpIndicator, Q::DownIndicator } )
     {
+        setGraphicRole( subControl | Q::Disabled, DisabledSymbol );
         setAlignment( subControl, Qt::AlignCenter );
-#if 1
-        setFontRole( subControl, QskSkin::TinyFont ); // until it is no graphic
-        setColor( subControl, m_pal.themeForeground );
-        setColor( subControl | Q::Disabled, m_pal.darker200 );
-#endif
+
         setAnimation( subControl | A::Color, 100 );
     }
 }
@@ -1071,7 +1145,7 @@ void Editor::setupSwitchButton()
     using A = QskAspect;
     using Q = QskSwitchButton;
 
-    const qreal radius = qskDpiScaled( 12 );
+    const qreal radius = 15_dp;
     const qreal handleSize = 2 * ( radius - 2 );
 
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
@@ -1122,7 +1196,12 @@ QskSquiekSkin::QskSquiekSkin( QObject* parent )
 {
     setupFonts( QStringLiteral( "DejaVuSans" ) );
 
-    Editor editor( &hintTable(), m_data->palette );
+    const auto& pal = m_data->palette;
+
+    addGraphicRole( DisabledSymbol, pal.darker200 );
+    addGraphicRole( CursorSymbol, pal.highlightedText );
+
+    Editor editor( &hintTable(), pal );
     editor.setup();
 }
 
@@ -1138,5 +1217,12 @@ void QskSquiekSkin::resetColors( const QColor& accent )
     editor.setup();
 }
 
+void QskSquiekSkin::addGraphicRole( int role, const QColor& color )
+{
+    QskColorFilter colorFilter;
+    colorFilter.addColorSubstitution( QskRgb::Black, color.rgba() );
+
+    setGraphicFilter( role, colorFilter );
+}
 
 #include "moc_QskSquiekSkin.cpp"

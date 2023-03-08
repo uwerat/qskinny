@@ -159,6 +159,9 @@ class QSK_EXPORT QskSkinlet
     QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
         const QString&, QskAspect::Subcontrol ) const;
 
+    QSGNode* updateSymbolNode( const QskSkinnable*, QSGNode*,
+        QskAspect::Subcontrol ) const;
+
     QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,
         const QskGraphic&, QskAspect::Subcontrol,
         Qt::Orientations mirrored = Qt::Orientations() ) const;

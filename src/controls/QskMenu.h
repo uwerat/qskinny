@@ -29,10 +29,12 @@ class QSK_EXPORT QskMenu : public QskPopup
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
+    Q_PROPERTY( QString currentText READ currentText )
+
     using Inherited = QskPopup;
 
   public:
-    QSK_SUBCONTROLS( Overlay, Panel, Segment, Cursor, Text, Graphic, Separator )
+    QSK_SUBCONTROLS( Overlay, Panel, Segment, Cursor, Text, Icon, Separator )
     QSK_STATES( Selected )
 
     QskMenu( QQuickItem* parentItem = nullptr );
@@ -48,11 +50,15 @@ class QSK_EXPORT QskMenu : public QskPopup
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
-    // insert, remove, functors, actions, QskGraphic ...
-    void addOption( const QUrl& graphicSource, const QString& text );
-    void addOption( const QString& graphicSource, const QString& text );
+    // insert, remove, functors, actions
+    void addOption( const QUrl& iconSource, const QString& text );
+    void addOption( const QString& iconSource, const QString& text );
+    void addOption( const QskGraphic&, const QString& text );
+    void addOption( const QString& text );
 
     QVariantList optionAt( int ) const;
+    QString textAt( int ) const;
+
     int count() const;
 
     void addSeparator();
@@ -63,6 +69,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     void clear();
 
     int currentIndex() const;
+    QString currentText() const;
 
     QRectF focusIndicatorRect() const override;
 

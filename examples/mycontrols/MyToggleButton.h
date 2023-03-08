@@ -16,8 +16,8 @@ class MyToggleButton : public QskAbstractButton
     using Inherited = QskAbstractButton;
 
   public:
-    QSK_SUBCONTROLS( Panel, Cursor, CheckedPanel, CheckedText, CheckedGraphic,
-        UncheckedPanel, UncheckedText, UncheckedGraphic )
+    QSK_SUBCONTROLS( Panel, Cursor, CheckedPanel, CheckedText, CheckedIcon,
+        UncheckedPanel, UncheckedText, UncheckedIcon )
 
     MyToggleButton( QQuickItem* parent = nullptr );
     ~MyToggleButton() override;

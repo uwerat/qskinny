@@ -16,14 +16,14 @@ class QSK_EXPORT QskRadioBox : public QskControl
     Q_PROPERTY( int selectedIndex READ selectedIndex
         WRITE setSelectedIndex NOTIFY selectedIndexChanged FINAL )
 
-    Q_PROPERTY( QStringList items READ items
-        WRITE setItems NOTIFY itemsChanged FINAL )
+    Q_PROPERTY( QStringList options READ options
+        WRITE setOptions NOTIFY optionsChanged FINAL )
 
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Button, Symbol, Text, Ripple )
-    QSK_STATES( Selected, Pressed, Focused )
+    QSK_SUBCONTROLS( Panel, Button, CheckIndicatorPanel, CheckIndicator, Text, Ripple )
+    QSK_STATES( Selected, Pressed )
 
     QskRadioBox( QQuickItem* parent = nullptr );
     QskRadioBox( const QStringList&, QQuickItem* parent = nullptr );
@@ -33,18 +33,19 @@ class QSK_EXPORT QskRadioBox : public QskControl
 
     QRectF focusIndicatorRect() const override;
 
-    const QStringList& items() const;
+    QStringList options() const;
+    QString optionAt( int ) const;
 
     int selectedIndex() const;
     int pressedIndex() const;
 
   public Q_SLOTS:
     void setSelectedIndex( int );
-    void setItems( const QStringList& );
+    void setOptions( const QStringList& );
 
   Q_SIGNALS:
     void selectedIndexChanged( int );
-    void itemsChanged( const QStringList& );
+    void optionsChanged( const QStringList& );
 
   protected:
     void keyPressEvent( QKeyEvent* ) override;
@@ -52,6 +53,7 @@ class QSK_EXPORT QskRadioBox : public QskControl
 
     void mousePressEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;
+    void mouseUngrabEvent() override;
 
     void focusInEvent( QFocusEvent* ) override;
     void focusOutEvent( QFocusEvent* ) override;

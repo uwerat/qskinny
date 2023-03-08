@@ -313,26 +313,8 @@ void qskDebugAspect( QDebug debug, const QMetaObject* metaObject, QskAspect aspe
     if ( aspect.isAnimator() )
         debug << "(A)";
 
-    switch ( aspect.type() )
-    {
-        case QskAspect::Color:
-        {
-            if ( aspect.colorPrimitive() != 0 )
-                debug << ", " << qskEnumString( "ColorPrimitive", aspect.colorPrimitive() );
-            break;
-        }
-        case QskAspect::Metric:
-        {
-            if ( aspect.metricPrimitive() != 0 )
-                debug << ", " << qskEnumString( "MetricPrimitive", aspect.metricPrimitive() );
-            break;
-        }
-        default:
-        {
-            if ( aspect.flagPrimitive() != 0 )
-                debug << ", " << qskEnumString( "FlagPrimitive", aspect.flagPrimitive() );
-        }
-    }
+    if ( aspect.primitive() != 0 )
+        debug << ", " << qskEnumString( "Primitive", aspect.primitive() );
 
     if ( aspect.variation() != QskAspect::NoVariation )
         debug << ", " << qskEnumString( "Variation", aspect.variation() );

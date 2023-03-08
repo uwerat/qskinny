@@ -176,5 +176,6 @@ QSK_EXPORT qreal qskWheelIncrement( const QWheelEvent* );
 #endif
 
 QSK_EXPORT bool qskIsStandardKeyInput( const QKeyEvent*, QKeySequence::StandardKey );
+QSK_EXPORT bool qskIsButtonPressKey( const QKeyEvent* );
 
 #endif

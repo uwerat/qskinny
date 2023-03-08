@@ -32,6 +32,7 @@ class QskShadowMetrics;
 class QskTextOptions;
 class QskBoxHints;
 class QskGradient;
+class QskGraphic;
 
 class QskSkin;
 class QskSkinlet;
@@ -173,8 +174,6 @@ class QSK_EXPORT QskSkinnable
     qreal metric( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     bool setFlagHint( QskAspect, int flag );
-    bool resetFlagHint( QskAspect );
-    int flagHint( QskAspect ) const;
     template< typename T > T flagHint( QskAspect, T = T() ) const;
 
     bool setPositionHint( QskAspect, qreal );
@@ -248,6 +247,10 @@ class QSK_EXPORT QskSkinnable
     bool resetGraphicRoleHint( QskAspect );
     int graphicRoleHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
+    bool setSymbolHint( const QskAspect, const QskGraphic& );
+    bool resetSymbolHint( const QskAspect );
+    QskGraphic symbolHint( const QskAspect, QskSkinHintStatus* = nullptr ) const;
+
     const QskSkinHintTable& hintTable() const;
 
     bool startHintTransitions( QskAspect::States, QskAspect::States, int index = -1 );
@@ -298,11 +301,6 @@ inline bool QskSkinnable::resetColor( QskAspect aspect )
 inline bool QskSkinnable::resetMetric( QskAspect aspect )
 {
     return resetSkinHint( aspect | QskAspect::Metric );
-}
-
-inline bool QskSkinnable::resetFlagHint( QskAspect aspect )
-{
-    return resetSkinHint( aspect | QskAspect::Flag );
 }
 
 #endif

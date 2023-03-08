@@ -8,6 +8,15 @@
 
 #include <qevent.h>
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 4, 0 )
+
+    QSK_QT_PRIVATE_BEGIN
+    #include <private/qguiapplication_p.h>
+    QSK_QT_PRIVATE_END
+
+    #include <qpa/qplatformtheme.h>
+#endif
+
 static void qskRegisterEventTypes()
 {
     // We don't ask QEvent::registerEventType for unique ids as it prevents
@@ -122,6 +131,31 @@ bool qskIsStandardKeyInput( const QKeyEvent* event, QKeySequence::StandardKey ke
     const auto bindings = theme->keyBindings( ( event->modifiers() | event->key() ) & mask );
 
     return bindings.contains( QKeySequence(searchkey) );
+#endif
+}
+
+bool qskIsButtonPressKey( const QKeyEvent* event )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 4, 0 )
+
+    const auto hint = QGuiApplicationPrivate::platformTheme()->themeHint(
+        QPlatformTheme::ButtonPressKeys );
+
+    const auto keys = hint.value< QList< Qt::Key > >();
+    return keys.contains( static_cast< Qt::Key >( event->key() ) );
+
+#else
+
+    switch( event->key() )
+    {
+        case Qt::Key_Space:
+        case Qt::Key_Enter:
+        case Qt::Key_Return:
+        case Qt::Key_Select:
+            return true;
+    }
+
+    return false;
 #endif
 }
 

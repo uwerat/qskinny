@@ -26,7 +26,7 @@ static void qskUpdateEventFilter( QskSubWindowArea* area )
 
 static Qt::Edges qskSelectedEdges( const QRectF& rect, const QPointF& pos )
 {
-    const qreal tolerance = qskDpiScaled( 10.0 );
+    const qreal tolerance = qskDpToPixels( 10.0 );
 
     Qt::Edges edges;
     if ( pos.x() <= rect.left() + tolerance )

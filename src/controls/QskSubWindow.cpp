@@ -22,7 +22,7 @@ namespace
 {
     inline QskAspect aspectDecoration()
     {
-        return QskSubWindow::TitleBarPanel | QskAspect::Flag | QskAspect::Style;
+        return QskSubWindow::TitleBarPanel | QskAspect::NoType | QskAspect::Style;
     }
 }
 
@@ -81,7 +81,7 @@ void QskSubWindow::setDecoration( Decoration decoration, bool on )
 
 void QskSubWindow::resetDecorations()
 {
-    if ( resetFlagHint( aspectDecoration() ) )
+    if ( resetSkinHint( aspectDecoration() ) )
         Q_EMIT decorationsChanged( decorations() );
 }
 
@@ -222,10 +222,10 @@ QSizeF QskSubWindow::layoutSizeHint(
     {
         // should be Minimum Width/Height from the skin hints
         if ( hint.width() < 0.0 )
-            hint.setWidth( qskDpiScaled( 100 ) );
+            hint.setWidth( qskDpToPixels( 100 ) );
 
         if ( hint.height() < 0.0 )
-            hint.setHeight( qskDpiScaled( 80 ) );
+            hint.setHeight( qskDpToPixels( 80 ) );
     }
 
     return hint;

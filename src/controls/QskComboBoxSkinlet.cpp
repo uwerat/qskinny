@@ -7,9 +7,7 @@
 #include "QskComboBox.h"
 
 #include "QskGraphic.h"
-#include "QskSkin.h"
 #include "QskSGNode.h"
-#include "QskStandardSymbol.h"
 #include "QskSubcontrolLayoutEngine.h"
 
 namespace
@@ -20,7 +18,7 @@ namespace
     {
         if( std::is_same< T, QString >() )
         {
-            return box->text();
+            return box->currentText();
         }
 
         const int index = box->currentIndex();
@@ -56,9 +54,10 @@ namespace
 
             setGraphicTextElements( box,
                 QskComboBox::Text, qskValueAt< QString >( box ),
-                QskComboBox::Graphic, qskValueAt< QskGraphic >( box ).defaultSize() );
+                QskComboBox::Icon, qskValueAt< QskGraphic >( box ).defaultSize() );
 
-            const auto alignment = box->alignmentHint( QskComboBox::Panel, Qt::AlignLeft );
+            const auto alignment = box->alignmentHint(
+                QskComboBox::Panel, Qt::AlignLeft );
             setFixedContent( QskComboBox::Text, Qt::Horizontal, alignment );
         }
     };
@@ -67,7 +66,7 @@ namespace
 QskComboBoxSkinlet::QskComboBoxSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, SplashRole, GraphicRole, TextRole, OpenMenuGraphicRole } );
+    setNodeRoles( { PanelRole, IconRole, TextRole, StatusIndicatorRole } );
 }
 
 QskComboBoxSkinlet::~QskComboBoxSkinlet() = default;
@@ -82,10 +81,7 @@ QRectF QskComboBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     if ( subControl == Q::Panel )
         return contentsRect;
 
-    if ( subControl == Q::Splash )
-        return splashRect( box, contentsRect );
-
-    if ( subControl == Q::Text || subControl == Q::Graphic )
+    if ( subControl == Q::Text || subControl == Q::Icon )
     {
         const auto r = box->subControlContentsRect( contentsRect, Q::Panel );
 
@@ -95,10 +91,10 @@ QRectF QskComboBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
         return layoutEngine.subControlRect( subControl );
     }
 
-    if( subControl == Q::OpenMenuGraphic )
+    if( subControl == Q::StatusIndicator )
     {
         auto rect = box->innerBox( Q::Panel, contentsRect );
-        const auto size = box->strutSizeHint( Q::OpenMenuGraphic );
+        const auto size = box->strutSizeHint( Q::StatusIndicator );
         rect.setLeft( rect.right() - size.width() );
         return rect;
     }
@@ -116,54 +112,19 @@ QSGNode* QskComboBoxSkinlet::updateSubNode(
     switch ( nodeRole )
     {
         case PanelRole:
-        {
             return updateBoxNode( box, node, Q::Panel );
-        }
 
-        case GraphicRole:
-        {
-            return updateGraphicNode( box, node, box->graphic(), Q::Graphic );
-        }
+        case IconRole:
+            return updateGraphicNode( box, node, box->icon(), Q::Icon );
 
         case TextRole:
-        {
             return updateTextNode( box, node );
-        }
 
-        case OpenMenuGraphicRole:
-        {
-            const auto symbol = box->isPopupOpen()
-                ? QskStandardSymbol::ComboBoxSymbolPopupOpen
-                : QskStandardSymbol::ComboBoxSymbolPopupClosed;
-
-            const auto graphic = box->effectiveSkin()->symbol( symbol );
-            return updateGraphicNode( box, node, graphic, Q::OpenMenuGraphic );
-        }
+        case StatusIndicatorRole:
+            return updateSymbolNode( box, node, Q::StatusIndicator );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
-}
-
-QRectF QskComboBoxSkinlet::splashRect(
-    const QskComboBox* box, const QRectF& contentsRect ) const
-{
-    using Q = QskComboBox;
-
-    QRectF rect;
-
-    const auto ratio = box->metric( Q::Splash | QskAspect::Size );
-    if ( ratio > 0.0 )
-    {
-        rect = subControlRect( box, contentsRect, Q::Panel );
-
-        const auto pos = box->positionHint( Q::Splash );
-        const qreal w = 2.0 * rect.width() * ratio;
-
-        rect.setX( pos - 0.5 * w ); 
-        rect.setWidth( w );
-    }
-
-    return rect;
 }
 
 QSGNode* QskComboBoxSkinlet::updateTextNode(
@@ -180,35 +141,7 @@ QSGNode* QskComboBoxSkinlet::updateTextNode(
     const auto alignment = box->alignmentHint( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
 
     return QskSkinlet::updateTextNode( box, node, rect,
-        alignment, box->text(), Q::Text );
-}
-
-QSGNode* QskComboBoxSkinlet::updateSplashNode(
-    const QskComboBox* box, QSGNode* node ) const
-{
-    using Q = QskComboBox;
-
-    const auto splashRect = box->subControlRect( Q::Splash );
-    if ( splashRect.isEmpty() )
-        return nullptr;
-
-    auto clipNode = updateBoxClipNode( box, node,
-        box->subControlRect( Q::Panel ), Q::Panel );
-
-    if ( clipNode )
-    {
-        auto boxNode = QskSGNode::findChildNode( clipNode, SplashRole );
-        boxNode = updateBoxNode( box, boxNode, splashRect, Q::Splash );
-
-        if ( boxNode == nullptr )
-            return nullptr;
-
-        QskSGNode::setNodeRole( boxNode, SplashRole );
-        if ( boxNode->parent() != clipNode )
-            clipNode->appendChildNode( boxNode );
-    }
-
-    return clipNode;
+        alignment, box->currentText(), Q::Text );
 }
 
 QSizeF QskComboBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
@@ -225,7 +158,7 @@ QSizeF QskComboBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
     auto size = layoutEngine.sizeHint( which, QSizeF() );
 
     const auto spacingHint = box->spacingHint( Q::Panel );
-    const auto menuGraphicHint = box->strutSizeHint( Q::OpenMenuGraphic );
+    const auto menuGraphicHint = box->strutSizeHint( Q::StatusIndicator );
 
     size.rwidth() += spacingHint + menuGraphicHint.width();
 

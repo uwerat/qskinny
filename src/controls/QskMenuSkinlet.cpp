@@ -133,7 +133,7 @@ class QskMenuSkinlet::PrivateData
     {
         const auto skinlet = menu->effectiveSkinlet();
 
-        const auto hint = menu->strutSizeHint( QskMenu::Graphic );
+        const auto hint = menu->strutSizeHint( QskMenu::Icon );
         const qreal textHeight = menu->effectiveFontHeight( QskMenu::Text );
 
         const auto h = qMax( hint.height(), textHeight );
@@ -141,7 +141,7 @@ class QskMenuSkinlet::PrivateData
         qreal maxW = 0.0;
         for ( int i = 0; i < menu->count(); i++ )
         {
-            const auto sample = skinlet->sampleAt( menu, QskMenu::Graphic, i );
+            const auto sample = skinlet->sampleAt( menu, QskMenu::Icon, i );
             if ( sample.canConvert< QskGraphic >() )
             {
                 const auto graphic = sample.value< QskGraphic >();
@@ -202,7 +202,7 @@ class QskMenuSkinlet::PrivateData
     {
         using Q = QskMenu;
 
-        const auto graphicHeight = menu->strutSizeHint( Q::Graphic ).height();
+        const auto graphicHeight = menu->strutSizeHint( Q::Icon ).height();
         const auto textHeight = menu->effectiveFontHeight( Q::Text );
         const auto padding = menu->paddingHint( Q::Segment );
 
@@ -313,16 +313,16 @@ QRectF QskMenuSkinlet::sampleRect(
         return QRectF( r.x(), r.y() + index * h, r.width(), h );
     }
 
-    if ( subControl == QskMenu::Graphic || subControl == QskMenu::Text )
+    if ( subControl == QskMenu::Icon || subControl == QskMenu::Text )
     {
         const auto r = sampleRect( menu, contentsRect, Q::Segment, index );
         const auto graphicWidth = m_data->graphicWidth( menu );
 
-        if ( subControl == QskMenu::Graphic )
+        if ( subControl == QskMenu::Icon )
         {
             auto graphicRect = r;
             graphicRect.setWidth( graphicWidth );
-            const auto padding = menu->paddingHint( QskMenu::Graphic );
+            const auto padding = menu->paddingHint( QskMenu::Icon );
             graphicRect = graphicRect.marginsRemoved( padding );
 
             return graphicRect;
@@ -378,7 +378,7 @@ int QskMenuSkinlet::sampleCount(
 {
     using Q = QskMenu;
 
-    if ( subControl == Q::Segment || subControl == Q::Graphic || subControl == Q::Text )
+    if ( subControl == Q::Segment || subControl == Q::Icon || subControl == Q::Text )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
         return menu->count();
@@ -400,7 +400,7 @@ QskAspect::States QskMenuSkinlet::sampleStates(
 
     auto states = Inherited::sampleStates( skinnable, subControl, index );
 
-    if ( subControl == Q::Segment || subControl == Q::Graphic || subControl == Q::Text )
+    if ( subControl == Q::Segment || subControl == Q::Icon || subControl == Q::Text )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
         if ( menu->currentIndex() == index )
@@ -417,7 +417,7 @@ QVariant QskMenuSkinlet::sampleAt( const QskSkinnable* skinnable,
 
     const auto menu = static_cast< const QskMenu* >( skinnable );
 
-    if ( subControl == Q::Graphic )
+    if ( subControl == Q::Icon )
         return qskSampleAt< QskGraphic >( menu, index );
 
     if ( subControl == Q::Text )
@@ -436,8 +436,8 @@ QSGNode* QskMenuSkinlet::updateContentsNode(
 QSGNode* QskMenuSkinlet::updateMenuNode(
     const QskSkinnable* skinnable, QSGNode* contentsNode ) const
 {
-    enum { Panel, Segment, Cursor, Graphic, Text, Separator };
-    static QVector< quint8 > roles = { Panel, Separator, Segment, Cursor, Graphic, Text };
+    enum { Panel, Segment, Cursor, Icon, Text, Separator };
+    static QVector< quint8 > roles = { Panel, Separator, Segment, Cursor, Icon, Text };
 
     if ( contentsNode == nullptr )
         contentsNode = new QSGNode();
@@ -465,9 +465,9 @@ QSGNode* QskMenuSkinlet::updateMenuNode(
                 newNode = updateBoxNode( skinnable, oldNode, QskMenu::Cursor );
                 break;
             }
-            case Graphic:
+            case Icon:
             {
-                newNode = updateSeriesNode( skinnable, QskMenu::Graphic, oldNode );
+                newNode = updateSeriesNode( skinnable, QskMenu::Icon, oldNode );
                 break;
             }
             case Text:
@@ -502,7 +502,7 @@ QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
         return updateBoxNode( menu, node, rect, subControl );
     }
 
-    if ( subControl == Q::Graphic )
+    if ( subControl == Q::Icon )
     {
         const auto graphic = qskValueAt< QskGraphic >( menu, index );
         if ( graphic.isNull() )
