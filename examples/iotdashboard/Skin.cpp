@@ -38,6 +38,7 @@
 #include <QskSkinHintTableEditor.h>
 #include <QskStateCombination.h>
 #include <QskTextLabel.h>
+#include <QskGraphicLabel.h>
 
 #include <QFontDatabase>
 
@@ -91,26 +92,30 @@ void Skin::initHints( const Palette& palette )
     ed.setPadding( MainContentGridBox::Panel, { 19, 0, 27, 24 } );
 
     // menu bar:
-    ed.setMargin( MenuBarTopLabel::Graphic, { 50, 5, 50, 65 } );
 
-    ed.setPadding( MenuBar::Panel, {0, 35, 0, 12} );
+    {
+        using Q = QskPushButton;
+        using A = QskAspect;
 
-    ed.setStrutSize( MenuButton::Panel | QskAspect::Size, {140, 40} );
-    QColor color( Qt::white );
-    color.setAlphaF( 0.09 );
-    ed.setGradient( MenuButton::Panel | QskControl::Hovered, color );
-    color.setAlphaF( 0.14 );
-    ed.setGradient( MenuButton::Panel | MenuButton::Checked, color );
-    ed.setSpacing( MenuButton::Panel, 10 );
+        ed.setStrutSize( Q::Panel | A::Header, -1, 40 );
+        ed.setPadding( Q::Panel | A::Padding, 10 );
 
-    ed.setColor( MenuButton::Text, Qt::white );
-    ed.setFontRole( MenuButton::Text, QskSkin::SmallFont );
-    ed.setAlignment( MenuButton::Text, Qt::AlignLeft | Qt::AlignVCenter );
+        QColor color( Qt::white );
+        color.setAlphaF( 0.09 );
+        ed.setGradient( Q::Panel | A::Header | Q::Hovered, color );
 
-    ed.setPadding( MenuButton::Icon, { 30, 0, 0, 0 } );
-    ed.setStrutSize( MenuButton::Icon, { 14, -1 } );
-    ed.setAlignment( MenuButton::Icon, Qt::AlignCenter );
+        color.setAlphaF( 0.14 );
+        ed.setGradient( Q::Panel | A::Header | Q::Checked, color );
+        ed.setSpacing( Q::Panel | A::Header, 10 );
 
+        ed.setColor( Q::Text | A::Header, Qt::white );
+        ed.setFontRole( Q::Text | A::Header, QskSkin::SmallFont );
+        ed.setAlignment( Q::Text | A::Header, Qt::AlignLeft | Qt::AlignVCenter );
+
+        ed.setPadding( Q::Icon | A::Header, { 30, 0, 0, 0 } );
+        ed.setStrutSize( Q::Icon | A::Header, { 14, -1 } );
+        ed.setAlignment( Q::Icon | A::Header, Qt::AlignCenter );
+    }
 
     // top bar:
     ed.setPadding( TopBar::Panel, { 25, 35, 25, 0 } );
