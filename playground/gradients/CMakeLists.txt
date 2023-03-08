@@ -16,6 +16,20 @@ target_link_libraries(${TARGET_NAME}
         qskinny
         qsktestsupport)
 
+if(TARGET quickshapes_private)
+    target_sources(gradients PUBLIC
+        GradientQuickShape.cpp GradientQuickShape.h
+    )
+
+    target_compile_definitions(gradients PRIVATE
+        SHAPE_GRADIENT
+    )
+
+    target_link_libraries(gradients PRIVATE
+        quickshapes_private
+    )
+endif()
+
 set_target_properties(${TARGET_NAME}
     PROPERTIES
         AUTOMOC ON
