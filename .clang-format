@@ -91,10 +91,12 @@ PenaltyBreakString: 1000
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 60
 PointerAlignment: Left
-RawStringFormats: 
-  - Delimiter:       pb
-    Language:        TextProto
-    BasedOnStyle:    google
+RawStringFormats:
+    - Language: TextProto
+      Delimiters:
+        - 'pb'
+        - 'proto'
+      BasedOnStyle: google
 ReflowComments:  true
 SortIncludes:    true
 SortUsingDeclarations: true
@@ -112,5 +114,6 @@ SpacesInSquareBrackets: true
 Standard:        Cpp11
 TabWidth:        4
 UseTab:          Never
+UseCRLF:         Always
 ...
 

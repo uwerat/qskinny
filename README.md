@@ -2,6 +2,8 @@
 
 ![](https://github.com/uwerat/qskinny/workflows/CI/badge.svg)
 
+[![CMake Build Matrix](https://github.com/vrcomputing/qskinny/actions/workflows/cmake.yml/badge.svg)](https://github.com/vrcomputing/qskinny/actions/workflows/cmake.yml)
+
 The (Q)Skinny library is a framework built on top of the Qt scene graph
 and very few core classes from Qt/Quick. It offers a set of lightweight controls,
 that can be used from C++ and/or QML.
@@ -36,6 +38,10 @@ It might support all versions Qt >= 5.15, but you can rely on:
 On debian bullseye these packages need to be installed: `build-essential
 qt-qmake qtbase5-dev qtbase5-private-dev qtdeclarative5-dev
 qtdeclarative5-private-dev libqt5svg5-dev`.
+
+> Optional: When enabling the `hunspell` feature the following package needs to be installed: `libhunspell-dev`
+
+> Optional: When enabling the `pinyin` feature the following package needs to be installed: `libimepinyin-dev`
 
 If you want to know more about QSkinny - or even like to give it a specific
 direction - please contact support@qskinny.org.

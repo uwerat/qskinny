@@ -13,8 +13,10 @@ class QSK_SQUIEK_EXPORT QskSquiekSkinFactory : public QskSkinFactory
 {
     Q_OBJECT
 
+#if defined( QSK_SQUIEK_MAKEDLL )
     Q_PLUGIN_METADATA( IID QskSkinFactoryIID FILE "metadata.json" )
     Q_INTERFACES( QskSkinFactory )
+#endif
 
   public:
     QskSquiekSkinFactory( QObject* parent = nullptr );

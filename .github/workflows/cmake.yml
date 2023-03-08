@@ -1,0 +1,459 @@
+name: CMake Build Matrix
+
+# Directories
+# - $GITHUB_WORKSPACE/qskinny_source     : Checkout directory for qskinny sources
+# - $GITHUB_WORKSPACE/qskinny_build      : Build directory for QSkinny CMake
+# - $GITHUB_WORKSPACE/qskinny_install    : Install directory for QSkinny package
+# - $GITHUB_WORKSPACE/qskinny_build_test : Build directory for QSkinny CMake integration test
+
+on:
+  push:
+    branches: [cmake]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              name: "Windows Latest MSVC Qt5",
+              os: windows-latest,
+              artifact: "windows_msvc.7z",
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+              archiver: "7z a",
+              generators: "Visual Studio 17 2022",
+              cmake:
+                {
+                  qtversion: "5.15.2",
+                  qtdirkey: "Qt5_DIR",
+                  qtdirvalue: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5",
+                  qtprefixpath: "../Qt/5.15.2/msvc2019_64",
+                },
+              screenshot_filename: "windows-latest-msvc-qt-5-15-2.jpg",
+            }
+          - {
+              name: "Windows Latest MSVC Qt6",
+              os: windows-latest,
+              artifact: "windows_msvc.7z",
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+              archiver: "7z a",
+              generators: "Visual Studio 17 2022",
+              cmake:
+                {
+                  qtversion: "6.2.4",
+                  qtdirkey: "Qt6_DIR",
+                  qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.2.4/msvc2019_64",
+                },
+              screenshot_filename: "windows-latest-msvc-qt-6-2-4.jpg",
+            }
+          - {
+              name: "Windows 2019 MSVC Qt5",
+              os: windows-2019,
+              artifact: "windows_msvc.7z",
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+              archiver: "7z a",
+              generators: "Visual Studio 16 2019",
+              cmake:
+                {
+                  qtversion: "5.15.2",
+                  qtdirkey: "Qt5_DIR",
+                  qtdirvalue: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5",
+                  qtprefixpath: "../Qt/5.15.2/msvc2019_64",
+                },
+              screenshot_filename: "windows-2019-msvc-qt-5-15-2.jpg",
+            }
+          - {
+              name: "Windows 2019 MSVC Qt6",
+              os: windows-2019,
+              artifact: "windows_msvc.7z",
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              environment_script: "C:/Program Files/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+              archiver: "7z a",
+              generators: "Visual Studio 16 2019",
+              cmake:
+                {
+                  qtversion: "6.2.4",
+                  qtdirkey: "Qt6_DIR",
+                  qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.2.4/msvc2019_64",
+                },
+              screenshot_filename: "windows-2019-msvc-qt-6-2-4.jpg",
+            }
+          - {
+              name: "Ubuntu Latest GCC Qt5",
+              os: ubuntu-latest,
+              artifact: "ubuntu_gcc.7z",
+              build_type: "Release",
+              cc: "gcc",
+              cxx: "g++",
+              archiver: "7z a",
+              generators: "Ninja",
+              env: { DISPLAY: ":1" },
+              cmake:
+                {
+                  qtversion: "5.15.2",
+                  qtdirkey: "Qt5_DIR",
+                  qtdirvalue: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5",
+                  qtprefixpath: "../Qt/5.15.2/gcc_64",
+                },
+              screenshot_filename: "ubuntu-latest-gcc-qt-5-15-2.jpg",
+            }
+          - {
+              name: "Ubuntu Latest GCC Qt6",
+              os: ubuntu-latest,
+              artifact: "ubuntu_gcc.7z",
+              build_type: "Release",
+              cc: "gcc",
+              cxx: "g++",
+              archiver: "7z a",
+              generators: "Ninja",
+              env: { DISPLAY: ":1" },
+              cmake:
+                {
+                  qtversion: "6.2.4",
+                  qtdirkey: "Qt6_DIR",
+                  qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.2.4/gcc_64",
+                },
+              screenshot_filename: "ubuntu-latest-gcc-qt-6-2-4.jpg",
+            }
+          - {
+              name: "Ubuntu GCC 9 Qt5",
+              os: ubuntu-latest,
+              artifact: "ubuntu_gcc9.7z",
+              build_type: "Release",
+              cc: "gcc",
+              cxx: "g++",
+              archiver: "7z a",
+              generators: "Ninja",
+              env: { DISPLAY: ":1" },
+              cmake:
+                {
+                  qtversion: "5.15.2",
+                  qtdirkey: "Qt5_DIR",
+                  qtdirvalue: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5",
+                  qtprefixpath: "../Qt/5.15.2/gcc_64",
+                },
+              screenshot_filename: "ubuntu-latest-gcc-9-qt-5-15-2.jpg",
+            }
+          - {
+              name: "Ubuntu GCC 9 Qt6",
+              os: ubuntu-latest,
+              artifact: "ubuntu_gcc9.7z",
+              build_type: "Release",
+              cc: "gcc",
+              cxx: "g++",
+              archiver: "7z a",
+              generators: "Ninja",
+              env: { DISPLAY: ":1" },
+              cmake:
+                {
+                  qtversion: "6.2.4",
+                  qtdirkey: "Qt6_DIR",
+                  qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.2.4/gcc_64",
+                },
+              screenshot_filename: "ubuntu-latest-gcc-9-qt-6-2-4.jpg",
+            }
+          - {
+              name: "macOS Latest Clang Qt5",
+              os: macos-latest,
+              artifact: "macos_clang.7z",
+              build_type: "Release",
+              cc: "clang",
+              cxx: "clang++",
+              archiver: "7za a",
+              generators: "Ninja",
+              cmake:
+                {
+                  qtversion: "5.15.2",
+                  qtdirkey: "Qt5_DIR",
+                  qtdirvalue: "../Qt/5.15.2/clang_64/lib/cmake/Qt5",
+                  qtprefixpath: "../Qt/5.15.2/clang_64",
+                },
+              screenshot_filename: "macos-latest-clang-qt-5-15-2.jpg",
+            }
+          - {
+              name: "macOS Latest Clang Qt6",
+              os: macos-latest,
+              artifact: "macos_clang.7z",
+              build_type: "Release",
+              cc: "clang",
+              cxx: "clang++",
+              archiver: "7za a",
+              generators: "Ninja",
+              cmake:
+                {
+                  qtversion: "6.2.4",
+                  qtdirkey: "Qt6_DIR",
+                  qtdirvalue: "../Qt/6.2.4/clang_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.2.4/clang_64",
+                },
+              screenshot_filename: "macos-latest-clang-qt-6-2-4.jpg",
+            }
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
+        with:
+          path: qskinny_source
+
+      - name: Print env
+        run: |
+          echo github.event.action: ${{ github.event.action }}
+          echo github.event_name: ${{ github.event_name }}
+
+      - name: Install dependencies on windows
+        if: startsWith(matrix.config.os, 'windows')
+        run: |
+          choco install ninja 
+          choco install cmake --version=3.16.3
+          ninja --version
+          cmake --version
+
+      - name: Install dependencies on ubuntu
+        if: startsWith(matrix.config.name, 'Ubuntu Latest GCC')
+        run: |
+          sudo apt-get update
+          sudo apt-get install ninja-build cmake
+          ninja --version
+          cmake --version
+          gcc --version
+
+      - name: Install dependencies on ubuntu9
+        if: startsWith(matrix.config.name, 'Ubuntu GCC 9')
+        run: |
+          echo Update gcc-9 =======================================================================
+          echo gcc version before
+          gcc --version
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install ninja-build cmake gcc-9 g++-9
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9
+          echo gcc version after
+          gcc --version
+          echo Update ninja =======================================================================
+          echo ninja version before
+          ninja --version
+          # wget https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
+          wget https://github.com/ninja-build/ninja/releases/latest/download/ninja-linux.zip
+          sudo unzip ninja-linux.zip -d /usr/local/bin/
+          sudo update-alternatives --install /usr/bin/ninja ninja /usr/local/bin/ninja 1 --force
+          echo ninja version after
+          ninja --version
+          echo Update cmake =======================================================================
+          echo cmake version before
+          cmake --version
+          # curl --silent "https://api.github.com/repos/Kitware/CMake/releases/latest" | sed -n 's/.*tag_name":\s"\(.*\)".*/\1/p' | head -2
+          # wget https://github.com/Kitware/CMake/releases/latest/download/cmake-3.16.5-Linux-x86_64.sh
+          cmake_version=$(curl --silent "https://api.github.com/repos/Kitware/CMake/releases/latest" | sed -n 's/.*tag_name":\s"\(.*\)".*/\1/p' | head -2 | cut -c 2-)
+          echo cmake download latest v$cmake_version version
+          wget https://github.com/Kitware/CMake/releases/download/v$cmake_version/cmake-$cmake_version-Linux-x86_64.sh
+          chmod +x cmake-$cmake_version-Linux-x86_64.sh
+          sudo mkdir /opt/cmake
+          sudo ./cmake-$cmake_version-Linux-x86_64.sh --prefix=/opt/cmake --skip-license
+          sudo update-alternatives --install /usr/bin/cmake cmake /opt/cmake/bin/cmake 1 --force
+          echo cmake version after
+          cmake --version
+
+      - name: Install dependencies on macos
+        if: startsWith(matrix.config.os, 'macos')
+        run: |
+          brew install p7zip cmake ninja
+          ninja --version
+          cmake --version
+
+      - name: Install needed xkbcommon symlink
+        if: startsWith(matrix.config.name, 'Ubuntu') && endsWith(matrix.config.name, 'Qt6')
+        run: sudo apt-get install libxkbcommon-dev -y
+
+      - name: Install hunspell for Ubuntu
+        if: false && startsWith(matrix.config.name, 'Ubuntu')
+        run: |
+          sudo apt-get install -y libhunspell-dev
+
+      - name: Install pinyin for Ubuntu
+        if: false && startsWith(matrix.config.name, 'Ubuntu')
+        run: |
+          sudo apt-get install -y libimepinyin-dev
+
+      - name: Install imagemagick for Ubuntu
+        if: startsWith(matrix.config.name, 'Ubuntu')
+        run: |
+          sudo apt-get install -y imagemagick
+
+      - name: Cache Qt5
+        if: endsWith(matrix.config.name, 'Qt5')
+        id: cache-qt-5-15
+        uses: actions/cache@v1 # not v2!
+        with:
+          path: ../Qt/5.15.2
+          key: ${{ runner.os }}-QtCache-Qt5
+
+      - name: Cache Qt6
+        if: endsWith(matrix.config.name, 'Qt6')
+        id: cache-qt-6-2
+        uses: actions/cache@v1 # not v2!
+        with:
+          path: ../Qt/6.2.4
+          key: ${{ runner.os }}-QtCache-Qt6
+
+      - name: Install Qt5
+        if: endsWith(matrix.config.name, 'Qt5')
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: "5.15.2"
+          target: "desktop"
+          install-deps: "true"
+          modules: "qtwebengine"
+          cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
+          setup-python: "false"
+          tools: ""
+          set-env: "true"
+          tools-only: "false"
+
+      - name: Install Qt6
+        if: endsWith(matrix.config.name, 'Qt6')
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: "6.2.4"
+          target: "desktop"
+          install-deps: "true"
+          modules: "qtwebengine"
+          cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
+          setup-python: "false"
+          tools: ""
+          set-env: "true"
+          tools-only: "false"
+
+      - name: Configure ( QSkinny )
+        shell: bash
+        run: |
+          mkdir qskinny_build
+          mkdir qskinny_install
+          cmake \
+            -S qskinny_source \
+            -B qskinny_build \
+            -G "${{ matrix.config.generators }}" \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+            -DCMAKE_INSTALL_PREFIX:PATH=qskinny_install \
+            -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixpath }}" \
+            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}"
+
+      - name: Build ( QSkinny )
+        shell: bash
+        run: cmake --build qskinny_build --config ${{ matrix.config.build_type }}
+
+      #- name: Tests
+      #  shell: bash
+      #  run: ctest -j14 -C Release -T test --output-on-failure
+
+      - name: Install ( QSkinny ) Strip
+        shell: bash
+        run: cmake --install qskinny_build --prefix qskinny_install --strip --config ${{ matrix.config.build_type }}
+
+      - name: Smoke test ( QSkinny ) on MacOS
+        if: startsWith(matrix.config.name, 'macOS')
+        run: |
+          echo "starting iotdashboard"
+          DYLD_LIBRARY_PATH=./qskinny_install/lib:./qskinny_install/plugins/skins ./qskinny_build/examples/iotdashboard/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 &
+          sleep 10
+
+      - name: Smoke Test ( QSkinny ) on Windows
+        if: startsWith(matrix.config.name, 'Windows')
+        run: |
+          $Env:PATH += ";qskinny_install/lib"
+          $Env:PATH += ";qskinny_install/plugins/skins"
+          echo "starting iotdashboard"          
+          Start-Process qskinny_build\examples\iotdashboard\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0"
+          Start-Sleep -s 10
+
+      - name: Smoke test ( QSkinny ) on Ubuntu
+        if: startsWith(matrix.config.name, 'Ubuntu')
+        env:
+          DISPLAY: ":1"
+        run: |
+          echo starting Xvfb
+          Xvfb :1 &
+          sleep 10
+          echo starting iotdashboard
+          ./qskinny_build/examples/iotdashboard/iotdashboard &
+          sleep 10
+
+      - uses: OrbitalOwen/desktop-screenshot-action@0.1
+        with:
+          file-name: ${{ matrix.config.screenshot_filename }}
+
+      - name: Smoke Test Cleanup ( QSkinny ) on Windows
+        if: startsWith(matrix.config.name, 'Windows')
+        run: |
+          taskkill /IM iotdashboard.exe /T
+
+      - name: Smoke Test Cleanup ( QSkinny ) on MacOS
+        if: startsWith(matrix.config.name, 'macOS')
+        run: |
+          killall iotdashboard
+
+      - name: Smoke Test Cleanup ( QSkinny ) on Ubuntu
+        if: startsWith(matrix.config.name, 'Ubuntu')
+        run: |
+          killall iotdashboard
+          killall Xvfb
+
+      - name: Configure ( CMake Integration Test )
+        shell: bash
+        run: |
+          mkdir qskinny_build_test
+          cmake \
+            -S qskinny_source/examples/iotdashboard_smoketest \
+            -B qskinny_build_test \
+            -G "${{ matrix.config.generators }}" \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+            -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixpath }}" \
+            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}" \
+            -DQSkinny_DIR:PATH=$GITHUB_WORKSPACE/qskinny_install/lib/cmake/QSkinny
+
+      - name: Build ( CMake Integration Test )
+        shell: bash
+        run: cmake --build qskinny_build_test --config ${{ matrix.config.build_type }}
+
+      # - name: Pack
+      #   shell: bash
+      #   working-directory: instdir
+      #   run: |
+      #     ls -laR
+      #     ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} .
+      
+      # - name: Upload
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     path: ./${{ matrix.config.artifact }}
+      #     name: ${{ matrix.config.artifact }}
+
+      # - name: Upload release asset
+      #   if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ github.event.release.upload_url }}
+      #     asset_path: ./${{ matrix.config.artifact }}
+      #     asset_name: ${{ matrix.config.artifact }}.zip
+      #     asset_content_type: application/zip
