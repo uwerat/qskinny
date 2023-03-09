@@ -5,8 +5,7 @@
 
 #include "QskSegmentedBar.h"
 
-#include "QskGraphic.h"
-#include "QskGraphicProvider.h"
+#include "QskLabelData.h"
 #include "QskTextOptions.h"
 #include "QskEvent.h"
 #include "QskSkinlet.h"
@@ -27,33 +26,6 @@ QSK_SYSTEM_STATE( QskSegmentedBar, Selected, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskSegmentedBar, Minimum, QskAspect::FirstSystemState << 2 )
 QSK_SYSTEM_STATE( QskSegmentedBar, Maximum, QskAspect::FirstSystemState << 3 )
 
-namespace
-{
-    class Option
-    {
-      public:
-        Option() = default;
-
-        Option( const QUrl& graphicSource, const QString& text )
-            : graphicSource( graphicSource )
-            , text( text )
-        {
-#if 1
-            // lazy loading TODO ...
-            if ( !graphicSource.isEmpty() )
-                graphic = Qsk::loadGraphic( graphicSource );
-#endif
-        }
-
-        QUrl graphicSource;
-        QString text;
-
-        QskGraphic graphic;
-
-        bool isEnabled = true;
-    };
-}
-
 class QskSegmentedBar::PrivateData
 {
   public:
@@ -62,20 +34,8 @@ class QskSegmentedBar::PrivateData
     {
     }
 
-    void addOption( QskSegmentedBar* bar, const Option& option )
-    {
-        this->options += option;
-
-        bar->resetImplicitSize();
-        bar->update();
-
-        Q_EMIT bar->countChanged();
-
-        if ( this->options.count() == 1 )
-            bar->setSelectedIndex( 0 );
-    }
-
-    QVector< Option > options;
+    QVector< QskLabelData > options;
+    QVector< bool > enabled;
 
     int selectedIndex = -1;
     int currentIndex = -1;
@@ -139,24 +99,39 @@ QskTextOptions QskSegmentedBar::textOptions() const
 
 int QskSegmentedBar::addOption( const QUrl& graphicSource, const QString& text )
 {
-    m_data->addOption( this, Option( graphicSource, text ) );
+    return addOption( QskLabelData( text, graphicSource ) );
+}
+
+int QskSegmentedBar::addOption( const QskLabelData& option )
+{
+    m_data->options += option;
+    m_data->enabled += true;
+
+    resetImplicitSize();
+    update();
+
+    Q_EMIT optionsChanged();
+
+    if ( count() == 1 )
+        setSelectedIndex( 0 );
+
     return count() - 1;
 }
 
-QVariantList QskSegmentedBar::optionAt( int index ) const
+QskLabelData QskSegmentedBar::optionAt( int index ) const
 {
-    const auto& options = m_data->options;
+    return m_data->options.value( index );
+}
 
-    if( index < 0 || index >= options.count() )
-        return QVariantList();
+void QskSegmentedBar::setOptions( const QVector< QskLabelData >& options )
+{
+    m_data->options = options;
+    m_data->enabled.fill( true, options.count() );
 
-    const auto& option = options[ index ];
+    resetImplicitSize();
+    update();
 
-    QVariantList list;
-    list += QVariant::fromValue( option.graphic );
-    list += QVariant::fromValue( option.text );
-
-    return list;
+    Q_EMIT optionsChanged();
 }
 
 QskAspect::Variation QskSegmentedBar::effectiveVariation() const
@@ -168,19 +143,24 @@ void QskSegmentedBar::mousePressEvent( QMouseEvent* event )
 {
     const int index = indexAtPosition( qskMousePosition( event ) );
 
-    if( index < 0 || index >= count() || !m_data->options[ index ].isEnabled )
-        return;
-
-    m_data->isPressed = true;
-
-    if( ( focusPolicy() & Qt::ClickFocus ) == Qt::ClickFocus )
+    if( isSegmentEnabled( index ) )
     {
-        if( !QGuiApplication::styleHints()->setFocusOnTouchRelease() )
+        m_data->isPressed = true;
+
+        if( ( focusPolicy() & Qt::ClickFocus ) == Qt::ClickFocus )
         {
-            if( index != m_data->currentIndex )
-                setCurrentIndex( index );
+            if( !QGuiApplication::styleHints()->setFocusOnTouchRelease() )
+            {
+                if( index != m_data->currentIndex )
+                    setCurrentIndex( index );
+            }
         }
     }
+}
+
+void QskSegmentedBar::mouseUngrabEvent()
+{
+    m_data->isPressed = false;
 }
 
 void QskSegmentedBar::mouseReleaseEvent( QMouseEvent* event )
@@ -193,15 +173,15 @@ void QskSegmentedBar::mouseReleaseEvent( QMouseEvent* event )
         index = indexAtPosition( qskMousePosition( event ) );
     }
 
-    if( index < 0 || !m_data->options[ index ].isEnabled )
-        return;
-
-    if( ( focusPolicy() & Qt::ClickFocus ) == Qt::ClickFocus )
+    if( isSegmentEnabled( index ) )
     {
-        if( QGuiApplication::styleHints()->setFocusOnTouchRelease() )
+        if( ( focusPolicy() & Qt::ClickFocus ) == Qt::ClickFocus )
         {
-            if( index != m_data->currentIndex )
-                setCurrentIndex( index );
+            if( QGuiApplication::styleHints()->setFocusOnTouchRelease() )
+            {
+                if( index != m_data->currentIndex )
+                    setCurrentIndex( index );
+            }
         }
     }
 
@@ -310,7 +290,7 @@ void QskSegmentedBar::clear()
         return;
 
     m_data->options.clear();
-    Q_EMIT countChanged();
+    Q_EMIT optionsChanged();
 
     if( m_data->selectedIndex >= 0 )
     {
@@ -329,13 +309,8 @@ void QskSegmentedBar::clear()
 
 void QskSegmentedBar::setCurrentIndex( int index )
 {
-    const auto& options = m_data->options;
-
-    if( ( index < 0 ) || ( index >= options.count() )
-        || !options[ index ].isEnabled )
-    {
+    if ( !isSegmentEnabled( index ) )
         index = -1;
-    }
 
     if( index != m_data->currentIndex )
     {
@@ -351,14 +326,8 @@ int QskSegmentedBar::currentIndex() const
 
 void QskSegmentedBar::setSelectedIndex( int index )
 {
-    if( index < 0 || index >= m_data->options.count() )
-    {
+    if ( !isSegmentEnabled( index ) )
         index = -1;
-    }
-    else if ( !m_data->options[ index ].isEnabled )
-    {
-        index = -1; // ???
-    }
 
     if( index != m_data->selectedIndex )
     {
@@ -400,7 +369,7 @@ int QskSegmentedBar::nextIndex( int index, bool forwards ) const
 
         while( ++index < count )
         {
-            if( options[ index ].isEnabled )
+            if( isSegmentEnabled( index ) )
                 return index;
         }
     }
@@ -411,12 +380,17 @@ int QskSegmentedBar::nextIndex( int index, bool forwards ) const
 
         while( --index >= 0 )
         {
-            if( options[ index ].isEnabled )
+            if( isSegmentEnabled( index ) )
                 return index;
         }
     }
 
     return -1;
+}
+
+QVector< QskLabelData > QskSegmentedBar::options() const
+{
+    return m_data->options;
 }
 
 int QskSegmentedBar::count() const
@@ -426,15 +400,15 @@ int QskSegmentedBar::count() const
 
 void QskSegmentedBar::setSegmentEnabled( int index, bool enabled )
 {
-    auto& options = m_data->options;
+    auto& bitVector = m_data->enabled;
 
-    if( ( index < 0 ) || ( index >= options.count() )
-        || ( options[ index ].isEnabled == enabled ) )
+    if( ( index < 0 ) || ( index >= bitVector.count() )
+        || ( bitVector[ index ] == enabled ) )
     {
         return;
     }
 
-    options[ index ].isEnabled = enabled;
+    bitVector[ index ] = enabled;
 
     if( !enabled )
     {
@@ -447,12 +421,7 @@ void QskSegmentedBar::setSegmentEnabled( int index, bool enabled )
 
 bool QskSegmentedBar::isSegmentEnabled( int index ) const
 {
-    const auto& options = m_data->options;
-
-    if( index < 0 || index >= options.count() )
-        return false;
-
-    return options[ index ].isEnabled;
+    return m_data->enabled.value( index, false );
 }
 
 int QskSegmentedBar::indexAtPosition( const QPointF& pos ) const

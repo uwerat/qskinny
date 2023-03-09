@@ -30,6 +30,7 @@ HEADERS += \
     common/QskGradientStop.h \
     common/QskHctColor.h \
     common/QskIntervalF.h \
+    common/QskLabelData.h \
     common/QskMargins.h \
     common/QskMetaFunction.h \
     common/QskMetaFunction.hpp \
@@ -60,6 +61,7 @@ SOURCES += \
     common/QskGradientStop.cpp \
     common/QskHctColor.cpp \
     common/QskIntervalF.cpp \
+    common/QskLabelData.cpp \
     common/QskMargins.cpp \
     common/QskMetaFunction.cpp \
     common/QskMetaInvokable.cpp \
@@ -83,6 +85,7 @@ HEADERS += \
     graphic/QskGraphicProvider.h \
     graphic/QskGraphicProviderMap.h \
     graphic/QskGraphicTextureFactory.h \
+    graphic/QskIcon.h \
     graphic/QskPainterCommand.h \
     graphic/QskStandardSymbol.h
 
@@ -95,6 +98,7 @@ SOURCES += \
     graphic/QskGraphicProvider.cpp \
     graphic/QskGraphicProviderMap.cpp \
     graphic/QskGraphicTextureFactory.cpp \
+    graphic/QskIcon.cpp \
     graphic/QskPainterCommand.cpp \
     graphic/QskStandardSymbol.cpp
 

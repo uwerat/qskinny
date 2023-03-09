@@ -6,6 +6,7 @@
 #include "QskSegmentedBarSkinlet.h"
 #include "QskSegmentedBar.h"
 
+#include "QskLabelData.h"
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
 #include "QskFunctions.h"
@@ -18,42 +19,24 @@
 
 namespace
 {
-#if 1 // unify with the implementation from QskMenu
-    template< class T >
-    static inline QVariant qskSampleAt( const QskSegmentedBar* bar, int index )
-    {
-        const auto list = bar->optionAt( index );
-        for ( const auto& value : list )
-        {
-            if ( value.canConvert< T >() )
-                return value;
-        }
-
-        return QVariant();
-    }
-
-    template< class T >
-    static inline T qskValueAt( const QskSegmentedBar* bar, int index )
-    {
-        const auto sample = qskSampleAt< T >( bar, index );
-        return sample.template value< T >();
-    }
-#endif
-
     QskGraphic iconAt( const QskSegmentedBar* bar, const int index )
     {
         using Q = QskSegmentedBar;
 
         if ( bar->selectedIndex() == index )
         {
-            // f.e Material 3 replaces the icon of the selected element by a checkmark
+            /* 
+                Material 3 replaces the icon of the selected element by a checkmark,
+                when icon and text are set. So this code is actually not correct
+                as it also replaces the icon when there is no text
+             */
 
             const auto icon = bar->symbolHint( Q::Icon | Q::Selected );
             if ( !icon.isNull() )
                 return icon;
         }
 
-        return qskValueAt< QskGraphic >( bar, index );
+        return bar->optionAt( index ).icon().graphic();
     }
 
     class LayoutEngine : public QskSubcontrolLayoutEngine
@@ -66,8 +49,9 @@ namespace
 
             setSpacing( bar->spacingHint( Q::Panel ) );
 
-            setGraphicTextElements( bar,
-                Q::Text, qskValueAt< QString >( bar, index ),
+            const auto option = bar->optionAt( index );
+
+            setGraphicTextElements( bar, Q::Text, option.text(),
                 Q::Icon, iconAt( bar, index ).defaultSize() );
 
             if( bar->orientation() == Qt::Horizontal )
@@ -228,33 +212,31 @@ QSizeF QskSegmentedBarSkinlet::segmentSizeHint(
 {
     using Q = QskSegmentedBar;
 
-    QSizeF sizeMax;
+    const QSizeF sizeSymbol =
+        bar->symbolHint( Q::Icon | Q::Selected ).defaultSize();
 
-    const auto graphic0 = bar->symbolHint( Q::Icon | Q::Selected );
+    QSizeF segmentSize;
 
     for ( int i = 0; i < bar->count(); i++ )
     {
+        const auto option = bar->optionAt( i );
+
+        auto iconSize = option.icon().graphic().defaultSize();
+        iconSize = iconSize.expandedTo( sizeSymbol );
+
         LayoutEngine layoutEngine( bar, i );
-
-        auto graphic = qskValueAt< QskGraphic >( bar, i );
-        if ( graphic.isNull() )
-            graphic = graphic0;
-
         layoutEngine.setGraphicTextElements( bar,
-            Q::Text, qskValueAt< QString >( bar, i ),
-            Q::Icon, graphic.defaultSize() );
+            Q::Text, option.text(), Q::Icon, iconSize );
 
         const auto size = layoutEngine.sizeHint( which, QSizeF() );
-
-        if( size.width() > sizeMax.width() )
-            sizeMax = size;
+        segmentSize = segmentSize.expandedTo( size );
     }
 
-    sizeMax = bar->outerBoxSize( Q::Segment, sizeMax );
-    sizeMax = sizeMax.expandedTo( bar->strutSizeHint( Q::Segment ) );
-    sizeMax = sizeMax.grownBy( bar->marginHint( Q::Segment ) );
+    segmentSize = bar->outerBoxSize( Q::Segment, segmentSize );
+    segmentSize = segmentSize.expandedTo( bar->strutSizeHint( Q::Segment ) );
+    segmentSize = segmentSize.grownBy( bar->marginHint( Q::Segment ) );
 
-    return sizeMax;
+    return segmentSize;
 }
 
 QSizeF QskSegmentedBarSkinlet::sizeHint( const QskSkinnable* skinnable,
@@ -324,6 +306,7 @@ QRectF QskSegmentedBarSkinlet::sampleRect( const QskSkinnable* skinnable,
 
         LayoutEngine layoutEngine( bar, index );
         layoutEngine.setGeometries( rect );
+
         return layoutEngine.subControlRect( subControl );
     }
 
@@ -373,7 +356,7 @@ QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable
 
     if ( subControl == Q::Text )
     {
-        const auto text = qskValueAt< QString >( bar, index );
+        const auto text = bar->optionAt( index ).text();
 
         if( !text.isEmpty() )
         {
