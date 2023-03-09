@@ -31,12 +31,28 @@
 #include <QskAnimationHint.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
+#include <QskGraphicProvider.h>
+#include <QskGraphicIO.h>
+#include <QskGraphic.h>
 #include <QskSetup.h>
 
 #include <QGuiApplication>
 
 namespace
 {
+    class GraphicProvider : public QskGraphicProvider
+    {
+      protected:
+        const QskGraphic* loadGraphic( const QString& id ) const override
+        {
+            const QString path = QStringLiteral( ":gallery/icons/qvg/" )
+                + id + QStringLiteral( ".qvg" );
+
+            const auto graphic = QskGraphicIO::read( path );
+            return graphic.isNull() ? nullptr : new QskGraphic( graphic );
+        }
+    };
+
     class TabView : public QskTabView
     {
       public:
@@ -234,6 +250,7 @@ int main( int argc, char* argv[] )
     QskObjectCounter counter( true );
 #endif
 
+    Qsk::addGraphicProvider( QString(), new GraphicProvider() );
     Qsk::addGraphicProvider( "shapes", new SkinnyShapeProvider() );
 
     // dialogs in faked windows -> QskSubWindow

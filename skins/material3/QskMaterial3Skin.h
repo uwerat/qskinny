@@ -9,7 +9,6 @@
 #include "QskMaterial3Global.h"
 
 #include <QskBoxShapeMetrics.h>
-#include <QskGraphicProvider.h>
 #include <QskHctColor.h>
 #include <QskSkin.h>
 #include <QskShadowMetrics.h>
@@ -102,19 +101,6 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
 
   private:
     std::array< QskHctColor, NumPaletteTypes > m_palettes;
-};
-
-class QSK_MATERIAL3_EXPORT QskMaterial3GraphicProvder : public QskGraphicProvider
-{
-    Q_OBJECT
-
-    using Inherited = QskGraphicProvider;
-
-  public:
-    QskMaterial3GraphicProvder( QObject* parent = nullptr );
-
-  protected:
-    virtual const QskGraphic* loadGraphic( const QString& id ) const override;
 };
 
 class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
