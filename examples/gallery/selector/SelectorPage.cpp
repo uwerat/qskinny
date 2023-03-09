@@ -7,6 +7,7 @@
 
 #include <QskComboBox.h>
 #include <QskSegmentedBar.h>
+#include <QskLabelData.h>
 
 namespace
 {

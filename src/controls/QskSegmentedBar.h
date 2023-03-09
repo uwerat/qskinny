@@ -12,7 +12,6 @@
 #include <qstring.h>
 
 class QskTextOptions;
-class QskGraphic;
 class QskLabelData;
 
 class QSK_EXPORT QskSegmentedBar : public QskControl

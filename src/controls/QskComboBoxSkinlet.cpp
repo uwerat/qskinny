@@ -7,43 +7,13 @@
 #include "QskComboBox.h"
 
 #include "QskGraphic.h"
+#include "QskLabelData.h"
+
 #include "QskSGNode.h"
 #include "QskSubcontrolLayoutEngine.h"
 
 namespace
 {
-#if 1 // unify with the implementation from QskMenu
-    template< class T >
-    static inline QVariant qskSampleAt( const QskComboBox* box )
-    {
-        if( std::is_same< T, QString >() )
-        {
-            return box->currentText();
-        }
-
-        const int index = box->currentIndex();
-
-        if( index < 0 )
-            return QVariant::fromValue( T() );
-
-        const auto list = box->optionAt( index );
-        for ( const auto& value : list )
-        {
-            if ( value.canConvert< T >() )
-                return value;
-        }
-
-        return QVariant();
-    }
-
-    template< class T >
-    static inline T qskValueAt( const QskComboBox* box )
-    {
-        const auto sample = qskSampleAt< T >( box );
-        return sample.template value< T >();
-    }
-#endif
-
     class LayoutEngine : public QskSubcontrolLayoutEngine
     {
       public:
@@ -52,12 +22,27 @@ namespace
         {
             setSpacing( box->spacingHint( QskComboBox::Panel ) );
 
+            QSizeF graphicSize;
+            QString text;
+
+            if ( box->currentIndex() >= 0 )
+            {
+                const auto option = box->optionAt( box->currentIndex() );
+
+                graphicSize = option.icon().graphic().defaultSize();
+                text = option.text();
+            }
+            else
+            {
+                text = box->placeholderText();
+            }
+
             setGraphicTextElements( box,
-                QskComboBox::Text, qskValueAt< QString >( box ),
-                QskComboBox::Icon, qskValueAt< QskGraphic >( box ).defaultSize() );
+                QskComboBox::Text, text, QskComboBox::Icon, graphicSize );
 
             const auto alignment = box->alignmentHint(
                 QskComboBox::Panel, Qt::AlignLeft );
+
             setFixedContent( QskComboBox::Text, Qt::Horizontal, alignment );
         }
     };
@@ -115,7 +100,11 @@ QSGNode* QskComboBoxSkinlet::updateSubNode(
             return updateBoxNode( box, node, Q::Panel );
 
         case IconRole:
-            return updateGraphicNode( box, node, box->icon(), Q::Icon );
+        {
+            const auto option = box->optionAt( box->currentIndex() );
+            return updateGraphicNode( box, node,
+                option.icon().graphic(), Q::Icon );
+        }
 
         case TextRole:
             return updateTextNode( box, node );

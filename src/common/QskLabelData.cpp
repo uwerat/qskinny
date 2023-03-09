@@ -20,6 +20,11 @@ static void qskRegisterLabelData()
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterLabelData )
 
+QskLabelData::QskLabelData( const char* text )
+    : m_text( text )
+{
+}
+
 QskLabelData::QskLabelData( const QString& text )
     : m_text( text )
 {

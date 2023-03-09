@@ -5,8 +5,7 @@
 
 #include "QskComboBox.h"
 
-#include "QskGraphicProvider.h"
-#include "QskGraphic.h"
+#include "QskLabelData.h"
 #include "QskMenu.h"
 #include "QskTextOptions.h"
 #include "QskEvent.h"
@@ -60,41 +59,12 @@ static inline int qskFindOption( QskComboBox* comboBox, const QString& key )
     return -1;
 }
 
-namespace
-{
-    class Option
-    {
-      public:
-        Option( const QskGraphic& graphic, const QString& text )
-            : text( text )
-            , graphic( graphic )
-        {
-        }
-
-        Option( const QUrl& graphicSource, const QString& text )
-            : graphicSource( graphicSource )
-            , text( text )
-        {
-#if 1
-            // lazy loading TODO ...
-            if( !graphicSource.isEmpty() )
-                graphic = Qsk::loadGraphic( graphicSource );
-#endif
-        }
-
-        QUrl graphicSource;
-        QString text;
-
-        QskGraphic graphic;
-    };
-}
-
 class QskComboBox::PrivateData
 {
   public:
     QPointer < QskMenu > menu;
 
-    QVector< Option > options;
+    QVector< QskLabelData > options;
     QString placeholderText;
 
     int currentIndex = -1;
@@ -113,7 +83,6 @@ QskComboBox::QskComboBox( QQuickItem* parent )
     setFocusPolicy( Qt::StrongFocus );
 
     setAcceptHoverEvents( true );
-
 }
 
 QskComboBox::~QskComboBox()
@@ -138,17 +107,6 @@ bool QskComboBox::isPopupOpen() const
     return hasSkinState( PopupOpen );
 }
 
-QskGraphic QskComboBox::icon() const
-{
-    if( m_data->currentIndex >= 0 )
-    {
-        const auto option = optionAt( m_data->currentIndex );
-        return option.at( 0 ).value< QskGraphic >();
-    }
-
-    return QskGraphic();
-}
-
 void QskComboBox::setTextOptions( const QskTextOptions& textOptions )
 {
     setTextOptionsHint( Text, textOptions );
@@ -159,52 +117,51 @@ QskTextOptions QskComboBox::textOptions() const
     return textOptionsHint( Text );
 }
 
-void QskComboBox::addOption( const QString& text )
+int QskComboBox::addOption( const QString& graphicSource, const QString& text )
 {
-    addOption( QUrl(), text );
+    return addOption( QskLabelData( text, QskIcon( graphicSource ) ) );
 }
 
-void QskComboBox::addOption( const QskGraphic& graphic, const QString& text )
+int QskComboBox::addOption( const QUrl& graphicSource, const QString& text )
 {
-    m_data->options += Option( graphic, text );
+    return addOption( QskLabelData( text, QskIcon( graphicSource ) ) );
+}
+
+int QskComboBox::addOption( const QskLabelData& option )
+{
+    m_data->options += option;
 
     resetImplicitSize();
     update();
 
     if ( isComponentComplete() )
-        Q_EMIT countChanged( count() );
+        Q_EMIT optionsChanged();
+
+    return count() - 1;
 }
 
-void QskComboBox::addOption( const QString& graphicSource, const QString& text )
+void QskComboBox::setOptions( const QVector< QskLabelData >& options )
 {
-    addOption( QUrl( graphicSource ), text );
-}
+    if ( options == m_data->options )
+        return;
 
-void QskComboBox::addOption( const QUrl& graphicSource, const QString& text )
-{
-    m_data->options += Option( graphicSource, text );
+    m_data->options = options;
+    m_data->currentIndex = -1; // currentIndexChanged ???
 
     resetImplicitSize();
     update();
 
-    if ( isComponentComplete() )
-        Q_EMIT countChanged( count() );
+    Q_EMIT optionsChanged();
 }
 
-QVariantList QskComboBox::optionAt( int index ) const
+QVector< QskLabelData > QskComboBox::options() const
 {
-    const auto& options = m_data->options;
+    return m_data->options;
+}
 
-    if( index < 0 || index >= options.count() )
-        return QVariantList();
-
-    const auto& option = options[ index ];
-
-    QVariantList list;
-    list += QVariant::fromValue( option.graphic );
-    list += QVariant::fromValue( option.text );
-
-    return list;
+QskLabelData QskComboBox::optionAt( int index ) const
+{
+    return m_data->options.value( index );
 }
 
 QString QskComboBox::placeholderText() const
@@ -228,16 +185,13 @@ void QskComboBox::setPlaceholderText( const QString& text )
 
 QString QskComboBox::textAt( int index ) const
 {
-    if ( index >= 0 && index < m_data->options.count() )
-        return m_data->options[ index ].text;
-
-    return QString();
+    return optionAt( index ).text();
 }
 
 QString QskComboBox::currentText() const
 {
-    if( m_data->currentIndex >= 0 )
-        return m_data->options[ m_data->currentIndex ].text;
+    if( m_data->currentIndex >= 0 && m_data->currentIndex < m_data->options.count() )
+        return m_data->options[ m_data->currentIndex ].text();
 
     return m_data->placeholderText;
 }
@@ -265,7 +219,7 @@ void QskComboBox::openPopup()
     menu->setFixedWidth( cr.width() );
 
     for ( const auto& option : m_data->options )
-        menu->addOption( option.graphic, option.text );
+        menu->addOption( option.icon().graphic(), option.text() );
 
     connect( menu, &QskMenu::currentIndexChanged,
         this, &QskComboBox::indexInPopupChanged );
@@ -391,8 +345,15 @@ void QskComboBox::clear()
     {
         m_data->options.clear();
 
-        if ( isComponentComplete() )
-            Q_EMIT countChanged( count() );
+        Q_EMIT optionsChanged();
+
+        if ( m_data->currentIndex >= 0 )
+        {
+            m_data->currentIndex = -1;
+            Q_EMIT currentIndexChanged( m_data->currentIndex );
+        }
+
+        update();
     }
 }
 
