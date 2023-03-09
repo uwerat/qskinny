@@ -216,26 +216,26 @@ QskVirtualKeyboard::KeyType QskVirtualKeyboard::typeForKey( int key ) const
 {
     switch( key )
     {
-    case Qt::Key_Return:
-    case Qt::Key_Enter:
-        return EnterType;
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+            return EnterType;
 
-    case Qt::Key_Backspace:
-        return BackspaceType;
+        case Qt::Key_Backspace:
+            return BackspaceType;
 
-    case Qt::Key_Shift:
-    case Qt::Key_CapsLock:
-        return CapsSwitchType;
+        case Qt::Key_Shift:
+        case Qt::Key_CapsLock:
+            return CapsSwitchType;
 
-    case Qt::Key_Mode_switch:
-        return ModeSwitchType;
+        case Qt::Key_Mode_switch:
+            return ModeSwitchType;
 
-    case Qt::Key_Comma:
-    case Qt::Key_Period:
-        return SpecialCharacterType;
+        case Qt::Key_Comma:
+        case Qt::Key_Period:
+            return SpecialCharacterType;
 
-    default:
-        return NormalType;
+        default:
+            return NormalType;
     }
 }
 
@@ -605,21 +605,21 @@ QskPushButton::Emphasis QskVirtualKeyboard::emphasisForType( KeyType type )
 {
     switch( type )
     {
-    case EnterType:
-        return QskPushButton::VeryHighEmphasis;
+        case EnterType:
+            return QskPushButton::VeryHighEmphasis;
 
-    case BackspaceType:
-    case CapsSwitchType:
-        return QskPushButton::HighEmphasis;
+        case BackspaceType:
+        case CapsSwitchType:
+            return QskPushButton::HighEmphasis;
 
-    case ModeSwitchType:
-        return QskPushButton::LowEmphasis;
+        case ModeSwitchType:
+            return QskPushButton::LowEmphasis;
 
-    case SpecialCharacterType:
-        return QskPushButton::VeryLowEmphasis;
+        case SpecialCharacterType:
+            return QskPushButton::VeryLowEmphasis;
 
-    default:
-        return QskPushButton::NoEmphasis;
+        default:
+            return QskPushButton::NoEmphasis;
     }
 }
 

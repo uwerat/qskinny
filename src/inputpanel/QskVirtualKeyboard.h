@@ -11,7 +11,7 @@
 
 class QSK_EXPORT QskVirtualKeyboardLayouts
 {
-public:
+  public:
     using Layout = QVector< QVector< QVector< int > > >;
 
     Layout bg; // Bulgarian
