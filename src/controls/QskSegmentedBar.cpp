@@ -131,6 +131,7 @@ void QskSegmentedBar::setOptions( const QVector< QskLabelData >& options )
     resetImplicitSize();
     update();
 
+    // selectedIndex ???
     Q_EMIT optionsChanged();
 }
 

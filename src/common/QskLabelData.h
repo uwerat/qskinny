@@ -23,6 +23,7 @@ class QSK_EXPORT QskLabelData
   public:
     QskLabelData() = default; 
 
+    QskLabelData( const char* );
     QskLabelData( const QString& );
     QskLabelData( const QskIcon& );
     QskLabelData( const QString&, const QskIcon& );

@@ -8,11 +8,14 @@
 
 #include "QskControl.h"
 
-class QskGraphic;
+class QskLabelData;
 
 class QSK_EXPORT QskComboBox : public QskControl
 {
     Q_OBJECT
+
+    Q_PROPERTY( QVector< QskLabelData > options READ options
+        WRITE setOptions NOTIFY optionsChanged )
 
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
@@ -20,7 +23,7 @@ class QSK_EXPORT QskComboBox : public QskControl
     Q_PROPERTY( QString currentText READ currentText
         NOTIFY currentIndexChanged )
 
-    Q_PROPERTY( int count READ count NOTIFY countChanged )
+    Q_PROPERTY( int count READ count )
 
     Q_PROPERTY( QString placeholderText READ placeholderText
         WRITE setPlaceholderText NOTIFY placeholderTextChanged )
@@ -41,15 +44,17 @@ class QSK_EXPORT QskComboBox : public QskControl
     void setPopupOpen( bool );
     bool isPopupOpen() const;
 
-    QskGraphic icon() const;
-
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
-    void addOption( const QString& text );
-    void addOption( const QUrl& iconSource, const QString& text );
-    void addOption( const QString& iconSource, const QString& text );
-    void addOption( const QskGraphic&, const QString& text );
+    int addOption( const QUrl&, const QString& );
+    int addOption( const QString&, const QString& );
+    int addOption( const QskLabelData& );
+    
+    void setOptions( const QVector< QskLabelData >& );
+    
+    QVector< QskLabelData > options() const;
+    QskLabelData optionAt( int ) const;
 
     void clear();
 
@@ -60,7 +65,6 @@ class QSK_EXPORT QskComboBox : public QskControl
     virtual int indexInPopup() const;
 
     int count() const;
-    QVariantList optionAt( int ) const;
     QString textAt( int ) const;
 
     QString placeholderText() const;
@@ -73,7 +77,7 @@ class QSK_EXPORT QskComboBox : public QskControl
     void currentIndexChanged( int );
     void indexInPopupChanged( int );
 
-    void countChanged( int );
+    void optionsChanged();
     void placeholderTextChanged( const QString& );
 
   protected:
