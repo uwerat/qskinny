@@ -1,5 +1,5 @@
 <RCC>
-    <qresource>
+    <qresource prefix="/gallery">
         <file>icons/qvg/airport_shuttle.qvg</file>
         <file>icons/qvg/flight.qvg</file>
         <file>icons/qvg/local_pizza.qvg</file>

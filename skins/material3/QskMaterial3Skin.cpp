@@ -16,7 +16,6 @@
 #include <QskFunctions.h>
 #include <QskGraphic.h>
 #include <QskGraphicIO.h>
-#include <QskGraphicProvider.h>
 #include <QskInputPanelBox.h>
 #include <QskListView.h>
 #include <QskMenu.h>
@@ -110,15 +109,12 @@ namespace
         void setupTextInput();
         void setupTextLabel();
 
-        QskGraphic symbol( const char* url ) const
+        QskGraphic symbol( const char* name ) const
         {
-            const auto provider = m_skin->graphicProvider( {} );
+            const QString path = QStringLiteral( ":m3/icons/qvg/" )
+                + name + QStringLiteral( ".qvg" );
 
-            auto graphic = provider->requestGraphic( url );
-            if ( graphic )
-                return *graphic;
-
-            return QskGraphic();
+            return QskGraphicIO::read( path );
         }
 
         void setStandardSymbol( QskAspect aspect,
@@ -1319,24 +1315,9 @@ QskMaterial3Theme::QskMaterial3Theme( Lightness lightness,
     shapeExtraSmallTop = QskBoxShapeMetrics( 4_dp, 4_dp, 0, 0 );
 }
 
-QskMaterial3GraphicProvder::QskMaterial3GraphicProvder( QObject* parent )
-    : Inherited( parent )
-{
-}
-
-const QskGraphic* QskMaterial3GraphicProvder::loadGraphic( const QString& id ) const
-{
-    const QString name = QString( ":/icons/qvg/%1.qvg" ).arg( id );
-    const QskGraphic graphic = QskGraphicIO::read( name );
-
-    return graphic.isNull() ? nullptr : new QskGraphic( graphic );
-}
-
 QskMaterial3Skin::QskMaterial3Skin( const QskMaterial3Theme& palette, QObject* parent )
     : Inherited( parent )
 {
-    addGraphicProvider( {}, new QskMaterial3GraphicProvder() );
-
     setupFonts();
     setupGraphicFilters( palette );
 

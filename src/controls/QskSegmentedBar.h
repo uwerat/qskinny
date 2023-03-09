@@ -13,6 +13,7 @@
 
 class QskTextOptions;
 class QskGraphic;
+class QskLabelData;
 
 class QSK_EXPORT QskSegmentedBar : public QskControl
 {
@@ -21,13 +22,16 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
     Q_PROPERTY( Qt::Orientation orientation READ orientation
         WRITE setOrientation NOTIFY orientationChanged )
 
+    Q_PROPERTY( QVector< QskLabelData > options READ options
+        WRITE setOptions NOTIFY optionsChanged )
+
     Q_PROPERTY( int selectedIndex READ selectedIndex
         WRITE setSelectedIndex NOTIFY selectedIndexChanged USER true )
 
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
-    Q_PROPERTY( int count READ count NOTIFY countChanged )
+    Q_PROPERTY( int count READ count )
 
     using Inherited = QskControl;
 
@@ -47,6 +51,12 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
     QskTextOptions textOptions() const;
 
     int addOption( const QUrl&, const QString& );
+    int addOption( const QskLabelData& );
+
+    void setOptions( const QVector< QskLabelData >& );
+
+    QVector< QskLabelData > options() const;
+    QskLabelData optionAt( int ) const;
 
     void clear();
 
@@ -54,8 +64,6 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
     int currentIndex() const;
 
     int count() const;
-
-    QVariantList optionAt( int ) const;
 
     void setSegmentEnabled( int, bool );
     bool isSegmentEnabled( int ) const;
@@ -72,12 +80,13 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
   Q_SIGNALS:
     void selectedIndexChanged( int );
     void currentIndexChanged( int );
-    void countChanged();
+    void optionsChanged();
     void orientationChanged();
 
   protected:
-    void mouseReleaseEvent( QMouseEvent* ) override;
     void mousePressEvent( QMouseEvent* ) override;
+    void mouseReleaseEvent( QMouseEvent* ) override;
+    void mouseUngrabEvent() override;
 
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
