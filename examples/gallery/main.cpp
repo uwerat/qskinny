@@ -14,7 +14,7 @@
 #include <SkinnyShapeProvider.h>
 #include <SkinnyNamespace.h>
 
-#include <QskApplicationView.h>
+#include <QskMainView.h>
 #include <QskFocusIndicator.h>
 #include <QskObjectCounter.h>
 #include <QskTabView.h>
@@ -182,10 +182,6 @@ namespace
         }
     };
 
-    /*
-        Once QskApplicationView and friends are implemented we can replace
-        Header/ApplicationWindow with it. TODO ...
-     */
     class Header : public QskLinearBox
     {
         Q_OBJECT
@@ -219,11 +215,11 @@ namespace
         void enabledToggled( bool );
     };
 
-    class ApplicationView : public QskApplicationView
+    class MainView : public QskMainView
     {
       public:
-        ApplicationView( QQuickItem* parent = nullptr )
-            : QskApplicationView( parent )
+        MainView( QQuickItem* parent = nullptr )
+            : QskMainView( parent )
         {
             auto header = new Header( this );
 
@@ -260,7 +256,7 @@ int main( int argc, char* argv[] )
 
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-    auto mainView = new ApplicationView();
+    auto mainView = new MainView();
 
     QskWindow window;
     window.addItem( mainView );

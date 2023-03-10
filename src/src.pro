@@ -168,7 +168,6 @@ HEADERS += \
     controls/QskAbstractButton.h \
     controls/QskAnimationHint.h \
     controls/QskAnimator.h \
-    controls/QskApplicationView.h \
     controls/QskBoundedControl.h \
     controls/QskBoundedInput.h \
     controls/QskBoundedRangeInput.h \
@@ -194,6 +193,7 @@ HEADERS += \
     controls/QskInputGrabber.h \
     controls/QskListView.h \
     controls/QskListViewSkinlet.h \
+    controls/QskMainView.h \
     controls/QskMenu.h \
     controls/QskMenuSkinlet.h \
     controls/QskObjectTree.h \
@@ -259,7 +259,6 @@ SOURCES += \
     controls/QskAbstractButton.cpp \
     controls/QskAnimator.cpp \
     controls/QskAnimationHint.cpp \
-    controls/QskApplicationView.cpp \
     controls/QskBoundedControl.cpp \
     controls/QskBoundedInput.cpp \
     controls/QskBoundedRangeInput.cpp \
@@ -285,6 +284,7 @@ SOURCES += \
     controls/QskInputGrabber.cpp \
     controls/QskListView.cpp \
     controls/QskListViewSkinlet.cpp \
+    controls/QskMainView.cpp \
     controls/QskMenuSkinlet.cpp \
     controls/QskMenu.cpp \
     controls/QskObjectTree.cpp \

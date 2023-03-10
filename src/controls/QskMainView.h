@@ -3,20 +3,20 @@
  * This file may be used under the terms of the QSkinny License, Version 1.0
  *****************************************************************************/
 
-#ifndef QSK_APPLICATION_VIEW_H
-#define QSK_APPLICATION_VIEW_H
+#ifndef QSK_MAIN_VIEW_H
+#define QSK_MAIN_VIEW_H
 
 #include "QskLinearBox.h"
 
-class QSK_EXPORT QskApplicationView : public QskLinearBox
+class QSK_EXPORT QskMainView : public QskLinearBox
 {
     Q_OBJECT
 
     using Inherited = QskLinearBox;
 
   public:
-    QskApplicationView( QQuickItem* parent = nullptr );
-    ~QskApplicationView() override;
+    QskMainView( QQuickItem* parent = nullptr );
+    ~QskMainView() override;
 
     QskControl* header() const;
     void setHeader( QskControl* );
