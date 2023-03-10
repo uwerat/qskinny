@@ -71,10 +71,8 @@ namespace
     class Editor : private QskSkinHintTableEditor
     {
       public:
-        Editor( const QskSkin* skin, QskSkinHintTable* table,
-                const QskMaterial3Theme& palette )
+        Editor( QskSkinHintTable* table, const QskMaterial3Theme& palette )
             : QskSkinHintTableEditor( table )
-            , m_skin( skin )
             , m_pal( palette )
         {
         }
@@ -123,7 +121,6 @@ namespace
             setSymbol( aspect, QskStandardSymbol::graphic( symbolType ) );
         }
 
-        const QskSkin* m_skin;
         const QskMaterial3Theme& m_pal;
     };
 
@@ -1335,7 +1332,7 @@ QskMaterial3Skin::QskMaterial3Skin( const QskMaterial3Theme& palette, QObject* p
     setupFonts();
     setupGraphicFilters( palette );
 
-    Editor editor( this, &hintTable(), palette );
+    Editor editor( &hintTable(), palette );
     editor.setup();
 }
 
