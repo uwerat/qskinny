@@ -6,6 +6,7 @@
 #include "QskMenu.h"
 
 #include "QskGraphicProvider.h"
+#include "QskLabelData.h"
 #include "QskTextOptions.h"
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
@@ -27,47 +28,15 @@ QSK_SUBCONTROL( QskMenu, Separator )
 
 QSK_SYSTEM_STATE( QskMenu, Selected, QskAspect::FirstSystemState << 2 )
 
-namespace
-{
-    class Option
-    {
-      public:
-        Option( const QskGraphic& graphic, const QString& text )
-            : text( text )
-            , graphic( graphic )
-        {
-        }
-
-        Option( const QUrl& graphicSource, const QString& text )
-            : graphicSource( graphicSource )
-            , text( text )
-        {
-#if 1
-            // lazy loading TODO ...
-            if( !graphicSource.isEmpty() )
-                graphic = Qsk::loadGraphic( graphicSource );
-#endif
-        }
-
-        QUrl graphicSource;
-        QString text;
-
-        QskGraphic graphic;
-
-#if 0
-        // TODO ...
-        bool isEnabled = true;
-#endif
-    };
-}
-
 class QskMenu::PrivateData
 {
   public:
-    QVector< Option > options;
+    QPointF origin;
+
+    QVector< QskLabelData > options;
+    // QVector< bool > enabled;
     QVector< int > separators;
 
-    QPointF origin;
 
     // current/selected are not well defined yet, TODO ...
     int currentIndex = -1;
@@ -135,36 +104,81 @@ QPointF QskMenu::origin() const
     return m_data->origin;
 }
 
-void QskMenu::addOption( const QString& text )
+void QskMenu::setTextOptions( const QskTextOptions& textOptions )
 {
-    addOption( QUrl(), text );
+    setTextOptionsHint( Text, textOptions );
 }
 
-void QskMenu::addOption( const QUrl& graphicSource, const QString& text )
+QskTextOptions QskMenu::textOptions() const
 {
-    m_data->options += Option( graphicSource, text );
+    return textOptionsHint( Text );
+}
+
+int QskMenu::addOption( const QString& graphicSource, const QString& text )
+{
+    return addOption( QskLabelData( text, graphicSource ) );
+}
+
+int QskMenu::addOption( const QUrl& graphicSource, const QString& text )
+{
+    return addOption( QskLabelData( text, graphicSource ) );
+}
+
+int QskMenu::addOption( const QskLabelData& option )
+{
+    m_data->options += option;
 
     resetImplicitSize();
     update();
 
     if ( isComponentComplete() )
-        Q_EMIT countChanged( count() );
+        Q_EMIT optionsChanged();
+
+    return count() - 1;
 }
 
-void QskMenu::addOption( const QskGraphic& graphic, const QString& text )
+void QskMenu::setOptions( const QVector< QskLabelData >& options )
 {
-    m_data->options += Option( graphic, text );
+    m_data->options = options;
+    m_data->selectedIndex = -1;
+
+    if ( m_data->currentIndex >= 0 )
+    {
+        m_data->currentIndex = -1;
+
+        if ( isComponentComplete() )
+            Q_EMIT currentIndexChanged( m_data->currentIndex );
+    }
 
     resetImplicitSize();
     update();
 
     if ( isComponentComplete() )
-        Q_EMIT countChanged( count() );
+        Q_EMIT optionsChanged();
 }
 
-void QskMenu::addOption( const QString& graphicSource, const QString& text )
+void QskMenu::clear()
 {
-    addOption( QUrl( graphicSource ), text );
+    m_data->selectedIndex = m_data->currentIndex = -1;
+    m_data->separators.clear();
+
+    if ( !m_data->options.isEmpty() )
+    {
+        m_data->options.clear();
+
+        if ( isComponentComplete() )
+            Q_EMIT optionsChanged();
+    }
+}
+
+QVector< QskLabelData > QskMenu::options() const
+{
+    return m_data->options;
+}
+
+QskLabelData QskMenu::optionAt( int index ) const
+{
+    return m_data->options.value( index );
 }
 
 int QskMenu::count() const
@@ -190,55 +204,12 @@ int QskMenu::separatorCount() const
     return m_data->separators.count();
 }
 
-void QskMenu::clear()
-{
-    m_data->separators.clear();
-
-    if ( !m_data->options.isEmpty() )
-    {
-        m_data->options.clear();
-        if ( isComponentComplete() )
-            Q_EMIT countChanged( count() );
-    }
-}
-
-QVariantList QskMenu::optionAt( int index ) const
-{
-    const auto& options = m_data->options;
-
-    if( index < 0 || index >= options.count() )
-        return QVariantList();
-
-    const auto& option = options[ index ];
-
-    QVariantList list;
-    list += QVariant::fromValue( option.graphic );
-    list += QVariant::fromValue( option.text );
-
-    return list;
-}
-
-QString QskMenu::textAt( int index ) const
-{
-    if ( index >= 0 && index < m_data->options.count() )
-        return m_data->options[ index ].text;
-
-    return QString();
-}
-
 QString QskMenu::currentText() const
 {
-    return textAt( m_data->currentIndex );
-}
+    if ( m_data->currentIndex >= 0 )
+        return optionAt( m_data->currentIndex ).text();
 
-void QskMenu::setTextOptions( const QskTextOptions& textOptions )
-{
-    setTextOptionsHint( Text, textOptions );
-}
-
-QskTextOptions QskMenu::textOptions() const
-{
-    return textOptionsHint( Text );
+    return QString();
 }
 
 void QskMenu::setCurrentIndex( int index )
@@ -372,6 +343,12 @@ void QskMenu::mousePressEvent( QMouseEvent* event )
     }
 
     Inherited::mousePressEvent( event );
+}
+
+void QskMenu::mouseUngrabEvent()
+{
+    m_data->isPressed = false;
+    Inherited::mouseUngrabEvent();
 }
 
 void QskMenu::mouseReleaseEvent( QMouseEvent* event )

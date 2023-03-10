@@ -37,6 +37,7 @@ class QSK_EXPORT QskIcon
   public:
     QskIcon();
 
+    QskIcon( const QString& );
     QskIcon( const QUrl& );
     QskIcon( const QskGraphic& );
 
@@ -69,6 +70,11 @@ class QSK_EXPORT QskIcon
 };
 
 Q_DECLARE_METATYPE( QskIcon )
+
+inline QskIcon::QskIcon( const QString& source )
+    : QskIcon( QUrl( source ) )
+{
+}
 
 inline bool QskIcon::isNull() const
 {

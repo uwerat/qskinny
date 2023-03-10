@@ -24,13 +24,15 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
     Q_PROPERTY( QVector< QskLabelData > options READ options
         WRITE setOptions NOTIFY optionsChanged )
 
+    Q_PROPERTY( int count READ count )
+
     Q_PROPERTY( int selectedIndex READ selectedIndex
         WRITE setSelectedIndex NOTIFY selectedIndexChanged USER true )
 
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
-    Q_PROPERTY( int count READ count )
+    Q_PROPERTY( QString currentText READ currentText )
 
     using Inherited = QskControl;
 
@@ -61,6 +63,8 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
 
     int selectedIndex() const;
     int currentIndex() const;
+
+    QString currentText() const;
 
     int count() const;
 

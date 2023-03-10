@@ -218,8 +218,7 @@ void QskComboBox::openPopup()
     menu->setOrigin( mapToScene( cr.bottomLeft() ) );
     menu->setFixedWidth( cr.width() );
 
-    for ( const auto& option : m_data->options )
-        menu->addOption( option.icon().graphic(), option.text() );
+    menu->setOptions( m_data->options );
 
     connect( menu, &QskMenu::currentIndexChanged,
         this, &QskComboBox::indexInPopupChanged );
