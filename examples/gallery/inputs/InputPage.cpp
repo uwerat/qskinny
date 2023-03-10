@@ -55,7 +55,9 @@ namespace
                 auto input = new QskTextInput( "12345", this );
                 input->setMaxLength( 5 );
                 input->setEchoMode( QskTextInput::PasswordEchoOnEdit );
-                input->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+#if 1
+                input->setFixedWidth( 80 );
+#endif
             }
 
             {
