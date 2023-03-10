@@ -68,7 +68,7 @@ QskHashValue QskLabelData::hash( QskHashValue seed ) const
     return m_icon.hash( hash );
 }
 
-QVector< QskLabelData > qskCreateLabelData( const QVector< QString >& list )
+QVector< QskLabelData > qskCreateLabelData( const QStringList& list )
 {
     QVector< QskLabelData > labelData;
     labelData.reserve( list.size() );
