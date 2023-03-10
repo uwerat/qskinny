@@ -110,7 +110,8 @@ int QskSegmentedBar::addOption( const QskLabelData& option )
     resetImplicitSize();
     update();
 
-    Q_EMIT optionsChanged();
+    if ( isComponentComplete() )
+        Q_EMIT optionsChanged();
 
     if ( count() == 1 )
         setSelectedIndex( 0 );
@@ -121,6 +122,11 @@ int QskSegmentedBar::addOption( const QskLabelData& option )
 QskLabelData QskSegmentedBar::optionAt( int index ) const
 {
     return m_data->options.value( index );
+}
+
+void QskSegmentedBar::setOptions( const QStringList& options )
+{
+    setOptions( qskCreateLabelData( options ) );
 }
 
 void QskSegmentedBar::setOptions( const QVector< QskLabelData >& options )
@@ -323,6 +329,14 @@ void QskSegmentedBar::setCurrentIndex( int index )
 int QskSegmentedBar::currentIndex() const
 {
     return m_data->currentIndex;
+}
+
+QString QskSegmentedBar::currentText() const
+{
+    if ( m_data->currentIndex >= 0 )
+        return optionAt( m_data->currentIndex ).text();
+
+    return QString();
 }
 
 void QskSegmentedBar::setSelectedIndex( int index )

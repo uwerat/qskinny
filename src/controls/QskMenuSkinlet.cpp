@@ -13,29 +13,10 @@
 #include "QskFunctions.h"
 #include "QskMargins.h"
 #include "QskFunctions.h"
+#include "QskLabelData.h"
 
 #include <qfontmetrics.h>
 #include <qmath.h>
-
-template< class T >
-static inline QVariant qskSampleAt( const QskMenu* menu, int index )
-{
-    const auto list = menu->optionAt( index );
-    for ( const auto& value : list )
-    {
-        if ( value.canConvert< T >() )
-            return value;
-    }
-
-    return QVariant();
-}
-
-template< class T >
-static inline T qskValueAt( const QskMenu* menu, int index )
-{
-    const auto sample = qskSampleAt< T >( menu, index );
-    return sample.template value< T >();
-}
 
 class QskMenuSkinlet::PrivateData
 {
@@ -415,13 +396,17 @@ QVariant QskMenuSkinlet::sampleAt( const QskSkinnable* skinnable,
 {
     using Q = QskMenu;
 
-    const auto menu = static_cast< const QskMenu* >( skinnable );
+    if ( subControl == Q::Icon || subControl == Q::Text )
+    {
+        const auto menu = static_cast< const QskMenu* >( skinnable );
 
-    if ( subControl == Q::Icon )
-        return qskSampleAt< QskGraphic >( menu, index );
+        const auto option = menu->optionAt( index );
 
-    if ( subControl == Q::Text )
-        return qskSampleAt< QString >( menu, index );
+        if ( subControl == Q::Icon )
+            return QVariant::fromValue( option.icon().graphic() );
+        else
+            return QVariant::fromValue( option.text() );
+    }
 
     return Inherited::sampleAt( skinnable, subControl, index );
 }
@@ -504,7 +489,7 @@ QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
 
     if ( subControl == Q::Icon )
     {
-        const auto graphic = qskValueAt< QskGraphic >( menu, index );
+        const auto graphic = menu->optionAt( index ).icon().graphic();
         if ( graphic.isNull() )
             return nullptr;
 
@@ -517,7 +502,7 @@ QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
 
     if ( subControl == Q::Text )
     {
-        const auto text = qskValueAt< QString >( menu, index );
+        const auto text = menu->optionAt( index ).text();
         if ( text.isEmpty() )
             return nullptr;
 

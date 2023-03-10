@@ -68,6 +68,17 @@ QskHashValue QskLabelData::hash( QskHashValue seed ) const
     return m_icon.hash( hash );
 }
 
+QVector< QskLabelData > qskCreateLabelData( const QVector< QString >& list )
+{
+    QVector< QskLabelData > labelData;
+    labelData.reserve( list.size() );
+
+    for ( const auto& text : list )
+        labelData += QskLabelData( text );
+
+    return labelData;
+}
+
 #ifndef QT_NO_DEBUG_STREAM
 
 #include <qdebug.h>

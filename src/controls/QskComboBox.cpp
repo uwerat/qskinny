@@ -140,6 +140,11 @@ int QskComboBox::addOption( const QskLabelData& option )
     return count() - 1;
 }
 
+void QskComboBox::setOptions( const QStringList& options )
+{
+    setOptions( qskCreateLabelData( options ) );
+}
+
 void QskComboBox::setOptions( const QVector< QskLabelData >& options )
 {
     if ( options == m_data->options )
@@ -218,8 +223,7 @@ void QskComboBox::openPopup()
     menu->setOrigin( mapToScene( cr.bottomLeft() ) );
     menu->setFixedWidth( cr.width() );
 
-    for ( const auto& option : m_data->options )
-        menu->addOption( option.icon().graphic(), option.text() );
+    menu->setOptions( m_data->options );
 
     connect( menu, &QskMenu::currentIndexChanged,
         this, &QskComboBox::indexInPopupChanged );

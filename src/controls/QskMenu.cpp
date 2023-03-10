@@ -6,6 +6,7 @@
 #include "QskMenu.h"
 
 #include "QskGraphicProvider.h"
+#include "QskLabelData.h"
 #include "QskTextOptions.h"
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
@@ -27,52 +28,17 @@ QSK_SUBCONTROL( QskMenu, Separator )
 
 QSK_SYSTEM_STATE( QskMenu, Selected, QskAspect::FirstSystemState << 2 )
 
-namespace
-{
-    class Option
-    {
-      public:
-        Option( const QskGraphic& graphic, const QString& text )
-            : text( text )
-            , graphic( graphic )
-        {
-        }
-
-        Option( const QUrl& graphicSource, const QString& text )
-            : graphicSource( graphicSource )
-            , text( text )
-        {
-#if 1
-            // lazy loading TODO ...
-            if( !graphicSource.isEmpty() )
-                graphic = Qsk::loadGraphic( graphicSource );
-#endif
-        }
-
-        QUrl graphicSource;
-        QString text;
-
-        QskGraphic graphic;
-
-#if 0
-        // TODO ...
-        bool isEnabled = true;
-#endif
-    };
-}
-
 class QskMenu::PrivateData
 {
   public:
-    QVector< Option > options;
-    QVector< int > separators;
-
     QPointF origin;
 
-    // current/selected are not well defined yet, TODO ...
-    int currentIndex = -1;
-    int selectedIndex = -1;
+    QVector< QskLabelData > options;
+    // QVector< bool > enabled;
+    QVector< int > separators;
 
+    int triggeredIndex = -1;
+    int currentIndex = -1;
     bool isPressed = false;
 };
 
@@ -93,6 +59,9 @@ QskMenu::QskMenu( QQuickItem* parent )
     // we hide the focus indicator while fading
     connect( this, &QskMenu::fadingChanged, this,
         &QskControl::focusIndicatorRectChanged );
+
+    connect( this, &QskMenu::opened, this,
+        [this]() { m_data->triggeredIndex = -1; } );
 }
 
 QskMenu::~QskMenu()
@@ -135,36 +104,77 @@ QPointF QskMenu::origin() const
     return m_data->origin;
 }
 
-void QskMenu::addOption( const QString& text )
+void QskMenu::setTextOptions( const QskTextOptions& textOptions )
 {
-    addOption( QUrl(), text );
+    setTextOptionsHint( Text, textOptions );
 }
 
-void QskMenu::addOption( const QUrl& graphicSource, const QString& text )
+QskTextOptions QskMenu::textOptions() const
 {
-    m_data->options += Option( graphicSource, text );
+    return textOptionsHint( Text );
+}
+
+int QskMenu::addOption( const QString& graphicSource, const QString& text )
+{
+    return addOption( QskLabelData( text, graphicSource ) );
+}
+
+int QskMenu::addOption( const QUrl& graphicSource, const QString& text )
+{
+    return addOption( QskLabelData( text, graphicSource ) );
+}
+
+int QskMenu::addOption( const QskLabelData& option )
+{
+    m_data->options += option;
 
     resetImplicitSize();
     update();
 
     if ( isComponentComplete() )
-        Q_EMIT countChanged( count() );
+        Q_EMIT optionsChanged();
+
+    return count() - 1;
 }
 
-void QskMenu::addOption( const QskGraphic& graphic, const QString& text )
+void QskMenu::setOptions( const QStringList& options )
 {
-    m_data->options += Option( graphic, text );
+    setOptions( qskCreateLabelData( options ) );
+}
+
+void QskMenu::setOptions( const QVector< QskLabelData >& options )
+{
+    m_data->options = options;
+
+    if ( m_data->currentIndex >= 0 )
+    {
+        m_data->currentIndex = -1;
+
+        if ( isComponentComplete() )
+            Q_EMIT currentIndexChanged( m_data->currentIndex );
+    }
 
     resetImplicitSize();
     update();
 
     if ( isComponentComplete() )
-        Q_EMIT countChanged( count() );
+        Q_EMIT optionsChanged();
 }
 
-void QskMenu::addOption( const QString& graphicSource, const QString& text )
+void QskMenu::clear()
 {
-    addOption( QUrl( graphicSource ), text );
+    m_data->separators.clear();
+    setOptions( QVector< QskLabelData >() );
+}
+
+QVector< QskLabelData > QskMenu::options() const
+{
+    return m_data->options;
+}
+
+QskLabelData QskMenu::optionAt( int index ) const
+{
+    return m_data->options.value( index );
 }
 
 int QskMenu::count() const
@@ -190,55 +200,9 @@ int QskMenu::separatorCount() const
     return m_data->separators.count();
 }
 
-void QskMenu::clear()
+int QskMenu::currentIndex() const
 {
-    m_data->separators.clear();
-
-    if ( !m_data->options.isEmpty() )
-    {
-        m_data->options.clear();
-        if ( isComponentComplete() )
-            Q_EMIT countChanged( count() );
-    }
-}
-
-QVariantList QskMenu::optionAt( int index ) const
-{
-    const auto& options = m_data->options;
-
-    if( index < 0 || index >= options.count() )
-        return QVariantList();
-
-    const auto& option = options[ index ];
-
-    QVariantList list;
-    list += QVariant::fromValue( option.graphic );
-    list += QVariant::fromValue( option.text );
-
-    return list;
-}
-
-QString QskMenu::textAt( int index ) const
-{
-    if ( index >= 0 && index < m_data->options.count() )
-        return m_data->options[ index ].text;
-
-    return QString();
-}
-
-QString QskMenu::currentText() const
-{
-    return textAt( m_data->currentIndex );
-}
-
-void QskMenu::setTextOptions( const QskTextOptions& textOptions )
-{
-    setTextOptionsHint( Text, textOptions );
-}
-
-QskTextOptions QskMenu::textOptions() const
-{
-    return textOptionsHint( Text );
+    return m_data->currentIndex;
 }
 
 void QskMenu::setCurrentIndex( int index )
@@ -258,9 +222,19 @@ void QskMenu::setCurrentIndex( int index )
     }
 }
 
-int QskMenu::currentIndex() const
+QString QskMenu::currentText() const
 {
-    return m_data->currentIndex;
+    return optionAt( m_data->currentIndex ).text();
+}
+
+int QskMenu::triggeredIndex() const
+{
+    return m_data->triggeredIndex;
+}
+
+QString QskMenu::triggeredText() const
+{
+    return optionAt( m_data->triggeredIndex ).text();
 }
 
 void QskMenu::keyPressEvent( QKeyEvent* event )
@@ -296,18 +270,14 @@ void QskMenu::keyPressEvent( QKeyEvent* event )
         case Qt::Key_Escape:
         case Qt::Key_Cancel:
         {
-            setSelectedIndex( -1 );
+            close();
             return;
         }
 
         default:
         {
-            const int steps = qskFocusChainIncrement( event );
-
-            if( steps != 0 )
-            {
+            if ( const int steps = qskFocusChainIncrement( event ) )
                 traverse( steps );
-            }
         }
     }
 }
@@ -317,7 +287,12 @@ void QskMenu::keyReleaseEvent( QKeyEvent* )
     if( m_data->isPressed )
     {
         m_data->isPressed = false;
-        setSelectedIndex( m_data->currentIndex );
+
+        if ( m_data->currentIndex >= 0 )
+        {
+            trigger( m_data->currentIndex );
+            close();
+        }
     }
 }
 
@@ -374,6 +349,12 @@ void QskMenu::mousePressEvent( QMouseEvent* event )
     Inherited::mousePressEvent( event );
 }
 
+void QskMenu::mouseUngrabEvent()
+{
+    m_data->isPressed = false;
+    Inherited::mouseUngrabEvent();
+}
+
 void QskMenu::mouseReleaseEvent( QMouseEvent* event )
 {
     if ( event->button() == Qt::LeftButton )
@@ -382,9 +363,14 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
         {
             m_data->isPressed = false;
 
-            const auto index = indexAtPosition( qskMousePosition( event ) );
-            if ( index == m_data->currentIndex )
-                setSelectedIndex( index );
+            const auto index = m_data->currentIndex;
+
+            if ( ( index >= 0 )
+                && ( index == indexAtPosition( qskMousePosition( event ) ) ) )
+            {
+                trigger( m_data->currentIndex );
+                close();
+            }
         }
 
         return;
@@ -417,20 +403,6 @@ QRectF QskMenu::focusIndicatorRect() const
     return Inherited::focusIndicatorRect();
 }
 
-void QskMenu::setSelectedIndex( int index )
-{
-    if ( !isOpen() )
-        return;
-
-    if ( index >= 0 )
-        setCurrentIndex( index );
-
-    m_data->selectedIndex = index;
-    Q_EMIT triggered( index );
-
-    close();
-}
-
 QRectF QskMenu::cellRect( int index ) const
 {
     return effectiveSkinlet()->sampleRect(
@@ -443,11 +415,19 @@ int QskMenu::indexAtPosition( const QPointF& pos ) const
         this, contentsRect(), QskMenu::Segment, pos );
 }
 
+void QskMenu::trigger( int index )
+{
+    if ( index >= 0 && index < m_data->options.count()  )
+    {
+        m_data->triggeredIndex = index;
+        Q_EMIT triggered( index );
+    }
+}
+
 int QskMenu::exec()
 {
-    m_data->selectedIndex = -1;
     (void) execPopup();
-    return m_data->selectedIndex;
+    return m_data->triggeredIndex;
 }
 
 #include "moc_QskMenu.cpp"

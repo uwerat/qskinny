@@ -7,12 +7,11 @@
 #define QSK_MENU_H
 
 #include "QskPopup.h"
-
-#include <qurl.h>
-#include <qstring.h>
+#include <qstringlist.h>
 
 class QskTextOptions;
-class QskGraphic;
+class QskLabelData;
+class QUrl;
 
 class QSK_EXPORT QskMenu : public QskPopup
 {
@@ -24,12 +23,18 @@ class QSK_EXPORT QskMenu : public QskPopup
     Q_PROPERTY( bool cascading READ isCascading WRITE setCascading
         RESET resetCascading NOTIFY cascadingChanged )
 
-    Q_PROPERTY( int count READ count NOTIFY countChanged )
+    Q_PROPERTY( QVector< QskLabelData > options READ options
+        WRITE setOptions NOTIFY optionsChanged )
+
+    Q_PROPERTY( int count READ count )
 
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
-    Q_PROPERTY( QString currentText READ currentText )
+    Q_PROPERTY( int triggeredIndex READ triggeredIndex NOTIFY triggered )
+
+    Q_PROPERTY( QString triggeredText READ triggeredText NOTIFY triggered )
+    Q_PROPERTY( QString currentText READ currentText NOTIFY currentIndexChanged )
 
     using Inherited = QskPopup;
 
@@ -50,14 +55,15 @@ class QSK_EXPORT QskMenu : public QskPopup
     void setTextOptions( const QskTextOptions& );
     QskTextOptions textOptions() const;
 
-    // insert, remove, functors, actions
-    void addOption( const QUrl& iconSource, const QString& text );
-    void addOption( const QString& iconSource, const QString& text );
-    void addOption( const QskGraphic&, const QString& text );
-    void addOption( const QString& text );
+    int addOption( const QString&, const QString& );
+    int addOption( const QUrl&, const QString& );
+    int addOption( const QskLabelData& );
 
-    QVariantList optionAt( int ) const;
-    QString textAt( int ) const;
+    void setOptions( const QVector< QskLabelData >& );
+    void setOptions( const QStringList& );
+
+    QVector< QskLabelData > options() const;
+    QskLabelData optionAt( int ) const;
 
     int count() const;
 
@@ -71,6 +77,9 @@ class QSK_EXPORT QskMenu : public QskPopup
     int currentIndex() const;
     QString currentText() const;
 
+    int triggeredIndex() const;
+    QString triggeredText() const;
+
     QRectF focusIndicatorRect() const override;
 
     QRectF cellRect( int index ) const;
@@ -83,12 +92,12 @@ class QSK_EXPORT QskMenu : public QskPopup
     void originChanged( const QPointF& );
 
     void triggered( int index );
-    void currentIndexChanged( int index );
+    void currentIndexChanged( int );
 
-    void countChanged( int );
+    void optionsChanged();
 
   public Q_SLOTS:
-    void setCurrentIndex( int index );
+    void setCurrentIndex( int );
 
   protected:
     void keyPressEvent( QKeyEvent* ) override;
@@ -99,13 +108,14 @@ class QSK_EXPORT QskMenu : public QskPopup
 #endif
 
     void mousePressEvent( QMouseEvent* ) override;
+    void mouseUngrabEvent() override;
     void mouseReleaseEvent( QMouseEvent* ) override;
 
     void aboutToShow() override;
+    void trigger( int );
 
   private:
     void traverse( int steps );
-    void setSelectedIndex( int index );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
