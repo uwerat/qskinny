@@ -14,6 +14,7 @@ list(APPEND TARGET_HEADERS
     common/QskGradientStop.h
     common/QskHctColor.h
     common/QskIntervalF.h
+    common/QskLabelData.h
     common/QskMargins.h
     common/QskMetaFunction.h
     common/QskMetaFunction.hpp
@@ -44,6 +45,7 @@ list(APPEND TARGET_SOURCES
     common/QskGradientStop.cpp
     common/QskHctColor.cpp
     common/QskIntervalF.cpp
+    common/QskLabelData.cpp
     common/QskMargins.cpp
     common/QskMetaFunction.cpp
     common/QskMetaInvokable.cpp
@@ -67,6 +69,7 @@ list(APPEND TARGET_HEADERS
     graphic/QskGraphicProvider.h
     graphic/QskGraphicProviderMap.h
     graphic/QskGraphicTextureFactory.h
+    graphic/QskIcon.h
     graphic/QskPainterCommand.h
     graphic/QskStandardSymbol.h)
 
@@ -79,6 +82,7 @@ list(APPEND TARGET_SOURCES
     graphic/QskGraphicProvider.cpp
     graphic/QskGraphicProviderMap.cpp
     graphic/QskGraphicTextureFactory.cpp
+    graphic/QskIcon.cpp
     graphic/QskPainterCommand.cpp
     graphic/QskStandardSymbol.cpp)
 
@@ -147,7 +151,7 @@ list(APPEND TARGET_HEADERS
     controls/QskAbstractButton.h
     controls/QskAnimationHint.h
     controls/QskAnimator.h
-    controls/QskApplicationView.h
+    controls/QskMainView.h
     controls/QskBoundedControl.h
     controls/QskBoundedInput.h
     controls/QskBoundedRangeInput.h
@@ -238,7 +242,7 @@ list(APPEND TARGET_SOURCES
     controls/QskAbstractButton.cpp
     controls/QskAnimator.cpp
     controls/QskAnimationHint.cpp
-    controls/QskApplicationView.cpp
+    controls/QskMainView.cpp
     controls/QskBoundedControl.cpp
     controls/QskBoundedInput.cpp
     controls/QskBoundedRangeInput.cpp
