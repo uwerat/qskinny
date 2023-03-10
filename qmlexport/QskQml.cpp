@@ -13,6 +13,7 @@
 #include <QskAspect.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
+#include <QskComboBox.h>
 #include <QskDialog.h>
 #include <QskDialogButton.h>
 #include <QskDialogButtonBox.h>
@@ -22,14 +23,18 @@
 #include <QskGradient.h>
 #include <QskGradientDirection.h>
 #include <QskGraphicLabel.h>
+#include <QskIcon.h>
 #include <QskIntervalF.h>
 #include <QskLayoutMetrics.h>
+#include <QskLabelData.h>
+#include <QskMainView.h>
 #include <QskMargins.h>
 #include <QskMessageWindow.h>
 #include <QskPlacementPolicy.h>
 #include <QskPopup.h>
 #include <QskProgressBar.h>
 #include <QskPushButton.h>
+#include <QskRadioBox.h>
 #include <QskScrollArea.h>
 #include <QskScrollView.h>
 #include <QskSelectionWindow.h>
@@ -40,6 +45,7 @@
 #include <QskSkin.h>
 #include <QskSkinManager.h>
 #include <QskSlider.h>
+#include <QskSpinBox.h>
 #include <QskStandardSymbol.h>
 #include <QskStatusIndicator.h>
 #include <QskSubWindow.h>
@@ -200,8 +206,13 @@ void QskQml::registerTypes()
     registerObject< QskLinearBoxQml >( "LinearBox" );
 
     registerObject< QskControl >();
+
+    registerObject< QskMainView >();
+    registerObject< QskComboBox >();
     registerObject< QskGraphicLabel >();
     registerObject< QskVirtualKeyboard >();
+    registerObject< QskRadioBox >();
+    registerObject< QskSpinBox >();
     registerObject< QskTextLabel >();
     registerObject< QskTabButton >();
     registerObject< QskTabBar >();
@@ -242,6 +253,8 @@ void QskQml::registerTypes()
     registerGadget< QskLayoutMetrics >();
     registerGadget< QskMargins >();
 
+    registerGadget< QskIcon >();
+    registerGadget< QskLabelData >();
     registerGadget< QskGradient >();
     registerGadget< QskGradientStop >();
     registerGadget< QskLinearDirection >();
