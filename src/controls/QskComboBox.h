@@ -7,8 +7,11 @@
 #define QSK_COMBO_BOX_H
 
 #include "QskControl.h"
+#include <qstringlist.h>
 
+class QskTextOptions;
 class QskLabelData;
+class QUrl;
 
 class QSK_EXPORT QskComboBox : public QskControl
 {
@@ -52,6 +55,7 @@ class QSK_EXPORT QskComboBox : public QskControl
     int addOption( const QskLabelData& );
     
     void setOptions( const QVector< QskLabelData >& );
+    void setOptions( const QStringList& );
     
     QVector< QskLabelData > options() const;
     QskLabelData optionAt( int ) const;

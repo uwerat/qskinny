@@ -124,6 +124,11 @@ QskLabelData QskSegmentedBar::optionAt( int index ) const
     return m_data->options.value( index );
 }
 
+void QskSegmentedBar::setOptions( const QStringList& options )
+{
+    setOptions( qskCreateLabelData( options ) );
+}
+
 void QskSegmentedBar::setOptions( const QVector< QskLabelData >& options )
 {
     m_data->options = options;

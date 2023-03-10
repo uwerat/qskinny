@@ -140,6 +140,11 @@ int QskComboBox::addOption( const QskLabelData& option )
     return count() - 1;
 }
 
+void QskComboBox::setOptions( const QStringList& options )
+{
+    setOptions( qskCreateLabelData( options ) );
+}
+
 void QskComboBox::setOptions( const QVector< QskLabelData >& options )
 {
     if ( options == m_data->options )

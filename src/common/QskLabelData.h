@@ -10,6 +10,7 @@
 #include "QskIcon.h"
 
 #include <qstring.h>
+#include <qvector.h>
 #include <qmetatype.h>
 #include <qdebug.h>
 
@@ -68,6 +69,8 @@ inline bool QskLabelData::operator!=( const QskLabelData& other ) const noexcept
 {
     return ( !( *this == other ) );
 }
+
+QSK_EXPORT QVector< QskLabelData > qskCreateLabelData( const QVector< QString >& );
 
 #ifndef QT_NO_DEBUG_STREAM
 

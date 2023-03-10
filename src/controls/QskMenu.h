@@ -7,12 +7,11 @@
 #define QSK_MENU_H
 
 #include "QskPopup.h"
-
-#include <qurl.h>
-#include <qstring.h>
+#include <qstringlist.h>
 
 class QskTextOptions;
 class QskLabelData;
+class QUrl;
 
 class QSK_EXPORT QskMenu : public QskPopup
 {
@@ -32,7 +31,10 @@ class QSK_EXPORT QskMenu : public QskPopup
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
-    Q_PROPERTY( QString currentText READ currentText )
+    Q_PROPERTY( int triggeredIndex READ triggeredIndex NOTIFY triggered )
+
+    Q_PROPERTY( QString triggeredText READ triggeredText NOTIFY triggered )
+    Q_PROPERTY( QString currentText READ currentText NOTIFY currentIndexChanged )
 
     using Inherited = QskPopup;
 
@@ -58,6 +60,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     int addOption( const QskLabelData& );
 
     void setOptions( const QVector< QskLabelData >& );
+    void setOptions( const QStringList& );
 
     QVector< QskLabelData > options() const;
     QskLabelData optionAt( int ) const;
@@ -73,6 +76,9 @@ class QSK_EXPORT QskMenu : public QskPopup
 
     int currentIndex() const;
     QString currentText() const;
+
+    int triggeredIndex() const;
+    QString triggeredText() const;
 
     QRectF focusIndicatorRect() const override;
 
@@ -106,10 +112,10 @@ class QSK_EXPORT QskMenu : public QskPopup
     void mouseReleaseEvent( QMouseEvent* ) override;
 
     void aboutToShow() override;
+    void trigger( int );
 
   private:
     void traverse( int steps );
-    void setSelectedIndex( int index );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

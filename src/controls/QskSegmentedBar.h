@@ -7,12 +7,11 @@
 #define QSK_SEGMENTED_BAR_H
 
 #include "QskControl.h"
-
-#include <qurl.h>
-#include <qstring.h>
+#include <qstringlist.h>
 
 class QskTextOptions;
 class QskLabelData;
+class QUrl;
 
 class QSK_EXPORT QskSegmentedBar : public QskControl
 {
@@ -55,6 +54,7 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
     int addOption( const QskLabelData& );
 
     void setOptions( const QVector< QskLabelData >& );
+    void setOptions( const QStringList& );
 
     QVector< QskLabelData > options() const;
     QskLabelData optionAt( int ) const;
