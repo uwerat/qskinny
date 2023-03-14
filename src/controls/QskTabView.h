@@ -50,23 +50,16 @@ class QSK_EXPORT QskTabView : public QskControl
 
     Qt::Orientation orientation() const;
 
-    int addTab( QskTabButton*, QQuickItem* );
-    int insertTab( int index, QskTabButton*, QQuickItem* );
-
     Q_INVOKABLE int addTab( const QString&, QQuickItem* );
     Q_INVOKABLE int insertTab( int index, const QString&, QQuickItem* );
 
     Q_INVOKABLE void removeTab( int index );
     Q_INVOKABLE void clear( bool autoDelete = false );
 
-    QQuickItem* itemAt( int index ) const;
-    QskTabButton* buttonAt( int index ) const;
+    QQuickItem* pageAt( int index ) const;
+    int pageIndex( const QQuickItem* );
 
-    int itemIndex( const QQuickItem* );
-    int buttonIndex( const QskTabButton* );
-
-    QQuickItem* currentItem() const;
-    QskTabButton* currentButton() const;
+    QQuickItem* currentPage() const;
 
     int currentIndex() const;
     int count() const;
@@ -74,6 +67,20 @@ class QSK_EXPORT QskTabView : public QskControl
     QRectF tabRect() const;
 
     QskAspect::Variation effectiveVariation() const override;
+
+    void setTabEnabled( int , bool );
+    bool isTabEnabled( int index ) const;
+
+#if 1
+    // see: https://github.com/uwerat/qskinny/issues/283
+
+    int addTab( QskTabButton*, QQuickItem* );
+    int insertTab( int index, QskTabButton*, QQuickItem* );
+
+    QskTabButton* buttonAt( int index ) const;
+    int buttonIndex( const QskTabButton* );
+    QskTabButton* currentButton() const;
+#endif
 
   public Q_SLOTS:
     void setCurrentIndex( int index );

@@ -62,10 +62,10 @@ namespace
             setAutoFitTabs( true );
         }
 
-        void setTabsEnabled( bool on )
+        void setPagesEnabled( bool on )
         {
             for ( int i = 0; i < count(); i++ )
-                itemAt( i )->setEnabled( on );
+                pageAt( i )->setEnabled( on );
         }
 
         void addPage( const QString& tabText, QQuickItem* page )
@@ -232,7 +232,7 @@ namespace
             tabView->addPage( "Dialogs", new DialogPage() );
 
             connect( header, &Header::enabledToggled,
-                tabView, &TabView::setTabsEnabled );
+                tabView, &TabView::setPagesEnabled );
 
             setHeader( header );
             setBody( tabView );
