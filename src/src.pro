@@ -40,6 +40,7 @@ HEADERS += \
     common/QskPlacementPolicy.h \
     common/QskPlatform.h \
     common/QskRgbValue.h \
+    common/QskRgbLiterals.h \
     common/QskScaleEngine.h \
     common/QskScaleTickmarks.h \
     common/QskShadowMetrics.h \
