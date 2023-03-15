@@ -236,4 +236,135 @@ namespace QskRgb
 
 #endif
 
+namespace QskRgb
+{
+    // Converts a HTML #RRGGBB[AA] color hex string to Qt's RGB 0xAARRGGBB integer
+    QSK_EXPORT Q_REQUIRED_RESULT constexpr QRgb fromHexString(
+        const char* const str, const size_t len ) noexcept
+    {
+        if ( len != 7 && len != 9 )
+        {
+            return 0;
+        }
+
+        if ( str[ 0 ] != '#' )
+        {
+            return 0;
+        }
+
+        QRgb rgb = 0x00;
+
+        for ( size_t i = 1; i < len; ++i )
+        {
+            switch ( str[ i ] )
+            {
+                case '0':
+                    rgb = ( rgb << 4 ) | 0x0;
+                    break;
+
+                case '1':
+                    rgb = ( rgb << 4 ) | 0x1;
+                    break;
+
+                case '2':
+                    rgb = ( rgb << 4 ) | 0x2;
+                    break;
+
+                case '3':
+                    rgb = ( rgb << 4 ) | 0x3;
+                    break;
+
+                case '4':
+                    rgb = ( rgb << 4 ) | 0x4;
+                    break;
+
+                case '5':
+                    rgb = ( rgb << 4 ) | 0x5;
+                    break;
+
+                case '6':
+                    rgb = ( rgb << 4 ) | 0x6;
+                    break;
+
+                case '7':
+                    rgb = ( rgb << 4 ) | 0x7;
+                    break;
+
+                case '8':
+                    rgb = ( rgb << 4 ) | 0x8;
+                    break;
+
+                case '9':
+                    rgb = ( rgb << 4 ) | 0x9;
+                    break;
+
+                case 'A':
+                case 'a':
+                    rgb = ( rgb << 4 ) | 0xA;
+                    break;
+
+                case 'B':
+                case 'b':
+                    rgb = ( rgb << 4 ) | 0xB;
+                    break;
+
+                case 'C':
+                case 'c':
+                    rgb = ( rgb << 4 ) | 0xC;
+                    break;
+
+                case 'D':
+                case 'd':
+                    rgb = ( rgb << 4 ) | 0xD;
+                    break;
+
+                case 'E':
+                case 'e':
+                    rgb = ( rgb << 4 ) | 0xE;
+                    break;
+
+                case 'F':
+                case 'f':
+                    rgb = ( rgb << 4 ) | 0xF;
+                    break;
+
+                default:
+                    rgb = ( rgb << 4 ) | 0x0;
+                    break;
+            }
+        }
+
+        // add default 0xFF for alpha channel
+        if ( len > 1 && len <= 7 )
+        {
+            rgb |= 0xFF000000;
+        }
+
+        // convert rrggbbaa to aarrggbb
+        if ( len > 7 )
+        {
+            rgb = ( 0x000000FF & rgb ) << 24 | ( rgb >> 8 );
+        }
+
+        return rgb;
+    }
+
+    namespace literals
+    {
+        Q_REQUIRED_RESULT constexpr QRgb operator""_rgba(
+            const char* const str, const size_t len ) noexcept
+        {
+            return fromHexString( str, len );
+        }
+
+#define QSK_CHECK_CONSTEXPR_LITERAL
+#ifdef QSK_CHECK_CONSTEXPR_LITERAL
+        // example for rgb with alpha channel set to 0xFF
+        static_assert( "#123456"_rgba == 0xFF123456, "not constexpr" );
+        // example for rgba
+        static_assert( "#112233AA"_rgba == 0xAA112233, "not constexpr" );
+#endif
+    }
+}
+
 #endif
