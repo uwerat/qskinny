@@ -332,7 +332,6 @@ namespace QskRgb
                     rgb = ( rgb << 4 ) | 0x0;
                     break;
             }
-            return rgb;
         }
 
         // add default 0xFF for alpha channel
