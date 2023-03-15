@@ -239,7 +239,7 @@ namespace QskRgb
 namespace QskRgb
 {
     // Converts a HTML #RRGGBB[AA] color hex string to Qt's RGB 0xAARRGGBB integer
-    QSK_EXPORT Q_REQUIRED_RESULT constexpr QRgb fromHexString(
+    Q_REQUIRED_RESULT constexpr QRgb fromHexString(
         const char* const str, const size_t len ) noexcept
     {
         if ( len != 7 && len != 9 )
