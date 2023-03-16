@@ -360,6 +360,18 @@ namespace QskRgb
             return fromHexString( str, len );
         }
 
+        QSK_EXPORT constexpr QColor operator""_color(
+            const char* const str, const size_t len ) noexcept
+        {
+          const auto argb = static_cast<int>(fromHexString( str, len ));
+          const auto r = ( argb >> 16) & 0xFF;
+          const auto g = ( argb >> 8) & 0xFF;
+          const auto b = ( argb >> 0) & 0xFF;
+          const auto a = ( argb >> 24) & 0xFF;
+          const auto color = QColor{r,g,b,a};
+          return color;
+        }
+
 #define QSK_CHECK_CONSTEXPR_LITERAL
 #ifdef QSK_CHECK_CONSTEXPR_LITERAL
         // example for rgb with alpha channel set to 0xFF
