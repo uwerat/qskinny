@@ -27,7 +27,7 @@ list(APPEND CONFIG        no_keywords)
 list(APPEND CONFIG        silent)
 #list(APPEND CONFIG           -= depend_includepath) # TODO was -=
 list(APPEND CONFIG        strict_c++)
-list(APPEND CONFIG        c++11)
+list(APPEND CONFIG        c++17)
 list(APPEND CONFIG        pedantic)
 list(APPEND CONFIG        hide_symbols)
 #list(APPEND CONFIG           += debug)
