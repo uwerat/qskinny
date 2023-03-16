@@ -336,16 +336,16 @@ namespace QskRgb
         namespace qrgb
         {
             // converts a hex string from '#RRGGBB[AA]' to '0x[AA]RRGGBB' integer
-        QSK_EXPORT constexpr QRgb operator""_rgba(
-            const char* const str, const size_t len ) noexcept
-        {
+            QSK_EXPORT constexpr QRgb operator""_rgba(
+                const char* const str, const size_t len ) noexcept
+            {
                 constexpr auto min = 7;
                 constexpr auto max = 9;
 
                 if ( len != min && len != max )
                 {
                     return 0;
-        }
+                }
 
                 const auto argb = static_cast< int >( fromHexString( str, len ) );
 
@@ -358,8 +358,8 @@ namespace QskRgb
 
             // converts a hex string from '#[AA]RRGGBB' to '0x[AA]RRGGBB' integer
             QSK_EXPORT constexpr QRgb operator""_argb(
-            const char* const str, const size_t len ) noexcept
-        {
+                const char* const str, const size_t len ) noexcept
+            {
                 constexpr auto min = 7;
                 constexpr auto max = 9;
 
@@ -375,14 +375,14 @@ namespace QskRgb
                 const auto b = ( argb >> 0 ) & 0xFF;
                 const auto a = ( len == max ? argb >> 24 : 0xFF ) & 0xFF;
                 return qRgba( r, g, b, a );
-        }
+            }
 
 #define QSK_CHECK_CONSTEXPR_LITERAL
 #ifdef QSK_CHECK_CONSTEXPR_LITERAL
-        static_assert( "#123456"_rgba == 0xFF123456, "not constexpr" );
+            static_assert( "#123456"_rgba == 0xFF123456, "not constexpr" );
             static_assert( "#123456"_argb == 0xFF123456, "not constexpr" );
             static_assert( "#AA112233"_argb == 0xAA112233, "not constexpr" );
-        static_assert( "#112233AA"_rgba == 0xAA112233, "not constexpr" );
+            static_assert( "#112233AA"_rgba == 0xAA112233, "not constexpr" );
 #endif
 
         }
