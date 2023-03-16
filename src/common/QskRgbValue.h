@@ -339,16 +339,8 @@ namespace QskRgb
             QSK_EXPORT constexpr QRgb operator""_rgba(
                 const char* const str, const size_t len ) noexcept
             {
-                constexpr auto min = 7;
                 constexpr auto max = 9;
-
-                if ( len != min && len != max )
-                {
-                    return 0;
-                }
-
                 const auto argb = static_cast< int >( fromHexString( str, len ) );
-
                 const auto r = ( argb >> ( len == max ? 24 : 16 ) ) & 0xFF;
                 const auto g = ( argb >> ( len == max ? 16 : 8 ) ) & 0xFF;
                 const auto b = ( argb >> ( len == max ? 8 : 0 ) ) & 0xFF;
@@ -360,16 +352,8 @@ namespace QskRgb
             QSK_EXPORT constexpr QRgb operator""_argb(
                 const char* const str, const size_t len ) noexcept
             {
-                constexpr auto min = 7;
                 constexpr auto max = 9;
-
-                if ( len != min && len != max )
-                {
-                    return 0;
-                }
-
                 const auto argb = static_cast< int >( fromHexString( str, len ) );
-
                 const auto r = ( argb >> 16 ) & 0xFF;
                 const auto g = ( argb >> 8 ) & 0xFF;
                 const auto b = ( argb >> 0 ) & 0xFF;
@@ -392,11 +376,12 @@ namespace QskRgb
             QSK_EXPORT constexpr QColor operator""_rgba(
                 const char* const str, const size_t len ) noexcept
             {
+                constexpr auto max = 9;
                 const auto argb = static_cast< int >( fromHexString( str, len ) );
-                const auto r = ( argb >> 24 ) & 0xFF;
-                const auto g = ( argb >> 16 ) & 0xFF;
-                const auto b = ( argb >> 8 ) & 0xFF;
-                const auto a = ( argb >> 0 ) & 0xFF;
+                const auto r = ( argb >> ( len == max ? 24 : 16 ) ) & 0xFF;
+                const auto g = ( argb >> ( len == max ? 16 : 8 ) ) & 0xFF;
+                const auto b = ( argb >> ( len == max ? 8 : 0 ) ) & 0xFF;
+                const auto a = ( len == max ? argb & 0xFF : 0xFF );
                 const auto color = QColor{ r, g, b, a };
                 return color;
             }
@@ -404,11 +389,12 @@ namespace QskRgb
             QSK_EXPORT constexpr QColor operator""_argb(
                 const char* const str, const size_t len ) noexcept
             {
+                constexpr auto max = 9;
                 const auto argb = static_cast< int >( fromHexString( str, len ) );
                 const auto r = ( argb >> 16 ) & 0xFF;
                 const auto g = ( argb >> 8 ) & 0xFF;
                 const auto b = ( argb >> 0 ) & 0xFF;
-                const auto a = ( argb >> 24 ) & 0xFF;
+                const auto a = ( len == max ? argb >> 24 : 0xFF ) & 0xFF;
                 const auto color = QColor{ r, g, b, a };
                 return color;
             }
