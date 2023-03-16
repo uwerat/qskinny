@@ -242,7 +242,10 @@ namespace QskRgb
     QSK_EXPORT Q_REQUIRED_RESULT constexpr QRgb fromHexString(
         const char* const str, const size_t len ) noexcept
     {
-        if ( len != 7 && len != 9 )
+        constexpr auto rgb_len = 7;
+        constexpr auto rgba_len = 9;
+
+        if ( len != rgb_len && len != rgba_len )
         {
             return 0;
         }
@@ -335,13 +338,13 @@ namespace QskRgb
         }
 
         // add default 0xFF for alpha channel
-        if ( len > 1 && len <= 7 )
+        if ( len == rgb_len )
         {
             rgb |= 0xFF000000;
         }
 
         // convert rrggbbaa to aarrggbb
-        if ( len > 7 )
+        if ( len == rgba_len )
         {
             rgb = ( 0x000000FF & rgb ) << 24 | ( rgb >> 8 );
         }
