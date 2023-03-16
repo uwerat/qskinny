@@ -15,7 +15,6 @@
 #include <QskObjectCounter.h>
 #include <QskPushButton.h>
 #include <QskSkin.h>
-#include <QskTabButton.h>
 #include <QskTabBar.h>
 #include <QskTabView.h>
 #include <QskTextLabel.h>
@@ -92,7 +91,7 @@ class TabView : public QskTabView
 
         }
 
-        buttonAt( 2 )->setEnabled( false );
+        setTabEnabled( 2, false );
         setCurrentIndex( 4 );
     }
 

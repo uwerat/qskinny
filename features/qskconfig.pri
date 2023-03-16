@@ -40,7 +40,7 @@ CONFIG           += silent
 #CONFIG           -= depend_includepath
 
 CONFIG           += strict_c++
-CONFIG           += c++11
+CONFIG           += c++17
 CONFIG           += pedantic
 CONFIG           += hide_symbols
 

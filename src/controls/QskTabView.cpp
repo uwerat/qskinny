@@ -108,54 +108,43 @@ Qt::Orientation QskTabView::orientation() const
     return qskTransposed( m_data->tabBar->orientation() );
 }
 
-int QskTabView::addTab( QskTabButton* button, QQuickItem* item )
+int QskTabView::addTab( const QString& text, QQuickItem* page )
 {
-    return insertTab( -1, button, item );
+    return insertTab( -1, text, page );
 }
 
-int QskTabView::insertTab( int index, QskTabButton* button, QQuickItem* item )
+int QskTabView::insertTab( int index, const QString& text, QQuickItem* page )
 {
-    // multiple insertion ???
+    index = m_data->tabBar->insertTab( index, text );
 
-    if ( item && item->parent() == nullptr )
-        item->setParent( this );
+    if ( page && page->parent() == nullptr )
+        page->setParent( this );
 
-    index = m_data->tabBar->insertTab( index, button );
-    m_data->stackBox->insertItem( index, item );
+    m_data->stackBox->insertItem( index, page );
 
     return index;
-}
-
-int QskTabView::addTab( const QString& tabText, QQuickItem* item )
-{
-    return insertTab( -1, tabText, item );
-}
-
-int QskTabView::insertTab( int index, const QString& tabText, QQuickItem* item )
-{
-    return insertTab( index, new QskTabButton( tabText ), item );
 }
 
 void QskTabView::removeTab( int index )
 {
     if ( index >= 0 && index < m_data->tabBar->count() )
     {
-        QPointer< QQuickItem > tabItem = m_data->stackBox->itemAtIndex( index );
+        QPointer< QQuickItem > page = m_data->stackBox->itemAtIndex( index );
 
         /*
-            We have to remove the item from the stackBox first. Removing
+            We have to remove the page from the stackBox first. Removing
             the tab then will result in a currentIndexChanged, where the stack
             box will be resynced.
          */
         m_data->stackBox->removeAt( index );
         m_data->tabBar->removeTab( index );
 
-        if ( tabItem )
+        if ( page )
         {
-            if ( tabItem->parent() == this )
-                delete tabItem;
+            if ( page->parent() == this )
+                delete page;
             else
-                tabItem->setParentItem( nullptr );
+                page->setParentItem( nullptr );
         }
     }
 }
@@ -166,34 +155,31 @@ void QskTabView::clear( bool autoDelete )
     m_data->stackBox->clear( autoDelete );
 }
 
-QskTabButton* QskTabView::buttonAt( int index ) const
+void QskTabView::setTabEnabled( int index, bool enabled )
 {
-    return m_data->tabBar->buttonAt( index );
+    m_data->tabBar->setTabEnabled( index, enabled );
+    if ( auto page = pageAt( index ) )
+        page->setEnabled( enabled );
 }
 
-QQuickItem* QskTabView::itemAt( int index ) const
+bool QskTabView::isTabEnabled( int index ) const
+{
+    return m_data->tabBar->isTabEnabled( index );
+}
+
+QQuickItem* QskTabView::pageAt( int index ) const
 {
     return m_data->stackBox->itemAtIndex( index );
 }
 
-int QskTabView::itemIndex( const QQuickItem* item )
+int QskTabView::pageIndex( const QQuickItem* page )
 {
-    return m_data->stackBox->indexOf( item );
+    return m_data->stackBox->indexOf( page );
 }
 
-int QskTabView::buttonIndex( const QskTabButton* button )
+QQuickItem* QskTabView::currentPage() const
 {
-    return m_data->tabBar->indexOf( button );
-}
-
-QQuickItem* QskTabView::currentItem() const
-{
-    return itemAt( currentIndex() );
-}
-
-QskTabButton* QskTabView::currentButton() const
-{
-    return buttonAt( currentIndex() );
+    return pageAt( currentIndex() );
 }
 
 int QskTabView::currentIndex() const
@@ -315,5 +301,45 @@ void QskTabView::updateLayout()
     m_data->tabBar->setGeometry( subControlRect( cr, TabBar ) );
     m_data->stackBox->setGeometry( subControlContentsRect( cr, Page ) );
 }
+
+#if 1
+
+/*
+  QskTabBar will do scene graph node composition and QskTabButton will go away
+  see: https://github.com/uwerat/qskinny/issues/283
+ */
+
+int QskTabView::addTab( QskTabButton* button, QQuickItem* page )
+{
+    return insertTab( -1, button, page );
+}
+
+int QskTabView::insertTab( int index, QskTabButton* button, QQuickItem* page )
+{
+    if ( page && page->parent() == nullptr )
+        page->setParent( this );
+
+    index = m_data->tabBar->insertTab( index, button );
+    m_data->stackBox->insertItem( index, page );
+
+    return index;
+}
+
+QskTabButton* QskTabView::buttonAt( int index ) const
+{
+    return m_data->tabBar->buttonAt( index );
+}
+
+int QskTabView::buttonIndex( const QskTabButton* button )
+{
+    return m_data->tabBar->indexOf( button );
+}
+
+QskTabButton* QskTabView::currentButton() const
+{
+    return buttonAt( currentIndex() );
+}
+
+#endif
 
 #include "moc_QskTabView.cpp"

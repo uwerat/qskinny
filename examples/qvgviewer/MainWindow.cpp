@@ -113,7 +113,7 @@ void MainWindow::setDarknessMode( bool on )
 {
     for ( int i = 0; i < m_tabView->count(); i++ )
     {
-        auto label = static_cast< GraphicLabel* >( m_tabView->itemAt( i ) );
+        auto label = static_cast< GraphicLabel* >( m_tabView->pageAt( i ) );
         label->setDarknessMode( on );
     }
 }
