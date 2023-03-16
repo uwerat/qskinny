@@ -238,19 +238,10 @@ namespace QskRgb
 
 namespace QskRgb
 {
-    // Converts a HTML #RRGGBB[AA] color hex string to Qt's RGB 0xAARRGGBB integer
-    QSK_EXPORT constexpr QRgb fromHexString(
-        const char* const str, const size_t len ) noexcept
+    // Converts a HTML #12345678... color hex string to a 0x12345678... integer
+    QSK_EXPORT constexpr QRgb fromHexString( const char* const str, const size_t len ) noexcept
     {
-        constexpr auto rgb_len = 7;
-        constexpr auto rgba_len = 9;
-
-        if ( len != rgb_len && len != rgba_len )
-        {
-            return 0;
-        }
-
-        if ( str[ 0 ] != '#' )
+        if ( len < 1 || str[ 0 ] != '#' )
         {
             return 0;
         }
@@ -337,48 +328,91 @@ namespace QskRgb
             }
         }
 
-        // add default 0xFF for alpha channel
-        if ( len == rgb_len )
-        {
-            rgb |= 0xFF000000;
-        }
-
-        // convert rrggbbaa to aarrggbb
-        if ( len == rgba_len )
-        {
-            rgb = ( 0x000000FF & rgb ) << 24 | ( rgb >> 8 );
-        }
-
         return rgb;
     }
 
     namespace literals
     {
+        namespace qrgb
+        {
+            // converts a hex string from '#RRGGBB[AA]' to '0x[AA]RRGGBB' integer
         QSK_EXPORT constexpr QRgb operator""_rgba(
             const char* const str, const size_t len ) noexcept
         {
-            return fromHexString( str, len );
+                constexpr auto min = 7;
+                constexpr auto max = 9;
+
+                if ( len != min && len != max )
+                {
+                    return 0;
         }
 
-        QSK_EXPORT constexpr QColor operator""_color(
+                const auto argb = static_cast< int >( fromHexString( str, len ) );
+
+                const auto r = ( argb >> ( len == max ? 24 : 16 ) ) & 0xFF;
+                const auto g = ( argb >> ( len == max ? 16 : 8 ) ) & 0xFF;
+                const auto b = ( argb >> ( len == max ? 8 : 0 ) ) & 0xFF;
+                const auto a = ( len == max ? argb & 0xFF : 0xFF );
+                return qRgba( r, g, b, a );
+            }
+
+            // converts a hex string from '#[AA]RRGGBB' to '0x[AA]RRGGBB' integer
+            QSK_EXPORT constexpr QRgb operator""_argb(
             const char* const str, const size_t len ) noexcept
         {
-          const auto argb = static_cast<int>(fromHexString( str, len ));
-          const auto r = ( argb >> 16) & 0xFF;
-          const auto g = ( argb >> 8) & 0xFF;
-          const auto b = ( argb >> 0) & 0xFF;
-          const auto a = ( argb >> 24) & 0xFF;
-          const auto color = QColor{r,g,b,a};
-          return color;
+                constexpr auto min = 7;
+                constexpr auto max = 9;
+
+                if ( len != min && len != max )
+                {
+                    return 0;
+                }
+
+                const auto argb = static_cast< int >( fromHexString( str, len ) );
+
+                const auto r = ( argb >> 16 ) & 0xFF;
+                const auto g = ( argb >> 8 ) & 0xFF;
+                const auto b = ( argb >> 0 ) & 0xFF;
+                const auto a = ( len == max ? argb >> 24 : 0xFF ) & 0xFF;
+                return qRgba( r, g, b, a );
         }
 
 #define QSK_CHECK_CONSTEXPR_LITERAL
 #ifdef QSK_CHECK_CONSTEXPR_LITERAL
-        // example for rgb with alpha channel set to 0xFF
         static_assert( "#123456"_rgba == 0xFF123456, "not constexpr" );
-        // example for rgba
+            static_assert( "#123456"_argb == 0xFF123456, "not constexpr" );
+            static_assert( "#AA112233"_argb == 0xAA112233, "not constexpr" );
         static_assert( "#112233AA"_rgba == 0xAA112233, "not constexpr" );
 #endif
+
+        }
+
+        namespace color
+        {
+            QSK_EXPORT constexpr QColor operator""_rgba(
+                const char* const str, const size_t len ) noexcept
+            {
+                const auto argb = static_cast< int >( fromHexString( str, len ) );
+                const auto r = ( argb >> 24 ) & 0xFF;
+                const auto g = ( argb >> 16 ) & 0xFF;
+                const auto b = ( argb >> 8 ) & 0xFF;
+                const auto a = ( argb >> 0 ) & 0xFF;
+                const auto color = QColor{ r, g, b, a };
+                return color;
+            }
+
+            QSK_EXPORT constexpr QColor operator""_argb(
+                const char* const str, const size_t len ) noexcept
+            {
+                const auto argb = static_cast< int >( fromHexString( str, len ) );
+                const auto r = ( argb >> 16 ) & 0xFF;
+                const auto g = ( argb >> 8 ) & 0xFF;
+                const auto b = ( argb >> 0 ) & 0xFF;
+                const auto a = ( argb >> 24 ) & 0xFF;
+                const auto color = QColor{ r, g, b, a };
+                return color;
+            }
+        }
     }
 }
 
