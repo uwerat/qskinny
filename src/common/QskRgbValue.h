@@ -361,7 +361,7 @@ namespace QskRgb
                 return qRgba( r, g, b, a );
             }
 
-#define QSK_CHECK_CONSTEXPR_LITERAL
+#define QSK_CHECK_CONSTEXPR_LITERAL 1
 #ifdef QSK_CHECK_CONSTEXPR_LITERAL
             static_assert( "#123456"_rgba == 0xFF123456, "not constexpr" );
             static_assert( "#123456"_argb == 0xFF123456, "not constexpr" );
