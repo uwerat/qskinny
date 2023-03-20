@@ -34,7 +34,7 @@ void QskRgbLiterals::qrgbLiterals_data()
     QTest::addColumn< QRgb >( "actual" );
     QTest::addColumn< QRgb >( "expected" );
 
-    using namespace QskRgb::literals::qrgb;
+    using namespace QskRgb::literals::integral;
 
     QTest::newRow( "\"#123456\"_rgba" ) << "#123456"_rgba << ( QRgb ) 0xFF123456;
     QTest::newRow( "\"#123456\"_argb" ) << "#123456"_argb << ( QRgb ) 0xFF123456;
@@ -55,7 +55,7 @@ void QskRgbLiterals::qrgbLiterals_data()
 
 void QskRgbLiterals::qrgbLiterals()
 {
-    using namespace QskRgb::literals::qrgb;
+    using namespace QskRgb::literals::integral;
     QFETCH( QRgb, actual );
     QFETCH( QRgb, expected );
     QCOMPARE( actual, expected );
