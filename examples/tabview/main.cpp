@@ -15,7 +15,6 @@
 #include <QskObjectCounter.h>
 #include <QskPushButton.h>
 #include <QskSkin.h>
-#include <QskTabBar.h>
 #include <QskTabView.h>
 #include <QskTextLabel.h>
 #include <QskWindow.h>
