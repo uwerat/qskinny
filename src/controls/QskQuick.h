@@ -96,8 +96,7 @@ inline T qskFindAncestorOf( QQuickItem* item )
 template< typename T >
 inline T qskFindAncestorOf( const QQuickItem* item )
 {
-    return qskFindAncestorOf< std::remove_const< T > >(
-        const_cast< QQuickItem* >( item ) );
+    return qskFindAncestorOf< T >( const_cast< QQuickItem* >( item ) );
 }
 
 inline qreal qskHeightForWidth(
