@@ -15,6 +15,11 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>
 QSK_QT_PRIVATE_END
 
+static inline constexpr qreal qskViewportPadding()
+{
+    return 10.0; // should be from the skin, TODO ...
+}
+
 namespace
 {
     class FlickAnimator final : public QskFlickAnimator
@@ -100,11 +105,6 @@ namespace
 class QskScrollBox::PrivateData
 {
   public:
-    PrivateData()
-        : autoScrollFocusItem( true )
-    {
-    }
-
     QPointF scrollPos;
     QSizeF scrollableSize = QSize( 0.0, 0.0 );
 
@@ -114,9 +114,7 @@ class QskScrollBox::PrivateData
     FlickAnimator flicker;
     ScrollAnimator scroller;
 
-    const qreal viewportPadding = 10;
-
-    bool autoScrollFocusItem : 1;
+    bool autoScrollFocusItem = true;
 };
 
 QskScrollBox::QskScrollBox( QQuickItem* parent )
@@ -270,7 +268,7 @@ void QskScrollBox::ensureItemVisible( const QQuickItem* item )
 
 void QskScrollBox::ensureVisible( const QPointF& pos )
 {
-    const qreal margin = m_data->viewportPadding;
+    const qreal margin = qskViewportPadding();
 
     QRectF r( scrollPos(), viewContentsRect().size() );
     r.adjust( margin, margin, -margin, -margin );
@@ -306,7 +304,7 @@ void QskScrollBox::ensureVisible( const QPointF& pos )
 
 void QskScrollBox::ensureVisible( const QRectF& itemRect )
 {
-    const qreal margin = m_data->viewportPadding;
+    const qreal margin = qskViewportPadding();
 
     QRectF r( scrollPos(), viewContentsRect().size() );
     r.adjust( margin, margin, -margin, -margin );
@@ -494,7 +492,7 @@ bool QskScrollBox::gestureFilter( QQuickItem* item, QEvent* event )
         recognizer.setTimeout( ( item == this ) ? -1 : m_data->panRecognizerTimeout );
     }
 
-    return m_data->panRecognizer.processEvent( item, event );
+    return recognizer.processEvent( item, event );
 }
 
 QPointF QskScrollBox::boundedScrollPos( const QPointF& pos ) const
