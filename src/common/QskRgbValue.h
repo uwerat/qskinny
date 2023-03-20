@@ -333,9 +333,52 @@ namespace QskRgb
 
     namespace literals
     {
+        template< QRgb V >
+        constexpr QRgb parse_hex_literal_h()
+        {
+            return V;
+        }
+
+        template< QRgb V, char C, char... Cs >
+        constexpr QRgb parse_hex_literal_h()
+        {
+            constexpr auto is_0_9 = C >= '0' && C <= '9';
+            constexpr auto is_a_f = C >= 'a' && C <= 'f';
+            constexpr auto is_A_F = C >= 'A' && C <= 'F';
+
+            static_assert( is_0_9 || is_a_f || is_A_F, "invalid hex character" );
+
+            if constexpr ( is_0_9 )
+            {
+                return parse_hex_literal_h< ( V << 4 ) | ( C - '0' ), Cs... >();
+            }
+            if constexpr ( is_a_f )
+            {
+                return parse_hex_literal_h< ( V << 4 ) | ( C - 'a' + 10 ), Cs... >();
+            }
+            if constexpr ( is_A_F )
+            {
+                return parse_hex_literal_h< ( V << 4 ) | ( C - 'A' + 10 ), Cs... >();
+            }
+        }
+
+        template< char C, char... Cs >
+        constexpr QRgb parse_hex_literal_x()
+        {
+            static_assert( C == 'x', "invalid hex prefix character" );
+            return parse_hex_literal_h< 0, Cs... >();
+        }
+
+        template< char C, char... Cs >
+        constexpr QRgb parse_hex_literal_0()
+        {
+            static_assert( C == '0', "invalid hex prefix character" );
+            return parse_hex_literal_x< Cs... >();
+        }
+
         namespace qrgb
         {
-            // converts a hex string from '#RRGGBB[AA]' to '0x[AA]RRGGBB' integer
+            // converts a hex string from '#RRGGBB[AA]' to '0xAARRGGBB' integer
             QSK_EXPORT constexpr QRgb operator""_rgba(
                 const char* const str, const size_t len ) noexcept
             {
@@ -348,7 +391,7 @@ namespace QskRgb
                 return qRgba( r, g, b, a );
             }
 
-            // converts a hex string from '#[AA]RRGGBB' to '0x[AA]RRGGBB' integer
+            // converts a hex string from '#[AA]RRGGBB' to '0xAARRGGBB' integer
             QSK_EXPORT constexpr QRgb operator""_argb(
                 const char* const str, const size_t len ) noexcept
             {
@@ -361,14 +404,82 @@ namespace QskRgb
                 return qRgba( r, g, b, a );
             }
 
-#define QSK_CHECK_CONSTEXPR_LITERAL 1
-#ifdef QSK_CHECK_CONSTEXPR_LITERAL
+            // converts a hex literal from '0xRRGGBB[AA]' to '0xAARRGGBB' integer
+            template< char... Cs >
+            constexpr QRgb operator""_rgba()
+            {
+                constexpr auto rrggbb = 8;
+                constexpr auto rrggbbaa = 10;
+                static_assert( sizeof...( Cs ) == rrggbb || sizeof...( Cs ) == rrggbbaa,
+                    "invalid color literal length" );
+                constexpr auto rgba = parse_hex_literal_0< Cs... >();
+                if constexpr ( sizeof...( Cs ) == rrggbb )
+                {
+                    const auto r = ( rgba >> ( 4 * 4 ) ) & 0xFF;
+                    const auto g = ( rgba >> ( 2 * 4 ) ) & 0xFF;
+                    const auto b = ( rgba >> ( 0 * 4 ) ) & 0xFF;
+                    const auto a = 0xFF;
+                    return qRgba( r, g, b, a );
+                }
+                if constexpr ( sizeof...( Cs ) == rrggbbaa )
+                {
+                    const auto r = ( rgba >> ( 6 * 4 ) ) & 0xFF;
+                    const auto g = ( rgba >> ( 4 * 4 ) ) & 0xFF;
+                    const auto b = ( rgba >> ( 2 * 4 ) ) & 0xFF;
+                    const auto a = ( rgba >> ( 0 * 4 ) ) & 0xFF;
+                    return qRgba( r, g, b, a );
+                }
+            }
+
+            // converts a hex literal from '0x[AA]RRGGBB' to '0xAARRGGBB' integer
+            template< char... Cs >
+            constexpr QRgb operator""_argb()
+            {
+                constexpr auto rrggbb = 8;
+                constexpr auto aarrggbb = 10;
+                static_assert( sizeof...( Cs ) == rrggbb || sizeof...( Cs ) == aarrggbb,
+                    "invalid color literal length" );
+                constexpr auto rgba = parse_hex_literal_0< Cs... >();
+                if constexpr ( sizeof...( Cs ) == rrggbb )
+                {
+                    const auto r = ( rgba >> ( 4 * 4 ) ) & 0xFF;
+                    const auto g = ( rgba >> ( 2 * 4 ) ) & 0xFF;
+                    const auto b = ( rgba >> ( 0 * 4 ) ) & 0xFF;
+                    const auto a = 0xFF;
+                    return qRgba( r, g, b, a );
+                }
+                if constexpr ( sizeof...( Cs ) == aarrggbb )
+                {
+                    const auto r = ( rgba >> ( 4 * 4 ) ) & 0xFF;
+                    const auto g = ( rgba >> ( 2 * 4 ) ) & 0xFF;
+                    const auto b = ( rgba >> ( 0 * 4 ) ) & 0xFF;
+                    const auto a = ( rgba >> ( 6 * 4 ) ) & 0xFF;
+                    return qRgba( r, g, b, a );
+                }
+            }
+
+#define QSK_REQUIRE_CONSTEXPR_LITERAL 1
+#ifdef QSK_REQUIRE_CONSTEXPR_LITERAL
+            // RGBA hex string to QRgb with defaulted alpha = 0xFF
             static_assert( "#123456"_rgba == 0xFF123456, "not constexpr" );
             static_assert( "#123456"_argb == 0xFF123456, "not constexpr" );
+
+            // ARGB hex string to QRgb with defaulted alpha = 0xFF
             static_assert( "#AA112233"_argb == 0xAA112233, "not constexpr" );
             static_assert( "#112233AA"_rgba == 0xAA112233, "not constexpr" );
-#endif
 
+            // RGBA hex literal to QRgb with defaulted alpha = 0xFF
+            static_assert( 0x112233_rgba == 0xFF112233, "" );
+            static_assert( 0xaabbcc_rgba == 0xFFAABBCC, "" );
+            static_assert( 0xAABBCC_rgba == 0xFFAABBCC, "" );
+            static_assert( 0x112233aa_rgba == 0xaa112233, "" );
+
+            // ARGB hex literal to QRgb with defaulted alpha = 0xFF
+            static_assert( 0x112233_argb == 0xFF112233, "" );
+            static_assert( 0xaabbcc_argb == 0xFFAABBCC, "" );
+            static_assert( 0xAABBCC_argb == 0xFFAABBCC, "" );
+            static_assert( 0x112233aa_argb == 0x112233aa, "" );
+#endif
         }
 
         namespace color
@@ -397,6 +508,60 @@ namespace QskRgb
                 const auto a = ( len == max ? argb >> 24 : 0xFF ) & 0xFF;
                 const auto color = QColor{ r, g, b, a };
                 return color;
+            }
+
+            // converts a hex literal from '0xRRGGBB[AA]' to a QColor
+            template< char... Cs >
+            constexpr QColor operator""_rgba()
+            {
+                constexpr auto rrggbb = 8;
+                constexpr auto rrggbbaa = 10;
+                static_assert( sizeof...( Cs ) == rrggbb || sizeof...( Cs ) == rrggbbaa,
+                    "invalid color literal length" );
+                constexpr auto rgba = parse_hex_literal_0< Cs... >();
+                if constexpr ( sizeof...( Cs ) == rrggbb )
+                {
+                    const auto r = ( rgba >> ( 4 * 4 ) ) & 0xFF;
+                    const auto g = ( rgba >> ( 2 * 4 ) ) & 0xFF;
+                    const auto b = ( rgba >> ( 0 * 4 ) ) & 0xFF;
+                    const auto a = 0xFF;
+                    return { r, g, b, a };
+                }
+                if constexpr ( sizeof...( Cs ) == rrggbbaa )
+                {
+                    const auto r = ( rgba >> ( 6 * 4 ) ) & 0xFF;
+                    const auto g = ( rgba >> ( 4 * 4 ) ) & 0xFF;
+                    const auto b = ( rgba >> ( 2 * 4 ) ) & 0xFF;
+                    const auto a = ( rgba >> ( 0 * 4 ) ) & 0xFF;
+                    return { r, g, b, a };
+                }
+            }
+
+            // converts a hex literal from '0x[AA]RRGGBB' to a QColor
+            template< char... Cs >
+            constexpr QColor operator""_argb()
+            {
+                constexpr auto rrggbb = 8;
+                constexpr auto aarrggbb = 10;
+                static_assert( sizeof...( Cs ) == rrggbb || sizeof...( Cs ) == aarrggbb,
+                    "invalid color literal length" );
+                constexpr auto rgba = parse_hex_literal_0< Cs... >();
+                if constexpr ( sizeof...( Cs ) == rrggbb )
+                {
+                    const auto r = ( rgba >> ( 4 * 4 ) ) & 0xFF;
+                    const auto g = ( rgba >> ( 2 * 4 ) ) & 0xFF;
+                    const auto b = ( rgba >> ( 0 * 4 ) ) & 0xFF;
+                    const auto a = 0xFF;
+                    return { r, g, b, a };
+                }
+                if constexpr ( sizeof...( Cs ) == aarrggbb )
+                {
+                    const auto r = ( rgba >> ( 4 * 4 ) ) & 0xFF;
+                    const auto g = ( rgba >> ( 2 * 4 ) ) & 0xFF;
+                    const auto b = ( rgba >> ( 0 * 4 ) ) & 0xFF;
+                    const auto a = ( rgba >> ( 6 * 4 ) ) & 0xFF;
+                    return { r, g, b, a };
+                }
             }
         }
     }
