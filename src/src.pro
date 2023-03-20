@@ -8,6 +8,7 @@ greaterThan( QT_MAJOR_VERSION, 5 ) {
 }
 
 contains(QSK_CONFIG, QskDll): DEFINES += QSK_MAKEDLL
+contains(QSK_CONFIG, QskRequireConstexprLiterals): DEFINES += QSK_REQUIRE_CONSTEXPR_LITERALS
 
 QSK_SUBDIRS = common graphic nodes controls layouts dialogs inputpanel
 INCLUDEPATH *= $${QSK_SUBDIRS}

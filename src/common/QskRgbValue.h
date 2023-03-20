@@ -458,27 +458,26 @@ namespace QskRgb
                 }
             }
 
-#define QSK_REQUIRE_CONSTEXPR_LITERAL 1
-#ifdef QSK_REQUIRE_CONSTEXPR_LITERAL
+#ifdef QSK_REQUIRE_CONSTEXPR_LITERALS
             // RGBA hex string to QRgb with defaulted alpha = 0xFF
-            static_assert( "#123456"_rgba == 0xFF123456, "not constexpr" );
-            static_assert( "#123456"_argb == 0xFF123456, "not constexpr" );
+            static_assert( "#123456"_rgba == 0xFF123456, "invalid or not constexpr" );
+            static_assert( "#123456"_argb == 0xFF123456, "invalid or not constexpr" );
 
             // ARGB hex string to QRgb with defaulted alpha = 0xFF
-            static_assert( "#AA112233"_argb == 0xAA112233, "not constexpr" );
-            static_assert( "#112233AA"_rgba == 0xAA112233, "not constexpr" );
+            static_assert( "#AA112233"_argb == 0xAA112233, "invalid or not constexpr" );
+            static_assert( "#112233AA"_rgba == 0xAA112233, "invalid or not constexpr" );
 
             // RGBA hex literal to QRgb with defaulted alpha = 0xFF
-            static_assert( 0x112233_rgba == 0xFF112233, "" );
-            static_assert( 0xaabbcc_rgba == 0xFFAABBCC, "" );
-            static_assert( 0xAABBCC_rgba == 0xFFAABBCC, "" );
-            static_assert( 0x112233aa_rgba == 0xaa112233, "" );
+            static_assert( 0x112233_rgba == 0xFF112233, "invalid or not constexpr" );
+            static_assert( 0xaabbcc_rgba == 0xFFAABBCC, "invalid or not constexpr" );
+            static_assert( 0xAABBCC_rgba == 0xFFAABBCC, "invalid or not constexpr" );
+            static_assert( 0x112233aa_rgba == 0xaa112233, "invalid or not constexpr" );
 
             // ARGB hex literal to QRgb with defaulted alpha = 0xFF
-            static_assert( 0x112233_argb == 0xFF112233, "" );
-            static_assert( 0xaabbcc_argb == 0xFFAABBCC, "" );
-            static_assert( 0xAABBCC_argb == 0xFFAABBCC, "" );
-            static_assert( 0x112233aa_argb == 0x112233aa, "" );
+            static_assert( 0x112233_argb == 0xFF112233, "invalid or not constexpr" );
+            static_assert( 0xaabbcc_argb == 0xFFAABBCC, "invalid or not constexpr" );
+            static_assert( 0xAABBCC_argb == 0xFFAABBCC, "invalid or not constexpr" );
+            static_assert( 0x112233aa_argb == 0x112233aa, "invalid or not constexpr" );
 #endif
         }
 
@@ -493,8 +492,7 @@ namespace QskRgb
                 const auto g = ( argb >> ( len == max ? 16 : 8 ) ) & 0xFF;
                 const auto b = ( argb >> ( len == max ? 8 : 0 ) ) & 0xFF;
                 const auto a = ( len == max ? argb & 0xFF : 0xFF );
-                const auto color = QColor{ r, g, b, a };
-                return color;
+                return { r, g, b, a };
             }
 
             QSK_EXPORT constexpr QColor operator""_argb(
@@ -506,8 +504,7 @@ namespace QskRgb
                 const auto g = ( argb >> 8 ) & 0xFF;
                 const auto b = ( argb >> 0 ) & 0xFF;
                 const auto a = ( len == max ? argb >> 24 : 0xFF ) & 0xFF;
-                const auto color = QColor{ r, g, b, a };
-                return color;
+                return { r, g, b, a };
             }
 
             // converts a hex literal from '0xRRGGBB[AA]' to a QColor

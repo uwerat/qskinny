@@ -56,25 +56,6 @@ void QskRgbLiterals::qrgbLiterals_data()
 void QskRgbLiterals::qrgbLiterals()
 {
     using namespace QskRgb::literals::qrgb;
-
-#ifdef QSK_REQUIRE_CONSTEXPR_LITERAL
-    static_assert( "#123456"_rgba == 0xFF123456, "not constexpr" );
-    static_assert( "#123456"_argb == 0xFF123456, "not constexpr" );
-
-    static_assert( "#AA112233"_argb == 0xAA112233, "not constexpr" );
-    static_assert( "#112233AA"_rgba == 0xAA112233, "not constexpr" );
-
-    static_assert( 0x112233_rgba == 0xFF112233, "not constexpr" );
-    static_assert( 0xaabbcc_rgba == 0xFFAABBCC, "not constexpr" );
-    static_assert( 0xAABBCC_rgba == 0xFFAABBCC, "not constexpr" );
-    static_assert( 0x112233aa_rgba == 0xaa112233, "not constexpr" );
-
-    static_assert( 0x112233_argb == 0xFF112233, "not constexpr" );
-    static_assert( 0xaabbcc_argb == 0xFFAABBCC, "not constexpr" );
-    static_assert( 0xAABBCC_argb == 0xFFAABBCC, "not constexpr" );
-    static_assert( 0x112233aa_argb == 0x112233aa, "not constexpr" );
-#endif
-
     QFETCH( QRgb, actual );
     QFETCH( QRgb, expected );
     QCOMPARE( actual, expected );

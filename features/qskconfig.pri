@@ -63,6 +63,7 @@ OBJECTS_DIR  = obj
 RCC_DIR      = rcc
 
 QSK_CONFIG += QskDll
+QSK_CONFIG += QskRequireConstexprLiterals
 
 linux {
 
