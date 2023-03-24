@@ -238,97 +238,97 @@ namespace QskRgb
 
 namespace QskRgb
 {
-    // Converts a HTML #12345678... color hex string to a 0x12345678... integer
+    // Converts a '#12345678' color hex string to a '0x12345678' unsigned integer
     QSK_EXPORT constexpr QRgb fromHexString( const char* const str, const size_t len ) noexcept
     {
-        if ( len < 1 || str[ 0 ] != '#' )
+        if ( ( len != 9 && len != 7 ) || str[ 0 ] != '#' )
         {
             return 0;
         }
 
-        QRgb rgb = 0x00;
+        QRgb argb = 0xFF;
 
         for ( size_t i = 1; i < len; ++i )
         {
             switch ( str[ i ] )
             {
                 case '0':
-                    rgb = ( rgb << 4 ) | 0x0;
+                    argb = ( argb << 4 ) | 0x0;
                     break;
 
                 case '1':
-                    rgb = ( rgb << 4 ) | 0x1;
+                    argb = ( argb << 4 ) | 0x1;
                     break;
 
                 case '2':
-                    rgb = ( rgb << 4 ) | 0x2;
+                    argb = ( argb << 4 ) | 0x2;
                     break;
 
                 case '3':
-                    rgb = ( rgb << 4 ) | 0x3;
+                    argb = ( argb << 4 ) | 0x3;
                     break;
 
                 case '4':
-                    rgb = ( rgb << 4 ) | 0x4;
+                    argb = ( argb << 4 ) | 0x4;
                     break;
 
                 case '5':
-                    rgb = ( rgb << 4 ) | 0x5;
+                    argb = ( argb << 4 ) | 0x5;
                     break;
 
                 case '6':
-                    rgb = ( rgb << 4 ) | 0x6;
+                    argb = ( argb << 4 ) | 0x6;
                     break;
 
                 case '7':
-                    rgb = ( rgb << 4 ) | 0x7;
+                    argb = ( argb << 4 ) | 0x7;
                     break;
 
                 case '8':
-                    rgb = ( rgb << 4 ) | 0x8;
+                    argb = ( argb << 4 ) | 0x8;
                     break;
 
                 case '9':
-                    rgb = ( rgb << 4 ) | 0x9;
+                    argb = ( argb << 4 ) | 0x9;
                     break;
 
                 case 'A':
                 case 'a':
-                    rgb = ( rgb << 4 ) | 0xA;
+                    argb = ( argb << 4 ) | 0xA;
                     break;
 
                 case 'B':
                 case 'b':
-                    rgb = ( rgb << 4 ) | 0xB;
+                    argb = ( argb << 4 ) | 0xB;
                     break;
 
                 case 'C':
                 case 'c':
-                    rgb = ( rgb << 4 ) | 0xC;
+                    argb = ( argb << 4 ) | 0xC;
                     break;
 
                 case 'D':
                 case 'd':
-                    rgb = ( rgb << 4 ) | 0xD;
+                    argb = ( argb << 4 ) | 0xD;
                     break;
 
                 case 'E':
                 case 'e':
-                    rgb = ( rgb << 4 ) | 0xE;
+                    argb = ( argb << 4 ) | 0xE;
                     break;
 
                 case 'F':
                 case 'f':
-                    rgb = ( rgb << 4 ) | 0xF;
+                    argb = ( argb << 4 ) | 0xF;
                     break;
 
                 default:
-                    rgb = ( rgb << 4 ) | 0x0;
+                    argb = ( argb << 4 ) | 0x0;
                     break;
             }
         }
 
-        return rgb;
+        return argb;
     }
 
     namespace literals
@@ -366,7 +366,8 @@ namespace QskRgb
         constexpr QRgb parse_hex_literal_x()
         {
             static_assert( C == 'x', "invalid hex prefix character" );
-            return parse_hex_literal_h< 0, Cs... >();
+            constexpr auto alpha = 0xFF;
+            return parse_hex_literal_h< alpha, Cs... >();
         }
 
         template< char C, char... Cs >
@@ -382,26 +383,17 @@ namespace QskRgb
             QSK_EXPORT constexpr QRgb operator""_rgba(
                 const char* const str, const size_t len ) noexcept
             {
-                constexpr auto max = 9;
-                const auto argb = static_cast< int >( fromHexString( str, len ) );
-                const auto r = ( argb >> ( len == max ? 24 : 16 ) ) & 0xFF;
-                const auto g = ( argb >> ( len == max ? 16 : 8 ) ) & 0xFF;
-                const auto b = ( argb >> ( len == max ? 8 : 0 ) ) & 0xFF;
-                const auto a = ( len == max ? argb & 0xFF : 0xFF );
-                return qRgba( r, g, b, a );
+                constexpr auto rrggbbaa = 9;
+                const auto c = fromHexString( str, len );
+                return len == rrggbbaa ? qRgba( qAlpha( c ), qRed( c ), qGreen( c ), qBlue( c ) )
+                                       : qRgba( qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) );
             }
 
             // converts a hex string from '#[AA]RRGGBB' to '0xAARRGGBB' integer
             QSK_EXPORT constexpr QRgb operator""_argb(
                 const char* const str, const size_t len ) noexcept
             {
-                constexpr auto max = 9;
-                const auto argb = static_cast< int >( fromHexString( str, len ) );
-                const auto r = ( argb >> 16 ) & 0xFF;
-                const auto g = ( argb >> 8 ) & 0xFF;
-                const auto b = ( argb >> 0 ) & 0xFF;
-                const auto a = ( len == max ? argb >> 24 : 0xFF ) & 0xFF;
-                return qRgba( r, g, b, a );
+                return fromHexString( str, len );
             }
 
             // converts a hex literal from '0xRRGGBB[AA]' to '0xAARRGGBB' integer
@@ -412,23 +404,10 @@ namespace QskRgb
                 constexpr auto rrggbbaa = 10;
                 static_assert( sizeof...( Cs ) == rrggbb || sizeof...( Cs ) == rrggbbaa,
                     "invalid color literal length" );
-                constexpr auto rgba = parse_hex_literal_0< Cs... >();
-                if constexpr ( sizeof...( Cs ) == rrggbb )
-                {
-                    const auto r = ( rgba >> ( 4 * 4 ) ) & 0xFF;
-                    const auto g = ( rgba >> ( 2 * 4 ) ) & 0xFF;
-                    const auto b = ( rgba >> ( 0 * 4 ) ) & 0xFF;
-                    const auto a = 0xFF;
-                    return qRgba( r, g, b, a );
-                }
-                if constexpr ( sizeof...( Cs ) == rrggbbaa )
-                {
-                    const auto r = ( rgba >> ( 6 * 4 ) ) & 0xFF;
-                    const auto g = ( rgba >> ( 4 * 4 ) ) & 0xFF;
-                    const auto b = ( rgba >> ( 2 * 4 ) ) & 0xFF;
-                    const auto a = ( rgba >> ( 0 * 4 ) ) & 0xFF;
-                    return qRgba( r, g, b, a );
-                }
+                constexpr auto c = parse_hex_literal_0< Cs... >();
+                return sizeof...( Cs ) == rrggbbaa
+                           ? qRgba( qAlpha( c ), qRed( c ), qGreen( c ), qBlue( c ) )
+                           : qRgba( qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) );
             }
 
             // converts a hex literal from '0x[AA]RRGGBB' to '0xAARRGGBB' integer
@@ -439,23 +418,7 @@ namespace QskRgb
                 constexpr auto aarrggbb = 10;
                 static_assert( sizeof...( Cs ) == rrggbb || sizeof...( Cs ) == aarrggbb,
                     "invalid color literal length" );
-                constexpr auto rgba = parse_hex_literal_0< Cs... >();
-                if constexpr ( sizeof...( Cs ) == rrggbb )
-                {
-                    const auto r = ( rgba >> ( 4 * 4 ) ) & 0xFF;
-                    const auto g = ( rgba >> ( 2 * 4 ) ) & 0xFF;
-                    const auto b = ( rgba >> ( 0 * 4 ) ) & 0xFF;
-                    const auto a = 0xFF;
-                    return qRgba( r, g, b, a );
-                }
-                if constexpr ( sizeof...( Cs ) == aarrggbb )
-                {
-                    const auto r = ( rgba >> ( 4 * 4 ) ) & 0xFF;
-                    const auto g = ( rgba >> ( 2 * 4 ) ) & 0xFF;
-                    const auto b = ( rgba >> ( 0 * 4 ) ) & 0xFF;
-                    const auto a = ( rgba >> ( 6 * 4 ) ) & 0xFF;
-                    return qRgba( r, g, b, a );
-                }
+                return parse_hex_literal_0< Cs... >();
             }
         }
 
@@ -465,26 +428,18 @@ namespace QskRgb
             QSK_EXPORT constexpr QColor operator""_rgba(
                 const char* const str, const size_t len ) noexcept
             {
-                constexpr auto max = 9;
-                const auto argb = static_cast< int >( fromHexString( str, len ) );
-                const auto r = ( argb >> ( len == max ? 24 : 16 ) ) & 0xFF;
-                const auto g = ( argb >> ( len == max ? 16 : 8 ) ) & 0xFF;
-                const auto b = ( argb >> ( len == max ? 8 : 0 ) ) & 0xFF;
-                const auto a = ( len == max ? argb & 0xFF : 0xFF );
-                return { r, g, b, a };
+                constexpr auto rrggbbaa = 9;
+                const auto c = fromHexString( str, len );
+                return len == rrggbbaa ? QColor{ qAlpha( c ), qRed( c ), qGreen( c ), qBlue( c ) }
+                                       : QColor{ qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) };
             }
 
             // converts a hex string from '#[AA]RRGGBB' to a QColor
             QSK_EXPORT constexpr QColor operator""_argb(
                 const char* const str, const size_t len ) noexcept
             {
-                constexpr auto max = 9;
-                const auto argb = static_cast< int >( fromHexString( str, len ) );
-                const auto r = ( argb >> 16 ) & 0xFF;
-                const auto g = ( argb >> 8 ) & 0xFF;
-                const auto b = ( argb >> 0 ) & 0xFF;
-                const auto a = ( len == max ? argb >> 24 : 0xFF ) & 0xFF;
-                return { r, g, b, a };
+                const auto c = fromHexString( str, len );
+                return QColor{ qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) };
             }
 
             // converts a hex literal from '0xRRGGBB[AA]' to a QColor
@@ -495,23 +450,10 @@ namespace QskRgb
                 constexpr auto rrggbbaa = 10;
                 static_assert( sizeof...( Cs ) == rrggbb || sizeof...( Cs ) == rrggbbaa,
                     "invalid color literal length" );
-                constexpr auto rgba = parse_hex_literal_0< Cs... >();
-                if constexpr ( sizeof...( Cs ) == rrggbb )
-                {
-                    const auto r = ( rgba >> ( 4 * 4 ) ) & 0xFF;
-                    const auto g = ( rgba >> ( 2 * 4 ) ) & 0xFF;
-                    const auto b = ( rgba >> ( 0 * 4 ) ) & 0xFF;
-                    const auto a = 0xFF;
-                    return { r, g, b, a };
-                }
-                if constexpr ( sizeof...( Cs ) == rrggbbaa )
-                {
-                    const auto r = ( rgba >> ( 6 * 4 ) ) & 0xFF;
-                    const auto g = ( rgba >> ( 4 * 4 ) ) & 0xFF;
-                    const auto b = ( rgba >> ( 2 * 4 ) ) & 0xFF;
-                    const auto a = ( rgba >> ( 0 * 4 ) ) & 0xFF;
-                    return { r, g, b, a };
-                }
+                constexpr auto c = parse_hex_literal_0< Cs... >();
+                return sizeof...( Cs ) == rrggbbaa
+                           ? QColor{ qAlpha( c ), qRed( c ), qGreen( c ), qBlue( c ) }
+                           : QColor{ qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) };
             }
 
             // converts a hex literal from '0x[AA]RRGGBB' to a QColor
@@ -522,23 +464,8 @@ namespace QskRgb
                 constexpr auto aarrggbb = 10;
                 static_assert( sizeof...( Cs ) == rrggbb || sizeof...( Cs ) == aarrggbb,
                     "invalid color literal length" );
-                constexpr auto rgba = parse_hex_literal_0< Cs... >();
-                if constexpr ( sizeof...( Cs ) == rrggbb )
-                {
-                    const auto r = ( rgba >> ( 4 * 4 ) ) & 0xFF;
-                    const auto g = ( rgba >> ( 2 * 4 ) ) & 0xFF;
-                    const auto b = ( rgba >> ( 0 * 4 ) ) & 0xFF;
-                    const auto a = 0xFF;
-                    return { r, g, b, a };
-                }
-                if constexpr ( sizeof...( Cs ) == aarrggbb )
-                {
-                    const auto r = ( rgba >> ( 4 * 4 ) ) & 0xFF;
-                    const auto g = ( rgba >> ( 2 * 4 ) ) & 0xFF;
-                    const auto b = ( rgba >> ( 0 * 4 ) ) & 0xFF;
-                    const auto a = ( rgba >> ( 6 * 4 ) ) & 0xFF;
-                    return { r, g, b, a };
-                }
+                constexpr auto c = parse_hex_literal_0< Cs... >();
+                return QColor{ qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) };
             }
         }
     }

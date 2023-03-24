@@ -35,15 +35,15 @@ void QskRgbLiterals::parsing_data()
 
     QTest::newRow( "" ) << "" << ( QRgb ) 0;
     QTest::newRow( "#" ) << "#" << ( QRgb ) 0;
-    QTest::newRow( "#1" ) << "#1" << ( QRgb ) 0x1;
-    QTest::newRow( "#12" ) << "#12" << ( QRgb ) 0x12;
-    QTest::newRow( "#123" ) << "#123" << ( QRgb ) 0x123;
-    QTest::newRow( "#1234" ) << "#1234" << ( QRgb ) 0x1234;
-    QTest::newRow( "#12345" ) << "#12345" << ( QRgb ) 0x12345;
-    QTest::newRow( "#123456" ) << "#123456" << ( QRgb ) 0x123456;
-    QTest::newRow( "#1234567" ) << "#1234567" << ( QRgb ) 0x1234567;
+    QTest::newRow( "#1" ) << "#1" << ( QRgb ) 0;
+    QTest::newRow( "#12" ) << "#12" << ( QRgb ) 0;
+    QTest::newRow( "#123" ) << "#123" << ( QRgb ) 0;
+    QTest::newRow( "#1234" ) << "#1234" << ( QRgb ) 0;
+    QTest::newRow( "#12345" ) << "#12345" << ( QRgb ) 0;
+    QTest::newRow( "#123456" ) << "#123456" << ( QRgb ) 0xFF123456;
+    QTest::newRow( "#1234567" ) << "#1234567" << ( QRgb ) 0;
     QTest::newRow( "#12345678" ) << "#12345678" << ( QRgb ) 0x12345678;
-    QTest::newRow( "#123456789" ) << "#123456789" << ( QRgb ) 0x23456789;
+    QTest::newRow( "#123456789" ) << "#123456789" << ( QRgb ) 0;
 }
 
 void QskRgbLiterals::parsing()
