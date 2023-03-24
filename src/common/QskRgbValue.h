@@ -238,97 +238,113 @@ namespace QskRgb
 
 namespace QskRgb
 {
+    enum Format
+    {
+        ARGB,
+        RGBA
+    };
+
     // Converts a '#12345678' color hex string to a '0x12345678' unsigned integer
-    QSK_EXPORT constexpr QRgb fromHexString( const char* const str, const size_t len ) noexcept
+    QSK_EXPORT constexpr QRgb fromHexString(
+        const char* const str, const size_t len, const Format format ) noexcept
     {
         if ( ( len != 9 && len != 7 ) || str[ 0 ] != '#' )
         {
             return 0;
         }
 
-        QRgb argb = 0xFF;
+        QRgb c = 0xFF;
 
         for ( size_t i = 1; i < len; ++i )
         {
             switch ( str[ i ] )
             {
                 case '0':
-                    argb = ( argb << 4 ) | 0x0;
+                    c = ( c << 4 ) | 0x0;
                     break;
 
                 case '1':
-                    argb = ( argb << 4 ) | 0x1;
+                    c = ( c << 4 ) | 0x1;
                     break;
 
                 case '2':
-                    argb = ( argb << 4 ) | 0x2;
+                    c = ( c << 4 ) | 0x2;
                     break;
 
                 case '3':
-                    argb = ( argb << 4 ) | 0x3;
+                    c = ( c << 4 ) | 0x3;
                     break;
 
                 case '4':
-                    argb = ( argb << 4 ) | 0x4;
+                    c = ( c << 4 ) | 0x4;
                     break;
 
                 case '5':
-                    argb = ( argb << 4 ) | 0x5;
+                    c = ( c << 4 ) | 0x5;
                     break;
 
                 case '6':
-                    argb = ( argb << 4 ) | 0x6;
+                    c = ( c << 4 ) | 0x6;
                     break;
 
                 case '7':
-                    argb = ( argb << 4 ) | 0x7;
+                    c = ( c << 4 ) | 0x7;
                     break;
 
                 case '8':
-                    argb = ( argb << 4 ) | 0x8;
+                    c = ( c << 4 ) | 0x8;
                     break;
 
                 case '9':
-                    argb = ( argb << 4 ) | 0x9;
+                    c = ( c << 4 ) | 0x9;
                     break;
 
                 case 'A':
                 case 'a':
-                    argb = ( argb << 4 ) | 0xA;
+                    c = ( c << 4 ) | 0xA;
                     break;
 
                 case 'B':
                 case 'b':
-                    argb = ( argb << 4 ) | 0xB;
+                    c = ( c << 4 ) | 0xB;
                     break;
 
                 case 'C':
                 case 'c':
-                    argb = ( argb << 4 ) | 0xC;
+                    c = ( c << 4 ) | 0xC;
                     break;
 
                 case 'D':
                 case 'd':
-                    argb = ( argb << 4 ) | 0xD;
+                    c = ( c << 4 ) | 0xD;
                     break;
 
                 case 'E':
                 case 'e':
-                    argb = ( argb << 4 ) | 0xE;
+                    c = ( c << 4 ) | 0xE;
                     break;
 
                 case 'F':
                 case 'f':
-                    argb = ( argb << 4 ) | 0xF;
+                    c = ( c << 4 ) | 0xF;
                     break;
 
                 default:
-                    argb = ( argb << 4 ) | 0x0;
+                    c = ( c << 4 ) | 0x0;
                     break;
             }
         }
 
-        return argb;
+        switch ( format )
+        {
+            case ARGB:
+                return c;
+            case RGBA:
+                return len == 9 ? qRgba( qAlpha( c ), qRed( c ), qGreen( c ), qBlue( c ) )
+                                : qRgba( qRed( c ), qGreen( c ), qBlue( c ), 255 );
+        }
+
+        return 0;
     }
 
     namespace literals
@@ -383,17 +399,14 @@ namespace QskRgb
             QSK_EXPORT constexpr QRgb operator""_rgba(
                 const char* const str, const size_t len ) noexcept
             {
-                constexpr auto rrggbbaa = 9;
-                const auto c = fromHexString( str, len );
-                return len == rrggbbaa ? qRgba( qAlpha( c ), qRed( c ), qGreen( c ), qBlue( c ) )
-                                       : qRgba( qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) );
+                return fromHexString( str, len, RGBA );
             }
 
             // converts a hex string from '#[AA]RRGGBB' to '0xAARRGGBB' integer
             QSK_EXPORT constexpr QRgb operator""_argb(
                 const char* const str, const size_t len ) noexcept
             {
-                return fromHexString( str, len );
+                return fromHexString( str, len, ARGB );
             }
 
             // converts a hex literal from '0xRRGGBB[AA]' to '0xAARRGGBB' integer
@@ -428,17 +441,15 @@ namespace QskRgb
             QSK_EXPORT constexpr QColor operator""_rgba(
                 const char* const str, const size_t len ) noexcept
             {
-                constexpr auto rrggbbaa = 9;
-                const auto c = fromHexString( str, len );
-                return len == rrggbbaa ? QColor{ qAlpha( c ), qRed( c ), qGreen( c ), qBlue( c ) }
-                                       : QColor{ qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) };
+                const auto c = fromHexString( str, len, RGBA );
+                return QColor{ qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) };
             }
 
             // converts a hex string from '#[AA]RRGGBB' to a QColor
             QSK_EXPORT constexpr QColor operator""_argb(
                 const char* const str, const size_t len ) noexcept
             {
-                const auto c = fromHexString( str, len );
+                const auto c = fromHexString( str, len, ARGB );
                 return QColor{ qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) };
             }
 
