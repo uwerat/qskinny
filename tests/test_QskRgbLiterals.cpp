@@ -2,6 +2,32 @@
 #include <QTest>
 #include <QskRgbValue.h>
 
+#define QSK_REQUIRE_CONSTEXPR_LITERALS
+#ifdef QSK_REQUIRE_CONSTEXPR_LITERALS
+namespace QskRgb::literals::integral
+{
+// RGBA hex string to QRgb with defaulted alpha = 0xFF
+static_assert( "#123456"_rgba == 0xFF123456, "invalid or not constexpr" );
+static_assert( "#123456"_argb == 0xFF123456, "invalid or not constexpr" );
+
+// ARGB hex string to QRgb with defaulted alpha = 0xFF
+static_assert( "#AA112233"_argb == 0xAA112233, "invalid or not constexpr" );
+static_assert( "#112233AA"_rgba == 0xAA112233, "invalid or not constexpr" );
+
+// RGBA hex literal to QRgb with defaulted alpha = 0xFF
+static_assert( 0x112233_rgba == 0xFF112233, "invalid or not constexpr" );
+static_assert( 0xaabbcc_rgba == 0xFFAABBCC, "invalid or not constexpr" );
+static_assert( 0xAABBCC_rgba == 0xFFAABBCC, "invalid or not constexpr" );
+static_assert( 0x112233aa_rgba == 0xaa112233, "invalid or not constexpr" );
+
+// ARGB hex literal to QRgb with defaulted alpha = 0xFF
+static_assert( 0x112233_argb == 0xFF112233, "invalid or not constexpr" );
+static_assert( 0xaabbcc_argb == 0xFFAABBCC, "invalid or not constexpr" );
+static_assert( 0xAABBCC_argb == 0xFFAABBCC, "invalid or not constexpr" );
+static_assert( 0x112233aa_argb == 0x112233aa, "invalid or not constexpr" );
+}
+#endif
+
 void QskRgbLiterals::parsing_data()
 {
     QTest::addColumn< QString >( "text" );
