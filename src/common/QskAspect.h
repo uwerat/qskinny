@@ -106,7 +106,7 @@ class QSK_EXPORT QskAspect
         NoState          = 0,
 
         FirstSystemState = 1 << 0,
-        FirstUserState   = 1 << 4,
+        FirstUserState   = 1 << 5,
         LastUserState    = 1 << 11,
         LastSystemState  = 1 << 15,
 

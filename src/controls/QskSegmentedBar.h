@@ -99,9 +99,11 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
     void hoverLeaveEvent( QHoverEvent* ) override;
 
     void focusInEvent( QFocusEvent* ) override;
+    void focusOutEvent( QFocusEvent* ) override;
 
   private:
     int nextIndex( int index, bool forward ) const;
+    void setFocusedIndex( int );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

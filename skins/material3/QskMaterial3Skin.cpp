@@ -486,7 +486,6 @@ void Editor::setupFocusIndicator()
 
 void Editor::setupSegmentedBar()
 {
-    // copied from Squiek: we need something similar to a tab bar here. TODO ...
     using A = QskAspect;
     using Q = QskSegmentedBar;
 
@@ -504,6 +503,7 @@ void Editor::setupSegmentedBar()
 
         setBoxBorderMetrics( Q::Panel, 1_dp );
         setBoxBorderColors( Q::Panel, m_pal.outline );
+
         setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface12 );
 
         setStrutSize( Q::Panel | A::Horizontal, panelStrutSize );
@@ -515,13 +515,40 @@ void Editor::setupSegmentedBar()
 
         setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
         setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
-        setGradient( Q::Segment, Qt::transparent );
-        setGradient( Q::Segment | Q::Hovered, m_pal.onSurface12,
-                     { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum | Q::Selected } );
+
+        setBoxBorderMetrics( Q::Segment | A::Horizontal, { 0, 1_dp, 0, 1_dp } );
+        setBoxBorderMetrics( Q::Segment | Q::Minimum | A::Horizontal, { 1_dp, 1_dp, 0, 1_dp } );
+        setBoxBorderMetrics( Q::Segment | Q::Maximum | A::Horizontal, { 0, 1_dp, 1_dp, 1_dp } );
+
+        setBoxBorderMetrics( Q::Segment | A::Vertical, { 1_dp, 0,  1_dp, 0 } );
+        setBoxBorderMetrics( Q::Segment | Q::Minimum | A::Vertical, { 1_dp, 1_dp, 1_dp, 0 } );
+        setBoxBorderMetrics( Q::Segment | Q::Maximum | A::Vertical, { 1_dp, 0, 1_dp, 1_dp } );
+
+        setBoxBorderColors( Q::Segment, Qt::transparent );
+
+        setGradient( Q::Segment | Q::Hovered, m_pal.onSurface8,
+                     { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum } );
+
+        setGradient( Q::Segment | Q::Focused, m_pal.onSurface12,
+                     { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum } );
+
+        setGradient( Q::Segment | Q::Selected, m_pal.secondaryContainer,
+                    { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum } );
+        setGradient( Q::Segment | Q::Selected | Q::Hovered,
+                    flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.hoverOpacity ),
+                                    { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum } );
+        setGradient( Q::Segment | Q::Selected | Q::Focused,
+                    flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.focusOpacity ),
+                                    { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum } );
+
+        setGradient( Q::Segment | Q::Selected | Q::Disabled, m_pal.onSurface12,
+                     { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum } );
+
         setPadding( Q::Segment | A::Horizontal, 12_dp, 0, 12_dp, 0 );
         setPadding( Q::Segment | A::Vertical, 0, 12_dp, 0, 12_dp );
 
         setBoxShape( Q::Segment, 0 );
+
         setBoxShape( Q::Segment | Q::Minimum | A::Horizontal,
                      { 100, 0, 100, 0, Qt::RelativeSize },
                      { QskStateCombination::CombinationNoState, Q::Disabled } );
@@ -545,34 +572,6 @@ void Editor::setupSegmentedBar()
         setPadding( Q::Separator, 0 );
         setGradient( Q::Separator, m_pal.outline );
         setColor( Q::Separator | Q::Disabled, m_pal.onSurface12 );
-    }
-
-    {
-        // Cursor
-        setBoxShape( Q::Cursor, 0 );
-
-        setBoxShape( Q::Cursor | Q::Minimum | A::Horizontal,
-            { 100, 0, 100, 0, Qt::RelativeSize },
-            { QskStateCombination::CombinationNoState, Q::Disabled } );
-
-        setBoxShape( Q::Cursor | Q::Maximum | A::Horizontal,
-            { 0, 100, 0, 100, Qt::RelativeSize },
-            { QskStateCombination::CombinationNoState, Q::Disabled } );
-
-        setBoxShape( Q::Cursor | Q::Minimum | A::Vertical,
-            { 100, 100, 0, 0, Qt::RelativeSize },
-            { QskStateCombination::CombinationNoState, Q::Disabled } );
-
-        setBoxShape( Q::Cursor | Q::Maximum | A::Vertical,
-            { 0, 0, 100, 100, Qt::RelativeSize },
-            { QskStateCombination::CombinationNoState, Q::Disabled } );
-
-        setGradient( Q::Cursor, m_pal.secondaryContainer );
-        setGradient( Q::Cursor | Q::Disabled, m_pal.onSurface12 );
-        setGradient( Q::Cursor | Q::Hovered, stateLayerColor( m_pal.onSurface, m_pal.hoverOpacity ) );
-
-        setBoxBorderMetrics( Q::Cursor, 1_dp );
-        setBoxBorderColors( Q::Cursor, Qt::transparent );
     }
 
     {

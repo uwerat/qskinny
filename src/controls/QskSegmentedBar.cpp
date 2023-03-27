@@ -24,10 +24,10 @@ QSK_SUBCONTROL( QskSegmentedBar, Cursor )
 QSK_SUBCONTROL( QskSegmentedBar, Text )
 QSK_SUBCONTROL( QskSegmentedBar, Icon )
 
-QSK_SYSTEM_STATE( QskSegmentedBar, Selected, QskAspect::FirstSystemState )
-QSK_SYSTEM_STATE( QskSegmentedBar, Pressed, QskAspect::FirstSystemState << 1 )
-QSK_SYSTEM_STATE( QskSegmentedBar, Minimum, QskAspect::FirstSystemState << 2 )
-QSK_SYSTEM_STATE( QskSegmentedBar, Maximum, QskAspect::FirstSystemState << 3 )
+QSK_SYSTEM_STATE( QskSegmentedBar, Minimum, QskAspect::FirstSystemState << 1 )
+QSK_SYSTEM_STATE( QskSegmentedBar, Maximum, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskSegmentedBar, Selected, QskAspect::FirstSystemState << 3 )
+QSK_SYSTEM_STATE( QskSegmentedBar, Pressed, QskAspect::FirstSystemState << 4 )
 
 class QskSegmentedBar::PrivateData
 {
@@ -42,6 +42,7 @@ class QskSegmentedBar::PrivateData
 
     int selectedIndex = -1;
     int currentIndex = -1;
+    int focusedIndex = -1;
 
     Qt::Orientation orientation;
     bool isPressed = false;
@@ -166,7 +167,10 @@ void QskSegmentedBar::mousePressEvent( QMouseEvent* event )
             if( !QGuiApplication::styleHints()->setFocusOnTouchRelease() )
             {
                 if( index != m_data->currentIndex )
+                {
                     setCurrentIndex( index );
+                    setFocusedIndex( index );
+                }
             }
         }
     }
@@ -226,11 +230,12 @@ void QskSegmentedBar::keyPressEvent( QKeyEvent* event )
             else
                 forwards = ( event->key() == Qt::Key_Right );
 
-            const int index = nextIndex( m_data->selectedIndex, forwards );
-            if ( index != m_data->selectedIndex )
+            const int index = nextIndex( m_data->focusedIndex, forwards );
+
+            if ( index != m_data->focusedIndex )
             {
                 if ( index >= 0 && index < count() )
-                    setSelectedIndex( index );
+                    setFocusedIndex( index );
             }
 
             return;
@@ -238,9 +243,11 @@ void QskSegmentedBar::keyPressEvent( QKeyEvent* event )
 
         case Qt::Key_Select:
         case Qt::Key_Space:
-
+        {
+            setCurrentIndex( m_data->focusedIndex );
             // stop further processing
             return;
+        }
 
         default:
         {
@@ -248,10 +255,10 @@ void QskSegmentedBar::keyPressEvent( QKeyEvent* event )
 
             if( steps != 0 )
             {
-                const int index = nextIndex( m_data->currentIndex, steps > 0 );
+                const int index = nextIndex( m_data->focusedIndex, steps > 0 );
 
-                if( index != m_data->currentIndex )
-                    setCurrentIndex( index );
+                if( index != m_data->focusedIndex )
+                    setFocusedIndex( index );
 
                 if( index >= 0 )
                     return;
@@ -279,7 +286,7 @@ void QskSegmentedBar::hoverEnterEvent( QHoverEvent* event )
 {
     using A = QskAspect;
 
-    setSkinHint( Segment | A::Metric | A::Position, qskHoverPosition( event ) );
+    setSkinHint( Segment | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
     update();
 }
 
@@ -287,21 +294,21 @@ void QskSegmentedBar::hoverMoveEvent( QHoverEvent* event )
 {
     using A = QskAspect;
 
-    setSkinHint( Segment | A::Metric | A::Position, qskHoverPosition( event ) );
+    setSkinHint( Segment | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
     update();
 }
 
-void QskSegmentedBar::hoverLeaveEvent( QHoverEvent* event )
+void QskSegmentedBar::hoverLeaveEvent( QHoverEvent* )
 {
     using A = QskAspect;
 
-    setSkinHint( Segment | A::Metric | A::Position, QPointF() );
+    setSkinHint( Segment | Hovered | A::Metric | A::Position, QPointF() );
     update();
 }
 
 void QskSegmentedBar::focusInEvent( QFocusEvent* event )
 {
-    int index = m_data->currentIndex;
+    int index = m_data->focusedIndex;
 
     switch( event->reason() )
     {
@@ -324,10 +331,18 @@ void QskSegmentedBar::focusInEvent( QFocusEvent* event )
         }
     }
 
-    if( index != m_data->currentIndex )
-        setCurrentIndex( index );
+    if( index != m_data->focusedIndex )
+        setFocusedIndex( index );
 
     Inherited::focusInEvent( event );
+}
+
+void QskSegmentedBar::focusOutEvent( QFocusEvent* event )
+{
+    setFocusedIndex( -1 );
+    update();
+
+    Inherited::focusOutEvent( event );
 }
 
 void QskSegmentedBar::clear()
@@ -493,6 +508,19 @@ QRectF QskSegmentedBar::focusIndicatorRect() const
     }
 
     return Inherited::focusIndicatorRect();
+}
+
+void QskSegmentedBar::setFocusedIndex( int index )
+{
+    if ( m_data->focusedIndex == index )
+        return;
+
+    m_data->focusedIndex = index;
+    setPositionHint( Segment | Focused, index );
+
+    update();
+
+    Q_EMIT focusIndicatorRectChanged();
 }
 
 #include "moc_QskSegmentedBar.cpp"

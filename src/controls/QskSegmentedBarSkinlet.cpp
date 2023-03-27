@@ -196,7 +196,7 @@ QRectF QskSegmentedBarSkinlet::separatorRect(
 
     if( bar->orientation() == Qt::Horizontal )
     {
-        rect.setLeft( rect.right() ); // ### *0.5 or so?
+        rect.setLeft( rect.right() );
         rect.setSize( { strutSize.width(), sh.height() } );
     }
     else
@@ -361,9 +361,19 @@ QskAspect::States QskSegmentedBarSkinlet::sampleStates(
 
     const auto* bar = static_cast< const QskSegmentedBar* >( skinnable );
 
-    if ( subControl == Q::Segment )
+    if ( subControl == Q::Segment || subControl == Q::Cursor )
     {
-        const auto cursorPos = bar->effectiveSkinHint( Q::Segment | A::Metric | A::Position ).toPointF();
+        if ( bar->isSegmentEnabled( index ) )
+        {
+            if ( bar->selectedIndex() == index )
+                states |= Q::Selected;
+        }
+        else
+        {
+            states |= Q::Disabled;
+        }
+
+        const auto cursorPos = bar->effectiveSkinHint( Q::Segment | Q::Hovered | A::Metric | A::Position ).toPointF();
 
         if( !cursorPos.isNull() && bar->indexAtPosition( cursorPos ) == index )
         {
@@ -372,6 +382,20 @@ QskAspect::States QskSegmentedBarSkinlet::sampleStates(
         else
         {
             states &= ~Q::Hovered;
+        }
+
+        const auto focusIndex = bar->positionHint( Q::Segment | Q::Focused );
+
+        if( focusIndex >= 0 && focusIndex < bar->count() )
+        {
+            if( focusIndex == index )
+            {
+                states |= Q::Focused;
+            }
+            else
+            {
+                states &= ~Q::Focused;
+            }
         }
 
         if( bar->count() > 0 )
@@ -393,7 +417,7 @@ QskAspect::States QskSegmentedBarSkinlet::sampleStates(
             }
         }
     }
-    else if( subControl == Q::Icon || subControl == Q::Text || subControl == Q::Cursor )
+    else if( subControl == Q::Icon || subControl == Q::Text )
     {
         if ( bar->isSegmentEnabled( index ) )
         {
@@ -418,7 +442,7 @@ QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable
 
     const auto rect = sampleRect( bar, bar->contentsRect(), subControl, index );
 
-    if ( subControl == Q::Segment || subControl == Q::Separator )
+    if ( subControl == Q::Segment || subControl == Q::Separator || subControl == Q::Cursor )
     {
         return updateBoxNode( skinnable, node, rect, subControl );
     }
