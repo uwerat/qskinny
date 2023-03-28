@@ -1,8 +1,0 @@
-TEMPLATE     = app
-CONFIG      += qskinny qsktestsupport
-
-DEFINES     += QSK_DLL
-DESTDIR      = $$clean_path( $${OUT_PWD}/../bin )
-
-target.path    = $${QSK_INSTALL_EXAMPLES}/bin
-INSTALLS       = target

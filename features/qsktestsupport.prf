@@ -1,9 +1,0 @@
-QSK_TEST_SUPPORT_DIRS = $${QSK_ROOT}/support
-
-INCLUDEPATH *= $${QSK_TEST_SUPPORT_DIRS}
-DEPENDPATH  *= $${QSK_TEST_SUPPORT_DIRS}
-
-use_install_rpath: QMAKE_RPATHDIR *= $${QSK_INSTALL_EXAMPLES}/lib
-use_local_rpath: QMAKE_RPATHDIR *= $${QSK_LIB_DIR}
-
-qskAddLibrary( $${QSK_LIB_DIR}, qsktestsupport)
