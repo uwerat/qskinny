@@ -8,7 +8,7 @@ name: CMake Build Matrix
 
 on:
   push:
-    branches: [cmake*]
+    branches: [cmake*] # TODO
   pull_request:
     branches: [master]
 
