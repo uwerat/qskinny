@@ -4,7 +4,7 @@ project(QSkinny VERSION 999.99.9)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -24,6 +24,7 @@ if(QT_VERSION_MAJOR VERSION_EQUAL "5")
     endfunction(qt_add_library)
 elseif(QT_VERSION_MAJOR VERSION_EQUAL "6")
     find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL Quick )
+    qt_standard_project_setup()
     find_package(Qt6 OPTIONAL_COMPONENTS Svg)
 else()
     message(FATAL_ERROR "Couldn't find any Qt version!")
