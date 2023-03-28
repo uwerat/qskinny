@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-include(${CMAKE_SOURCE_DIR}/features/qskconfig.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/QskBuild.cmake)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 if(QT_VERSION_MAJOR VERSION_EQUAL "5")

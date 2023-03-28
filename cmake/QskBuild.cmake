@@ -5,33 +5,15 @@
 
 set(QSK_VERSION ${CMAKE_PROJECT_VERSION})
 
-# trying the PREFIX environment variable first
-set(QSK_INSTALL_PREFIX $ENV{PREFIX}) # TODO still required?
-
-if("${QSK_INSTALL_PREFIX}" STREQUAL "")
-    set(QSK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}") # TODO where does QT_INSTALL_PREFIX come from?
-
-    if (UNIX)
-        set(QSK_INSTALL_PREFIX /usr/local/qskinny-${QSK_VERSION})
-    endif()
-
-    if (MSVC)
-        set(QSK_INSTALL_PREFIX C:/Qskinny-${QSK_VERSION})
-    endif()
-endif()
-
 # TODO find compiler flag equivalent
 list(APPEND CONFIG        no_private_qt_headers_warning)
 list(APPEND CONFIG        warn_on)
 list(APPEND CONFIG        no_keywords)
-list(APPEND CONFIG        silent)
 #list(APPEND CONFIG           -= depend_includepath) # TODO was -=
 list(APPEND CONFIG        strict_c++)
 list(APPEND CONFIG        c++17)
 list(APPEND CONFIG        pedantic)
 list(APPEND CONFIG        hide_symbols)
-#list(APPEND CONFIG           += debug)
-#list(APPEND CONFIG           += sanitize)
 
 # TODO
 # use_no_rpath {
@@ -140,15 +122,20 @@ if ("pedantic" IN_LIST CONFIG)
     endif()
 endif()
 
-if ("sanitize" IN_LIST CONFIG)
 
-    list(APPEND CONFIG sanitizer)
-    list(APPEND CONFIG sanitize_address)
-    # CONFIG *= sanitize_undefined
+# DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
 
-    if ("${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+" OR "${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+-64")
-        # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -fsanitize-address-use-after-scope)
-        #QMAKE_LFLAGS *= -fsanitize-address-use-after-scope
+set(LOCAL_CMAKE_RULES $ENV{QSK_LOCAL_CMAKE_RULES})
+
+if(NOT "${LOCAL_CMAKE_RULES}" STREQUAL "")
+
+    if(EXISTS ${LOCAL_CMAKE_RULES})
+
+        # When not working with the Qt/Creator it is often more convenient
+        # to include the specific options of your local build, than passing
+        # them all on the command line
+
+        include(${LOCAL_CMAKE_RULES})
     endif()
 endif()
 
@@ -156,18 +143,21 @@ if (CMAKE_BUILD_TYPE EQUAL "Debug")
     add_compile_definitions(ITEM_STATISTICS=1)
 endif()
 
-# DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
+if ( NOT "${ECM_ENABLE_SANITIZERS}" STREQUAL "")
 
-set(LOCAL_PRI $ENV{QSK_LOCAL_PRI})
+    # see: https://api.kde.org/ecm/module/ECMEnableSanitizers.html
+    #
+    # a semicolon-separated list of sanitizers:
+    #   - address
+    #   - memory
+    #   - thread
+    #   - leak
+    #   - undefined
+    #   - fuzzer
+    #
+    # where “address”, “memory” and “thread” are mutually exclusive
+    # f.e: set(ECM_ENABLE_SANITIZERS address;leak;undefined)
 
-if (${LOCAL_PRI}) # TODO not empty check
+    include(${CMAKE_SOURCE_DIR}/cmake/ECMEnableSanitizers.cmake)
 
-    if(EXISTS  ${LOCAL_PRI})
-
-        # When not working with the Qt/Creator it is often more convenient
-        # to include the specific options of your local build, than passing
-        # them all on the command line
-
-        include(${LOCAL_PRI})
-    endif()
 endif()
