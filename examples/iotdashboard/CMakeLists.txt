@@ -1,4 +1,6 @@
-list(APPEND TARGET_SOURCES
+list(APPEND RESOURCES images.qrc fonts.qrc)
+
+list(APPEND SOURCES
     Box.cpp
     BoxWithButtons.cpp
     CircularProgressBar.cpp
@@ -31,12 +33,12 @@ list(APPEND TARGET_SOURCES
     StorageBarSkinlet.cpp
     main.cpp)
 
-list(APPEND TARGET_SOURCES
+list(APPEND SOURCES
     nodes/DiagramDataNode.cpp
     nodes/DiagramSegmentsNode.cpp
     nodes/RadialTickmarksNode.cpp)
 
-list(APPEND TARGET_HEADERS
+list(APPEND HEADERS
     Box.h
     BoxWithButtons.h
     CircularProgressBar.h
@@ -68,38 +70,9 @@ list(APPEND TARGET_HEADERS
     StorageBar.h
     StorageBarSkinlet.h)
 
-list(APPEND TARGET_HEADERS
+list(APPEND HEADERS
     nodes/DiagramDataNode.h
     nodes/DiagramSegmentsNode.h
     nodes/RadialTickmarksNode.h)
 
-list(APPEND TARGET_RESSOURCES
-    images.qrc
-    fonts.qrc)
-
-set(TARGET_NAME iotdashboard)
-
-qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
-    ${TARGET_SOURCES}
-    ${TARGET_HEADERS}
-    ${TARGET_RESSOURCES})
-
-if(TARGET Qsk::qskinny) 
-    # integration test
-    # - qsktestsupport doesn't exists
-    # - qskinny has a namespace Qsk
-    target_link_libraries(${TARGET_NAME}
-        PRIVATE
-            Qsk::qskinny)
-else()
-    target_link_libraries(${TARGET_NAME}
-        PRIVATE
-            qskinny
-            qsktestsupport)
-
-    target_compile_definitions(${TARGET_NAME}
-        PRIVATE
-            USE_SHORTCUTS)
-endif()
-
-include(${CMAKE_SOURCE_DIR}/cmake/QskExamples.cmake)
+qsk_example(iotdashboard)

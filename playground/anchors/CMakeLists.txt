@@ -1,4 +1,4 @@
-list(APPEND TARGET_HEADERS
+list(APPEND HEADERS
     kiwi/Constraint.h
     kiwi/Expression.h
     kiwi/Solver.h
@@ -6,28 +6,16 @@ list(APPEND TARGET_HEADERS
     kiwi/Term.h
     kiwi/Variable.h)
 
-list(APPEND TARGET_SOURCES
+list(APPEND SOURCES
     kiwi/Expression.cpp
     kiwi/Constraint.cpp
     kiwi/Solver.cpp)
 
-list(APPEND TARGET_HEADERS
+list(APPEND HEADERS
     AnchorBox.h)
 
-list(APPEND TARGET_SOURCES
+list(APPEND SOURCES
     AnchorBox.cpp
     main.cpp)
 
-set(TARGET_NAME anchors)
-
-qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
-    ${TARGET_SOURCES}
-    ${TARGET_HEADERS}
-    ${TARGET_RESSOURCES})
-
-target_link_libraries(${TARGET_NAME}
-    PRIVATE
-        qskinny
-        qsktestsupport)
-
-include(${CMAKE_SOURCE_DIR}/cmake/QskPlayground.cmake)
+qsk_example(anchors)

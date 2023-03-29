@@ -1,4 +1,6 @@
-list(APPEND TARGET_HEADERS
+list(APPEND RESOURCES icons.qrc )
+
+list(APPEND HEADERS
     label/LabelPage.h
     inputs/InputPage.h
     progressbar/ProgressBarPage.h
@@ -7,7 +9,7 @@ list(APPEND TARGET_HEADERS
     dialog/DialogPage.h
     Page.h)
 
-list(APPEND TARGET_SOURCES
+list(APPEND SOURCES
     label/LabelPage.cpp
     inputs/InputPage.cpp
     progressbar/ProgressBarPage.cpp
@@ -17,20 +19,4 @@ list(APPEND TARGET_SOURCES
     Page.cpp
     main.cpp)
 
-list(APPEND TARGET_RESSOURCES
-    icons.qrc )
-
-set(TARGET_NAME gallery)
-
-qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES} )
-
-target_link_libraries(${TARGET_NAME}
-    PRIVATE
-        qskinny
-        qsktestsupport)
-
-target_include_directories(${TARGET_NAME}
-   PRIVATE
-       ${CMAKE_CURRENT_LIST_DIR})
-
-include(${CMAKE_SOURCE_DIR}/cmake/QskExamples.cmake)
+qsk_example(gallery)

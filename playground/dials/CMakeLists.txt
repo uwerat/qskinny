@@ -1,29 +1,16 @@
-list(APPEND TARGET_HEADERS
+list(APPEND RESOURCES images.qrc)
+
+list(APPEND HEADERS
     SkinFactory.h
     Dial.h
     DialSkinlet.h
     Dashboard.h)
 
-list(APPEND TARGET_SOURCES
+list(APPEND SOURCES
     SkinFactory.cpp
     Dial.cpp
     DialSkinlet.cpp
     Dashboard.cpp
     main.cpp)
 
-list(APPEND TARGET_RESSOURCES
-    images.qrc)
-
-set(TARGET_NAME dials)
-
-qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
-    ${TARGET_SOURCES}
-    ${TARGET_HEADERS}
-    ${TARGET_RESSOURCES})
-
-target_link_libraries(${TARGET_NAME}
-    PRIVATE
-        qskinny
-        qsktestsupport)
-
-include(${CMAKE_SOURCE_DIR}/cmake/QskPlayground.cmake)
+qsk_example(dials)

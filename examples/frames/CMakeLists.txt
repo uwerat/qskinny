@@ -1,21 +1,6 @@
-list(APPEND TARGET_RESSOURCES
-    frames.qrc)
+list(APPEND RESOURCES frames.qrc)
+list(APPEND HEADERS Frame.h)
+list(APPEND SOURCES Frame.cpp main.cpp)
 
-list(APPEND TARGET_HEADERS
-    Frame.h)
+qsk_example(frames)
 
-list(APPEND TARGET_SOURCES
-    Frame.cpp
-    main.cpp)
-
-set(TARGET_NAME frames)
-
-qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES})
-
-target_link_libraries(${TARGET_NAME}
-    PRIVATE
-        qskinny
-        qsktestsupport
-        qskqmlexport)
-
-include(${CMAKE_SOURCE_DIR}/cmake/QskExamples.cmake)
