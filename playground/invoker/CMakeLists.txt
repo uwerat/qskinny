@@ -19,6 +19,7 @@ target_link_libraries(${TARGET_NAME}
 
 set_target_properties(${TARGET_NAME}
     PROPERTIES
-        AUTOMOC ON
-        AUTOMOC_MOC_OPTIONS -nw
-        FOLDER playground)
+        AUTOMOC_MOC_OPTIONS --no-warnings
+        )
+
+include(${CMAKE_SOURCE_DIR}/cmake/QskPlayground.cmake)

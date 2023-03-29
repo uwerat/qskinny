@@ -49,7 +49,4 @@ target_link_libraries(${TARGET_NAME}
         qskinny
         Qt::GuiPrivate)
 
-set_target_properties(${TARGET_NAME} PROPERTIES
-    AUTOMOC ON)
-
 install(TARGETS ${TARGET_NAME} DESTINATION ${QSK_INSTALL_PLUGINS}/platforminputcontexts)

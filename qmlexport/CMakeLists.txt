@@ -15,10 +15,6 @@ list(APPEND TARGET_SOURCES
 
 qt_add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS})
 
-set_target_properties(${TARGET_NAME}
-    PROPERTIES
-        AUTOMOC ON)
-
 target_link_libraries(${TARGET_NAME}
     PRIVATE
     qskinny)

@@ -14,7 +14,4 @@ target_link_libraries(${TARGET_NAME}
        qskinny
        qsktestsupport)
 
-set_target_properties(${TARGET_NAME}
-    PROPERTIES
-        AUTOMOC ON
-        FOLDER playground)
+include(${CMAKE_SOURCE_DIR}/cmake/QskPlayground.cmake)

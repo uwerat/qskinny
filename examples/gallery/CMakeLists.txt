@@ -17,14 +17,12 @@ list(APPEND TARGET_SOURCES
     Page.cpp
     main.cpp)
 
+list(APPEND TARGET_RESSOURCES
+    icons.qrc )
+
 set(TARGET_NAME gallery)
 
-qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE ${TARGET_SOURCES} ${TARGET_HEADERS})
-
-set_target_properties(${TARGET_NAME}
-    PROPERTIES
-        AUTOMOC ON
-        FOLDER examples)
+qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES} )
 
 target_link_libraries(${TARGET_NAME}
     PRIVATE
@@ -34,3 +32,5 @@ target_link_libraries(${TARGET_NAME}
 target_include_directories(${TARGET_NAME}
    PRIVATE
        ${CMAKE_CURRENT_LIST_DIR})
+
+include(${CMAKE_SOURCE_DIR}/cmake/QskExamples.cmake)

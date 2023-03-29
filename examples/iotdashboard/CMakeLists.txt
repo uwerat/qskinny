@@ -84,12 +84,6 @@ qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
     ${TARGET_HEADERS}
     ${TARGET_RESSOURCES})
 
-set_target_properties(${TARGET_NAME}
-    PROPERTIES
-        AUTOMOC ON
-        AUTORCC ON
-        FOLDER examples)
-
 if(TARGET Qsk::qskinny) 
     # integration test
     # - qsktestsupport doesn't exists
@@ -107,3 +101,5 @@ else()
         PRIVATE
             USE_SHORTCUTS)
 endif()
+
+include(${CMAKE_SOURCE_DIR}/cmake/QskExamples.cmake)

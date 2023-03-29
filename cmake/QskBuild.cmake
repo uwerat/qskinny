@@ -5,13 +5,20 @@
 
 set(QSK_VERSION ${CMAKE_PROJECT_VERSION})
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC OFF)
+set(CMAKE_GLOBAL_AUTOGEN_TARGET OFF)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(AUTOGEN_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/autogen")
+
 # TODO find compiler flag equivalent
 list(APPEND CONFIG        no_private_qt_headers_warning)
 list(APPEND CONFIG        warn_on)
 list(APPEND CONFIG        no_keywords)
 #list(APPEND CONFIG           -= depend_includepath) # TODO was -=
-list(APPEND CONFIG        strict_c++)
-list(APPEND CONFIG        c++17)
 list(APPEND CONFIG        pedantic)
 list(APPEND CONFIG        hide_symbols)
 

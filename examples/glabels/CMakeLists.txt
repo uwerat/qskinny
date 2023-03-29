@@ -14,8 +14,4 @@ target_link_libraries(${TARGET_NAME}
         qsktestsupport
         qskqmlexport)
 
-set_target_properties(${TARGET_NAME}
-    PROPERTIES
-        AUTOMOC ON
-        AUTORCC ON
-        FOLDER examples)
+include(${CMAKE_SOURCE_DIR}/cmake/QskExamples.cmake)

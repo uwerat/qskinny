@@ -474,8 +474,6 @@ endif()
 
 set_target_properties(${TARGET_NAME}
     PROPERTIES
-        AUTOMOC ON
-        AUTORCC ON
         FOLDER libs)
 
 # TODO hack for standalone qvg2svg

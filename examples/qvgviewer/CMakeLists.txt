@@ -28,12 +28,6 @@ qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
     ${TARGET_RESSOURCES}
     ${TARGET_SVGS})
 
-set_target_properties(${TARGET_NAME}
-    PROPERTIES
-        AUTOMOC ON
-        AUTORCC ON
-        FOLDER examples)
-
 target_link_libraries(${TARGET_NAME}
     PRIVATE
         qskinny
@@ -58,3 +52,5 @@ endif()
 target_sources(${TARGET_NAME} PRIVATE ${TARGET_QVGS})
 source_group("generated" FILES ${TARGET_QVGS})
 source_group("svg" FILES ${TARGET_SVGS})
+
+include(${CMAKE_SOURCE_DIR}/cmake/QskExamples.cmake)

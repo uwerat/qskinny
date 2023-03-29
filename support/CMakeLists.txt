@@ -33,9 +33,6 @@ if(ENABLE_FONT_CONFIG)
             FONTCONFIG_FILE=${QSK_FONTCONF_FILE})
 endif()
 
-set_target_properties(${TARGET_NAME} PROPERTIES
-   AUTOMOC ON)
-
 target_link_libraries(${TARGET_NAME}
    PUBLIC
        qskinny)
