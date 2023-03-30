@@ -1,7 +1,7 @@
 set(TARGET_NAME svg2qvg)
 set(TARGET_SOURCES main.cpp)
 
-qt_add_executable(${TARGET_NAME} ${TARGET_SOURCES})
+qsk_add_executable(${TARGET_NAME} ${TARGET_SOURCES})
 
 if(BUILD_SVG2QVG_STANDALONE)
 

@@ -13,7 +13,7 @@ list(APPEND TARGET_SOURCES
     QskMainQml.cpp
     QskQml.cpp)
 
-qt_add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS})
+qsk_add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS})
 
 target_link_libraries(${TARGET_NAME}
     PRIVATE

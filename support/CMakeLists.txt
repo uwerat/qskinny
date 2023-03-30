@@ -14,9 +14,9 @@ list(APPEND TARGET_SOURCES
 set(TARGET_NAME qsktestsupport)
 
 if (BUILD_QSKDLL)
-    qt_add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS})
+    qsk_add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS})
 else()
-    qt_add_library(${TARGET_NAME} STATIC ${TARGET_SOURCES} ${TARGET_HEADERS})
+    qsk_add_library(${TARGET_NAME} STATIC ${TARGET_SOURCES} ${TARGET_HEADERS})
 endif()
 
 if(ENABLE_FONT_CONFIG)

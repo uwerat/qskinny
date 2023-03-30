@@ -13,11 +13,54 @@ if(TARGET ${Qt}::Svg)
     endfunction()
 endif()
 
+function(qsk_add_executable)
+
+    if(QT_VERSION_MAJOR VERSION_EQUAL "5")
+        add_executable(${ARGV})
+    else()
+        qt6_add_executable(${ARGV})
+    endif()
+
+endfunction()
+
+function(qsk_add_library)
+
+    if(QT_VERSION_MAJOR VERSION_EQUAL "5")
+        add_library(${ARGV})
+    else()
+        qt6_add_library(${ARGV})
+    endif()
+
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib" )
+
+endfunction()
+
+function(qsk_plugin PLUGIN_NAME TYPE)
+
+    if(QT_VERSION_MAJOR VERSION_EQUAL "5")
+        add_library(${PLUGIN_NAME} SHARED ${HEADERS} ${SOURCES} ${OTHER_FILES})
+    else()
+        qt6_add_library(${PLUGIN_NAME} SHARED ${HEADERS} ${SOURCES} ${OTHER_FILES})
+    endif()
+
+    target_link_libraries(${PLUGIN_NAME} PRIVATE qskinny)
+
+    set_target_properties(${PLUGIN_NAME} PROPERTIES FOLDER ${TYPE})
+
+    # the plugin has to go to .../plugins/${TYPE}/
+    # otherwise it can't be loaded at runtime ...
+
+    set_target_properties( ${PLUGIN_NAME} PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/plugins/${TYPE}")
+
+endfunction()
+
 function(qsk_example EXAMPLE_NAME)
 
     set(TARGET_NAME ${EXAMPLE_NAME})
 
-    qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
+    qsk_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
         ${SOURCES} ${HEADERS} ${RESOURCES})
 
     set_target_properties(${TARGET_NAME} PROPERTIES FOLDER examples)

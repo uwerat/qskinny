@@ -21,16 +21,6 @@ else()
     message(FATAL_ERROR "Couldn't find any Qt package !")
 endif()
 
-if(QT_VERSION_MAJOR VERSION_EQUAL "5")
-    function(qt_add_executable)
-        add_executable(${ARGV})
-    endfunction(qt_add_executable)
-
-    function(qt_add_library)
-        add_library(${ARGV})
-    endfunction(qt_add_library)
-endif()
-
 # Note, that modules might be found in different places.
 # f.e. when having Qt installations that have only been built
 # with a subset of modules
