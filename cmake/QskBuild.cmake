@@ -12,6 +12,8 @@ set(CMAKE_GLOBAL_AUTOGEN_TARGET OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 set(AUTOGEN_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/autogen")
 
 # TODO find compiler flag equivalent
@@ -142,6 +144,7 @@ if(NOT "${LOCAL_CMAKE_RULES}" STREQUAL "")
         # to include the specific options of your local build, than passing
         # them all on the command line
 
+        message(STATUS "Loading build options from: ${LOCAL_CMAKE_RULES}")
         include(${LOCAL_CMAKE_RULES})
     endif()
 endif()

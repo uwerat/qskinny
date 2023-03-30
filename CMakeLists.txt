@@ -1,33 +1,46 @@
 cmake_minimum_required(VERSION 3.16.3)
 
-project(QSkinny VERSION 999.99.9)
+project(QSkinny
+    LANGUAGES CXX 
+    HOMEPAGE_URL "https://github.com/uwerat/qskinny"
+    VERSION 999.99.9)
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-include(${CMAKE_SOURCE_DIR}/cmake/QskBuild.cmake)
+#set(CMAKE_FIND_DEBUG_MODE TRUE)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+
+if ( QT_FOUND )
+    message(STATUS "Found Qt ${QT_VERSION} ${_qt_cmake_dir}")
+
+    if(QT_VERSION VERSION_LESS "5.15.0")
+        message(FATAL_ERROR "Couldn't find any Qt >= 5.15 !")
+    endif()
+else()
+    message(FATAL_ERROR "Couldn't find any Qt package !")
+endif()
+
 if(QT_VERSION_MAJOR VERSION_EQUAL "5")
-    find_package(Qt5 5.15 REQUIRED COMPONENTS Core Gui OpenGL Quick )
-    find_package(Qt5 5.15 OPTIONAL_COMPONENTS Svg )
-    message(WARNING "using QSkinny's 'qt_add_executable()'")
     function(qt_add_executable)
         add_executable(${ARGV})
     endfunction(qt_add_executable)
-    message(WARNING "using QSkinny's 'qt_add_library()'")
+
     function(qt_add_library)
         add_library(${ARGV})
     endfunction(qt_add_library)
-elseif(QT_VERSION_MAJOR VERSION_EQUAL "6")
-    find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL Quick )
-    find_package(Qt6 OPTIONAL_COMPONENTS Svg)
-else()
-    message(FATAL_ERROR "Couldn't find any Qt version!")
 endif()
+
+# Note, that modules might be found in different places.
+# f.e. when having Qt installations that have only been built
+# with a subset of modules
+
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui OpenGL Quick )
+find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS Svg)
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+include("QskBuild")
 
 # optional package hunspell
 if(NOT LINUX AND ENABLE_HUNSPELL)
@@ -42,25 +55,12 @@ if(NOT LINUX AND ENABLE_PINYIN)
 endif()
 
 if(ENABLE_HUNSPELL)
-    include(cmake/QSkinnyOptionalHunspell.cmake)
+    include("QSkinnyOptionalHunspell")
 endif()
 
 if(ENABLE_PINYIN)
-    include(cmake/QSkinnyOptionalPinyin.cmake)
+    include("QSkinnyOptionalPinyin")
 endif()
-
-# define install directories
-set(QSK_INSTALL_DOCS     doc)
-set(QSK_INSTALL_HEADERS  include)
-set(QSK_INSTALL_LIBS     lib)
-set(QSK_INSTALL_BINS     bin)
-set(QSK_INSTALL_PLUGINS  plugins)
-set(QSK_INSTALL_EXAMPLES examples)
-
-# define debug postfix globally
-set(CMAKE_DEBUG_POSTFIX d)
-# define binary install directory globally
-set(CMAKE_INSTALL_BINDIR ${QSK_INSTALL_BINS}$<$<CONFIG:Debug>:/debug>)
 
 add_subdirectory(src)
 add_subdirectory(skins)
@@ -68,63 +68,10 @@ add_subdirectory(inputcontext)
 add_subdirectory(qmlexport)
 add_subdirectory(tools)
 add_subdirectory(support)
+
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 if(BUILD_PLAYGROUND)
     add_subdirectory(playground)
 endif()
-
-#TODO add doxygen support
-#OTHER_FILES =
-#doc / Doxyfile
-#doc/*.dox
-#     doc/*.metadox
-#     doc/classes/*.dox
-#     doc/classes/*.metadox
-
-set(PACKAGE_NAME      ${PROJECT_NAME})
-set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
-set(PACKAGE_NAMESPACE Qsk)
-set(PACKAGE_LOCATION  lib/cmake/${PROJECT_NAME})
-
-install(TARGETS qskinny EXPORT ${PACKAGE_NAME}Targets
-    LIBRARY DESTINATION       ${QSK_INSTALL_LIBS}
-    ARCHIVE DESTINATION       ${QSK_INSTALL_LIBS}
-    RUNTIME DESTINATION       ${QSK_INSTALL_LIBS}
-    INCLUDES DESTINATION      ${QSK_INSTALL_HEADERS}
-    PUBLIC_HEADER DESTINATION ${QSK_INSTALL_HEADERS})
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}ConfigVersion.cmake
-    VERSION ${PACKAGE_VERSION}
-    COMPATIBILITY AnyNewerVersion)
-
-export(EXPORT ${PACKAGE_NAME}Targets
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}Targets.cmake
-    NAMESPACE ${PACKAGE_NAMESPACE}::)
-
-configure_file(cmake/${PACKAGE_NAME}Config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}Config.cmake
-    COPYONLY)
-
-install(EXPORT ${PACKAGE_NAME}Targets
-    FILE
-        ${PACKAGE_NAME}Targets.cmake
-    NAMESPACE
-        ${PACKAGE_NAMESPACE}::
-    DESTINATION
-        ${PACKAGE_LOCATION})
-
-install(
-    FILES
-        cmake/${PACKAGE_NAME}Config.cmake
-        cmake/${PACKAGE_NAME}Macros.cmake
-        cmake/${PACKAGE_NAME}OptionalHunspell.cmake
-        cmake/${PACKAGE_NAME}OptionalPinyin.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}ConfigVersion.cmake
-    DESTINATION
-        ${PACKAGE_LOCATION}
-    COMPONENT
-        Devel)

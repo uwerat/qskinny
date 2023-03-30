@@ -20,6 +20,8 @@ function(qsk_example EXAMPLE_NAME)
     qt_add_executable(${TARGET_NAME} WIN32 MACOSX_BUNDLE
         ${SOURCES} ${HEADERS} ${RESOURCES})
 
+    set_target_properties(${TARGET_NAME} PROPERTIES FOLDER examples)
+
     set_target_properties(${TARGET_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../bin )
 
