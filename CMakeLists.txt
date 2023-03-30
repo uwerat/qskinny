@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.3)
 
 project(QSkinny
-    LANGUAGES CXX 
+    LANGUAGES C CXX 
     HOMEPAGE_URL "https://github.com/uwerat/qskinny"
     VERSION 999.99.9)
 

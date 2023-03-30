@@ -22,7 +22,10 @@ list(APPEND CONFIG        warn_on)
 list(APPEND CONFIG        no_keywords)
 #list(APPEND CONFIG           -= depend_includepath) # TODO was -=
 list(APPEND CONFIG        pedantic)
-list(APPEND CONFIG        hide_symbols)
+
+set(CMAKE_C_VISIBILITY_PRESET hidden)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 # TODO
 # use_no_rpath {
