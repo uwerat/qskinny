@@ -19,7 +19,17 @@ else()
     qsk_add_library(${TARGET_NAME} STATIC ${TARGET_SOURCES} ${TARGET_HEADERS})
 endif()
 
-if(ENABLE_FONT_CONFIG)
+set(HACK_FONT_CONFIG ON)
+
+if(HACK_FONT_CONFIG)
+
+    message( STATUS "Building an dummy fontconfig enviroment for faster startups" )
+
+    # On systems where many fonts are installed we have a significant effect
+    # on the startup performance when building the font cache. To avoid this
+    # penalty we configure an empty environment
+    # ( this code should be moved to a cmake function TODO ...
+
     set(QSK_FONTDIR       ${CMAKE_CURRENT_LIST_DIR}/fonts)
     set(QSK_FONTCACHEDIR  ${CMAKE_CURRENT_BINARY_DIR}/fontconfig)
     set(QSK_FONTCONF_FILE ${QSK_FONTCACHEDIR}/fonts.conf)

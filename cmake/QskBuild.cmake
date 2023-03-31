@@ -3,12 +3,6 @@
 # This file may be used under the terms of the QSkinny License, Version 1.0
 ############################################################################
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC OFF)
-set(CMAKE_GLOBAL_AUTOGEN_TARGET OFF)
-set(AUTOGEN_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/autogen")
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -23,16 +17,6 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
-
-option(BUILD_QSKDLL             "Build qskinny as shared library" ON)
-option(BUILD_EXAMPLES           "Build qskinny examples" ON)
-option(BUILD_PLAYGROUND         "Build qskinny playground" ON)
-option(BUILD_SVG2QVG_STANDALONE "If 'ON' application won't be linked against qskinny library" ON)
-option(ENABLE_PINYIN            "UNIX ONLY OPTION: Enable romanization system for standard mandarin chinese" OFF)
-option(ENABLE_HUNSPELL          "UNIX ONLY OPTION: Enable spell checker" OFF)
-option(ENABLE_FONT_CONFIG       "Enable font config for font caching" ON)
-option(ENABLE_ENSURE_SKINS      "Enabling fall back code, that inserts some skin factories manually when not finding skin factories as plugins" ON)
-option(ENABLE_AUTOQVG           "enable automatic qvg compilation" OFF)
 
 if ("pedantic" IN_LIST CONFIG)
 
