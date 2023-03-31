@@ -73,8 +73,13 @@ function(qsk_example EXAMPLE_NAME)
     # not all examples need this one. TODO ...
     target_link_libraries(${TARGET_NAME} PRIVATE qsktestsupport)
 
-    # only needed, when having QML files, autodetection might be possible
-    target_link_libraries(${TARGET_NAME} PRIVATE qskqmlexport)
+    if( BUILD_QML_EXPORT )
+        # Only needed, when having QML files. Autodetections is possible
+        # by looking into all '*.qrc' files ( rcc --list *.qrc ) for *.qml
+        # entries TODO ...
+
+        target_link_libraries(${TARGET_NAME} PRIVATE qskqmlexport)
+    endif()
 
     # for examples with subdirectories 
     target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR})

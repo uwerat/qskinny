@@ -3,10 +3,16 @@ add_subdirectory(dials)
 add_subdirectory(dialogbuttons)
 add_subdirectory(gradients)
 add_subdirectory(invoker)
-add_subdirectory(inputpanel)
-add_subdirectory(images)
 add_subdirectory(shadows)
 add_subdirectory(shapes)
+
+if (BUILD_INPUTCONTEXT)
+    add_subdirectory(inputpanel)
+endif()
+
+if (BUILD_QML_EXPORT)
+    add_subdirectory(images)
+endif()
 
 if (QT_VERSION_MAJOR VERSION_LESS 6)
     if(TARGET Qt::WebEngine)

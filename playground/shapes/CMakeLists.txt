@@ -1,5 +1,3 @@
-list(APPEND RESOURCES shapes.qrc)
-
 list(APPEND HEADERS
     ShapeItem.h
     GeometricShape.h
@@ -13,4 +11,12 @@ list(APPEND SOURCES
     Window.cpp
     main.cpp)
 
+if( BUILD_QML_EXPORT )
+    list(APPEND RESOURCES shapes.qrc)
+endif()
+
 qsk_example(shapes)
+
+if( BUILD_QML_EXPORT )
+    target_compile_definitions(shapes PRIVATE NO_QML)
+endif()
