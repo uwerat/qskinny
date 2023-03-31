@@ -15,20 +15,20 @@ endif()
 
 function(qsk_add_executable)
 
-    if(QT_VERSION_MAJOR VERSION_EQUAL "5")
-        add_executable(${ARGV})
-    else()
+    if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
         qt6_add_executable(${ARGV})
+    else()
+        add_executable(${ARGV})
     endif()
 
 endfunction()
 
 function(qsk_add_library)
 
-    if(QT_VERSION_MAJOR VERSION_EQUAL "5")
-        add_library(${ARGV})
-    else()
+    if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
         qt6_add_library(${ARGV})
+    else()
+        add_library(${ARGV})
     endif()
 
     set_target_properties(${TARGET_NAME} PROPERTIES
@@ -38,10 +38,10 @@ endfunction()
 
 function(qsk_plugin PLUGIN_NAME TYPE)
 
-    if(QT_VERSION_MAJOR VERSION_EQUAL "5")
-        add_library(${PLUGIN_NAME} SHARED ${HEADERS} ${SOURCES} ${OTHER_FILES})
-    else()
+    if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
         qt6_add_library(${PLUGIN_NAME} SHARED ${HEADERS} ${SOURCES} ${OTHER_FILES})
+    else()
+        add_library(${PLUGIN_NAME} SHARED ${HEADERS} ${SOURCES} ${OTHER_FILES})
     endif()
 
     target_link_libraries(${PLUGIN_NAME} PRIVATE qskinny)

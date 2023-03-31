@@ -3,23 +3,18 @@
 # This file may be used under the terms of the QSkinny License, Version 1.0
 ############################################################################
 
-set(QSK_VERSION ${CMAKE_PROJECT_VERSION})
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC OFF)
 set(CMAKE_GLOBAL_AUTOGEN_TARGET OFF)
+set(AUTOGEN_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/autogen")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(AUTOGEN_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/autogen")
-
 # TODO find compiler flag equivalent
-list(APPEND CONFIG        no_private_qt_headers_warning)
 list(APPEND CONFIG        warn_on)
-list(APPEND CONFIG        no_keywords)
 #list(APPEND CONFIG           -= depend_includepath) # TODO was -=
 list(APPEND CONFIG        pedantic)
 
@@ -27,17 +22,7 @@ set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
-# TODO
-# use_no_rpath {
-#     CONFIG -= use_local_rpath use_install_rpath
-# } else {
-#     cross_compile {
-#         CONFIG *= use_install_rpath
-#         QMAKE_RPATHLINKDIR *= $${QSK_PLUGIN_DIR}/skins
-#     } else {
-#         !use_install_rpath: CONFIG *= use_local_rpath
-#     }
-# }
+ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
 option(BUILD_QSKDLL             "Build qskinny as shared library" ON)
 option(BUILD_EXAMPLES           "Build qskinny examples" ON)
@@ -49,53 +34,12 @@ option(ENABLE_FONT_CONFIG       "Enable font config for font caching" ON)
 option(ENABLE_ENSURE_SKINS      "Enabling fall back code, that inserts some skin factories manually when not finding skin factories as plugins" ON)
 option(ENABLE_AUTOQVG           "enable automatic qvg compilation" OFF)
 
-if(UNIX AND NOT APPLE)
-    set(LINUX TRUE)
-endif()
-
-if(LINUX) 
-
-    if ("pedantic" IN_LIST CONFIG)
-
-        add_compile_definitions(QT_STRICT_ITERATORS)
-
-        # Qt headers do not stand pedantic checks, so it's better
-        # to exclude them by declaring them as system includes
-
-        list(APPEND CONFIG qtassysteminclude)
-    endif()
-
-    if ("qtassysteminclude" IN_LIST CONFIG)
-
-        # As most distros set QT_INSTALL_HEADERS to /usr/include we
-        # would run into gcc compiler errors and better drop it
-        # from the list below. Should be no problem as we don't
-        # add the Qt module to our includes and therefore don't
-        # need this path.
-
-        # TODO find solution for all platforms
-        # QMAKE_CXXFLAGS += \
-        #     -isystem $$[QT_INSTALL_HEADERS]/QtCore \
-        #     -isystem $$[QT_INSTALL_HEADERS]/QtCore/$$[QT_VERSION]/QtCore \
-        #     -isystem $$[QT_INSTALL_HEADERS]/QtGui \
-        #     -isystem $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]/QtGui \
-        #     -isystem $$[QT_INSTALL_HEADERS]/QtQuick \
-        #     -isystem $$[QT_INSTALL_HEADERS]/QtQuick/$$[QT_VERSION]/QtQuick \
-        #     -isystem $$[QT_INSTALL_HEADERS]/QtQml \
-        #     -isystem $$[QT_INSTALL_HEADERS]/QtQml/$$[QT_VERSION]/QtQml \
-    endif()
-endif()
-
-if ("${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+" OR "${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+-64")
-    # --- optional optimzations
-    if (CMAKE_BUILD_TYPE EQUAL "Debug")
-        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -O0) # TODO check if still required
-    else()
-        set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -O3 -ffast-math) # TODO check if still required
-    endif()
-endif()
-
 if ("pedantic" IN_LIST CONFIG)
+
+    if(QT_VERSION_MAJOR VERSION_EQUAL "5")
+        add_compile_definitions(QT_STRICT_ITERATORS)
+    endif()
+
     if ("${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+" OR "${CMAKE_CXX_COMPILER}" MATCHES ".*linux-g\\+\\+-64")
         set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -pedantic-errors)
         set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wextra)
@@ -137,24 +81,45 @@ endif()
 
 # DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
 
-set(LOCAL_CMAKE_RULES $ENV{QSK_LOCAL_CMAKE_RULES})
+if( DEFINED ENV{QSK_LOCAL_CMAKE_RULES} )
 
-if(NOT "${LOCAL_CMAKE_RULES}" STREQUAL "")
+    # When not working with the Qt/Creator it is often more convenient
+    # to include the specific options of your local build, than passing
+    # them all on the command line
 
-    if(EXISTS ${LOCAL_CMAKE_RULES})
+    set(LOCAL_RULES $ENV{QSK_LOCAL_CMAKE_RULES})
 
-        # When not working with the Qt/Creator it is often more convenient
-        # to include the specific options of your local build, than passing
-        # them all on the command line
+    if(NOT "${LOCAL_RULES}" STREQUAL "")
 
-        message(STATUS "Loading build options from: ${LOCAL_CMAKE_RULES}")
-        include(${LOCAL_CMAKE_RULES})
+        if(EXISTS ${LOCAL_RULES})
+            message(STATUS "Loading build options from: ${LOCAL_RULES}")
+            include(${LOCAL_RULES})
+        else()
+            message(Warning "Loading build options from: ${LOCAL_RULES}" - Failed)
+        endif()
+
     endif()
+
 endif()
 
-if (CMAKE_BUILD_TYPE EQUAL "Debug")
+message( STATUS "Build Type: ${CMAKE_BUILD_TYPE}" )
+
+if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_compile_definitions(ITEM_STATISTICS=1)
 endif()
+
+if( (CMAKE_CXX_COMPILER_ID MATCHES "Clang") OR (CMAKE_CXX_COMPILER_ID MATCHES "GNU") )
+
+    if (CMAKE_BUILD_TYPE MATCHES Debug)
+        add_compile_options(-O0)
+    else()
+        add_compile_options(-O3)
+    endif()
+
+    add_compile_options(-ffast-math)
+
+endif()
+
 
 if ( NOT "${ECM_ENABLE_SANITIZERS}" STREQUAL "")
 
