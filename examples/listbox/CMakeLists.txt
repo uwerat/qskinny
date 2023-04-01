@@ -1,3 +1,6 @@
-list(APPEND SOURCES main.cpp)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the 3-clause BSD License
+############################################################################
 
-qsk_add_example(listbox)
+qsk_add_example(listbox main.cpp)

@@ -1,4 +1,6 @@
-list(APPEND HEADERS ShadowedBox.h)
-list(APPEND SOURCES ShadowedBox.cpp main.cpp)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the 3-clause BSD License
+############################################################################
 
-qsk_add_example(shadows)
+qsk_add_example(shadows ShadowedBox.h ShadowedBox.cpp main.cpp)

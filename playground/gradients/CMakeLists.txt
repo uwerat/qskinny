@@ -1,14 +1,15 @@
-list(APPEND HEADERS GradientView.h)
-list(APPEND SOURCES GradientView.cpp main.cpp)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the 3-clause BSD License
+############################################################################
+
+set(SOURCES GradientView.h GradientView.cpp main.cpp)
 
 if(TARGET quickshapes_private)
-
-    list(APPEND SOURCES GradientQuickShape.cpp)
-    list(APPEND HEADERS GradientQuickShape.cpp)
-
+    list(APPEND SOURCES GradientQuickShape.h GradientQuickShape.cpp)
 endif()
 
-qsk_add_example(gradients)
+qsk_add_example(gradients ${SOURCES})
 
 if(TARGET quickshapes_private)
     target_compile_definitions(gradients PRIVATE SHAPE_GRADIENT)

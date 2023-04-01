@@ -1,16 +1,15 @@
-list(APPEND RESOURCES images.qrc)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the 3-clause BSD License
+############################################################################
 
-list(APPEND HEADERS
-    SkinFactory.h
-    Dial.h
-    DialSkinlet.h
-    Dashboard.h)
+set(SOURCES
+    SkinFactory.h SkinFactory.cpp
+    Dial.h Dial.cpp
+    DialSkinlet.h DialSkinlet.cpp
+    Dashboard.h Dashboard.cpp
+    main.cpp
+)
+qt_add_resources(SOURCES images.qrc)
 
-list(APPEND SOURCES
-    SkinFactory.cpp
-    Dial.cpp
-    DialSkinlet.cpp
-    Dashboard.cpp
-    main.cpp)
-
-qsk_add_example(dials)
+qsk_add_example(dials ${SOURCES})

@@ -1,32 +1,19 @@
-set(TARGET_NAME qskqmlexport)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the QSkinny License, Version 1.0
+############################################################################
 
-list(APPEND TARGET_HEADERS
-    QskQmlGlobal.h
-    QskShortcutQml.h
-    QskLayoutQml.h
-    QskMainQml.h
-    QskQml.h)
+set(HEADERS  QskQmlGlobal.h QskShortcutQml.h QskLayoutQml.h QskMainQml.h QskQml.h)
+set(SOURCES QskShortcutQml.cpp QskLayoutQml.cpp QskMainQml.cpp QskQml.cpp)
 
-list(APPEND TARGET_SOURCES
-    QskShortcutQml.cpp
-    QskLayoutQml.cpp
-    QskMainQml.cpp
-    QskQml.cpp)
+set(target qskqmlexport)
+qsk_add_library(${target} SHARED ${SOURCES} ${HEADERS})
 
-qsk_add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS})
-
-target_link_libraries(${TARGET_NAME}
-    PRIVATE
-    qskinny)
-
-target_include_directories(${TARGET_NAME}
-   PUBLIC
-       ${CMAKE_CURRENT_LIST_DIR})
+target_link_libraries(${target} PRIVATE qskinny)
+target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 
 if(BUILD_QSKDLL)
-    target_compile_definitions(${TARGET_NAME}
-        PRIVATE
-            QSK_QML_MAKEDLL)
+    target_compile_definitions(${target} PRIVATE QSK_QML_MAKEDLL)
 endif()
 
-install(TARGETS ${TARGET_NAME} DESTINATION qmlexport)
+install(TARGETS ${target} DESTINATION qmlexport)

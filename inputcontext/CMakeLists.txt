@@ -1,7 +1,7 @@
-set(TARGET_NAME qskinputcontext)
-
-list(APPEND HEADERS QskInputContextGlobal.h)
-list(APPEND SOURCES QskInputContextPlugin.cpp)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the QSkinny License, Version 1.0
+############################################################################
 
 if(NOT LINUX AND ENABLE_HUNSPELL)
     message(WARNING "Feature 'hunspell' only available for UNIX!")
@@ -13,25 +13,28 @@ if(NOT LINUX AND ENABLE_PINYIN)
     unset(ENABLE_PINYIN CACHE)
 endif()
 
+set(SOURCES QskInputContextGlobal.h QskInputContextPlugin.cpp)
+
 if(ENABLE_PINYIN)
     include("QSkinnyOptionalPinyin")
 
-    list(APPEND HEADERS
-        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.h)
     list(APPEND SOURCES
-        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.cpp)
+        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.h
+        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.cpp
+    )
 endif()
 
 if(ENABLE_HUNSPELL)
     include("QSkinnyOptionalHunspell")
 
-    list(APPEND HEADERS
-        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.h)
     list(APPEND SOURCES
-        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.cpp)
+        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.h
+        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.cpp
+    )
 endif()
 
-qsk_add_plugin(qskinputcontext platforminputcontexts QskInputContextPlugin)
+qsk_add_plugin(qskinputcontext
+    platforminputcontexts QskInputContextPlugin ${SOURCES})
 
 if(ENABLE_PINYIN)
     target_link_libraries(qskinputcontext PRIVATE pinyin Fcitx5::Utils)

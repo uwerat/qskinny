@@ -1,12 +1,11 @@
-list(APPEND HEADERS
-    CustomSlider.h
-    CustomSliderSkinlet.h
-    OtherSlider.h)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the 3-clause BSD License
+############################################################################
 
-list(APPEND SOURCES
-    CustomSlider.cpp
-    CustomSliderSkinlet.cpp
-    OtherSlider.cpp
-    main.cpp)
-
-qsk_add_example(tabview)
+qsk_add_example(tabview 
+    CustomSlider.h CustomSlider.cpp
+    CustomSliderSkinlet.h CustomSliderSkinlet.cpp
+    OtherSlider.h OtherSlider.cpp
+    main.cpp
+)

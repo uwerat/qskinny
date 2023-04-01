@@ -1,11 +1,9 @@
-list(APPEND HEADERS
-    MainWindow.h)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the 3-clause BSD License
+############################################################################
 
-list(APPEND SOURCES
-    MainWindow.cpp
-    main.cpp)
+set(SOURCES MainWindow.h MainWindow.cpp main.cpp)
+qt_add_resources(SOURCES qvgviewer.qrc)
 
-list(APPEND RESOURCES
-    qvgviewer.qrc)
-
-qsk_add_example(qvgviewer)
+qsk_add_example(qvgviewer ${SOURCES})

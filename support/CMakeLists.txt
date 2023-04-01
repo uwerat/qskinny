@@ -1,22 +1,22 @@
-list(APPEND TARGET_HEADERS
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the 3-clause BSD License
+############################################################################
+
+set(SOURCES
     SkinnyGlobal.h
-    SkinnyNamespace.h
-    SkinnyShapeFactory.h
-    SkinnyShapeProvider.h
-    SkinnyShortcut.h)
+    SkinnyNamespace.h SkinnyNamespace.cpp
+    SkinnyShapeFactory.h SkinnyShapeFactory.cpp
+    SkinnyShapeProvider.h SkinnyShapeProvider.cpp
+    SkinnyShortcut.h SkinnyShortcut.cpp
+)
 
-list(APPEND TARGET_SOURCES
-    SkinnyNamespace.cpp
-    SkinnyShapeFactory.cpp
-    SkinnyShapeProvider.cpp
-    SkinnyShortcut.cpp)
-
-set(TARGET_NAME qsktestsupport)
+set(target qsktestsupport)
 
 if (BUILD_QSKDLL)
-    qsk_add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS})
+    qsk_add_library(${target} SHARED ${SOURCES})
 else()
-    qsk_add_library(${TARGET_NAME} STATIC ${TARGET_SOURCES} ${TARGET_HEADERS})
+    qsk_add_library(${target} STATIC ${SOURCES})
 endif()
 
 set(HACK_FONT_CONFIG ON)
@@ -38,32 +38,29 @@ if(HACK_FONT_CONFIG)
         @ONLY
         NEWLINE_STYLE LF)
 
-    target_compile_definitions(${TARGET_NAME}
-        PRIVATE
-            FONTCONFIG_FILE=${QSK_FONTCONF_FILE})
+    target_compile_definitions(${target}
+        PRIVATE FONTCONFIG_FILE=${QSK_FONTCONF_FILE})
 endif()
 
-target_link_libraries(${TARGET_NAME} PUBLIC qskinny)
+target_link_libraries(${target} PUBLIC qskinny)
 
 if (BUILD_QSKDLL)
-    target_compile_definitions(${TARGET_NAME} PRIVATE SKINNY_MAKEDLL)
+    target_compile_definitions(${target} PRIVATE SKINNY_MAKEDLL)
 endif()
 
-target_compile_definitions(${TARGET_NAME}
+target_compile_definitions(${target}
     PRIVATE PLUGIN_PATH=${CMAKE_BINARY_DIR}/plugins)
 
-target_include_directories(${TARGET_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 
 if(ENABLE_ENSURE_SKINS)
     #set( ENABLE_ENSURE_SKINS OFF )
 endif()
 
 if(ENABLE_ENSURE_SKINS)
-    target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/skins)
-    target_compile_definitions(${TARGET_NAME} PRIVATE ENSURE_SKINS)
-
-    target_link_libraries(${TARGET_NAME}
-        PRIVATE squiekskin material3skin)
+    target_include_directories(${target} PRIVATE ${CMAKE_SOURCE_DIR}/skins)
+    target_compile_definitions(${target} PRIVATE ENSURE_SKINS)
+    target_link_libraries(${target} PRIVATE squiekskin material3skin)
 endif()
 
-install(TARGETS ${TARGET_NAME} DESTINATION ${QSK_INSTALL_LIBS})
+install(TARGETS ${target} DESTINATION ${QSK_INSTALL_LIBS})

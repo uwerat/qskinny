@@ -1,22 +1,18 @@
-list(APPEND RESOURCES layouts.qrc)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the 3-clause BSD License
+############################################################################
 
-list(APPEND HEADERS
-    TestRectangle.h
-    ButtonBox.h
-    FlowLayoutPage.h
-    GridLayoutPage.h
-    LinearLayoutPage.h
-    DynamicConstraintsPage.h
-    StackLayoutPage.h)
+set(SOURCES
+    TestRectangle.h TestRectangle.cpp
+    ButtonBox.h ButtonBox.cpp
+    FlowLayoutPage.h FlowLayoutPage.cpp
+    GridLayoutPage.h GridLayoutPage.cpp
+    LinearLayoutPage.h LinearLayoutPage.cpp
+    DynamicConstraintsPage.h DynamicConstraintsPage.cpp
+    StackLayoutPage.h StackLayoutPage.cpp
+    main.cpp
+)
+qt_add_resources(SOURCES layouts.qrc)
 
-list(APPEND SOURCES
-    TestRectangle.cpp
-    ButtonBox.cpp
-    FlowLayoutPage.cpp
-    GridLayoutPage.cpp
-    LinearLayoutPage.cpp
-    DynamicConstraintsPage.cpp
-    StackLayoutPage.cpp
-    main.cpp)
-
-qsk_add_example(layouts)
+qsk_add_example(layouts ${SOURCES})

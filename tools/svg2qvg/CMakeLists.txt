@@ -1,14 +1,17 @@
-set(TARGET_NAME svg2qvg)
-set(TARGET_SOURCES main.cpp)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the QSkinny License, Version 1.0
+############################################################################
 
-qsk_add_executable(${TARGET_NAME} ${TARGET_SOURCES})
+set(target svg2qvg)
+qsk_add_executable(${target} main.cpp)
 
 if(BUILD_SVG2QVG_STANDALONE)
 
     # NOTE: when building standalone some moc files are transitively required.
     #       These files are being created by the qskinny build, hence we add an explicit dependency.
     #       E.g. main.cpp -> #include <QskGraphic.cpp> -> #include "moc_QskGraphic.cpp"
-    add_dependencies(${TARGET_NAME} qskinny)
+    add_dependencies(${target} qskinny)
 
     # TODO hack for standalone qvg2svg
     get_target_property(qskinny_AUTOGEN_DIR qskinny AUTOGEN_BUILD_DIR)
@@ -20,34 +23,20 @@ if(BUILD_SVG2QVG_STANDALONE)
     if(CMAKE_GENERATOR MATCHES "Visual Studio.*")
         add_definitions("/I${qskinny_AUTOGEN_DIR}/include_\$(Configuration)")
     else()
-        target_include_directories(${TARGET_NAME}
-            PRIVATE
-                ${qskinny_AUTOGEN_DIR}/include)
+        target_include_directories(${target} PRIVATE ${qskinny_AUTOGEN_DIR}/include)
     endif()
 
-    target_include_directories(${TARGET_NAME}
+    target_include_directories(${target}
         PRIVATE
             ${CMAKE_SOURCE_DIR}/src/common
             ${CMAKE_SOURCE_DIR}/src/graphic)
 
-    target_compile_definitions(${TARGET_NAME}
-        PRIVATE
-            QSK_STANDALONE)
-
-    target_link_libraries(${TARGET_NAME}
-        PRIVATE
-            Qt::Gui
-            Qt::GuiPrivate
-            Qt::Svg)
-else()
-    target_link_libraries(${TARGET_NAME}
-        PRIVATE
-            qskinny
-            Qt::Svg)
+    target_compile_definitions(${target} PRIVATE QSK_STANDALONE)
+    target_link_libraries(${target} PRIVATE Qt::Gui Qt::GuiPrivate)
 endif()
 
-set_target_properties(${TARGET_NAME}
-    PROPERTIES
-        FOLDER tools)
+target_link_libraries(${target} PRIVATE qskinny Qt::Svg)
 
-install(TARGETS ${TARGET_NAME})
+set_target_properties(${target} PROPERTIES FOLDER tools)
+
+install(TARGETS ${target})

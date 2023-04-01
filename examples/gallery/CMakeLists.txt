@@ -1,22 +1,19 @@
-list(APPEND RESOURCES icons.qrc )
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the 3-clause BSD License
+############################################################################
 
-list(APPEND HEADERS
-    label/LabelPage.h
-    inputs/InputPage.h
-    progressbar/ProgressBarPage.h
-    button/ButtonPage.h
-    selector/SelectorPage.h
-    dialog/DialogPage.h
-    Page.h)
+set(SOURCES
+    label/LabelPage.h label/LabelPage.cpp
+    inputs/InputPage.h inputs/InputPage.cpp
+    progressbar/ProgressBarPage.h progressbar/ProgressBarPage.cpp
+    button/ButtonPage.h button/ButtonPage.cpp
+    selector/SelectorPage.h selector/SelectorPage.cpp
+    dialog/DialogPage.h dialog/DialogPage.cpp
+    Page.h Page.cpp
+    main.cpp
+)
+qt_add_resources(SOURCES icons.qrc)
 
-list(APPEND SOURCES
-    label/LabelPage.cpp
-    inputs/InputPage.cpp
-    progressbar/ProgressBarPage.cpp
-    button/ButtonPage.cpp
-    selector/SelectorPage.cpp
-    dialog/DialogPage.cpp
-    Page.cpp
-    main.cpp)
+qsk_add_example(gallery ${SOURCES})
 
-qsk_add_example(gallery)

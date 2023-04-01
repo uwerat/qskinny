@@ -1,20 +1,18 @@
-list(APPEND HEADERS
-    GridAccessor.h
-    GridSkinny.h
-    GridWidgets.h
-    GridGraphics.h
-    GridQuick.h
-    TestBox.h)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the 3-clause BSD License
+############################################################################
 
-list(APPEND SOURCES
-    GridAccessor.cpp
-    GridSkinny.cpp
-    GridWidgets.cpp
-    GridGraphics.cpp
-    GridQuick.cpp
-    TestBox.cpp
-    main.cpp)
+set(SOURCES 
+    GridAccessor.h GridAccessor.cpp
+    GridSkinny.h GridSkinny.cpp
+    GridWidgets.h GridWidgets.cpp
+    GridGraphics.h GridGraphics.cpp
+    GridQuick.h GridQuick.cpp
+    TestBox.h TestBox.cpp
+    main.cpp
+)
 
-qsk_add_example(grids)
+qsk_add_example(grids ${SOURCES})
 target_link_libraries(grids PRIVATE Qt::QuickWidgets)
 

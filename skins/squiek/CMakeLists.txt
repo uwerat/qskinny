@@ -1,13 +1,10 @@
-set(QSK_PLUGIN_SUBDIR skins)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the QSkinny License, Version 1.0
+############################################################################
 
-list(APPEND HEADERS
-    QskSquiekGlobal.h
-    QskSquiekSkin.h
-    QskSquiekSkinFactory.h)
-
-list(APPEND SOURCES
-    QskSquiekSkin.cpp
-    QskSquiekSkinFactory.cpp)
-
-qsk_add_plugin(squiekskin skins QskSquiekSkinFactory)
+qsk_add_plugin(squiekskin skins QskSquiekSkinFactory
+    QskSquiekGlobal.h QskSquiekSkin.h QskSquiekSkin.cpp
+    QskSquiekSkinFactory.h QskSquiekSkinFactory.cpp
+)
 target_compile_definitions(squiekskin PRIVATE QSK_SQUIEK_MAKEDLL)

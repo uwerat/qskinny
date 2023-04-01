@@ -1,22 +1,22 @@
-list(APPEND HEADERS
-    ShapeItem.h
-    GeometricShape.h
-    Window.h
-    Stroke.h)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the 3-clause BSD License
+############################################################################
 
-list(APPEND SOURCES
-    Stroke.cpp
-    ShapeItem.cpp
-    GeometricShape.cpp
-    Window.cpp
-    main.cpp)
+set(SOURCES
+    ShapeItem.h ShapeItem.cpp
+    GeometricShape.h GeometricShape.cpp
+    Stroke.h Stroke.cpp
+    Window.h Window.cpp
+    main.cpp
+)
 
 if( BUILD_QML_EXPORT )
-    list(APPEND RESOURCES shapes.qrc)
+    qt_add_resources(SOURCES shapes.qrc)
 endif()
 
-qsk_add_example(shapes)
+qsk_add_example(shapes ${SOURCES})
 
-if( BUILD_QML_EXPORT )
+if( NOT BUILD_QML_EXPORT )
     target_compile_definitions(shapes PRIVATE NO_QML)
 endif()

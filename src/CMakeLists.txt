@@ -1,6 +1,11 @@
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the QSkinny License, Version 1.0
+############################################################################
+
 include(${CMAKE_SOURCE_DIR}/cmake/QSkinnyMacros.cmake)
 
-list(APPEND TARGET_HEADERS
+list(APPEND HEADERS
     common/QskArcMetrics.h
     common/QskAspect.h
     common/QskBoxBorderColors.h
@@ -30,9 +35,10 @@ list(APPEND TARGET_HEADERS
     common/QskSizePolicy.h
     common/QskStateCombination.h
     common/QskTextColors.h
-    common/QskTextOptions.h)
+    common/QskTextOptions.h
+)
 
-list(APPEND TARGET_SOURCES
+list(APPEND SOURCES
     common/QskArcMetrics.cpp
     common/QskAspect.cpp
     common/QskBoxBorderColors.cpp
@@ -58,9 +64,10 @@ list(APPEND TARGET_SOURCES
     common/QskShadowMetrics.cpp
     common/QskSizePolicy.cpp
     common/QskTextColors.cpp
-    common/QskTextOptions.cpp)
+    common/QskTextOptions.cpp
+)
 
-list(APPEND TARGET_HEADERS
+list(APPEND HEADERS
     graphic/QskColorFilter.h
     graphic/QskGraphic.h
     graphic/QskGraphicImageProvider.h
@@ -71,9 +78,10 @@ list(APPEND TARGET_HEADERS
     graphic/QskGraphicTextureFactory.h
     graphic/QskIcon.h
     graphic/QskPainterCommand.h
-    graphic/QskStandardSymbol.h)
+    graphic/QskStandardSymbol.h
+)
 
-list(APPEND TARGET_SOURCES
+list(APPEND SOURCES
     graphic/QskColorFilter.cpp
     graphic/QskGraphic.cpp
     graphic/QskGraphicImageProvider.cpp
@@ -84,9 +92,10 @@ list(APPEND TARGET_SOURCES
     graphic/QskGraphicTextureFactory.cpp
     graphic/QskIcon.cpp
     graphic/QskPainterCommand.cpp
-    graphic/QskStandardSymbol.cpp)
+    graphic/QskStandardSymbol.cpp
+)
 
-list(APPEND TARGET_HEADERS
+list(APPEND HEADERS
     nodes/QskArcNode.h
     nodes/QskArcRenderer.h
     nodes/QskBoxNode.h
@@ -113,9 +122,10 @@ list(APPEND TARGET_HEADERS
     nodes/QskTextRenderer.h
     nodes/QskTextureRenderer.h
     nodes/QskTickmarksNode.h
-    nodes/QskVertex.h)
+    nodes/QskVertex.h
+)
 
-list(APPEND TARGET_SOURCES
+list(APPEND SOURCES
     nodes/QskArcNode.cpp
     nodes/QskArcRenderer.cpp
     nodes/QskBoxNode.cpp
@@ -142,12 +152,12 @@ list(APPEND TARGET_SOURCES
     nodes/QskTextRenderer.cpp
     nodes/QskTextureRenderer.cpp
     nodes/QskTickmarksNode.cpp
-    nodes/QskVertex.cpp)
+    nodes/QskVertex.cpp
+)
 
-list(APPEND TARGET_RESSOURCES
-    nodes/shaders.qrc)
+qt_add_resources(SOURCES nodes/shaders.qrc)
 
-list(APPEND TARGET_HEADERS
+list(APPEND HEADERS
     controls/QskAbstractButton.h
     controls/QskAnimationHint.h
     controls/QskAnimator.h
@@ -236,9 +246,10 @@ list(APPEND TARGET_HEADERS
     controls/QskTextLabel.h
     controls/QskTextLabelSkinlet.h
     controls/QskVariantAnimator.h
-    controls/QskWindow.h)
+    controls/QskWindow.h
+)
 
-list(APPEND TARGET_SOURCES
+list(APPEND SOURCES
     controls/QskAbstractButton.cpp
     controls/QskAnimator.cpp
     controls/QskAnimationHint.cpp
@@ -326,9 +337,10 @@ list(APPEND TARGET_SOURCES
     controls/QskTextLabel.cpp
     controls/QskTextLabelSkinlet.cpp
     controls/QskVariantAnimator.cpp
-    controls/QskWindow.cpp)
+    controls/QskWindow.cpp
+)
 
-list(APPEND TARGET_HEADERS
+list(APPEND HEADERS
     layouts/QskGridBox.h
     layouts/QskGridLayoutEngine.h
     layouts/QskIndexedLayoutBox.h
@@ -340,9 +352,10 @@ list(APPEND TARGET_HEADERS
     layouts/QskLinearLayoutEngine.h
     layouts/QskStackBoxAnimator.h
     layouts/QskStackBox.h
-    layouts/QskSubcontrolLayoutEngine.h)
+    layouts/QskSubcontrolLayoutEngine.h
+)
 
-list(APPEND TARGET_SOURCES
+list(APPEND SOURCES
     layouts/QskGridBox.cpp
     layouts/QskGridLayoutEngine.cpp
     layouts/QskIndexedLayoutBox.cpp
@@ -354,9 +367,10 @@ list(APPEND TARGET_SOURCES
     layouts/QskLinearLayoutEngine.cpp
     layouts/QskStackBoxAnimator.cpp
     layouts/QskStackBox.cpp
-    layouts/QskSubcontrolLayoutEngine.cpp)
+    layouts/QskSubcontrolLayoutEngine.cpp
+)
 
-list(APPEND TARGET_HEADERS
+list(APPEND HEADERS
     dialogs/QskDialog.h
     dialogs/QskDialogButton.h
     dialogs/QskDialogButtonBox.h
@@ -365,9 +379,10 @@ list(APPEND TARGET_HEADERS
     dialogs/QskMessageSubWindow.h
     dialogs/QskMessageWindow.h
     dialogs/QskSelectionSubWindow.h
-    dialogs/QskSelectionWindow.h)
+    dialogs/QskSelectionWindow.h
+)
 
-list(APPEND TARGET_SOURCES
+list(APPEND SOURCES
     dialogs/QskDialogButton.cpp
     dialogs/QskDialogButtonBox.cpp
     dialogs/QskDialog.cpp
@@ -376,112 +391,86 @@ list(APPEND TARGET_SOURCES
     dialogs/QskMessageSubWindow.cpp
     dialogs/QskMessageWindow.cpp
     dialogs/QskSelectionSubWindow.cpp
-    dialogs/QskSelectionWindow.cpp)
+    dialogs/QskSelectionWindow.cpp
+)
 
-list(APPEND TARGET_HEADERS
+list(APPEND HEADERS
     inputpanel/QskTextPredictor.h
     inputpanel/QskInputContext.h
     inputpanel/QskInputPanel.h
     inputpanel/QskInputPanelBox.h
     inputpanel/QskInputPredictionBar.h
-    inputpanel/QskVirtualKeyboard.h)
+    inputpanel/QskVirtualKeyboard.h
+)
 
-list(APPEND TARGET_SOURCES
+list(APPEND SOURCES
     inputpanel/QskTextPredictor.cpp
     inputpanel/QskInputContext.cpp
     inputpanel/QskInputPanel.cpp
     inputpanel/QskInputPanelBox.cpp
     inputpanel/QskInputPredictionBar.cpp
-    inputpanel/QskVirtualKeyboard.cpp)
+    inputpanel/QskVirtualKeyboard.cpp
+)
 
 if(ENABLE_PINYIN)
-    list(APPEND TARGET_HEADERS
-        inputpanel/QskPinyinTextPredictor.h)
-
-    list(APPEND TARGET_SOURCES
-        inputpanel/QskPinyinTextPredictor.cpp)
+    list(APPEND HEADERS inputpanel/QskPinyinTextPredictor.h)
+    list(APPEND SOURCES inputpanel/QskPinyinTextPredictor.cpp)
 endif()
 
 if(ENABLE_HUNSPELL)
-    list(APPEND TARGET_HEADERS
-        inputpanel/QskHunspellTextPredictor.h)
-    list(APPEND TARGET_SOURCES
-        inputpanel/QskHunspellTextPredictor.cpp)
+    list(APPEND HEADERS inputpanel/QskHunspellTextPredictor.h)
+    list(APPEND SOURCES inputpanel/QskHunspellTextPredictor.cpp)
 endif()
 
-set(TARGET_NAME qskinny)
+set(target qskinny)
 
 if(BUILD_QSKDLL)
-    qsk_add_library(${TARGET_NAME} SHARED ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES})
+    qsk_add_library(${target} SHARED ${SOURCES} ${HEADERS})
 else()
-    qsk_add_library(${TARGET_NAME} STATIC ${TARGET_SOURCES} ${TARGET_HEADERS} ${TARGET_RESSOURCES})
+    qsk_add_library(${target} STATIC ${SOURCES} ${HEADERS})
 endif()
 
 if(BUILD_QSKDLL)
-    target_compile_definitions(${TARGET_NAME}
-        PUBLIC
-            QSK_DLL
-        PRIVATE
-            QSK_MAKEDLL)
+    target_compile_definitions(${target} PUBLIC QSK_DLL PRIVATE QSK_MAKEDLL)
 endif()
 
-target_include_directories(${TARGET_NAME}
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/common>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/controls>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/dialogs>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/graphic>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/inputpanel>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/layouts>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/nodes>)
+target_include_directories(${target} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/common>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/controls>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/dialogs>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/graphic>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/inputpanel>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/layouts>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/nodes>)
 
-target_include_directories(${TARGET_NAME}
-    INTERFACE
-        $<INSTALL_INTERFACE:${QSK_INSTALL_HEADERS}>)
+target_include_directories(${target}
+    INTERFACE $<INSTALL_INTERFACE:${QSK_INSTALL_HEADERS}>)
 
-target_link_libraries(${TARGET_NAME}
-    PUBLIC
-        Qt::Core
-        Qt::CorePrivate
-        Qt::Quick
-        Qt::QuickPrivate)
+target_link_libraries(${target}
+    PUBLIC Qt::Core Qt::CorePrivate Qt::Quick Qt::QuickPrivate)
 
 if (QT_VERSION_MAJOR VERSION_GREATER "5")
-    target_link_libraries(${TARGET_NAME}
-        PUBLIC
-            Qt::OpenGL
-            Qt::OpenGLPrivate)
+    target_link_libraries(${target}
+        PUBLIC Qt::OpenGL Qt::OpenGLPrivate)
 endif()
 
 if(ENABLE_HUNSPELL)
-    target_link_libraries(${TARGET_NAME}
-        PRIVATE
-            hunspell)
+    target_link_libraries(${target} PRIVATE hunspell)
 endif()
 
 if(ENABLE_PINYIN)
-    target_compile_definitions(${TARGET_NAME} PRIVATE PINYIN)
+    target_compile_definitions(${target} PRIVATE PINYIN)
+    target_link_libraries(${target} PRIVATE pinyin Fcitx5::Utils)
 
-    target_link_libraries(${TARGET_NAME}
-        PRIVATE
-            pinyin
-            Fcitx5::Utils)
-
-    target_include_directories(${TARGET_NAME}
-        PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/inputcontext>)
+    target_include_directories(${target}
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/inputcontext>)
 endif()
 
-set_target_properties(${TARGET_NAME}
-    PROPERTIES
-        FOLDER libs)
+set_target_properties(${target} PROPERTIES FOLDER libs)
 
 # TODO hack for standalone qvg2svg
-set_target_properties(${TARGET_NAME}
-    PROPERTIES
-        AUTOGEN_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/qskinny_autogen)
+set_target_properties(${target}
+    PROPERTIES AUTOGEN_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/qskinny_autogen)
 
-list(TRANSFORM TARGET_HEADERS PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
-set_target_properties(${TARGET_NAME}
-    PROPERTIES
-        PUBLIC_HEADER "${TARGET_HEADERS}")
+list(TRANSFORM HEADERS PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
+set_target_properties(${target} PROPERTIES PUBLIC_HEADER "${HEADERS}")
