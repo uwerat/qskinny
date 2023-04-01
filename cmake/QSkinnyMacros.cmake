@@ -59,7 +59,7 @@ function(qsk_add_plugin PLUGIN_NAME TYPE CLASS_NAME)
 
     target_compile_definitions(${PLUGIN_NAME} PRIVATE QT_PLUGIN )
 
-    target_sources( ${PLUGIN_NAME} PRIVATE ${HEADERS} ${SOURCES} )
+    target_sources( ${PLUGIN_NAME} PRIVATE ${HEADERS} ${SOURCES} ${RESOURCES} )
     target_link_libraries(${PLUGIN_NAME} PRIVATE qskinny)
 
     set_target_properties(${PLUGIN_NAME} PROPERTIES FOLDER ${TYPE})
