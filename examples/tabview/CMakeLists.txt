@@ -9,4 +9,4 @@ list(APPEND SOURCES
     OtherSlider.cpp
     main.cpp)
 
-qsk_example(tabview)
+qsk_add_example(tabview)

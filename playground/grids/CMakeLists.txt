@@ -15,6 +15,6 @@ list(APPEND SOURCES
     TestBox.cpp
     main.cpp)
 
-qsk_example(grids)
+qsk_add_example(grids)
 target_link_libraries(grids PRIVATE Qt::QuickWidgets)
 

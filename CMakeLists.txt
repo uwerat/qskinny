@@ -5,10 +5,6 @@ project(QSkinny
     HOMEPAGE_URL "https://github.com/uwerat/qskinny"
     VERSION 999.99.9)
 
-# Useful unsupported scenarios:
-#     - When cross compiling we might want to build the tools only
-#     - Suppressing 
-
 option(BUILD_QSKDLL "Build libs ( not plugins ) as shared library" ON)
 option(BUILD_QML_EXPORT "Exporting QSkinny to QML" ON)
 

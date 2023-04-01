@@ -1,4 +1,4 @@
 list(APPEND RESOURCES buttons.qrc)
 list(APPEND SOURCES main.cpp)
 
-qsk_example(buttons)
+qsk_add_example(buttons)

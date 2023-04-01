@@ -8,4 +8,4 @@ list(APPEND SOURCES
 list(APPEND RESOURCES
     qvgviewer.qrc)
 
-qsk_example(qvgviewer)
+qsk_add_example(qvgviewer)

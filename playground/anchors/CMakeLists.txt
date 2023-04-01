@@ -18,4 +18,4 @@ list(APPEND SOURCES
     AnchorBox.cpp
     main.cpp)
 
-qsk_example(anchors)
+qsk_add_example(anchors)

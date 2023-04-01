@@ -15,7 +15,7 @@ if( BUILD_QML_EXPORT )
     list(APPEND RESOURCES shapes.qrc)
 endif()
 
-qsk_example(shapes)
+qsk_add_example(shapes)
 
 if( BUILD_QML_EXPORT )
     target_compile_definitions(shapes PRIVATE NO_QML)

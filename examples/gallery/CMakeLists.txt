@@ -19,4 +19,4 @@ list(APPEND SOURCES
     Page.cpp
     main.cpp)
 
-qsk_example(gallery)
+qsk_add_example(gallery)

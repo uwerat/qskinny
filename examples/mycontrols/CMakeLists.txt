@@ -9,4 +9,4 @@ list(APPEND HEADERS
     MyToggleButtonSkinlet.h
     MySkin.h)
 
-qsk_example(mycontrols)
+qsk_add_example(mycontrols)

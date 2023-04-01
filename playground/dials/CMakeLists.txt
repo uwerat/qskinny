@@ -13,4 +13,4 @@ list(APPEND SOURCES
     Dashboard.cpp
     main.cpp)
 
-qsk_example(dials)
+qsk_add_example(dials)

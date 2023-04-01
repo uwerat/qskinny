@@ -9,7 +9,5 @@ list(APPEND SOURCES
     QskSquiekSkin.cpp
     QskSquiekSkinFactory.cpp)
 
-list(APPEND OTHER_FILES metadata.json)
-
-qsk_plugin(squiekskin skins)
+qsk_add_plugin(squiekskin skins QskSquiekSkinFactory)
 target_compile_definitions(squiekskin PRIVATE QSK_SQUIEK_MAKEDLL)

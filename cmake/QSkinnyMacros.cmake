@@ -36,27 +36,43 @@ function(qsk_add_library)
 
 endfunction()
 
-function(qsk_plugin PLUGIN_NAME TYPE)
+function(qsk_add_plugin PLUGIN_NAME TYPE CLASS_NAME)
+
+    # qt6_add_plugin calls add_library as MODULE - even when SHARED
+    # is requested. In general this ould be the correct type for plugins -
+    # however we also want to link the plugin when ENABLE_ENSURE_SKINS
+    # is enabled.
+    # Probably the correct solution would be to put the implemetation of
+    # the skins into a regular lib and the plugins would contain
+    # the factories only. TODO ...
+    # So for the moment better don't do:
+    #      qt6_add_plugin(${PLUGIN_NAME} SHARED ${CLASS_NAME} )
 
     if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
-        qt6_add_library(${PLUGIN_NAME} SHARED ${HEADERS} ${SOURCES} ${OTHER_FILES})
+        qt6_add_library(${PLUGIN_NAME} SHARED )
     else()
-        add_library(${PLUGIN_NAME} SHARED ${HEADERS} ${SOURCES} ${OTHER_FILES})
+        add_library(${PLUGIN_NAME} SHARED )
     endif()
 
+    set_target_properties(${PLUGIN_NAME} PROPERTIES
+        QT_PLUGIN_CLASS_NAME ${CLASS_NAME} )
+
+    target_compile_definitions(${PLUGIN_NAME} PRIVATE QT_PLUGIN )
+
+    target_sources( ${PLUGIN_NAME} PRIVATE ${HEADERS} ${SOURCES} )
     target_link_libraries(${PLUGIN_NAME} PRIVATE qskinny)
 
     set_target_properties(${PLUGIN_NAME} PROPERTIES FOLDER ${TYPE})
 
     # the plugin has to go to .../plugins/${TYPE}/
-    # otherwise it can't be loaded at runtime ...
+    # otherwise it won't be found at runtime ...
 
     set_target_properties( ${PLUGIN_NAME} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/plugins/${TYPE}")
 
 endfunction()
 
-function(qsk_example EXAMPLE_NAME)
+function(qsk_add_example EXAMPLE_NAME)
 
     set(TARGET_NAME ${EXAMPLE_NAME})
 

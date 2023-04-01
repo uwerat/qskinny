@@ -19,4 +19,4 @@ list(APPEND SOURCES
     StackLayoutPage.cpp
     main.cpp)
 
-qsk_example(layouts)
+qsk_add_example(layouts)

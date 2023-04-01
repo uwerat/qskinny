@@ -2,7 +2,6 @@ set(TARGET_NAME qskinputcontext)
 
 list(APPEND HEADERS QskInputContextGlobal.h)
 list(APPEND SOURCES QskInputContextPlugin.cpp)
-list(APPEND OTHER_FILES metadata.json)
 
 if(NOT LINUX AND ENABLE_HUNSPELL)
     message(WARNING "Feature 'hunspell' only available for UNIX!")
@@ -32,7 +31,7 @@ if(ENABLE_HUNSPELL)
         ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.cpp)
 endif()
 
-qsk_plugin(qskinputcontext platforminputcontexts)
+qsk_add_plugin(qskinputcontext platforminputcontexts QskInputContextPlugin)
 
 if(ENABLE_PINYIN)
     target_link_libraries(qskinputcontext PRIVATE pinyin Fcitx5::Utils)

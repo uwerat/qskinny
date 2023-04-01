@@ -75,4 +75,4 @@ list(APPEND HEADERS
     nodes/DiagramSegmentsNode.h
     nodes/RadialTickmarksNode.h)
 
-qsk_example(iotdashboard)
+qsk_add_example(iotdashboard)

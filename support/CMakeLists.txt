@@ -43,32 +43,27 @@ if(HACK_FONT_CONFIG)
             FONTCONFIG_FILE=${QSK_FONTCONF_FILE})
 endif()
 
-target_link_libraries(${TARGET_NAME}
-   PUBLIC
-       qskinny)
+target_link_libraries(${TARGET_NAME} PUBLIC qskinny)
 
 if (BUILD_QSKDLL)
-    target_compile_definitions(${TARGET_NAME}
-        PRIVATE
-            SKINNY_MAKEDLL)
+    target_compile_definitions(${TARGET_NAME} PRIVATE SKINNY_MAKEDLL)
 endif()
 
 target_compile_definitions(${TARGET_NAME}
-    PRIVATE
-        PLUGIN_PATH=${CMAKE_INSTALL_PREFIX}/skins)
+    PRIVATE PLUGIN_PATH=${CMAKE_BINARY_DIR}/plugins)
 
-target_include_directories(${TARGET_NAME}
-   PUBLIC
-       ${CMAKE_CURRENT_LIST_DIR})
+target_include_directories(${TARGET_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+
+if(ENABLE_ENSURE_SKINS)
+    #set( ENABLE_ENSURE_SKINS OFF )
+endif()
 
 if(ENABLE_ENSURE_SKINS)
     target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/skins)
     target_compile_definitions(${TARGET_NAME} PRIVATE ENSURE_SKINS)
 
     target_link_libraries(${TARGET_NAME}
-        PRIVATE
-            squiekskin
-            material3skin)
+        PRIVATE squiekskin material3skin)
 endif()
 
 install(TARGETS ${TARGET_NAME} DESTINATION ${QSK_INSTALL_LIBS})

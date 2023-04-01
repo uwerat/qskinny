@@ -8,7 +8,7 @@ if(TARGET quickshapes_private)
 
 endif()
 
-qsk_example(gradients)
+qsk_add_example(gradients)
 
 if(TARGET quickshapes_private)
     target_compile_definitions(gradients PRIVATE SHAPE_GRADIENT)

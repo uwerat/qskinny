@@ -1,3 +1,3 @@
 list(APPEND SOURCES main.cpp)
 
-qsk_example(desktop)
+qsk_add_example(desktop)
