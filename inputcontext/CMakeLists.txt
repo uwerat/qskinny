@@ -33,16 +33,17 @@ if(ENABLE_HUNSPELL)
     )
 endif()
 
-qsk_add_plugin(qskinputcontext
-    platforminputcontexts QskInputContextPlugin ${SOURCES})
+set(target qskinputcontext)
+
+qsk_add_plugin(${target} platforminputcontexts QskInputContextPlugin ${SOURCES})
 
 if(ENABLE_PINYIN)
-    target_link_libraries(qskinputcontext PRIVATE pinyin Fcitx5::Utils)
+    target_link_libraries(${target} PRIVATE pinyin Fcitx5::Utils)
 endif()
 
 if(ENABLE_HUNSPELL)
-    target_link_libraries(qskinputcontext PRIVATE hunspell)
+    target_link_libraries(${target} PRIVATE hunspell)
 endif()
 
-target_compile_definitions(qskinputcontext PRIVATE QSK_INPUTCONTEXT_MAKEDLL)
-target_link_libraries(qskinputcontext PRIVATE qskinny Qt::GuiPrivate)
+set_target_properties(${target} PROPERTIES DEFINE_SYMBOL QSK_INPUTCONTEXT_MAKEDLL )
+target_link_libraries(${target} PRIVATE qskinny Qt::GuiPrivate)

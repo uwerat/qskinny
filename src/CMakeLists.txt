@@ -431,7 +431,8 @@ else()
 endif()
 
 if(BUILD_QSKDLL)
-    target_compile_definitions(${target} PUBLIC QSK_DLL PRIVATE QSK_MAKEDLL)
+    target_compile_definitions(${target} PUBLIC QSK_DLL )
+    set_target_properties(${target} PROPERTIES DEFINE_SYMBOL QSK_MAKEDLL)
 endif()
 
 target_include_directories(${target} PUBLIC

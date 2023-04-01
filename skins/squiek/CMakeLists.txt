@@ -7,4 +7,4 @@ qsk_add_plugin(squiekskin skins QskSquiekSkinFactory
     QskSquiekGlobal.h QskSquiekSkin.h QskSquiekSkin.cpp
     QskSquiekSkinFactory.h QskSquiekSkinFactory.cpp
 )
-target_compile_definitions(squiekskin PRIVATE QSK_SQUIEK_MAKEDLL)
+set_target_properties(squiekskin PROPERTIES DEFINE_SYMBOL QSK_SQUIEK_MAKEDLL)

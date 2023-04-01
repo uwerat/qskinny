@@ -45,7 +45,7 @@ endif()
 target_link_libraries(${target} PUBLIC qskinny)
 
 if (BUILD_QSKDLL)
-    target_compile_definitions(${target} PRIVATE SKINNY_MAKEDLL)
+    set_target_properties( ${target} PROPERTIES DEFINE_SYMBOL SKINNY_MAKEDLL )
 endif()
 
 target_compile_definitions(${target}

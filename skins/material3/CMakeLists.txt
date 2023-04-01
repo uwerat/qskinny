@@ -10,4 +10,4 @@ set(SOURCES
 qt_add_resources(SOURCES icons.qrc)
 
 qsk_add_plugin(material3skin skins QskMaterial3SkinFactory ${SOURCES})
-target_compile_definitions(material3skin PRIVATE QSK_MATERIAL3_MAKEDLL)
+set_target_properties(material3skin PROPERTIES DEFINE_SYMBOL QSK_MATERIAL3_MAKEDLL )
