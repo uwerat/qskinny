@@ -7,6 +7,7 @@ cmake_minimum_required(VERSION 3.16.3) # unclear - TODO
 
 macro(qsk_setup_options)
 
+    option(BUILD_PEDANTIC "Enable pedantic compile flags ( only GNU/CLANG )" OFF)
     option(BUILD_QSKDLL "Build libs ( not plugins ) as shared library" ON)
     option(BUILD_QML_EXPORT "Exporting QSkinny to QML" ON)
 
@@ -31,6 +32,35 @@ macro(qsk_setup_options)
 
 endmacro()
 
+macro(qsk_setup_build)
+
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    set(CMAKE_AUTOUIC OFF)
+    set(CMAKE_GLOBAL_AUTOGEN_TARGET OFF)
+    set(AUTOGEN_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/autogen")
+
+    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+    qsk_initialize_build_flags()
+
+    if ( BUILD_PEDANTIC )
+        message( STATUS "Setting pedantic compiler flags" )
+        qsk_enable_pedantic_flags()
+    endif()
+
+    # Loading individual settings from a file that is
+    # propagated by the environmant variable QSK_LOCAL_CMAKE_RULES
+    # This is a leftover from the previous qmake build environment.
+    # Let's if we can do this using cmake standard mechanisms TODO ...
+
+    qsk_load_optional_build_flags()
+
+    # Finalizing after processing QSK_LOCAL_CMAKE_RULES
+    qsk_finalize_build_flags()
+
+endmacro()
+
 ############################################################################
 # QSkinny
 ############################################################################
@@ -40,17 +70,19 @@ project(QSkinny
     HOMEPAGE_URL "https://github.com/uwerat/qskinny"
     VERSION 999.99.9)
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
 qsk_setup_options()
 
 include(GNUInstallDirs)
 
+# loading helper macros
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include("QskFindQt")
-include("QskAutogen")
-include("QskBuild")
+include("QskConfigMacros")
+include("QskFindMacros")
+include("QskBuildFunctions")
+
+qsk_setup_Qt()
+qsk_setup_build()
 
 add_subdirectory(src)
 add_subdirectory(skins)

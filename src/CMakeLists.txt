@@ -3,8 +3,6 @@
 # This file may be used under the terms of the QSkinny License, Version 1.0
 ############################################################################
 
-include(${CMAKE_SOURCE_DIR}/cmake/QSkinnyMacros.cmake)
-
 list(APPEND HEADERS
     common/QskArcMetrics.h
     common/QskAspect.h

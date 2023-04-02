@@ -16,7 +16,7 @@ endif()
 set(SOURCES QskInputContextGlobal.h QskInputContextPlugin.cpp)
 
 if(ENABLE_PINYIN)
-    include("QSkinnyOptionalPinyin")
+    qsk_setup_Pinyin()
 
     list(APPEND SOURCES
         ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.h
@@ -25,7 +25,7 @@ if(ENABLE_PINYIN)
 endif()
 
 if(ENABLE_HUNSPELL)
-    include("QSkinnyOptionalHunspell")
+    qsk_setup_Hunspell()
 
     list(APPEND SOURCES
         ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.h
