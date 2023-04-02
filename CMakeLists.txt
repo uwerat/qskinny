@@ -1,39 +1,52 @@
-cmake_minimum_required(VERSION 3.16.3)
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the QSkinny License, Version 1.0
+############################################################################
+
+cmake_minimum_required(VERSION 3.16.3) # unclear - TODO
+
+macro(qsk_setup_options)
+
+    option(BUILD_QSKDLL "Build libs ( not plugins ) as shared library" ON)
+    option(BUILD_QML_EXPORT "Exporting QSkinny to QML" ON)
+
+    option(BUILD_TOOLS      "Build qskinny tools" ON)
+    option(BUILD_INPUTCONTEXT "Build virtual keyboard support" ON)
+    option(BUILD_EXAMPLES   "Build qskinny examples" ON)
+    option(BUILD_PLAYGROUND "Build qskinny playground" ON)
+
+    # we actually want to use cmake_dependent_option - minimum cmake version ??
+
+    option( BUILD_SVG2QVG_STANDALONE "Build svg2qvg without qskinny library dependency" ON )
+    if( NOT BUILD_TOOLS )
+        set( BUILD_SVG2QVG_STANDALONE OFF )
+    endif()
+
+    if( NOT BUILD_INPUTCONTEXT )
+        set( ENABLE_PINYIN OFF )
+        set( ENABLE_HUNSPELL OFF )
+    endif()
+
+    option(ENABLE_ENSURE_SKINS "Examples add skins manually, when not finding plugins" ON)
+
+endmacro()
+
+############################################################################
+# QSkinny
+############################################################################
 
 project(QSkinny
     LANGUAGES C CXX 
     HOMEPAGE_URL "https://github.com/uwerat/qskinny"
     VERSION 999.99.9)
 
-option(BUILD_QSKDLL "Build libs ( not plugins ) as shared library" ON)
-option(BUILD_QML_EXPORT "Exporting QSkinny to QML" ON)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-option(BUILD_TOOLS      "Build qskinny tools" ON)
-option(BUILD_INPUTCONTEXT "Build virtual keyboard support" ON)
-option(BUILD_EXAMPLES   "Build qskinny examples" ON)
-option(BUILD_PLAYGROUND "Build qskinny playground" ON)
+qsk_setup_options()
 
-# we actually want to use cmake_dependent_option - minimum cmake version ??
-
-option( BUILD_SVG2QVG_STANDALONE "Build svg2qvg without qskinny library dependency" ON )
-if( NOT BUILD_TOOLS )
-    set( BUILD_SVG2QVG_STANDALONE OFF )
-endif()
-
-if( NOT BUILD_INPUTCONTEXT )
-    set( ENABLE_PINYIN OFF )
-    set( ENABLE_HUNSPELL OFF )
-endif()
-
-option(ENABLE_ENSURE_SKINS "Examples will load skins manually, when not finding plugins" ON)
-if ( NOT ( BUILD_EXAMPLES OR BUILD_PLAYGROUND ) )
-    set( ENABLE_ENSURE_SKINS OFF )
-endif()
+include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-#set(CMAKE_FIND_DEBUG_MODE TRUE)
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 include("QskFindQt")
 include("QskAutogen")

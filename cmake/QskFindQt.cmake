@@ -8,46 +8,56 @@
 # standard cmake features are good enough or if we need to introduce
 # something sort of additional option. TODO ...
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+find_package(QT "5.15" NAMES Qt6 Qt5 REQUIRED COMPONENTS Quick)
 
 if ( QT_FOUND )
 
     # Would like to have a status message about where the Qt installation
     # has been found without having the mess of CMAKE_FIND_DEBUG_MODE
-    # All I found was 
+    # With Qt6 there seems to be: _qt_cmake_dir
 
     message(STATUS "Found Qt ${QT_VERSION} ${_qt_cmake_dir}")
-
-    if(QT_VERSION VERSION_LESS "5.15.0")
-        message(FATAL_ERROR "Couldn't find any Qt >= 5.15 !")
-    endif()
 else()
     message(FATAL_ERROR "Couldn't find any Qt package !")
 endif()
 
-# Not sure if using find_package here is a good idea.
-# In situations, where the Qt installation that has been found
-# above has not been built with all modules we might end up with modules
-# from other Qt installations/versions. Might be better to limit
-# finding packages from the same package. TODO ...
-
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui OpenGL Quick )
+# Using find_package is probably no good idea as all other Qt modules should
+# be located below ${_qt_cmake_dir}. Otherwise we might end up with modules
+# from different packages. TODO ...
 
 if( BUILD_TOOLS )
     # needed for building the svg2qvg tool
-    find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS Svg)
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Svg)
 endif()
 
-# some examples need additional modules
-
 if( BUILD_EXAMPLES OR BUILD_PLAYGROUND )
-    find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS QuickWidgets)
+    # On embedded systems you often find optimized Qt installations without
+    # Qt/Widgets support. QSkinny itself does not need Qt/Widgets - however
+    # playground/grids demonstrates the differences between the various
+    # grid layouts. So no big deal when it is missing.
+
+    find_package(Qt${QT_VERSION_MAJOR} QUIET OPTIONAL_COMPONENTS QuickWidgets)
+    if (NOT Qt${QT_VERSION_MAJOR}QuickWidgets_FOUND)
+        message(STATUS "No Qt/Quick Widgets support: skipping some unimportant examples")
+    endif()
 endif()
 
 if(BUILD_PLAYGROUND)
+    # When building Qt most of the time is spent on the WebEngine modules
+    # while only few applications need it. So it is a common situation to
+    # have Qt installations without.
+    # playground/webview shows how to use the Qt/Quick frontend from
+    # C++, but QSkinny itself does not need the WebEngine at all.
+
     if (QT_VERSION_MAJOR VERSION_LESS 6)
-        find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS WebEngine)
+        find_package(Qt${QT_VERSION_MAJOR} QUIET OPTIONAL_COMPONENTS WebEngine)
+        set( Qt5WebEngineQuick_FOUND ${Qt5WebEngine_FOUND} )
     else()
-        find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS WebEngineCore WebEngineQuick)
+        find_package(Qt${QT_VERSION_MAJOR} QUIET
+            OPTIONAL_COMPONENTS WebEngineCore WebEngineQuick)
+    endif()
+
+    if( NOT Qt${QT_VERSION_MAJOR}WebEngineQuick_FOUND)
+        message(STATUS "No Qt/Quick WebEngine support: skipping some unimportant examples")
     endif()
 endif()
