@@ -57,5 +57,3 @@ if(HIDE_SYSTEM_FONTS)
     target_compile_definitions(${target}
         PRIVATE FONTCONFIG_FILE=${QSK_FONTCONF_FILE})
 endif()
-
-install(TARGETS ${target} DESTINATION ${QSK_INSTALL_LIBS})

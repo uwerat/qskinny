@@ -61,6 +61,11 @@ macro(qsk_setup_build)
 
 endmacro()
 
+macro(qsk_setup_install)
+    # we have to provide and install a QSkinnyConfig.cmake
+    # TODO ...
+endmacro()
+
 ############################################################################
 # QSkinny
 ############################################################################
@@ -83,6 +88,7 @@ include("QskBuildFunctions")
 
 qsk_setup_Qt()
 qsk_setup_build()
+qsk_setup_install()
 
 add_subdirectory(src)
 add_subdirectory(skins)

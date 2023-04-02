@@ -171,8 +171,6 @@ list(APPEND HEADERS
     controls/QskComboBox.h
     controls/QskComboBoxSkinlet.h
     controls/QskControl.h
-    controls/QskControlPrivate.h
-    controls/QskDirtyItemFilter.h
     controls/QskEvent.h
     controls/QskFlickAnimator.h
     controls/QskFocusIndicator.h
@@ -199,7 +197,6 @@ list(APPEND HEADERS
     controls/QskProgressBarSkinlet.h
     controls/QskQuick.h
     controls/QskQuickItem.h
-    controls/QskQuickItemPrivate.h
     controls/QskRadioBox.h
     controls/QskRadioBoxSkinlet.h
     controls/QskScrollArea.h
@@ -245,6 +242,12 @@ list(APPEND HEADERS
     controls/QskTextLabelSkinlet.h
     controls/QskVariantAnimator.h
     controls/QskWindow.h
+)
+
+list(APPEND PRIVATE_HEADERS
+    controls/QskDirtyItemFilter.h
+    controls/QskControlPrivate.h
+    controls/QskQuickItemPrivate.h
 )
 
 list(APPEND SOURCES
@@ -350,6 +353,9 @@ list(APPEND HEADERS
     layouts/QskLinearLayoutEngine.h
     layouts/QskStackBoxAnimator.h
     layouts/QskStackBox.h
+)
+
+list(APPEND PRIVATE_HEADERS
     layouts/QskSubcontrolLayoutEngine.h
 )
 
@@ -423,9 +429,9 @@ endif()
 set(target qskinny)
 
 if(BUILD_QSKDLL)
-    qsk_add_library(${target} SHARED ${SOURCES} ${HEADERS})
+    qsk_add_library(${target} SHARED ${SOURCES} ${HEADERS} ${PRIVATE_HEADERS})
 else()
-    qsk_add_library(${target} STATIC ${SOURCES} ${HEADERS})
+    qsk_add_library(${target} STATIC ${SOURCES} ${HEADERS} ${PRIVATE_HEADERS})
 endif()
 
 if(BUILD_QSKDLL)
@@ -442,15 +448,11 @@ target_include_directories(${target} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/layouts>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/nodes>)
 
-target_include_directories(${target}
-    INTERFACE $<INSTALL_INTERFACE:${QSK_INSTALL_HEADERS}>)
-
 target_link_libraries(${target}
     PUBLIC Qt::Core Qt::CorePrivate Qt::Quick Qt::QuickPrivate)
 
 if (QT_VERSION_MAJOR VERSION_GREATER "5")
-    target_link_libraries(${target}
-        PUBLIC Qt::OpenGL Qt::OpenGLPrivate)
+    target_link_libraries(${target} PUBLIC Qt::OpenGL Qt::OpenGLPrivate)
 endif()
 
 if(ENABLE_HUNSPELL)
@@ -473,3 +475,5 @@ set_target_properties(${target}
 
 list(TRANSFORM HEADERS PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
 set_target_properties(${target} PROPERTIES PUBLIC_HEADER "${HEADERS}")
+
+install(TARGETS ${target} )
