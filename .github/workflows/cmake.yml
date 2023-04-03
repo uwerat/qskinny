@@ -392,7 +392,7 @@ jobs:
           Xvfb :1 &
           sleep 10
           echo starting iotdashboard
-          ./qskinny_build/examples/iotdashboard/iotdashboard &
+          ./qskinny_build/examples/bin/iotdashboard &
           sleep 10
 
       - uses: OrbitalOwen/desktop-screenshot-action@0.1
