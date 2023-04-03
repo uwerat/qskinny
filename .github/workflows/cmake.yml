@@ -386,7 +386,7 @@ jobs:
         run: |
           dir iotdashboard.exe -S
           echo "starting iotdashboard"
-          Start-Process qskinny_build\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0"
+          Start-Process qskinny_build\examples\bin\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0"
 
       - name: Smoke test ( QSkinny ) on Ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu')
