@@ -369,21 +369,6 @@ jobs:
         shell: bash
         run: cmake --install qskinny_build --prefix qskinny_install --strip --config ${{ matrix.config.build_type }}
 
-      - name: Smoke test ( QSkinny ) Setup Env on MacOS
-        if: startsWith(matrix.config.name, 'macOS')
-        run: |
-          echo "$GITHUB_WORKSPACE/qskinny_install/bin:$GITHUB_WORKSPACE/qskinny_install/lib:$GITHUB_WORKSPACE/qskinny_install/plugins/skins" >> $GITHUB_PATH
-
-      - name: Smoke test ( QSkinny ) Setup Env on Ubuntu
-        if: startsWith(matrix.config.name, 'Ubuntu')
-        run: |
-          echo "$GITHUB_WORKSPACE/qskinny_install/bin:$GITHUB_WORKSPACE/qskinny_install/lib:$GITHUB_WORKSPACE/qskinny_install/plugins/skins" >> $GITHUB_PATH
-
-      - name: Smoke test ( QSkinny ) Setup Env on Windows
-        if: startsWith(matrix.config.name, 'Windows')
-        run: |
-          echo "$GITHUB_WORKSPACE/qskinny_install/bin;$GITHUB_WORKSPACE/qskinny_install/lib;$GITHUB_WORKSPACE/qskinny_install/plugins/skins" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
       - name: Smoke test ( QSkinny ) on MacOS
         if: startsWith(matrix.config.name, 'macOS')
         run: |
@@ -394,7 +379,7 @@ jobs:
       - name: Smoke Test ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
         run: |
-          $env:Path += ";$GITHUB_WORKSPACE/qskinny_install/bin:$GITHUB_WORKSPACE/qskinny_install/lib:$GITHUB_WORKSPACE/qskinny_install/plugins/skins"
+          $env:Path += ";$GITHUB_WORKSPACE/qskinny_install/bin;$GITHUB_WORKSPACE/qskinny_install/lib;$GITHUB_WORKSPACE/qskinny_install/plugins/skins"
           echo "starting iotdashboard"
           Start-Process qskinny_build\examples\bin\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0"
 
