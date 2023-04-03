@@ -282,7 +282,9 @@ jobs:
 
       - name: Install needed xkbcommon symlink
         if: startsWith(matrix.config.name, 'Ubuntu') && endsWith(matrix.config.name, 'Qt6')
-        run: sudo apt-get install libxkbcommon-dev -y
+        run: |
+          sudo apt-get install libxkbcommon-dev -y
+          sudo apt-get install libxkbcommon-x11-0 -y
 
       - name: Install hunspell for Ubuntu
         if: false && startsWith(matrix.config.name, 'Ubuntu')
