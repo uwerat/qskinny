@@ -384,6 +384,8 @@ jobs:
       - name: Smoke Test ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
         run: |
+          $Env:PATH += ";qskinny_install/lib"
+          $Env:PATH += ";qskinny_install/plugins/skins"
           dir iotdashboard.exe -S
           echo "starting iotdashboard"
           Start-Process qskinny_build\examples\bin\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0"
