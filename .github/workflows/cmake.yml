@@ -51,12 +51,12 @@ jobs:
               generators: "Visual Studio 17 2022",
               cmake:
                 {
-                  qtversion: "6.2.4",
+                  qtversion: "6.5.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.2.4/msvc2019_64",
+                  qtdirvalue: "../Qt/6.5.0/msvc2019_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.5.0/msvc2019_64",
                 },
-              screenshot_filename: "windows-latest-msvc-qt-6-2-4.jpg",
+              screenshot_filename: "windows-latest-msvc-qt-6.5.0.jpg",
             }
           - {
               name: "Windows 2019 MSVC Qt5",
@@ -89,12 +89,12 @@ jobs:
               generators: "Visual Studio 16 2019",
               cmake:
                 {
-                  qtversion: "6.2.4",
+                  qtversion: "6.5.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.2.4/msvc2019_64",
+                  qtdirvalue: "../Qt/6.5.0/msvc2019_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.5.0/msvc2019_64",
                 },
-              screenshot_filename: "windows-2019-msvc-qt-6-2-4.jpg",
+              screenshot_filename: "windows-2019-msvc-qt-6.5.0.jpg",
             }
           - {
               name: "Ubuntu Latest GCC Qt5",
@@ -127,12 +127,12 @@ jobs:
               env: { DISPLAY: ":1" },
               cmake:
                 {
-                  qtversion: "6.2.4",
+                  qtversion: "6.5.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.2.4/gcc_64",
+                  qtdirvalue: "../Qt/6.5.0/gcc_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.5.0/gcc_64",
                 },
-              screenshot_filename: "ubuntu-latest-gcc-qt-6-2-4.jpg",
+              screenshot_filename: "ubuntu-latest-gcc-qt-6.5.0.jpg",
             }
           - {
               name: "Ubuntu GCC 9 Qt5",
@@ -165,12 +165,12 @@ jobs:
               env: { DISPLAY: ":1" },
               cmake:
                 {
-                  qtversion: "6.2.4",
+                  qtversion: "6.5.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.2.4/gcc_64",
+                  qtdirvalue: "../Qt/6.5.0/gcc_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.5.0/gcc_64",
                 },
-              screenshot_filename: "ubuntu-latest-gcc-9-qt-6-2-4.jpg",
+              screenshot_filename: "ubuntu-latest-gcc-9-qt-6.5.0.jpg",
             }
           - {
               name: "macOS Latest Clang Qt5",
@@ -201,12 +201,12 @@ jobs:
               generators: "Ninja",
               cmake:
                 {
-                  qtversion: "6.2.4",
+                  qtversion: "6.5.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.2.4/clang_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.2.4/clang_64",
+                  qtdirvalue: "../Qt/6.5.0/clang_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.5.0/clang_64",
                 },
-              screenshot_filename: "macos-latest-clang-qt-6-2-4.jpg",
+              screenshot_filename: "macos-latest-clang-qt-6.5.0.jpg",
             }
 
     steps:
@@ -312,7 +312,7 @@ jobs:
       #  id: cache-qt-6-2
       #  uses: actions/cache@v1 # not v2!
       #  with:
-      #    path: ../Qt/6.2.4
+      #    path: ../Qt/6.5.0
       #    key: ${{ runner.os }}-QtCache-Qt6
 
       - name: Install Qt5
@@ -333,7 +333,7 @@ jobs:
         if: endsWith(matrix.config.name, 'Qt6')
         uses: jurplel/install-qt-action@v3
         with:
-          version: "6.2.4"
+          version: "6.5.0"
           target: "desktop"
           install-deps: "true"
           modules: "qtwebengine"
