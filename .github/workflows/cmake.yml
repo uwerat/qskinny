@@ -369,8 +369,13 @@ jobs:
         shell: bash
         run: cmake --install qskinny_build --prefix qskinny_install --strip --config ${{ matrix.config.build_type }}
 
-      - name: Smoke test ( QSkinny ) Setup Env
-        if: not startsWith(matrix.config.name, 'Windows')
+      - name: Smoke test ( QSkinny ) Setup Env on MacOS
+        if: startsWith(matrix.config.name, 'macOS')
+        run: |
+          echo "$GITHUB_WORKSPACE/qskinny_install/bin:$GITHUB_WORKSPACE/qskinny_install/lib:$GITHUB_WORKSPACE/qskinny_install/plugins/skins" >> $GITHUB_PATH
+
+      - name: Smoke test ( QSkinny ) Setup Env on Ubuntu
+        if: not startsWith(matrix.config.name, 'Ubuntu')
         run: |
           echo "$GITHUB_WORKSPACE/qskinny_install/bin:$GITHUB_WORKSPACE/qskinny_install/lib:$GITHUB_WORKSPACE/qskinny_install/plugins/skins" >> $GITHUB_PATH
 
