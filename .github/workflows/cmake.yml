@@ -285,6 +285,7 @@ jobs:
         run: |
           sudo apt-get install libxkbcommon-dev -y
           sudo apt-get install libxkbcommon-x11-0 -y
+          sudo apt-get install libxcb-cursor-dev -y
 
       - name: Install hunspell for Ubuntu
         if: false && startsWith(matrix.config.name, 'Ubuntu')
