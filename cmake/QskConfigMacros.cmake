@@ -50,7 +50,6 @@ macro(qsk_enable_pedantic_flags)
             add_compile_options( -Wredundant-decls )
 
             add_compile_options( -Wnon-virtual-dtor )
-            add_compile_options( -Weffc++ )
             add_compile_options( -Woverloaded-virtual )
             add_compile_options( -Wfloat-equal )
 
@@ -91,6 +90,9 @@ macro(qsk_enable_pedantic_flags)
 
             add_compile_options( -Wno-signed-enum-bitfield )
             add_compile_options( -Wno-padded )
+
+            # since Qt 6.3 Q_GLOBAL_STATIC seems to use what is not supported for < c++20 
+            add_compile_options( -Wno-gnu-zero-variadic-macro-arguments )
         endif()
     endif()
 
