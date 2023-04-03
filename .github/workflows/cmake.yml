@@ -387,6 +387,7 @@ jobs:
         if: startsWith(matrix.config.name, 'Ubuntu')
         env:
           DISPLAY: ":1"
+          QT_DEBUG_PLUGINS: "1"
         run: |
           echo starting Xvfb
           Xvfb :1 &
