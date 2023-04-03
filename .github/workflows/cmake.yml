@@ -377,7 +377,7 @@ jobs:
         if: startsWith(matrix.config.name, 'macOS')
         run: |
           echo "starting iotdashboard"
-          DYLD_LIBRARY_PATH=./qskinny_install/lib:./qskinny_install/plugins/skins ./qskinny_build/examples/iotdashboard/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 &
+          DYLD_LIBRARY_PATH=./qskinny_install/lib:./qskinny_install/plugins/skins ./qskinny_build/examples/bin/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 &
           sleep 10
 
       - name: Smoke Test ( QSkinny ) on Windows
