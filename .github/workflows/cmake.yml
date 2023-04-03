@@ -299,21 +299,21 @@ jobs:
         run: |
           sudo apt-get install -y imagemagick
 
-      - name: Cache Qt5
-        if: endsWith(matrix.config.name, 'Qt5')
-        id: cache-qt-5-15
-        uses: actions/cache@v1 # not v2!
-        with:
-          path: ../Qt/5.15.2
-          key: ${{ runner.os }}-QtCache-Qt5
-
-      - name: Cache Qt6
-        if: endsWith(matrix.config.name, 'Qt6')
-        id: cache-qt-6-2
-        uses: actions/cache@v1 # not v2!
-        with:
-          path: ../Qt/6.2.4
-          key: ${{ runner.os }}-QtCache-Qt6
+      #- name: Cache Qt5
+      #  if: endsWith(matrix.config.name, 'Qt5')
+      #  id: cache-qt-5-15
+      #  uses: actions/cache@v1 # not v2!
+      #  with:
+      #    path: ../Qt/5.15.2
+      #    key: ${{ runner.os }}-QtCache-Qt5
+#
+      #- name: Cache Qt6
+      #  if: endsWith(matrix.config.name, 'Qt6')
+      #  id: cache-qt-6-2
+      #  uses: actions/cache@v1 # not v2!
+      #  with:
+      #    path: ../Qt/6.2.4
+      #    key: ${{ runner.os }}-QtCache-Qt6
 
       - name: Install Qt5
         if: endsWith(matrix.config.name, 'Qt5')
