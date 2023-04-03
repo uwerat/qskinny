@@ -375,7 +375,7 @@ jobs:
           echo "$GITHUB_WORKSPACE/qskinny_install/bin:$GITHUB_WORKSPACE/qskinny_install/lib:$GITHUB_WORKSPACE/qskinny_install/plugins/skins" >> $GITHUB_PATH
 
       - name: Smoke test ( QSkinny ) Setup Env on Ubuntu
-        if: not startsWith(matrix.config.name, 'Ubuntu')
+        if: startsWith(matrix.config.name, 'Ubuntu')
         run: |
           echo "$GITHUB_WORKSPACE/qskinny_install/bin:$GITHUB_WORKSPACE/qskinny_install/lib:$GITHUB_WORKSPACE/qskinny_install/plugins/skins" >> $GITHUB_PATH
 
