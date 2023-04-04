@@ -118,7 +118,7 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
         QskAspect::Subcontrol areaSubcontrol = subcontrolForIndex( Diagram::Area, i );
         QskAspect::Subcontrol barSubcontrol = subcontrolForIndex( Diagram::Bar, i );
 
-        int lineWidth = diagram->metric( lineSubcontrol | QskAspect::Size );
+        const auto lineWidth = diagram->metric( lineSubcontrol | QskAspect::Size );
 
         for( const auto type : { Diagram::Line, Diagram::Area, Diagram::Bar } )
         {
