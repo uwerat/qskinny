@@ -554,7 +554,7 @@ QskTextPredictor* QskInputContextFactory::createPredictor( const QLocale& locale
 #if HUNSPELL
     return new QskHunspellTextPredictor( locale );
 #else
-    Q_UNUSED( locale );
+    Q_UNUSED( locale )
 #endif
 
     return nullptr;

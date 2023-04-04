@@ -31,7 +31,7 @@ namespace
     }
 
     inline int edgeToIndex( Qt::Edge edge )
-        { return qCountTrailingZeroBits( (quint8) edge ); }
+        { return qCountTrailingZeroBits( static_cast< quint8 >( edge ) ); }
 
     class CornerIterator : public QskVertex::ArcIterator
     {

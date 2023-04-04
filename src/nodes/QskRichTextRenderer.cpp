@@ -83,15 +83,15 @@ namespace
 
         inline void setAlignment( Qt::Alignment alignment )
         {
-            setHAlign( ( QQuickText::HAlignment )( int( alignment ) & 0x0f ) );
-            setVAlign( ( QQuickText::VAlignment )( int( alignment ) & 0xf0 ) );
+            setHAlign( static_cast< QQuickText::HAlignment >( int( alignment ) & 0x0f ) );
+            setVAlign( static_cast< QQuickText::VAlignment >( int( alignment ) & 0xf0 ) );
         }
 
         inline void setOptions( const QskTextOptions& options )
         {
             // what about Qt::TextShowMnemonic ???
-            setTextFormat( ( QQuickText::TextFormat ) options.format() );
-            setElideMode( ( QQuickText::TextElideMode ) options.elideMode() );
+            setTextFormat( static_cast< QQuickText::TextFormat >( options.format() ) );
+            setElideMode( static_cast< QQuickText::TextElideMode >( options.elideMode() ) );
             setMaximumLineCount( options.maximumLineCount() );
             setWrapMode( static_cast< QQuickText::WrapMode >( options.wrapMode() ) );
         }

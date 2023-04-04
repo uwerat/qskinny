@@ -382,9 +382,11 @@ bool QskPopup::hasFaderEffect() const
 
 void QskPopup::setPopupFlags( PopupFlags flags )
 {
-    if ( static_cast< int >( flags ) != m_data->flags )
+    const auto newFlags = static_cast< int >( flags );
+
+    if ( newFlags != m_data->flags )
     {
-        m_data->flags = flags;
+        m_data->flags = newFlags;
         updateInputGrabber();
     }
 }

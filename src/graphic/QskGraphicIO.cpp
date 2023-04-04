@@ -138,7 +138,7 @@ static inline void qskReadStateData(
     quint16 flags;
     s >> flags;
 
-    data.flags = ( QPaintEngine::DirtyFlags ) flags;
+    data.flags = static_cast< QPaintEngine::DirtyFlags >( flags );
 
     if ( data.flags & QPaintEngine::DirtyPen )
         s >> data.pen;
@@ -316,7 +316,7 @@ bool QskGraphicIO::write( const QskGraphic& graphic, QIODevice* dev )
     stream.setByteOrder( QDataStream::BigEndian );
     stream.writeRawData( qskMagicNumber, 4 );
 
-    const int numCommands = graphic.commands().size();
+    const auto numCommands = graphic.commands().size();
     const QskPainterCommand* cmds = graphic.commands().constData();
 
     stream << static_cast< quint32 >( numCommands );

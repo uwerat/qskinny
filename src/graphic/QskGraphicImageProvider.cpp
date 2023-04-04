@@ -32,7 +32,7 @@ static inline QSize qskGraphicSize( const QskGraphic& graphic,
     if ( requestedSize.width() < 0 )
     {
         const auto f = requestedSize.height() / defaultSize.height();
-        return QSize( f * defaultSize.width(),
+        return QSize( static_cast< int >( f * defaultSize.width() ),
             static_cast< int >( requestedSize.height() ) );
     }
 

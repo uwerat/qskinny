@@ -72,7 +72,6 @@ class TabView : public QskTabView
     {
         for ( int i = 0; i < 10; i++ )
         {
-            QString text;
             if ( i == 4 )
             {
                 const auto text = QStringLiteral( "Another Tab" );

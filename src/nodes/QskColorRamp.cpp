@@ -35,7 +35,7 @@ namespace
             setVerticalWrapMode( wrapMode );
 
             setFiltering( QSGTexture::Linear );
-        };
+        }
 
       private:
         static inline QSGTexture::WrapMode wrapMode( QskGradient::SpreadMode spreadMode )

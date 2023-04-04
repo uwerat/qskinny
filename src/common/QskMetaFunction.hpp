@@ -35,9 +35,9 @@ class QskMetaFunction::FunctionCall : public QtPrivate::QSlotObjectBase
 
   protected:
     explicit inline FunctionCall( InvokeFunction f,
-            const int* m_parameterTypes = nullptr ):
+            const int* parameterTypes = nullptr ):
         QSlotObjectBase( f ),
-        m_parameterTypes( m_parameterTypes )
+        m_parameterTypes( parameterTypes )
     {
     }
 

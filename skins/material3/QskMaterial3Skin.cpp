@@ -58,12 +58,12 @@ static const int qskDuration = 150;
 
 namespace
 {
-    inline double operator ""_dp( long double value )
+    Q_DECL_UNUSED inline double operator ""_dp( long double value )
     {
         return qskDpToPixels( static_cast< qreal >( value ) );
     }
 
-    inline double operator ""_dp( unsigned long long value )
+    Q_DECL_UNUSED inline double operator ""_dp( unsigned long long value )
     {
         return qskDpToPixels( value );
     }
@@ -115,25 +115,17 @@ namespace
             return QskGraphicIO::read( path );
         }
 
-        void setStandardSymbol( QskAspect aspect,
-            QskStandardSymbol::Type symbolType )
-        {
-            setSymbol( aspect, QskStandardSymbol::graphic( symbolType ) );
-        }
-
         const QskMaterial3Theme& m_pal;
     };
 
-    QFont createFont( const QString& name, int lineHeight,
-        int size, qreal tracking, QFont::Weight weight )
+    QFont createFont( const QString& name, qreal lineHeight,
+        qreal size, qreal tracking, QFont::Weight weight )
     {
-        QFont font( name, size );
-        font.setPixelSize( lineHeight );
+        QFont font( name, qRound( size ) );
+        font.setPixelSize( qRound( lineHeight ) );
 
         if( !qskFuzzyCompare( tracking, 0.0 ) )
-        {
             font.setLetterSpacing( QFont::AbsoluteSpacing, tracking );
-        }
 
         font.setWeight( weight );
 
@@ -498,8 +490,8 @@ void Editor::setupSegmentedBar()
     using A = QskAspect;
     using Q = QskSegmentedBar;
 
-    const QSize panelStrutSize( -1, 48_dp );
-    const QSize segmentStrutSize( 48_dp, 40_dp );
+    const QSizeF panelStrutSize( -1, 48_dp );
+    const QSizeF segmentStrutSize( 48_dp, 40_dp );
 
     {
         // Container

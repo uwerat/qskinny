@@ -183,7 +183,7 @@ namespace
     {
       public:
         Point() = default;
-        inline Point( qreal x, qreal y, qreal v ): x( x ), y( y ), v( v ) {};
+        inline Point( qreal x, qreal y, qreal v ): x( x ), y( y ), v( v ) {}
 
         qreal x = 0;
         qreal y = 0;
@@ -625,10 +625,10 @@ namespace
                 {
                     const auto p = vec.pointAt( it.position() );
 
-                    const qreal y1 = p.y() + ( p.x() - c1.x ) / m;
-                    const qreal x2 = p.x() + ( p.y() - c1.y ) * m;
+                    const qreal ly1 = p.y() + ( p.x() - c1.x ) / m;
+                    const qreal lx2 = p.x() + ( p.y() - c1.y ) * m;
 
-                    setLine( c1.x, y1, x2, c1.y, it.color(), l++ );
+                    setLine( c1.x, ly1, lx2, c1.y, it.color(), l++ );
                     it.advance();
                 }
 
@@ -642,10 +642,10 @@ namespace
                     {
                         const auto p = vec.pointAt( it.position() );
 
-                        const qreal y1 = p.y() + ( p.x() - c2.x ) / m;
-                        const qreal y2 = p.y() + ( p.x() - c3.x ) / m;
+                        const qreal ly1 = p.y() + ( p.x() - c2.x ) / m;
+                        const qreal ly2 = p.y() + ( p.x() - c3.x ) / m;
 
-                        setLine( c2.x, y1, c3.x, y2, it.color(), l++ );
+                        setLine( c2.x, ly1, c3.x, ly2, it.color(), l++ );
                         it.advance();
                     }
 
@@ -661,10 +661,10 @@ namespace
                     {
                         const auto p = vec.pointAt( it.position() );
 
-                        const qreal x1 = p.x() + ( p.y() - c2.y ) * m;
-                        const qreal x2 = p.x() + ( p.y() - c3.y ) * m;
+                        const qreal lx1 = p.x() + ( p.y() - c2.y ) * m;
+                        const qreal lx2 = p.x() + ( p.y() - c3.y ) * m;
 
-                        setLine( x1, c2.y, x2, c3.y, it.color(), l++ );
+                        setLine( lx1, c2.y, lx2, c3.y, it.color(), l++ );
                         it.advance();
                     }
 
@@ -675,10 +675,10 @@ namespace
                 {
                     const auto p = vec.pointAt( it.position() );
 
-                    const qreal y1 = p.y() + ( p.x() - c4.x ) / m;
-                    const qreal x2 = p.x() + ( p.y() - c4.y ) * m;
+                    const qreal ly1 = p.y() + ( p.x() - c4.x ) / m;
+                    const qreal lx2 = p.x() + ( p.y() - c4.y ) * m;
 
-                    setLine( c4.x, y1, x2, c4.y, it.color(), l++ );
+                    setLine( c4.x, ly1, lx2, c4.y, it.color(), l++ );
                     it.advance();
                 }
 

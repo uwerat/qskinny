@@ -327,7 +327,7 @@ int QskGradient::stepCount() const noexcept
     if ( !isValid() )
         return 0;
 
-    int steps = m_stops.count() - 1;
+    auto steps = static_cast< int >( m_stops.count() ) - 1;
 
     if ( m_stops.first().position() > 0.0 )
         steps++;

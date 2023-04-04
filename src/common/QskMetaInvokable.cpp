@@ -152,7 +152,7 @@ QMetaMethod qskNotifySignal( const QMetaObject* metaObject, const char* property
 
 static void qskInvokeMetaCall(
     QObject* object, const QMetaObject* metaObject,
-    QMetaObject::Call call, int offset, int index, void* argv[],
+    QMetaObject::Call call, ushort offset, ushort index, void* argv[],
     Qt::ConnectionType connectionType )
 {
     QPointer< QObject > receiver( object );
@@ -196,6 +196,7 @@ static void qskInvokeMetaCall(
 
             QSemaphore semaphore;
 
+            Q_ASSERT( metaObject == nullptr || receiver->metaObject() == metaObject );
             qskInvokeMetaCallQueued( receiver, call,
                 offset, index, argv, &semaphore );
 
@@ -256,6 +257,7 @@ static void qskInvokeMetaCall(
                 return;
             }
 
+            Q_ASSERT( metaObject == nullptr || receiver->metaObject() == metaObject );
             qskInvokeMetaCallQueued( object, call, offset, index, arguments, nullptr );
 
             break;

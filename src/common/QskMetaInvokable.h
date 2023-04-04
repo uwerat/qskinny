@@ -132,8 +132,8 @@ QSK_EXPORT void qskInvokeMetaPropertyWrite(
     void* args[], Qt::ConnectionType = Qt::AutoConnection );
 
 QSK_EXPORT void qskInvokeMetaPropertyWrite(
-    const QObject* object, const QMetaProperty&,
-    void* args[], Qt::ConnectionType = Qt::AutoConnection );
+    QObject*, const QMetaProperty&, void* args[],
+    Qt::ConnectionType = Qt::AutoConnection );
 
 QSK_EXPORT QMetaMethod qskNotifySignal( const QMetaObject*, const char* propertyName );
 QSK_EXPORT QMetaMethod qskNotifySignal( const QObject*, const char* propertyName );

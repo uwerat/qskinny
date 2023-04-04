@@ -28,7 +28,7 @@ class CircularProgressBar : public QskBoundedControl
 
     CircularProgressBar( qreal min, qreal max, QQuickItem* parent = nullptr );
     CircularProgressBar( QQuickItem* parent = nullptr );
-    ~CircularProgressBar();
+    ~CircularProgressBar() override;
 
     bool isIndeterminate() const;
     void setIndeterminate( bool on = true );

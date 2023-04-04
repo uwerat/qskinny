@@ -8,7 +8,7 @@
 
 Stroke::Stroke( const QPen& pen ) noexcept
     : m_width( pen.widthF() )
-    , m_miterLimit( pen.miterLimit() )
+    , m_miterLimit( qRound( pen.miterLimit() ) )
     , m_color( pen.color() )
     , m_lineStyle( ( pen.style() == Qt::DashLine ) ? DashLine : SolidLine )
     , m_joinStyle( static_cast< JoinStyle >( pen.joinStyle() ) )

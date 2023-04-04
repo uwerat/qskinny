@@ -28,7 +28,7 @@ class QSK_EXPORT QskScaleRenderer
 {
   public:
     QskScaleRenderer();
-    ~QskScaleRenderer();
+    virtual ~QskScaleRenderer();
 
     void setOrientation( Qt::Orientation );
     void setAlignment( Qt::Alignment );

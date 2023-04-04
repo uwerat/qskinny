@@ -202,7 +202,7 @@ namespace QskQml
         return qmlregister( TypeRegistration, &type );
     }
 
-    int registerUncreatableMetaObject(
+    inline int registerUncreatableMetaObject(
         const QMetaObject& staticMetaObject, const char* qmlName )
     {
         using namespace QQmlPrivate;

@@ -174,8 +174,12 @@ QSGNode* QskScaleRenderer::updateTicksNode(
     if( ticksNode == nullptr )
         ticksNode = new QskTickmarksNode;
 
+#if 1
+    const int tickWidth = qRound( m_data->tickWidth );
+#endif
+
     ticksNode->update( m_data->tickColor, rect, m_data->boundaries,
-        m_data->tickmarks, m_data->tickWidth, m_data->orientation,
+        m_data->tickmarks, tickWidth, m_data->orientation,
         m_data->alignment );
 
     return ticksNode;

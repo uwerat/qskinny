@@ -485,11 +485,11 @@ int QskGridLayoutEngine::insertSpacer( const QSizeF& spacing, const QRect& grid 
 
 bool QskGridLayoutEngine::removeAt( int index )
 {
-    const auto element = m_data->elementAt( index );
-    if ( element == nullptr )
+    const auto elementAt = m_data->elementAt( index );
+    if ( elementAt == nullptr )
         return false;
 
-    const auto grid = element->minimumGrid();
+    const auto grid = elementAt->minimumGrid();
 
     auto& elements = m_data->elements;
     elements.erase( elements.begin() + index );
@@ -504,10 +504,10 @@ bool QskGridLayoutEngine::removeAt( int index )
 
         for ( const auto& element : elements )
         {
-            const auto grid = element.minimumGrid();
+            const auto minGrid = element.minimumGrid();
 
-            maxRow = qMax( maxRow, grid.bottom() );
-            maxColumn = qMax( maxColumn, grid.right() );
+            maxRow = qMax( maxRow, minGrid.bottom() );
+            maxColumn = qMax( maxColumn, minGrid.right() );
         }
 
         m_data->rowCount = maxRow + 1;

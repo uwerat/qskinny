@@ -102,8 +102,10 @@ QDebug operator<<( QDebug debug, const QskGradientStop& stop )
 static inline QColor qskInterpolatedColor(
     const QskGradientStops& stops, int index1, int index2, qreal position )
 {
-    index1 = qBound( 0, index1, stops.count() - 1 );
-    index2 = qBound( 0, index2, stops.count() - 1 );
+    const auto max = static_cast< int >( stops.count() ) - 1;
+
+    index1 = qBound( 0, index1, max );
+    index2 = qBound( 0, index2, max );
 
     return QskGradientStop::interpolated( stops[ index1 ], stops[ index2 ], position );
 }
@@ -138,7 +140,7 @@ QskGradientStops qskTransparentGradientStops( const QskGradientStops& stops, qre
     for ( auto& stop : newStops )
     {
         auto c = stop.color();
-        c.setAlpha( c.alpha() * ratio );
+        c.setAlpha( qRound( c.alpha() * ratio ) );
 
         stop.setColor( c );
     }

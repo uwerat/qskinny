@@ -29,7 +29,7 @@ class GeometricShape : public ShapeItem
         Hexagon,
         Arc
     };
-    Q_ENUM( Figure );
+    Q_ENUM( Figure )
 
     GeometricShape( QQuickItem* parent = nullptr );
     GeometricShape( Figure figure, QQuickItem* parent = nullptr );

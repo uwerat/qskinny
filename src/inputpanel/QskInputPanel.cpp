@@ -148,16 +148,14 @@ namespace
                         // Let the input field update right away, otherwise
                         // we'll get weird effects with fast backspace presses:
                         Q_EMIT keyProcessingFinished( m_currentResult );
-                        return;
                     }
                     else
                     {
                         m_currentResult.key = Qt::Key_Backspace;
                         Q_EMIT keyProcessingFinished( m_currentResult );
-                        return;
                     }
 
-                    break;
+                    return;
                 }
                 case Qt::Key_Return:
                 {

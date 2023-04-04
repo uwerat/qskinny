@@ -19,7 +19,7 @@ DiagramSegmentsNode::DiagramSegmentsNode()
 void DiagramSegmentsNode::update( const QRectF& rect, const QColor& color,
     const QVector< QVector< QPointF > >& dataPoints, int xGridLines )
 {
-    Q_UNUSED( rect );
+    Q_UNUSED( rect )
 
     if( color != m_color )
     {

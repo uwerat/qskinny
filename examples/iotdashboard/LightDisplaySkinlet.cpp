@@ -31,8 +31,7 @@ LightDisplaySkinlet::~LightDisplaySkinlet()
 QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    auto* display = static_cast< const LightDisplay* >( skinnable );
-    QRectF rect = contentsRect;
+    auto display = static_cast< const LightDisplay* >( skinnable );
     const qreal ticksSpacing = 4; // space between the ticks and the arc
 
     if( subControl == LightDisplay::Groove || subControl == LightDisplay::Panel )
@@ -50,25 +49,23 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
 
         const qreal diameter = qMin( w, h );
 
-        rect = QRectF( x, y, diameter, diameter );
-        return rect;
+        return QRectF( x, y, diameter, diameter );
     }
     else if( subControl == LightDisplay::ColdAndWarmArc )
     {
         const QRectF panelRect = subControlRect( skinnable, contentsRect, LightDisplay::Panel );
-        auto barWidth = display->arcMetricsHint( LightDisplay::ColdAndWarmArc ).width();
-        auto rect = panelRect.marginsAdded( { barWidth, barWidth, barWidth, barWidth } );
-        return rect;
+        const auto barWidth = display->arcMetricsHint( LightDisplay::ColdAndWarmArc ).width();
+
+        return panelRect.marginsAdded( { barWidth, barWidth, barWidth, barWidth } );
     }
     else if( subControl == LightDisplay::Tickmarks )
     {
-        const QRectF arcRect = subControlRect(
+        const auto arcRect = subControlRect(
             skinnable, contentsRect, LightDisplay::ColdAndWarmArc );
         const qreal ticksWidth = display->arcMetricsHint(
             LightDisplay::Tickmarks ).width() + ticksSpacing;
-        const QRectF rect =
-            arcRect.marginsAdded( { ticksWidth, ticksWidth, ticksWidth, ticksWidth } );
-        return rect;
+
+        return arcRect.marginsAdded( { ticksWidth, ticksWidth, ticksWidth, ticksWidth } );
     }
     else if( subControl == LightDisplay::ValueText )
     {
@@ -76,14 +73,18 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
         const QFontMetricsF fm( skinnable->effectiveFont( subControl ) );
         const qreal fontWidth = qskHorizontalAdvance( fm, QStringLiteral( "100 %" ) );
         const QPointF center = valueTextRect.center();
-        const QRectF rect( center.x() - fontWidth / 2, center.y() - fm.height() / 2, fontWidth, fm.height() );
-        return rect;
+
+        return QRectF(
+            center.x() - fontWidth / 2, center.y() - fm.height() / 2,
+            fontWidth, fm.height() );
     }
     else if( subControl == LightDisplay::LeftLabel )
     {
-        const QRectF ticksRect = subControlRect( skinnable, contentsRect, LightDisplay::Tickmarks );
+        const QRectF ticksRect = subControlRect(
+            skinnable, contentsRect, LightDisplay::Tickmarks );
         const auto size = textLabelsSize( display );
 
+        auto rect = contentsRect;
         rect.setWidth( size.width() );
 
         rect.setY( ticksRect.y() + ( ticksRect.height() - size.height() ) / 2 );
@@ -96,6 +97,7 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
         const auto ticksRect = subControlRect( skinnable, contentsRect, LightDisplay::Tickmarks );
         const auto size = textLabelsSize( display );
 
+        auto rect = contentsRect;
         rect.setX( ticksRect.x() + ticksRect.width() );
 
         rect.setY( ticksRect.y() + ( ticksRect.height() - size.height() ) / 2 );
@@ -119,8 +121,7 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
         const auto x = arcRect.center().x() - knobSize.width() / 2 - radius * cos;
         const auto y = arcRect.center().y() - knobSize.height() / 2 - radius * sin;
 
-        rect = QRectF( x, y, knobSize.width(), knobSize.height() );
-        return rect;
+        return QRectF( x, y, knobSize.width(), knobSize.height() );
     }
 
     return contentsRect;

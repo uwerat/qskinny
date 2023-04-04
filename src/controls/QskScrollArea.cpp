@@ -201,7 +201,7 @@ namespace
 
       public:
         ClipItem( QskScrollArea* );
-        virtual ~ClipItem();
+        ~ClipItem() override;
 
         void enableGeometryListener( bool on );
 

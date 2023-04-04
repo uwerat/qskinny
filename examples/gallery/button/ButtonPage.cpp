@@ -18,7 +18,7 @@ namespace
     {
       public:
         ButtonBox( Qt::Orientation orientation, QQuickItem* parent = nullptr )
-            : ButtonBox( orientation, -1, parent )
+            : ButtonBox( orientation, std::numeric_limits< uint >::max(), parent )
         {
         }
 

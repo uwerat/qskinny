@@ -30,7 +30,7 @@ namespace
 
             TypeCount
         };
-        Q_ENUM( ButtonType );
+        Q_ENUM( ButtonType )
 
         Button( ButtonType type, QQuickItem* parent = nullptr )
             : QskPushButton( parent )

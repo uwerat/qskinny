@@ -203,23 +203,6 @@ namespace
             return m_skinMap.keys();
         }
 
-        QStringList skinNames( const QString& factoryId ) const
-        {
-            const auto it = m_factoryMap.constFind( factoryId );
-            if ( it != m_factoryMap.constEnd() )
-            {
-                const auto& data = it.value();
-
-                if ( data.factory )
-                    return data.factory->skinNames();
-
-                if ( data.loader )
-                    return data.loader->skinNames();
-            }
-
-            return QStringList();
-        }
-
         void insertFactory( FactoryLoader* loader )
         {
             auto& data = m_factoryMap[ loader->factoryId() ];
@@ -251,11 +234,11 @@ namespace
 
         void removeFactory( const QString& factoryId )
         {
-            const auto it = m_factoryMap.find( factoryId );
-            if ( it == m_factoryMap.end() )
+            const auto itFactory = m_factoryMap.find( factoryId );
+            if ( itFactory == m_factoryMap.end() )
                 return;
 
-            m_factoryMap.erase( it );
+            m_factoryMap.erase( itFactory );
 
             if ( m_isValid )
             {
