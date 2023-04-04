@@ -16,6 +16,8 @@ set_target_properties(${target} PROPERTIES PUBLIC_HEADER QskQml.h)
 if(BUILD_QSKDLL)
     set_target_properties(${target} PROPERTIES DEFINE_SYMBOL QSK_QML_MAKEDLL)
     set_target_properties(${target} PROPERTIES INSTALL_RPATH "\${ORIGIN}" )
+    set_target_properties(${target} PROPERTIES
+        VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR} )
 endif()
 
 install(TARGETS ${target} )

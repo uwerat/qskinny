@@ -73,7 +73,7 @@ endmacro()
 project(QSkinny
     LANGUAGES C CXX 
     HOMEPAGE_URL "https://github.com/uwerat/qskinny"
-    VERSION 999.99.9)
+    VERSION 0.8.0)
 
 qsk_setup_options()
 
