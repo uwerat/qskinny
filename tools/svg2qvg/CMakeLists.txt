@@ -33,9 +33,11 @@ if(BUILD_SVG2QVG_STANDALONE)
 
     target_compile_definitions(${target} PRIVATE QSK_STANDALONE)
     target_link_libraries(${target} PRIVATE Qt::Gui Qt::GuiPrivate)
+else()
+    target_link_libraries(${target} PRIVATE qskinny)
 endif()
 
-target_link_libraries(${target} PRIVATE qskinny Qt::Svg)
+target_link_libraries(${target} PRIVATE Qt::Svg)
 
 set_target_properties(${target} PROPERTIES FOLDER tools)
 

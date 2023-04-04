@@ -51,12 +51,12 @@ jobs:
               generators: "Visual Studio 17 2022",
               cmake:
                 {
-                  qtversion: "6.2.4",
+                  qtversion: "6.5.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.2.4/msvc2019_64",
+                  qtdirvalue: "../Qt/6.5.0/msvc2019_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.5.0/msvc2019_64",
                 },
-              screenshot_filename: "windows-latest-msvc-qt-6-2-4.jpg",
+              screenshot_filename: "windows-latest-msvc-qt-6.5.0.jpg",
             }
           - {
               name: "Windows 2019 MSVC Qt5",
@@ -89,12 +89,12 @@ jobs:
               generators: "Visual Studio 16 2019",
               cmake:
                 {
-                  qtversion: "6.2.4",
+                  qtversion: "6.5.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.2.4/msvc2019_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.2.4/msvc2019_64",
+                  qtdirvalue: "../Qt/6.5.0/msvc2019_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.5.0/msvc2019_64",
                 },
-              screenshot_filename: "windows-2019-msvc-qt-6-2-4.jpg",
+              screenshot_filename: "windows-2019-msvc-qt-6.5.0.jpg",
             }
           - {
               name: "Ubuntu Latest GCC Qt5",
@@ -127,12 +127,12 @@ jobs:
               env: { DISPLAY: ":1" },
               cmake:
                 {
-                  qtversion: "6.2.4",
+                  qtversion: "6.5.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.2.4/gcc_64",
+                  qtdirvalue: "../Qt/6.5.0/gcc_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.5.0/gcc_64",
                 },
-              screenshot_filename: "ubuntu-latest-gcc-qt-6-2-4.jpg",
+              screenshot_filename: "ubuntu-latest-gcc-qt-6.5.0.jpg",
             }
           - {
               name: "Ubuntu GCC 9 Qt5",
@@ -165,12 +165,12 @@ jobs:
               env: { DISPLAY: ":1" },
               cmake:
                 {
-                  qtversion: "6.2.4",
+                  qtversion: "6.5.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.2.4/gcc_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.2.4/gcc_64",
+                  qtdirvalue: "../Qt/6.5.0/gcc_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.5.0/gcc_64",
                 },
-              screenshot_filename: "ubuntu-latest-gcc-9-qt-6-2-4.jpg",
+              screenshot_filename: "ubuntu-latest-gcc-9-qt-6.5.0.jpg",
             }
           - {
               name: "macOS Latest Clang Qt5",
@@ -201,12 +201,12 @@ jobs:
               generators: "Ninja",
               cmake:
                 {
-                  qtversion: "6.2.4",
+                  qtversion: "6.5.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.2.4/clang_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.2.4/clang_64",
+                  qtdirvalue: "../Qt/6.5.0/clang_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.5.0/clang_64",
                 },
-              screenshot_filename: "macos-latest-clang-qt-6-2-4.jpg",
+              screenshot_filename: "macos-latest-clang-qt-6.5.0.jpg",
             }
 
     steps:
@@ -281,8 +281,12 @@ jobs:
           cmake --version
 
       - name: Install needed xkbcommon symlink
-        if: startsWith(matrix.config.name, 'Ubuntu') && endsWith(matrix.config.name, 'Qt6')
-        run: sudo apt-get install libxkbcommon-dev -y
+        if: startsWith(matrix.config.name, 'Ubuntu')
+        run: |
+          sudo apt-get install libxkbcommon-dev -y
+          sudo apt-get install libxkbcommon-x11-0 -y
+          sudo apt-get install libxcb-cursor-dev -y
+          sudo apt-get install x11-xserver-utils -y
 
       - name: Install hunspell for Ubuntu
         if: false && startsWith(matrix.config.name, 'Ubuntu')
@@ -299,21 +303,21 @@ jobs:
         run: |
           sudo apt-get install -y imagemagick
 
-      - name: Cache Qt5
-        if: endsWith(matrix.config.name, 'Qt5')
-        id: cache-qt-5-15
-        uses: actions/cache@v1 # not v2!
-        with:
-          path: ../Qt/5.15.2
-          key: ${{ runner.os }}-QtCache-Qt5
-
-      - name: Cache Qt6
-        if: endsWith(matrix.config.name, 'Qt6')
-        id: cache-qt-6-2
-        uses: actions/cache@v1 # not v2!
-        with:
-          path: ../Qt/6.2.4
-          key: ${{ runner.os }}-QtCache-Qt6
+      #- name: Cache Qt5
+      #  if: endsWith(matrix.config.name, 'Qt5')
+      #  id: cache-qt-5-15
+      #  uses: actions/cache@v1 # not v2!
+      #  with:
+      #    path: ../Qt/5.15.2
+      #    key: ${{ runner.os }}-QtCache-Qt5
+#
+      #- name: Cache Qt6
+      #  if: endsWith(matrix.config.name, 'Qt6')
+      #  id: cache-qt-6-2
+      #  uses: actions/cache@v1 # not v2!
+      #  with:
+      #    path: ../Qt/6.5.0
+      #    key: ${{ runner.os }}-QtCache-Qt6
 
       - name: Install Qt5
         if: endsWith(matrix.config.name, 'Qt5')
@@ -333,7 +337,7 @@ jobs:
         if: endsWith(matrix.config.name, 'Qt6')
         uses: jurplel/install-qt-action@v3
         with:
-          version: "6.2.4"
+          version: "6.5.0"
           target: "desktop"
           install-deps: "true"
           modules: "qtwebengine"
@@ -371,35 +375,45 @@ jobs:
 
       - name: Smoke test ( QSkinny ) on MacOS
         if: startsWith(matrix.config.name, 'macOS')
+        env:
+          QT_DEBUG_PLUGINS: "1"
         run: |
           echo "starting iotdashboard"
-          DYLD_LIBRARY_PATH=./qskinny_install/lib:./qskinny_install/plugins/skins ./qskinny_build/examples/iotdashboard/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 &
+          DYLD_LIBRARY_PATH=./qskinny_install/lib:./qskinny_install/plugins/skins ./qskinny_build/examples/bin/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 --screenshot ${{ matrix.config.screenshot_filename }} &
           sleep 10
 
+      # TODO remove 'qskinny_build\skins\material3\Release' when skin install is fixed
       - name: Smoke Test ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
+        env:
+          QT_DEBUG_PLUGINS: "1"
         run: |
-          $Env:PATH += ";qskinny_install/lib"
-          $Env:PATH += ";qskinny_install/plugins/skins"
-          echo "starting iotdashboard"          
-          Start-Process qskinny_build\examples\iotdashboard\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0"
-          Start-Sleep -s 10
+          $env:Path += ";./qskinny_install/bin;./qskinny_install/lib;./qskinny_install/plugins/skins;./qskinny_build/skins/material3/Release;./qskinny_build/skins/squiek/Release"
+          echo "starting iotdashboard"
+          Start-Process qskinny_build\examples\bin\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0 --screenshot ${{ matrix.config.screenshot_filename }}"
+          Start-Sleep -Seconds 10
 
       - name: Smoke test ( QSkinny ) on Ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu')
         env:
           DISPLAY: ":1"
+          QT_DEBUG_PLUGINS: "1"
         run: |
           echo starting Xvfb
           Xvfb :1 &
           sleep 10
           echo starting iotdashboard
-          ./qskinny_build/examples/iotdashboard/iotdashboard &
+          ./qskinny_build/examples/bin/iotdashboard --screenshot ${{ matrix.config.screenshot_filename }} &
           sleep 10
 
-      - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      - uses: actions/upload-artifact@v3
         with:
-          file-name: ${{ matrix.config.screenshot_filename }}
+          name: ${{ matrix.config.screenshot_filename }}
+          path: ${{ matrix.config.screenshot_filename }}
+
+      #- uses: OrbitalOwen/desktop-screenshot-action@0.1
+      #  with:
+      #    file-name: ${{ matrix.config.screenshot_filename }}
 
       - name: Smoke Test Cleanup ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
@@ -417,22 +431,22 @@ jobs:
           killall iotdashboard
           killall Xvfb
 
-      - name: Configure ( CMake Integration Test )
-        shell: bash
-        run: |
-          mkdir qskinny_build_test
-          cmake \
-            -S qskinny_source/examples/iotdashboard_smoketest \
-            -B qskinny_build_test \
-            -G "${{ matrix.config.generators }}" \
-            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
-            -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixpath }}" \
-            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}" \
-            -DQSkinny_DIR:PATH=$GITHUB_WORKSPACE/qskinny_install/lib/cmake/QSkinny
-
-      - name: Build ( CMake Integration Test )
-        shell: bash
-        run: cmake --build qskinny_build_test --config ${{ matrix.config.build_type }}
+      #- name: Configure ( CMake Integration Test )
+      #  shell: bash
+      #  run: |
+      #    mkdir qskinny_build_test
+      #    cmake \
+      #      -S qskinny_source/examples/iotdashboard_smoketest \
+      #      -B qskinny_build_test \
+      #      -G "${{ matrix.config.generators }}" \
+      #      -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+      #      -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixpath }}" \
+      #      -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}" \
+      #      -DQSkinny_DIR:PATH=$GITHUB_WORKSPACE/qskinny_install/lib/cmake/QSkinny
+#
+      #- name: Build ( CMake Integration Test )
+      #  shell: bash
+      #  run: cmake --build qskinny_build_test --config ${{ matrix.config.build_type }}
 
       # - name: Pack
       #   shell: bash

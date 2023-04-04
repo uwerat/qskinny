@@ -19,6 +19,7 @@
 #include <QskObjectCounter.h>
 
 #include <QGuiApplication>
+#include <QTimer>
 
 namespace
 {
@@ -85,6 +86,17 @@ int main( int argc, char* argv[] )
 
     MainWindow window;
     window.show();
+
+    for( int i = 1; i < argc; i++ )
+    {
+      if( argv[i] == QStringLiteral("--screenshot") && i + 1 < argc )
+      {
+          QTimer::singleShot( 500, &window, [&app, &window, filename = QString(argv[i + 1])]()
+            { auto image = window.grabWindow(); image.save(filename); } );
+
+          break;
+      }
+    }
 
     return app.exec();
 }
