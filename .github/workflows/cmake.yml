@@ -281,7 +281,7 @@ jobs:
           cmake --version
 
       - name: Install needed xkbcommon symlink
-        if: startsWith(matrix.config.name, 'Ubuntu') && endsWith(matrix.config.name, 'Qt6')
+        if: startsWith(matrix.config.name, 'Ubuntu')
         run: |
           sudo apt-get install libxkbcommon-dev -y
           sudo apt-get install libxkbcommon-x11-0 -y
@@ -377,7 +377,7 @@ jobs:
         if: startsWith(matrix.config.name, 'macOS')
         run: |
           echo "starting iotdashboard"
-          DYLD_LIBRARY_PATH=./qskinny_install/lib:./qskinny_install/plugins/skins ./qskinny_build/examples/bin/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 &
+          DYLD_LIBRARY_PATH=./qskinny_install/lib:./qskinny_install/plugins/skins ./qskinny_build/examples/bin/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 --screenshot &
           sleep 10
 
       # TODO remove 'qskinny_build\skins\material3\Release' when skin install is fixed
@@ -386,7 +386,7 @@ jobs:
         run: |
           $env:Path += ";./qskinny_install/bin;./qskinny_install/lib;./qskinny_install/plugins/skins;./qskinny_build/skins/material3/Release;./qskinny_build/skins/squiek/Release"
           echo "starting iotdashboard"
-          Start-Process qskinny_build\examples\bin\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0"
+          Start-Process qskinny_build\examples\bin\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0" --screenshot
 
       - name: Smoke test ( QSkinny ) on Ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu')
@@ -401,9 +401,14 @@ jobs:
           ./qskinny_build/examples/bin/iotdashboard &
           sleep 10
 
-      - uses: OrbitalOwen/desktop-screenshot-action@0.1
+      - uses: actions/upload-artifact@v3
         with:
-          file-name: ${{ matrix.config.screenshot_filename }}
+          name: ${{ matrix.config.screenshot_filename }}
+          path: ${{ matrix.config.screenshot_filename }}
+
+      #- uses: OrbitalOwen/desktop-screenshot-action@0.1
+      #  with:
+      #    file-name: ${{ matrix.config.screenshot_filename }}
 
       - name: Smoke Test Cleanup ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
