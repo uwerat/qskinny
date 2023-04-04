@@ -158,7 +158,7 @@ class IconGrid : public QskLinearBox
   private:
     void setItemsVisible( const QRectF& rect, bool on )
     {
-        const int dim = dimension();
+        const auto dim = dimension();
 
         // we know, that all items have the same size
         const auto itemSize = itemAtIndex( 0 )->size();

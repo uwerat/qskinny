@@ -132,10 +132,10 @@ void LayoutSolver::setup( bool layoutChildren,
 
         const auto expr1 = r1.expressionAt( anchor.edge1 );
 
-        Expression expr2;
-
         if ( anchor.item2 == nullptr )
         {
+            Expression expr2;
+
             switch( anchor.edge2 )
             {
                 case Qt::AnchorLeft:
