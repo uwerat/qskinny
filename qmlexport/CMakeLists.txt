@@ -14,7 +14,8 @@ target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 set_target_properties(${target} PROPERTIES PUBLIC_HEADER QskQml.h)
 
 if(BUILD_QSKDLL)
-    set_target_properties( ${target} PROPERTIES DEFINE_SYMBOL QSK_QML_MAKEDLL )
+    set_target_properties(${target} PROPERTIES DEFINE_SYMBOL QSK_QML_MAKEDLL)
+    set_target_properties(${target} PROPERTIES INSTALL_RPATH "\${ORIGIN}" )
 endif()
 
 install(TARGETS ${target} )

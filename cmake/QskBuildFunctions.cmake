@@ -65,6 +65,10 @@ function(qsk_add_plugin target TYPE CLASS_NAME)
     set_target_properties( ${target} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/plugins/${TYPE}")
 
+    install(TARGETS ${target} DESTINATION "plugins/${TYPE}" )
+    set_target_properties(${target} PROPERTIES
+        INSTALL_RPATH "\${ORIGIN}/../../lib" )
+
 endfunction()
 
 function(qsk_add_example target)
