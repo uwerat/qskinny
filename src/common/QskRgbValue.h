@@ -238,177 +238,57 @@ namespace QskRgb
 
 namespace QskRgb
 {
-    enum Format
-    {
-        ARGB,
-        RGBA
-    };
-
-    // Converts a '#12345678' color hex string to a '0x12345678' unsigned integer
-    QSK_EXPORT constexpr QRgb fromHexString(
-        const char* const str, const size_t len, const Format format ) noexcept
-    {
-        if ( ( len != 9 && len != 7 ) || str[ 0 ] != '#' )
-        {
-            return 0;
-        }
-
-        QRgb c = 0xFF;
-
-        for ( size_t i = 1; i < len; ++i )
-        {
-            switch ( str[ i ] )
-            {
-                case '0':
-                    c = ( c << 4 ) | 0x0;
-                    break;
-
-                case '1':
-                    c = ( c << 4 ) | 0x1;
-                    break;
-
-                case '2':
-                    c = ( c << 4 ) | 0x2;
-                    break;
-
-                case '3':
-                    c = ( c << 4 ) | 0x3;
-                    break;
-
-                case '4':
-                    c = ( c << 4 ) | 0x4;
-                    break;
-
-                case '5':
-                    c = ( c << 4 ) | 0x5;
-                    break;
-
-                case '6':
-                    c = ( c << 4 ) | 0x6;
-                    break;
-
-                case '7':
-                    c = ( c << 4 ) | 0x7;
-                    break;
-
-                case '8':
-                    c = ( c << 4 ) | 0x8;
-                    break;
-
-                case '9':
-                    c = ( c << 4 ) | 0x9;
-                    break;
-
-                case 'A':
-                case 'a':
-                    c = ( c << 4 ) | 0xA;
-                    break;
-
-                case 'B':
-                case 'b':
-                    c = ( c << 4 ) | 0xB;
-                    break;
-
-                case 'C':
-                case 'c':
-                    c = ( c << 4 ) | 0xC;
-                    break;
-
-                case 'D':
-                case 'd':
-                    c = ( c << 4 ) | 0xD;
-                    break;
-
-                case 'E':
-                case 'e':
-                    c = ( c << 4 ) | 0xE;
-                    break;
-
-                case 'F':
-                case 'f':
-                    c = ( c << 4 ) | 0xF;
-                    break;
-
-                default:
-                    c = ( c << 4 ) | 0x0;
-                    break;
-            }
-        }
-
-        switch ( format )
-        {
-            case ARGB:
-                return c;
-            case RGBA:
-                return len == 9 ? qRgba( qAlpha( c ), qRed( c ), qGreen( c ), qBlue( c ) )
-                                : qRgba( qRed( c ), qGreen( c ), qBlue( c ), 255 );
-        }
-
-        return 0;
-    }
-
     namespace literals
     {
-        template< QRgb V >
-        constexpr QRgb parse_hex_literal_h()
+        namespace details
         {
-            return V;
-        }
-
-        template< QRgb V, char C, char... Cs >
-        constexpr QRgb parse_hex_literal_h()
-        {
-            constexpr auto is_0_9 = C >= '0' && C <= '9';
-            constexpr auto is_a_f = C >= 'a' && C <= 'f';
-            constexpr auto is_A_F = C >= 'A' && C <= 'F';
-
-            static_assert( is_0_9 || is_a_f || is_A_F, "invalid hex character" );
-
-            if constexpr ( is_0_9 )
+            template< QRgb V >
+            constexpr QRgb parse_hex_literal_h()
             {
-                return parse_hex_literal_h< ( V << 4 ) | ( C - '0' ), Cs... >();
+                return V;
             }
-            if constexpr ( is_a_f )
-            {
-                return parse_hex_literal_h< ( V << 4 ) | ( C - 'a' + 10 ), Cs... >();
-            }
-            if constexpr ( is_A_F )
-            {
-                return parse_hex_literal_h< ( V << 4 ) | ( C - 'A' + 10 ), Cs... >();
-            }
-        }
 
-        template< char C, char... Cs >
-        constexpr QRgb parse_hex_literal_x()
-        {
-            static_assert( C == 'x', "invalid hex prefix character" );
-            constexpr auto alpha = 0xFF;
-            return parse_hex_literal_h< alpha, Cs... >();
-        }
+            template< QRgb V, char C, char... Cs >
+            constexpr QRgb parse_hex_literal_h()
+            {
+                constexpr auto is_0_9 = C >= '0' && C <= '9';
+                constexpr auto is_a_f = C >= 'a' && C <= 'f';
+                constexpr auto is_A_F = C >= 'A' && C <= 'F';
 
-        template< char C, char... Cs >
-        constexpr QRgb parse_hex_literal_0()
-        {
-            static_assert( C == '0', "invalid hex prefix character" );
-            return parse_hex_literal_x< Cs... >();
+                static_assert( is_0_9 || is_a_f || is_A_F, "invalid hex character" );
+
+                if constexpr ( is_0_9 )
+                {
+                    return parse_hex_literal_h< ( V << 4 ) | ( C - '0' ), Cs... >();
+                }
+                if constexpr ( is_a_f )
+                {
+                    return parse_hex_literal_h< ( V << 4 ) | ( C - 'a' + 10 ), Cs... >();
+                }
+                if constexpr ( is_A_F )
+                {
+                    return parse_hex_literal_h< ( V << 4 ) | ( C - 'A' + 10 ), Cs... >();
+                }
+            }
+
+            template< char C, char... Cs >
+            constexpr QRgb parse_hex_literal_x()
+            {
+                static_assert( C == 'x', "invalid hex prefix character" );
+                constexpr auto alpha = 0xFF;
+                return parse_hex_literal_h< alpha, Cs... >();
+            }
+
+            template< char C, char... Cs >
+            constexpr QRgb parse_hex_literal_0()
+            {
+                static_assert( C == '0', "invalid hex prefix character" );
+                return parse_hex_literal_x< Cs... >();
+            }
         }
 
         namespace integral
         {
-            // converts a hex string from '#RRGGBB[AA]' to '0xAARRGGBB' integer
-            QSK_EXPORT constexpr QRgb operator""_rgba(
-                const char* const str, const size_t len ) noexcept
-            {
-                return fromHexString( str, len, RGBA );
-            }
-
-            // converts a hex string from '#[AA]RRGGBB' to '0xAARRGGBB' integer
-            QSK_EXPORT constexpr QRgb operator""_argb(
-                const char* const str, const size_t len ) noexcept
-            {
-                return fromHexString( str, len, ARGB );
-            }
-
             // converts a hex literal from '0xRRGGBB[AA]' to '0xAARRGGBB' integer
             template< char... Cs >
             constexpr QRgb operator""_rgba() noexcept
@@ -417,7 +297,7 @@ namespace QskRgb
                 constexpr auto rrggbbaa = 10;
                 static_assert( sizeof...( Cs ) == rrggbb || sizeof...( Cs ) == rrggbbaa,
                     "invalid color literal length" );
-                constexpr auto c = parse_hex_literal_0< Cs... >();
+                constexpr auto c = details::parse_hex_literal_0< Cs... >();
                 return sizeof...( Cs ) == rrggbbaa
                            ? qRgba( qAlpha( c ), qRed( c ), qGreen( c ), qBlue( c ) )
                            : qRgba( qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) );
@@ -431,28 +311,12 @@ namespace QskRgb
                 constexpr auto aarrggbb = 10;
                 static_assert( sizeof...( Cs ) == rrggbb || sizeof...( Cs ) == aarrggbb,
                     "invalid color literal length" );
-                return parse_hex_literal_0< Cs... >();
+                return details::parse_hex_literal_0< Cs... >();
             }
         }
 
         namespace color
         {
-            // converts a hex string from '#RRGGBB[AA]' to a QColor
-            QSK_EXPORT constexpr QColor operator""_rgba(
-                const char* const str, const size_t len ) noexcept
-            {
-                const auto c = fromHexString( str, len, RGBA );
-                return QColor{ qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) };
-            }
-
-            // converts a hex string from '#[AA]RRGGBB' to a QColor
-            QSK_EXPORT constexpr QColor operator""_argb(
-                const char* const str, const size_t len ) noexcept
-            {
-                const auto c = fromHexString( str, len, ARGB );
-                return QColor{ qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) };
-            }
-
             // converts a hex literal from '0xRRGGBB[AA]' to a QColor
             template< char... Cs >
             constexpr QColor operator""_rgba() noexcept
@@ -461,7 +325,7 @@ namespace QskRgb
                 constexpr auto rrggbbaa = 10;
                 static_assert( sizeof...( Cs ) == rrggbb || sizeof...( Cs ) == rrggbbaa,
                     "invalid color literal length" );
-                constexpr auto c = parse_hex_literal_0< Cs... >();
+                constexpr auto c = details::parse_hex_literal_0< Cs... >();
                 return sizeof...( Cs ) == rrggbbaa
                            ? QColor{ qAlpha( c ), qRed( c ), qGreen( c ), qBlue( c ) }
                            : QColor{ qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) };
@@ -475,9 +339,33 @@ namespace QskRgb
                 constexpr auto aarrggbb = 10;
                 static_assert( sizeof...( Cs ) == rrggbb || sizeof...( Cs ) == aarrggbb,
                     "invalid color literal length" );
-                constexpr auto c = parse_hex_literal_0< Cs... >();
+                constexpr auto c = details::parse_hex_literal_0< Cs... >();
                 return QColor{ qRed( c ), qGreen( c ), qBlue( c ), qAlpha( c ) };
             }
+        }
+
+        template< char... Cs >
+        constexpr QRgb operator""_qrgba() noexcept
+        {
+            return integral::operator""_rgba<Cs...>();
+        }
+
+        template< char... Cs >
+        constexpr QRgb operator""_qargb() noexcept
+        {
+            return integral::operator""_argb<Cs...>();
+        }
+
+        template< char... Cs >
+        constexpr QColor operator""_crgba() noexcept
+        {
+            return color::operator""_rgba<Cs...>();
+        }
+
+        template< char... Cs >
+        constexpr QColor operator""_cargb() noexcept
+        {
+            return color::operator""_argb<Cs...>();
         }
     }
 }
