@@ -94,7 +94,6 @@ int main( int argc, char* argv[] )
         QTimer::singleShot(500, &window, [&app, &window, filename = QString(argv[i + 1])](){
           auto image = window.grabWindow();
           image.save(filename);
-          app.exit();
         });
         break;
       }
