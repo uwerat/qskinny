@@ -753,10 +753,12 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
     aspect.setSection( QskAspect::Body );
     aspect.setVariation( QskAspect::NoVariation );
 
-    const auto v = animatedHint( aspect, nullptr );
+    {
+        const auto v = animatedHint( aspect, nullptr );
 
-    if ( v.canConvert< QskColorFilter >() )
-        return v.value< QskColorFilter >();
+        if ( v.canConvert< QskColorFilter >() )
+            return v.value< QskColorFilter >();
+    }
 
     if ( auto control = owningControl() )
     {
@@ -816,16 +818,18 @@ QskAnimationHint QskSkinnable::effectiveAnimation(
 
     QskAnimationHint hint;
 
-    const auto a = m_data->hintTable.resolvedAnimator( aspect, hint );
-    if ( a.isAnimator() )
     {
-        if ( status )
+        const auto a = m_data->hintTable.resolvedAnimator( aspect, hint );
+        if ( a.isAnimator() )
         {
-            status->source = QskSkinHintStatus::Skinnable;
-            status->aspect = a;
-        }
+            if ( status )
+            {
+                status->source = QskSkinHintStatus::Skinnable;
+                status->aspect = a;
+            }
 
-        return hint;
+            return hint;
+        }
     }
 
     if ( auto skin = effectiveSkin() )

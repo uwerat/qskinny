@@ -234,11 +234,11 @@ namespace
 
         void removeFactory( const QString& factoryId )
         {
-            const auto it = m_factoryMap.find( factoryId );
-            if ( it == m_factoryMap.end() )
+            const auto itFactory = m_factoryMap.find( factoryId );
+            if ( itFactory == m_factoryMap.end() )
                 return;
 
-            m_factoryMap.erase( it );
+            m_factoryMap.erase( itFactory );
 
             if ( m_isValid )
             {
