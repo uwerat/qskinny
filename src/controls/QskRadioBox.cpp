@@ -177,16 +177,13 @@ void QskRadioBox::keyPressEvent( QKeyEvent* event )
     }
     else
     {
-        setFocusedIndex( ( float ) nextTabIndex );
+        setFocusedIndex( nextTabIndex );
 
         const auto aspect = Ripple | QskAspect::Metric | QskAspect::Position;
         const auto hint = animationHint( aspect | skinStates() );
 
         if( hint.isValid() )
-        {
-            startTransition( aspect, hint,
-                ( float ) currentTabIndex, ( float ) nextTabIndex );
-        }
+            startTransition( aspect, hint, currentTabIndex, nextTabIndex );
     }
 
     update();

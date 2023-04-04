@@ -154,7 +154,7 @@ int QskMetaFunction::returnType() const
 
 size_t QskMetaFunction::parameterCount() const
 {
-    int count = 0;
+    size_t count = 0;
 
     if ( auto types = parameterTypes() )
     {

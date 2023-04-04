@@ -24,7 +24,7 @@ class QskPlatformInputContext final : public QPlatformInputContext
 
   public:
     QskPlatformInputContext();
-    virtual ~QskPlatformInputContext() = default;
+    ~QskPlatformInputContext() override = default;
 
     bool isValid() const override;
     bool hasCapability( Capability ) const override;

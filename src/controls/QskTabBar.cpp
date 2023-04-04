@@ -184,7 +184,7 @@ namespace
             auto boxSize = viewContentsRect().size();
             boxSize = qskConstrainedItemSize( box, boxSize );
 
-            if ( auto box = buttonBox() )
+            if ( box )
                 box->setSize( boxSize );
 
             enableAutoTranslation( false );

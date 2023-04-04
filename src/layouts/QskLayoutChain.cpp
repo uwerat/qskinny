@@ -250,7 +250,7 @@ QskLayoutChain::Segments QskLayoutChain::segments( qreal size ) const
         const qreal padding = size - m_boundingMetrics.maximum();
 
         qreal offset = 0.0;
-        qreal extra = 0.0;;
+        qreal extra = 0.0;
 
         switch( m_fillMode )
         {
@@ -424,13 +424,13 @@ QskLayoutChain::Segments QskLayoutChain::preferredStretched( qreal size ) const
             if ( factors[i] < 0.0 )
                 continue;
 
-            const auto size = sumSizes * factors[i] / sumFactors;
+            const auto sz = sumSizes * factors[i] / sumFactors;
 
             const auto& hint = m_cells[i].metrics;
             const auto boundedSize =
-                qBound( hint.preferred(), size, hint.maximum() );
+                qBound( hint.preferred(), sz, hint.maximum() );
 
-            if ( boundedSize != size )
+            if ( boundedSize != sz )
             {
                 segments[i].length = boundedSize;
                 sumSizes -= boundedSize;

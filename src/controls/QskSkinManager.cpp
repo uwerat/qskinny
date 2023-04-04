@@ -203,23 +203,6 @@ namespace
             return m_skinMap.keys();
         }
 
-        QStringList skinNames( const QString& factoryId ) const
-        {
-            const auto it = m_factoryMap.constFind( factoryId );
-            if ( it != m_factoryMap.constEnd() )
-            {
-                const auto& data = it.value();
-
-                if ( data.factory )
-                    return data.factory->skinNames();
-
-                if ( data.loader )
-                    return data.loader->skinNames();
-            }
-
-            return QStringList();
-        }
-
         void insertFactory( FactoryLoader* loader )
         {
             auto& data = m_factoryMap[ loader->factoryId() ];

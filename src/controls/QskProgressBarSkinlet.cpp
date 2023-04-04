@@ -85,7 +85,6 @@ QRectF QskProgressBarSkinlet::subControlRect(
 
     if( subControl == QskProgressBar::Bar )
     {
-        const auto bar = static_cast< const QskProgressBar* >( skinnable );
         return barRect( bar );
     }
 

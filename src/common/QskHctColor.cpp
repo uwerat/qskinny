@@ -544,7 +544,7 @@ static XYZ nthVertex( double y, int n )
     return { -1.0, -1.0, -1.0 };
 }
 
-void bisectToSegment( double y, double targetHue, XYZ& left, XYZ& right )
+static void bisectToSegment( double y, double targetHue, XYZ& left, XYZ& right )
 {
     left = { -1.0, -1.0, -1.0 };
     right = left;

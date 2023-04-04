@@ -73,7 +73,7 @@ namespace QskVertex
     {
     }
 
-    inline Color Color::interpolatedTo( Color colorTo, double ratio ) const noexcept
+    inline Color Color::interpolatedTo( Color colorTo, qreal ratio ) const noexcept
     {
         if ( ratio <= 0.0 )
             return *this;
@@ -81,11 +81,15 @@ namespace QskVertex
         if ( ratio >= 1.0 )
             return colorTo;
 
-        const double t = ratio;
-        const double rt = 1.0 - ratio;
+        const auto t = ratio;
+        const auto rt = 1.0 - ratio;
 
-        return Color( rt * r + t * colorTo.r, rt * g + t * colorTo.g,
-            rt * b + t * colorTo.b, rt * a + t * colorTo.a );
+        return Color(
+            static_cast< unsigned char >( rt * r + t * colorTo.r ),
+            static_cast< unsigned char >( rt * g + t * colorTo.g ),
+            static_cast< unsigned char >( rt * b + t * colorTo.b ),
+            static_cast< unsigned char >( rt * a + t * colorTo.a ) 
+        );
     }
 
     inline constexpr bool Color::operator==( const Color& other ) const noexcept

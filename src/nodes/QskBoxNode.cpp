@@ -26,7 +26,7 @@ namespace
     };
 }
 
-void qskUpdateChildren( QSGNode* parentNode, quint8 role, QSGNode* node )
+static void qskUpdateChildren( QSGNode* parentNode, quint8 role, QSGNode* node )
 {
     static const QVector< quint8 > roles = { ShadowRole, BoxRole, FillRole };
 

@@ -10,35 +10,12 @@
 #include <QThread>
 #include <QTimer>
 
-void debugNone1()
-{
-    qDebug() << "None 1";
-}
-
-void debugNone2()
-{
-    qDebug() << "None 2";
-}
-
-void debugValueI1( int i )
-{
-    qDebug() << "I1" << i;
-}
-
-void debugValueI2( int i )
-{
-    qDebug() << "I2" << i;
-}
-
-void debugValueD( qreal d )
-{
-    qDebug() << "D" << d;
-}
-
-void debugValue( qreal d, int i )
-{
-    qDebug() << d << i;
-}
+static void debugNone1() { qDebug() << "None 1"; }
+static void debugNone2() { qDebug() << "None 2"; }
+static void debugValueI1( int i ) { qDebug() << "I1" << i; }
+static void debugValueI2( int i ) { qDebug() << "I2" << i; }
+static void debugValueD( qreal d ) { qDebug() << "D" << d; }
+static void debugValue( qreal d, int i ) { qDebug() << d << i; }
 
 class MyObject : public QObject
 {
@@ -166,7 +143,7 @@ class Application : public QCoreApplication
 #endif
     }
 
-    virtual ~Application()
+    ~Application() override
     {
         delete m_object;
     }

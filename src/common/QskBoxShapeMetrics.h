@@ -59,7 +59,7 @@ class QSK_EXPORT QskBoxShapeMetrics
 
         Proportional
     };
-    Q_ENUM( ScalingMode );
+    Q_ENUM( ScalingMode )
 
     constexpr QskBoxShapeMetrics() noexcept;
 

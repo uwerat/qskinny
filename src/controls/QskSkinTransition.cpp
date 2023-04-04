@@ -160,7 +160,7 @@ namespace
         Q_OBJECT
 
       public:
-        ~ApplicationAnimator();
+        ~ApplicationAnimator() override;
 
         WindowAnimator* windowAnimator( const QQuickWindow* );
 

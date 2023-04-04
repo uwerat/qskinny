@@ -16,7 +16,7 @@ namespace
     class RootNode : public QSGNode
     {
       public:
-        ~RootNode()
+        ~RootNode() override
         {
             delete m_clipNode;
             delete m_transformNode;

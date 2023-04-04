@@ -50,6 +50,4 @@ QskHashValue QskArcNode::hash( const void* nodeData ) const
 
     auto h = arcData->metrics.hash();
     return arcData->gradient.hash( h );
-
-    return h;
 }

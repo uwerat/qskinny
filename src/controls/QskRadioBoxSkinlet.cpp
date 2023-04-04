@@ -83,7 +83,7 @@ QSGNode* QskRadioBoxSkinlet::updateSubNode( const QskSkinnable* skinnable,
 
         case RippleRole:
             return updateBoxNode( skinnable, node, Q::Ripple );
-    };
+    }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }

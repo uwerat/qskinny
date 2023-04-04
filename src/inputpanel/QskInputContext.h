@@ -48,7 +48,7 @@ class QSK_EXPORT QskInputContext : public QObject
 
   public:
     QskInputContext();
-    virtual ~QskInputContext();
+    ~QskInputContext() override;
 
     void setFactory( QskInputContextFactory* );
     QskInputContextFactory* factory() const;

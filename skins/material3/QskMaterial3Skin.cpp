@@ -115,12 +115,6 @@ namespace
             return QskGraphicIO::read( path );
         }
 
-        void setStandardSymbol( QskAspect aspect,
-            QskStandardSymbol::Type symbolType )
-        {
-            setSymbol( aspect, QskStandardSymbol::graphic( symbolType ) );
-        }
-
         const QskMaterial3Theme& m_pal;
     };
 
@@ -131,9 +125,7 @@ namespace
         font.setPixelSize( lineHeight );
 
         if( !qskFuzzyCompare( tracking, 0.0 ) )
-        {
             font.setLetterSpacing( QFont::AbsoluteSpacing, tracking );
-        }
 
         font.setWeight( weight );
 

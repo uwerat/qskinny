@@ -183,7 +183,7 @@ namespace
     {
       public:
         Point() = default;
-        inline Point( qreal x, qreal y, qreal v ): x( x ), y( y ), v( v ) {};
+        inline Point( qreal x, qreal y, qreal v ): x( x ), y( y ), v( v ) {}
 
         qreal x = 0;
         qreal y = 0;
