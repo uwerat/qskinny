@@ -53,12 +53,12 @@ static const int qskDuration = 200;
 
 namespace
 {
-    inline double operator ""_dp( long double value )
+    Q_DECL_UNUSED inline double operator ""_dp( long double value )
     {
         return qskDpToPixels( static_cast< qreal >( value ) );
     }
 
-    inline double operator ""_dp( unsigned long long value )
+    Q_DECL_UNUSED inline double operator ""_dp( unsigned long long value )
     {
         return qskDpToPixels( value );
     }
@@ -571,7 +571,7 @@ void Editor::setupSegmentedBar()
 
         setBoxBorderColors( Q::Panel, borderColors );
 
-        const QSize strutSize( 100_dp, 50_dp );
+        const QSizeF strutSize( 100_dp, 50_dp );
 
         setStrutSize( Q::Panel | A::Horizontal, strutSize );
         setStrutSize( Q::Panel | A::Vertical, strutSize.transposed() );

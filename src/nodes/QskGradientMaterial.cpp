@@ -526,18 +526,18 @@ namespace
             // Angles as ratio of a rotation
 
             float start = fmod( dir.startAngle(), 360.0 ) / 360.0;
-            if ( start < 0.0)
-                start += 1.0;
+            if ( start < 0.0f)
+                start += 1.0f;
 
             float span;
 
             if ( dir.spanAngle() >= 360.0 )
             {
-                span = 1.0;
+                span = 1.0f;
             }
             else if ( dir.spanAngle() <= -360.0 )
             {
-                span = -1.0;
+                span = -1.0f;
             }
             else
             {

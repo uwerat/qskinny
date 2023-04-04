@@ -1390,9 +1390,9 @@ bool QskSkinnable::startHintTransitions(
                     that differ between the states
                  */
 
-                for ( uint i = 0; i < primitiveCount; i++ )
+                for ( uint j = 0; j < primitiveCount; j++ )
                 {
-                    const auto primitive = static_cast< QskAspect::Primitive >( i );
+                    const auto primitive = static_cast< QskAspect::Primitive >( j );
                     aspect.setPrimitive( type, primitive );
 
                     const auto a1 = aspect | oldStates;

@@ -9,6 +9,7 @@
 #include "QskFunctions.h"
 
 #include <qfontmetrics.h>
+#include <qmath.h>
 
 namespace
 {
@@ -100,7 +101,7 @@ QRectF QskRadioBoxSkinlet::rippleRect(
 {
     using Q = QskRadioBox;
 
-    const auto index = radioBox->positionHint( Q::Ripple );
+    const auto index = qFloor( radioBox->positionHint( Q::Ripple ) );
     if( index < 0 )
         return QRectF();
 

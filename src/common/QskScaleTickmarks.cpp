@@ -27,15 +27,17 @@ QskScaleTickmarks::~QskScaleTickmarks()
 
 int QskScaleTickmarks::tickCount() const noexcept
 {
-    return m_ticks[ MajorTick ].count()
+    const auto count = m_ticks[ MajorTick ].count()
         + m_ticks[ MediumTick ].count()
         + m_ticks[ MinorTick ].count();
+
+    return static_cast< int >( count );
 }
 
 
 int QskScaleTickmarks::tickCount( TickType type ) const noexcept
 {
-    return m_ticks[ type ].count();
+    return static_cast< int >( m_ticks[ type ].count() );
 }
 
 QVector< qreal > QskScaleTickmarks::ticks( TickType type ) const noexcept
