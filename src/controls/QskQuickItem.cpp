@@ -26,7 +26,9 @@ QSK_QT_PRIVATE_BEGIN
     #endif
 #endif
 
+#if defined( QT_DEBUG )
 #include <private/qquickpositioners_p.h>
+#endif
 
 QSK_QT_PRIVATE_END
 

@@ -11,11 +11,6 @@
 
 #include <qsgtexture.h>
 
-QSK_QT_PRIVATE_BEGIN
-#include <private/qrhi_p.h>
-#include <private/qdrawhelper_p.h>
-QSK_QT_PRIVATE_END
-
 #include <cmath>
 
 // RHI shaders are supported by Qt 5.15 and Qt 6.x

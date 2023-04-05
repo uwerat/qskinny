@@ -13,14 +13,12 @@
 #include "QskQuick.h"
 #include "QskTextPredictor.h"
 #include "QskWindow.h"
+#include "QskPlatform.h"
 
 #include <qguiapplication.h>
 #include <qmap.h>
 #include <qpointer.h>
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qguiapplication_p.h>
-QSK_QT_PRIVATE_END
+#include <qthread.h>
 
 #include <qpa/qplatforminputcontext.h>
 #include <qpa/qplatformintegration.h>
@@ -183,7 +181,7 @@ static QPointer< QskInputContext > qskInputContext;
 
 static void qskSendToPlatformContext( QEvent::Type type )
 {
-    const auto integration = QGuiApplicationPrivate::platformIntegration();
+    const auto integration = qskPlatformIntegration();
 
     if ( const auto inputContext = integration->inputContext() )
     {
