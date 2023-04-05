@@ -101,7 +101,7 @@ if(BUILD_INPUTCONTEXT)
     add_subdirectory(inputcontext)
 endif()
 
-if(BUILD_EXAMPLES OR BUILD_EXAMPLES)
+if(BUILD_EXAMPLES OR BUILD_PLAYGROUND)
     add_subdirectory(support)
 endif()
 
