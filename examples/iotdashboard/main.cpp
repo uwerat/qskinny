@@ -7,7 +7,9 @@
 #include "GraphicProvider.h"
 #include "Skin.h"
 
+#ifdef USE_SHORTCUTS
 #include <SkinnyShortcut.h>
+#endif
 
 #include <QskSetup.h>
 #include <QskShortcutMap.h>
@@ -17,6 +19,7 @@
 #include <QskObjectCounter.h>
 
 #include <QGuiApplication>
+#include <QTimer>
 
 namespace
 {
@@ -75,12 +78,25 @@ int main( int argc, char* argv[] )
 
     qskSetup->setSkin( "DaytimeSkin" );
 
+#ifdef USE_SHORTCUTS
     // With CTRL-B you can rotate a couple of visual debug modes
     SkinnyShortcut::enable( SkinnyShortcut::RotateSkin | SkinnyShortcut::DebugBackground |
         SkinnyShortcut::DebugStatistics | SkinnyShortcut::Quit );
+#endif
 
     MainWindow window;
     window.show();
+
+    for( int i = 1; i < argc; i++ )
+    {
+      if( argv[i] == QStringLiteral("--screenshot") && i + 1 < argc )
+      {
+          QTimer::singleShot( 500, &window, [&app, &window, filename = QString(argv[i + 1])]()
+            { auto image = window.grabWindow(); image.save(filename); } );
+
+          break;
+      }
+    }
 
     return app.exec();
 }

@@ -7,12 +7,14 @@
 #include "GeometricShape.h"
 #include "Stroke.h"
 
-#include <QskQml.h>
 #include <QskObjectCounter.h>
 
 #include <SkinnyShortcut.h>
 #include <QGuiApplication>
 
+#ifndef NO_QML
+
+#include <QskQml.h>
 #include <QQmlApplicationEngine>
 
 template< typename T >
@@ -44,6 +46,8 @@ static bool doQml( int argc, char* argv[] )
     return false;
 }
 
+#endif
+
 int main( int argc, char* argv[] )
 {
 #ifdef ITEM_STATISTICS
@@ -53,6 +57,7 @@ int main( int argc, char* argv[] )
     QGuiApplication app( argc, argv );
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
+#ifndef NO_QML
     if ( doQml( argc, argv ) )
     {
         qDebug() << "Running QML";
@@ -66,7 +71,7 @@ int main( int argc, char* argv[] )
 
         return app.exec();
     }
-    else
+#endif
     {
         qDebug() << "Running C++";
 

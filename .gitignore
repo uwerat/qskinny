@@ -14,3 +14,4 @@ qskinny.pro.user
 *.log
 html
 tags
+.vscode
