@@ -34,6 +34,9 @@ macro(qsk_enable_pedantic_flags)
         add_compile_definitions(QT_STRICT_ITERATORS)
     endif()
 
+    # note: setting CMAKE_CXX_COMPILER without CMAKE_CXX_COMPILER_ID
+    #       will fail here
+
     if ( ( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
         OR ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" ) )
 
@@ -113,6 +116,8 @@ macro(qsk_initialize_build_flags)
 
     if ( NOT MSVC )
         add_compile_options( -Wall -Wextra )
+    else
+        add_compile_options(/W4 /WX)
     endif()
 
 endmacro()
