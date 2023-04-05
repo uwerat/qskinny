@@ -8,7 +8,7 @@ name: CMake Build Matrix
 
 on:
   push:
-    branches: [cmake]
+    branches: [master]
   pull_request:
     branches: [master]
 
