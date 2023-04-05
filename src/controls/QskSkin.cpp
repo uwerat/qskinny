@@ -16,10 +16,7 @@
 
 #include "QskMargins.h"
 
-QSK_QT_PRIVATE_BEGIN
-#include <private/qguiapplication_p.h>
-QSK_QT_PRIVATE_END
-
+#include <qguiapplication.h>
 #include <qpa/qplatformdialoghelper.h>
 #include <qpa/qplatformtheme.h>
 
@@ -344,7 +341,7 @@ bool QskSkin::hasGraphicProvider() const
 
 QString QskSkin::dialogButtonText( int action ) const
 {
-    const auto theme = QGuiApplicationPrivate::platformTheme();
+    const auto theme = qskPlatformTheme();
 
     auto text = theme->standardButtonText( action );
     text = QPlatformTheme::removeMnemonics( text );
@@ -357,7 +354,7 @@ const int* QskSkin::dialogButtonLayout( Qt::Orientation orientation ) const
     // auto policy = QPlatformDialogHelper::UnknownLayout;
     auto policy = QPlatformDialogHelper::WinLayout;
 
-    if ( const auto theme = QGuiApplicationPrivate::platformTheme() )
+    if ( const auto theme = qskPlatformTheme() )
     {
         const QVariant v = theme->themeHint( QPlatformTheme::DialogButtonBoxLayout );
         policy = static_cast< QPlatformDialogHelper::ButtonLayout >( v.toInt() );

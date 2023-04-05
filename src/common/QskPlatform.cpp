@@ -23,6 +23,11 @@ const QPlatformIntegration* qskPlatformIntegration()
     return QGuiApplicationPrivate::platformIntegration();
 }
 
+const QPlatformTheme* qskPlatformTheme()
+{
+    return QGuiApplicationPrivate::platformTheme();
+}
+
 bool qskMaybeDesktopPlatform()
 {
 #if QT_CONFIG(cursor)

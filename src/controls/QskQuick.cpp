@@ -7,10 +7,10 @@
 #include "QskControl.h"
 #include "QskFunctions.h"
 #include "QskLayoutElement.h"
+#include "QskPlatform.h"
 #include <qquickitem.h>
 
 QSK_QT_PRIVATE_BEGIN
-#include <private/qguiapplication_p.h>
 #include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
@@ -277,7 +277,7 @@ void qskUpdateInputMethod( const QQuickItem* item, Qt::InputMethodQueries querie
         when using it. So let's go with QGuiApplicationPrivate.
      */
 
-    auto inputContext = QGuiApplicationPrivate::platformIntegration()->inputContext();
+    auto inputContext = qskPlatformIntegration()->inputContext();
     if ( inputContext == nullptr )
     {
         context = nullptr;
@@ -317,7 +317,7 @@ void qskInputMethodSetVisible( const QQuickItem* item, bool on )
     static QPlatformInputContext* context = nullptr;
     static int methodId = -1;
 
-    auto inputContext = QGuiApplicationPrivate::platformIntegration()->inputContext();
+    auto inputContext = qskPlatformIntegration()->inputContext();
     if ( inputContext == nullptr )
     {
         context = nullptr;

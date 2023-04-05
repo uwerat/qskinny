@@ -9,11 +9,7 @@
 #include <qevent.h>
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 4, 0 )
-
-    QSK_QT_PRIVATE_BEGIN
-    #include <private/qguiapplication_p.h>
-    QSK_QT_PRIVATE_END
-
+    #include "QskPlatform.h"
     #include <qpa/qplatformtheme.h>
 #endif
 
@@ -127,7 +123,7 @@ bool qskIsStandardKeyInput( const QKeyEvent* event, QKeySequence::StandardKey ke
     constexpr auto mask = ~( Qt::KeypadModifier | Qt::GroupSwitchModifier );
 
     // We should route this call through the skin. TODO
-    const auto theme = QGuiApplicationPrivate::platformTheme();
+    const auto theme = qskPlatformTheme();
     const auto bindings = theme->keyBindings( ( event->modifiers() | event->key() ) & mask );
 
     return bindings.contains( QKeySequence(searchkey) );
@@ -138,8 +134,7 @@ bool qskIsButtonPressKey( const QKeyEvent* event )
 {
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 4, 0 )
 
-    const auto hint = QGuiApplicationPrivate::platformTheme()->themeHint(
-        QPlatformTheme::ButtonPressKeys );
+    const auto hint = qskPlatformTheme()->themeHint( QPlatformTheme::ButtonPressKeys );
 
     const auto keys = hint.value< QList< Qt::Key > >();
     return keys.contains( static_cast< Qt::Key >( event->key() ) );

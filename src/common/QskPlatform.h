@@ -10,13 +10,16 @@
 
 class QScreen;
 class QPlatformIntegration;
+class QPlatformTheme;
 class QRect;
 
 QSK_EXPORT qreal qskGlobalScaleFactor();
 
 QSK_EXPORT bool qskMaybeDesktopPlatform();
-QSK_EXPORT const QPlatformIntegration* qskPlatformIntegration();
 QSK_EXPORT QRect qskPlatformScreenGeometry( const QScreen* );
+
+QSK_EXPORT const QPlatformIntegration* qskPlatformIntegration();
+QSK_EXPORT const QPlatformTheme* qskPlatformTheme();
 
 /*
     One dp is a virtual pixel unit that's roughly equal to one pixel
