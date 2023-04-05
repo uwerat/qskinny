@@ -11,10 +11,8 @@
 #include "QskSGNode.h"
 
 QSK_QT_PRIVATE_BEGIN
-#include <private/qquickclipnode_p.h>
 #include <private/qquickitem_p.h>
 #include <private/qquickitemchangelistener_p.h>
-#include <private/qquickwindow_p.h>
 QSK_QT_PRIVATE_END
 
 static inline bool qskNeedsScrollBars(

@@ -12,8 +12,6 @@
 #include <qsgnode.h>
 
 QSK_QT_PRIVATE_BEGIN
-#include <private/qsgadaptationlayer_p.h>
-#include <private/qsgcontext_p.h>
 #include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 

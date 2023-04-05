@@ -19,7 +19,6 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qpainter_p.h>
-#include <private/qpaintengineex_p.h>
 QSK_QT_PRIVATE_END
 
 static inline qreal qskDevicePixelRatio()

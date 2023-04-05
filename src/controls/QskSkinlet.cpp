@@ -32,13 +32,9 @@
 #include <qquickwindow.h>
 #include <qsgsimplerectnode.h>
 
-QSK_QT_PRIVATE_BEGIN
-#include <private/qquickitem_p.h>
-QSK_QT_PRIVATE_END
-
 static inline QRectF qskSceneAlignedRect( const QQuickItem* item, const QRectF& rect )
 {
-    const auto transform = QQuickItemPrivate::get( item )->itemToWindowTransform();
+    const auto transform = item->itemTransform( nullptr, nullptr );
     if ( transform.type() > QTransform::TxTranslate )
         return rect;
 
