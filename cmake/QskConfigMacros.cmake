@@ -117,7 +117,7 @@ macro(qsk_initialize_build_flags)
     if ( NOT MSVC )
         add_compile_options( -Wall -Wextra )
     else()
-        add_compile_options(/W4 /WX)
+        # add_compile_options(/W4 /WX)
     endif()
 
 endmacro()
