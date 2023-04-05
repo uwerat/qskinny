@@ -1,3 +1,8 @@
+############################################################################
+# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# This file may be used under the terms of the 3-clause BSD License
+############################################################################
+
 add_subdirectory(desktop)
 add_subdirectory(gallery)
 add_subdirectory(layouts)

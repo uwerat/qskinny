@@ -451,7 +451,7 @@ target_include_directories(${target} PUBLIC
 target_link_libraries(${target}
     PUBLIC Qt::Core Qt::CorePrivate Qt::Quick Qt::QuickPrivate)
 
-if (QT_VERSION_MAJOR VERSION_GREATER "5")
+if (QT_VERSION_MAJOR VERSION_GREATER 5)
     target_link_libraries(${target} PUBLIC Qt::OpenGL Qt::OpenGLPrivate)
 endif()
 

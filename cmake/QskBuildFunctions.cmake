@@ -12,7 +12,7 @@ function(qsk_add_executable target)
     endif()
 
     set_target_properties(${target} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin" )
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
 endfunction()
 
@@ -25,7 +25,7 @@ function(qsk_add_library target)
     endif()
 
     set_target_properties(${target} PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib" )
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
 endfunction()
 
@@ -63,7 +63,7 @@ function(qsk_add_plugin target TYPE CLASS_NAME)
     # otherwise it won't be found at runtime ...
 
     set_target_properties( ${target} PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/plugins/${TYPE}")
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/${TYPE})
 
     install(TARGETS ${target} DESTINATION "plugins/${TYPE}" )
     set_target_properties(${target} PROPERTIES
