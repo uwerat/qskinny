@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) 2022 Edelhirsch Software GmbH
- *           SPDX-License-Identifier: BSD-3-Claus
+ *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
 #pragma once
