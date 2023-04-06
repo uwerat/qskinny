@@ -454,6 +454,7 @@ void QskBoxBasicStroker::setBorderGradientLines(
             break;
         }
         case Qt::RightEdge:
+        default:
         {
             orientation = Qt::Vertical;
 
