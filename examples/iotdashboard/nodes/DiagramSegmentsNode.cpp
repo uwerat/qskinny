@@ -1,6 +1,6 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2021 Uwe Rathmann
- * This file may be used under the terms of the QSkinny License, Version 1.0
+ * Copyright (C) 2021 Edelhirsch Software GmbH
+ *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
 #include "DiagramSegmentsNode.h"

@@ -51,10 +51,7 @@ direction - please contact support@qskinny.org.
 
 # Contributing to QSkinny
 
-For now QSkinny is licensed under LGPL v2.1. In the future, We want to have the
-possibility to transfer the QSkinny code to a **more permissive license**, i.e.
-any of the following or similar licenses: BSD "Simplified" License, BSD
-"Revised" License or MIT license.
+QSkinny is licensed under the BSD 3 Clause License ( https://opensource.org/license/bsd-3-clause ). However we want to be able to offer more licenses on request.
 
 If you are fine with these terms, you are welcome to contribute to QSkinny by
 completing the following steps:

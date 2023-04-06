@@ -1,6 +1,6 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2021 Uwe Rathmann
- * This file may be used under the terms of the QSkinny License, Version 1.0
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
 #ifndef QSK_ARC_METRICS_H

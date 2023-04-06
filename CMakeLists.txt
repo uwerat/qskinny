@@ -1,6 +1,6 @@
 ############################################################################
 # QSkinny - Copyright (C) 2016 Uwe Rathmann
-# This file may be used under the terms of the QSkinny License, Version 1.0
+#           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
 cmake_minimum_required(VERSION 3.16.3)
