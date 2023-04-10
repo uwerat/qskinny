@@ -29,3 +29,5 @@ endif()
 if(TARGET Qt::QuickWidgets)
     add_subdirectory(grids)
 endif()
+
+qsk_internal_sync_generated_target_folder(${CMAKE_CURRENT_LIST_DIR})

@@ -163,3 +163,23 @@ macro(qsk_finalize_build_flags)
     endif()
 
 endmacro()
+
+function(qsk_internal_sync_generated_target_folder directory)
+    # loop through all targets in the directory recursively and
+    # synchronize the generated target's folder property with 
+    # the actual target's folder property
+    get_property(TARGETS DIRECTORY "${directory}" PROPERTY BUILDSYSTEM_TARGETS)
+    foreach(target IN LISTS TARGETS)
+        if(TARGET ${target}_qmlimportscan)
+            get_target_property(folder ${target} FOLDER)
+            set_target_properties(${target}_qmlimportscan PROPERTIES FOLDER ${folder})
+            message(DEBUG "Adjusting target '${target}_qmlimportscan' folder property to ${target}'s folder property '${folder}'")
+        endif()
+    endforeach()
+
+    # scan directory recursively
+    get_property(SUBDIRS DIRECTORY "${directory}" PROPERTY SUBDIRECTORIES)
+    foreach(SUBDIR IN LISTS SUBDIRS)
+        qsk_internal_sync_generated_target_folder("${SUBDIR}")
+    endforeach()
+endfunction()

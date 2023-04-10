@@ -21,3 +21,5 @@ if( BUILD_QML_EXPORT )
     add_subdirectory(glabels)
     add_subdirectory(messageboxQml)
 endif()
+
+qsk_internal_sync_generated_target_folder(${CMAKE_CURRENT_LIST_DIR})
