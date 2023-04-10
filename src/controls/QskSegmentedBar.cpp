@@ -408,9 +408,6 @@ void QskSegmentedBar::setSelectedIndex( int index )
 
         Q_EMIT selectedIndexChanged( index );
 
-        setSkinStateFlag( Minimum, ( m_data->selectedIndex == 0 ) );
-        setSkinStateFlag( Maximum, ( m_data->selectedIndex == count() - 1 ) );
-
         const auto states = skinStates();
 
         if ( oldIndex >= 0 )
