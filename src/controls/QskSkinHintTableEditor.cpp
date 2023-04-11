@@ -570,11 +570,11 @@ QColor QskSkinHintTableEditor::shadowColor( QskAspect aspect ) const
     return colorHint< QColor >( aspectShadow( aspect ) );
 }
 
-void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect, qreal width,
-    qreal startAngle, qreal spanAngle, Qt::SizeMode sizeMode )
+void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect,
+    qreal startAngle, qreal spanAngle, qreal thickness, Qt::SizeMode sizeMode )
 {
     setMetricHint( aspectShape( aspect ),
-        QskArcMetrics( width, startAngle, spanAngle, sizeMode ) );
+        QskArcMetrics( startAngle, spanAngle, thickness, sizeMode ) );
 }
 
 void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect,

@@ -37,11 +37,10 @@ void QskArcNode::paint( QPainter* painter, const QSize& size, const void* nodeDa
 {
     const auto arcData = reinterpret_cast< const ArcData* >( nodeData );
 
-    const qreal w = arcData->metrics.width();
-    const QRectF rect( 0.5 * w, 0.5 * w, size.width() - w, size.height() - w );
+    const qreal t = arcData->metrics.thickness();
+    const QRectF rect( 0.5 * t, 0.5 * t, size.width() - t, size.height() - t );
 
-    QskArcRenderer renderer;
-    renderer.renderArc( rect, arcData->metrics, arcData->gradient, painter );
+    QskArcRenderer::renderArc( rect, arcData->metrics, arcData->gradient, painter );
 }
 
 QskHashValue QskArcNode::hash( const void* nodeData ) const

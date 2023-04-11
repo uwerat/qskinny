@@ -39,13 +39,13 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
         const auto textSize = textLabelsSize( display );
         const auto arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
         const qreal ticksWidth = display->arcMetricsHint(
-            LightDisplay::Tickmarks ).width() + ticksSpacing;
+            LightDisplay::Tickmarks ).thickness() + ticksSpacing;
 
-        const qreal x = textSize.width() + arcMetrics.width() + ticksWidth;
+        const qreal x = textSize.width() + arcMetrics.thickness() + ticksWidth;
         const qreal w = contentsRect.width() -
-            ( 2 * ( textSize.width() + arcMetrics.width() + ticksWidth ) );
-        const qreal y = arcMetrics.width() + ticksWidth;
-        const qreal h = contentsRect.height() - 2 * ( arcMetrics.width() + ticksWidth );
+            ( 2 * ( textSize.width() + arcMetrics.thickness() + ticksWidth ) );
+        const qreal y = arcMetrics.thickness() + ticksWidth;
+        const qreal h = contentsRect.height() - 2 * ( arcMetrics.thickness() + ticksWidth );
 
         const qreal diameter = qMin( w, h );
 
@@ -54,7 +54,7 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     else if( subControl == LightDisplay::ColdAndWarmArc )
     {
         const QRectF panelRect = subControlRect( skinnable, contentsRect, LightDisplay::Panel );
-        const auto barWidth = display->arcMetricsHint( LightDisplay::ColdAndWarmArc ).width();
+        const auto barWidth = display->arcMetricsHint( LightDisplay::ColdAndWarmArc ).thickness();
 
         return panelRect.marginsAdded( { barWidth, barWidth, barWidth, barWidth } );
     }
@@ -63,7 +63,7 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
         const auto arcRect = subControlRect(
             skinnable, contentsRect, LightDisplay::ColdAndWarmArc );
         const qreal ticksWidth = display->arcMetricsHint(
-            LightDisplay::Tickmarks ).width() + ticksSpacing;
+            LightDisplay::Tickmarks ).thickness() + ticksSpacing;
 
         return arcRect.marginsAdded( { ticksWidth, ticksWidth, ticksWidth, ticksWidth } );
     }
@@ -112,7 +112,7 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
         const auto arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
         const auto knobSize = display->strutSizeHint( LightDisplay::Knob );
 
-        const qreal radius = ( arcRect.width() - arcMetrics.width() ) / 2;
+        const qreal radius = ( arcRect.width() - arcMetrics.thickness() ) / 2;
         const qreal angle = display->valueAsRatio() * 180;
 
         const qreal cos = qFastCos( qDegreesToRadians( angle ) );

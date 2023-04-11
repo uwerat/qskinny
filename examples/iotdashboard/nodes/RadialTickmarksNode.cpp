@@ -46,7 +46,7 @@ void RadialTickmarksNode::update( const QColor& color, const QRectF& rect,
 
         const auto center = rect.center();
         const auto radius = 0.5 * rect.width();
-        const auto needleRadius = radius - arcMetrics.width();
+        const auto needleRadius = radius - arcMetrics.thickness();
 
         using TM = QskScaleTickmarks;
 

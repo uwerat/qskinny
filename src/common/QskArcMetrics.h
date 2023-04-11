@@ -16,23 +16,25 @@ class QSK_EXPORT QskArcMetrics
 {
     Q_GADGET
 
-    Q_PROPERTY( qreal width READ width WRITE setWidth )
     Q_PROPERTY( qreal startAngle READ startAngle WRITE setStartAngle )
     Q_PROPERTY( qreal spanAngle READ spanAngle WRITE setSpanAngle )
+
+    Q_PROPERTY( qreal thickness READ thickness WRITE setThickness )
     Q_PROPERTY( Qt::SizeMode sizeMode READ sizeMode WRITE setSizeMode )
 
   public:
-    constexpr QskArcMetrics() noexcept;
-    constexpr QskArcMetrics( qreal width, qreal startAngle, qreal spanAngle,
+    constexpr QskArcMetrics() noexcept = default;
+
+    constexpr QskArcMetrics( qreal thickness,
         Qt::SizeMode = Qt::AbsoluteSize ) noexcept;
+
+    constexpr QskArcMetrics( qreal startAngle, qreal spanAngle,
+        qreal thickness, Qt::SizeMode = Qt::AbsoluteSize ) noexcept;
 
     bool operator==( const QskArcMetrics& ) const noexcept;
     bool operator!=( const QskArcMetrics& ) const noexcept;
 
     constexpr bool isNull() const noexcept;
-
-    void setWidth( qreal width ) noexcept;
-    constexpr qreal width() const noexcept;
 
     void setStartAngle( qreal startAngle ) noexcept;
     constexpr qreal startAngle() const noexcept;
@@ -41,6 +43,10 @@ class QSK_EXPORT QskArcMetrics
     constexpr qreal spanAngle() const noexcept;
 
     constexpr qreal endAngle() const noexcept;
+    constexpr qreal angleAtRatio( qreal ratio ) const noexcept;
+
+    void setThickness( qreal ) noexcept;
+    constexpr qreal thickness() const noexcept;
 
     void setSizeMode( Qt::SizeMode ) noexcept;
     constexpr Qt::SizeMode sizeMode() const noexcept;
@@ -56,26 +62,25 @@ class QSK_EXPORT QskArcMetrics
         const QskArcMetrics&, qreal progress );
 
   private:
-    qreal m_width;
-    qreal m_startAngle;
-    qreal m_spanAngle;
-    Qt::SizeMode m_sizeMode;
+    qreal m_startAngle = 0.0;
+    qreal m_spanAngle = 0.0;
+
+    qreal m_thickness = 0.0;
+    Qt::SizeMode m_sizeMode = Qt::AbsoluteSize;
 };
 
-inline constexpr QskArcMetrics::QskArcMetrics() noexcept
-    : m_width( 0 )
-    , m_startAngle( 0 )
-    , m_spanAngle( 0 )
-    , m_sizeMode( Qt::AbsoluteSize )
+inline constexpr QskArcMetrics::QskArcMetrics(
+        qreal thickness, Qt::SizeMode sizeMode ) noexcept
+    : QskArcMetrics( 0.0, 360.0, thickness, sizeMode )
 {
 }
 
 inline constexpr QskArcMetrics::QskArcMetrics(
-        qreal width, qreal startAngle, qreal spanAngle,
-        Qt::SizeMode sizeMode ) noexcept
-    : m_width( width )
-    , m_startAngle( startAngle )
+        qreal startAngle, qreal spanAngle,
+        qreal thickness, Qt::SizeMode sizeMode ) noexcept
+    : m_startAngle( startAngle )
     , m_spanAngle( spanAngle )
+    , m_thickness( thickness )
     , m_sizeMode( sizeMode )
 {
 }
@@ -83,7 +88,7 @@ inline constexpr QskArcMetrics::QskArcMetrics(
 inline bool QskArcMetrics::operator==(
     const QskArcMetrics& other ) const noexcept
 {
-    return ( qskFuzzyCompare( m_width, other.m_width )
+    return ( qskFuzzyCompare( m_thickness, other.m_thickness )
         && qskFuzzyCompare( m_startAngle, other.m_startAngle )
         && qskFuzzyCompare( m_spanAngle, other.m_spanAngle )
         && m_sizeMode == other.m_sizeMode );
@@ -97,12 +102,12 @@ inline bool QskArcMetrics::operator!=(
 
 inline constexpr bool QskArcMetrics::isNull() const noexcept
 {
-    return qFuzzyIsNull( m_width ) || qFuzzyIsNull( m_spanAngle );
+    return qFuzzyIsNull( m_thickness ) || qFuzzyIsNull( m_spanAngle );
 }
 
-inline constexpr qreal QskArcMetrics::width() const noexcept
+inline constexpr qreal QskArcMetrics::thickness() const noexcept
 {
-    return m_width;
+    return m_thickness;
 }
 
 inline constexpr qreal QskArcMetrics::startAngle() const noexcept
@@ -118,6 +123,11 @@ inline constexpr qreal QskArcMetrics::spanAngle() const noexcept
 inline constexpr qreal QskArcMetrics::endAngle() const noexcept
 {
     return m_startAngle + m_spanAngle;
+}
+
+inline constexpr qreal QskArcMetrics::angleAtRatio( qreal ratio ) const noexcept
+{
+    return m_startAngle + ratio * m_spanAngle;
 }
 
 inline constexpr Qt::SizeMode QskArcMetrics::sizeMode() const noexcept

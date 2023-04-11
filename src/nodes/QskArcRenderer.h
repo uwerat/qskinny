@@ -14,10 +14,9 @@ class QskGradient;
 class QPainter;
 class QRectF;
 
-class QSK_EXPORT QskArcRenderer
+namespace QskArcRenderer
 {
-  public:
-    void renderArc( const QRectF&, const QskArcMetrics&,
+    QSK_EXPORT void renderArc( const QRectF&, const QskArcMetrics&,
         const QskGradient&, QPainter* );
 };
 

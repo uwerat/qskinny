@@ -31,9 +31,9 @@ static inline qreal qskAbsoluted( qreal length, qreal percentage )
     return percentage / 100.0 * 0.5 * length;
 }
 
-void QskArcMetrics::setWidth( qreal width ) noexcept
+void QskArcMetrics::setThickness( qreal thickness ) noexcept
 {
-    m_width = width;
+    m_thickness = thickness;
 }
 
 void QskArcMetrics::setStartAngle( qreal startAngle ) noexcept
@@ -57,12 +57,12 @@ QskArcMetrics QskArcMetrics::interpolated(
     if ( ( *this == to ) || ( m_sizeMode != to.m_sizeMode ) )
         return to;
 
-    const qreal width = qskInterpolated( m_width, to.m_width, ratio );
+    const qreal thickness = qskInterpolated( m_thickness, to.m_thickness, ratio );
 
     const qreal s1 = qskInterpolated( m_startAngle, to.m_startAngle, ratio );
     const qreal s2 = qskInterpolated( endAngle(), to.endAngle(), ratio );
 
-    return QskArcMetrics( width, s1, s2 - s1, m_sizeMode );
+    return QskArcMetrics( s1, s2 - s1, thickness, m_sizeMode );
 }
 
 QVariant QskArcMetrics::interpolate(
@@ -81,9 +81,9 @@ QskArcMetrics QskArcMetrics::toAbsolute( const QSizeF& size ) const noexcept
 
     const auto l = qMin( size.width(), size.height() );
     if ( l <= 0.0 )
-        absoluted.m_width = 0.0;
+        absoluted.m_thickness = 0.0;
     else
-        absoluted.m_width = qskAbsoluted( l, absoluted.m_width );
+        absoluted.m_thickness = qskAbsoluted( l, absoluted.m_thickness );
 
     absoluted.m_sizeMode = Qt::AbsoluteSize;
 
@@ -92,7 +92,7 @@ QskArcMetrics QskArcMetrics::toAbsolute( const QSizeF& size ) const noexcept
 
 QskHashValue QskArcMetrics::hash( QskHashValue seed ) const noexcept
 {
-    auto hash = qHash( m_width, seed );
+    auto hash = qHash( m_thickness, seed );
     hash = qHash( m_startAngle, hash );
     hash = qHash( m_spanAngle, hash );
 
@@ -110,7 +110,7 @@ QDebug operator<<( QDebug debug, const QskArcMetrics& metrics )
     debug.nospace();
 
     debug << "QskArcMetrics" << '(';
-    debug << metrics.width() << ',' << metrics.sizeMode();
+    debug << metrics.thickness() << ',' << metrics.sizeMode();
     debug << ",[" << metrics.startAngle() << ',' << metrics.spanAngle() << ']';
     debug << ')';
 

@@ -45,7 +45,7 @@ void QskArcRenderer::renderArc(const QRectF& rect,
     }
 
     painter->setRenderHint( QPainter::Antialiasing, true );
-    painter->setPen( QPen( brush, metrics.width(), Qt::SolidLine, Qt::FlatCap ) );
+    painter->setPen( QPen( brush, metrics.thickness(), Qt::SolidLine, Qt::FlatCap ) );
 
     const int startAngle = qRound( metrics.startAngle() * 16 );
     const int spanAngle = qRound( metrics.spanAngle() * 16 );

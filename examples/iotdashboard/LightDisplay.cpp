@@ -152,7 +152,7 @@ bool LightDisplay::arcContainsPoint( const QRectF& rect, const QPointF& point ) 
 
     // 2. check whether point is on arc
     const qreal radiusMax = rect.width() / 2;
-    const qreal arcWidth = metrics.width();
+    const qreal arcWidth = metrics.thickness();
     const qreal radiusMin = radiusMax - arcWidth;
 
     const qreal polarRadius = qSqrt( qPow( circlePos.x(), 2 ) + qPow( circlePos.y(), 2 ) );
