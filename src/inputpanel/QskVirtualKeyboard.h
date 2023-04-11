@@ -43,6 +43,9 @@ class QSK_EXPORT QskVirtualKeyboard : public QskBox
 {
     Q_OBJECT
 
+    Q_PROPERTY( Mode mode READ mode
+        WRITE setMode NOTIFY modeChanged FINAL )
+
     using Inherited = QskBox;
 
   public:
