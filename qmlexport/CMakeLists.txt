@@ -20,4 +20,6 @@ if(BUILD_QSKDLL)
         VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR} )
 endif()
 
+set_target_properties(${target} PROPERTIES FOLDER libs)
+
 install(TARGETS ${target} )

@@ -57,3 +57,5 @@ if(HIDE_SYSTEM_FONTS)
     target_compile_definitions(${target}
         PRIVATE FONTCONFIG_FILE=${QSK_FONTCONF_FILE})
 endif()
+
+set_target_properties(${target} PROPERTIES FOLDER libs)
