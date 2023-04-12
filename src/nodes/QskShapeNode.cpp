@@ -89,6 +89,10 @@ QskShapeNode::QskShapeNode()
     setFlag( QSGNode::OwnsMaterial, true );
 }
 
+QskShapeNode::~QskShapeNode()
+{
+}
+
 void QskShapeNode::updateNode( const QPainterPath& path,
     const QTransform& transform, const QRectF& rect, const QskGradient& gradient )
 {

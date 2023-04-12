@@ -19,6 +19,7 @@ class QSK_EXPORT QskShapeNode : public QSGGeometryNode
 {
   public:
     QskShapeNode();
+    ~QskShapeNode() override;
 
     void updateNode( const QPainterPath&, const QTransform&,
         const QRectF&, const QskGradient& );
