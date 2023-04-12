@@ -12,7 +12,7 @@
 #include "QskFunctions.h"
 #include "QskSGNode.h"
 #include "QskSkin.h"
-#include "QskStandardSymbol.h"
+#include "QskSkinStateChanger.h"
 #include "QskSubcontrolLayoutEngine.h"
 
 #include <qfontmetrics.h>
@@ -144,7 +144,20 @@ QRectF QskSegmentedBarSkinlet::splashRect(
         {
             const auto sr = segmentRect( bar, contentsRect, index );
             rect = sr;
-            rect.setSize( { 2.0 * rect.width() * ratio, rect.height() * 2.0 } );
+            qreal w, h;
+
+            if( bar->orientation() == Qt::Horizontal )
+            {
+                w = 2.0 * rect.width() * ratio;
+                h = 2.0 * rect.height();
+            }
+            else
+            {
+                w = 2.0 * rect.width();
+                h = 2.0 * rect.height() * ratio;
+            }
+
+            rect.setSize( { w, h } );
             rect.moveCenter( pos );
             rect = rect.intersected( sr );
         }
@@ -486,6 +499,11 @@ QSGNode* QskSegmentedBarSkinlet::updateSplashNode(
     const QskSegmentedBar* bar, QSGNode* node ) const
 {
     using Q = QskSegmentedBar;
+
+    // get Minimum / Maximum right:
+    QskSkinStateChanger stateChanger( bar );
+    const auto states = sampleStates( bar, Q::Segment, bar->selectedIndex() );
+    stateChanger.setStates( states );
 
     const auto splashRect = bar->subControlRect( Q::Splash );
     if ( splashRect.isEmpty() )
