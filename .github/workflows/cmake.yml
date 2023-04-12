@@ -418,7 +418,7 @@ jobs:
       - name: Smoke Test Cleanup ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
         run: |
-          taskkill /IM iotdashboard.exe /T
+          taskkill /IM iotdashboard.exe /T /F
 
       - name: Smoke Test Cleanup ( QSkinny ) on MacOS
         if: startsWith(matrix.config.name, 'macOS')
