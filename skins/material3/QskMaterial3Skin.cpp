@@ -511,7 +511,7 @@ void Editor::setupSegmentedBar()
     }
 
     {
-        // Segment
+        // Segment / Splash
 
         setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
         setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
@@ -547,21 +547,22 @@ void Editor::setupSegmentedBar()
         setPadding( Q::Segment | A::Horizontal, 12_dp, 0, 12_dp, 0 );
         setPadding( Q::Segment | A::Vertical, 0, 12_dp, 0, 12_dp );
 
-        setBoxShape( Q::Segment, 0 );
+        for( const auto subcontrol : { Q::Segment, Q::Splash } )
+        {
+            setBoxShape( subcontrol | Q::Minimum | A::Horizontal,
+                         { 100, 0, 100, 0, Qt::RelativeSize },
+                         { QskStateCombination::CombinationNoState, Q::Disabled } );
+            setBoxShape( subcontrol | Q::Maximum | A::Horizontal,
+                         { 0, 100, 0, 100, Qt::RelativeSize },
+                         { QskStateCombination::CombinationNoState, Q::Disabled } );
 
-        setBoxShape( Q::Segment | Q::Minimum | A::Horizontal,
-                     { 100, 0, 100, 0, Qt::RelativeSize },
-                     { QskStateCombination::CombinationNoState, Q::Disabled } );
-        setBoxShape( Q::Segment | Q::Maximum | A::Horizontal,
-                     { 0, 100, 0, 100, Qt::RelativeSize },
-                     { QskStateCombination::CombinationNoState, Q::Disabled } );
-
-        setBoxShape( Q::Segment | Q::Minimum | A::Vertical,
-                     { 100, 100, 0, 0, Qt::RelativeSize },
-                     { QskStateCombination::CombinationNoState, Q::Disabled } );
-        setBoxShape( Q::Segment | Q::Maximum | A::Vertical,
-                     { 0, 0, 100, 100, Qt::RelativeSize },
-                     { QskStateCombination::CombinationNoState, Q::Disabled } );
+            setBoxShape( subcontrol | Q::Minimum | A::Vertical,
+                         { 100, 100, 0, 0, Qt::RelativeSize },
+                         { QskStateCombination::CombinationNoState, Q::Disabled } );
+            setBoxShape( subcontrol | Q::Maximum | A::Vertical,
+                         { 0, 0, 100, 100, Qt::RelativeSize },
+                         { QskStateCombination::CombinationNoState, Q::Disabled } );
+        }
     }
 
     {
@@ -576,7 +577,7 @@ void Editor::setupSegmentedBar()
 
     {
         // Splash
-        setBoxShape( Q::Splash, 20_dp );
+
         setGradient( Q::Splash, stateLayerColor( m_pal.onSecondaryContainer, m_pal.pressedOpacity ) );
         setAnimation( Q::Splash | A::Color, qskDuration );
     }
