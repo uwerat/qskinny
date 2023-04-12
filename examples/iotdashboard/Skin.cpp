@@ -326,7 +326,7 @@ Skin::Palette DaytimeSkin::palette() const
         0xffc4c4c4,
         { { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff }, { 0.5, 0xff6776ff },
             { 1.0, Qt::black } } },
-        { { { 0.0, 0xffc4c4c4 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffc4c4c4 } } },
+        { { { 0.0, 0xffe0e0e0 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffe0e0e0 } } },
         0xffdddddd,
     };
 }

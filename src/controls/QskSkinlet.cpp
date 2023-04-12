@@ -204,16 +204,15 @@ static inline QSGNode* qskUpdateBoxNode(
 }
 
 static inline QSGNode* qskUpdateArcNode(
-    const QskSkinnable* skinnable, QSGNode* node, const QRectF& rect,
+    const QskSkinnable*, QSGNode* node, const QRectF& rect,
     const QskGradient& fillGradient, const QskArcMetrics& metrics )
 {
-    const auto control = skinnable->owningControl();
-    if ( control == nullptr || rect.isEmpty() )
+    if ( rect.isEmpty() )
         return nullptr;
 
-    auto absoluteMetrics = metrics.toAbsolute( rect.size() );
+    const auto absoluteMetrics = metrics.toAbsolute( rect.size() );
 
-    if ( !qskIsArcVisible( metrics, fillGradient ) )
+    if ( !qskIsArcVisible( absoluteMetrics, fillGradient ) )
         return nullptr;
 
     auto arcNode = static_cast< QskArcNode* >( node );
@@ -221,8 +220,7 @@ static inline QSGNode* qskUpdateArcNode(
     if ( arcNode == nullptr )
         arcNode = new QskArcNode();
 
-    const auto r = qskSceneAlignedRect( control, rect );
-    arcNode->setArcData( r, absoluteMetrics, fillGradient, control->window() );
+    arcNode->setArcData( rect, absoluteMetrics, fillGradient );
 
     return arcNode;
 }

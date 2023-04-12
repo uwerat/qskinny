@@ -9,15 +9,13 @@
 #include "QskGlobal.h"
 
 class QskArcMetrics;
-class QskGradient;
 
-class QPainter;
+class QPainterPath;
 class QRectF;
 
 namespace QskArcRenderer
 {
-    QSK_EXPORT void renderArc( const QRectF&, const QskArcMetrics&,
-        const QskGradient&, QPainter* );
+    QSK_EXPORT QPainterPath arcPath( const QRectF&, const QskArcMetrics& );
 };
 
 #endif

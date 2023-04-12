@@ -4,18 +4,67 @@
  *****************************************************************************/
 
 #include "QskArcNode.h"
-#include "QskArcMetrics.h"
 #include "QskArcRenderer.h"
+#include "QskArcMetrics.h"
 #include "QskGradient.h"
+#include "QskGradientDirection.h"
 
-namespace
+#include <qpainterpath.h>
+
+static inline QskGradient effectiveGradient( const QRectF& rect,
+    const QskArcMetrics& metrics, const QskGradient& gradient )
 {
-    class ArcData
+    if ( gradient.isMonochrome() )
+        return gradient;
+
+    bool isRadial = false;
+
+    if ( gradient.type() == QskGradient::Linear )
     {
-      public:
-        const QskArcMetrics& metrics;
-        const QskGradient& gradient;
-    };
+        /*
+            Horizontal is interpreted as conic ( in direction of the arc ),
+            while Vertical means radial ( inner to outer border )
+         */
+        isRadial = gradient.linearDirection().isVertical();
+    }
+
+    auto g = gradient;
+    g.setStretchMode( QskGradient::NoStretch );
+
+    const auto center = rect.center();
+
+    if( isRadial )
+    {
+        g.setRadialDirection( center.x(), center.y(),
+            rect.width(), rect.height() );
+
+        {
+            /*
+                Trying to do what QGradient::LogicalMode does in
+                the previous QPainter based implementation
+             */
+
+            const auto radius = 0.5 * qMin( rect.width(), rect.height() );
+            const auto t = metrics.thickness() / radius;
+
+            QskGradientStops stops;
+            stops.reserve( gradient.stops().size() );
+
+            for ( const auto& stop : gradient.stops() )
+            {
+                const auto pos = 0.5 - t * ( 0.75 - stop.position() );
+                stops += QskGradientStop( pos, stop.color() );
+            }
+
+            g.setStops( stops );
+        }
+    }
+    else
+    {
+        g.setConicDirection( center.x(), center.y(), metrics.startAngle() );
+    }
+
+    return g;
 }
 
 QskArcNode::QskArcNode()
@@ -26,27 +75,25 @@ QskArcNode::~QskArcNode()
 {
 }
 
-void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& metrics,
-    const QskGradient& gradient, QQuickWindow* window )
+void QskArcNode::setArcData( const QRectF& rect,
+    const QskArcMetrics& metrics, const QskGradient& gradient )
 {
-    const ArcData arcData { metrics, gradient };
-    update( window, rect, QSizeF(), &arcData );
-}
+#if 1
+    /*
+        Translating linear gradients into conic or radial gradients.
+        This code is a leftover from situations, where only linear
+        gradients had been available. Once the iotdashboard example
+        has been adjusted we will remove this code TODO ...
+     */
+    const auto g = effectiveGradient( rect, metrics, gradient );
+#endif
 
-void QskArcNode::paint( QPainter* painter, const QSize& size, const void* nodeData )
-{
-    const auto arcData = reinterpret_cast< const ArcData* >( nodeData );
+    /*
+        For the moment using a QPainterPath/QskShapeNode.
+        But we can do better by creatig vertex lists manually
+        like what is done by the box renderer. TODO ...
+     */
 
-    const qreal t = arcData->metrics.thickness();
-    const QRectF rect( 0.5 * t, 0.5 * t, size.width() - t, size.height() - t );
-
-    QskArcRenderer::renderArc( rect, arcData->metrics, arcData->gradient, painter );
-}
-
-QskHashValue QskArcNode::hash( const void* nodeData ) const
-{
-    const auto arcData = reinterpret_cast< const ArcData* >( nodeData );
-
-    auto h = arcData->metrics.hash();
-    return arcData->gradient.hash( h );
+    const auto path = QskArcRenderer::arcPath( rect, metrics );
+    updateNode( path, QTransform(), rect, g );
 }
