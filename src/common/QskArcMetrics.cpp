@@ -74,16 +74,26 @@ QVariant QskArcMetrics::interpolate(
 
 QskArcMetrics QskArcMetrics::toAbsolute( const QSizeF& size ) const noexcept
 {
+    if ( size.width() < 0.0 )
+        return toAbsolute( size.height() );
+
+    if ( size.height() < 0.0 )
+        return toAbsolute( size.width() );
+
+    return toAbsolute( qMin( size.width(), size.height() ) );
+}
+
+QskArcMetrics QskArcMetrics::toAbsolute( qreal size ) const noexcept
+{
     if ( m_sizeMode != Qt::RelativeSize )
         return *this;
 
     QskArcMetrics absoluted = *this;
 
-    const auto l = qMin( size.width(), size.height() );
-    if ( l <= 0.0 )
+    if ( size <= 0.0 )
         absoluted.m_thickness = 0.0;
     else
-        absoluted.m_thickness = qskAbsoluted( l, absoluted.m_thickness );
+        absoluted.m_thickness = qskAbsoluted( size, absoluted.m_thickness );
 
     absoluted.m_sizeMode = Qt::AbsoluteSize;
 

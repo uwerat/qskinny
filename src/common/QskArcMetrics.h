@@ -55,6 +55,7 @@ class QSK_EXPORT QskArcMetrics
         qreal value ) const noexcept;
 
     QskArcMetrics toAbsolute( const QSizeF& ) const noexcept;
+    QskArcMetrics toAbsolute( qreal ) const noexcept;
 
     QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 
