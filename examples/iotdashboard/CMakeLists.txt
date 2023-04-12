@@ -42,3 +42,4 @@ set(SOURCES
 qt_add_resources(SOURCES images.qrc fonts.qrc)
 
 qsk_add_example(iotdashboard ${SOURCES})
+target_compile_definitions(iotdashboard PRIVATE USE_SHORTCUTS=1)
