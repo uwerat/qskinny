@@ -434,9 +434,11 @@ void QskVirtualKeyboard::updateKeyCodes()
     m_data->keyCodes = {};
     m_data->keyCodes.reserve( rowCount() * columnCount() );
 
-    for ( int mode = 0; mode < ModeCount; mode++ )
+    const auto layout = *m_data->currentLayout;
+
+    for ( int mode = 0; mode < layout.size(); mode++ )
     {
-        const auto& page = ( *m_data->currentLayout )[ mode ];
+        const auto& page = layout[ mode ];
 
         for ( int i = 0; i < page.size(); i++ )
         {
