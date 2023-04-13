@@ -207,7 +207,7 @@ double qskConstrainedRadians( double radians )
     return radians;
 }
 
-float qskConstrainedRadians( double float )
+float qskConstrainedRadians( float radians )
 {
     constexpr float pi2 = 2.0f * M_PI;
 
