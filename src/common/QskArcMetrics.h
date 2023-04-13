@@ -45,6 +45,8 @@ class QSK_EXPORT QskArcMetrics
     constexpr qreal endAngle() const noexcept;
     constexpr qreal angleAtRatio( qreal ratio ) const noexcept;
 
+    bool containsAngle( qreal ) const;
+
     void setThickness( qreal ) noexcept;
     constexpr qreal thickness() const noexcept;
 

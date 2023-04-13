@@ -71,4 +71,10 @@ inline bool qskFuzzyCompare( qreal value1, qreal value2 )
 QSK_EXPORT qreal qskFuzzyFloor( qreal value, qreal stepSize );
 QSK_EXPORT qreal qskFuzzyCeil( qreal value, qreal stepSize );
 
+QSK_EXPORT double qskConstrainedDegrees( double );
+QSK_EXPORT float qskConstrainedDegrees( float );
+
+QSK_EXPORT double qskConstrainedRadians( double );
+QSK_EXPORT float qskConstrainedRadians( float );
+
 #endif

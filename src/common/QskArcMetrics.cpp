@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskArcMetrics.h"
+#include "QskFunctions.h"
 
 #include <qhashfunctions.h>
 #include <qvariant.h>
@@ -38,17 +39,37 @@ void QskArcMetrics::setThickness( qreal thickness ) noexcept
 
 void QskArcMetrics::setStartAngle( qreal startAngle ) noexcept
 {
-    m_startAngle = startAngle;
+    m_startAngle = qskConstrainedDegrees( startAngle );
 }
 
 void QskArcMetrics::setSpanAngle( qreal spanAngle ) noexcept
 {
-    m_spanAngle = spanAngle;
+    m_spanAngle = qBound( -360.0, spanAngle, 360.0 );
 }
 
 void QskArcMetrics::setSizeMode( Qt::SizeMode sizeMode ) noexcept
 {
     m_sizeMode = sizeMode;
+}
+
+bool QskArcMetrics::containsAngle( qreal angle ) const
+{
+    angle = qskConstrainedDegrees( angle );
+
+    if ( m_spanAngle >= 0.0 )
+    {
+        if ( angle < m_startAngle )
+            angle += 360.0;
+
+        return ( angle >= m_startAngle ) && ( angle <= m_startAngle + m_spanAngle );
+    }
+    else
+    {
+        if ( angle > m_startAngle )
+            angle -= 360.0;
+
+        return ( angle <= m_startAngle ) && ( angle >= m_startAngle + m_spanAngle );
+    }
 }
 
 QskArcMetrics QskArcMetrics::interpolated(

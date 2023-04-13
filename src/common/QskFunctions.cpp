@@ -177,3 +177,43 @@ qreal qskFuzzyCeil( qreal value, qreal stepSize )
     value = ( value - eps ) / stepSize;
     return std::ceil( value ) * stepSize;
 }
+
+double qskConstrainedDegrees( double degrees )
+{
+    degrees = fmod( degrees, 360.0 );
+    if ( degrees < 0.0 )
+        degrees += 360.0;
+
+    return degrees;
+}
+
+float qskConstrainedDegrees( float degrees )
+{
+    degrees = fmodf( degrees, 360.0f );
+    if ( degrees < 0.0f )
+        degrees += 360.0f;
+
+    return degrees;
+}
+
+double qskConstrainedRadians( double radians )
+{
+    constexpr double pi2 = 2.0 * M_PI;
+
+    radians = fmod( radians, pi2 );
+    if ( radians < 0.0 )
+        radians += pi2;
+
+    return radians;
+}
+
+float qskConstrainedRadians( double float )
+{
+    constexpr float pi2 = 2.0f * M_PI;
+
+    radians = fmodf( radians, pi2 );
+    if ( radians < 0.0f )
+        radians += pi2;
+
+    return radians;
+}
