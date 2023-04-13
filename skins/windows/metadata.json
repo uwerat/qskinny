@@ -1,0 +1,4 @@
+{
+    "FactoryId": "WindowsFactory",
+    "Skins": [ "Windows Light", "Windows Dark" ]
+}
