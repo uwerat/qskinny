@@ -11,6 +11,11 @@
 class QskArcMetrics;
 class QskGradient;
 
+/*
+    For the moment a QPainterPath/QskShapeNode.
+    But we can do better by creatig vertex lists manually
+    like what is done by the box renderer. TODO ...
+ */
 class QSK_EXPORT QskArcNode : public QskShapeNode
 {
   public:

@@ -56,8 +56,8 @@ class QSK_EXPORT QskArcMetrics
     QskArcMetrics interpolated( const QskArcMetrics&,
         qreal value ) const noexcept;
 
-    QskArcMetrics toAbsolute( const QSizeF& ) const noexcept;
-    QskArcMetrics toAbsolute( qreal ) const noexcept;
+    QskArcMetrics toAbsolute( qreal radiusX, qreal radiusY ) const noexcept;
+    QskArcMetrics toAbsolute( qreal radius ) const noexcept;
 
     QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 

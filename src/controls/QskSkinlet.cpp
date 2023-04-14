@@ -210,7 +210,10 @@ static inline QSGNode* qskUpdateArcNode(
     if ( rect.isEmpty() )
         return nullptr;
 
-    const auto absoluteMetrics = metrics.toAbsolute( rect.size() );
+    const auto rx = 0.5 * rect.width();
+    const auto ry = 0.5 * rect.height();
+
+    const auto absoluteMetrics = metrics.toAbsolute( rx, ry );
 
     if ( !qskIsArcVisible( absoluteMetrics, fillGradient ) )
         return nullptr;

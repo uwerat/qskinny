@@ -25,13 +25,6 @@ static inline qreal qskInterpolated( qreal from, qreal to, qreal ratio )
     return from + ( to - from ) * ratio;
 }
 
-static inline qreal qskAbsoluted( qreal length, qreal percentage )
-{
-    // 100% means -> 0.5 of length
-    percentage = qBound( 0.0, percentage, 100.0 );
-    return percentage / 100.0 * 0.5 * length;
-}
-
 void QskArcMetrics::setThickness( qreal thickness ) noexcept
 {
     m_thickness = thickness;
@@ -93,32 +86,33 @@ QVariant QskArcMetrics::interpolate(
     return QVariant::fromValue( from.interpolated( to, progress ) );
 }
 
-QskArcMetrics QskArcMetrics::toAbsolute( const QSizeF& size ) const noexcept
+QskArcMetrics QskArcMetrics::toAbsolute( qreal radiusX, qreal radiusY ) const noexcept
 {
-    if ( size.width() < 0.0 )
-        return toAbsolute( size.height() );
+    if ( radiusX < 0.0 )
+        return toAbsolute( radiusY );
 
-    if ( size.height() < 0.0 )
-        return toAbsolute( size.width() );
+    if ( radiusY < 0.0 )
+        return toAbsolute( radiusX );
 
-    return toAbsolute( qMin( size.width(), size.height() ) );
+    return toAbsolute( qMin( radiusX, radiusY ) );
 }
 
-QskArcMetrics QskArcMetrics::toAbsolute( qreal size ) const noexcept
+QskArcMetrics QskArcMetrics::toAbsolute( qreal radius ) const noexcept
 {
     if ( m_sizeMode != Qt::RelativeSize )
         return *this;
 
-    QskArcMetrics absoluted = *this;
+    QskArcMetrics m = *this;
 
-    if ( size <= 0.0 )
-        absoluted.m_thickness = 0.0;
-    else
-        absoluted.m_thickness = qskAbsoluted( size, absoluted.m_thickness );
+    if ( radius < 0.0 )
+        radius = 0.0;
 
-    absoluted.m_sizeMode = Qt::AbsoluteSize;
+    const auto ratio = qBound( 0.0, m.m_thickness, 100.0 ) / 100.0;
 
-    return absoluted;
+    m.m_thickness = radius * ratio;
+    m.m_sizeMode = Qt::AbsoluteSize;
+
+    return m;
 }
 
 QskHashValue QskArcMetrics::hash( QskHashValue seed ) const noexcept

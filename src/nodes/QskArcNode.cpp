@@ -11,31 +11,29 @@
 
 #include <qpainterpath.h>
 
-static inline QskGradient effectiveGradient( const QRectF& rect,
-    const QskArcMetrics& metrics, const QskGradient& gradient )
+#define LINEAR_GRADIENT_HACK 1
+
+#if LINEAR_GRADIENT_HACK
+
+static inline QskGradient buildGradient( QskGradient::Type type,
+    const QRectF& rect, const QskArcMetrics& metrics,
+    const QskGradientStops& stops )
 {
-    if ( gradient.isMonochrome() )
-        return gradient;
-
-    bool isRadial = false;
-
-    if ( gradient.type() == QskGradient::Linear )
-    {
-        /*
-            Horizontal is interpreted as conic ( in direction of the arc ),
-            while Vertical means radial ( inner to outer border )
-         */
-        isRadial = gradient.linearDirection().isVertical();
-    }
-
-    auto g = gradient;
-    g.setStretchMode( QskGradient::NoStretch );
-
     const auto center = rect.center();
 
-    if( isRadial )
+    QskGradient gradient;
+    gradient.setStretchMode( QskGradient::NoStretch );
+
+    if ( type == QskGradient::Conic )
     {
-        g.setRadialDirection( center.x(), center.y(),
+        gradient.setConicDirection(
+            center.x(), center.y(), metrics.startAngle() );
+
+        gradient.setStops( stops );
+    }
+    else
+    {
+        gradient.setRadialDirection( center.x(), center.y(),
             rect.width(), rect.height() );
 
         {
@@ -47,24 +45,58 @@ static inline QskGradient effectiveGradient( const QRectF& rect,
             const auto radius = 0.5 * qMin( rect.width(), rect.height() );
             const auto t = metrics.thickness() / radius;
 
-            QskGradientStops stops;
-            stops.reserve( gradient.stops().size() );
+            QskGradientStops scaledStops;
+            scaledStops.reserve( stops.size() );
 
-            for ( const auto& stop : gradient.stops() )
+            for ( const auto& stop : stops )
             {
                 const auto pos = 0.5 - t * ( 0.75 - stop.position() );
-                stops += QskGradientStop( pos, stop.color() );
+                scaledStops += QskGradientStop( pos, stop.color() );
             }
 
-            g.setStops( stops );
+            gradient.setStops( scaledStops );
         }
     }
-    else
+
+    return gradient;
+}
+
+#endif
+
+static inline QskGradient effectiveGradient( const QRectF& rect,
+    const QskArcMetrics& metrics, const QskGradient& gradient )
+{
+    if ( !gradient.isMonochrome() )
     {
-        g.setConicDirection( center.x(), center.y(), metrics.startAngle() );
+        if ( gradient.type() == QskGradient::Stops )
+        {
+            const QskConicDirection dir(
+                rect.center(), metrics.startAngle() );
+#if 0
+            dir.setSpanAngle( metrics.spanAngle() ); // what is "expected" ??
+#endif
+
+            QskGradient g( gradient.stops() );
+            g.setStretchMode( QskGradient::NoStretch );
+            g.setConicDirection( dir );
+
+            return g;
+        }
+
+#if LINEAR_GRADIENT_HACK
+        if ( gradient.type() == QskGradient::Linear )
+        {
+            // to keep the iotdashboard working: to be removed
+
+            const auto type = gradient.linearDirection().isHorizontal()
+                ? QskGradient::Conic : QskGradient::Radial;
+
+            return buildGradient( type, rect, metrics, gradient.stops() );
+        }
+#endif
     }
 
-    return g;
+    return gradient;
 }
 
 QskArcNode::QskArcNode()
@@ -78,22 +110,8 @@ QskArcNode::~QskArcNode()
 void QskArcNode::setArcData( const QRectF& rect,
     const QskArcMetrics& metrics, const QskGradient& gradient )
 {
-#if 1
-    /*
-        Translating linear gradients into conic or radial gradients.
-        This code is a leftover from situations, where only linear
-        gradients had been available. Once the iotdashboard example
-        has been adjusted we will remove this code TODO ...
-     */
-    const auto g = effectiveGradient( rect, metrics, gradient );
-#endif
-
-    /*
-        For the moment using a QPainterPath/QskShapeNode.
-        But we can do better by creatig vertex lists manually
-        like what is done by the box renderer. TODO ...
-     */
-
     const auto path = QskArcRenderer::arcPath( rect, metrics );
-    updateNode( path, QTransform(), rect, g );
+
+    updateNode( path, QTransform(), rect,
+        effectiveGradient( rect, metrics, gradient ) );
 }
