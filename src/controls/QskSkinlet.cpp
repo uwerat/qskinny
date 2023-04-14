@@ -205,25 +205,16 @@ static inline QSGNode* qskUpdateBoxNode(
 
 static inline QSGNode* qskUpdateArcNode(
     const QskSkinnable*, QSGNode* node, const QRectF& rect,
-    const QskGradient& fillGradient, const QskArcMetrics& metrics )
+    const QskGradient& gradient, const QskArcMetrics& metrics )
 {
-    if ( rect.isEmpty() )
-        return nullptr;
-
-    const auto rx = 0.5 * rect.width();
-    const auto ry = 0.5 * rect.height();
-
-    const auto absoluteMetrics = metrics.toAbsolute( rx, ry );
-
-    if ( !qskIsArcVisible( absoluteMetrics, fillGradient ) )
+    if ( rect.isEmpty() || !qskIsArcVisible( metrics, gradient )  )
         return nullptr;
 
     auto arcNode = static_cast< QskArcNode* >( node );
-
     if ( arcNode == nullptr )
         arcNode = new QskArcNode();
 
-    arcNode->setArcData( rect, absoluteMetrics, fillGradient );
+    arcNode->setArcData( rect, metrics, gradient );
 
     return arcNode;
 }
