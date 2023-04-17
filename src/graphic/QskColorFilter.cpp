@@ -56,10 +56,10 @@ static inline QBrush qskSubstitutedBrush(
 
         if ( isModified )
         {
-            newBrush = brush;
-
-            auto newGradient = const_cast< QGradient* >( newBrush.gradient() );
-            newGradient->setStops( stops );
+            auto newGradient = *gradient;
+            newGradient.setStops( stops );
+            newBrush = QBrush( newGradient );
+            newBrush.setTransform( brush.transform() );
         }
     }
     else
