@@ -555,8 +555,8 @@ namespace
             const auto mat = static_cast< const ConicMaterial* >( other );
 
             if ( ( m_center != mat->m_center )
-                || qskFuzzyCompare( m_start, mat->m_start )
-                || qskFuzzyCompare( m_span, mat->m_span ) )
+                || !qskFuzzyCompare( m_start, mat->m_start )
+                || !qskFuzzyCompare( m_span, mat->m_span ) )
             {
                 return QSGMaterial::compare( other );
             }
