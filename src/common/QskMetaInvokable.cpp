@@ -84,13 +84,11 @@ namespace
     };
 }
 
-static inline void qskInvokeMetaCallQueued(
-    QObject* object, QMetaObject::Call call, ushort offset,
+static inline void qskInvokeMetaCallQueued( QObject* object,
+    const QMetaObject* metaObject, QMetaObject::Call call, ushort offset,
     ushort index, void* args[], QSemaphore* semaphore )
 {
-    const auto callFunction = object->metaObject()->d.static_metacall;
-
-    auto event = new MetaCallEvent( call, callFunction,
+    auto event = new MetaCallEvent( call, metaObject->d.static_metacall,
         offset, index, args, semaphore );
 
     QCoreApplication::postEvent( object, event );
@@ -196,8 +194,7 @@ static void qskInvokeMetaCall(
 
             QSemaphore semaphore;
 
-            Q_ASSERT( metaObject == nullptr || receiver->metaObject() == metaObject );
-            qskInvokeMetaCallQueued( receiver, call,
+            qskInvokeMetaCallQueued( receiver, metaObject, call,
                 offset, index, argv, &semaphore );
 
             semaphore.acquire();
@@ -257,8 +254,8 @@ static void qskInvokeMetaCall(
                 return;
             }
 
-            Q_ASSERT( metaObject == nullptr || receiver->metaObject() == metaObject );
-            qskInvokeMetaCallQueued( object, call, offset, index, arguments, nullptr );
+            qskInvokeMetaCallQueued( object, metaObject,
+                 call, offset, index, arguments, nullptr );
 
             break;
         }
