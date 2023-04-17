@@ -45,6 +45,11 @@ void QskArcMetrics::setSizeMode( Qt::SizeMode sizeMode ) noexcept
     m_sizeMode = sizeMode;
 }
 
+bool QskArcMetrics::isClosed() const
+{
+    return qAbs( m_spanAngle ) >= 360.0;
+}
+
 bool QskArcMetrics::containsAngle( qreal angle ) const
 {
     angle = qskConstrainedDegrees( angle );
