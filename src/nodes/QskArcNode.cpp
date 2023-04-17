@@ -8,7 +8,6 @@
 #include "QskArcMetrics.h"
 #include "QskMargins.h"
 #include "QskGradient.h"
-#include "QskGradientDirection.h"
 #include "QskShapeNode.h"
 #include "QskStrokeNode.h"
 #include "QskSGNode.h"
@@ -17,22 +16,14 @@
 #include <qpainterpath.h>
 
 static inline QskGradient qskEffectiveGradient(
-    const QskGradient& gradient, const QRectF& rect,
-    const QskArcMetrics& metrics )
+    const QskGradient& gradient, const QskArcMetrics& metrics )
 {
     if ( !gradient.isMonochrome() )
     {
         if ( gradient.type() == QskGradient::Stops )
         {
-            const QskConicDirection dir(
-                rect.center(), metrics.startAngle() );
-#if 0
-            dir.setSpanAngle( metrics.spanAngle() ); // what is "expected" ??
-#endif
-
             QskGradient g( gradient.stops() );
-            g.setStretchMode( QskGradient::NoStretch );
-            g.setConicDirection( dir );
+            g.setConicDirection( 0.5, 0.5, metrics.startAngle(), 360.0 );
 
             return g;
         }
@@ -88,7 +79,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     };
 
     const auto metrics = qskEffectiveMetrics( arcMetrics, rect );
-    const auto gradient = qskEffectiveGradient( fillGradient, rect, metrics );
+    const auto gradient = qskEffectiveGradient( fillGradient, metrics );
 
     auto fillNode = static_cast< QskShapeNode* >(
         QskSGNode::findChildNode( this, FillRole ) );
