@@ -23,7 +23,7 @@ class Skin : public QskSkin
         QColor shadow;
         QColor lightDisplayKnobBorder;
         QskGradient lightDisplayColdAndWarmArc;
-        QskGradient circularProgressBarGroove;
+        QRgb circularProgressBarGroove;
         QRgb deviceGraphic;
     };
 

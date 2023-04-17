@@ -101,7 +101,8 @@ class QSK_EXPORT QskSkinlet
         const QRectF&, const QskGradient&, QskAspect::Subcontrol );
 
     static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, const QskGradient&, const QskArcMetrics& );
+        const QRectF&, qreal borderWidth, const QColor& borderColor,
+        const QskGradient&, const QskArcMetrics& );
 
     static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
         const QRectF&, qreal startAngle, qreal spanAngle, QskAspect::Subcontrol );

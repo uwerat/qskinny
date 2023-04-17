@@ -24,7 +24,7 @@ class QSK_EXPORT QskArcNode : public QskShapeNode
 
     void setArcData( const QRectF&, const QskArcMetrics&, const QskGradient& );
     void setArcData( const QRectF&, const QskArcMetrics&,
-        qreal borderWidth, const QColor borderColor, const QskGradient& );
+        qreal borderWidth, const QColor& borderColor, const QskGradient& );
 };
 
 #endif

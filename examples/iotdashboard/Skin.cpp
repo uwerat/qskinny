@@ -287,9 +287,9 @@ void Skin::initHints( const Palette& palette )
     ed.setColor( QskTextLabel::Text, palette.text );
     ed.setColor( UsageDiagramBox::DayText, palette.text );
 
-    auto grooveGradient = palette.circularProgressBarGroove;
-    grooveGradient.setDirection( QskGradient::Linear );
-    ed.setGradient( CircularProgressBar::Groove, grooveGradient );
+    ed.setMetric( CircularProgressBar::Groove | QskAspect::Border, 2 );
+    ed.setColor( CircularProgressBar::Groove | QskAspect::Border,
+        palette.circularProgressBarGroove );
 
     // storage bar
     {
@@ -326,8 +326,8 @@ Skin::Palette DaytimeSkin::palette() const
         0xffc4c4c4,
         { { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff }, { 0.5, 0xff6776ff },
             { 1.0, Qt::black } } },
-        { { { 0.0, 0xffe0e0e0 }, { 0.5, 0xfff8f8f8 }, { 1.0, 0xffe0e0e0 } } },
-        0xffdddddd,
+        0x10000000,
+        0xffdddddd
     };
 }
 
@@ -344,7 +344,7 @@ Skin::Palette NighttimeSkin::palette() const
         0xff4a4a4a,
         0xff555555,
         { { { 0.0, 0xff991100 }, { 0.2, 0xff9a7a57 }, { 0.5, 0xff3726af }, { 1.0, Qt::black } } },
-        { { { 0.0, 0xff666666 }, { 0.5, 0xff222222 }, { 1.0, 0xff333333 } } },
-        0xff222222,
+        0x10ffffff,
+        0xff222222
     };
 }

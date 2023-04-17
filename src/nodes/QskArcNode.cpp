@@ -16,58 +16,6 @@
 #include <qpen.h>
 #include <qpainterpath.h>
 
-#define LINEAR_GRADIENT_HACK 1
-
-#if LINEAR_GRADIENT_HACK
-
-static inline QskGradient qskBuildGradient( QskGradient::Type type,
-    const QRectF& rect, const QskArcMetrics& metrics,
-    const QskGradientStops& stops )
-{
-    const auto center = rect.center();
-
-    QskGradient gradient;
-    gradient.setStretchMode( QskGradient::NoStretch );
-
-    if ( type == QskGradient::Conic )
-    {
-        gradient.setConicDirection(
-            center.x(), center.y(), metrics.startAngle() );
-
-        gradient.setStops( stops );
-    }
-    else
-    {
-        gradient.setRadialDirection( center.x(), center.y(),
-            rect.width(), rect.height() );
-
-        {
-            /*
-                Trying to do what QGradient::LogicalMode does in
-                the previous QPainter based implementation
-             */
-
-            const auto radius = 0.5 * qMin( rect.width(), rect.height() );
-            const auto t = metrics.thickness() / radius;
-
-            QskGradientStops scaledStops;
-            scaledStops.reserve( stops.size() );
-
-            for ( const auto& stop : stops )
-            {
-                const auto pos = 0.5 - t * ( 0.75 - stop.position() );
-                scaledStops += QskGradientStop( pos, stop.color() );
-            }
-
-            gradient.setStops( scaledStops );
-        }
-    }
-
-    return gradient;
-}
-
-#endif
-
 static inline QskGradient qskEffectiveGradient(
     const QskGradient& gradient, const QRectF& rect,
     const QskArcMetrics& metrics )
@@ -88,18 +36,6 @@ static inline QskGradient qskEffectiveGradient(
 
             return g;
         }
-
-#if LINEAR_GRADIENT_HACK
-        if ( gradient.type() == QskGradient::Linear )
-        {
-            // to keep the iotdashboard working: to be removed
-
-            const auto type = gradient.linearDirection().isHorizontal()
-                ? QskGradient::Conic : QskGradient::Radial;
-
-            return qskBuildGradient( type, rect, metrics, gradient.stops() );
-        }
-#endif
     }
 
     return gradient;
@@ -143,7 +79,7 @@ void QskArcNode::setArcData( const QRectF& rect,
 }
 
 void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics,
-    qreal borderWidth, const QColor borderColor, const QskGradient& fillGradient )
+    qreal borderWidth, const QColor& borderColor, const QskGradient& fillGradient )
 {
     enum NodeRole
     {
