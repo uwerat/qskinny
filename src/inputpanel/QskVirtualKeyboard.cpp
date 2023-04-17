@@ -354,8 +354,14 @@ void QskVirtualKeyboard::ensureButtons()
     if( newButtonSize == oldButtonSize )
         return;
 
-    const auto autoRepeatInterval =
-        1000 / QGuiApplication::styleHints()->keyboardAutoRepeatRate();
+    const auto hints = QGuiApplication::styleHints();
+
+    auto autoRepeatInterval = 1000.0;
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
+        autoRepeatInterval /= hints->keyboardAutoRepeatRateF();
+#else
+        autoRepeatInterval /= hints->keyboardAutoRepeatRate();
+#endif
 
     m_data->keyButtons.reserve( rowCount() * columnCount() );
 
