@@ -105,16 +105,19 @@ class QSK_EXPORT QskConicDirection
     Q_PROPERTY( qreal y READ y WRITE setY )
     Q_PROPERTY( qreal startAngle READ startAngle WRITE setStartAngle )
     Q_PROPERTY( qreal spanAngle READ spanAngle WRITE setSpanAngle )
+    Q_PROPERTY( qreal aspectRatio READ aspectRatio WRITE setAspectRatio )
 
   public:
     // counter-clockwise
     constexpr QskConicDirection() noexcept = default;
 
     constexpr QskConicDirection( qreal x, qreal y, qreal startAngle = 0.0 ) noexcept;
-    constexpr QskConicDirection( qreal x, qreal y, qreal startAngle, qreal spanAngle ) noexcept;
+    constexpr QskConicDirection( qreal x, qreal y,
+        qreal startAngle, qreal spanAngle, qreal aspectRatio = 0.0 ) noexcept;
 
     constexpr QskConicDirection( const QPointF&, qreal startAngle = 0.0 ) noexcept;
-    constexpr QskConicDirection( const QPointF&, qreal startAngle, qreal spanAngle ) noexcept;
+    constexpr QskConicDirection( const QPointF&,
+        qreal startAngle, qreal spanAngle, qreal aspectRatio = 0.0 ) noexcept;
 
     constexpr QPointF center() const noexcept;
     void setCenter(const QPointF& center) noexcept;
@@ -132,11 +135,15 @@ class QSK_EXPORT QskConicDirection
     constexpr qreal spanAngle() const noexcept;
     void setSpanAngle( qreal ) noexcept;
 
+    constexpr qreal aspectRatio() const noexcept;
+    void setAspectRatio( qreal ) noexcept;
+
   private:
     qreal m_x = 0.5;
     qreal m_y = 0.5;
     qreal m_startAngle = 0.0;
     qreal m_spanAngle = 360.0;
+    qreal m_aspectRatio = 0.0;
 };
 
 class QSK_EXPORT QskRadialDirection
@@ -299,12 +306,13 @@ inline constexpr QskConicDirection::QskConicDirection(
 {
 }
 
-inline constexpr QskConicDirection::QskConicDirection(
-        qreal x, qreal y, qreal startAngle, qreal spanAngle ) noexcept
+inline constexpr QskConicDirection::QskConicDirection( qreal x, qreal y,
+        qreal startAngle, qreal spanAngle, qreal aspectRatio ) noexcept
     : m_x( x )
     , m_y( y )
     , m_startAngle( startAngle )
     , m_spanAngle( spanAngle )
+    , m_aspectRatio( aspectRatio )
 {
 }
 
@@ -314,9 +322,9 @@ inline constexpr QskConicDirection::QskConicDirection(
 {
 }
 
-inline constexpr QskConicDirection::QskConicDirection(
-        const QPointF& pos, qreal startAngle, qreal spanAngle ) noexcept
-    : QskConicDirection( pos.x(), pos.y(), startAngle, spanAngle )
+inline constexpr QskConicDirection::QskConicDirection( const QPointF& pos,
+        qreal startAngle, qreal spanAngle, qreal apectRatio ) noexcept
+    : QskConicDirection( pos.x(), pos.y(), startAngle, spanAngle, apectRatio )
 {
 }
 
@@ -343,6 +351,11 @@ inline constexpr qreal QskConicDirection::x() const noexcept
 inline constexpr qreal QskConicDirection::y() const noexcept
 {
     return m_y;
+}
+
+inline constexpr qreal QskConicDirection::aspectRatio() const noexcept
+{
+    return m_aspectRatio;
 }
 
 inline constexpr QskRadialDirection::QskRadialDirection(

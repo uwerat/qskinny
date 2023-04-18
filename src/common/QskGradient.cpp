@@ -171,7 +171,7 @@ QskGradient::QskGradient( const QGradient& qGradient )
 QskGradient::QskGradient( const QskGradient& other ) noexcept
     : m_stops( other.m_stops )
     , m_values{ other.m_values[0], other.m_values[1],
-        other.m_values[2], other.m_values[3], }
+        other.m_values[2], other.m_values[3], other.m_values[4] }
     , m_type( other.m_type )
     , m_spreadMode( other.m_spreadMode )
     , m_stretchMode( other.m_stretchMode )
@@ -197,6 +197,7 @@ QskGradient& QskGradient::operator=( const QskGradient& other ) noexcept
     m_values[1] = other.m_values[1];
     m_values[2] = other.m_values[2];
     m_values[3] = other.m_values[3];
+    m_values[4] = other.m_values[4];
 
     m_isDirty = other.m_isDirty;
     m_isValid = other.m_isValid;
@@ -215,6 +216,7 @@ bool QskGradient::operator==( const QskGradient& other ) const noexcept
            && ( m_values[1] == other.m_values[1] )
            && ( m_values[2] == other.m_values[2] )
            && ( m_values[3] == other.m_values[3] )
+           && ( m_values[4] == other.m_values[4] )
            && ( m_stops == other.m_stops );
 }
 
@@ -439,6 +441,10 @@ void QskGradient::stretchTo( const QRectF& rect )
         case Conic:
         {
             transform.map( m_values[0], m_values[1], &m_values[0], &m_values[1] );
+
+            if ( m_values[4] == 0.0 && !rect.isEmpty() )
+                m_values[4] = rect.width() / rect.height();
+
             break;
         }
     }
@@ -657,6 +663,13 @@ void QskGradient::setConicDirection( qreal x, qreal y,
     setConicDirection( QskConicDirection( x, y, startAngle, spanAngle ) );
 }
 
+void QskGradient::setConicDirection( qreal x, qreal y,
+    qreal startAngle, qreal spanAngle, qreal aspectRatio )
+{
+    const QskConicDirection dir( x, y, startAngle, spanAngle, aspectRatio );
+    setConicDirection( dir );
+}
+
 void QskGradient::setConicDirection( const QskConicDirection& direction )
 {
     m_type = Conic;
@@ -665,6 +678,7 @@ void QskGradient::setConicDirection( const QskConicDirection& direction )
     m_values[1] = direction.center().y();
     m_values[2] = direction.startAngle();
     m_values[3] = direction.spanAngle();
+    m_values[4] = direction.aspectRatio();
 }
 
 QskConicDirection QskGradient::conicDirection() const
@@ -674,7 +688,10 @@ QskConicDirection QskGradient::conicDirection() const
     if ( m_type != Conic )
         return QskConicDirection( 0.5, 0.5, 0.0, 0.0 );
 
-    return QskConicDirection( m_values[0], m_values[1], m_values[2], m_values[3] );
+    QskConicDirection dir( m_values[0], m_values[1], m_values[2], m_values[3] );
+    dir.setAspectRatio( m_values[4] );
+
+    return dir;
 }
 
 void QskGradient::setDirection( Type type )
@@ -702,7 +719,7 @@ void QskGradient::setDirection( Type type )
 void QskGradient::resetDirection()
 {
     m_type = Stops;
-    m_values[0] = m_values[1] = m_values[2] = m_values[3] = 0.0;
+    m_values[0] = m_values[1] = m_values[2] = m_values[3] = m_values[4] = 0.0;
 }
 
 QskGradient QskGradient::effectiveGradient() const
@@ -803,6 +820,7 @@ QDebug operator<<( QDebug debug, const QskGradient& gradient )
             const auto dir = gradient.conicDirection();
 
             debug << dir.center().x() << "," << dir.center().y()
+                << ",AR:" << dir.aspectRatio()
                 << ",[" << dir.startAngle() << "," << dir.spanAngle() << "])";
             break;
         }

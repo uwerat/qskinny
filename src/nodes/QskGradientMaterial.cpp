@@ -510,6 +510,16 @@ namespace
 
             const auto dir = gradient.conicDirection();
 
+            float ratio = dir.aspectRatio();
+            if ( ratio <= 0.0f )
+                ratio = 1.0f;
+
+            if ( ratio != m_aspectRatio )
+            {
+                m_aspectRatio = ratio;
+                changed = true;
+            }
+
             const QVector2D center( dir.x(), dir.y() );
 
             if ( center != m_center )
@@ -555,6 +565,7 @@ namespace
             const auto mat = static_cast< const ConicMaterial* >( other );
 
             if ( ( m_center != mat->m_center )
+                || !qskFuzzyCompare( m_aspectRatio, mat->m_aspectRatio )
                 || !qskFuzzyCompare( m_start, mat->m_start )
                 || !qskFuzzyCompare( m_span, mat->m_span ) )
             {
@@ -567,6 +578,7 @@ namespace
         QSGMaterialShader* createShader() const override;
 
         QVector2D m_center;
+        float m_aspectRatio = 1.0;
         float m_start = 0.0;
         float m_span = 1.0;
     };
@@ -585,6 +597,7 @@ namespace
             GradientShaderGL::initialize();
 
             m_centerCoordId = program()->uniformLocation( "centerCoord" );
+            m_aspectRatioId = program()->uniformLocation( "aspectRatio" );
             m_startId = program()->uniformLocation( "start" );
             m_spanId = program()->uniformLocation( "span" );
         }
@@ -594,12 +607,14 @@ namespace
             auto material = static_cast< const ConicMaterial* >( newMaterial );
 
             program()->setUniformValue( m_centerCoordId, material->m_center );
+            program()->setUniformValue( m_aspectRatioId, material->m_aspectRatio );
             program()->setUniformValue( m_startId, material->m_start );
             program()->setUniformValue( m_spanId, material->m_span );
         }
 
       private:
         int m_centerCoordId = -1;
+        int m_aspectRatioId = -1;
         int m_startId = -1;
         int m_spanId = -1;
     };
@@ -620,7 +635,7 @@ namespace
             auto matNew = static_cast< ConicMaterial* >( newMaterial );
             auto matOld = static_cast< ConicMaterial* >( oldMaterial );
 
-            Q_ASSERT( state.uniformData()->size() >= 84 );
+            Q_ASSERT( state.uniformData()->size() >= 88 );
 
             auto data = state.uniformData()->data();
             bool changed = false;
@@ -639,22 +654,28 @@ namespace
                 changed = true;
             }
 
+            if ( matOld == nullptr || matNew->m_aspectRatio != matOld->m_aspectRatio )
+            {
+                memcpy( data + 72, &matNew->m_aspectRatio, 4 );
+                changed = true;
+            }
+
             if ( matOld == nullptr || matNew->m_start != matOld->m_start )
             {
-                memcpy( data + 72, &matNew->m_start, 4 );
+                memcpy( data + 76, &matNew->m_start, 4 );
                 changed = true;
             }
 
             if ( matOld == nullptr || matNew->m_span != matOld->m_span )
             {
-                memcpy( data + 76, &matNew->m_span, 4 );
+                memcpy( data + 80, &matNew->m_span, 4 );
                 changed = true;
             }
 
             if ( state.isOpacityDirty() )
             {
                 const float opacity = state.opacity();
-                memcpy( data + 80, &opacity, 4 );
+                memcpy( data + 84, &opacity, 4 );
 
                 changed = true;
             }

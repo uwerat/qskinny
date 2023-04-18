@@ -97,8 +97,14 @@ class QSK_EXPORT QskGradient
     void setRadialDirection( const qreal x, qreal y, qreal radiusX, qreal radiusY );
     QskRadialDirection radialDirection() const;
 
-    void setConicDirection( qreal, qreal );
-    void setConicDirection( qreal, qreal, qreal, qreal = 360.0 );
+    void setConicDirection( qreal x, qreal y );
+
+    void setConicDirection( qreal x, qreal y,
+        qreal startAngle, qreal spanAngle = 360.0 );
+
+    void setConicDirection( qreal x, qreal y,
+        qreal startAngle, qreal spanAngle, qreal aspectRatio );
+
     void setConicDirection( const QskConicDirection& );
     QskConicDirection conicDirection() const;
 
@@ -172,9 +178,9 @@ class QSK_EXPORT QskGradient
     /*
         Linear: x1, y1, x2, y2
         Radial: centerX, centerY, radiusX, radiusY
-        Conic: centerX, centerY, startAngle, spanAngle
+        Conic: centerX, centerY, startAngle, spanAngle, aspectRatio
      */
-    qreal m_values[4] = {};
+    qreal m_values[5] = {};
 
     unsigned int m_type : 3;
     unsigned int m_spreadMode : 3;

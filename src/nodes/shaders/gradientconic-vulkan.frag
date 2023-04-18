@@ -7,6 +7,7 @@ layout( std140, binding = 0 ) uniform buf
 {
     mat4 matrix;
     vec2 centerCoord;
+    float aspectRatio;
     float start;
     float span;
     float opacity;

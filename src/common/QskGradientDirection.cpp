@@ -228,6 +228,11 @@ void QskConicDirection::setSpanAngle( qreal degrees ) noexcept
     m_spanAngle = qBound( -360.0, degrees, 360.0 );
 }
 
+void QskConicDirection::setAspectRatio( qreal ratio ) noexcept
+{
+    m_aspectRatio = qMax( ratio, 0.0 );
+}
+
 // -- QskRadialDirection
 
 void QskRadialDirection::setCenter( const QPointF& center ) noexcept
