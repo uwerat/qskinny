@@ -12,23 +12,39 @@
 static inline QPainterPath qskArcPath(
     const QRectF& rect, const QskArcMetrics& metrics )
 {
-    const auto rx = 0.5 * rect.width();
-    const auto ry = 0.5 * rect.height();
+    const auto sz = qMin( rect.width(), rect.height() );
+    if ( sz <= 0.0 )
+        return QPainterPath();
 
-    const auto m = metrics.toAbsolute( rx, ry );
+    const auto m = metrics.toAbsolute( 0.5 * sz );
 
-    const qreal t2 = 0.5 * m.thickness();
-    const auto r = rect.adjusted( t2, t2, -t2, -t2 );
+    const auto tx = m.thickness() * rect.width() / sz;
+    const auto ty = m.thickness() * rect.height() / sz;
+
+    const auto innerRect = rect.adjusted( tx, ty, -tx, -ty );
+
+    const auto angle = m.startAngle();
+    const auto span = m.spanAngle();
 
     QPainterPath path;
-    path.arcMoveTo( r, m.startAngle() );
-    path.arcTo( r, m.startAngle(), m.spanAngle() );
 
-    QPainterPathStroker stroker;
-    stroker.setWidth( m.thickness() );
-    stroker.setCapStyle( Qt::FlatCap );
+    /*
+        We need the end point of the inner arc to add the line that connects
+        the inner/outer arcs. As QPainterPath does not offer such a method
+        we insert a dummy arcMoveTo and grab the calculated position.
+     */
+    path.arcMoveTo( innerRect, angle + span );
+    const auto pos = path.currentPosition();
 
-    return stroker.createStroke( path );
+    path.arcMoveTo( rect, angle ); // replaces the dummy arcMoveTo above
+    path.arcTo( rect, angle, span );
+
+    path.lineTo( pos );
+    path.arcTo( innerRect, angle + span, -span );
+
+    path.closeSubpath();
+
+    return path;
 }
 
 static inline QRectF qskArcRect(
