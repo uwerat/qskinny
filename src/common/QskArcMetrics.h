@@ -11,6 +11,7 @@
 #include <qmetatype.h>
 
 class QVariant;
+class QPainterPath;
 
 class QSK_EXPORT QskArcMetrics
 {
@@ -59,6 +60,11 @@ class QSK_EXPORT QskArcMetrics
 
     QskArcMetrics toAbsolute( qreal radiusX, qreal radiusY ) const noexcept;
     QskArcMetrics toAbsolute( qreal radius ) const noexcept;
+
+    QPainterPath painterPath( const QRectF& ellipseRect ) const;
+
+    QRectF boundingRect( const QRectF& ellipseRect ) const;
+    QSizeF boundingSize( const QSizeF& ellipseSize ) const;
 
     QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 

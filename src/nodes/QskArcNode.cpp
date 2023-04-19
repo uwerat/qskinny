@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "QskArcNode.h"
-#include "QskArcRenderer.h"
 #include "QskArcMetrics.h"
 #include "QskMargins.h"
 #include "QskGradient.h"
@@ -96,7 +95,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
         return;
     }
 
-    const auto path = QskArcRenderer::arcPath( arcRect, metrics );
+    const auto path = metrics.painterPath( arcRect );
 
     if ( gradient.isVisible() && !metrics.isNull() )
     {

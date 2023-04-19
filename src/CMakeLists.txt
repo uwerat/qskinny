@@ -95,7 +95,6 @@ list(APPEND SOURCES
 
 list(APPEND HEADERS
     nodes/QskArcNode.h
-    nodes/QskArcRenderer.h
     nodes/QskBoxNode.h
     nodes/QskBoxClipNode.h
     nodes/QskBoxFillNode.h
@@ -125,7 +124,6 @@ list(APPEND HEADERS
 
 list(APPEND SOURCES
     nodes/QskArcNode.cpp
-    nodes/QskArcRenderer.cpp
     nodes/QskBoxNode.cpp
     nodes/QskBoxClipNode.cpp
     nodes/QskBoxFillNode.cpp
