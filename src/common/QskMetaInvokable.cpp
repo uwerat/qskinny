@@ -249,8 +249,16 @@ static void qskInvokeMetaCall(
 
             if ( receiver.isNull() )
             {
-                // object might have died in the meantime
-                free( arguments );
+                /*
+                    receiver might have died in the meantime.
+                    We create a dummy event, so that the arguments
+                    are freed by its destructor.
+                 */
+
+                const MetaCallEvent cleanUpEvent(
+                    call, metaObject->d.static_metacall,
+                    offset, index, arguments, nullptr );
+
                 return;
             }
 
