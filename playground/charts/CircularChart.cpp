@@ -65,23 +65,13 @@ void CircularChart::setArcDiameters( qreal diameterX, qreal diameterY )
 void CircularChart::setArcDiameters( const QSizeF& diameters )
 {
     if ( setStrutSizeHint( Arc, diameters ) )
-    {
-        resetImplicitSize();
-        update();
-
         Q_EMIT arcDiametersChanged( diameters );
-    }
 }
 
 void CircularChart::resetArcDiameters()
 {
     if ( resetStrutSizeHint( Arc ) )
-    {
-        resetImplicitSize();
-        update();
-
         Q_EMIT arcDiametersChanged( arcDiameters() );
-    }
 }
 
 QskArcMetrics CircularChart::arcMetrics() const
@@ -92,23 +82,13 @@ QskArcMetrics CircularChart::arcMetrics() const
 void CircularChart::setArcMetrics( const QskArcMetrics& metrics )
 {
     if ( setArcMetricsHint( Arc, metrics ) )
-    {
-        resetImplicitSize();
-        update();
-
         Q_EMIT arcMetricsChanged( metrics );
-    }
 }
 
 void CircularChart::resetArcMetrics()
 {
     if ( resetArcMetricsHint( Arc ) )
-    {
-        resetImplicitSize();
-        update();
-
         Q_EMIT arcMetricsChanged( arcMetrics() );
-    }
 }
 
 void CircularChart::setArcThickness( qreal width, Qt::SizeMode sizeMode )
