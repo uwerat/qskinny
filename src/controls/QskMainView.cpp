@@ -23,6 +23,7 @@ QskMainView::QskMainView( QQuickItem* parent )
 {
     setAutoAddChildren( false );
     setSpacing( 0 );
+    setPanel( true );
 }
 
 QskMainView::~QskMainView()
