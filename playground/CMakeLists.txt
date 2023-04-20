@@ -5,6 +5,7 @@ add_subdirectory(gradients)
 add_subdirectory(invoker)
 add_subdirectory(shadows)
 add_subdirectory(shapes)
+add_subdirectory(charts)
 
 if (BUILD_INPUTCONTEXT)
     add_subdirectory(inputpanel)
