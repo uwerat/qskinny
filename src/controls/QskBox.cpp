@@ -5,6 +5,9 @@
 
 #include "QskBox.h"
 #include "QskMargins.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxBorderColors.h"
+#include "QskGradient.h"
 
 QSK_SUBCONTROL( QskBox, Panel )
 
@@ -38,6 +41,57 @@ void QskBox::setPanel( bool on )
 bool QskBox::hasPanel() const
 {
     return m_hasPanel;
+}
+
+QskBoxBorderMetrics QskBox::borderMetrics() const
+{
+    return boxBorderMetricsHint( Panel );
+}
+
+void QskBox::setBorderMetrics( const QskBoxBorderMetrics& metrics )
+{
+    if ( setBoxBorderMetricsHint( Panel, metrics ) )
+        Q_EMIT borderMetricsChanged( borderMetrics() );
+}
+
+void QskBox::resetBorderMetrics()
+{
+    if ( resetBoxBorderMetricsHint( Panel ) )
+        Q_EMIT borderMetricsChanged( borderMetrics() );
+}
+
+QskBoxBorderColors QskBox::borderColors() const
+{
+    return boxBorderColorsHint( Panel );
+}
+
+void QskBox::setBorderColors( const QskBoxBorderColors& colors )
+{
+    if ( setBoxBorderColorsHint( Panel, colors ) )
+        Q_EMIT borderColorsChanged( borderColors() );
+}
+
+void QskBox::resetBorderColors()
+{
+    if ( resetBoxBorderColorsHint( Panel ) )
+        Q_EMIT borderColorsChanged( borderColors() );
+}
+
+QskGradient QskBox::fillGradient() const
+{
+    return gradientHint( Panel );
+}
+
+void QskBox::setFillGradient( const QskGradient& gradient )
+{
+    if ( setGradientHint( Panel, gradient ) )
+        Q_EMIT fillGradientChanged( gradient );
+}
+
+void QskBox::resetFillGradient()
+{
+    if ( resetColor( Panel ) )
+        Q_EMIT fillGradientChanged( fillGradient() );
 }
 
 void QskBox::setPadding( qreal padding )

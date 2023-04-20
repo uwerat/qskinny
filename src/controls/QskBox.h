@@ -17,6 +17,18 @@ class QSK_EXPORT QskBox : public QskControl
     Q_PROPERTY( bool panel READ hasPanel
         WRITE setPanel NOTIFY panelChanged FINAL )
 
+    Q_PROPERTY( QskBoxBorderMetrics borderMetrics READ borderMetrics
+        WRITE setBorderMetrics RESET resetBorderMetrics
+        NOTIFY borderMetricsChanged )
+
+    Q_PROPERTY( QskBoxBorderColors borderColors READ borderColors
+        WRITE setBorderColors RESET resetBorderColors
+        NOTIFY borderColorsChanged )
+
+    Q_PROPERTY( QskGradient setFillGradient READ fillGradient
+        WRITE setFillGradient RESET resetFillGradient
+        NOTIFY fillGradientChanged )
+
     Q_PROPERTY( QskMargins padding READ padding
         WRITE setPadding RESET resetPadding NOTIFY paddingChanged )
 
@@ -31,6 +43,18 @@ class QSK_EXPORT QskBox : public QskControl
     void setPanel( bool );
     bool hasPanel() const;
 
+    QskBoxBorderMetrics borderMetrics() const;
+    void setBorderMetrics( const QskBoxBorderMetrics& );
+    void resetBorderMetrics();
+
+    QskBoxBorderColors borderColors() const;
+    void setBorderColors( const QskBoxBorderColors& );
+    void resetBorderColors();
+
+    QskGradient fillGradient() const;
+    void setFillGradient( const QskGradient& );
+    void resetFillGradient();
+
     void setPadding( qreal );
     void setPadding( const QMarginsF& );
     void resetPadding();
@@ -40,6 +64,9 @@ class QSK_EXPORT QskBox : public QskControl
 
   Q_SIGNALS:
     void panelChanged( bool );
+    void borderMetricsChanged( const QskBoxBorderMetrics& );
+    void borderColorsChanged( const QskBoxBorderColors& );
+    void fillGradientChanged( const QskGradient& );
     void paddingChanged( const QMarginsF& );
 
   private:
