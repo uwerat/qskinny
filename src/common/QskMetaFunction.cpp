@@ -14,16 +14,6 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>
 QSK_QT_PRIVATE_END
 
-static inline void qskInvokeFunctionQueued(
-    QObject* object, QskMetaFunction::FunctionCall* functionCall,
-    void* argv[], QSemaphore* semaphore )
-{
-    auto event = new QMetaCallEvent(
-        functionCall, nullptr, 0, argv, semaphore );
-
-    QCoreApplication::postEvent( object, event );
-}
-
 namespace
 {
     using FunctionCall = QskMetaFunction::FunctionCall;
@@ -216,7 +206,10 @@ void QskMetaFunction::invoke( QObject* object,
 
             QSemaphore semaphore;
 
-            qskInvokeFunctionQueued( receiver, m_functionCall, argv, &semaphore );
+            auto event = new QMetaCallEvent(
+                m_functionCall, nullptr, 0, argv, &semaphore );
+
+            QCoreApplication::postEvent( receiver, event );
 
             semaphore.acquire();
 
@@ -225,18 +218,22 @@ void QskMetaFunction::invoke( QObject* object,
         case Qt::QueuedConnection:
         {
             if ( receiver.isNull() )
-            {
                 return;
-            }
 
             const auto argc = parameterCount() + 1; // return value + arguments
 
-            auto arguments = static_cast< void** >( std::malloc( argc * sizeof( void* ) ) );
+            auto event = new QMetaCallEvent( m_functionCall, nullptr, 0, argc );
 
-            if ( arguments == nullptr )
-                return;
+            auto types = event->types();
+            auto arguments = event->args();
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+            types[0] = QMetaType();
             arguments[ 0 ] = nullptr;
+#else
+            types[0] = 0;
+            arguments[ 0 ] = nullptr;
+#endif
 
             const int* parameterTypes = m_functionCall->parameterTypes();
             for ( uint i = 1; i < argc; i++ )
@@ -248,24 +245,22 @@ void QskMetaFunction::invoke( QObject* object,
                     break;
                 }
 
-                const auto type = parameterTypes[ i - 1 ];
+                const auto type = parameterTypes[i - 1];
 
-                arguments[ i ] =
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-                    QMetaType( type ).create( argv[ i ] );
+                types[ i ] = QMetaType( type );
+                arguments[ i ] = QMetaType( type ).create( argv[ i ] );
 #else
-                    QMetaType::create( type, argv[ i ] );
+                types[ i ] = type;
+                arguments[ i ] = QMetaType::create( type, argv[ i ] );
 #endif
             }
 
-            if ( receiver.isNull() )
-            {
-                // object might have died in the meantime
-                std::free( arguments );
-                return;
-            }
+            if ( receiver )
+                QCoreApplication::postEvent( receiver, event );
+            else
+                delete event;
 
-            qskInvokeFunctionQueued( object, m_functionCall, arguments, nullptr );
             break;
         }
     }

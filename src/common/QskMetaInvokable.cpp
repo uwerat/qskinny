@@ -60,12 +60,22 @@ namespace
     class MetaCallEvent final : public QMetaCallEvent
     {
       public:
-        MetaCallEvent(
-                QMetaObject::Call call, CallFunction callFunction, ushort offset,
-                ushort index, void* args[], QSemaphore* semaphore )
-            : QMetaCallEvent( offset, index, callFunction, nullptr, -1, args, semaphore )
+        MetaCallEvent( QMetaObject::Call call, const QMetaObject* metaObject,
+                ushort offset, ushort index, void* args[], QSemaphore* semaphore )
+            : QMetaCallEvent( offset, index,
+                metaObject->d.static_metacall, nullptr, -1, args, semaphore )
             , m_call( call )
-            , m_callFunction( callFunction )
+            , m_callFunction( metaObject->d.static_metacall )
+            , m_index( index )
+        {
+        }
+
+        MetaCallEvent( QMetaObject::Call call, const QMetaObject* metaObject,
+                ushort offset, ushort index, int argc )
+            : QMetaCallEvent( offset, index,
+                metaObject->d.static_metacall, nullptr, -1, argc )
+            , m_call( call )
+            , m_callFunction( metaObject->d.static_metacall )
             , m_index( index )
         {
         }
@@ -88,7 +98,7 @@ static inline void qskInvokeMetaCallQueued( QObject* object,
     const QMetaObject* metaObject, QMetaObject::Call call, ushort offset,
     ushort index, void* args[], QSemaphore* semaphore )
 {
-    auto event = new MetaCallEvent( call, metaObject->d.static_metacall,
+    auto event = new MetaCallEvent( call, metaObject,
         offset, index, args, semaphore );
 
     QCoreApplication::postEvent( object, event );
@@ -194,8 +204,10 @@ static void qskInvokeMetaCall(
 
             QSemaphore semaphore;
 
-            qskInvokeMetaCallQueued( receiver, metaObject, call,
+            auto event = new MetaCallEvent( call, metaObject,
                 offset, index, argv, &semaphore );
+
+            QCoreApplication::postEvent( receiver, event );
 
             semaphore.acquire();
 
@@ -206,7 +218,7 @@ static void qskInvokeMetaCall(
             if ( receiver == nullptr )
                 return;
 
-            void** arguments = nullptr;
+            MetaCallEvent* event = nullptr;
 
             if ( call == QMetaObject::InvokeMetaMethod )
             {
@@ -216,15 +228,23 @@ static void qskInvokeMetaCall(
 #endif
                 const int argc = method.parameterCount() + 1;
 
-                arguments = static_cast< void** >( malloc( argc * sizeof( void* ) ) );
+                event = new MetaCallEvent( call, metaObject, offset, index, argc );
 
                 /*
                     The first one is the return type, one that is always
                     invalid for Queued Connections.
                  */
 
-                arguments[ 0 ] = nullptr;
+                auto types = event->types();
+                auto arguments = event->args();
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+                types[0] = QMetaType();
+                arguments[ 0 ] = nullptr;
+#else
+                types[0] = 0;
+                arguments[ 0 ] = nullptr;
+#endif
                 for ( int i = 1; i < argc; i++ )
                 {
                     if ( argv[ i ] == nullptr )
@@ -235,7 +255,15 @@ static void qskInvokeMetaCall(
                     }
 
                     const auto type = method.parameterType( i - 1 );
-                    arguments[ i ] = qskMetaTypeCreate( type, argv[ i ] );
+                    const auto arg = argv[ i ];
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+                    types[ i ] = QMetaType( type );
+                    arguments[ i ] = QMetaType( type ).create( arg );
+#else
+                    types[ i ] = type;
+                    arguments[ i ] = QMetaType::create( type, arg );
+#endif
                 }
             }
             else
@@ -243,27 +271,24 @@ static void qskInvokeMetaCall(
                 // should be doable without QMetaMethod. TODO ...
                 const auto property = metaObject->property( offset + index );
 
-                arguments = static_cast< void** >( malloc( 1 * sizeof( void* ) ) );
-                arguments[ 0 ] = qskMetaTypeCreate( property.userType(), argv[ 0 ] );
+                event = new MetaCallEvent( call, metaObject, offset, index, 1 );
+
+                const auto type = property.userType();
+                const auto arg = argv[ 0 ];
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+                event->types()[0] = QMetaType( type );
+                event->args()[ 0 ] = QMetaType( type ).create( arg );
+#else
+                event->types()[0] = type;
+                event->args()[ 0 ] = QMetaType::create( type, arg );
+#endif
             }
 
-            if ( receiver.isNull() )
-            {
-                /*
-                    receiver might have died in the meantime.
-                    We create a dummy event, so that the arguments
-                    are freed by its destructor.
-                 */
-
-                const MetaCallEvent cleanUpEvent(
-                    call, metaObject->d.static_metacall,
-                    offset, index, arguments, nullptr );
-
-                return;
-            }
-
-            qskInvokeMetaCallQueued( object, metaObject,
-                 call, offset, index, arguments, nullptr );
+            if ( receiver )
+                QCoreApplication::postEvent( receiver, event );
+            else
+                delete event;
 
             break;
         }
