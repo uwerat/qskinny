@@ -381,6 +381,9 @@ QskLayoutChain::Segments QskLayoutChain::preferredStretched( qreal size ) const
 {
     const int count = m_cells.size();
 
+    if ( count == 0 )
+        return Segments();
+
     qreal sumFactors = 0.0;
 
     QVarLengthArray< qreal > factors( count );
@@ -413,36 +416,41 @@ QskLayoutChain::Segments QskLayoutChain::preferredStretched( qreal size ) const
         sumFactors += factors[i];
     }
 
-    auto sumSizes = size - ( m_validCells - 1 ) * m_spacing;
+    qreal sumSizes = 0.0;
 
-    Q_FOREVER
+    if ( sumFactors > 0.0 )
     {
-        bool done = true;
+        sumSizes = size - ( m_validCells - 1 ) * m_spacing;
 
-        for ( int i = 0; i < count; i++ )
+        Q_FOREVER
         {
-            if ( factors[i] < 0.0 )
-                continue;
+            bool done = true;
 
-            const auto sz = sumSizes * factors[i] / sumFactors;
-
-            const auto& hint = m_cells[i].metrics;
-            const auto boundedSize =
-                qBound( hint.preferred(), sz, hint.maximum() );
-
-            if ( boundedSize != sz )
+            for ( int i = 0; i < count; i++ )
             {
-                segments[i].length = boundedSize;
-                sumSizes -= boundedSize;
-                sumFactors -= factors[i];
-                factors[i] = -1.0;
+                if ( factors[i] < 0.0 )
+                    continue;
 
-                done = false;
+                const auto sz = sumSizes * factors[i] / sumFactors;
+
+                const auto& hint = m_cells[i].metrics;
+                const auto boundedSize =
+                    qBound( hint.preferred(), sz, hint.maximum() );
+
+                if ( boundedSize != sz )
+                {
+                    segments[i].length = boundedSize;
+                    sumSizes -= boundedSize;
+                    sumFactors -= factors[i];
+                    factors[i] = -1.0;
+
+                    done = false;
+                }
             }
-        }
 
-        if ( done )
-            break;
+            if ( done )
+                break;
+        }
     }
 
     qreal offset = 0;
