@@ -94,16 +94,6 @@ namespace
     };
 }
 
-static inline void qskInvokeMetaCallQueued( QObject* object,
-    const QMetaObject* metaObject, QMetaObject::Call call, ushort offset,
-    ushort index, void* args[], QSemaphore* semaphore )
-{
-    auto event = new MetaCallEvent( call, metaObject,
-        offset, index, args, semaphore );
-
-    QCoreApplication::postEvent( object, event );
-}
-
 QMetaMethod qskMetaMethod( const QObject* object, const char* methodName )
 {
     return object ? qskMetaMethod( object->metaObject(), methodName ) : QMetaMethod();
@@ -160,7 +150,7 @@ QMetaMethod qskNotifySignal( const QMetaObject* metaObject, const char* property
 
 static void qskInvokeMetaCall(
     QObject* object, const QMetaObject* metaObject,
-    QMetaObject::Call call, ushort offset, ushort index, void* argv[],
+    QMetaObject::Call call, ushort offset, ushort index, void* args[],
     Qt::ConnectionType connectionType )
 {
     QPointer< QObject > receiver( object );
@@ -190,7 +180,7 @@ static void qskInvokeMetaCall(
                 Need to dive deeper into the Qt code to be 100% sure TODO ...
              */
 
-            metaObject->d.static_metacall( receiver, call, index, argv );
+            metaObject->d.static_metacall( receiver, call, index, args );
             break;
         }
         case Qt::BlockingQueuedConnection:
@@ -205,7 +195,7 @@ static void qskInvokeMetaCall(
             QSemaphore semaphore;
 
             auto event = new MetaCallEvent( call, metaObject,
-                offset, index, argv, &semaphore );
+                offset, index, args, &semaphore );
 
             QCoreApplication::postEvent( receiver, event );
 
@@ -247,15 +237,15 @@ static void qskInvokeMetaCall(
 #endif
                 for ( int i = 1; i < argc; i++ )
                 {
-                    if ( argv[ i ] == nullptr )
+                    if ( args[ i ] == nullptr )
                     {
-                        Q_ASSERT( argv[ i ] != nullptr );
+                        Q_ASSERT( args[ i ] != nullptr );
                         receiver = nullptr;
                         break;
                     }
 
                     const auto type = method.parameterType( i - 1 );
-                    const auto arg = argv[ i ];
+                    const auto arg = args[ i ];
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
                     types[ i ] = QMetaType( type );
@@ -274,7 +264,7 @@ static void qskInvokeMetaCall(
                 event = new MetaCallEvent( call, metaObject, offset, index, 1 );
 
                 const auto type = property.userType();
-                const auto arg = argv[ 0 ];
+                const auto arg = args[ 0 ];
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
                 event->types()[0] = QMetaType( type );
@@ -327,7 +317,7 @@ void qskInvokeMetaMethod( QObject* object,
 }
 
 void qskInvokeMetaMethod( QObject* object,
-    const QMetaObject* metaObject, int methodIndex, void* argv[],
+    const QMetaObject* metaObject, int methodIndex, void* args[],
     Qt::ConnectionType connectionType )
 {
     if ( metaObject && ( methodIndex >= 0 ) &&
@@ -337,7 +327,7 @@ void qskInvokeMetaMethod( QObject* object,
         const auto index = methodIndex - offset;
 
         qskInvokeMetaCall( object, metaObject, QMetaObject::InvokeMetaMethod,
-            offset, index, argv, connectionType );
+            offset, index, args, connectionType );
     }
 }
 
