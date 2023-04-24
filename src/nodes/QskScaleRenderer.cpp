@@ -79,9 +79,24 @@ void QskScaleRenderer::setOrientation( Qt::Orientation orientation )
     m_data->orientation = orientation;
 }
 
+Qt::Orientation QskScaleRenderer::orientation() const
+{
+    return m_data->orientation;
+}
+
 void QskScaleRenderer::setAlignment( Qt::Alignment alignment )
 {
     m_data->alignment = alignment;
+}
+
+Qt::Alignment QskScaleRenderer::aligment() const
+{
+    return m_data->alignment;
+}
+
+void QskScaleRenderer::setBoundaries( qreal lowerBound, qreal upperBound )
+{
+    setBoundaries( QskIntervalF( lowerBound, upperBound ) );
 }
 
 void QskScaleRenderer::setBoundaries( const QskIntervalF& boundaries )
@@ -89,9 +104,19 @@ void QskScaleRenderer::setBoundaries( const QskIntervalF& boundaries )
     m_data->boundaries = boundaries;
 }
 
+QskIntervalF QskScaleRenderer::boundaries() const
+{
+    return m_data->boundaries;
+}
+
 void QskScaleRenderer::setTickmarks( const QskScaleTickmarks& tickmarks )
 {
     m_data->tickmarks = tickmarks;
+}
+
+const QskScaleTickmarks& QskScaleRenderer::tickmarks() const
+{
+    return m_data->tickmarks;
 }
 
 void QskScaleRenderer::setTickColor( const QColor& color )
@@ -99,9 +124,19 @@ void QskScaleRenderer::setTickColor( const QColor& color )
     m_data->tickColor = color;
 }
 
+QColor QskScaleRenderer::tickColor() const
+{
+    return m_data->tickColor;
+}
+
 void QskScaleRenderer::setTickWidth( qreal width )
 {
     m_data->tickWidth = width;
+}
+
+qreal QskScaleRenderer::tickWidth() const
+{
+    return m_data->tickWidth;
 }
 
 void QskScaleRenderer::setFont( const QFont& font )
@@ -109,14 +144,29 @@ void QskScaleRenderer::setFont( const QFont& font )
     m_data->font = font;
 }
 
+QFont QskScaleRenderer::font() const
+{
+    return m_data->font;
+}
+
 void QskScaleRenderer::setTextColors( const QskTextColors& textColors )
 {
     m_data->textColors = textColors;
 }
 
+QskTextColors QskScaleRenderer::textColors() const
+{
+    return m_data->textColors;
+}
+
 void QskScaleRenderer::setColorFilter( const QskColorFilter& colorFilter )
 {
     m_data->colorFilter = colorFilter;
+}
+
+const QskColorFilter& QskScaleRenderer::colorFilter() const
+{
+    return m_data->colorFilter;
 }
 
 QSGNode* QskScaleRenderer::updateScaleNode(

@@ -31,18 +31,32 @@ class QSK_EXPORT QskScaleRenderer
     virtual ~QskScaleRenderer();
 
     void setOrientation( Qt::Orientation );
-    void setAlignment( Qt::Alignment );
+    Qt::Orientation orientation() const;
 
+    void setAlignment( Qt::Alignment );
+    Qt::Alignment aligment() const;
+
+    void setBoundaries( qreal lowerBound, qreal upperBound );
     void setBoundaries( const QskIntervalF& );
+    QskIntervalF boundaries() const;
+
     void setTickmarks( const QskScaleTickmarks& );
+    const QskScaleTickmarks& tickmarks() const;
 
     void setTickColor( const QColor& );
+    QColor tickColor() const;
+
     void setTickWidth( qreal );
+    qreal tickWidth() const;
 
     void setFont( const QFont& );
+    QFont font() const;
+
     void setTextColors( const QskTextColors& );
+    QskTextColors textColors() const;
 
     void setColorFilter( const QskColorFilter& );
+    const QskColorFilter& colorFilter() const;
 
     QSGNode* updateScaleNode( const QskSkinnable*,
         const QRectF& tickmarksRect, const QRectF& labelsRect, QSGNode* );
