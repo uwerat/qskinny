@@ -47,6 +47,11 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ) :
     setSkinHint( Q::Overlay | QskAspect::Style, false );
 
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );    
+
+    connect(this, &QskDrawer::closed, this, [this](){
+	qDebug() << "Close this motherfucker";
+	startTransition( DasPanel | QskAspect::Metric, QskAnimationHint(200), .0, 1.0 );
+    });
 }
 
 QskDrawer::~QskDrawer()
