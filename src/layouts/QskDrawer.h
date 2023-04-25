@@ -1,9 +1,6 @@
-#include "QskGlobal.h"
 #include "QskPopup.h"
 
 #include <memory>
-#include <qnamespace.h>
-#include <qobjectdefs.h>
 
 #ifndef QSK_DRAWER_H
 #define QSK_DRAWER_H

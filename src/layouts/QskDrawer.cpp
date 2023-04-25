@@ -1,18 +1,9 @@
 #include "QskDrawer.h"
-#include "QskAnimationHint.h"
-#include "QskAspect.h"
-#include "QskControl.h"
-#include "QskPopup.h"
-#include "QskBox.h"
-#include <algorithm>
-#include <qnamespace.h>
-#include <qquickitem.h>
-#include <QskQuick.h>
 
-#include <QskSkinlet.h>
-#include <QskSkin.h>
-#include <QskWindow.h>
-#include <qsize.h>
+#include <QskPopup.h>
+#include <QskBox.h>
+#include <QskAnimationHint.h>
+#include <QskQuick.h>
 
 QSK_SUBCONTROL( QskDrawer, DasPanel )
 
@@ -102,6 +93,5 @@ void QskDrawer::aboutToShow()
     startTransition( DasPanel | QskAspect::Metric, QskAnimationHint(200), 1.0, .0 );
     Inherited::aboutToShow();
 }
-
 
 #include "moc_QskDrawer.cpp"
