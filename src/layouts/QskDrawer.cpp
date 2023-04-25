@@ -40,8 +40,7 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ) :
 
     setAnimationHint( QskDrawer::DasPanel | QskAspect::Metric, QskAnimationHint(300) );
     setModal( false );
-    setFaderAspect( QskDrawer::DasPanel | QskAspect::Metric );
-    setMetric( DasPanel, 0.1);
+
     setFaderAspect( DasPanel | QskAspect::Metric );
     
     setSkinHint( Q::Overlay | QskAspect::Style, false );
@@ -52,6 +51,7 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ) :
 	qDebug() << "Close this motherfucker";
 	startTransition( DasPanel | QskAspect::Metric, QskAnimationHint(200), .0, 1.0 );
     });
+
 }
 
 QskDrawer::~QskDrawer()
@@ -74,7 +74,6 @@ void QskDrawer::setEdge( Qt::Edge edge ) {
 void QskDrawer::setContent( QskControl* t ) {
     m_data->control = t;
     t->setParentItem( m_data->content );
-    //    polish();
 }
 
 void QskDrawer::updateLayout() {
@@ -83,7 +82,6 @@ void QskDrawer::updateLayout() {
     }
 
     auto rect = parentItem()->childrenRect();
-    rect.setSize( {200, 400} ); //m_data->content->preferredSize() );
 
     switch( m_data->edge ) {
     case Qt::Edge::LeftEdge:
@@ -108,14 +106,9 @@ void QskDrawer::updateLayout() {
     Inherited::updateLayout();
 }
 
-QSizeF QskDrawer::contentsSizeHint( Qt::SizeHint, const QSizeF& ) const {
-    return {200, 200};
-}
-
-
 void QskDrawer::aboutToShow()
 {
-    startTransition( DasPanel | QskAspect::Metric, QskAnimationHint(2000), 1.0, .0 );
+    startTransition( DasPanel | QskAspect::Metric, QskAnimationHint(200), 1.0, .0 );
     Inherited::aboutToShow();
 }
 

@@ -30,7 +30,6 @@ class QSK_EXPORT QskDrawer : public QskPopup
 
  protected:
     void aboutToShow() override;
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
   
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
