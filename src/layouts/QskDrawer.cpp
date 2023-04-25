@@ -1,4 +1,5 @@
 #include "QskDrawer.h"
+#include "QskAspect.h"
 
 #include <QskPopup.h>
 #include <QskBox.h>
@@ -9,7 +10,6 @@ QSK_SUBCONTROL( QskDrawer, DasPanel )
 
 class QskDrawer::PrivateData {
 public:
-    QskControl* control = nullptr;
     QskBox* content;
     Qt::Edge edge = Qt::LeftEdge;
 };
@@ -18,19 +18,18 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ) :
     Inherited ( parentItem )
     , m_data( new PrivateData { } )
 {
-    using Q = QskDrawer;
     setZ( 1 );
 
     setPopupFlag( PopupFlag::CloseOnPressOutside, true );
 
     m_data->content = new QskBox(this);
-    m_data->content->setSubcontrolProxy( QskBox::Panel, QskDrawer::DasPanel );
+    m_data->content->setSubcontrolProxy( QskBox::Panel, DasPanel );
     
     setAnimationHint( DasPanel | QskAspect::Position, QskAnimationHint( 1000 ) );
 
     setFaderAspect( DasPanel | QskAspect::Metric );
     
-    setSkinHint( Q::Overlay | QskAspect::Style, false );
+    setSkinHint( Overlay | QskAspect::Style, false );
 
     connect(this, &QskDrawer::closed, this, [this](){
 	startTransition( DasPanel | QskAspect::Metric,
@@ -57,15 +56,10 @@ void QskDrawer::setEdge( Qt::Edge edge ) {
 }
 
 void QskDrawer::setContent( QskControl* t ) {
-    m_data->control = t;
     t->setParentItem( m_data->content );
 }
 
 void QskDrawer::updateLayout() {
-    if( !m_data->control ) {
-	return;
-    }
-
     auto rect = parentItem()->childrenRect();
 
     switch( m_data->edge ) {
