@@ -30,28 +30,21 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ) :
     using Q = QskDrawer;
     setZ( 1 );
 
-    setPolishOnResize( true );
-    this->setPopupFlags( PopupFlag::CloseOnPressOutside );
     setPopupFlag( PopupFlag::CloseOnPressOutside, true );
 
     m_data->content = new QskBox(this);
     m_data->content->setSubcontrolProxy( QskBox::Panel, QskDrawer::DasPanel );
-    m_data->content->setClip( true );
-
+    
     setAnimationHint( QskDrawer::DasPanel | QskAspect::Metric, QskAnimationHint(300) );
-    setModal( false );
 
     setFaderAspect( DasPanel | QskAspect::Metric );
     
     setSkinHint( Q::Overlay | QskAspect::Style, false );
 
-    initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );    
-
     connect(this, &QskDrawer::closed, this, [this](){
-	qDebug() << "Close this motherfucker";
-	startTransition( DasPanel | QskAspect::Metric, QskAnimationHint(200), .0, 1.0 );
+	startTransition( DasPanel | QskAspect::Metric,
+			 QskAnimationHint(200), 0.0, 1.0 );
     });
-
 }
 
 QskDrawer::~QskDrawer()
@@ -100,8 +93,6 @@ void QskDrawer::updateLayout() {
     qreal off = metric( faderAspect() ) * size.width();
 
     qskSetItemGeometry( m_data->content, -off, 0, size.width(), size.height());
-
-    m_data->content->polish();
 
     Inherited::updateLayout();
 }
