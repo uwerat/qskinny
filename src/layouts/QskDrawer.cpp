@@ -26,7 +26,7 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ) :
     m_data->content = new QskBox(this);
     m_data->content->setSubcontrolProxy( QskBox::Panel, QskDrawer::DasPanel );
     
-    setAnimationHint( QskDrawer::DasPanel | QskAspect::Metric, QskAnimationHint(300) );
+    setAnimationHint( DasPanel | QskAspect::Position, QskAnimationHint( 1000 ) );
 
     setFaderAspect( DasPanel | QskAspect::Metric );
     
@@ -34,7 +34,8 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ) :
 
     connect(this, &QskDrawer::closed, this, [this](){
 	startTransition( DasPanel | QskAspect::Metric,
-			 QskAnimationHint(200), 0.0, 1.0 );
+			 animationHint( DasPanel | QskAspect::Position ),
+			 0.0, 1.0 );
     });
 }
 
@@ -90,7 +91,9 @@ void QskDrawer::updateLayout() {
 
 void QskDrawer::aboutToShow()
 {
-    startTransition( DasPanel | QskAspect::Metric, QskAnimationHint(200), 1.0, .0 );
+    startTransition( DasPanel | QskAspect::Metric,
+		     animationHint( DasPanel | QskAspect::Position ),
+		     1.0, 0.0 );
     Inherited::aboutToShow();
 }
 
