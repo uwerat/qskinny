@@ -7,7 +7,7 @@
 #include <QskAnimationHint.h>
 #include <QskQuick.h>
 
-QSK_SUBCONTROL( QskDrawer, DasPanel )
+QSK_SUBCONTROL( QskDrawer, Panel )
 
 class QskDrawer::PrivateData {
 public:
@@ -25,17 +25,17 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ) :
     setPopupFlag( PopupFlag::CloseOnPressOutside, true );
 
     m_data->contentBox = new QskBox(this);
-    m_data->contentBox->setSubcontrolProxy( QskBox::Panel, DasPanel );
+    m_data->contentBox->setSubcontrolProxy( QskBox::Panel, Panel );
     
-    setAnimationHint( DasPanel | QskAspect::Position, QskAnimationHint( 1000 ) );
+    setAnimationHint( Panel | QskAspect::Position, QskAnimationHint( 1000 ) );
 
-    setFaderAspect( DasPanel | QskAspect::Metric );
+    setFaderAspect( Panel | QskAspect::Metric );
     
     setSkinHint( Overlay | QskAspect::Style, false );
 
     connect(this, &QskDrawer::closed, this, [this](){
-	startTransition( DasPanel | QskAspect::Metric,
-			 animationHint( DasPanel | QskAspect::Position ),
+	startTransition( Panel | QskAspect::Metric,
+			 animationHint( Panel | QskAspect::Position ),
 			 0.0, 1.0 );
     });
 }
@@ -105,8 +105,8 @@ void QskDrawer::updateLayout() {
 
 void QskDrawer::aboutToShow()
 {
-    startTransition( DasPanel | QskAspect::Metric,
-		     animationHint( DasPanel | QskAspect::Position ),
+    startTransition( Panel | QskAspect::Metric,
+		     animationHint( Panel | QskAspect::Position ),
 		     1.0, 0.0 );
     Inherited::aboutToShow();
 }

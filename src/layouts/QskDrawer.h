@@ -14,7 +14,7 @@ class QSK_EXPORT QskDrawer : public QskPopup
     Q_PROPERTY( Qt::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged )
 
  public:
-    QSK_SUBCONTROLS( DasPanel )
+    QSK_SUBCONTROLS( Panel )
     QskDrawer( QQuickItem* parentItem = nullptr );
     ~QskDrawer() override;
 
