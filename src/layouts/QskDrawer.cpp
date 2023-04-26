@@ -1,5 +1,6 @@
 #include "QskDrawer.h"
 #include "QskAspect.h"
+#include "QskControl.h"
 
 #include <QskPopup.h>
 #include <QskBox.h>
@@ -10,7 +11,8 @@ QSK_SUBCONTROL( QskDrawer, DasPanel )
 
 class QskDrawer::PrivateData {
 public:
-    QskBox* content;
+    QskControl* content;
+    QskBox* contentBox;
     Qt::Edge edge = Qt::LeftEdge;
 };
 
@@ -22,8 +24,8 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ) :
 
     setPopupFlag( PopupFlag::CloseOnPressOutside, true );
 
-    m_data->content = new QskBox(this);
-    m_data->content->setSubcontrolProxy( QskBox::Panel, DasPanel );
+    m_data->contentBox = new QskBox(this);
+    m_data->contentBox->setSubcontrolProxy( QskBox::Panel, DasPanel );
     
     setAnimationHint( DasPanel | QskAspect::Position, QskAnimationHint( 1000 ) );
 
@@ -55,13 +57,14 @@ void QskDrawer::setEdge( Qt::Edge edge ) {
     edgeChanged( edge );
 }
 
-void QskDrawer::setContent( QskControl* t ) {
-    t->setParentItem( m_data->content );
+void QskDrawer::setContent( QskControl* content ) {
+    content->setParentItem( m_data->contentBox );
+    m_data->content = content;
 }
 
 void QskDrawer::updateLayout() {
-    auto rect = parentItem()->childrenRect();
-
+    auto size = m_data->content->preferredSize();
+ 
     switch( m_data->edge ) {
     case Qt::Edge::LeftEdge:
     case Qt::Edge::RightEdge:
@@ -75,11 +78,9 @@ void QskDrawer::updateLayout() {
 
     }
     
-    auto size = rect.size();
     qreal off = metric( faderAspect() ) * size.width();
-
-    qskSetItemGeometry( m_data->content, -off, 0, size.width(), size.height());
-
+    qskSetItemGeometry( m_data->contentBox, -off, 0, size.width(), size.height());
+   
     Inherited::updateLayout();
 }
 
