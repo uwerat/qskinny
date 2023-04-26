@@ -67,19 +67,38 @@ void QskDrawer::updateLayout() {
  
     switch( m_data->edge ) {
     case Qt::Edge::LeftEdge:
+	{
+	    qreal off = metric( faderAspect() ) * size.width();
+	    qskSetItemGeometry( m_data->contentBox,
+				-off, 0, size.width(), size.height());
+	    break;
+	}
     case Qt::Edge::RightEdge:
-	//	rect.setWidth( m_data->control->preferredSize().width() );
-	break;
+	{
+	    qreal off = metric( faderAspect() ) * size.width();
+	    qskSetItemGeometry( m_data->contentBox,
+				size.width() + off, 0, size.width(), size.height());
+	    break;
+	}
 
     case Qt::Edge::TopEdge:
+	{
+	    qreal off = metric( faderAspect() ) * size.height();
+	    qskSetItemGeometry( m_data->contentBox,
+				0, -off, size.width(), size.height());
+	    break;
+	}
+
     case Qt::Edge::BottomEdge:
-	//	rect.setHeight( m_data->control->preferredSize().height() );
+	{
+	    qreal off = metric( faderAspect() ) * size.height();
+	    qskSetItemGeometry( m_data->contentBox,
+				0, size.height() + off, size.width(), size.height());
+	    break;
+	}
 	break;
 
-    }
-    
-    qreal off = metric( faderAspect() ) * size.width();
-    qskSetItemGeometry( m_data->contentBox, -off, 0, size.width(), size.height());
+    }    
    
     Inherited::updateLayout();
 }
