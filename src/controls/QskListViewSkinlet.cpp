@@ -126,8 +126,7 @@ void QskListViewSkinlet::updateBackgroundNode( const QskListView* listView, QSGN
         boxNode = updateBoxNode( listView, boxNode, boxRect, subControl );
 
         if ( boxNode && prepend )
-        {
-            Q_ASSERT(boxNode);
+        {            
             rowNode->prependChildNode( boxNode );
         }
     }
@@ -144,7 +143,6 @@ void QskListViewSkinlet::updateBackgroundNode( const QskListView* listView, QSGN
 
         if ( boxNode && prepend )
         {
-            Q_ASSERT(boxNode);
             rowNode->prependChildNode( boxNode );
         }
     }   
