@@ -8,8 +8,8 @@
 #ifdef ITEM_STATISTICS
 #include <QskObjectCounter.h>
 #endif
-#include <QskWindow.h>
 #include <QskLinearBox.h>
+#include <QskWindow.h>
 
 #include <QGuiApplication>
 
@@ -29,10 +29,10 @@ int main( int argc, char* argv[] )
     QskWindow window;
     window.setColor( "Silver" );
 
-    auto* const layout = new QskLinearBox(Qt::Horizontal);
-    layout->setSpacing(8);
-    (void) new ListBox(layout);
-    (void) new TreeBox(layout);
+    auto* const layout = new QskLinearBox( Qt::Horizontal );
+    layout->setSpacing( 8 );
+    ( void ) new ListBox( layout );
+    ( void ) new TreeBox( layout );
 
     window.addItem( layout );
     window.resize( 400, 600 );

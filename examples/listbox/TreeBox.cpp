@@ -11,12 +11,12 @@ QSK_SUBCONTROL( TreeBox, SecondRow )
 TreeBox::TreeBox( QQuickItem* const parent )
     : Inherited( parent )
 {
-    setAlternatingRowColors( true );   
+    setAlternatingRowColors( true );
     setPaddingHint( Cell, QMargins( 10, 20, 10, 20 ) );
 
     setAlternatingRowColors( true );
     setColor( FirstRow, Qt::white );
-    setColor( SecondRow, color(Panel) );
+    setColor( SecondRow, color( Panel ) );
     updateScrollableSize();
 };
 
@@ -44,8 +44,8 @@ int TreeBox::columnCount() const
 }
 
 qreal TreeBox::columnWidth( int col ) const
-{    
-    return col == 0 ? 100: 350;
+{
+    return col == 0 ? 100 : 350;
 }
 
 qreal TreeBox::rowHeight() const
@@ -68,7 +68,7 @@ Q_INVOKABLE QVariant TreeBox::valueAt( int row, int col ) const
     return QStringLiteral( "The quick brown fox jumps over the lazy dog" );
 }
 
-qreal TreeBox::rowOffset( int row ) const 
+qreal TreeBox::rowOffset( int row ) const
 {
     return ( row % 4 ) * 10;
 }
