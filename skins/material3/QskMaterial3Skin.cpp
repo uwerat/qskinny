@@ -18,6 +18,7 @@
 #include <QskGraphicIO.h>
 #include <QskInputPanelBox.h>
 #include <QskListView.h>
+#include <QskTreeView.h>
 #include <QskMenu.h>
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
@@ -88,6 +89,7 @@ namespace
         void setupInputPanel();
         void setupVirtualKeyboard();
         void setupListView();
+        void setupTreeView();
         void setupMenu();
         void setupPageIndicator();
         void setupPopup();
@@ -154,6 +156,7 @@ void Editor::setup()
     setupInputPanel();
     setupVirtualKeyboard();
     setupListView();
+    setupTreeView();
     setupMenu();
     setupPageIndicator();
     setupPopup();
@@ -1160,7 +1163,20 @@ void Editor::setupListView()
     using Q = QskListView;
 
     setPadding( Q::Cell, { 16_dp, 12_dp, 16_dp, 12_dp } );
-    setBoxBorderMetrics( Q::Cell, { 0, 0, 0, 1_dp } );
+    setBoxBorderMetrics( Q::Cell, { 0, 1_dp, 0, 1_dp } );
+    setBoxBorderColors( Q::Cell, m_pal.outline );
+    setColor( Q::Cell, m_pal.surface );
+    setColor( Q::Cell | Q::Selected, m_pal.primary12 );
+
+    setColor( Q::Text, m_pal.onSurfaceVariant );
+}
+
+void Editor::setupTreeView()
+{
+    using Q = QskTreeView;
+
+    setPadding( Q::Cell, { 16_dp, 12_dp, 16_dp, 12_dp } );
+    setBoxBorderMetrics( Q::Cell, { 0, 1_dp, 0, 1_dp } );
     setBoxBorderColors( Q::Cell, m_pal.outline );
     setColor( Q::Cell, m_pal.surface );
     setColor( Q::Cell | Q::Selected, m_pal.primary12 );

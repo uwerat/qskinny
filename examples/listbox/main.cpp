@@ -5,56 +5,16 @@
 
 #include <SkinnyShortcut.h>
 
-#include <QskAspect.h>
+#ifdef ITEM_STATISTICS
 #include <QskObjectCounter.h>
-#include <QskSimpleListBox.h>
+#endif
 #include <QskWindow.h>
-#include <QskFunctions.h>
+#include <QskLinearBox.h>
 
-#include <QFontMetricsF>
 #include <QGuiApplication>
 
-class ListBox : public QskSimpleListBox
-{
-  public:
-    ListBox()
-    {
-        setMargins( QMarginsF( 15, 10, 10, 10 ) );
-        setAlternatingRowColors( true );
-
-        // increasing the padding of each row: usually the job of the skin !
-        setPaddingHint( Cell, QMargins( 10, 20, 10, 20 ) );
-
-        populate();
-
-        setSelectedRow( 5 );
-    }
-
-  private:
-    void populate()
-    {
-        const int count = 10000;
-
-        const QString format( "Row %1: The quick brown fox jumps over the lazy dog" );
-
-        QStringList entries;
-        entries.reserve( count );
-
-        for ( int i = 0; i < count; i++ )
-        {
-            entries += format.arg( i + 1 );
-        }
-
-        // we know, that the last entry is the longest one and
-        // can prevent the list box from having to find it out
-        // the expensive way.
-
-        const qreal maxWidth = qskHorizontalAdvance( effectiveFont( Cell ), entries.last() );
-        setColumnWidthHint( 0, maxWidth );
-
-        append( entries );
-    }
-};
+#include "ListBox.h"
+#include "TreeBox.h"
 
 int main( int argc, char* argv[] )
 {
@@ -69,7 +29,12 @@ int main( int argc, char* argv[] )
     QskWindow window;
     window.setColor( "Silver" );
 
-    window.addItem( new ListBox() );
+    auto* const layout = new QskLinearBox(Qt::Horizontal);
+    layout->setSpacing(8);
+    (void) new ListBox(layout);
+    (void) new TreeBox(layout);
+
+    window.addItem( layout );
     window.resize( 400, 600 );
     window.show();
 

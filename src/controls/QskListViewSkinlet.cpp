@@ -110,6 +110,51 @@ QSGNode* QskListViewSkinlet::updateContentsNode(
     return listViewNode;
 }
 
+void QskListViewSkinlet::updateBackgroundNode( const QskListView* listView, QSGNode* rowNode, const QRectF& boxRect, const int row ) const
+{
+    const auto selectedRow = listView->selectedRow();
+    const auto subControl = listView->rowSubControl( row );
+
+    // current row is a selected row
+    if ( row == selectedRow )
+    {
+        auto* boxNode = rowNode->firstChild();
+        auto prepend = boxNode == nullptr;
+
+        QskSkinStateChanger stateChanger( listView );
+        stateChanger.setStates( listView->skinStates() | QskListView::Selected );
+        boxNode = updateBoxNode( listView, boxNode, boxRect, subControl );
+
+        if ( boxNode && prepend )
+        {
+            Q_ASSERT(boxNode);
+            rowNode->prependChildNode( boxNode );
+        }
+    }
+    // current row should be styled
+    else if ( subControl != QskAspect::NoSubcontrol)
+    {
+        auto* boxNode = rowNode->firstChild();
+        auto prepend = boxNode == nullptr;
+
+        const auto color = listView->color(subControl);
+        const auto gradient = listView->gradientHint(subControl);
+
+        boxNode = updateBoxNode( listView, boxNode, boxRect, subControl );
+
+        if ( boxNode && prepend )
+        {
+            Q_ASSERT(boxNode);
+            rowNode->prependChildNode( boxNode );
+        }
+    }   
+    // current row should not be styled
+    else 
+    {
+        rowNode->removeAllChildNodes();
+    }
+}
+
 void QskListViewSkinlet::updateBackgroundNodes(
     const QskListView* listView, QskListViewNode* listViewNode ) const
 {
@@ -126,56 +171,29 @@ void QskListViewSkinlet::updateBackgroundNodes(
         rowMax = listView->rowCount() - 1;
 
     const int rowSelected = listView->selectedRow();
-    const double x0 = viewRect.left() + scrolledPos.x();
+    const double x0 = viewRect.left();
     const double y0 = viewRect.top();
 
-    auto* rowNode = static_cast< QSGSimpleRectNode* >( backgroundNode->firstChild() );
+    auto* rowNode = static_cast< QSGNode* >( backgroundNode->firstChild() );
 
     if ( listView->alternatingRowColors() )
     {
-#if 1
-        /*
-            Cell might be better for regular cells, while ( Cell | AlternateColor )
-            could be used for the alternate color TODO ...
-         */
-#endif
-        const auto color = listView->color( QskListView::Cell );
-
         for ( int row = rowMin; row <= rowMax; row++ )
         {
-            if ( row % 2 )
+            const auto offsetX = listView->rowOffset( row );
+            const QRectF boxRect{ x0 + offsetX, y0 + row * cellHeight, viewRect.width() - offsetX + scrolledPos.x(),
+                cellHeight };
+            
+            if ( rowNode == nullptr )
             {
-                if ( rowNode == nullptr )
-                {
-                    rowNode = new QSGSimpleRectNode();
-                    backgroundNode->appendChildNode( rowNode );
-                }
-
-                rowNode->setRect( x0, y0 + row * cellHeight, viewRect.width(), cellHeight );
-                rowNode->setColor( color );
-
-                rowNode = static_cast< QSGSimpleRectNode* >( rowNode->nextSibling() );
+                rowNode = new QSGNode;
+                updateBackgroundNode( listView, rowNode, boxRect, row );
+                backgroundNode->appendChildNode( rowNode );
             }
+
+            updateBackgroundNode( listView, rowNode, boxRect, row );
+            rowNode = rowNode->nextSibling();
         }
-    }
-
-    if ( rowSelected >= rowMin && rowSelected <= rowMax )
-    {
-        QskSkinStateChanger stateChanger( listView );
-        stateChanger.setStates( listView->skinStates() | QskListView::Selected );
-
-        const QColor color = listView->color( QskListView::Cell );
-
-        if ( rowNode == nullptr )
-        {
-            rowNode = new QSGSimpleRectNode();
-            backgroundNode->appendChildNode( rowNode );
-        }
-
-        rowNode->setRect( x0, y0 + rowSelected * cellHeight, viewRect.width(), cellHeight );
-        rowNode->setColor( color );
-
-        rowNode = static_cast< QSGSimpleRectNode* >( rowNode->nextSibling() );
     }
 
     QSGNode* nextNode = rowNode;
@@ -199,7 +217,8 @@ void QskListViewSkinlet::updateForegroundNodes(
         return;
     }
 
-    const auto margins = listView->paddingHint( QskListView::Cell );
+    const auto subControl = listView->rowSubControl(0);
+    const auto margins = listView->paddingHint( subControl );
 
     const auto cr = listView->viewContentsRect();
     const auto scrolledPos = listView->scrollPos();
@@ -255,8 +274,8 @@ void QskListViewSkinlet::updateForegroundNodes(
         }
     }
 
-    updateVisibleForegroundNodes( listView, listViewNode,
-        rowMin, rowMax, colMin, colMax, margins, forwards );
+    updateVisibleForegroundNodes(
+        listView, listViewNode, rowMin, rowMax, colMin, colMax, margins, forwards );
 
     // finally putting the nodes into their position
     auto node = parentNode->firstChild();
@@ -272,9 +291,10 @@ void QskListViewSkinlet::updateForegroundNodes(
         {
             Q_ASSERT( node->type() == QSGNode::TransformNodeType );
             auto transformNode = static_cast< QSGTransformNode* >( node );
+            const auto offsetX = col == 0 ? listView->rowOffset( row ) : 0.0;
 
             QTransform transform;
-            transform.translate( x + margins.left(), y + margins.top() );
+            transform.translate( x + margins.left() + offsetX, y + margins.top() );
 
             transformNode->setMatrix( transform );
 
@@ -288,10 +308,9 @@ void QskListViewSkinlet::updateForegroundNodes(
     listViewNode->resetRows( rowMin, rowMax );
 }
 
-void QskListViewSkinlet::updateVisibleForegroundNodes(
-    const QskListView* listView, QskListViewNode* listViewNode,
-    int rowMin, int rowMax, int colMin, int colMax, const QMarginsF& margins,
-    bool forward ) const
+void QskListViewSkinlet::updateVisibleForegroundNodes( const QskListView* listView,
+    QskListViewNode* listViewNode, int rowMin, int rowMax, int colMin, int colMax,
+    const QMarginsF& margins, bool forward ) const
 {
     auto parentNode = listViewNode->foregroundNode();
 
@@ -312,11 +331,12 @@ void QskListViewSkinlet::updateVisibleForegroundNodes(
 
             for ( int col = 0; col < listView->columnCount(); col++ )
             {
-                const qreal w = listView->columnWidth( col ) - ( margins.left() + margins.right() );
+                const auto offsetX = col == 0 ? listView->rowOffset( row ) : 0.0;
+                const qreal w =
+                    listView->columnWidth( col ) - ( margins.left() + margins.right() ) - offsetX;
 
-                node = updateForegroundNode( listView,
-                    parentNode, static_cast< QSGTransformNode* >( node ),
-                    row, col, QSizeF( w, h ), forward );
+                node = updateForegroundNode( listView, parentNode,
+                    static_cast< QSGTransformNode* >( node ), row, col, QSizeF( w, h ), forward );
 
                 node = node->nextSibling();
             }
@@ -335,11 +355,12 @@ void QskListViewSkinlet::updateVisibleForegroundNodes(
 
             for ( int col = listView->columnCount() - 1; col >= 0; col-- )
             {
-                const qreal w = listView->columnWidth( col ) - ( margins.left() + margins.right() );
+                const auto offsetX = col == 0 ? listView->rowOffset( row ) : 0.0;
+                const qreal w =
+                    listView->columnWidth( col ) - ( margins.left() + margins.right() ) - offsetX;
 
-                node = updateForegroundNode( listView,
-                    parentNode, static_cast< QSGTransformNode* >( node ),
-                    row, col, QSizeF( w, h ), forward );
+                node = updateForegroundNode( listView, parentNode,
+                    static_cast< QSGTransformNode* >( node ), row, col, QSizeF( w, h ), forward );
 
                 node = node->previousSibling();
             }
@@ -347,9 +368,9 @@ void QskListViewSkinlet::updateVisibleForegroundNodes(
     }
 }
 
-QSGTransformNode* QskListViewSkinlet::updateForegroundNode(
-    const QskListView* listView, QSGNode* parentNode, QSGTransformNode* cellNode,
-    int row, int col, const QSizeF& size, bool forward ) const
+QSGTransformNode* QskListViewSkinlet::updateForegroundNode( const QskListView* listView,
+    QSGNode* parentNode, QSGTransformNode* cellNode, int row, int col, const QSizeF& size,
+    bool forward ) const
 {
     const QRectF cellRect( 0.0, 0.0, size.width(), size.height() );
 
@@ -431,8 +452,8 @@ QSGTransformNode* QskListViewSkinlet::updateForegroundNode(
     return newCellNode;
 }
 
-QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
-    QSGNode* contentNode, const QRectF& rect, int row, int col ) const
+QSGNode* QskListViewSkinlet::updateCellNode(
+    const QskListView* listView, QSGNode* contentNode, const QRectF& rect, int row, int col ) const
 {
     using namespace QskSGNode;
 
@@ -452,8 +473,10 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
         public API of QskListView TODO ...
      */
 #endif
-    const auto alignment = listView->alignmentHint(
-        QskListView::Cell, Qt::AlignVCenter | Qt::AlignLeft );
+    
+    const auto subControl = listView->cellSubControl(row, col);
+    const auto alignment =
+        listView->alignmentHint( subControl, Qt::AlignVCenter | Qt::AlignLeft );
 
     const auto value = listView->valueAt( row, col );
 
@@ -464,8 +487,8 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
 
         const auto colorFilter = listView->graphicFilterAt( row, col );
 
-        newNode = updateGraphicNode( listView, newNode,
-            value.value< QskGraphic >(), colorFilter, rect, alignment );
+        newNode = updateGraphicNode(
+            listView, newNode, value.value< QskGraphic >(), colorFilter, rect, alignment );
 
         if ( newNode )
             setNodeRole( newNode, GraphicRole );
@@ -475,8 +498,10 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
         if ( nodeRole( contentNode ) == TextRole )
             newNode = contentNode;
 
-        newNode = updateTextNode( listView, newNode, rect, alignment,
-            value.toString(), QskListView::Text );
+        const auto subControl = listView->textSubControl( row, col );
+        const auto alignment = listView->alignmentHint( subControl );
+        newNode =
+            updateTextNode( listView, newNode, rect, alignment, value.toString(), subControl );
 
         if ( newNode )
             setNodeRole( newNode, TextRole );
@@ -489,8 +514,8 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
     return newNode;
 }
 
-QSizeF QskListViewSkinlet::sizeHint( const QskSkinnable* skinnable,
-    Qt::SizeHint which, const QSizeF& ) const
+QSizeF QskListViewSkinlet::sizeHint(
+    const QskSkinnable* skinnable, Qt::SizeHint which, const QSizeF& ) const
 {
     const auto listView = static_cast< const QskListView* >( skinnable );
 
