@@ -161,6 +161,12 @@ void Editor::setup()
 
 void Editor::setupBox()
 {
+    using Q = QskBox;
+    using A = QskAspect;
+
+    setGradient( Q::Panel, theme.palette.background.fillColor.solidBackground.base );
+    setGradient( Q::Panel | A::Header, theme.palette.background.fillColor.solidBackground.tertiary );
+    setGradient( Q::Panel | A::Footer, theme.palette.background.fillColor.solidBackground.tertiary );
 }
 
 void Editor::setupCheckBox()
@@ -208,7 +214,6 @@ void Editor::setupPushButton()
     using Q = QskPushButton;
 
     setStrutSize( Q::Panel, { 120, 32 } );
-    setGradient( Q::Panel, theme.palette.fillColor.accent.defaultColor );
     setBoxShape( Q::Panel, 4 );
     setBoxBorderMetrics( Q::Panel, 1 );
 
@@ -225,7 +230,22 @@ void Editor::setupPushButton()
     setStrutSize( Q::Icon, { 0, 0 } );
 
     setFontRole( Q::Text, QskWindowsSkin::Body );
+
+    // Rest:
+    setGradient( Q::Panel, theme.palette.fillColor.accent.defaultColor );
     setColor( Q::Text, theme.palette.fillColor.textOnAccent.primary );
+
+    // Hovered:
+    setGradient( Q::Panel | Q::Hovered, theme.palette.fillColor.accent.secondary );
+
+    // Pressed:
+    setGradient( Q::Panel | Q::Pressed, theme.palette.fillColor.accent.tertiary );
+    setColor( Q::Text | Q::Pressed, theme.palette.fillColor.textOnAccent.secondary );
+
+    // Disabled:
+    setGradient( Q::Panel | Q::Disabled, theme.palette.fillColor.accent.disabled );
+    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.textOnAccent.disabled );
+    setBoxBorderMetrics( Q::Panel | Q::Disabled, 0 );
 }
 
 void Editor::setupRadioBox()
@@ -316,7 +336,7 @@ QskWindowsTheme::QskWindowsTheme( Theme theme, std::array< QRgb, NumAccentColors
         palette.fillColor.accentText.disabled = QskRgb::toTransparentF( 0xff000000, 0.3614 );
 
         palette.fillColor.textOnAccent.primary = 0xffffffff;
-        palette.fillColor.textOnAccent.secondary = QskRgb::toTransparentF( 0xff000000, 0.70 );
+        palette.fillColor.textOnAccent.secondary = QskRgb::toTransparentF( 0xffffffff, 0.70 );
         palette.fillColor.textOnAccent.disabled = 0xffffffff;
         palette.fillColor.textOnAccent.selectedText = 0xffffffff;
 
@@ -434,6 +454,134 @@ QskWindowsTheme::QskWindowsTheme( Theme theme, std::array< QRgb, NumAccentColors
     }
     else if( theme == Dark )
     {
+        // Fill color:
+
+        palette.fillColor.text.primary = 0xffffffff;
+        palette.fillColor.text.secondary = QskRgb::toTransparentF( 0xffffffff, 0.786 );
+        palette.fillColor.text.tertiary = QskRgb::toTransparentF( 0xffffffff, 0.5442 );
+        palette.fillColor.text.disabled = QskRgb::toTransparentF( 0xffffffff, 0.3628 );
+
+        palette.fillColor.accentText.primary = accentColors[ AccentLight3 ];
+        palette.fillColor.accentText.secondary = accentColors[ AccentLight3 ];
+        palette.fillColor.accentText.tertiary = accentColors[ AccentLight2 ];
+        palette.fillColor.accentText.disabled = QskRgb::toTransparentF( 0xffffffff, 0.3628 );
+
+        palette.fillColor.textOnAccent.primary = 0xff000000;
+        palette.fillColor.textOnAccent.secondary = QskRgb::toTransparentF( 0xff000000, 0.50 );
+        palette.fillColor.textOnAccent.disabled = QskRgb::toTransparentF( 0xffffffff, 0.5302 );
+        palette.fillColor.textOnAccent.selectedText = 0xffffffff;
+
+        palette.fillColor.control.transparent = Qt::transparent;
+        palette.fillColor.control.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.0605 );
+        palette.fillColor.control.secondary = QskRgb::toTransparentF( 0xffffffff, 0.0837 );
+        palette.fillColor.control.tertiary = QskRgb::toTransparentF( 0xffffffff, 0.0326 );
+        palette.fillColor.control.inputActive = QskRgb::toTransparentF( 0xff1e1e1e, 0.70 );
+        palette.fillColor.control.disabled = QskRgb::toTransparentF( 0xffffffff, 0.0419 );
+
+        palette.fillColor.controlStrong.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.5442 );
+        palette.fillColor.controlStrong.disabled = QskRgb::toTransparentF( 0xffffffff, 0.2465 );
+
+        palette.fillColor.subtle.transparent = Qt::transparent;
+        palette.fillColor.subtle.secondary =QskRgb::toTransparentF( 0xffffffff, 0.0605 );
+        palette.fillColor.subtle.tertiary = QskRgb::toTransparentF( 0xffffffff, 0.0419 );
+        palette.fillColor.subtle.disabled = Qt::transparent;
+
+        palette.fillColor.controlSolid.defaultColor = 0xff454545;
+
+        palette.fillColor.controlAlt.transparent = Qt::transparent;
+        palette.fillColor.controlAlt.secondary = QskRgb::toTransparentF( 0xff000000, 0.10 );
+        palette.fillColor.controlAlt.tertiary = QskRgb::toTransparentF( 0xffffffff, 0.0419 );
+        palette.fillColor.controlAlt.quaternary = QskRgb::toTransparentF( 0xffffffff, 0.0698 );
+        palette.fillColor.controlAlt.disabled = Qt::transparent;
+
+        palette.fillColor.accent.defaultColor = accentColors[ AccentLight2 ];
+        palette.fillColor.accent.secondary = QskRgb::toTransparentF( accentColors[ AccentLight2 ], 0.90 );
+        palette.fillColor.accent.tertiary = QskRgb::toTransparentF( accentColors[ AccentLight2 ], 0.80 );
+        palette.fillColor.accent.disabled = QskRgb::toTransparentF( 0xffffffff, 0.1581 );
+        palette.fillColor.accent.selectedTextBackground = accentColors[ AccentBase ];
+
+        palette.fillColor.system.critical = 0xffFF99A4;
+        palette.fillColor.system.success = 0xff6CCB5F;
+        palette.fillColor.system.attention = 0xff60CDFF;
+        palette.fillColor.system.caution = 0xffFCE100;
+        palette.fillColor.system.attentionBackground = QskRgb::toTransparentF( 0xffffffff, 0.0326 );
+        palette.fillColor.system.successBackground = 0xff393D1B;
+        palette.fillColor.system.cautionBackground = 0xff433519;
+        palette.fillColor.system.criticalBackground = 0xff442726;
+        palette.fillColor.system.neutral = QskRgb::toTransparentF( 0xffffffff, 0.5442 );
+        palette.fillColor.system.neutralBackground = QskRgb::toTransparentF( 0xffffffff, 0.0326 );
+        palette.fillColor.system.solidNeutral = 0xff9D9D9D;
+        palette.fillColor.system.solidAttentionBackground = 0xff2E2E2E;
+        palette.fillColor.system.solidNeutralBackground = 0xff2E2E2E;
+
+        // Elevation:
+
+        palette.elevation.control.border = { QskRgb::toTransparentF( 0xffffffff, 0.093 ),
+                                           QskRgb::toTransparentF( 0xffffffff, 0.0698 ) };
+
+        palette.elevation.circle.border = { QskRgb::toTransparentF( 0xffffffff, 0.093 ),
+                                          QskRgb::toTransparentF( 0xffffffff, 0.0698 ) };
+
+        palette.elevation.textControl.border = { QskRgb::toTransparentF( 0xffffffff, 0.08 ),
+                                                QskRgb::toTransparentF( 0xffffffff, 0.08 ) };
+
+        palette.elevation.textControl.borderFocused = { QskRgb::toTransparentF( 0xffffffff, 0.08 ),
+                                                       QskRgb::toTransparentF( 0xffffffff, 0.08 ) };
+
+        palette.elevation.accentControl.border = { QskRgb::toTransparentF( 0xffffffff, 0.08 ),
+                                                 QskRgb::toTransparentF( 0xff000000, 0.14 ) };
+
+        // Stroke color:
+
+        palette.strokeColor.controlStroke.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.0698 );
+        palette.strokeColor.controlStroke.secondary = QskRgb::toTransparentF( 0xffffffff, 0.093 );
+        palette.strokeColor.controlStroke.onAccentDefault = QskRgb::toTransparentF( 0xffffffff, 0.08 );
+        palette.strokeColor.controlStroke.onAccentSecondary = QskRgb::toTransparentF( 0xff000000, 0.14 );
+        palette.strokeColor.controlStroke.onAccentTertiary = QskRgb::toTransparentF( 0xff000000, 0.2169 );
+        palette.strokeColor.controlStroke.onAccentDisabled = QskRgb::toTransparentF( 0xff000000, 0.20 );
+        palette.strokeColor.controlStroke.forStrongFillWhenOnImage = QskRgb::toTransparentF( 0xff000000, 0.42 );
+
+        palette.strokeColor.controlStrongStroke.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.5442 );
+        palette.strokeColor.controlStrongStroke.disabled = QskRgb::toTransparentF( 0xffffffff, 0.1581 );
+
+        palette.strokeColor.cardStroke.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.0578 );
+        palette.strokeColor.cardStroke.defaultSolid = 0xffEBEBEB;
+
+        palette.strokeColor.dividerStroke.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.0837 );
+
+        palette.strokeColor.surfaceStroke.defaultColor = QskRgb::toTransparentF( 0xff757575, 0.40 );
+        palette.strokeColor.surfaceStroke.flyout = QskRgb::toTransparentF( 0xff000000, 0.20 );
+
+        palette.strokeColor.focusStroke.outer = 0xffffffff;
+        palette.strokeColor.focusStroke.inner = QskRgb::toTransparentF( 0xff000000, 0.70 );
+
+        // Background:
+
+        palette.background.fillColor.cardBackground.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.0512 );
+        palette.background.fillColor.cardBackground.secondary = QskRgb::toTransparentF( 0xffffffff, 0.0326 );
+        palette.background.fillColor.cardBackground.tertiary = 0xffffffff; // not set in Figma
+
+        palette.background.fillColor.stroke.defaultColor = QskRgb::toTransparentF( 0xff000000, 0.30 );
+
+        palette.background.fillColor.layer.defaultColor = QskRgb::toTransparentF( 0xff3A3A3A, 0.30 );
+        palette.background.fillColor.layer.alt = QskRgb::toTransparentF( 0xffffffff, 0.0538 );
+
+        palette.background.fillColor.layerOnAcrylic.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.0359 );
+
+        palette.background.fillColor.layerOnAccentAcrylic.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.0359 );
+
+        palette.background.fillColor.acrylicBackground.defaultColor = QskRgb::toTransparentF( 0xffFCFCFC, 0.85 );
+        palette.background.fillColor.acrylicBackground.base = QskRgb::toTransparentF( 0xffF3F3F3, 0.90 );
+
+        palette.background.fillColor.accentAcrylicBackground.base = QskRgb::toTransparentF( accentColors[ AccentDark2 ], 0.80 );
+        palette.background.fillColor.accentAcrylicBackground.defaultColor = QskRgb::toTransparentF( accentColors[ AccentBase ], 0.80 );
+
+        palette.background.fillColor.micaBackground.base = QskRgb::toTransparentF( 0xffffffff, 0.50 );
+
+        palette.background.fillColor.solidBackground.base = 0xff202020;
+        palette.background.fillColor.solidBackground.secondary = 0xff1C1C1C;
+        palette.background.fillColor.solidBackground.tertiary = 0xff282828;
+        palette.background.fillColor.solidBackground.quaternary = 0xff2C2C2C;
     }
 }
 

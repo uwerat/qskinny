@@ -348,6 +348,9 @@ class QSK_WINDOWS_EXPORT QskWindowsSkin : public QskSkin
         Display
     };
 
+    static constexpr QskAspect::Variation Standard = QskAspect::NoVariation;
+    static constexpr QskAspect::Variation Accent = QskAspect::Large;
+
   private:
     void setupFonts();
     void setupGraphicFilters( const QskWindowsTheme& palette );
