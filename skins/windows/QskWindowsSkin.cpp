@@ -212,40 +212,100 @@ void Editor::setupProgressBar()
 void Editor::setupPushButton()
 {
     using Q = QskPushButton;
+    using W = QskWindowsSkin;
 
     setStrutSize( Q::Panel, { 120, 32 } );
     setBoxShape( Q::Panel, 4 );
     setBoxBorderMetrics( Q::Panel, 1 );
 
-    QColor restBorderColor1, restBorderColor2;
-
-    restBorderColor1 = flattenedColor( theme.palette.elevation.accentControl.border[ 0 ],
-                                      theme.palette.fillColor.accent.defaultColor );
-
-    restBorderColor2 = flattenedColor( theme.palette.elevation.accentControl.border[ 1 ],
-                                      theme.palette.fillColor.accent.defaultColor );
-
-    setBoxBorderColors( Q::Panel, { restBorderColor1, restBorderColor1, restBorderColor1, restBorderColor2 } );
-
     setStrutSize( Q::Icon, { 0, 0 } );
 
     setFontRole( Q::Text, QskWindowsSkin::Body );
 
-    // Rest:
-    setGradient( Q::Panel, theme.palette.fillColor.accent.defaultColor );
-    setColor( Q::Text, theme.palette.fillColor.textOnAccent.primary );
+    // Accent buttons:
 
-    // Hovered:
-    setGradient( Q::Panel | Q::Hovered, theme.palette.fillColor.accent.secondary );
+    const QRgb accentRestBorderColor1 = flattenedColor( theme.palette.elevation.accentControl.border[ 0 ],
+                                                       theme.palette.fillColor.accent.defaultColor );
 
-    // Pressed:
-    setGradient( Q::Panel | Q::Pressed, theme.palette.fillColor.accent.tertiary );
-    setColor( Q::Text | Q::Pressed, theme.palette.fillColor.textOnAccent.secondary );
+    const QRgb accentRestBorderColor2 = flattenedColor( theme.palette.elevation.accentControl.border[ 1 ],
+                                                       theme.palette.fillColor.accent.defaultColor );
 
-    // Disabled:
-    setGradient( Q::Panel | Q::Disabled, theme.palette.fillColor.accent.disabled );
-    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.textOnAccent.disabled );
-    setBoxBorderMetrics( Q::Panel | Q::Disabled, 0 );
+    setBoxBorderColors( Q::Panel | W::Accent, { accentRestBorderColor1, accentRestBorderColor1,
+                                              accentRestBorderColor1, accentRestBorderColor2 } );
+
+    setGradient( Q::Panel | W::Accent, theme.palette.fillColor.accent.defaultColor );
+    setColor( Q::Text | W::Accent, theme.palette.fillColor.textOnAccent.primary );
+
+
+    const QRgb accentHoveredBorderColor1 = flattenedColor( theme.palette.elevation.accentControl.border[ 0 ],
+                                                          theme.palette.fillColor.accent.secondary );
+
+    const QRgb accentHoveredBorderColor2 = flattenedColor( theme.palette.elevation.accentControl.border[ 1 ],
+                                                          theme.palette.fillColor.accent.secondary );
+
+    setBoxBorderColors( Q::Panel | W::Accent | Q::Hovered, { accentHoveredBorderColor1, accentHoveredBorderColor1,
+                                                           accentHoveredBorderColor1, accentHoveredBorderColor2 } );
+
+    setGradient( Q::Panel | W::Accent | Q::Hovered, theme.palette.fillColor.accent.secondary );
+
+
+    setGradient( Q::Panel | W::Accent | Q::Pressed, theme.palette.fillColor.accent.tertiary );
+    setColor( Q::Text | W::Accent | Q::Pressed, theme.palette.fillColor.textOnAccent.secondary );
+
+    const QRgb accentPressedBorderColor = flattenedColor( theme.palette.strokeColor.controlStroke.onAccentDefault,
+                                                         theme.palette.fillColor.accent.tertiary );
+
+    setBoxBorderColors( Q::Panel | W::Accent | Q::Pressed, accentPressedBorderColor );
+
+
+    setGradient( Q::Panel | W::Accent | Q::Disabled, theme.palette.fillColor.accent.disabled );
+    setColor( Q::Text | W::Accent | Q::Disabled, theme.palette.fillColor.textOnAccent.disabled );
+    setBoxBorderMetrics( Q::Panel | W::Accent | Q::Disabled, 0 );
+
+
+    // Standard buttons:
+
+    const QRgb standardRestBorderColor1 = flattenedColor( theme.palette.elevation.control.border[ 0 ],
+                                                         theme.palette.fillColor.control.defaultColor );
+
+    const QRgb standardRestBorderColor2 = flattenedColor( theme.palette.elevation.control.border[ 1 ],
+                                                         theme.palette.fillColor.control.defaultColor );
+
+    setBoxBorderColors( Q::Panel, { standardRestBorderColor1, standardRestBorderColor1,
+                                  standardRestBorderColor1, standardRestBorderColor2 } );
+
+    setGradient( Q::Panel, theme.palette.fillColor.control.defaultColor );
+    setColor( Q::Text, theme.palette.fillColor.text.primary );
+
+
+    const QRgb standardHoveredBorderColor1 = flattenedColor( theme.palette.elevation.control.border[ 0 ],
+                                                         theme.palette.fillColor.control.secondary );
+
+    const QRgb standardHoveredBorderColor2 = flattenedColor( theme.palette.elevation.control.border[ 1 ],
+                                                         theme.palette.fillColor.control.secondary );
+
+    setBoxBorderColors( Q::Panel | Q::Hovered, { standardHoveredBorderColor1, standardHoveredBorderColor1,
+                                  standardHoveredBorderColor1, standardHoveredBorderColor2 } );
+
+    setGradient( Q::Panel | Q::Hovered, theme.palette.fillColor.control.secondary );
+
+
+    const QRgb standardPressedBorderColor = flattenedColor( theme.palette.strokeColor.controlStroke.defaultColor,
+                                                           theme.palette.fillColor.control.tertiary );
+
+    setBoxBorderColors( Q::Panel | Q::Pressed, standardPressedBorderColor );
+
+    setGradient( Q::Panel | Q::Pressed, theme.palette.fillColor.control.tertiary );
+    setColor( Q::Text | Q::Pressed, theme.palette.fillColor.text.secondary );
+
+
+    const QRgb standardDisabledBorderColor = flattenedColor( theme.palette.strokeColor.controlStroke.defaultColor,
+                                                            theme.palette.fillColor.control.disabled );
+
+    setBoxBorderColors( Q::Panel | Q::Disabled, standardDisabledBorderColor );
+
+    setGradient( Q::Panel | Q::Disabled, theme.palette.fillColor.control.disabled );
+    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
 }
 
 void Editor::setupRadioBox()
@@ -341,11 +401,11 @@ QskWindowsTheme::QskWindowsTheme( Theme theme, std::array< QRgb, NumAccentColors
         palette.fillColor.textOnAccent.selectedText = 0xffffffff;
 
         palette.fillColor.control.transparent = Qt::transparent;
-        palette.fillColor.control.defaultColor = QskRgb::toTransparentF( 0xff000000, 0.70 );
-        palette.fillColor.control.secondary = QskRgb::toTransparentF( 0xff000000, 0.50 );
-        palette.fillColor.control.tertiary = QskRgb::toTransparentF( 0xff000000, 0.30 );
+        palette.fillColor.control.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.70 );
+        palette.fillColor.control.secondary = QskRgb::toTransparentF( 0xffF9F9F9, 0.50 );
+        palette.fillColor.control.tertiary = QskRgb::toTransparentF( 0xffF9F9F9, 0.30 );
         palette.fillColor.control.inputActive = 0xffffffff;
-        palette.fillColor.control.disabled = QskRgb::toTransparentF( 0xfff9f9f9, 0.30 );
+        palette.fillColor.control.disabled = QskRgb::toTransparentF( 0xffF9F9F9, 0.30 );
 
         palette.fillColor.controlStrong.defaultColor = QskRgb::toTransparentF( 0xff000000, 0.4458 );
         palette.fillColor.controlStrong.disabled = QskRgb::toTransparentF( 0xff000000, 0.3173 );
@@ -475,7 +535,7 @@ QskWindowsTheme::QskWindowsTheme( Theme theme, std::array< QRgb, NumAccentColors
         palette.fillColor.control.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.0605 );
         palette.fillColor.control.secondary = QskRgb::toTransparentF( 0xffffffff, 0.0837 );
         palette.fillColor.control.tertiary = QskRgb::toTransparentF( 0xffffffff, 0.0326 );
-        palette.fillColor.control.inputActive = QskRgb::toTransparentF( 0xff1e1e1e, 0.70 );
+        palette.fillColor.control.inputActive = QskRgb::toTransparentF( 0xff1E1E1E, 0.70 );
         palette.fillColor.control.disabled = QskRgb::toTransparentF( 0xffffffff, 0.0419 );
 
         palette.fillColor.controlStrong.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.5442 );
