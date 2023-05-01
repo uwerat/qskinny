@@ -1,7 +1,5 @@
 #include "QskPopup.h"
 
-#include <memory>
-
 #ifndef QSK_DRAWER_H
 #define QSK_DRAWER_H
 
