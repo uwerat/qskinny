@@ -340,6 +340,7 @@ list(APPEND SOURCES
 )
 
 list(APPEND HEADERS
+    layouts/QskDrawer.h
     layouts/QskGridBox.h
     layouts/QskGridLayoutEngine.h
     layouts/QskIndexedLayoutBox.h
@@ -358,6 +359,7 @@ list(APPEND PRIVATE_HEADERS
 )
 
 list(APPEND SOURCES
+    layouts/QskDrawer.cpp
     layouts/QskGridBox.cpp
     layouts/QskGridLayoutEngine.cpp
     layouts/QskIndexedLayoutBox.cpp
