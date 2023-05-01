@@ -15,7 +15,6 @@ class QskDrawer::PrivateData {
     QskControl* content;
     QskBox* contentBox;
     Qt::Edge edge = Qt::LeftEdge;
-    Qt::Alignment alignment = Qt::AlignCenter;
 };
 
 QskDrawer::QskDrawer( QQuickItem* parentItem ):
@@ -28,6 +27,8 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ):
 
     m_data->contentBox = new QskBox(this);
     m_data->contentBox->setSubcontrolProxy( QskBox::Panel, Panel );
+    m_data->contentBox->setPanel( true );
+
     setSubcontrolProxy( Inherited::Overlay, Overlay );
 
     setFaderAspect( Panel | QskAspect::Metric );
@@ -47,10 +48,6 @@ Qt::Edge QskDrawer::edge() const {
     return m_data->edge;
 }
 
-Qt::Alignment QskDrawer::alignment() const {
-    return m_data->alignment;
-}
-
 void QskDrawer::setEdge( Qt::Edge edge ) {
     if( m_data->edge == edge )
     {
@@ -60,17 +57,6 @@ void QskDrawer::setEdge( Qt::Edge edge ) {
     update();
     m_data->edge = edge;
     edgeChanged( edge );
-}
-
-void QskDrawer::setAlignment( Qt::Alignment alignment ) {
-    if( m_data->alignment == alignment )
-    {
-        return;
-    }
-
-    update();
-    m_data->alignment = alignment;
-    alignmentChanged( alignment );
 }
 
 void QskDrawer::setContent( QskControl* content ) {
@@ -86,19 +72,9 @@ void QskDrawer::updateLayout() {
         case Qt::Edge::LeftEdge:
     {
         qreal x = metric( faderAspect() ) * contentSize.width() * -1.0;
-        qreal y = 0;
-
-        if( alignment().testFlag( Qt::AlignVCenter ) )
-        {
-            y = ( parentSize.height() - contentSize.height() ) / 2.0;
-        }
-        else if ( alignment().testFlag( Qt::AlignBottom ) )
-        {
-            y = ( parentSize.height() - contentSize.height() );
-        }
 
         qskSetItemGeometry( m_data->contentBox,
-            x, y,
+            x, 0,
             contentSize.width(), parentSize.height() );
         break;
     }
@@ -107,67 +83,35 @@ void QskDrawer::updateLayout() {
         qreal x = ( metric( faderAspect() ) * contentSize.width() )
             + parentSize.width()
             - contentSize.width();
-        qreal y = 0;
-
-        if( alignment().testFlag( Qt::AlignVCenter ) )
-        {
-            y = ( parentSize.height() - contentSize.height() ) / 2.0;
-        }
-        else if ( alignment().testFlag( Qt::AlignBottom ) )
-        {
-            y = ( parentSize.height() - contentSize.height() );
-        }
 
         qskSetItemGeometry( m_data->contentBox,
-            x, y,
-            contentSize.width(),
-            parentSize.height() );
+	    x, 0,
+	    contentSize.width(), parentSize.height());
         break;
     }
 
         case Qt::Edge::TopEdge:
     {
-        qreal x = 0;
         qreal y = metric( faderAspect() ) * contentSize.height();
 
-        if( alignment().testFlag( Qt::AlignCenter) )
-        {
-            x = ( parentSize.width() - contentSize.width() ) / 2;
-        }
-        else if( alignment().testFlag( Qt::AlignRight) )
-        {
-            x = ( parentSize.width() - contentSize.width() );
-        }
-
         qskSetItemGeometry( m_data->contentBox,
-            x, -y,
+            0, -y,
             parentSize.width(), contentSize.height() );
         break;
     }
 
         case Qt::Edge::BottomEdge:
     {
-        qreal x = 0;
         qreal y = metric( faderAspect() ) * contentSize.height() + parentSize.height() -
             contentSize.height();
 
-        if( alignment().testFlag( Qt::AlignCenter) )
-        {
-            x = ( parentSize.width() - contentSize.width() ) / 2;
-        }
-        else if( alignment().testFlag( Qt::AlignRight) )
-        {
-            x = ( parentSize.width() - contentSize.width() );
-        }
-
         qskSetItemGeometry( m_data->contentBox,
-            x, y,
+            0, y,
             parentSize.width(), contentSize.height() );
         break;
     }
-    break;
-
     }
+    m_data->content->setGeometry( QPointF(), m_data->contentBox->size() );
 
     Inherited::updateLayout();
 }
