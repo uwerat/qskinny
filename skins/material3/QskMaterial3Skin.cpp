@@ -12,6 +12,7 @@
 #include <QskComboBox.h>
 #include <QskColorFilter.h>
 #include <QskDialogButtonBox.h>
+#include <QskDrawer.h>
 #include <QskFocusIndicator.h>
 #include <QskFunctions.h>
 #include <QskGraphic.h>
@@ -84,6 +85,7 @@ namespace
         void setupCheckBox();
         void setupComboBox();
         void setupDialogButtonBox();
+        void setupDrawer();
         void setupFocusIndicator();
         void setupInputPanel();
         void setupVirtualKeyboard();
@@ -150,6 +152,7 @@ void Editor::setup()
     setupCheckBox();
     setupComboBox();
     setupDialogButtonBox();
+    setupDrawer();
     setupFocusIndicator();
     setupInputPanel();
     setupVirtualKeyboard();
@@ -784,6 +787,13 @@ void Editor::setupDialogButtonBox()
     setGradient( Q::Panel, m_pal.secondaryContainer );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
+}
+
+void Editor::setupDrawer() {
+    using Q = QskDrawer;
+
+    setAnimation( Q::Panel | QskAspect::Position, 5000 );
+    setHint( Q::Overlay | QskAspect::Style, false );
 }
 
 void Editor::setupSlider()

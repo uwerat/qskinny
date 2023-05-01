@@ -13,7 +13,7 @@ class QSK_EXPORT QskDrawer : public QskPopup
     Q_PROPERTY( Qt::Alignment alignment READ alignment WRITE setAlignment NOTIFY alignmentChanged )
 
  public:
-    QSK_SUBCONTROLS( Panel )
+    QSK_SUBCONTROLS( Panel, Overlay )
     QskDrawer( QQuickItem* parentItem = nullptr );
     ~QskDrawer() override;
 

@@ -8,6 +8,7 @@
 #include <QskQuick.h>
 
 QSK_SUBCONTROL( QskDrawer, Panel )
+QSK_SUBCONTROL( QskDrawer, Overlay )
 
 class QskDrawer::PrivateData {
 public:
@@ -27,14 +28,11 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ) :
 
     m_data->contentBox = new QskBox(this);
     m_data->contentBox->setSubcontrolProxy( QskBox::Panel, Panel );
-
-    setAnimationHint( Panel | QskAspect::Position, QskAnimationHint( 5000 ) );
+    setSubcontrolProxy( Inherited::Overlay, Overlay );
 
     setFaderAspect( Panel | QskAspect::Metric );
 
-    setSkinHint( Overlay | QskAspect::Style, false );
-
-    connect(this, &QskDrawer::closed, this, [this](){
+    connect(this, &QskDrawer::closed, this, [this]() {
 	startTransition( Panel | QskAspect::Metric,
 			 animationHint( Panel | QskAspect::Position ),
 			 0.0, 1.0 );
@@ -146,7 +144,7 @@ void QskDrawer::updateLayout() {
 	    } else if( alignment().testFlag( Qt::AlignRight) ) {
 		x = ( parentSize.width() - contentSize.width() );
 	    }
-	    
+
 	    qskSetItemGeometry( m_data->contentBox,
 				x, y,
 				parentSize.width(), contentSize.height());
