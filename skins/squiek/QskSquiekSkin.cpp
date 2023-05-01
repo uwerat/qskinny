@@ -736,6 +736,8 @@ void Editor::setupDialogButtonBox()
 void Editor::setupDrawer() {
     using Q = QskDrawer;
 
+    setPadding( Q::Panel, 5 );
+    setGradient( Q::Panel, m_pal.darker125 );
     setAnimation( Q::Panel | QskAspect::Position, qskDuration );
     setHint( Q::Overlay | QskAspect::Style, false );
 }

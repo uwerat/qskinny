@@ -65,7 +65,9 @@ void QskDrawer::setContent( QskControl* content ) {
 }
 
 void QskDrawer::updateLayout() {
-    const auto& contentSize = m_data->content->preferredSize();
+    const auto& padding = paddingHint( Panel );
+    const auto& contentSize = m_data->content->preferredSize()
+            .grownBy( padding );
     const auto& parentSize = parentItem()->size();
 
     switch( m_data->edge ) {
@@ -85,8 +87,8 @@ void QskDrawer::updateLayout() {
             - contentSize.width();
 
         qskSetItemGeometry( m_data->contentBox,
-	    x, 0,
-	    contentSize.width(), parentSize.height());
+            x, 0,
+            contentSize.width(), parentSize.height() );
         break;
     }
 
@@ -111,7 +113,8 @@ void QskDrawer::updateLayout() {
         break;
     }
     }
-    m_data->content->setGeometry( QPointF(), m_data->contentBox->size() );
+    m_data->content->setGeometry( QPointF( padding.left(), padding.top() ),
+        m_data->contentBox->size().shrunkBy( padding ) );
 
     Inherited::updateLayout();
 }
