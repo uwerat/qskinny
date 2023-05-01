@@ -171,6 +171,48 @@ void Editor::setupBox()
 
 void Editor::setupCheckBox()
 {
+    using Q = QskCheckBox;
+
+    setStrutSize( Q::Panel, 126, 38 );
+    setSpacing( Q::Panel, 8 );
+
+    setStrutSize( Q::Box, { 20, 20 } ); // 18 + 2*1 border
+    setBoxShape( Q::Box, 4 ); // adapt to us taking the border into account
+    setBoxBorderMetrics( Q::Box, 1 );
+    setPadding( Q::Box, 5 ); // "icon size"
+
+    setGradient( Q::Box, theme.palette.fillColor.controlAlt.secondary );
+    setBoxBorderColors( Q::Box, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+
+    setGradient( Q::Box | Q::Checked, theme.palette.fillColor.accent.defaultColor );
+    setBoxBorderColors( Q::Box | Q::Checked, theme.palette.fillColor.accent.defaultColor );
+
+    const auto checkMark = symbol( "checkmark" );
+    setSymbol( Q::Indicator | Q::Checked, checkMark, { QskStateCombination::CombinationNoState, Q::Disabled } );
+    setGraphicRole( Q::Indicator, QskWindowsSkin::GraphicRoleFillColorTextOnAccentPrimary );
+
+    setFontRole( Q::Text, QskWindowsSkin::Body );
+    setColor( Q::Text, theme.palette.fillColor.text.primary );
+
+
+    setGradient( Q::Box | Q::Hovered, theme.palette.fillColor.controlAlt.tertiary );
+    setBoxBorderColors( Q::Box | Q::Hovered, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+    setGradient( Q::Box | Q::Hovered | Q::Checked, theme.palette.fillColor.accent.secondary );
+    setBoxBorderColors( Q::Box | Q::Hovered | Q::Checked, theme.palette.fillColor.accent.secondary );
+    // indicator the same as in Rest state
+
+    setGradient( Q::Box | Q::Pressed, theme.palette.fillColor.controlAlt.quaternary );
+    setBoxBorderColors( Q::Box | Q::Pressed, theme.palette.strokeColor.controlStrongStroke.disabled );
+    setGradient( Q::Box | Q::Pressed | Q::Checked, theme.palette.fillColor.accent.tertiary );
+    setBoxBorderColors( Q::Box | Q::Pressed | Q::Checked, theme.palette.fillColor.accent.tertiary );
+    setGraphicRole( Q::Indicator | Q::Pressed | Q::Checked, QskWindowsSkin::GraphicRoleFillColorTextOnAccentSecondary );
+
+    setGradient( Q::Box | Q::Disabled, theme.palette.fillColor.controlAlt.disabled );
+    setBoxBorderColors( Q::Box | Q::Disabled, theme.palette.strokeColor.controlStrongStroke.disabled );
+    setGradient( Q::Box | Q::Disabled | Q::Checked, theme.palette.fillColor.accent.disabled );
+    setBoxBorderColors( Q::Box | Q::Disabled | Q::Checked, theme.palette.fillColor.accent.disabled );
+    setGraphicRole( Q::Indicator | Q::Disabled | Q::Checked, QskWindowsSkin::GraphicRoleFillColorTextOnAccentDisabled );
+    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
 }
 
 void Editor::setupComboBox()
@@ -762,21 +804,16 @@ void QskWindowsSkin::setGraphicColor( GraphicRole role, QRgb rgb )
 {
     QskColorFilter colorFilter;
     colorFilter.setMask( QskRgb::RGBAMask );
-    colorFilter.addColorSubstitution( QskRgb::Black, rgb );
+    colorFilter.addColorSubstitution( QskRgb::White, rgb );
 
     setGraphicFilter( role, colorFilter );
 }
 
 void QskWindowsSkin::setupGraphicFilters( const QskWindowsTheme& theme )
 {
-//    setGraphicColor( GraphicRoleOnPrimary, palette.onPrimary );
-//    setGraphicColor( GraphicRoleOnSecondaryContainer, palette.onSecondaryContainer );
-//    setGraphicColor( GraphicRoleOnError, palette.onError );
-//    setGraphicColor( GraphicRoleOnSurface, palette.onSurface );
-//    setGraphicColor( GraphicRoleOnSurface38, palette.onSurface38 );
-//    setGraphicColor( GraphicRoleOnSurfaceVariant, palette.onSurfaceVariant );
-//    setGraphicColor( GraphicRolePrimary, palette.primary );
-//    setGraphicColor( GraphicRoleSurface, palette.surface );
+    setGraphicColor( GraphicRoleFillColorTextOnAccentDisabled, theme.palette.fillColor.textOnAccent.disabled );
+    setGraphicColor( GraphicRoleFillColorTextOnAccentPrimary, theme.palette.fillColor.textOnAccent.primary );
+    setGraphicColor( GraphicRoleFillColorTextOnAccentSecondary, theme.palette.fillColor.textOnAccent.secondary );
 }
 
 #include "moc_QskWindowsSkin.cpp"

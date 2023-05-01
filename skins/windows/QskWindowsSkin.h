@@ -326,14 +326,9 @@ class QSK_WINDOWS_EXPORT QskWindowsSkin : public QskSkin
 
     enum GraphicRole
     {
-        GraphicRoleOnError,
-        GraphicRoleOnPrimary,
-        GraphicRoleOnSecondaryContainer,
-        GraphicRoleOnSurface,
-        GraphicRoleOnSurface38,
-        GraphicRoleOnSurfaceVariant,
-        GraphicRolePrimary,
-        GraphicRoleSurface,
+        GraphicRoleFillColorTextOnAccentDisabled,
+        GraphicRoleFillColorTextOnAccentPrimary,
+        GraphicRoleFillColorTextOnAccentSecondary,
     };
 
     enum FontRole
