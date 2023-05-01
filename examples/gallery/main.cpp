@@ -3,6 +3,7 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
+#include "QskLinearBox.h"
 #include "label/LabelPage.h"
 #include "progressbar/ProgressBarPage.h"
 #include "inputs/InputPage.h"
@@ -17,6 +18,7 @@
 #include <QskMainView.h>
 #include <QskFocusIndicator.h>
 #include <QskObjectCounter.h>
+#include <QskDrawer.h>
 #include <QskTabView.h>
 #include <QskTextLabel.h>
 #include <QskSwitchButton.h>
@@ -208,6 +210,31 @@ namespace
 
                 connect( button, &QskSwitchButton::toggled,
                     this, &Header::enabledToggled );
+            }
+
+            {
+                QskDrawer* drawer = new QskDrawer( this->parentItem() );
+                drawer->setEdge( Qt::RightEdge );
+
+                auto o = new QskLinearBox( Qt::Vertical );
+
+                auto c = new QskLinearBox( Qt::Vertical, o );
+                new QskPushButton( "One", c );
+                new QskPushButton( "Two", c );
+                new QskPushButton( "Three", c );
+
+                c->setExtraSpacingAt( Qt::BottomEdge );
+
+                auto close = new QskPushButton( "Close", o );
+                connect( close, &QskPushButton::clicked,
+                    drawer, &QskDrawer::close );
+
+                drawer->setContent( o );
+
+                auto burger = new QskPushButton( "≡", this );
+		burger->setEmphasis( QskPushButton::LowEmphasis );
+                connect( burger, &QskPushButton::clicked,
+                    this, [drawer]() { drawer->open(); });
             }
         }
 
