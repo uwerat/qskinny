@@ -11,14 +11,14 @@ QSK_SUBCONTROL( QskDrawer, Panel )
 QSK_SUBCONTROL( QskDrawer, Overlay )
 
 class QskDrawer::PrivateData {
-public:
+  public:
     QskControl* content;
     QskBox* contentBox;
     Qt::Edge edge = Qt::LeftEdge;
     Qt::Alignment alignment = Qt::AlignCenter;
 };
 
-QskDrawer::QskDrawer( QQuickItem* parentItem ) :
+QskDrawer::QskDrawer( QQuickItem* parentItem ):
     Inherited ( parentItem )
     , m_data( new PrivateData { } )
 {
@@ -33,9 +33,9 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ) :
     setFaderAspect( Panel | QskAspect::Metric );
 
     connect(this, &QskDrawer::closed, this, [this]() {
-	startTransition( Panel | QskAspect::Metric,
-			 animationHint( Panel | QskAspect::Position ),
-			 0.0, 1.0 );
+        startTransition( Panel | QskAspect::Metric,
+            animationHint( Panel | QskAspect::Position ),
+            0.0, 1.0 );
     });
 }
 
@@ -52,8 +52,9 @@ Qt::Alignment QskDrawer::alignment() const {
 }
 
 void QskDrawer::setEdge( Qt::Edge edge ) {
-    if( m_data->edge == edge ) {
-	return;
+    if( m_data->edge == edge )
+    {
+        return;
     }
 
     update();
@@ -62,8 +63,9 @@ void QskDrawer::setEdge( Qt::Edge edge ) {
 }
 
 void QskDrawer::setAlignment( Qt::Alignment alignment ) {
-    if( m_data->alignment == alignment ) {
-	return;
+    if( m_data->alignment == alignment )
+    {
+        return;
     }
 
     update();
@@ -81,76 +83,89 @@ void QskDrawer::updateLayout() {
     const auto& parentSize = parentItem()->size();
 
     switch( m_data->edge ) {
-    case Qt::Edge::LeftEdge:
-	{
-	    qreal x = metric( faderAspect() ) * contentSize.width() * -1.0;
-	    qreal y = 0;
+        case Qt::Edge::LeftEdge:
+    {
+        qreal x = metric( faderAspect() ) * contentSize.width() * -1.0;
+        qreal y = 0;
 
-	    if( alignment().testFlag( Qt::AlignVCenter ) ) {
-		y = ( parentSize.height() - contentSize.height() ) / 2.0;
-	    } else if ( alignment().testFlag( Qt::AlignBottom ) ) {
-		y = ( parentSize.height() - contentSize.height() );
-	    }
+        if( alignment().testFlag( Qt::AlignVCenter ) )
+        {
+            y = ( parentSize.height() - contentSize.height() ) / 2.0;
+        }
+        else if ( alignment().testFlag( Qt::AlignBottom ) )
+        {
+            y = ( parentSize.height() - contentSize.height() );
+        }
 
-	    qskSetItemGeometry( m_data->contentBox,
-				x, y,
-				contentSize.width(), parentSize.height() );
-	    break;
-	}
-    case Qt::Edge::RightEdge:
-	{
-	    qreal x = ( metric( faderAspect() ) * contentSize.width() )
-		+ parentSize.width()
-		- contentSize.width();
-	    qreal y = 0;
+        qskSetItemGeometry( m_data->contentBox,
+            x, y,
+            contentSize.width(), parentSize.height() );
+        break;
+    }
+        case Qt::Edge::RightEdge:
+    {
+        qreal x = ( metric( faderAspect() ) * contentSize.width() )
+            + parentSize.width()
+            - contentSize.width();
+        qreal y = 0;
 
-	    if( alignment().testFlag( Qt::AlignVCenter ) ) {
-		y = ( parentSize.height() - contentSize.height() ) / 2.0;
-	    } else if ( alignment().testFlag( Qt::AlignBottom ) ) {
-		y = ( parentSize.height() - contentSize.height() );
-	    }
+        if( alignment().testFlag( Qt::AlignVCenter ) )
+        {
+            y = ( parentSize.height() - contentSize.height() ) / 2.0;
+        }
+        else if ( alignment().testFlag( Qt::AlignBottom ) )
+        {
+            y = ( parentSize.height() - contentSize.height() );
+        }
 
-	    qskSetItemGeometry( m_data->contentBox,
-				x, y,
-				contentSize.width(),
-				parentSize.height() );
-	    break;
-	}
+        qskSetItemGeometry( m_data->contentBox,
+            x, y,
+            contentSize.width(),
+            parentSize.height() );
+        break;
+    }
 
-    case Qt::Edge::TopEdge:
-	{
-	    qreal x = 0;
-	    qreal y = metric( faderAspect() ) * contentSize.height();
+        case Qt::Edge::TopEdge:
+    {
+        qreal x = 0;
+        qreal y = metric( faderAspect() ) * contentSize.height();
 
-	    if( alignment().testFlag( Qt::AlignCenter) ) {
-		x = ( parentSize.width() - contentSize.width() ) / 2;
-	    } else if( alignment().testFlag( Qt::AlignRight) ) {
-		x = ( parentSize.width() - contentSize.width() );
-	    }
+        if( alignment().testFlag( Qt::AlignCenter) )
+        {
+            x = ( parentSize.width() - contentSize.width() ) / 2;
+        }
+        else if( alignment().testFlag( Qt::AlignRight) )
+        {
+            x = ( parentSize.width() - contentSize.width() );
+        }
 
-	    qskSetItemGeometry( m_data->contentBox,
-				x, -y,
-				parentSize.width(), contentSize.height());
-	    break;
-	}
+        qskSetItemGeometry( m_data->contentBox,
+            x, -y,
+            parentSize.width(), contentSize.height() );
+        break;
+    }
 
-    case Qt::Edge::BottomEdge:
-	{
-	    qreal x = 0;
-	    qreal y = metric( faderAspect() ) * contentSize.height() + parentSize.height() - contentSize.height();
+        case Qt::Edge::BottomEdge:
+    {
+        qreal x = 0;
+        qreal y = metric( faderAspect() ) * contentSize.height() + parentSize.height() -
+            contentSize.height();
 
-	    if( alignment().testFlag( Qt::AlignCenter) ) {
-		x = ( parentSize.width() - contentSize.width() ) / 2;
-	    } else if( alignment().testFlag( Qt::AlignRight) ) {
-		x = ( parentSize.width() - contentSize.width() );
-	    }
+        if( alignment().testFlag( Qt::AlignCenter) )
+        {
+            x = ( parentSize.width() - contentSize.width() ) / 2;
+        }
+        else if( alignment().testFlag( Qt::AlignRight) )
+        {
+            x = ( parentSize.width() - contentSize.width() );
+        }
 
-	    qskSetItemGeometry( m_data->contentBox,
-				x, y,
-				parentSize.width(), contentSize.height());
-	    break;
-	}
-	break;
+        qskSetItemGeometry( m_data->contentBox,
+            x, y,
+            parentSize.width(), contentSize.height() );
+        break;
+    }
+    break;
 
     }
 
@@ -160,8 +175,8 @@ void QskDrawer::updateLayout() {
 void QskDrawer::aboutToShow()
 {
     startTransition( Panel | QskAspect::Metric,
-		     animationHint( Panel | QskAspect::Position ),
-		     1.0, 0.0 );
+        animationHint( Panel | QskAspect::Position ),
+        1.0, 0.0 );
     Inherited::aboutToShow();
 }
 

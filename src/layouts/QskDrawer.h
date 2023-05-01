@@ -12,7 +12,7 @@ class QSK_EXPORT QskDrawer : public QskPopup
     Q_PROPERTY( Qt::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged )
     Q_PROPERTY( Qt::Alignment alignment READ alignment WRITE setAlignment NOTIFY alignmentChanged )
 
- public:
+  public:
     QSK_SUBCONTROLS( Panel, Overlay )
     QskDrawer( QQuickItem* parentItem = nullptr );
     ~QskDrawer() override;
@@ -26,14 +26,14 @@ class QSK_EXPORT QskDrawer : public QskPopup
     void setEdge( Qt::Edge edge );
     void setAlignment( Qt::Alignment aligmnent );
 
- protected:
+  protected:
     void aboutToShow() override;
-  
+
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
     void alignmentChanged( Qt::Alignment );
 
- private:
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
