@@ -355,6 +355,90 @@ void Editor::setupTextInput()
 
 void Editor::setupSwitchButton()
 {
+    using Q = QskSwitchButton;
+    using A = QskAspect;
+
+    const QSizeF strutSize( 38, 18 );
+    setStrutSize( Q::Groove | A::Horizontal, strutSize );
+    setStrutSize( Q::Groove | A::Vertical, strutSize.transposed() );
+    setBoxShape( Q::Groove, 100, Qt::RelativeSize );
+    setBoxBorderMetrics( Q::Groove, 1 );
+    setBoxBorderMetrics( Q::Groove | Q::Checked, 0 );
+
+    setBoxShape( Q::Handle, 100, Qt::RelativeSize );
+    setPosition( Q::Handle, 0.1, { QskStateCombination::CombinationNoState, Q::Disabled } );
+    setPosition( Q::Handle | Q::Checked, 0.9, { QskStateCombination::CombinationNoState, Q::Disabled } );
+    setAnimation( Q::Handle | A::Metric, 100 );
+
+    setBoxBorderMetrics( Q::Handle | Q::Checked, 1 );
+
+    // ### big size during animation
+
+    setGradient( Q::Groove, theme.palette.fillColor.controlAlt.secondary );
+    setGradient( Q::Groove | Q::Checked, theme.palette.fillColor.accent.defaultColor );
+    setBoxBorderColors( Q::Groove, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+
+    setStrutSize( Q::Handle, 12, 12 );
+    setGradient( Q::Handle, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+    setGradient( Q::Handle | Q::Checked, theme.palette.fillColor.textOnAccent.primary );
+
+    const QRgb handleRestBorderColor1 = flattenedColor( theme.palette.elevation.circle.border[ 0 ],
+                                                       theme.palette.fillColor.accent.defaultColor );
+
+    const QRgb handleRestBorderColor2 = flattenedColor( theme.palette.elevation.circle.border[ 1 ],
+                                                       theme.palette.fillColor.accent.defaultColor );
+
+    setBoxBorderColors( Q::Handle | Q::Checked, { handleRestBorderColor1, handleRestBorderColor1,
+                                                handleRestBorderColor1, handleRestBorderColor2 } );
+
+
+    setGradient( Q::Groove | Q::Hovered, theme.palette.fillColor.controlAlt.tertiary );
+    setGradient( Q::Groove | Q::Hovered | Q::Checked, theme.palette.fillColor.accent.secondary );
+    setBoxBorderColors( Q::Groove | Q::Hovered, theme.palette.fillColor.text.secondary );
+
+    setStrutSize( Q::Handle | Q::Hovered, 14, 14, { QskStateCombination::CombinationNoState, Q::Checked } );
+    setGradient( Q::Handle | Q::Hovered, theme.palette.fillColor.text.secondary );
+    // Handle | Hovered | Checked is the same as in Rest state
+
+    const QRgb handleHoveredBorderColor1 = flattenedColor( theme.palette.elevation.circle.border[ 0 ],
+                                                          theme.palette.fillColor.accent.secondary );
+
+    const QRgb handleHoveredBorderColor2 = flattenedColor( theme.palette.elevation.circle.border[ 1 ],
+                                                          theme.palette.fillColor.accent.secondary );
+
+    setBoxBorderColors( Q::Handle | Q::Hovered | Q::Checked, { handleHoveredBorderColor1, handleHoveredBorderColor1,
+                                                             handleHoveredBorderColor1, handleHoveredBorderColor2 } );
+
+
+    setGradient( Q::Groove | Q::Pressed, theme.palette.fillColor.controlAlt.quaternary );
+    setGradient( Q::Groove | Q::Pressed | Q::Checked, theme.palette.fillColor.accent.tertiary );
+    setBoxBorderColors( Q::Groove | Q::Pressed, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+
+    const QSizeF pressedSize( 17, 14 );
+    setStrutSize( Q::Handle | Q::Pressed | A::Horizontal, pressedSize, { QskStateCombination::CombinationNoState, Q::Checked }  );
+    setStrutSize( Q::Handle | Q::Pressed | A::Vertical, pressedSize.transposed(), { QskStateCombination::CombinationNoState, Q::Checked }  );
+    setGradient( Q::Handle | Q::Pressed, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+    // Handle | Pressed | Checked is the same as in Rest state
+
+    const QRgb handlePressedBorderColor1 = flattenedColor( theme.palette.elevation.circle.border[ 0 ],
+                                                          theme.palette.fillColor.accent.tertiary );
+
+    const QRgb handlePressedBorderColor2 = flattenedColor( theme.palette.elevation.circle.border[ 1 ],
+                                                          theme.palette.fillColor.accent.tertiary );
+
+    setBoxBorderColors( Q::Handle | Q::Pressed | Q::Checked, { handlePressedBorderColor1, handlePressedBorderColor1,
+                                                             handlePressedBorderColor1, handlePressedBorderColor2 } );
+
+
+    setGradient( Q::Groove | Q::Disabled, theme.palette.fillColor.controlAlt.disabled );
+    setBoxBorderColors( Q::Groove | Q::Disabled, theme.palette.fillColor.text.disabled );
+    setGradient( Q::Groove | Q::Disabled | Q::Checked, theme.palette.fillColor.accent.disabled );
+    setBoxBorderColors( Q::Groove | Q::Disabled | Q::Checked, theme.palette.fillColor.accent.disabled );
+
+    setStrutSize( Q::Handle | Q::Disabled, 12, 12, { QskStateCombination::CombinationNoState, Q::Checked } );
+    setGradient( Q::Handle | Q::Disabled, theme.palette.fillColor.text.disabled );
+    setGradient( Q::Handle | Q::Disabled | Q::Checked, theme.palette.fillColor.textOnAccent.disabled );
+    setBoxBorderMetrics( Q::Handle | Q::Disabled | Q::Checked, 1 );
 }
 
 void Editor::setupSubWindow()
