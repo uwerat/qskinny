@@ -1,6 +1,6 @@
 <RCC>
-    <qresource prefix="/m3">
-        <file>icons/qvg/check_small.qvg</file>
+    <qresource prefix="/windows">
+        <file>icons/qvg/checkmark.qvg</file>
         <file>icons/qvg/combo-box-arrow-closed.qvg</file>
         <file>icons/qvg/combo-box-arrow-open.qvg</file>
         <file>icons/qvg/segmented-button-check.qvg</file>
