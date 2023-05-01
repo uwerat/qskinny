@@ -792,7 +792,7 @@ void Editor::setupDialogButtonBox()
 void Editor::setupDrawer() {
     using Q = QskDrawer;
 
-    setAnimation( Q::Panel | QskAspect::Position, 5000 );
+    setAnimation( Q::Panel | QskAspect::Position, qskDuration );
     setHint( Q::Overlay | QskAspect::Style, false );
 }
 
