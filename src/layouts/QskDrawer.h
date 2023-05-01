@@ -12,6 +12,7 @@ class QSK_EXPORT QskDrawer : public QskPopup
     using Inherited = QskPopup;
 
     Q_PROPERTY( Qt::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged )
+    Q_PROPERTY( Qt::Alignment alignment READ alignment WRITE setAlignment NOTIFY alignmentChanged )
 
  public:
     QSK_SUBCONTROLS( Panel )
@@ -19,17 +20,20 @@ class QSK_EXPORT QskDrawer : public QskPopup
     ~QskDrawer() override;
 
     Qt::Edge edge() const;
+    Qt::Alignment alignment() const;
 
     void updateLayout() override;
 
     void setContent( QskControl* t );
     void setEdge( Qt::Edge edge );
+    void setAlignment( Qt::Alignment aligmnent );
 
  protected:
     void aboutToShow() override;
   
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
+    void alignmentChanged( Qt::Alignment );
 
  private:
     class PrivateData;

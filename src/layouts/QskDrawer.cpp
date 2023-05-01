@@ -14,6 +14,7 @@ public:
     QskControl* content;
     QskBox* contentBox;
     Qt::Edge edge = Qt::LeftEdge;
+    Qt::Alignment alignment = Qt::AlignCenter;
 };
 
 QskDrawer::QskDrawer( QQuickItem* parentItem ) :
@@ -26,11 +27,11 @@ QskDrawer::QskDrawer( QQuickItem* parentItem ) :
 
     m_data->contentBox = new QskBox(this);
     m_data->contentBox->setSubcontrolProxy( QskBox::Panel, Panel );
-    
-    setAnimationHint( Panel | QskAspect::Position, QskAnimationHint( 1000 ) );
+
+    setAnimationHint( Panel | QskAspect::Position, QskAnimationHint( 5000 ) );
 
     setFaderAspect( Panel | QskAspect::Metric );
-    
+
     setSkinHint( Overlay | QskAspect::Style, false );
 
     connect(this, &QskDrawer::closed, this, [this](){
@@ -44,8 +45,12 @@ QskDrawer::~QskDrawer()
 {
 }
 
-Qt::Edge QskDrawer::edge() const { 
+Qt::Edge QskDrawer::edge() const {
     return m_data->edge;
+}
+
+Qt::Alignment QskDrawer::alignment() const {
+    return m_data->alignment;
 }
 
 void QskDrawer::setEdge( Qt::Edge edge ) {
@@ -53,8 +58,19 @@ void QskDrawer::setEdge( Qt::Edge edge ) {
 	return;
     }
 
+    update();
     m_data->edge = edge;
     edgeChanged( edge );
+}
+
+void QskDrawer::setAlignment( Qt::Alignment alignment ) {
+    if( m_data->alignment == alignment ) {
+	return;
+    }
+
+    update();
+    m_data->alignment = alignment;
+    alignmentChanged( alignment );
 }
 
 void QskDrawer::setContent( QskControl* content ) {
@@ -63,43 +79,83 @@ void QskDrawer::setContent( QskControl* content ) {
 }
 
 void QskDrawer::updateLayout() {
-    auto size = m_data->content->preferredSize();
- 
+    const auto& contentSize = m_data->content->preferredSize();
+    const auto& parentSize = parentItem()->size();
+
     switch( m_data->edge ) {
     case Qt::Edge::LeftEdge:
 	{
-	    qreal off = metric( faderAspect() ) * size.width();
+	    qreal x = metric( faderAspect() ) * contentSize.width() * -1.0;
+	    qreal y = 0;
+
+	    if( alignment().testFlag( Qt::AlignVCenter ) ) {
+		y = ( parentSize.height() - contentSize.height() ) / 2.0;
+	    } else if ( alignment().testFlag( Qt::AlignBottom ) ) {
+		y = ( parentSize.height() - contentSize.height() );
+	    }
+
 	    qskSetItemGeometry( m_data->contentBox,
-				-off, 0, size.width(), size.height());
+				x, y,
+				contentSize.width(), parentSize.height() );
 	    break;
 	}
     case Qt::Edge::RightEdge:
 	{
-	    qreal off = metric( faderAspect() ) * size.width();
+	    qreal x = ( metric( faderAspect() ) * contentSize.width() )
+		+ parentSize.width()
+		- contentSize.width();
+	    qreal y = 0;
+
+	    if( alignment().testFlag( Qt::AlignVCenter ) ) {
+		y = ( parentSize.height() - contentSize.height() ) / 2.0;
+	    } else if ( alignment().testFlag( Qt::AlignBottom ) ) {
+		y = ( parentSize.height() - contentSize.height() );
+	    }
+
 	    qskSetItemGeometry( m_data->contentBox,
-				size.width() + off, 0, size.width(), size.height());
+				x, y,
+				contentSize.width(),
+				parentSize.height() );
 	    break;
 	}
 
     case Qt::Edge::TopEdge:
 	{
-	    qreal off = metric( faderAspect() ) * size.height();
+	    qreal x = 0;
+	    qreal y = metric( faderAspect() ) * contentSize.height();
+
+	    if( alignment().testFlag( Qt::AlignCenter) ) {
+		x = ( parentSize.width() - contentSize.width() ) / 2;
+	    } else if( alignment().testFlag( Qt::AlignRight) ) {
+		x = ( parentSize.width() - contentSize.width() );
+	    }
+
 	    qskSetItemGeometry( m_data->contentBox,
-				0, -off, size.width(), size.height());
+				x, -y,
+				parentSize.width(), contentSize.height());
 	    break;
 	}
 
     case Qt::Edge::BottomEdge:
 	{
-	    qreal off = metric( faderAspect() ) * size.height();
+	    qreal x = 0;
+	    qreal y = metric( faderAspect() ) * contentSize.height() + parentSize.height() - contentSize.height();
+
+	    if( alignment().testFlag( Qt::AlignCenter) ) {
+		x = ( parentSize.width() - contentSize.width() ) / 2;
+	    } else if( alignment().testFlag( Qt::AlignRight) ) {
+		x = ( parentSize.width() - contentSize.width() );
+	    }
+	    
 	    qskSetItemGeometry( m_data->contentBox,
-				0, size.height() + off, size.width(), size.height());
+				x, y,
+				parentSize.width(), contentSize.height());
 	    break;
 	}
 	break;
 
-    }    
-   
+    }
+
     Inherited::updateLayout();
 }
 
