@@ -169,6 +169,7 @@ list(APPEND HEADERS
     controls/QskComboBox.h
     controls/QskComboBoxSkinlet.h
     controls/QskControl.h
+    controls/QskDrawer.h
     controls/QskEvent.h
     controls/QskFlickAnimator.h
     controls/QskFocusIndicator.h
@@ -266,6 +267,7 @@ list(APPEND SOURCES
     controls/QskControl.cpp
     controls/QskControlPrivate.cpp
     controls/QskDirtyItemFilter.cpp
+    controls/QskDrawer.cpp
     controls/QskEvent.cpp
     controls/QskFlickAnimator.cpp
     controls/QskFocusIndicator.cpp
@@ -340,7 +342,6 @@ list(APPEND SOURCES
 )
 
 list(APPEND HEADERS
-    layouts/QskDrawer.h
     layouts/QskGridBox.h
     layouts/QskGridLayoutEngine.h
     layouts/QskIndexedLayoutBox.h
@@ -359,7 +360,6 @@ list(APPEND PRIVATE_HEADERS
 )
 
 list(APPEND SOURCES
-    layouts/QskDrawer.cpp
     layouts/QskGridBox.cpp
     layouts/QskGridLayoutEngine.cpp
     layouts/QskIndexedLayoutBox.cpp

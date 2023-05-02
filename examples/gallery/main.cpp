@@ -55,6 +55,30 @@ namespace
         }
     };
 
+    class Drawer : public QskDrawer
+    {
+      public:
+        Drawer( QQuickItem* parent = nullptr )
+            : QskDrawer( parent )
+        {
+            auto box = new QskLinearBox( Qt::Vertical );
+            box->setSection( QskAspect::Header );
+            box->setPanel( true );
+            box->setPaddingHint( QskBox::Panel, 20 );
+
+            new QskPushButton( "One", box );
+            new QskPushButton( "Two", box );
+            new QskPushButton( "Three", box );
+
+            box->addStretch( 1 );
+
+            auto btn = new QskPushButton( "Close", box );
+            connect( btn, &QskPushButton::clicked, this, &QskDrawer::close );
+
+            setContent( box );
+        }
+    };
+
     class TabView : public QskTabView
     {
       public:
@@ -213,28 +237,14 @@ namespace
             }
 
             {
-                QskDrawer* drawer = new QskDrawer( this->parentItem() );
+                auto drawer = new Drawer( parentItem() );
                 drawer->setEdge( Qt::RightEdge );
 
-                auto o = new QskLinearBox( Qt::Vertical );
-
-                auto c = new QskLinearBox( Qt::Vertical, o );
-                new QskPushButton( "One", c );
-                new QskPushButton( "Two", c );
-                new QskPushButton( "Three", c );
-
-                c->setExtraSpacingAt( Qt::BottomEdge );
-
-                auto close = new QskPushButton( "Close", o );
-                connect( close, &QskPushButton::clicked,
-                    drawer, &QskDrawer::close );
-
-                drawer->setContent( o );
-
                 auto burger = new QskPushButton( "≡", this );
-		burger->setEmphasis( QskPushButton::LowEmphasis );
+		        burger->setEmphasis( QskPushButton::LowEmphasis );
+
                 connect( burger, &QskPushButton::clicked,
-                    this, [drawer]() { drawer->open(); });
+                    drawer, &QskPopup::open );
             }
         }
 

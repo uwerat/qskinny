@@ -1,7 +1,8 @@
-#include "QskPopup.h"
-
 #ifndef QSK_DRAWER_H
 #define QSK_DRAWER_H
+
+#include "QskPopup.h"
+#include <qnamespace.h>
 
 class QSK_EXPORT QskDrawer : public QskPopup
 {
@@ -13,21 +14,22 @@ class QSK_EXPORT QskDrawer : public QskPopup
 
   public:
     QSK_SUBCONTROLS( Panel, Overlay )
+
     QskDrawer( QQuickItem* parentItem = nullptr );
     ~QskDrawer() override;
 
+    void setEdge( Qt::Edge edge );
     Qt::Edge edge() const;
 
     void updateLayout() override;
 
     void setContent( QskControl* t );
-    void setEdge( Qt::Edge edge );
-
-  protected:
-    void aboutToShow() override;
 
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
+
+  protected:
+    void aboutToShow() override;
 
   private:
     class PrivateData;
