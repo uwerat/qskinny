@@ -162,6 +162,17 @@ qreal qskHorizontalAdvance( const QFontMetricsF& fontMetrics, const QString& tex
     return fontMetrics.horizontalAdvance( text );
 }
 
+QSizeF qskTextRenderSize( const QFontMetricsF& fontMetrics, const QString& text )
+{
+    if ( text.isEmpty() )
+        return QSizeF( 0.0, 0.0 );
+
+    QRectF r( 0.0, 0.0, 10e6, 10e6 );
+    r = fontMetrics.boundingRect( r, 0, text );
+
+    return r.size();
+}
+
 qreal qskFuzzyFloor( qreal value, qreal stepSize )
 {
     const double eps = 1.0e-6 * stepSize;
