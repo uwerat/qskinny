@@ -916,7 +916,7 @@ QSGNode* QskControl::updateItemPaintNode( QSGNode* node )
     return node;
 }
 
-QskControl* QskControl::owningControl() const
+QskControl* QskControl::owningItem() const
 {
     return const_cast< QskControl* >( this );
 }

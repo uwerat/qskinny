@@ -121,7 +121,7 @@ static inline T qskColor( const QskSkinnable* skinnable,
         aspect | QskAspect::Color, status ).value< T >();
 }
 
-static inline void qskTriggerUpdates( QskAspect aspect, QskControl* control )
+static inline void qskTriggerUpdates( QskAspect aspect, QQuickItem* item )
 {
     /*
         To put the hint into effect we have to call the usual suspects:
@@ -137,7 +137,13 @@ static inline void qskTriggerUpdates( QskAspect aspect, QskControl* control )
         controls.
      */
 
-    if ( control == nullptr || aspect.isAnimator() )
+    if ( item == nullptr || aspect.isAnimator() )
+        return;
+
+    item->update(); // always
+
+    auto control = qskControlCast( item );
+    if ( control == nullptr )
         return;
 
     bool maybeLayout = false;
@@ -184,8 +190,6 @@ static inline void qskTriggerUpdates( QskAspect aspect, QskControl* control )
             }
         }
     }
-
-    control->update(); // always
 
     if ( maybeLayout && control->hasChildItems() )
     {
@@ -269,13 +273,15 @@ void QskSkinnable::setSkinlet( const QskSkinlet* skinlet )
     m_data->skinlet = skinlet;
     m_data->hasLocalSkinlet = ( skinlet != nullptr );
 
-    if ( auto control = owningControl() )
+    if ( auto item = owningItem() )
     {
-        control->resetImplicitSize();
-        control->polish();
+        if ( auto control = qskControlCast( item ) )
+            control->resetImplicitSize();
 
-        if ( control->flags() & QQuickItem::ItemHasContents )
-            control->update();
+        item->polish();
+
+        if ( item->flags() & QQuickItem::ItemHasContents )
+            item->update();
     }
 }
 
@@ -760,12 +766,12 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
             return v.value< QskColorFilter >();
     }
 
-    if ( auto control = owningControl() )
+    if ( auto item = owningItem() )
     {
         const auto graphicRole = hint.toInt();
 
         const auto v = QskSkinTransition::animatedGraphicFilter(
-            control->window(), graphicRole );
+            item->window(), graphicRole );
 
         if ( v.canConvert< QskColorFilter >() )
         {
@@ -776,7 +782,7 @@ QskColorFilter QskSkinnable::effectiveGraphicFilter(
                 filter. As a workaround we schedule the update in the
                 getter: TODO ...
              */
-            control->update();
+            item->update();
 #endif
             return v.value< QskColorFilter >();
         }
@@ -862,7 +868,7 @@ bool QskSkinnable::setSkinHint( QskAspect aspect, const QVariant& hint )
 
     if ( m_data->hintTable.setHint( aspect, hint ) )
     {
-        qskTriggerUpdates( aspect, owningControl() );
+        qskTriggerUpdates( aspect, owningItem() );
         return true;
     }
 
@@ -875,7 +881,7 @@ bool QskSkinnable::resetSkinHint( QskAspect aspect )
 
     if ( m_data->hintTable.removeHint( aspect ) )
     {
-        qskTriggerUpdates( aspect, owningControl() );
+        qskTriggerUpdates( aspect, owningItem() );
         return true;
     }
 
@@ -980,8 +986,8 @@ QVariant QskSkinnable::interpolatedHint(
     if ( !QskSkinTransition::isRunning() || m_data->hintTable.hasHint( aspect ) )
         return QVariant();
 
-    const auto control = owningControl();
-    if ( control == nullptr )
+    const auto item = owningItem();
+    if ( item == nullptr )
         return QVariant();
 
     QVariant v;
@@ -990,7 +996,7 @@ QVariant QskSkinnable::interpolatedHint(
 
     Q_FOREVER
     {
-        v = QskSkinTransition::animatedHint( control->window(), aspect );
+        v = QskSkinTransition::animatedHint( item->window(), aspect );
 
         if ( !v.isValid() )
         {
@@ -1227,7 +1233,7 @@ bool QskSkinnable::isTransitionAccepted( QskAspect aspect ) const
         happen while the skinnable is visible. There are few exceptions
         like QskPopup::Closed, that is used to slide/fade in.
      */
-    if ( auto control = owningControl() )
+    if ( auto control = qskControlCast( owningItem() ) )
         return control->isInitiallyPainted();
 
     return false;
@@ -1252,7 +1258,7 @@ void QskSkinnable::startHintTransition( QskAspect aspect, int index,
     if ( animationHint.duration <= 0 || ( from == to ) )
         return;
 
-    auto control = this->owningControl();
+    auto control = qskControlCast( owningItem() );
     if ( control->window() == nullptr || !isTransitionAccepted( aspect ) )
         return;
 
@@ -1321,17 +1327,17 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
     if ( m_data->skinStates == newStates )
         return;
 
-    auto control = owningControl();
+    auto item = owningItem();
 
 #if DEBUG_STATE
-    const auto className = control ? control->className() : "QskSkinnable";
+    const auto className = item ? item->className() : "QskSkinnable";
 
     qDebug() << className << ":"
         << skinStateAsPrintable( m_data->skinState ) << "->"
         << skinStateAsPrintable( newState );
 #endif
 
-    if ( control && control->window() )
+    if ( item && item->window() )
     {
         if ( const auto skin = effectiveSkin() )
         {
@@ -1347,8 +1353,8 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
             }
         }
 
-        if ( control->flags() & QQuickItem::ItemHasContents )
-            control->update();
+        if ( item->flags() & QQuickItem::ItemHasContents )
+            item->update();
     }
 
     m_data->skinStates = newStates;
@@ -1370,7 +1376,9 @@ bool QskSkinnable::startHintTransitions(
     aspect.setSection( section() );
 
     const auto skin = effectiveSkin();
-    const auto control = owningControl();
+    const auto control = qskControlCast( owningItem() );
+    if ( control == nullptr )
+        return false;
 
     const auto primitiveCount = QskAspect::primitiveCount();
 
@@ -1440,8 +1448,8 @@ QskSkin* QskSkinnable::effectiveSkin() const
 
     if ( skin == nullptr )
     {
-        if ( const auto control = owningControl() )
-            skin = qskEffectiveSkin( control->window() );
+        if ( const auto item = owningItem() )
+            skin = qskEffectiveSkin( item->window() );
     }
 
     return skin ? skin : qskSetup->skin();

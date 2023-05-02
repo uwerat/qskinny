@@ -217,7 +217,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     QSGNode* updateItemPaintNode( QSGNode* ) override final;
     void updateItemPolish() override final;
 
-    QskControl* owningControl() const override final;
+    QskControl* owningItem() const override final;
 
   private:
     Q_DECLARE_PRIVATE( QskControl )

@@ -20,6 +20,7 @@ class QVariant;
 class QDebug;
 
 class QSGNode;
+class QQuickItem;
 
 class QskArcMetrics;
 class QskControl;
@@ -133,7 +134,7 @@ class QSK_EXPORT QskSkinnable
     QskControl* controlCast();
     const QskControl* controlCast() const;
 
-    virtual QskControl* owningControl() const = 0;
+    virtual QQuickItem* owningItem() const = 0;
     virtual const QMetaObject* metaObject() const = 0;
 
     void debug( QskAspect ) const;

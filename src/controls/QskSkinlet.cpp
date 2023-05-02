@@ -28,6 +28,7 @@
 #include "QskTextOptions.h"
 #include "QskSkinStateChanger.h"
 #include "QskTextureRenderer.h"
+#include "QskSetup.h"
 
 #include <qquickwindow.h>
 #include <qsgsimplerectnode.h>
@@ -101,7 +102,7 @@ static inline QSGNode* qskUpdateTextNode( const QskSkinnable* skinnable,
             break;
     }
 
-    textNode->setTextData( skinnable->owningControl(),
+    textNode->setTextData( skinnable->owningItem(),
         text, rect, effectiveFont, textOptions, textColors, alignment, textStyle );
 
     return textNode;
@@ -115,21 +116,26 @@ static inline QSGNode* qskUpdateGraphicNode(
     if ( rect.isEmpty() )
         return nullptr;
 
-    const auto control = skinnable->owningControl();
-    if ( control == nullptr )
+    const auto item = skinnable->owningItem();
+    if ( item == nullptr )
         return nullptr;
 
     auto graphicNode = static_cast< QskGraphicNode* >( node );
     if ( graphicNode == nullptr )
         graphicNode = new QskGraphicNode();
 
-    const bool useRaster = control->testUpdateFlag( QskControl::PreferRasterForTextures );
+    const auto flag = QskQuickItem::PreferRasterForTextures;
+
+    bool useRaster = qskSetup->testItemUpdateFlag( flag );
+    if ( auto qItem = qobject_cast< const QskQuickItem* >( item ) )
+        useRaster = qItem->testUpdateFlag( flag );
+
     graphicNode->setRenderHint( useRaster ? QskPaintedNode::Raster : QskPaintedNode::OpenGL );
 
     graphicNode->setMirrored( mirrored );
 
-    const auto r = qskSceneAlignedRect( control, rect );
-    graphicNode->setGraphic( control->window(), graphic, colorFilter, r );
+    const auto r = qskSceneAlignedRect( item, rect );
+    graphicNode->setGraphic( item->window(), graphic, colorFilter, r );
 
     return graphicNode;
 }
