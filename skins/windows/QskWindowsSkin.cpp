@@ -352,6 +352,97 @@ void Editor::setupPushButton()
 
 void Editor::setupRadioBox()
 {
+    using Q = QskRadioBox;
+
+    setSpacing( Q::Button, 8 );
+    setStrutSize( Q::Button, { 115, 38 } );
+
+    setStrutSize( Q::CheckIndicatorPanel, { 20, 20 } );
+    setBoxShape( Q::CheckIndicatorPanel, 100, Qt::RelativeSize );
+    setBoxBorderMetrics( Q::CheckIndicatorPanel, 1 );
+    setFontRole( Q::Text, QskWindowsSkin::Body );
+    setColor( Q::Text, theme.palette.fillColor.text.primary );
+
+    // Rest
+
+    setGradient( Q::CheckIndicatorPanel, theme.palette.fillColor.controlAlt.secondary );
+    setBoxBorderColors( Q::CheckIndicatorPanel, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+
+    setGradient( Q::CheckIndicatorPanel | Q::Selected, theme.palette.fillColor.accent.defaultColor );
+    setBoxBorderMetrics( Q::CheckIndicatorPanel | Q::Selected, 0 );
+
+    setPadding( Q::CheckIndicatorPanel | Q::Selected, { 5, 5 } ); // indicator "strut size"
+
+    setBoxShape( Q::CheckIndicator | Q::Selected, 100, Qt::RelativeSize );
+    setBoxBorderMetrics( Q::CheckIndicator | Q::Selected, 1 );
+    setGradient( Q::CheckIndicator | Q::Selected, theme.palette.fillColor.textOnAccent.primary );
+
+    const QRgb panelRestBorderColor1 = flattenedColor( theme.palette.elevation.circle.border[ 0 ],
+                                                      theme.palette.fillColor.accent.defaultColor );
+
+    const QRgb panelRestBorderColor2 = flattenedColor( theme.palette.elevation.circle.border[ 1 ],
+                                                      theme.palette.fillColor.accent.defaultColor );
+
+    setBoxBorderColors( Q::CheckIndicator | Q::Selected, { panelRestBorderColor1, panelRestBorderColor1,
+                                                         panelRestBorderColor1, panelRestBorderColor2 } );
+
+    // Hover
+
+    setGradient( Q::CheckIndicatorPanel | Q::Hovered, theme.palette.fillColor.controlAlt.tertiary );
+
+    setGradient( Q::CheckIndicatorPanel | Q::Hovered | Q::Selected, theme.palette.fillColor.accent.secondary );
+    setPadding( Q::CheckIndicatorPanel | Q::Hovered | Q::Selected, { 4, 4 } ); // indicator "strut size"
+
+    const QRgb panelHoveredBorderColor1 = flattenedColor( theme.palette.elevation.circle.border[ 0 ],
+                                                      theme.palette.fillColor.accent.secondary );
+
+    const QRgb panelHoveredBorderColor2 = flattenedColor( theme.palette.elevation.circle.border[ 1 ],
+                                                      theme.palette.fillColor.accent.secondary );
+
+    setBoxBorderColors( Q::CheckIndicator | Q::Selected, { panelHoveredBorderColor1, panelHoveredBorderColor1,
+                                                         panelHoveredBorderColor1, panelHoveredBorderColor2 } );
+
+    // Pressed
+
+    setGradient( Q::CheckIndicatorPanel | Q::Pressed, theme.palette.fillColor.controlAlt.quaternary );
+    setBoxBorderColors( Q::CheckIndicatorPanel | Q::Pressed, theme.palette.strokeColor.controlStrongStroke.disabled );
+
+    setPadding( Q::CheckIndicatorPanel | Q::Pressed, { 7, 7 } ); // indicator "strut size"
+
+    setBoxShape( Q::CheckIndicator | Q::Pressed, 100, Qt::RelativeSize );
+    setBoxBorderMetrics( Q::CheckIndicator | Q::Pressed, 0 );
+    setGradient( Q::CheckIndicator | Q::Pressed, theme.palette.fillColor.textOnAccent.primary );
+
+    setGradient( Q::CheckIndicatorPanel | Q::Pressed | Q::Selected, theme.palette.fillColor.accent.tertiary );
+    setBoxBorderMetrics( Q::CheckIndicatorPanel | Q::Pressed | Q::Selected, 0 );
+
+    setPadding( Q::CheckIndicatorPanel | Q::Pressed | Q::Selected, { 6, 6 } ); // indicator "strut size"
+    setBoxBorderMetrics( Q::CheckIndicator | Q::Pressed, 1 );
+
+    const QRgb panelPressedBorderColor1 = flattenedColor( theme.palette.elevation.circle.border[ 0 ],
+                                                      theme.palette.fillColor.accent.tertiary ); // ### calculate those colors at skin construction time
+
+    const QRgb panelPressedBorderColor2 = flattenedColor( theme.palette.elevation.circle.border[ 1 ],
+                                                      theme.palette.fillColor.accent.tertiary );
+
+    setBoxBorderColors( Q::CheckIndicator | Q::Pressed | Q::Selected, { panelPressedBorderColor1, panelPressedBorderColor1,
+                                                                      panelPressedBorderColor1, panelPressedBorderColor2 } );
+
+    // Disabled
+
+    setGradient( Q::CheckIndicatorPanel | Q::Disabled, theme.palette.fillColor.controlAlt.disabled );
+    setBoxBorderColors( Q::CheckIndicatorPanel | Q::Disabled, theme.palette.strokeColor.controlStrongStroke.disabled );
+
+    setGradient( Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, theme.palette.fillColor.accent.disabled );
+    setBoxBorderMetrics( Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, 0 );
+
+    setPadding( Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, { 6, 6 } ); // indicator "strut size"
+
+    setBoxBorderMetrics( Q::CheckIndicator | Q::Disabled | Q::Selected, 0 );
+    setGradient( Q::CheckIndicator | Q::Disabled | Q::Selected, theme.palette.fillColor.textOnAccent.primary );
+    setBoxShape( Q::CheckIndicator | Q::Disabled | Q::Selected, 100, Qt::RelativeSize );
+
+    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
 }
 
 void Editor::setupScrollView()
