@@ -201,7 +201,6 @@ void QskRadioBox::mousePressEvent( QMouseEvent* event )
     auto indexAtPosition = indexAt( qskMousePosition( event ) );
 
     m_data->pressedIndex = indexAtPosition;
-    m_data->selectedIndex = -1;
 
     setFocusedIndex( indexAtPosition );
     update();
