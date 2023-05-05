@@ -24,6 +24,7 @@ class QskRadioBox::PrivateData
     QStringList options;
 
     int selectedIndex = -1;
+    int hoveredIndex = -1;
     int focusedIndex = -1;
     int pressedIndex = -1;
 };
@@ -38,6 +39,8 @@ QskRadioBox::QskRadioBox( QQuickItem* parent )
     setAcceptedMouseButtons( Qt::LeftButton );
 
     setPositionHint( Ripple, -1 );
+
+    setAcceptHoverEvents( true );
 }
 
 QskRadioBox::QskRadioBox( const QStringList& options, QQuickItem* parent )
@@ -223,6 +226,23 @@ void QskRadioBox::mouseReleaseEvent( QMouseEvent* event )
     update();
 }
 
+void QskRadioBox::hoverEnterEvent( QHoverEvent* event )
+{
+    const auto index = indexAt( qskHoverPosition( event ) );
+    setHoveredIndex( index );
+}
+
+void QskRadioBox::hoverMoveEvent( QHoverEvent* event )
+{
+    const auto index = indexAt( qskHoverPosition( event ) );
+    setHoveredIndex( index );
+}
+
+void QskRadioBox::hoverLeaveEvent( QHoverEvent* )
+{
+    setHoveredIndex( -1 );
+}
+
 void QskRadioBox::focusInEvent( QFocusEvent* event )
 {
     if( event->reason() == Qt::TabFocusReason )
@@ -250,6 +270,17 @@ int QskRadioBox::indexAt( const QPointF& pos ) const
 {
     return effectiveSkinlet()->sampleIndexAt( this,
         contentsRect(), QskRadioBox::Button, pos );
+}
+
+void QskRadioBox::setHoveredIndex( int index )
+{
+    if ( m_data->hoveredIndex == index )
+        return;
+
+    m_data->hoveredIndex = index;
+    setPositionHint( Ripple | Hovered, index );
+
+    update();
 }
 
 void QskRadioBox::setFocusedIndex( int index )
