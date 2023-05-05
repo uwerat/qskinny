@@ -219,6 +219,11 @@ QskAspect::States QskRadioBoxSkinlet::sampleStates(
         states |= Q::Pressed;
 
 #if 1
+    if( radioBox->positionHint( Q::Ripple | Q::Hovered ) == index )
+        states |= Q::Hovered;
+    else
+        states &= ~Q::Hovered;
+
     if( radioBox->positionHint( Q::Ripple ) == index )
         states |= Q::Focused;
     else

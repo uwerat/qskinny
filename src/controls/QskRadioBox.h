@@ -55,12 +55,17 @@ class QSK_EXPORT QskRadioBox : public QskControl
     void mouseReleaseEvent( QMouseEvent* ) override;
     void mouseUngrabEvent() override;
 
+    void hoverEnterEvent( QHoverEvent* ) override;
+    void hoverMoveEvent( QHoverEvent* ) override;
+    void hoverLeaveEvent( QHoverEvent* ) override;
+
     void focusInEvent( QFocusEvent* ) override;
     void focusOutEvent( QFocusEvent* ) override;
 
     int indexAt( const QPointF& ) const;
 
   private:
+    void setHoveredIndex( int index );
     void setFocusedIndex( int index );
 
     class PrivateData;
