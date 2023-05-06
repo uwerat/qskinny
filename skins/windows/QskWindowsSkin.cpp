@@ -506,6 +506,12 @@ void Editor::setupTabView()
 
 void Editor::setupTextLabel()
 {
+    using Q = QskTextLabel;
+
+    setPadding( Q::Panel, 10 );
+
+    setFontRole( Q::Text, QskWindowsSkin::Body );
+    setColor( Q::Text, theme.palette.fillColor.text.primary );
 }
 
 
