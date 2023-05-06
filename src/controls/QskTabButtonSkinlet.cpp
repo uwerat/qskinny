@@ -57,19 +57,25 @@ QSGNode* QskTabButtonSkinlet::updateSubNode(
 QSizeF QskTabButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
     Qt::SizeHint which, const QSizeF& ) const
 {
+    using Q = QskTabButton;
+
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
     const auto tabButton = static_cast< const QskTabButton* >( skinnable );
 
-    auto size = tabButton->strutSizeHint( QskTabButton::Panel );
+    QSizeF size;
     const auto text = tabButton->text();
 
     if ( !text.isEmpty() )
     {
         const QFontMetricsF fm( tabButton->effectiveFont( QskTabButton::Text ) );
-        size += fm.size( Qt::TextShowMnemonic, text );
+        size = fm.size( Qt::TextShowMnemonic, text );
     }
+
+    size = tabButton->outerBoxSize( Q::Panel, size );
+    size = size.expandedTo( tabButton->strutSizeHint( Q::Panel ) );
+    size = size.grownBy( skinnable->marginHint( Q::Panel ) );
 
     return size;
 }
