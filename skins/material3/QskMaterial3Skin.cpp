@@ -984,7 +984,7 @@ void Editor::setupTabButton()
     using A = QskAspect;
     using Q = QskTabButton;
 
-    setStrutSize( Q::Panel, 48_dp, 48_dp );
+    setStrutSize( Q::Panel, 48_dp, 64_dp );
     setGradient( Q::Panel, m_pal.surface );
 
     setColor( Q::Text, m_pal.onSurfaceVariant );
@@ -994,44 +994,15 @@ void Editor::setupTabButton()
     setColor( Q::Text | Q::Checked, m_pal.primary );
     setColor( Q::Text | Q::Hovered, m_pal.primary );
 
-    for ( const auto variation : { A::Left, A::Right, A::Top, A::Bottom } )
-    {
-        const auto aspect = Q::Panel | variation;
+    QskBoxBorderMetrics border;
+    border.setWidthAt( Qt::BottomEdge, 3_dp );
+    setBoxBorderMetrics( Q::Panel, border );
 
-        Qt::Edge edge;
+    QskBoxBorderColors borderColors( m_pal.surface );
+    setBoxBorderColors( Q::Panel, borderColors );
 
-        switch( variation )
-        {
-            case A::Left:
-                edge = Qt::RightEdge;
-                break;
-
-            case A::Right:
-                edge = Qt::LeftEdge;
-                break;
-
-            case A::Top:
-                edge = Qt::BottomEdge;
-                break;
-
-            case A::Bottom:
-                edge = Qt::TopEdge;
-                break;
-
-            default:
-                edge = Qt::Edge( 0 ); // making gcc4 happy
-        }
-
-        QskBoxBorderMetrics border;
-        border.setWidthAt( edge, 3_dp );
-        setBoxBorderMetrics( aspect, border );
-
-        QskBoxBorderColors borderColors( m_pal.surface );
-        setBoxBorderColors( aspect, borderColors );
-
-        borderColors.setGradientAt( edge, m_pal.primary );
-        setBoxBorderColors( aspect | Q::Checked, borderColors );
-    }
+    borderColors.setGradientAt( Qt::BottomEdge, m_pal.primary );
+    setBoxBorderColors( Q::Panel | Q::Checked, borderColors );
 
     setGradient( Q::Panel | Q::Hovered,
         QskRgb::toTransparentF( m_pal.surface, m_pal.hoverOpacity ) );
