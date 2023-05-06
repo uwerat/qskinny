@@ -237,6 +237,21 @@ void Editor::setupListView()
 
 void Editor::setupMenu()
 {
+    using Q = QskMenu;
+
+    setPadding( Q::Panel, { 16, 6, 16, 6 } );
+    setBoxBorderMetrics( Q::Panel, 1 );
+    setBoxBorderColors( Q::Panel, theme.palette.strokeColor.surfaceStroke.flyout );
+    setBoxShape( Q::Panel, 7 );
+    setGradient( Q::Panel, theme.palette.background.fillColor.acrylicBackground.defaultColor );
+    setShadowMetrics( Q::Panel, theme.shadow.flyout.first ); // ### metrics should be the same, just color differs
+    setShadowColor( Q::Panel, theme.shadow.flyout.second );
+
+    setPadding( Q::Segment, { 0, 10, 0, 10 } );
+    setSpacing( Q::Segment, 15 );
+
+    setFontRole( Q::Text, QskWindowsSkin::Body );
+    setColor( Q::Text, theme.palette.fillColor.text.primary );
 }
 
 void Editor::setupPageIndicator()
@@ -761,6 +776,16 @@ QskWindowsTheme::QskWindowsTheme( Theme theme, std::array< QRgb, NumAccentColors
         palette.background.fillColor.solidBackground.secondary = 0xffEEEEEE;
         palette.background.fillColor.solidBackground.tertiary = 0xffF9F9F9;
         palette.background.fillColor.solidBackground.quaternary = 0xffffffff;
+
+
+        // Shadow:
+
+        shadow.cardRest = qMakePair( QskShadowMetrics( 0, 4, QPointF( 0, 2 ) ), QskRgb::toTransparentF( 0xff000000, 0.04 ) );
+        shadow.cardHover = qMakePair( QskShadowMetrics( 0, 4, QPointF( 0, 2 ) ), QskRgb::toTransparentF( 0xff000000, 0.10 ) );
+        shadow.tooltip = qMakePair( QskShadowMetrics( 0, 8, QPointF( 0, 4 ) ), QskRgb::toTransparentF( 0xff000000, 0.14 ) );
+        shadow.flyout = qMakePair( QskShadowMetrics( 0, 16, QPointF( 0, 8 ) ), QskRgb::toTransparentF( 0xff000000, 0.14 ) );
+        // ### should actually be drawn twice with different values:
+        shadow.dialog = qMakePair( QskShadowMetrics( 0, 21, QPointF( 0, 2 ) ), QskRgb::toTransparentF( 0xff000000, 0.1474 ) );
     }
     else if( theme == Dark )
     {
@@ -880,8 +905,8 @@ QskWindowsTheme::QskWindowsTheme( Theme theme, std::array< QRgb, NumAccentColors
 
         palette.background.fillColor.layerOnAccentAcrylic.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.0359 );
 
-        palette.background.fillColor.acrylicBackground.defaultColor = QskRgb::toTransparentF( 0xffFCFCFC, 0.85 );
-        palette.background.fillColor.acrylicBackground.base = QskRgb::toTransparentF( 0xffF3F3F3, 0.90 );
+        palette.background.fillColor.acrylicBackground.defaultColor = QskRgb::toTransparentF( 0xff2C2C2C, 0.96 );
+        palette.background.fillColor.acrylicBackground.base = QskRgb::toTransparentF( 0xff202020, 0.90 );
 
         palette.background.fillColor.accentAcrylicBackground.base = QskRgb::toTransparentF( accentColors[ AccentDark2 ], 0.80 );
         palette.background.fillColor.accentAcrylicBackground.defaultColor = QskRgb::toTransparentF( accentColors[ AccentBase ], 0.80 );
@@ -892,6 +917,16 @@ QskWindowsTheme::QskWindowsTheme( Theme theme, std::array< QRgb, NumAccentColors
         palette.background.fillColor.solidBackground.secondary = 0xff1C1C1C;
         palette.background.fillColor.solidBackground.tertiary = 0xff282828;
         palette.background.fillColor.solidBackground.quaternary = 0xff2C2C2C;
+
+
+        // Shadow:
+
+        shadow.cardRest = qMakePair( QskShadowMetrics( 0, 4, QPointF( 0, 2 ) ), QskRgb::toTransparentF( 0xff000000, 0.13 ) );
+        shadow.cardHover = qMakePair( QskShadowMetrics( 0, 4, QPointF( 0, 2 ) ), QskRgb::toTransparentF( 0xff000000, 0.26 ) );
+        shadow.tooltip = qMakePair( QskShadowMetrics( 0, 8, QPointF( 0, 4 ) ), QskRgb::toTransparentF( 0xff000000, 0.26 ) );
+        shadow.flyout = qMakePair( QskShadowMetrics( 0, 16, QPointF( 0, 8 ) ), QskRgb::toTransparentF( 0xff000000, 0.26 ) );
+        // ### should actually be drawn twice with different values:
+        shadow.dialog = qMakePair( QskShadowMetrics( 0, 21, QPointF( 0, 2 ) ), QskRgb::toTransparentF( 0xff000000, 0.37 ) );
     }
 }
 

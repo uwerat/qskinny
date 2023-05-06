@@ -10,8 +10,8 @@
 
 #include <QskBoxShapeMetrics.h>
 #include <QskGradient.h>
-#include <QskSkin.h>
 #include <QskShadowMetrics.h>
+#include <QskSkin.h>
 
 #include <array>
 
@@ -312,6 +312,19 @@ class QSK_WINDOWS_EXPORT QskWindowsTheme
     };
 
     Palette palette;
+
+    typedef QPair< QskShadowMetrics, QRgb > ShadowSettings;
+
+    struct Shadow
+    {
+        ShadowSettings cardRest;
+        ShadowSettings cardHover;
+        ShadowSettings tooltip;
+        ShadowSettings flyout;
+        ShadowSettings dialog;
+    };
+
+    Shadow shadow;
 };
 
 class QSK_WINDOWS_EXPORT QskWindowsSkin : public QskSkin
