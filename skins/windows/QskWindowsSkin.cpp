@@ -471,10 +471,37 @@ void Editor::setupTabBar()
 
 void Editor::setupTabButton()
 {
+    using Q = QskTabButton;
+
+    setStrutSize( Q::Panel, { -1, 31 } );
+    setPadding( Q::Panel, { 7, 0, 7, 0 } );
+    setBoxShape( Q::Panel, { 7, 7, 0, 0 } );
+
+    setGradient( Q::Panel, theme.palette.fillColor.subtle.transparent );
+    setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1 } );
+    setBoxBorderColors( Q::Panel, theme.palette.strokeColor.cardStroke.defaultColor );
+
+    setGradient( Q::Panel | Q::Checked, theme.palette.background.fillColor.solidBackground.tertiary );
+    setBoxBorderMetrics( Q::Panel | Q::Checked, { 1, 1, 1, 0 } );
+
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+
+    setFontRole( Q::Text, QskWindowsSkin::Body );
+    setColor( Q::Text, theme.palette.fillColor.text.secondary );
+
+    setFontRole( Q::Text | Q::Checked, QskWindowsSkin::BodyStrong );
+    setColor( Q::Text | Q::Checked, theme.palette.fillColor.text.primary );
+
+    setGradient( Q::Panel | Q::Hovered, theme.palette.fillColor.subtle.secondary );
+
+    setGradient( Q::Panel | Q::Pressed, theme.palette.fillColor.subtle.tertiary );
 }
 
 void Editor::setupTabView()
 {
+    using Q = QskTabView;
+
+    setGradient( Q::Page, theme.palette.background.fillColor.solidBackground.tertiary );
 }
 
 void Editor::setupTextLabel()
