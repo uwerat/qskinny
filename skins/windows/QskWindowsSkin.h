@@ -339,9 +339,12 @@ class QSK_WINDOWS_EXPORT QskWindowsSkin : public QskSkin
 
     enum GraphicRole
     {
+        GraphicRoleFillColorTextDisabled,
         GraphicRoleFillColorTextOnAccentDisabled,
         GraphicRoleFillColorTextOnAccentPrimary,
         GraphicRoleFillColorTextOnAccentSecondary,
+        GraphicRoleFillColorTextPrimary,
+        GraphicRoleFillColorTextSecondary,
     };
 
     enum FontRole
