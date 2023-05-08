@@ -275,7 +275,11 @@ void Editor::setupPushButton()
     setBoxShape( Q::Panel, 4 );
     setBoxBorderMetrics( Q::Panel, 1 );
 
-    setStrutSize( Q::Icon, { 0, 0 } );
+    // Windows buttons don't really have icons,
+    // but for the sake of compatibility with the
+    // gallery app, let's define their style here as well:
+    setStrutSize( Q::Icon, 12, 12 );
+    setPadding( Q::Icon, { 0, 0, 8, 0 } );
 
     setFontRole( Q::Text, QskWindowsSkin::Body );
 
@@ -292,6 +296,7 @@ void Editor::setupPushButton()
 
     setGradient( Q::Panel | W::Accent, theme.palette.fillColor.accent.defaultColor );
     setColor( Q::Text | W::Accent, theme.palette.fillColor.textOnAccent.primary );
+    setGraphicRole( Q::Icon | W::Accent, QskWindowsSkin::GraphicRoleFillColorTextOnAccentPrimary );
 
 
     const QRgb accentHoveredBorderColor1 = flattenedColor( theme.palette.elevation.accentControl.border[ 0 ],
@@ -308,6 +313,7 @@ void Editor::setupPushButton()
 
     setGradient( Q::Panel | W::Accent | Q::Pressed, theme.palette.fillColor.accent.tertiary );
     setColor( Q::Text | W::Accent | Q::Pressed, theme.palette.fillColor.textOnAccent.secondary );
+    setGraphicRole( Q::Icon | W::Accent | Q::Pressed, QskWindowsSkin::GraphicRoleFillColorTextOnAccentSecondary );
 
     const QRgb accentPressedBorderColor = flattenedColor( theme.palette.strokeColor.controlStroke.onAccentDefault,
                                                          theme.palette.fillColor.accent.tertiary );
@@ -317,6 +323,7 @@ void Editor::setupPushButton()
 
     setGradient( Q::Panel | W::Accent | Q::Disabled, theme.palette.fillColor.accent.disabled );
     setColor( Q::Text | W::Accent | Q::Disabled, theme.palette.fillColor.textOnAccent.disabled );
+    setGraphicRole( Q::Icon | W::Accent | Q::Disabled, QskWindowsSkin::GraphicRoleFillColorTextOnAccentDisabled );
     setBoxBorderMetrics( Q::Panel | W::Accent | Q::Disabled, 0 );
 
 
@@ -333,6 +340,7 @@ void Editor::setupPushButton()
 
     setGradient( Q::Panel, theme.palette.fillColor.control.defaultColor );
     setColor( Q::Text, theme.palette.fillColor.text.primary );
+    setGraphicRole( Q::Icon, QskWindowsSkin::GraphicRoleFillColorTextPrimary );
 
 
     const QRgb standardHoveredBorderColor1 = flattenedColor( theme.palette.elevation.control.border[ 0 ],
@@ -354,6 +362,7 @@ void Editor::setupPushButton()
 
     setGradient( Q::Panel | Q::Pressed, theme.palette.fillColor.control.tertiary );
     setColor( Q::Text | Q::Pressed, theme.palette.fillColor.text.secondary );
+    setGraphicRole( Q::Icon | Q::Pressed, QskWindowsSkin::GraphicRoleFillColorTextSecondary );
 
 
     const QRgb standardDisabledBorderColor = flattenedColor( theme.palette.strokeColor.controlStroke.defaultColor,
@@ -363,6 +372,7 @@ void Editor::setupPushButton()
 
     setGradient( Q::Panel | Q::Disabled, theme.palette.fillColor.control.disabled );
     setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
+    setGraphicRole( Q::Icon | Q::Disabled, QskWindowsSkin::GraphicRoleFillColorTextDisabled );
 }
 
 void Editor::setupRadioBox()
@@ -963,16 +973,19 @@ void QskWindowsSkin::setGraphicColor( GraphicRole role, QRgb rgb )
 {
     QskColorFilter colorFilter;
     colorFilter.setMask( QskRgb::RGBAMask );
-    colorFilter.addColorSubstitution( QskRgb::White, rgb );
+    colorFilter.addColorSubstitution( QskRgb::Black, rgb );
 
     setGraphicFilter( role, colorFilter );
 }
 
 void QskWindowsSkin::setupGraphicFilters( const QskWindowsTheme& theme )
 {
+    setGraphicColor( GraphicRoleFillColorTextDisabled, theme.palette.fillColor.text.disabled );
     setGraphicColor( GraphicRoleFillColorTextOnAccentDisabled, theme.palette.fillColor.textOnAccent.disabled );
     setGraphicColor( GraphicRoleFillColorTextOnAccentPrimary, theme.palette.fillColor.textOnAccent.primary );
     setGraphicColor( GraphicRoleFillColorTextOnAccentSecondary, theme.palette.fillColor.textOnAccent.secondary );
+    setGraphicColor( GraphicRoleFillColorTextPrimary, theme.palette.fillColor.text.primary );
+    setGraphicColor( GraphicRoleFillColorTextSecondary, theme.palette.fillColor.text.secondary );
 }
 
 #include "moc_QskWindowsSkin.cpp"
