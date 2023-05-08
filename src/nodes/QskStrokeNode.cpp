@@ -120,6 +120,11 @@ QskStrokeNode::RenderHint QskStrokeNode::renderHint() const
     return ( material() == qskMaterialColorVertex ) ? Colored : Flat;
 }
 
+void QskStrokeNode::updateNode( const QPainterPath& path, const QPen& pen )
+{
+    updateNode( path, QTransform(), pen );
+}
+
 void QskStrokeNode::updateNode(
     const QPainterPath& path, const QTransform& transform,  const QPen& pen )
 {
@@ -214,6 +219,12 @@ void QskStrokeNode::updateNode(
             markDirty( QSGNode::DirtyMaterial );
         }
     }
+}
+
+void QskStrokeNode::updateNode( const QPolygonF& polygon,
+    qreal lineWidth, const QColor& color )
+{
+    updateNode( polygon, QTransform(), lineWidth, color );
 }
 
 /*

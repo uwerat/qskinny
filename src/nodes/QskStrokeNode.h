@@ -35,8 +35,10 @@ class QSK_EXPORT QskStrokeNode : public QSGGeometryNode
     void setRenderHint( RenderHint );
     RenderHint renderHint() const;
 
+    void updateNode( const QPainterPath&, const QPen& );
     void updateNode( const QPainterPath&, const QTransform&, const QPen& );
 
+    void updateNode( const QPolygonF&, qreal lineWidth, const QColor& );
     void updateNode( const QPolygonF&, const QTransform&,
         qreal lineWidth, const QColor& );
 
