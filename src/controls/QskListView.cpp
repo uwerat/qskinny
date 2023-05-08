@@ -166,6 +166,8 @@ QskAspect::Subcontrol QskListView::rowSubControl( int row ) const noexcept
 
 QskAspect::Subcontrol QskListView::cellSubControl( int row, int col ) const noexcept
 {
+    Q_UNUSED(row);
+    Q_UNUSED(col);
     return Cell;
 }
 
@@ -399,6 +401,7 @@ void QskListView::componentComplete()
 
 qreal QskListView::rowOffset( int row ) const
 {
+    Q_UNUSED(row);
     return 0.0;
 }
 

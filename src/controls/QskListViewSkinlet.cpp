@@ -136,7 +136,6 @@ void QskListViewSkinlet::updateBackgroundNode( const QskListView* listView, QSGN
         auto* boxNode = rowNode->firstChild();
         auto prepend = boxNode == nullptr;
 
-        const auto color = listView->color(subControl);
         const auto gradient = listView->gradientHint(subControl);
 
         boxNode = updateBoxNode( listView, boxNode, boxRect, subControl );
@@ -168,7 +167,6 @@ void QskListViewSkinlet::updateBackgroundNodes(
     if ( rowMax >= listView->rowCount() )
         rowMax = listView->rowCount() - 1;
 
-    const int rowSelected = listView->selectedRow();
     const double x0 = viewRect.left();
     const double y0 = viewRect.top();
 
