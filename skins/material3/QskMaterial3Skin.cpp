@@ -789,7 +789,8 @@ void Editor::setupDialogButtonBox()
     setBoxBorderMetrics( Q::Panel, 0 );
 }
 
-void Editor::setupDrawer() {
+void Editor::setupDrawer()
+{
     using Q = QskDrawer;
 
     setPadding( Q::Panel, 5_dp );
