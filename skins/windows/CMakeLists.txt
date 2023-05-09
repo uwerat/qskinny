@@ -10,4 +10,4 @@ set(SOURCES
 qt_add_resources(SOURCES icons.qrc)
 
 qsk_add_plugin(windowsskin skins QskWindowsSkinFactory ${SOURCES})
-set_target_properties(windowsskin PROPERTIES DEFINE_SYMBOL QSK_Windows_MAKEDLL )
+set_target_properties(windowsskin PROPERTIES DEFINE_SYMBOL QSK_WINDOWS_MAKEDLL )
