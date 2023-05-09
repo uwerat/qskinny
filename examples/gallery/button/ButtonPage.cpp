@@ -168,6 +168,7 @@ namespace
             : ButtonBox( Qt::Horizontal, parent )
         {
             auto radioBox1 = new QskRadioBox( { "One", "Two", "Three" }, this );
+            radioBox1->setSelectedIndex( 0 );
             radioBox1->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
 
             auto radioBox2 = new QskRadioBox( { "One", "Two", "Three" }, this );
