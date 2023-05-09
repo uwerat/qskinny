@@ -12,7 +12,7 @@
 class QSK_WINDOWS_EXPORT QskWindowsSkinFactory : public QskSkinFactory
 {
     Q_OBJECT
-#if defined( QSK_Windows_MAKEDLL )
+#if defined( QSK_WINDOWS_MAKEDLL )
     Q_PLUGIN_METADATA( IID QskSkinFactoryIID FILE "metadata.json" )
     Q_INTERFACES( QskSkinFactory )
 #endif
