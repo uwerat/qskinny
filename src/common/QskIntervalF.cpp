@@ -7,6 +7,7 @@
 #include "QskFunctions.h"
 
 #include <qvariant.h>
+#include <qrect.h>
 #include <algorithm>
 
 static void qskRegisterIntervalF()
@@ -224,6 +225,13 @@ bool QskIntervalF::fuzzyIsBoundary( qreal value ) const
 {
     return qskFuzzyCompare( value, m_lowerBound )
         || qskFuzzyCompare( value, m_upperBound );
+}
+
+QRectF QskIntervalF::toRect( const QskIntervalF& intervalX,
+    const QskIntervalF& intervalY ) noexcept
+{
+    return QRectF( intervalX.lowerBound(), intervalY.lowerBound(),
+        intervalX.width(), intervalY.width() ).normalized();
 }
 
 #ifndef QT_NO_DEBUG_STREAM

@@ -11,6 +11,7 @@
 #include <qmetatype.h>
 
 class QVariant;
+class QRectF;
 
 class QSK_EXPORT QskIntervalF
 {
@@ -81,6 +82,8 @@ class QSK_EXPORT QskIntervalF
     void invalidate() noexcept;
 
     QskIntervalF interpolated( const QskIntervalF&, qreal progress ) const noexcept;
+
+    static QRectF toRect( const QskIntervalF&, const QskIntervalF& ) noexcept;
 
     static QVariant interpolate( const QskIntervalF&,
         const QskIntervalF&, qreal progress ) noexcept;
