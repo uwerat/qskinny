@@ -290,8 +290,8 @@ void QskMenu::keyReleaseEvent( QKeyEvent* )
 
         if ( m_data->currentIndex >= 0 )
         {
-            trigger( m_data->currentIndex );
             close();
+            trigger( m_data->currentIndex );
         }
     }
 }
@@ -368,8 +368,8 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
             if ( ( index >= 0 )
                 && ( index == indexAtPosition( qskMousePosition( event ) ) ) )
             {
-                trigger( m_data->currentIndex );
                 close();
+                trigger( m_data->currentIndex );
             }
         }
 
