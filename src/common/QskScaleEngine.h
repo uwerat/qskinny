@@ -59,4 +59,6 @@ class QSK_EXPORT QskScaleEngine
     Attributes m_attributes;
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskScaleEngine::Attributes )
+
 #endif
