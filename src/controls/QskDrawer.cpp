@@ -63,6 +63,9 @@ void QskDrawer::setEdge( Qt::Edge edge )
 void QskDrawer::setContent( QskControl* content )
 {
     content->setParentItem( m_data->contentBox );
+    if ( content->parent() == nullptr )
+        content->setParent( m_data->contentBox );
+
     m_data->content = content;
 }
 
