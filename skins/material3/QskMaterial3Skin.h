@@ -127,10 +127,10 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
 
     enum FontRole
     {
-        M3BodyMedium = QskSkin::HugeFont + 1,
-        M3BodyLarge,
-        M3HeadlineSmall,
-        M3LabelLarge,
+        M3BodyMedium = DefaultFont,
+        M3BodyLarge = LargeFont,
+        M3HeadlineSmall = SmallFont,
+        M3LabelLarge = HugeFont,
     };
 
     static constexpr QskAspect::Variation Filled = QskAspect::NoVariation;
