@@ -1,5 +1,5 @@
 ############################################################################
-# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# QSkinny - Copyright (C) 2023 Edelhirsch Software GmbH
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
