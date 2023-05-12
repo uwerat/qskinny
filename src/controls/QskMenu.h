@@ -26,7 +26,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     Q_PROPERTY( QVector< QskLabelData > options READ options
         WRITE setOptions NOTIFY optionsChanged )
 
-    Q_PROPERTY( int count READ count )
+    Q_PROPERTY( int optionsCount READ optionsCount )
 
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
@@ -65,12 +65,10 @@ class QSK_EXPORT QskMenu : public QskPopup
     QVector< QskLabelData > options() const;
     QskLabelData optionAt( int ) const;
 
-    int count() const;
+    int optionsCount() const;
 
     void addSeparator();
-
-    int separatorPosition( int ) const;
-    int separatorCount() const;
+    QVector< int > separators() const;
 
     void clear();
 

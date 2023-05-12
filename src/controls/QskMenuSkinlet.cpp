@@ -47,10 +47,12 @@ class QskMenuSkinlet::PrivateData
 
     inline int separatorsBefore( const QskMenu* menu, int index ) const
     {
+        const auto separators = menu->separators();
+
         int i = 0;
-        for ( ; i < menu->separatorCount(); i++ )
+        for ( ; i < separators.count(); i++ )
         {
-            if ( menu->separatorPosition( i ) > index )
+            if ( separators[i] >= index )
                 break;
         }
 
@@ -112,26 +114,22 @@ class QskMenuSkinlet::PrivateData
   private:
     qreal graphicWidthInternal( const QskMenu* menu ) const
     {
-        const auto skinlet = menu->effectiveSkinlet();
-
         const auto hint = menu->strutSizeHint( QskMenu::Icon );
         const qreal textHeight = menu->effectiveFontHeight( QskMenu::Text );
 
         const auto h = qMax( hint.height(), textHeight );
 
         qreal maxW = 0.0;
-        for ( int i = 0; i < menu->count(); i++ )
+
+        const auto options = menu->options();
+        for ( auto& option : options )
         {
-            const auto sample = skinlet->sampleAt( menu, QskMenu::Icon, i );
-            if ( sample.canConvert< QskGraphic >() )
+            const auto graphic = option.icon().graphic();
+            if ( !graphic.isNull() )
             {
-                const auto graphic = sample.value< QskGraphic >();
-                if ( !graphic.isNull() )
-                {
-                    const auto w = graphic.widthForHeight( h );
-                    if( w > maxW )
-                        maxW = w;
-                }
+                const auto w = graphic.widthForHeight( h );
+                if( w > maxW )
+                    maxW = w;
             }
         }
 
@@ -140,24 +138,18 @@ class QskMenuSkinlet::PrivateData
 
     qreal textWidthInternal( const QskMenu* menu ) const
     {
-        const auto skinlet = menu->effectiveSkinlet();
-
         const QFontMetricsF fm( menu->effectiveFont( QskMenu::Text ) );
 
         auto maxWidth = 0.0;
 
-        for ( int i = 0; i < menu->count(); i++ )
+        const auto options = menu->options();
+        for ( auto& option : options )
         {
-            const auto sample = skinlet->sampleAt( menu, QskMenu::Text, i );
-            if ( sample.canConvert< QString >() )
+            if( !option.text().isEmpty() )
             {
-                const auto text = sample.toString();
-                if( !text.isEmpty() )
-                {
-                    const auto w = qskHorizontalAdvance( fm, text );
-                    if( w > maxWidth )
-                        maxWidth = w;
-                }
+                const auto w = qskHorizontalAdvance( fm, option.text() );
+                if( w > maxWidth )
+                    maxWidth = w;
             }
         }
 
@@ -324,17 +316,16 @@ QRectF QskMenuSkinlet::sampleRect(
 
     if ( subControl == QskMenu::Separator )
     {
-        const int pos = menu->separatorPosition( index );
-        if ( pos < 0 )
+        const auto separators = menu->separators();
+        if ( index >= separators.count() )
             return QRectF();
 
-        QRectF r = menu->subControlContentsRect( Q::Panel );
+        const int pos = separators[ index ];
 
-        if ( pos < menu->count() )
-        {
-            const auto segmentRect = sampleRect( skinnable, contentsRect, Q::Segment, pos );
-            r.setBottom( segmentRect.top() ); // spacing ???
-        }
+        auto r = menu->subControlContentsRect( Q::Panel );
+
+        const auto segmentRect = sampleRect( skinnable, contentsRect, Q::Segment, pos );
+        r.setBottom( segmentRect.top() ); // spacing ???
 
         const qreal h = menu->metric( Q::Separator | QskAspect::Size );
         r.setTop( r.bottom() - h );
@@ -362,13 +353,13 @@ int QskMenuSkinlet::sampleCount(
     if ( subControl == Q::Segment || subControl == Q::Icon || subControl == Q::Text )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
-        return menu->count();
+        return menu->optionsCount() - menu->separators().count();
     }
 
     if ( subControl == Q::Separator )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
-        return menu->separatorCount();
+        return menu->separators().count();
     }
 
     return Inherited::sampleCount( skinnable, subControl );
