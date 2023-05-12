@@ -40,6 +40,8 @@ class QSK_WINDOWS_EXPORT QskWindowsTheme
     QskWindowsTheme( Theme );
     QskWindowsTheme( Theme, std::array< QRgb, NumAccentColors > );
 
+    typedef std::array< QRgb, 2 > BorderGradient;
+
     struct FillColor
     {
         struct Text
@@ -156,23 +158,23 @@ class QSK_WINDOWS_EXPORT QskWindowsTheme
     {
         struct Control
         {
-            std::array< QRgb, 2 > border;
+            BorderGradient border;
         };
 
         struct Circle
         {
-            std::array< QRgb, 2 > border;
+            BorderGradient border;
         };
 
         struct TextControl
         {
-            std::array< QRgb, 2 > border;
-            std::array< QRgb, 2 > borderFocused;
+            BorderGradient border;
+            BorderGradient borderFocused;
         };
 
         struct AccentControl
         {
-            std::array< QRgb, 2 > border;
+            BorderGradient border;
         };
 
         Control control;
