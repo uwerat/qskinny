@@ -363,6 +363,20 @@ const int* QskSkin::dialogButtonLayout( Qt::Orientation orientation ) const
     return QPlatformDialogHelper::buttonLayout( orientation, policy );
 }
 
+const QMetaObject* QskSkin::skinletMetaObject( const QMetaObject* metaObject ) const
+{
+    while ( metaObject )
+    {
+        auto it = m_data->skinletMap.find( metaObject );
+        if ( it != m_data->skinletMap.cend() )
+            return it->second.metaObject;
+
+        metaObject = metaObject->superClass();
+    }
+
+    return nullptr;
+}
+
 QskSkinlet* QskSkin::skinlet( const QMetaObject* metaObject )
 {
     while ( metaObject )

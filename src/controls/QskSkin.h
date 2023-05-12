@@ -15,7 +15,7 @@
 #include <type_traits>
 #include <unordered_map>
 
-class QskControl;
+class QskSkinnable;
 class QskSkinlet;
 
 class QskColorFilter;
@@ -76,6 +76,7 @@ class QSK_EXPORT QskSkin : public QObject
     virtual QString dialogButtonText( int button ) const;
 
     QskSkinlet* skinlet( const QMetaObject* );
+    const QMetaObject* skinletMetaObject( const QMetaObject* ) const;
 
     const QskSkinHintTable& hintTable() const;
     QskSkinHintTable& hintTable();
@@ -84,19 +85,19 @@ class QSK_EXPORT QskSkin : public QObject
     const std::unordered_map< int, QskColorFilter >& graphicFilters() const;
 
   private:
-    void declareSkinlet( const QMetaObject* controlMetaObject,
-        const QMetaObject* skinMetaObject );
+    void declareSkinlet( const QMetaObject* metaObject,
+        const QMetaObject* skinletMetaObject );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
 
-template< typename Control, typename Skinlet >
+template< typename Skinnable, typename Skinlet >
 inline void QskSkin::declareSkinlet()
 {
-    Q_STATIC_ASSERT( ( std::is_base_of< QskControl, Control >::value ) );
+    Q_STATIC_ASSERT( ( std::is_base_of< QskSkinnable, Skinnable >::value ) );
     Q_STATIC_ASSERT( ( std::is_base_of< QskSkinlet, Skinlet >::value ) );
-    declareSkinlet( &Control::staticMetaObject, &Skinlet::staticMetaObject );
+    declareSkinlet( &Skinnable::staticMetaObject, &Skinlet::staticMetaObject );
 }
 
 #endif
