@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2022 Edelhirsch Software GmbH
+ * QSkinny - Copyright (C) 2023 Edelhirsch Software GmbH
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
