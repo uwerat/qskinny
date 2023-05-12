@@ -349,14 +349,14 @@ class QSK_WINDOWS_EXPORT QskWindowsSkin : public QskSkin
 
     enum FontRole
     {
-        Caption = QskSkin::HugeFont + 1, // ### define QskSkin enums
-        Body,
-        BodyStrong,
-        BodyLarge,
-        Subtitle,
-        Title,
+        Caption = TinyFont,
+        Body = DefaultFont,
+        BodyStrong = SmallFont,
+        BodyLarge = MediumFont,
+        Subtitle = LargeFont,
+        Title = HugeFont,
         TitleLarge,
-        Display
+        Display,
     };
 
     static constexpr QskAspect::Variation Standard = QskAspect::NoVariation;
