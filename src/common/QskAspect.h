@@ -81,6 +81,9 @@ class QSK_EXPORT QskAspect
         Vertical = Qt::Vertical,
         Horizontal = Qt::Horizontal,
 
+        Lower  = 1,
+        Upper  = 2,
+
         Top    = 1,
         Left   = 2,
         Right  = 3,
