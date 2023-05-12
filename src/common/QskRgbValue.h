@@ -101,7 +101,7 @@ namespace QskRgb
     constexpr const QRgb LightSteelBlue       = 0xffb0c4de;
     constexpr const QRgb LightYellow          = 0xffffffe0;
     constexpr const QRgb Lime                 = 0xff00ff00;
-    constexpr const QRgb Limegreen            = 0xff32cd32;
+    constexpr const QRgb LimeGreen            = 0xff32cd32;
     constexpr const QRgb Linen                = 0xfffaf0e6;
     constexpr const QRgb Magenta              = 0xffff00ff;
     constexpr const QRgb Maroon               = 0xff800000;
