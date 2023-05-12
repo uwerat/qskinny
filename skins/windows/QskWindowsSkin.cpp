@@ -225,6 +225,12 @@ void Editor::setupDialogButtonBox()
 
 void Editor::setupFocusIndicator()
 {
+    using Q = QskFocusIndicator;
+
+    setBoxBorderMetrics( Q::Panel, 2 );
+    setPadding( Q::Panel, 3 );
+    setBoxShape( Q::Panel, 4 );
+    setBoxBorderColors( Q::Panel, theme.palette.strokeColor.focusStroke.outer );
 }
 
 void Editor::setupInputPanel()
