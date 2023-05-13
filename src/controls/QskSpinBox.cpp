@@ -173,7 +173,7 @@ void QskSpinBox::resetDecoration()
 
 QskSpinBox::Decoration QskSpinBox::decoration() const
 {
-    return flagHint< QskSpinBox::Decoration >( aspectDecoration(), Buttons );
+    return flagHint< QskSpinBox::Decoration >( aspectDecoration(), ButtonsLeftAndRight );
 }
 
 void QskSpinBox::setTextAlignment( Qt::Alignment alignment )

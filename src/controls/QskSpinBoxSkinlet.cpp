@@ -38,8 +38,8 @@ static inline QskAspect::States qskButtonStates(
 
 QskSpinBoxSkinlet::QskSpinBoxSkinlet( QskSkin* )
 {
-    setNodeRoles( { UpPanel, DownPanel, TextPanel,
-        UpIndicator, DownIndicator, Text } );
+    setNodeRoles( { PanelRole, UpPanelRole, DownPanelRole, TextPanelRole,
+                  UpIndicatorRole, DownIndicatorRole, TextRole } );
 }
 
 QRectF QskSpinBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
@@ -49,6 +49,9 @@ QRectF QskSpinBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
 
     QskSkinStateChanger stateChanger( skinnable );
     stateChanger.setStates( qskButtonStates( skinnable, subControl ) );
+
+    if ( subControl == Q::Panel )
+        return contentsRect;
 
     if ( subControl == Q::DownIndicator )
         return skinnable->subControlContentsRect( contentsRect, Q::DownPanel );
@@ -77,36 +80,41 @@ QSGNode* QskSpinBoxSkinlet::updateSubNode(
 
     switch( nodeRole )
     {
-        case UpPanel:
+        case PanelRole:
+        {
+            return updateBoxNode( skinnable, node, Q::Panel );
+        }
+
+        case UpPanelRole:
         {
             stateChanger.setStates( qskButtonStates( skinnable, Q::UpPanel ) );
             return updateBoxNode( skinnable, node, Q::UpPanel );
         }
 
-        case DownPanel:
+        case DownPanelRole:
         {
             stateChanger.setStates( qskButtonStates( skinnable, Q::DownPanel ) );
             return updateBoxNode( skinnable, node, Q::DownPanel );
         }
 
-        case UpIndicator:
+        case UpIndicatorRole:
         {
             stateChanger.setStates( qskButtonStates( skinnable, Q::UpIndicator ) );
             return updateSymbolNode( skinnable, node, Q::UpIndicator );
         }
 
-        case DownIndicator:
+        case DownIndicatorRole:
         {
             stateChanger.setStates( qskButtonStates( skinnable, Q::DownIndicator ) );
             return updateSymbolNode( skinnable, node, Q::DownIndicator );
         }
 
-        case TextPanel:
+        case TextPanelRole:
         {
             return updateBoxNode( skinnable, node, Q::TextPanel );
         }
 
-        case Text:
+        case TextRole:
         {
             auto spinBox = static_cast< const QskSpinBox* >( skinnable );
 
@@ -140,6 +148,16 @@ QRectF QskSpinBoxSkinlet::textPanelRect(
         const auto w = subControlRect( skinnable, rect, Q::UpPanel ).width();
         if ( w > 0.0 )
             r.setRight( r.right() - spacing - w );
+    }
+    else if ( decoration == Q::ButtonsRight )
+    {
+        const auto w1 = subControlRect( skinnable, rect, Q::DownPanel ).width();
+        if ( w1 > 0.0 )
+            r.setRight( r.right() - w1 - spacing );
+
+        const auto w2 = subControlRect( skinnable, rect, Q::UpPanel ).width();
+        if ( w2 > 0.0 )
+            r.setRight( r.right() - w2 - spacing );
     }
     else
     {
@@ -179,6 +197,30 @@ QRectF QskSpinBoxSkinlet::buttonRect( const QskSkinnable* skinnable,
 
             x = rect.right() - w;
             y = ( subControl == Q::UpPanel ) ? rect.top() : rect.bottom() - h;
+        }
+        else if ( decoration == Q::ButtonsRight )
+        {
+            const auto hint = spinBox->strutSizeHint( subControl );
+
+            h = hint.height();
+            if ( h <= 0.0 )
+                h = rect.height();
+
+            w = hint.width();
+            if ( w <= 0.0 )
+                w = h;
+
+            if( subControl == Q::UpPanel )
+            {
+                const auto downRect = buttonRect( skinnable, rect, Q::DownPanel );
+                x = downRect.left() - w;
+            }
+            else
+            {
+                x = rect.right() - w;
+            }
+
+            y = 0.5 * ( rect.height() - h );
         }
         else
         {
