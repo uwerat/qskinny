@@ -458,6 +458,44 @@ void Editor::setupSeparator()
 
 void Editor::setupSlider()
 {
+    using Q = QskSlider;
+    using A = QskAspect;
+
+    const qreal extent = 22;
+    setMetric( Q::Panel | A::Size, extent );
+    setBoxShape( Q::Panel, 0 );
+    setBoxBorderMetrics( Q::Panel, 0 );
+    setGradient( Q::Panel, {} );
+
+    setPadding( Q::Panel | A::Horizontal, QskMargins( 0.5 * extent, 0 ) );
+    setPadding( Q::Panel | A::Vertical, QskMargins( 0, 0.5 * extent ) );
+
+    setMetric( Q::Groove | A::Size, 4 );
+    setGradient( Q::Groove, theme.palette.fillColor.controlStrong.defaultColor );
+    setBoxShape( Q::Groove, 100, Qt::RelativeSize );
+
+    setMetric( Q::Fill | A::Size, 4 );
+    setGradient( Q::Fill, theme.palette.fillColor.accent.defaultColor );
+    setBoxShape( Q::Fill, 100, Qt::RelativeSize );
+
+    setStrutSize( Q::Handle, { 22, 22 } );
+    setGradient( Q::Handle, theme.palette.fillColor.controlSolid.defaultColor );
+    setBoxShape( Q::Handle, 100, Qt::RelativeSize );
+    setBoxBorderMetrics( Q::Handle, 1 );
+    setBoxBorderGradient( Q::Handle, theme.palette.elevation.circle.border, theme.palette.fillColor.controlSolid.defaultColor );
+
+    setStrutSize( Q::Ripple, { 12, 12 } );
+    setGradient( Q::Ripple, theme.palette.fillColor.accent.defaultColor );
+    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
+
+    setStrutSize( Q::Ripple | Q::Hovered, { 14, 14 } );
+
+    setStrutSize( Q::Ripple | Q::Pressed, { 10, 10 } );
+    setGradient( Q::Ripple | Q::Pressed, theme.palette.fillColor.accent.tertiary );
+
+    setGradient( Q::Groove | Q::Disabled, theme.palette.fillColor.controlStrong.disabled );
+    setGradient( Q::Fill | Q::Disabled, theme.palette.fillColor.accent.disabled );
+    setGradient( Q::Ripple | Q::Disabled, theme.palette.fillColor.controlStrong.disabled );
 }
 
 void Editor::setupSpinBox()
