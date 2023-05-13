@@ -37,7 +37,8 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     {
         NoDecoration,
 
-        Buttons,
+        ButtonsLeftAndRight,
+        ButtonsRight,
         UpDownControl
     };
     Q_ENUM( Decoration )

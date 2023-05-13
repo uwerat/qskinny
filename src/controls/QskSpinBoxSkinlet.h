@@ -18,14 +18,15 @@ class QSK_EXPORT QskSpinBoxSkinlet : public QskSkinlet
 
     enum NodeRole
     {
-        TextPanel,
-        Text,
+        PanelRole,
+        TextPanelRole,
+        TextRole,
 
-        UpPanel,
-        UpIndicator,
+        UpPanelRole,
+        UpIndicatorRole,
 
-        DownPanel,
-        DownIndicator,
+        DownPanelRole,
+        DownIndicatorRole,
 
         RoleCount
     };

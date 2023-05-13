@@ -861,7 +861,7 @@ void Editor::setupSpinBox()
 {
     using Q = QskSpinBox;
 
-    setHint( Q::Panel | QskAspect::Style, Q::Buttons );
+    setHint( Q::Panel | QskAspect::Style, Q::ButtonsLeftAndRight );
     setSpacing( Q::Panel, 4_dp );
 
     setStrutSize( Q::TextPanel, 80_dp, 40_dp );

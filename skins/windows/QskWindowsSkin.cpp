@@ -500,6 +500,65 @@ void Editor::setupSlider()
 
 void Editor::setupSpinBox()
 {
+    using Q = QskSpinBox;
+
+    setHint( Q::Panel | QskAspect::Style, Q::ButtonsRight );
+    setStrutSize( Q::Panel, { -1, 32 } );
+    setBoxBorderMetrics( Q::Panel, 1 );
+    setBoxShape( Q::Panel, 3 );
+    setPadding( Q::Panel, { 11, 0, 11, 0 } );
+
+    setGradient( Q::Panel, theme.palette.fillColor.control.defaultColor );
+    setBoxBorderGradient( Q::Panel, theme.palette.elevation.control.border,
+                         theme.palette.fillColor.control.defaultColor );
+
+    setAlignment( Q::Text, Qt::AlignLeft );
+    setFontRole( Q::Text, QskWindowsSkin::Body );
+    setColor( Q::Text, theme.palette.fillColor.text.primary );
+
+    setPadding( Q::TextPanel, { 11, 5, 0, 0 } );
+
+    setStrutSize( Q::UpPanel, 16, 16 );
+    setStrutSize( Q::DownPanel, 16, 16 );
+
+    setStrutSize( Q::UpPanel, 32, 20 );
+    setPadding( Q::UpPanel, { 11, 7, 11, 7 } );
+    setStrutSize( Q::DownPanel, 34, 20 );
+    setPadding( Q::DownPanel, { 11, 7, 13, 7 } );
+
+    setSymbol( Q::UpIndicator, symbol( "spin-box-arrow-up" ) );
+    setSymbol( Q::DownIndicator, symbol( "spin-box-arrow-down" ) );
+
+    setGraphicRole( Q::UpIndicator, QskWindowsSkin::GraphicRoleFillColorTextSecondary );
+    setGraphicRole( Q::DownIndicator, QskWindowsSkin::GraphicRoleFillColorTextSecondary );
+
+    // Hovered:
+
+    setGradient( Q::Panel | Q::Hovered, theme.palette.fillColor.control.secondary );
+    setBoxBorderGradient( Q::Panel | Q::Hovered, theme.palette.elevation.textControl.border,
+                         theme.palette.fillColor.control.secondary );
+
+
+    // Focused (Pressed doesn't exist yet):
+
+    setBoxBorderMetrics( Q::Panel | Q::Focused, { 1, 1, 1, 2 } );
+
+    setGradient( Q::Panel | Q::Focused, theme.palette.fillColor.control.inputActive );
+
+    auto gradient = theme.palette.elevation.textControl.border;
+    gradient.at( 1 ) = theme.palette.fillColor.accent.defaultColor;
+
+    setBoxBorderGradient( Q::Panel | Q::Focused, gradient, theme.palette.fillColor.control.inputActive );
+
+    // Disabled:
+
+    setGradient( Q::Panel | Q::Disabled, theme.palette.fillColor.control.disabled );
+    setBoxBorderColors( Q::Panel | Q::Disabled, theme.palette.strokeColor.controlStroke.defaultColor );
+
+    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
+
+    setGraphicRole( Q::UpIndicator | Q::Disabled, QskWindowsSkin::GraphicRoleFillColorTextDisabled );
+    setGraphicRole( Q::DownIndicator | Q::Disabled, QskWindowsSkin::GraphicRoleFillColorTextDisabled );
 }
 
 void Editor::setupTabBar()
