@@ -212,6 +212,8 @@ QRectF QskMenuSkinlet::cursorRect(
     const auto menu = static_cast< const QskMenu* >( skinnable );
     const auto actions = menu->actions();
 
+    index = qskActionIndex( menu, index );
+
     QRectF rect;
 
     if ( index < 0 )
@@ -226,7 +228,7 @@ QRectF QskMenuSkinlet::cursorRect(
     }
     else
     {
-        rect = sampleRect( skinnable, contentsRect, Q::Segment, actions[index] );
+        rect = sampleRect( skinnable, contentsRect, Q::Segment, index );
     }
 
     return rect;
