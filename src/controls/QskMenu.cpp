@@ -347,17 +347,23 @@ void QskMenu::traverse( int steps )
     int action2 = action1 + steps;
 
     // when cycling we want to slide in
+    int index1;
+
     if ( action2 < 0 )
-        action1 = count;
+        index1 = m_data->options.count();
     else if ( action2 >= count )
-        action1 = -1;
+        index1 = -1;
+    else
+        index1 = actions[ action1 ];
 
     action2 %= count;
     if ( action2 < 0 )
         action2 += count;
 
-    movePositionHint( Cursor, actions[ action1 ], actions[ action2 ] );
-    setCurrentIndex( actions[ action2 ] );
+    const auto index2 = actions[ action2 ];
+
+    movePositionHint( Cursor, index1, index2 );
+    setCurrentIndex( index2 );
 }
 
 void QskMenu::mousePressEvent( QMouseEvent* event )
