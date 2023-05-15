@@ -27,6 +27,9 @@ class QSK_EXPORT QskMainView : public QskLinearBox
     QskControl* footer() const;
     void setFooter( QskControl* );
 
+  protected:
+    void focusInEvent( QFocusEvent* );
+
   private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
