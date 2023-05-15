@@ -211,7 +211,7 @@ QRectF QskMenuSkinlet::cursorRect(
     const auto count = sampleCount( skinnable, QskMenu::Segment );
 
     auto rect = sampleRect( skinnable, contentsRect,
-        QskMenu::Segment, qBound( 0, index, count ) );
+        QskMenu::Segment, qBound( 0, index, count - 1 ) );
 
     if ( index < 0 )
         rect.setBottom( rect.top() );
@@ -375,7 +375,8 @@ QskAspect::States QskMenuSkinlet::sampleStates(
     if ( subControl == Q::Segment || subControl == Q::Icon || subControl == Q::Text )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
-        if ( menu->currentIndex() == index )
+
+        if ( menu->currentIndex() == menu->actions()[ index ] )
             states |= QskMenu::Selected;
     }
 

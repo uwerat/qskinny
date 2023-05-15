@@ -432,8 +432,10 @@ QRectF QskMenu::focusIndicatorRect() const
 
     if( currentIndex() >= 0 )
     {
+        auto actionIndex = qskActionIndex( m_data->actions, currentIndex() );
+
         return effectiveSkinlet()->sampleRect( this,
-            contentsRect(), Segment, currentIndex() );
+            contentsRect(), Segment, actionIndex );
     }
 
     return Inherited::focusIndicatorRect();
@@ -441,8 +443,10 @@ QRectF QskMenu::focusIndicatorRect() const
 
 QRectF QskMenu::cellRect( int index ) const
 {
+    const auto actionIndex = qskActionIndex( m_data->actions, index );
+
     return effectiveSkinlet()->sampleRect(
-        this, contentsRect(), QskMenu::Segment, index );
+        this, contentsRect(), QskMenu::Segment, actionIndex );
 }
 
 int QskMenu::indexAtPosition( const QPointF& pos ) const
