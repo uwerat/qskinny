@@ -451,8 +451,10 @@ QRectF QskMenu::cellRect( int index ) const
 
 int QskMenu::indexAtPosition( const QPointF& pos ) const
 {
-    return effectiveSkinlet()->sampleIndexAt(
+    const auto index = effectiveSkinlet()->sampleIndexAt(
         this, contentsRect(), QskMenu::Segment, pos );
+
+    return m_data->actions.value( index, -1 );
 }
 
 void QskMenu::trigger( int index )
