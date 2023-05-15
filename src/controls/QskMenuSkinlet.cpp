@@ -207,17 +207,27 @@ QskMenuSkinlet::~QskMenuSkinlet() = default;
 QRectF QskMenuSkinlet::cursorRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect, int index ) const
 {
-    // TODO
-    const auto count = sampleCount( skinnable, QskMenu::Segment );
+    using Q = QskMenu;
 
-    auto rect = sampleRect( skinnable, contentsRect,
-        QskMenu::Segment, qBound( 0, index, count - 1 ) );
+    const auto menu = static_cast< const QskMenu* >( skinnable );
+    const auto actions = menu->actions();
+
+    QRectF rect;
 
     if ( index < 0 )
+    {
+        rect = sampleRect( skinnable, contentsRect, Q::Segment, 0 );
         rect.setBottom( rect.top() );
-
-    if ( index >= count )
+    }
+    else if ( index >= actions.count() )
+    {
+        rect = sampleRect( skinnable, contentsRect, Q::Segment, actions.count() - 1 );
         rect.setTop( rect.bottom() );
+    }
+    else
+    {
+        rect = sampleRect( skinnable, contentsRect, Q::Segment, actions[index] );
+    }
 
     return rect;
 }
