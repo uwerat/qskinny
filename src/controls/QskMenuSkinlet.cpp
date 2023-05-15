@@ -207,6 +207,7 @@ QskMenuSkinlet::~QskMenuSkinlet() = default;
 QRectF QskMenuSkinlet::cursorRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect, int index ) const
 {
+    // TODO
     const auto count = sampleCount( skinnable, QskMenu::Segment );
 
     auto rect = sampleRect( skinnable, contentsRect,
@@ -241,6 +242,7 @@ QRectF QskMenuSkinlet::subControlRect(
 
         const qreal pos = menu->positionHint( Q::Cursor );
 
+        // separators TODO ...
         const int pos1 = qFloor( pos );
         const int pos2 = qCeil( pos );
 
@@ -274,7 +276,7 @@ QRectF QskMenuSkinlet::sampleRect(
 
         auto dy = index * h;
 
-        if ( const auto n = index - qskActionIndex( menu, index ) )
+        if ( const auto n = menu->actions()[ index ] - index )
         {
             // spacing ???
             dy += n * menu->metric( Q::Separator | QskAspect::Size );
