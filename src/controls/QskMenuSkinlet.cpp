@@ -18,6 +18,19 @@
 #include <qfontmetrics.h>
 #include <qmath.h>
 
+static inline int qskActionIndex( const QskMenu* menu, int optionIndex )
+{
+    if ( optionIndex < 0 )
+        return -1;
+
+    const auto& actions = menu->actions();
+
+    auto it = std::lower_bound(
+        actions.constBegin(), actions.constEnd(), optionIndex );
+
+    return it - actions.constBegin();
+}
+
 class QskMenuSkinlet::PrivateData
 {
   public:
@@ -43,20 +56,6 @@ class QskMenuSkinlet::PrivateData
     {
         m_isCaching = on;
         m_segmentHeight = m_segmentWidth = m_graphicWidth = m_textWidth = -1.0;
-    }
-
-    inline int separatorsBefore( const QskMenu* menu, int index ) const
-    {
-        const auto separators = menu->separators();
-
-        int i = 0;
-        for ( ; i < separators.count(); i++ )
-        {
-            if ( separators[i] >= index )
-                break;
-        }
-
-        return i;
     }
 
     inline qreal graphicWidth( const QskMenu* menu ) const
@@ -271,19 +270,18 @@ QRectF QskMenuSkinlet::sampleRect(
 
     if ( subControl == Q::Segment )
     {
-        const auto r = menu->subControlContentsRect( Q::Panel );
+        const auto h = m_data->segmentHeight( menu );
 
-        auto h = m_data->segmentHeight( menu );
+        auto dy = index * h;
 
-        if ( int n = m_data->separatorsBefore( menu, index ) )
+        if ( const auto n = index - qskActionIndex( menu, index ) )
         {
             // spacing ???
-
-            const qreal separatorH = menu->metric( Q::Separator | QskAspect::Size );
-            h += n * separatorH;
+            dy += n * menu->metric( Q::Separator | QskAspect::Size );
         }
 
-        return QRectF( r.x(), r.y() + index * h, r.width(), h );
+        const auto r = menu->subControlContentsRect( Q::Panel );
+        return QRectF( r.x(), r.y() + dy, r.width(), h );
     }
 
     if ( subControl == QskMenu::Icon || subControl == QskMenu::Text )
@@ -353,7 +351,7 @@ int QskMenuSkinlet::sampleCount(
     if ( subControl == Q::Segment || subControl == Q::Icon || subControl == Q::Text )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
-        return menu->optionsCount() - menu->separators().count();
+        return menu->actions().count();
     }
 
     if ( subControl == Q::Separator )
