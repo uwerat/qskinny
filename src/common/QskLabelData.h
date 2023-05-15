@@ -42,6 +42,8 @@ class QSK_EXPORT QskLabelData
     void setIcon( const QskIcon& );
     QskIcon icon() const noexcept;
 
+    bool isEmpty() const;
+
     QskHashValue hash( QskHashValue ) const;
 
   private:
@@ -69,6 +71,11 @@ inline QUrl QskLabelData::iconSource() const noexcept
 inline bool QskLabelData::operator!=( const QskLabelData& other ) const noexcept
 {
     return ( !( *this == other ) );
+}
+
+inline bool QskLabelData::isEmpty() const
+{
+    return m_text.isEmpty() && m_icon.isNull();
 }
 
 QSK_EXPORT QVector< QskLabelData > qskCreateLabelData( const QStringList& );
