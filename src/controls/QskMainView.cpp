@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskMainView.h"
+#include "QskQuick.h"
 
 /*
     This code is a placeholder implementation until we know
@@ -24,6 +25,9 @@ QskMainView::QskMainView( QQuickItem* parent )
     setAutoAddChildren( false );
     setSpacing( 0 );
     setPanel( true );
+
+    setFlag( QQuickItem::ItemIsFocusScope, true );
+    setFocusPolicy( Qt::StrongFocus );
 }
 
 QskMainView::~QskMainView()
@@ -87,6 +91,23 @@ void QskMainView::setFooter( QskControl* footer )
     {
         footer->setSection( QskAspect::Footer );
         insertItem( 2, footer );
+    }
+}
+
+void QskMainView::focusInEvent( QFocusEvent* event )
+{
+    Inherited::focusInEvent( event );
+
+    if ( isFocusScope() && ( scopedFocusItem() == nullptr ) )
+    {
+        if ( auto focusItem = nextItemInFocusChain( true ) )
+        {
+            if ( qskIsItemComplete( focusItem )
+                 && qskIsAncestorOf( this, focusItem ) )
+            {
+                focusItem->setFocus( true );
+            }
+        }
     }
 }
 
