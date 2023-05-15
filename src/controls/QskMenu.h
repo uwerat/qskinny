@@ -58,6 +58,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     int addOption( const QString&, const QString& );
     int addOption( const QUrl&, const QString& );
     int addOption( const QskLabelData& );
+    void addSeparator();
 
     void setOptions( const QVector< QskLabelData >& );
     void setOptions( const QStringList& );
@@ -67,8 +68,8 @@ class QSK_EXPORT QskMenu : public QskPopup
 
     int optionsCount() const;
 
-    void addSeparator();
     QVector< int > separators() const;
+    QVector< int > actions() const;
 
     void clear();
 

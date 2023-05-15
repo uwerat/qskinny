@@ -28,17 +28,13 @@ QSK_SUBCONTROL( QskMenu, Separator )
 
 QSK_SYSTEM_STATE( QskMenu, Selected, QskAspect::FirstSystemState << 2 )
 
-QVector< int > qskSeparators( const QVector< QskLabelData >& options )
+static inline int qskActionIndex( const QVector< int >& actions, int index )
 {
-    QVector< int > separators;
+    if ( index < 0 )
+        return -1;
 
-    for ( int i = 0; i < options.count(); i++ )
-    {
-        if ( options[i].isEmpty() )
-            separators += i;
-    }
-
-    return separators;
+    auto it = std::lower_bound( actions.constBegin(), actions.constEnd(), index );
+    return it - actions.constBegin();
 }
 
 class QskMenu::PrivateData
@@ -47,7 +43,9 @@ class QskMenu::PrivateData
     QPointF origin;
 
     QVector< QskLabelData > options;
+
     QVector< int > separators;
+    QVector< int > actions;
 
     int triggeredIndex = -1;
     int currentIndex = -1;
@@ -138,10 +136,14 @@ int QskMenu::addOption( const QUrl& graphicSource, const QString& text )
 
 int QskMenu::addOption( const QskLabelData& option )
 {
+    const int index = m_data->options.count();
+
     m_data->options += option;
 
     if ( option.isEmpty() )
-        m_data->separators += m_data->options.count() - 1;
+        m_data->separators += index;
+    else
+        m_data->actions += index;
 
     resetImplicitSize();
     update();
@@ -149,7 +151,7 @@ int QskMenu::addOption( const QskLabelData& option )
     if ( isComponentComplete() )
         Q_EMIT optionsChanged();
 
-    return m_data->options.count() - 1;
+    return index;
 }
 
 void QskMenu::setOptions( const QStringList& options )
@@ -160,7 +162,14 @@ void QskMenu::setOptions( const QStringList& options )
 void QskMenu::setOptions( const QVector< QskLabelData >& options )
 {
     m_data->options = options;
-    m_data->separators = qskSeparators( options );
+
+    for ( int i = 0; i < options.count(); i++ )
+    {
+        if ( options[i].isEmpty() )
+            m_data->separators += i;
+        else
+            m_data->actions += i;
+    }
 
     if ( m_data->currentIndex >= 0 )
     {
@@ -205,6 +214,11 @@ void QskMenu::addSeparator()
 QVector< int > QskMenu::separators() const
 {
     return m_data->separators;
+}
+
+QVector< int > QskMenu::actions() const
+{
+    return m_data->actions;
 }
 
 int QskMenu::currentIndex() const
@@ -322,42 +336,28 @@ void QskMenu::wheelEvent( QWheelEvent* event )
 
 void QskMenu::traverse( int steps )
 {
-    const auto count = m_data->options.count();
+    const auto& actions = m_data->actions;
+    const auto count = actions.count();
 
-    const auto n = count - m_data->separators.count();
-    if ( ( n <= 0 ) || ( steps % n == 0 ) )
+    // -1 -> only one entry ?
+    if ( actions.isEmpty() || ( steps % count == 0 ) )
         return;
 
-    auto index = m_data->currentIndex;
-    for ( auto i : m_data->separators )
-    {
-        if ( i < index )
-            index--;
-    }
+    int action1 = qskActionIndex( actions, m_data->currentIndex );
+    int action2 = action1 + steps;
 
-    index += steps;
+    // when cycling we want to slide in
+    if ( action2 < 0 )
+        action1 = count;
+    else if ( action2 >= count )
+        action1 = -1;
 
-    auto newIndex = index % n;
-    if ( newIndex < 0 )
-        newIndex += n;
+    action2 %= count;
+    if ( action2 < 0 )
+        action2 += count;
 
-    for ( int i = 0; i < newIndex; i++)
-    {
-        if ( m_data->options[i].isEmpty() )
-            newIndex++;
-    }
-
-    // when cycling we want slide in
-
-    int startIndex = m_data->currentIndex;
-
-    if ( index < 0 )
-        startIndex = count;
-    else if ( index >= n )
-        startIndex = -1;
-
-    movePositionHint( Cursor, startIndex, newIndex );
-    setCurrentIndex( newIndex );
+    movePositionHint( Cursor, actions[ action1 ], actions[ action2 ] );
+    setCurrentIndex( actions[ action2 ] );
 }
 
 void QskMenu::mousePressEvent( QMouseEvent* event )
