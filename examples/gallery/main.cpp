@@ -24,7 +24,7 @@
 #include <QskSwitchButton.h>
 #include <QskPushButton.h>
 #include <QskScrollArea.h>
-#include <QskMenu.h>
+#include <QskMenuButton.h>
 #include <QskWindow.h>
 #include <QskDialog.h>
 #include <QskSkinManager.h>
@@ -36,6 +36,7 @@
 #include <QskGraphicProvider.h>
 #include <QskGraphicIO.h>
 #include <QskGraphic.h>
+#include <QskLabelData.h>
 #include <QskSetup.h>
 
 #include <QGuiApplication>
@@ -111,100 +112,64 @@ namespace
         }
     };
 
-    class MenuButton : public QskPushButton
-    {
-      public:
-        MenuButton( const QString& text, QQuickItem* parent = nullptr )
-            : QskPushButton( text, parent )
-        {
-            connect( this, &QskPushButton::pressed, this, &MenuButton::openMenu );
-        }
-
-      private:
-        void openMenu()
-        {
-            auto menu = new QskMenu( window()->contentItem() );
-
-            populateMenu( menu );
-
-            menu->setOrigin( geometry().bottomLeft() );
-            menu->open();
-        }
-
-        virtual void populateMenu( QskMenu* ) = 0;
-    };
-
-    class SkinButton final : public MenuButton
+    class SkinButton final : public QskMenuButton
     {
       public:
         SkinButton( const QString& text, QQuickItem* parent = nullptr )
-            : MenuButton( text, parent )
-        {
-        }
-
-      private:
-        void populateMenu( QskMenu* menu ) override
+            : QskMenuButton( text, parent )
         {
             const auto names = qskSkinManager->skinNames();
 
-            for ( const auto& name : names )
-                menu->addOption( QUrl(), name );
+            setOptions( names );
 
             if ( const auto index = names.indexOf( qskSetup->skinName() ) )
-                menu->setCurrentIndex( index );
+                setStartIndex( index );
 
-            connect( menu, &QskMenu::triggered, this, &SkinButton::changeSkin );
+            connect( this, &QskMenuButton::triggered,
+                this, &SkinButton::changeSkin );
+        }
+
+        void openMenu() override
+        {
+            const auto names = qskSkinManager->skinNames();
+            setStartIndex( names.indexOf( qskSetup->skinName() ) );
+
+            QskMenuButton::openMenu();
         }
 
         void changeSkin( int index )
         {
             const auto names = qskSkinManager->skinNames();
-            if ( index < 0 || index >= names.size() )
-                return;
 
-            if ( index == names.indexOf( qskSetup->skinName() ) )
-                return;
-
-            auto oldSkin = qskSetup->skin();
-            if ( oldSkin->parent() == qskSetup )
-                oldSkin->setParent( nullptr ); // otherwise setSkin deletes it
-
-            if ( auto newSkin = qskSetup->setSkin( names[ index ] ) )
+            if ( ( index >= 0 ) && ( index < names.size() )
+                 && ( index != names.indexOf( qskSetup->skinName() ) ) )
             {
-                QskSkinTransition transition;
-
-                transition.setSourceSkin( oldSkin );
-                transition.setTargetSkin( newSkin );
-                transition.setAnimation( 500 );
-
-                transition.process();
-
-                if ( oldSkin->parent() == nullptr )
-                    delete oldSkin;
+                Skinny::setSkin( index, 500 );
             }
         }
     };
 
-    class FileButton final : public MenuButton
+    class FileButton final : public QskMenuButton
     {
       public:
         FileButton( const QString& text, QQuickItem* parent = nullptr )
-            : MenuButton( text, parent )
+            : QskMenuButton( text, parent )
         {
-        }
-
-      private:
-        void populateMenu( QskMenu* menu ) override
-        {
-            menu->addOption( "image://shapes/Rectangle/White", "Print" );
-            menu->addOption( "image://shapes/Diamond/Yellow", "Save As" );
-            menu->addOption( "image://shapes/Ellipse/Red", "Setup" );
-            menu->addSeparator();
-            menu->addOption( "image://shapes/Hexagon/PapayaWhip", "Quit" );
+            addOption( "image://shapes/Rectangle/White", "Print" );
+            addOption( "image://shapes/Diamond/Yellow", "Save As" );
+            addOption( "image://shapes/Ellipse/Red", "Setup" );
+            addSeparator();
+            addOption( "image://shapes/Hexagon/PapayaWhip", "Quit" );
 
             // see https://github.com/uwerat/qskinny/issues/192
-            connect( menu, &QskMenu::triggered,
-                []( int index ) { if ( index == 3 ) qApp->quit(); } );
+            connect( this, &QskMenuButton::triggered,
+                this, &FileButton::activate );
+        }
+      private:
+        void activate( int index )
+        {
+            if ( optionAt( index ).text() == "Quit" )
+                qApp->quit();
         }
     };
 
@@ -241,7 +206,7 @@ namespace
                 drawer->setEdge( Qt::RightEdge );
 
                 auto burger = new QskPushButton( "≡", this );
-		        burger->setEmphasis( QskPushButton::LowEmphasis );
+                burger->setEmphasis( QskPushButton::LowEmphasis );
 
                 connect( burger, &QskPushButton::clicked,
                     drawer, &QskPopup::open );

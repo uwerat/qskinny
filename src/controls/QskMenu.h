@@ -71,8 +71,6 @@ class QSK_EXPORT QskMenu : public QskPopup
     QVector< int > separators() const;
     QVector< int > actions() const;
 
-    void clear();
-
     int currentIndex() const;
     QString currentText() const;
 
@@ -97,6 +95,7 @@ class QSK_EXPORT QskMenu : public QskPopup
 
   public Q_SLOTS:
     void setCurrentIndex( int );
+    void clear();
 
   protected:
     void keyPressEvent( QKeyEvent* ) override;
