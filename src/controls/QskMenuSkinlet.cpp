@@ -481,6 +481,8 @@ QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
 
     if ( subControl == Q::Icon )
     {
+        index = menu->actions()[ index ];
+
         const auto graphic = menu->optionAt( index ).icon().graphic();
         if ( graphic.isNull() )
             return nullptr;
@@ -494,6 +496,8 @@ QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
 
     if ( subControl == Q::Text )
     {
+        index = menu->actions()[ index ];
+
         const auto text = menu->optionAt( index ).text();
         if ( text.isEmpty() )
             return nullptr;
