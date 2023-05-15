@@ -120,18 +120,16 @@ class QskMenuSkinlet::PrivateData
         const auto h = qMax( hint.height(), textHeight );
 
         qreal maxW = 0.0;
-        for ( int i = 0; i < menu->count(); i++ )
+
+        const auto options = menu->options();
+        for ( auto& option : options )
         {
-            const auto sample = skinlet->sampleAt( menu, QskMenu::Icon, i );
-            if ( sample.canConvert< QskGraphic >() )
+            const auto graphic = option.icon().graphic();
+            if ( !graphic.isNull() )
             {
-                const auto graphic = sample.value< QskGraphic >();
-                if ( !graphic.isNull() )
-                {
-                    const auto w = graphic.widthForHeight( h );
-                    if( w > maxW )
-                        maxW = w;
-                }
+                const auto w = graphic.widthForHeight( h );
+                if( w > maxW )
+                    maxW = w;
             }
         }
 
@@ -146,18 +144,14 @@ class QskMenuSkinlet::PrivateData
 
         auto maxWidth = 0.0;
 
-        for ( int i = 0; i < menu->count(); i++ )
+        const auto options = menu->options();
+        for ( auto& option : options )
         {
-            const auto sample = skinlet->sampleAt( menu, QskMenu::Text, i );
-            if ( sample.canConvert< QString >() )
+            if( !option.text().isEmpty() )
             {
-                const auto text = sample.toString();
-                if( !text.isEmpty() )
-                {
-                    const auto w = qskHorizontalAdvance( fm, text );
-                    if( w > maxWidth )
-                        maxWidth = w;
-                }
+                const auto w = qskHorizontalAdvance( fm, option.text() );
+                if( w > maxWidth )
+                    maxWidth = w;
             }
         }
 
