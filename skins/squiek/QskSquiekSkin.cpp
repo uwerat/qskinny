@@ -428,6 +428,7 @@ void Editor::setupMenu()
 
     setMetric( Q::Separator | A::Size, 2_dp );
     setSeparator( Q::Separator );
+    setMargin( Q::Separator, 2 );
 
     setPadding( Q::Segment, QskMargins( 2, 10, 2, 10 ) );
     setSpacing( Q::Segment, 5 );

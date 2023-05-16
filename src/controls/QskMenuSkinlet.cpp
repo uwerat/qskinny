@@ -31,6 +31,16 @@ static inline int qskActionIndex( const QskMenu* menu, int optionIndex )
     return it - actions.constBegin();
 }
 
+static inline qreal qskPaddedSeparatorHeight( const QskMenu* menu )
+{
+    using Q = QskMenu;
+
+    const auto margins = menu->marginHint( Q::Separator );
+
+    return menu->metric( Q::Separator | QskAspect::Size )
+        + margins.top() + margins.bottom();
+}
+
 class QskMenuSkinlet::PrivateData
 {
   public:
@@ -254,7 +264,6 @@ QRectF QskMenuSkinlet::subControlRect(
 
         const qreal pos = menu->positionHint( Q::Cursor );
 
-        // separators TODO ...
         const int pos1 = qFloor( pos );
         const int pos2 = qCeil( pos );
 
@@ -289,10 +298,7 @@ QRectF QskMenuSkinlet::sampleRect(
         auto dy = index * h;
 
         if ( const auto n = menu->actions()[ index ] - index )
-        {
-            // spacing ???
-            dy += n * menu->metric( Q::Separator | QskAspect::Size );
-        }
+            dy += n * qskPaddedSeparatorHeight( menu );
 
         const auto r = menu->subControlContentsRect( Q::Panel );
         return QRectF( r.x(), r.y() + dy, r.width(), h );
@@ -332,17 +338,15 @@ QRectF QskMenuSkinlet::sampleRect(
         if ( index >= separators.count() )
             return QRectF();
 
-        const int pos = separators[ index ];
+        const auto h = qskPaddedSeparatorHeight( menu );
 
-        auto r = menu->subControlContentsRect( Q::Panel );
+        auto y = index * h;
 
-        const auto segmentRect = sampleRect( skinnable, contentsRect, Q::Segment, pos );
-        r.setBottom( segmentRect.top() ); // spacing ???
+        if ( const auto n = qskActionIndex( menu, separators[ index ] ) )
+            y += n * m_data->segmentHeight( menu );
 
-        const qreal h = menu->metric( Q::Separator | QskAspect::Size );
-        r.setTop( r.bottom() - h );
-
-        return r;
+        const auto r = menu->subControlContentsRect( Q::Panel );
+        return QRectF( r.left(), y, r.width(), h );
     }
 
     return Inherited::sampleRect(
@@ -555,7 +559,7 @@ QSizeF QskMenuSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     if ( const auto count = sampleCount( skinnable, Q::Separator ) )
     {
-        h += count * menu->metric( Q::Separator | QskAspect::Size );
+        h += count * qskPaddedSeparatorHeight( menu );
     }
 
     auto hint = skinnable->outerBoxSize( QskMenu::Panel, QSizeF( w, h ) );

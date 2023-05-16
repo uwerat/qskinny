@@ -201,11 +201,6 @@ QskLabelData QskMenu::optionAt( int index ) const
     return m_data->options.value( index );
 }
 
-int QskMenu::optionsCount() const
-{
-    return m_data->options.count();
-}
-
 void QskMenu::addSeparator()
 {
     addOption( QskLabelData() );
@@ -420,7 +415,10 @@ void QskMenu::aboutToShow()
     setGeometry( QRectF( m_data->origin, sizeConstraint() ) );
 
     if ( m_data->currentIndex < 0 )
-        setCurrentIndex( 0 );
+    {
+        if ( !m_data->actions.isEmpty() )
+            setCurrentIndex( m_data->actions.first() );
+    }
 
     Inherited::aboutToShow();
 }
@@ -459,7 +457,7 @@ int QskMenu::indexAtPosition( const QPointF& pos ) const
 
 void QskMenu::trigger( int index )
 {
-    if ( index >= 0 && index < m_data->options.count()  )
+    if ( index >= 0 && index < m_data->options.count() )
     {
         m_data->triggeredIndex = index;
         Q_EMIT triggered( index );
