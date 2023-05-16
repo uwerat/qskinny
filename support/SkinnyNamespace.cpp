@@ -137,11 +137,23 @@ Q_COREAPP_STARTUP_FUNCTION( initFonts )
 void Skinny::changeSkin( QskAnimationHint hint )
 {
     const auto names = qskSkinManager->skinNames();
+    if ( names.size() > 1 )
+    {
+        auto index = names.indexOf( qskSetup->skinName() );
+        index = ( index + 1 ) % names.size();
+
+        setSkin( index, hint );
+    }
+}
+
+void Skinny::setSkin( int index, QskAnimationHint hint )
+{
+    const auto names = qskSkinManager->skinNames();
     if ( names.size() <= 1 )
         return;
 
-    int index = names.indexOf( qskSetup->skinName() );
-    index = ( index + 1 ) % names.size();
+    if ( index == names.indexOf( qskSetup->skinName() ) )
+        return;
 
     auto oldSkin = qskSetup->skin();
     if ( oldSkin->parent() == qskSetup )

@@ -159,28 +159,11 @@ namespace
         void changeSkin( int index )
         {
             const auto names = qskSkinManager->skinNames();
-            if ( index < 0 || index >= names.size() )
-                return;
 
-            if ( index == names.indexOf( qskSetup->skinName() ) )
-                return;
-
-            auto oldSkin = qskSetup->skin();
-            if ( oldSkin->parent() == qskSetup )
-                oldSkin->setParent( nullptr ); // otherwise setSkin deletes it
-
-            if ( auto newSkin = qskSetup->setSkin( names[ index ] ) )
+            if ( ( index >= 0 ) && ( index < names.size() )
+                 && ( index != names.indexOf( qskSetup->skinName() ) ) )
             {
-                QskSkinTransition transition;
-
-                transition.setSourceSkin( oldSkin );
-                transition.setTargetSkin( newSkin );
-                transition.setAnimation( 500 );
-
-                transition.process();
-
-                if ( oldSkin->parent() == nullptr )
-                    delete oldSkin;
+                Skinny::setSkin( index, 500 );
             }
         }
     };
