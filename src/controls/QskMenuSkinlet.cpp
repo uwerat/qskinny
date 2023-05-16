@@ -18,6 +18,29 @@
 #include <qfontmetrics.h>
 #include <qmath.h>
 
+static inline int qskActionIndex( const QskMenu* menu, int optionIndex )
+{
+    if ( optionIndex < 0 )
+        return -1;
+
+    const auto& actions = menu->actions();
+
+    auto it = std::lower_bound(
+        actions.constBegin(), actions.constEnd(), optionIndex );
+
+    return it - actions.constBegin();
+}
+
+static inline qreal qskPaddedSeparatorHeight( const QskMenu* menu )
+{
+    using Q = QskMenu;
+
+    const auto margins = menu->marginHint( Q::Separator );
+
+    return menu->metric( Q::Separator | QskAspect::Size )
+        + margins.top() + margins.bottom();
+}
+
 class QskMenuSkinlet::PrivateData
 {
   public:
@@ -43,18 +66,6 @@ class QskMenuSkinlet::PrivateData
     {
         m_isCaching = on;
         m_segmentHeight = m_segmentWidth = m_graphicWidth = m_textWidth = -1.0;
-    }
-
-    inline int separatorsBefore( const QskMenu* menu, int index ) const
-    {
-        int i = 0;
-        for ( ; i < menu->separatorCount(); i++ )
-        {
-            if ( menu->separatorPosition( i ) > index )
-                break;
-        }
-
-        return i;
     }
 
     inline qreal graphicWidth( const QskMenu* menu ) const
@@ -112,8 +123,6 @@ class QskMenuSkinlet::PrivateData
   private:
     qreal graphicWidthInternal( const QskMenu* menu ) const
     {
-        const auto skinlet = menu->effectiveSkinlet();
-
         const auto hint = menu->strutSizeHint( QskMenu::Icon );
         const qreal textHeight = menu->effectiveFontHeight( QskMenu::Text );
 
@@ -138,8 +147,6 @@ class QskMenuSkinlet::PrivateData
 
     qreal textWidthInternal( const QskMenu* menu ) const
     {
-        const auto skinlet = menu->effectiveSkinlet();
-
         const QFontMetricsF fm( menu->effectiveFont( QskMenu::Text ) );
 
         auto maxWidth = 0.0;
@@ -210,16 +217,29 @@ QskMenuSkinlet::~QskMenuSkinlet() = default;
 QRectF QskMenuSkinlet::cursorRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect, int index ) const
 {
-    const auto count = sampleCount( skinnable, QskMenu::Segment );
+    using Q = QskMenu;
 
-    auto rect = sampleRect( skinnable, contentsRect,
-        QskMenu::Segment, qBound( 0, index, count ) );
+    const auto menu = static_cast< const QskMenu* >( skinnable );
+    const auto actions = menu->actions();
+
+    index = qskActionIndex( menu, index );
+
+    QRectF rect;
 
     if ( index < 0 )
+    {
+        rect = sampleRect( skinnable, contentsRect, Q::Segment, 0 );
         rect.setBottom( rect.top() );
-
-    if ( index >= count )
+    }
+    else if ( index >= actions.count() )
+    {
+        rect = sampleRect( skinnable, contentsRect, Q::Segment, actions.count() - 1 );
         rect.setTop( rect.bottom() );
+    }
+    else
+    {
+        rect = sampleRect( skinnable, contentsRect, Q::Segment, index );
+    }
 
     return rect;
 }
@@ -273,19 +293,15 @@ QRectF QskMenuSkinlet::sampleRect(
 
     if ( subControl == Q::Segment )
     {
+        const auto h = m_data->segmentHeight( menu );
+
+        auto dy = index * h;
+
+        if ( const auto n = menu->actions()[ index ] - index )
+            dy += n * qskPaddedSeparatorHeight( menu );
+
         const auto r = menu->subControlContentsRect( Q::Panel );
-
-        auto h = m_data->segmentHeight( menu );
-
-        if ( int n = m_data->separatorsBefore( menu, index ) )
-        {
-            // spacing ???
-
-            const qreal separatorH = menu->metric( Q::Separator | QskAspect::Size );
-            h += n * separatorH;
-        }
-
-        return QRectF( r.x(), r.y() + index * h, r.width(), h );
+        return QRectF( r.x(), r.y() + dy, r.width(), h );
     }
 
     if ( subControl == QskMenu::Icon || subControl == QskMenu::Text )
@@ -318,22 +334,19 @@ QRectF QskMenuSkinlet::sampleRect(
 
     if ( subControl == QskMenu::Separator )
     {
-        const int pos = menu->separatorPosition( index );
-        if ( pos < 0 )
+        const auto separators = menu->separators();
+        if ( index >= separators.count() )
             return QRectF();
 
-        QRectF r = menu->subControlContentsRect( Q::Panel );
+        const auto h = qskPaddedSeparatorHeight( menu );
 
-        if ( pos < menu->count() )
-        {
-            const auto segmentRect = sampleRect( skinnable, contentsRect, Q::Segment, pos );
-            r.setBottom( segmentRect.top() ); // spacing ???
-        }
+        auto y = index * h;
 
-        const qreal h = menu->metric( Q::Separator | QskAspect::Size );
-        r.setTop( r.bottom() - h );
+        if ( const auto n = qskActionIndex( menu, separators[ index ] ) )
+            y += n * m_data->segmentHeight( menu );
 
-        return r;
+        const auto r = menu->subControlContentsRect( Q::Panel );
+        return QRectF( r.left(), y, r.width(), h );
     }
 
     return Inherited::sampleRect(
@@ -356,13 +369,13 @@ int QskMenuSkinlet::sampleCount(
     if ( subControl == Q::Segment || subControl == Q::Icon || subControl == Q::Text )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
-        return menu->count();
+        return menu->actions().count();
     }
 
     if ( subControl == Q::Separator )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
-        return menu->separatorCount();
+        return menu->separators().count();
     }
 
     return Inherited::sampleCount( skinnable, subControl );
@@ -378,7 +391,8 @@ QskAspect::States QskMenuSkinlet::sampleStates(
     if ( subControl == Q::Segment || subControl == Q::Icon || subControl == Q::Text )
     {
         const auto menu = static_cast< const QskMenu* >( skinnable );
-        if ( menu->currentIndex() == index )
+
+        if ( menu->currentIndex() == menu->actions()[ index ] )
             states |= QskMenu::Selected;
     }
 
@@ -483,6 +497,8 @@ QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
 
     if ( subControl == Q::Icon )
     {
+        index = menu->actions()[ index ];
+
         const auto graphic = menu->optionAt( index ).icon().graphic();
         if ( graphic.isNull() )
             return nullptr;
@@ -496,6 +512,8 @@ QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
 
     if ( subControl == Q::Text )
     {
+        index = menu->actions()[ index ];
+
         const auto text = menu->optionAt( index ).text();
         if ( text.isEmpty() )
             return nullptr;
@@ -541,7 +559,7 @@ QSizeF QskMenuSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     if ( const auto count = sampleCount( skinnable, Q::Separator ) )
     {
-        h += count * menu->metric( Q::Separator | QskAspect::Size );
+        h += count * qskPaddedSeparatorHeight( menu );
     }
 
     auto hint = skinnable->outerBoxSize( QskMenu::Panel, QSizeF( w, h ) );

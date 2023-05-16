@@ -26,8 +26,6 @@ class QSK_EXPORT QskMenu : public QskPopup
     Q_PROPERTY( QVector< QskLabelData > options READ options
         WRITE setOptions NOTIFY optionsChanged )
 
-    Q_PROPERTY( int count READ count )
-
     Q_PROPERTY( int currentIndex READ currentIndex
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
@@ -58,6 +56,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     int addOption( const QString&, const QString& );
     int addOption( const QUrl&, const QString& );
     int addOption( const QskLabelData& );
+    void addSeparator();
 
     void setOptions( const QVector< QskLabelData >& );
     void setOptions( const QStringList& );
@@ -65,14 +64,8 @@ class QSK_EXPORT QskMenu : public QskPopup
     QVector< QskLabelData > options() const;
     QskLabelData optionAt( int ) const;
 
-    int count() const;
-
-    void addSeparator();
-
-    int separatorPosition( int ) const;
-    int separatorCount() const;
-
-    void clear();
+    QVector< int > separators() const;
+    QVector< int > actions() const;
 
     int currentIndex() const;
     QString currentText() const;
@@ -98,6 +91,7 @@ class QSK_EXPORT QskMenu : public QskPopup
 
   public Q_SLOTS:
     void setCurrentIndex( int );
+    void clear();
 
   protected:
     void keyPressEvent( QKeyEvent* ) override;

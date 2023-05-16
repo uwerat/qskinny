@@ -187,7 +187,7 @@ namespace
 
             // see https://github.com/uwerat/qskinny/issues/192
             connect( menu, &QskMenu::triggered,
-                []( int index ) { if ( index == 3 ) qApp->quit(); } );
+                []( int index ) { if ( index == 4 ) qApp->quit(); } );
         }
     };
 
@@ -224,7 +224,7 @@ namespace
                 drawer->setEdge( Qt::RightEdge );
 
                 auto burger = new QskPushButton( "≡", this );
-		        burger->setEmphasis( QskPushButton::LowEmphasis );
+                burger->setEmphasis( QskPushButton::LowEmphasis );
 
                 connect( burger, &QskPushButton::clicked,
                     drawer, &QskPopup::open );
