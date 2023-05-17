@@ -32,19 +32,27 @@ class QSK_EXPORT QskLinesNode : public QSGGeometryNode
     void setGlobalPosition( const QPointF&, qreal devicePixelRatio );
     void setGlobalPosition( const QQuickItem* );
 
-    void setLineColor( const QColor& );
-    void setLineWidth( qreal );
+    void updateLines( const QColor&, qreal lineWidth,
+        const QskStippleMetrics&, const QTransform&, const QRectF&,
+        const QVector< qreal >&, const QVector< qreal >& );
 
-    void updateGrid( const QColor&, qreal lineWidth,
-        const QskStippleMetrics&, const QTransform&,
-        const QskIntervalF&, const QVector< qreal >&,
-        const QskIntervalF&, const QVector< qreal >& );
+    void updateLines( const QColor&, qreal lineWidth,
+        const QskStippleMetrics&, const QTransform&, const QRectF& );
 
   private:
     void updateGeometry(
-        const QskStippleMetrics&, const QTransform&,
-        const QskIntervalF&, const QVector< qreal >&,
-        const QskIntervalF&, const QVector< qreal >& );
+        const QskStippleMetrics&, const QTransform&, const QRectF&,
+        const QVector< qreal >&, const QVector< qreal >& );
+
+    QSGGeometry::Point2D* setSolidLines(
+        Qt::Orientation, qreal, qreal,
+        const QTransform&, int count, const qreal* values,
+        QSGGeometry::Point2D* ) const;
+
+    QSGGeometry::Point2D* setStippledLines(
+        Qt::Orientation, qreal, qreal,
+        const QTransform&, int count, const qreal* values,
+        const QskStippleMetrics&, QSGGeometry::Point2D* ) const;
 
     Q_DECLARE_PRIVATE( QskLinesNode )
 };
