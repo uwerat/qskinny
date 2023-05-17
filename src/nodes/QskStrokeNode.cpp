@@ -86,6 +86,8 @@ QskStrokeNode::QskStrokeNode()
     setMaterial( qskMaterialColorVertex );
 }
 
+QskStrokeNode::~QskStrokeNode() = default;
+
 void QskStrokeNode::setRenderHint( RenderHint renderHint )
 {
     Q_D( QskStrokeNode );

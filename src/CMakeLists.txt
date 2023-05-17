@@ -32,6 +32,7 @@ list(APPEND HEADERS
     common/QskShadowMetrics.h
     common/QskSizePolicy.h
     common/QskStateCombination.h
+    common/QskStippleMetrics.h
     common/QskTextColors.h
     common/QskTextOptions.h
 )
@@ -61,6 +62,7 @@ list(APPEND SOURCES
     common/QskScaleTickmarks.cpp
     common/QskShadowMetrics.cpp
     common/QskSizePolicy.cpp
+    common/QskStippleMetrics.cpp
     common/QskTextColors.cpp
     common/QskTextOptions.cpp
 )
@@ -107,6 +109,7 @@ list(APPEND HEADERS
     nodes/QskBoxShadowNode.h
     nodes/QskColorRamp.h
     nodes/QskGraphicNode.h
+    nodes/QskLinesNode.h
     nodes/QskPaintedNode.h
     nodes/QskPlainTextRenderer.h
     nodes/QskRichTextRenderer.h
@@ -135,6 +138,7 @@ list(APPEND SOURCES
     nodes/QskBoxShadowNode.cpp
     nodes/QskColorRamp.cpp
     nodes/QskGraphicNode.cpp
+    nodes/QskLinesNode.cpp
     nodes/QskPaintedNode.cpp
     nodes/QskPlainTextRenderer.cpp
     nodes/QskRectangleNode.cpp
