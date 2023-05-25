@@ -708,14 +708,14 @@ int QskSkinnable::fontRoleHint(
     return qskFlag( this, aspect | QskAspect::FontRole, status );
 }
 
-QFont QskSkinnable::effectiveFont( const QskAspect::Subcontrol subControl ) const
+QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
 {
-    return effectiveSkin()->font( fontRoleHint( subControl ) );
+    return effectiveSkin()->font( fontRoleHint( aspect ) );
 }
 
-qreal QskSkinnable::effectiveFontHeight( const QskAspect::Subcontrol subControl ) const
+qreal QskSkinnable::effectiveFontHeight( const QskAspect aspect ) const
 {
-    const QFontMetricsF fm( effectiveFont( subControl ) );
+    const QFontMetricsF fm( effectiveFont( aspect ) );
     return fm.height();
 }
 
