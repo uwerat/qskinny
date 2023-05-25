@@ -38,6 +38,12 @@ class QSK_EXPORT QskStippleMetrics
     void setPattern( const QVector< qreal >& );
     QVector< qreal > pattern() const;
 
+    QskStippleMetrics interpolated(
+        const QskStippleMetrics&, qreal value ) const;
+
+    static QVariant interpolate( const QskStippleMetrics&,
+        const QskStippleMetrics&, qreal progress );
+
     QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 
   private:
@@ -84,6 +90,8 @@ inline bool QskStippleMetrics::isSolid() const noexcept
 {
     return m_pattern.count() == 1;
 }
+
+QSK_EXPORT QVector< qreal > qskDashPattern( Qt::PenStyle );
 
 #ifndef QT_NO_DEBUG_STREAM
 

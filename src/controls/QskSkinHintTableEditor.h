@@ -14,6 +14,7 @@
 
 #include <qcolor.h>
 #include <qvariant.h>
+#include <qvector.h>
 
 class QskArcMetrics;
 class QskMargins;
@@ -22,6 +23,7 @@ class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
 class QskShadowMetrics;
+class QskStippleMetrics;
 class QskGraphic;
 
 class QSK_EXPORT QskSkinHintTableEditor
@@ -264,6 +266,21 @@ class QSK_EXPORT QskSkinHintTableEditor
     bool removeArcMetrics( QskAspect, QskStateCombination = QskStateCombination() );
 
     QskArcMetrics arcMetrics( QskAspect ) const;
+
+    // lines
+
+    void setStippleMetrics( QskAspect, Qt::PenStyle,
+        QskStateCombination = QskStateCombination() );
+
+    void setStippleMetrics( QskAspect, const QVector< qreal >&,
+        QskStateCombination = QskStateCombination() );
+
+    void setStippleMetrics( QskAspect, const QskStippleMetrics&,
+        QskStateCombination = QskStateCombination() );
+
+    bool removeStippleMetrics( QskAspect, QskStateCombination = QskStateCombination() );
+
+    QskStippleMetrics stippleMetrics( QskAspect ) const;
 
     // text options flag
 

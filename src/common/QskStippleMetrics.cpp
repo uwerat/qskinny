@@ -16,11 +16,19 @@ static void qskRegisterStippleMetrics()
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     QMetaType::registerEqualsComparator< QskStippleMetrics >();
 #endif
+
+    QMetaType::registerConverter< QPen, QskStippleMetrics >(
+        []( const QPen& pen ) { return QskStippleMetrics( pen ); } );
+
+    QMetaType::registerConverter< Qt::PenStyle, QskStippleMetrics >(
+        []( Qt::PenStyle style ) { return QskStippleMetrics( style ); } );
 }
 
-static inline QVector< qreal > qskDashPattern( const Qt::PenStyle& style )
+Q_CONSTRUCTOR_FUNCTION( qskRegisterStippleMetrics )
+
+QVector< qreal > qskDashPattern( Qt::PenStyle style )
 {
-    static QVector< qreal > pattern[] =
+    static const QVector< qreal > pattern[] =
     {
         {}, { 1 }, { 4, 2 }, { 1, 2 },
         { 4, 2, 1, 2 }, { 4, 2, 1, 2, 1, 2 }, {}
@@ -29,7 +37,22 @@ static inline QVector< qreal > qskDashPattern( const Qt::PenStyle& style )
     return pattern[ style ];
 }
 
-Q_CONSTRUCTOR_FUNCTION( qskRegisterStippleMetrics )
+static inline qreal qskInterpolated( qreal from, qreal to, qreal ratio )
+{
+    return from + ( to - from ) * ratio;
+}
+
+static inline QVector< qreal > qskInterpolatedSpaces(
+    const QVector< qreal >& pattern, qreal progress )
+{
+    QVector< qreal > interpolated;
+    interpolated.reserve( pattern.count() );
+
+    for ( int i = 1; i < pattern.count(); i += 2 )
+        interpolated[i] = progress * pattern[i];
+
+    return interpolated;
+}
 
 QskStippleMetrics::QskStippleMetrics( Qt::PenStyle penStyle )
     : m_pattern( qskDashPattern( penStyle ) )
@@ -54,6 +77,47 @@ void QskStippleMetrics::setPattern( const QVector< qreal >& pattern )
 void QskStippleMetrics::setOffset( qreal offset ) noexcept
 {
     m_offset = offset;
+}
+
+QskStippleMetrics QskStippleMetrics::interpolated(
+    const QskStippleMetrics& to, qreal progress ) const
+{
+    if ( *this == to )
+        return to;
+
+    const auto offset = qskInterpolated( m_offset, to.m_offset, progress );
+
+    QVector< qreal > pattern;
+
+    if ( isSolid() )
+    {
+        pattern = qskInterpolatedSpaces( to.m_pattern, progress );
+    }
+    else if ( to.isSolid() )
+    {
+        pattern = qskInterpolatedSpaces( m_pattern, 1.0 - progress );
+    }
+    else
+    {
+        const auto count = qMax( m_pattern.count(), to.m_pattern.count() );
+        pattern.reserve( count );
+
+        for ( int i = 0; i < count; i++ )
+        {
+            const auto v1 = m_pattern.value( i, 0.0 );
+            const auto v2 = to.m_pattern.value( i, 0.0 );
+
+            pattern += qskInterpolated( v1, v2, progress );
+        }
+    }
+
+    return QskStippleMetrics( pattern, offset );
+}
+
+QVariant QskStippleMetrics::interpolate(
+    const QskStippleMetrics& from, const QskStippleMetrics& to, qreal progress )
+{
+    return QVariant::fromValue( from.interpolated( to, progress ) );
 }
 
 QskHashValue QskStippleMetrics::hash( QskHashValue seed ) const noexcept

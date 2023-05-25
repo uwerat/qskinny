@@ -23,6 +23,7 @@
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskShadowMetrics.h"
+#include "QskStippleMetrics.h"
 #include "QskBoxHints.h"
 #include "QskGradient.h"
 #include "QskTextOptions.h"
@@ -636,6 +637,24 @@ QskArcMetrics QskSkinnable::arcMetricsHint(
 {
     return qskMetric< QskArcMetrics >(
         this, aspect | QskAspect::Shape, status );
+}
+
+bool QskSkinnable::setStippleMetricsHint(
+    QskAspect aspect, const QskStippleMetrics& metrics )
+{
+    return qskSetMetric( this, aspect | QskAspect::Style, metrics );
+}
+
+bool QskSkinnable::resetStippleMetricsHint( QskAspect aspect )
+{
+    return resetMetric( aspect | QskAspect::Style );
+}
+
+QskStippleMetrics QskSkinnable::stippleMetricsHint(
+    QskAspect aspect, QskSkinHintStatus* status ) const
+{
+    return qskMetric< QskStippleMetrics >(
+        this, aspect | QskAspect::Style, status );
 }
 
 bool QskSkinnable::setSpacingHint( const QskAspect aspect, qreal spacing )
