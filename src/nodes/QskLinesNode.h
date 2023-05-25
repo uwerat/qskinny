@@ -15,6 +15,7 @@ class QskIntervalF;
 class QskStippleMetrics;
 class QTransform;
 class QPointF;
+class QLineF;
 class QQuickItem;
 
 class QskLinesNodePrivate;
@@ -31,15 +32,29 @@ class QSK_EXPORT QskLinesNode : public QSGGeometryNode
 
     void setGlobalPosition( const QPointF&, qreal devicePixelRatio );
     void setGlobalPosition( const QQuickItem* );
+    void resetGlobalPosition();
 
-    void updateLines( const QColor&, qreal lineWidth,
+    void updateGrid( const QColor&, qreal lineWidth,
         const QskStippleMetrics&, const QTransform&, const QRectF&,
         const QVector< qreal >&, const QVector< qreal >& );
 
-    void updateLines( const QColor&, qreal lineWidth,
+    void updateRect( const QColor&, qreal lineWidth,
         const QskStippleMetrics&, const QTransform&, const QRectF& );
 
+    void updateLine( const QColor&, qreal lineWidth,
+        const QskStippleMetrics&, const QTransform&,
+        const QPointF&, const QPointF& );
+
+    void updateLines( const QColor&, qreal lineWidth,
+        const QskStippleMetrics&, const QTransform&, const QVector< QLineF >& );
+
   private:
+    void updateLines( const QColor&, qreal lineWidth, const QskStippleMetrics&,
+        const QTransform&, int count, const QLineF* );
+
+    void updateGeometry( const QskStippleMetrics&, const QTransform&,
+        int count, const QLineF* );
+
     void updateGeometry(
         const QskStippleMetrics&, const QTransform&, const QRectF&,
         const QVector< qreal >&, const QVector< qreal >& );

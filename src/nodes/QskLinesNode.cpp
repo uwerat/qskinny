@@ -6,6 +6,7 @@
 #include "QskLinesNode.h"
 #include "QskVertex.h"
 #include "QskStippleMetrics.h"
+#include "QskStippledLineRenderer.h"
 #include "QskSGNode.h"
 
 #include <qsgflatcolormaterial.h>
@@ -13,10 +14,10 @@
 #include <qtransform.h>
 #include <qquickitem.h>
 #include <qquickwindow.h>
+#include <qline.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qsgnode_p.h>
-#include <private/qstroker_p.h>
 QSK_QT_PRIVATE_END
 
 namespace
@@ -31,83 +32,86 @@ namespace
         return t.dy() + t.m22() * y;
     }
 
-    /*
-        Thanks to the hooks of the stroker classes we can make use
-        of QDashStroker without having to deal with the overhead of
-        QPainterPaths. But it might be worth to check if this could
-        be done in a shader. TODO ...
-     */
-    class DashStroker : public QDashStroker
+    class Renderer : public QskStippledLineRenderer
     {
       public:
-        DashStroker( const QskStippleMetrics& metrics )
-            : QDashStroker( nullptr )
+        inline Renderer( const QskStippleMetrics& metrics )
+            : QskStippledLineRenderer( metrics )
         {
-            setDashOffset( metrics.offset() );
-            setDashPattern( metrics.pattern() );
-
-            m_elements.reserve( 2 );
         }
 
-        QSGGeometry::Point2D* addDashes( QSGGeometry::Point2D* points,
+        inline QSGGeometry::Point2D* addDashes( QSGGeometry::Point2D* points,
             qreal x1, qreal y1, qreal x2, qreal y2 )
         {
-            setMoveToHook( addPoint );
-            setLineToHook( addPoint );
-
             m_points = points;
-
-            begin( this );
-
-            m_elements.add( { QPainterPath::MoveToElement, x1, y1 } );
-            m_elements.add( { QPainterPath::LineToElement, x2, y2 } );
-
-            processCurrentSubpath();
-
-            end();
-
+            renderLine( x1, y1, x2, y2 );
             return m_points;
         }
 
-        int pointCount( qreal x1, qreal y1, qreal x2, qreal y2 )
-        {
-            /*
-                There should be a faster way to calculate the
-                number of points. TODO ...
-             */
-            setMoveToHook( countPoint );
-            setLineToHook( countPoint );
-
-            m_count = 0;
-
-            begin( this );
-
-            m_elements.add( { QPainterPath::MoveToElement, x1, y1 } );
-            m_elements.add( { QPainterPath::LineToElement, x2, y2 } );
-
-            processCurrentSubpath();
-
-            end();
-
-            return m_count;
-        }
-
       private:
-        static void addPoint( qfixed x, qfixed y, void* data )
+        void renderDash( qreal x1, qreal y1, qreal x2, qreal y2 ) override
         {
-            auto stroker = reinterpret_cast< DashStroker* >( data );
-            ( stroker->m_points++ )->set( x, y );
+            m_points++->set( x1, y1 );
+            m_points++->set( x2, y2 );
         }
 
-        static void countPoint( qfixed, qfixed, void* data )
-        {
-            auto stroker = reinterpret_cast< DashStroker* >( data );
-            stroker->m_count++;
-        }
-
-        int m_count = 0;
         QSGGeometry::Point2D* m_points;
     };
+}
+
+static QSGGeometry::Point2D* qskAddDashes( const QTransform& transform,
+    int count, const QLineF* lines, const QskStippleMetrics& metrics,
+    QSGGeometry::Point2D* points )
+{
+    if ( count <= 0 )
+        return points;
+
+    const bool doTransform = !transform.isIdentity();
+
+    Renderer renderer( metrics );
+
+    for ( int i = 0; i < count; i++ )
+    {
+        auto p1 = lines[i].p1();
+        auto p2 = lines[i].p2();
+
+        if ( doTransform )
+        {
+            p1 = transform.map( p1 );
+            p2 = transform.map( p2 );
+        }
+
+        points = renderer.addDashes( points, p1.x(), p1.y(), p2.x(), p2.y() );
+    }
+
+    return points;
+}
+
+static QSGGeometry::Point2D* qskAddLines( const QTransform& transform,
+    int count, const QLineF* lines, QSGGeometry::Point2D* points )
+{
+    if ( count <= 0 )
+        return points;
+
+    const bool doTransform = !transform.isIdentity();
+
+    auto vlines = reinterpret_cast< QskVertex::Line* >( points );
+
+    for ( int i = 0; i < count; i++ )
+    {
+        auto p1 = lines[i].p1();
+        auto p2 = lines[i].p2();
+
+        if ( doTransform )
+        {
+            p1 = transform.map( p1 );
+            p2 = transform.map( p2 );
+        }
+
+        vlines++->setLine( p1.x(), p1.y(), p2.x(), p2.y() );
+    }
+
+    return reinterpret_cast< QSGGeometry::Point2D* >( vlines );
 }
 
 class QskLinesNodePrivate final : public QSGGeometryNodePrivate
@@ -122,6 +126,9 @@ class QskLinesNodePrivate final : public QSGGeometryNodePrivate
 
     inline qreal round( bool isHorizontal, qreal v ) const
     {
+        if ( !doRound )
+            return v;
+
         const auto r2 = 2.0 * devicePixelRatio;
         const qreal v0 = isHorizontal ? p0.x() : p0.y();
 
@@ -129,6 +136,19 @@ class QskLinesNodePrivate final : public QSGGeometryNodePrivate
         const auto f = ( d % 2 ? d : d - 1 ) / r2;
 
         return f / devicePixelRatio - v0;
+    }
+
+    inline void setLineAttributes( QskLinesNode* node,
+        const QColor& color, float lineWidth )
+    {
+        if ( color != material.color() )
+        {
+            material.setColor( color );
+            node->markDirty( QSGNode::DirtyMaterial );
+        }
+
+        if( lineWidth != geometry.lineWidth() )
+            geometry.setLineWidth( lineWidth );
     }
 
     QSGGeometry geometry;
@@ -139,7 +159,9 @@ class QskLinesNodePrivate final : public QSGGeometryNodePrivate
     qreal devicePixelRatio = 1.0;
 
     QskHashValue hash = 0.0;
+
     bool dirty = true;
+    bool doRound = false;
 };
 
 QskLinesNode::QskLinesNode()
@@ -176,6 +198,12 @@ void QskLinesNode::setGlobalPosition(
 {
     Q_D( QskLinesNode );
 
+    if ( d->doRound == false )
+    {
+        d->doRound = true;
+        d->dirty = true;
+    }
+
     if ( pos != d->p0 || devicePixelRatio != d->devicePixelRatio )
     {
         d->p0 = pos;
@@ -185,26 +213,96 @@ void QskLinesNode::setGlobalPosition(
     }
 }
 
-void QskLinesNode::updateLines( const QColor& color,
+void QskLinesNode::resetGlobalPosition()
+{
+    Q_D( QskLinesNode );
+
+    if ( d->doRound == true )
+    {
+        d->doRound = false;
+        d->dirty = true;
+    }
+}
+
+void QskLinesNode::updateRect( const QColor& color,
     qreal lineWidth, const QskStippleMetrics& stippleMetrics,
     const QTransform& transform, const QRectF& rect )
 {
     // using QVarLengthArray instead. TODO ...
-    updateLines( color, lineWidth, stippleMetrics, transform,
+    updateGrid( color, lineWidth, stippleMetrics, transform,
         rect, { rect.left(), rect.right() }, { rect.top(), rect.bottom() } );
 }
 
+void QskLinesNode::updateLine( const QColor& color,
+    qreal lineWidth, const QskStippleMetrics& stippleMetrics,
+    const QTransform& transform, const QPointF& p1, const QPointF& p2 )
+{
+    if ( p1 == p2 )
+    {
+        updateLines( color, lineWidth, stippleMetrics, transform, 0, nullptr );
+    }
+    else
+    {
+        const QLineF line( p1, p2 );
+        updateLines( color, lineWidth, stippleMetrics, transform, 1, &line );
+    }
+}
+
 void QskLinesNode::updateLines( const QColor& color,
+    qreal lineWidth, const QskStippleMetrics& stippleMetrics,
+    const QTransform& transform, const QVector< QLineF >& lines )
+{
+    updateLines( color, lineWidth, stippleMetrics,
+        transform, lines.count(), lines.constData() );
+}
+
+void QskLinesNode::updateLines( const QColor& color,
+    qreal lineWidth, const QskStippleMetrics& stippleMetrics,
+    const QTransform& transform, int count, const QLineF* lines )
+{
+    Q_D( QskLinesNode );
+
+    if ( !stippleMetrics.isValid() || !color.isValid()
+        || color.alpha() == 0 || count == 0 )
+    {
+        QskSGNode::resetGeometry( this );
+        return;
+    }
+
+    QskHashValue hash = 9784;
+
+    hash = stippleMetrics.hash( hash );
+    hash = qHash( transform, hash );
+    hash = qHashBits( lines, count * sizeof( QLineF ) );
+
+    if ( hash != d->hash )
+    {
+        d->dirty = true;
+        d->hash = hash;
+    }
+
+    if( d->dirty )
+    {
+        updateGeometry( stippleMetrics, transform, count, lines );
+
+        markDirty( QSGNode::DirtyGeometry );
+        d->dirty = false;
+    }
+
+    d->setLineAttributes( this, color, lineWidth );
+}
+
+void QskLinesNode::updateGrid( const QColor& color,
     qreal lineWidth, const QskStippleMetrics& stippleMetrics,
     const QTransform& transform, const QRectF& rect,
     const QVector< qreal >& xValues, const QVector< qreal >& yValues )
 {
     Q_D( QskLinesNode );
 
-    if ( color != d->material.color() )
+    if ( !stippleMetrics.isValid() || !color.isValid() || color.alpha() == 0 )
     {
-        d->material.setColor( color );
-        markDirty( QSGNode::DirtyMaterial );
+        QskSGNode::resetGeometry( this );
+        return;
     }
 
     QskHashValue hash = 9784;
@@ -223,24 +321,62 @@ void QskLinesNode::updateLines( const QColor& color,
 
     if( d->dirty )
     {
-        if ( rect.isEmpty() || !stippleMetrics.isValid()
-            || !color.isValid() || color.alpha() == 0 )
-        {
-            QskSGNode::resetGeometry( this );
-        }
-        else
-        {
-            updateGeometry( stippleMetrics,
-                transform, rect, xValues, yValues );
-        }
+        updateGeometry( stippleMetrics, transform, rect, xValues, yValues );
 
         markDirty( QSGNode::DirtyGeometry );
         d->dirty = false;
     }
 
-    const float lineWidthF = lineWidth;
-    if( lineWidthF != d->geometry.lineWidth() )
-        d->geometry.setLineWidth( lineWidthF );
+    d->setLineAttributes( this, color, lineWidth );
+}
+
+void QskLinesNode::updateGeometry( const QskStippleMetrics& stippleMetrics,
+    const QTransform& transform, int count, const QLineF* lines )
+{
+    Q_D( QskLinesNode );
+
+    auto& geom = d->geometry;
+
+    QSGGeometry::Point2D* points = nullptr;
+
+    if ( stippleMetrics.isSolid() )
+    {
+        using namespace QskVertex;
+
+        geom.allocate( 2 * count );
+        points = geom.vertexDataAsPoint2D();
+
+        points = qskAddLines( transform, count, lines, points );
+    }
+    else
+    {
+        const bool doTransform = !transform.isIdentity();
+
+        Renderer renderer( stippleMetrics );
+
+        int lineCount = 0;
+        for ( int i = 0; i < count; i++ )
+        {
+            auto p1 = lines[i].p1();
+            auto p2 = lines[i].p2();
+
+            if ( doTransform )
+            {
+                p1 = transform.map( p1 );
+                p2 = transform.map( p2 );
+            }
+            lineCount += renderer.dashCount( p1, p2 );
+        }
+
+        d->geometry.allocate( 2 * lineCount );
+        points = d->geometry.vertexDataAsPoint2D();
+
+        points = qskAddDashes( transform,
+            count, lines, stippleMetrics, points );
+
+    }
+
+    Q_ASSERT( geom.vertexCount() == ( points - geom.vertexDataAsPoint2D() ) );
 }
 
 void QskLinesNode::updateGeometry(
@@ -275,12 +411,13 @@ void QskLinesNode::updateGeometry(
     }
     else
     {
-        DashStroker stroker( stippleMetrics );
+        Renderer renderer( stippleMetrics );
 
-        const int countX = stroker.pointCount( 0.0, y1, 0.0, y2 );
-        const int countY = stroker.pointCount( x1, 0.0, x2, 0.0 );
+        const auto countX = renderer.dashCount( 0.0, y1, 0.0, y2 );
+        const auto countY = renderer.dashCount( x1, 0.0, x2, 0.0 );
+        const auto count = xValues.count() * countX + yValues.count() * countY;
 
-        d->geometry.allocate( xValues.count() * countX + yValues.count() * countY );
+        d->geometry.allocate( 2 * count );
         points = d->geometry.vertexDataAsPoint2D();
 
         points = setStippledLines( Qt::Vertical, y1, y2,
@@ -305,7 +442,7 @@ QSGGeometry::Point2D* QskLinesNode::setStippledLines(
     if ( count <= 0 )
         return points;
 
-    DashStroker stroker( stippleMetrics );
+    Renderer renderer( stippleMetrics );
 
     // Calculating the dashes for the first line
 
@@ -317,7 +454,7 @@ QSGGeometry::Point2D* QskLinesNode::setStippledLines(
         auto x = mapX( transform, values[0] );
         x = d->round( true, x );
 
-        points = stroker.addDashes( points, x, v1, x, v2 );
+        points = renderer.addDashes( points, x, v1, x, v2 );
         dashCount = points - line0;
     }
     else
@@ -325,7 +462,7 @@ QSGGeometry::Point2D* QskLinesNode::setStippledLines(
         auto y = mapY( transform, values[0] );
         y = d->round( false, y );
 
-        points = stroker.addDashes( points, v1, y, v2, y );
+        points = renderer.addDashes( points, v1, y, v2, y );
         dashCount = points - line0;
     }
 
