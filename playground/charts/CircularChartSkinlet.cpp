@@ -30,6 +30,31 @@
 
 namespace
 {
+    QConicalGradient qskQConicalGradient(
+        const QskGradientStops& stops, qreal startAngle, qreal spanAngle )
+    {
+        QskGradientStops scaledStops;
+        scaledStops.reserve( stops.size() );
+
+        const auto ratio = qAbs( spanAngle ) / 360.0;
+
+        if ( spanAngle > 0.0 )
+        {
+            for ( auto it = stops.cbegin(); it != stops.cend(); ++it )
+                scaledStops += { ratio * it->position(), it->color() };
+        }
+        else
+        {
+            for ( auto it = stops.crbegin(); it != stops.crend(); ++it )
+                scaledStops += { 1.0 - ratio * it->position(), it->color() };
+        }
+
+        QConicalGradient qGradient( QPointF(), startAngle );
+        qGradient.setStops( qskToQGradientStops( scaledStops ) );
+
+        return qGradient;
+    }
+
     class PaintedArcNode : public QskPaintedNode
     {
       public:
@@ -98,26 +123,8 @@ namespace
     QBrush PaintedArcNode::fillBrush( const QskGradient& gradient,
         const QRectF& rect, qreal startAngle, qreal spanAngle ) const
     {
-        const auto stops = gradient.stops();
-
-        QskGradientStops scaledStops;
-        scaledStops.reserve( gradient.stops().size() );
-
-        const auto ratio = qAbs( spanAngle ) / 360.0;
-
-        if ( spanAngle > 0.0 )
-        {
-            for ( auto it = stops.cbegin(); it != stops.cend(); ++it )
-                scaledStops += { ratio* it->position(), it->color() };
-        }
-        else
-        {
-            for ( auto it = stops.crbegin(); it != stops.crend(); ++it )
-                scaledStops += { 1.0 - ratio * it->position(), it->color() };
-        }
-
-        QConicalGradient qGradient( QPointF(), startAngle );
-        qGradient.setStops( qskToQGradientStops( scaledStops ) );
+        const auto qGradient = qskQConicalGradient(
+            gradient.stops(), startAngle, spanAngle );
 
         const qreal sz = qMax( rect.width(), rect.height() );
         const qreal sx = rect.width() / sz;
