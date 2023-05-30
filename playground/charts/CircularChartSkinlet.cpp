@@ -339,15 +339,6 @@ QSGNode* CircularChartSkinlet::updateArcSegmentNode(
     QSGNode* node, qreal borderWidth, const QColor& borderColor,
     const QskGradient& gradient, const QskArcMetrics& metrics ) const
 {
-    auto fillGradient = gradient;
-
-    if ( fillGradient.type() == QskGradient::Stops )
-    {
-        fillGradient.setStretchMode( QskGradient::StretchToSize );
-        fillGradient.setConicDirection( 0.5, 0.5,
-            metrics.startAngle(), metrics.spanAngle() );
-    }
-
 #if PAINTED_NODE
     auto arcNode = static_cast< PaintedArcNode* >( node );
     if ( arcNode == nullptr )
@@ -356,9 +347,18 @@ QSGNode* CircularChartSkinlet::updateArcSegmentNode(
     const auto chart = static_cast< const CircularChart* >( skinnable );
 
     arcNode->setArcData( m_data->closedArcRect, metrics,
-        borderWidth, borderColor, fillGradient, chart->window() );
+        borderWidth, borderColor, gradient, chart->window() );
 #else
     Q_UNUSED( skinnable )
+
+    auto fillGradient = gradient;
+
+    if ( fillGradient.type() == QskGradient::Stops )
+    {
+        fillGradient.setStretchMode( QskGradient::StretchToSize );
+        fillGradient.setConicDirection( 0.5, 0.5,
+            metrics.startAngle(), metrics.spanAngle() );
+    }
 
     auto arcNode = static_cast< QskArcNode* >( node );
     if ( arcNode == nullptr )

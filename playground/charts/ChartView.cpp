@@ -184,7 +184,6 @@ namespace
 
             QPainter painter( &identifier );
             painter.setPen( QPen( QskRgb::toTransparent( Qt::black, 100 ), 1 ) );
-            painter.setBrush( gradient.toQGradient() );
 
             QLinearGradient qGradient;
             qGradient.setStops( qskToQGradientStops( gradient.stops() ) );
