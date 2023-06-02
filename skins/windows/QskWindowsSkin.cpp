@@ -460,6 +460,57 @@ void Editor::setupScrollView()
 
 void Editor::setupSegmentedBar()
 {
+    using Q = QskSegmentedBar;
+    using A = QskAspect;
+
+    const QSizeF segmentStrutSize( 120, 32 );
+
+    setBoxBorderMetrics( Q::Panel, 1 );
+
+    setBoxBorderGradient( Q::Panel, theme.palette.elevation.control.border,
+                         theme.palette.fillColor.control.defaultColor );
+
+    setGradient( Q::Panel, theme.palette.fillColor.control.defaultColor );
+    setSpacing( Q::Panel, 8 );
+
+    setStrutSize( Q::Icon, { 12, 12 } );
+    setGraphicRole( Q::Icon, QskWindowsSkin::GraphicRoleFillColorTextPrimary );
+
+    setFontRole( Q::Text, QskWindowsSkin::Body );
+    setColor( Q::Text, theme.palette.fillColor.text.primary );
+
+    setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
+    setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
+    setBoxShape( Q::Segment , 4 );
+    setPadding( Q::Segment, { 8, 0, 8, 0 } );
+
+    // Hovered:
+    setGradient( Q::Segment | Q::Hovered, theme.palette.fillColor.control.secondary );
+
+    setBoxBorderGradient( Q::Segment | Q::Hovered, theme.palette.elevation.control.border,
+                         theme.palette.fillColor.control.secondary );
+
+    // Selected:
+    setGradient( Q::Segment | Q::Selected, theme.palette.fillColor.accent.defaultColor );
+    setGraphicRole( Q::Icon | Q::Selected, QskWindowsSkin::GraphicRoleFillColorTextOnAccentPrimary );
+    setColor( Q::Text | Q::Selected, theme.palette.fillColor.textOnAccent.primary );
+
+    // Disabled:
+    const QRgb standardDisabledBorderColor = flattenedColor( theme.palette.strokeColor.controlStroke.defaultColor,
+                                                            theme.palette.fillColor.control.disabled );
+
+    setBoxBorderColors( Q::Segment | Q::Disabled, standardDisabledBorderColor );
+
+    setGradient( Q::Segment | Q::Disabled, theme.palette.fillColor.control.disabled );
+    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
+    setGraphicRole( Q::Icon | Q::Disabled, QskWindowsSkin::GraphicRoleFillColorTextDisabled );
+
+
+    setGradient( Q::Segment | Q::Selected | Q::Disabled, theme.palette.fillColor.accent.disabled );
+    setColor( Q::Text | Q::Selected | Q::Disabled, theme.palette.fillColor.textOnAccent.disabled );
+    setGraphicRole( Q::Icon | Q::Selected | Q::Disabled, QskWindowsSkin::GraphicRoleFillColorTextOnAccentDisabled );
+    setBoxBorderMetrics( Q::Panel | Q::Selected | Q::Disabled, 0 );
+
 }
 
 void Editor::setupSeparator()
