@@ -192,7 +192,9 @@ void QskProgressBar::resetExtent()
 
 qreal QskProgressBar::extent() const
 {
-    return metric( Groove | QskAspect::Size );
+    auto grooveSize = metric( Groove | QskAspect::Size );
+    auto barSize = metric( Bar | QskAspect::Size );
+    return qMax( grooveSize, barSize );
 }
 
 void QskProgressBar::setOrigin( qreal origin )

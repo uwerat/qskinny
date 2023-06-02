@@ -276,6 +276,16 @@ void Editor::setupPopup()
 
 void Editor::setupProgressBar()
 {
+    using Q = QskProgressBar;
+    using A = QskAspect;
+
+    setMetric( Q::Groove | A::Size, 1 );
+    setBoxShape( Q::Groove, 100, Qt::RelativeSize );
+    setGradient( Q::Groove, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+
+    setMetric( Q::Bar| A::Size, 3 );
+    setBoxShape( Q::Bar, 100, Qt::RelativeSize );
+    setGradient( Q::Bar, theme.palette.fillColor.accent.defaultColor );
 }
 
 void Editor::setupPushButton()
