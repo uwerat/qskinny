@@ -151,6 +151,31 @@ QskColorFilter QskListView::graphicFilterAt( int row, int col ) const
     return QskColorFilter();
 }
 
+QskAspect::Subcontrol QskListView::rowSubControl( int row ) const noexcept
+{
+    if ( alternatingRowColors() )
+    {
+        if ( row == selectedRow() )
+        {
+            return Cell;
+        }
+        return row % 2 == 0 ? Cell : QskAspect::NoSubcontrol;
+    }
+    return QskAspect::NoSubcontrol;
+}
+
+QskAspect::Subcontrol QskListView::cellSubControl( int row, int col ) const noexcept
+{
+    Q_UNUSED(row);
+    Q_UNUSED(col);
+    return Cell;
+}
+
+QskAspect::Subcontrol QskListView::textSubControl( int row, int col ) const noexcept
+{
+    return Text;
+}
+
 void QskListView::keyPressEvent( QKeyEvent* event )
 {
     if ( m_data->selectionMode == NoSelection )
@@ -372,6 +397,12 @@ void QskListView::componentComplete()
         if ( m_data->selectedRow >= rowCount() )
             setSelectedRow( -1 );
     }
+}
+
+qreal QskListView::rowOffset( int row ) const
+{
+    Q_UNUSED(row);
+    return 0.0;
 }
 
 #include "moc_QskListView.cpp"

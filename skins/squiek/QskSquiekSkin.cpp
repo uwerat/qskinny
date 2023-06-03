@@ -16,6 +16,7 @@
 #include <QskInputPanelBox.h>
 #include <QskInputPredictionBar.h>
 #include <QskListView.h>
+#include <QskTreeView.h>
 #include <QskMenu.h>
 #include <QskPageIndicator.h>
 #include <QskPopup.h>
@@ -158,6 +159,7 @@ namespace
         void setupInputPredictionBar();
         void setupVirtualKeyboard();
         void setupListView();
+        void setupTreeView();
         void setupMenu();
         void setupPageIndicator();
         void setupPopup();
@@ -283,6 +285,7 @@ void Editor::setup()
     setupInputPredictionBar();
     setupVirtualKeyboard();
     setupListView();
+    setupTreeView();
     setupMenu();
     setupPageIndicator();
     setupPopup();
@@ -1045,6 +1048,20 @@ void Editor::setupScrollView()
 void Editor::setupListView()
 {
     using Q = QskListView;
+
+    // padding for each cell
+    setPadding( Q::Cell, QskMargins( 4, 8 ) );
+
+    setColor( Q::Text, m_pal.themeForeground );
+    setColor( Q::Cell, m_pal.contrasted );
+
+    setColor( Q::Cell | Q::Selected, m_pal.highlighted );
+    setColor( Q::Text | Q::Selected, m_pal.highlightedText );
+}
+
+void Editor::setupTreeView()
+{
+    using Q = QskTreeView;
 
     // padding for each cell
     setPadding( Q::Cell, QskMargins( 4, 8 ) );

@@ -75,6 +75,11 @@ project(QSkinny
     HOMEPAGE_URL "https://github.com/uwerat/qskinny"
     VERSION 0.8.0)
 
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    message(STATUS "Added parallel build arguments to CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+endif()    
+
 qsk_setup_options()
 
 include(GNUInstallDirs)

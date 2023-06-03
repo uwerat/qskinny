@@ -44,6 +44,7 @@ class QSK_EXPORT QskListViewSkinlet : public QskScrollViewSkinlet
     virtual QSGNode* updateCellNode( const QskListView*,
         QSGNode*, const QRectF&, int row, int col ) const;
 
+    virtual void updateBackgroundNode( const QskListView* listView, QSGNode* rowNode, const QRectF& boxRect, const int row ) const;
   private:
     void updateForegroundNodes( const QskListView*, QskListViewNode* ) const;
     void updateBackgroundNodes( const QskListView*, QskListViewNode* ) const;

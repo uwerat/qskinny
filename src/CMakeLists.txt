@@ -188,6 +188,8 @@ list(APPEND HEADERS
     controls/QskInputGrabber.h
     controls/QskListView.h
     controls/QskListViewSkinlet.h
+    controls/QskTreeView.h
+    controls/QskTreeViewSkinlet.h
     controls/QskMenu.h
     controls/QskMenuSkinlet.h
     controls/QskObjectTree.h
@@ -286,6 +288,8 @@ list(APPEND SOURCES
     controls/QskInputGrabber.cpp
     controls/QskListView.cpp
     controls/QskListViewSkinlet.cpp
+    controls/QskTreeView.cpp
+    controls/QskTreeViewSkinlet.cpp
     controls/QskMenuSkinlet.cpp
     controls/QskMenu.cpp
     controls/QskObjectTree.cpp

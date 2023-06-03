@@ -64,12 +64,17 @@ class QSK_EXPORT QskListView : public QskScrollView
 
     virtual qreal columnWidth( int col ) const = 0;
     virtual qreal rowHeight() const = 0;
+    virtual qreal rowOffset( int row ) const;
 
     Q_INVOKABLE virtual QVariant valueAt( int row, int col ) const = 0;
 
 #if 1
     virtual QskColorFilter graphicFilterAt( int row, int col ) const;
 #endif
+
+    virtual QskAspect::Subcontrol rowSubControl( int row ) const noexcept;
+    virtual QskAspect::Subcontrol cellSubControl( int row, int col ) const noexcept;
+    virtual QskAspect::Subcontrol textSubControl( int row, int col ) const noexcept;
 
   public Q_SLOTS:
     void setSelectedRow( int row );
