@@ -42,8 +42,13 @@ class QSK_EXPORT QskLinesNode : public QSGGeometryNode
         const QskStippleMetrics&, const QTransform&, const QRectF& );
 
     void updateLine( const QColor&, qreal lineWidth,
+        const QPointF&, const QPointF& );
+
+    void updateLine( const QColor&, qreal lineWidth,
         const QskStippleMetrics&, const QTransform&,
         const QPointF&, const QPointF& );
+
+    void updateLines( const QColor&, qreal lineWidth, const QVector< QLineF >& );
 
     void updateLines( const QColor&, qreal lineWidth,
         const QskStippleMetrics&, const QTransform&, const QVector< QLineF >& );

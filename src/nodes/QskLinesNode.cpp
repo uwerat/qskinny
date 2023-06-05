@@ -234,6 +234,12 @@ void QskLinesNode::updateRect( const QColor& color,
 }
 
 void QskLinesNode::updateLine( const QColor& color,
+    qreal lineWidth, const QPointF& p1, const QPointF& p2 )
+{
+    updateLine( color, lineWidth, QskStippleMetrics(), QTransform(), p1, p2 );
+}
+
+void QskLinesNode::updateLine( const QColor& color,
     qreal lineWidth, const QskStippleMetrics& stippleMetrics,
     const QTransform& transform, const QPointF& p1, const QPointF& p2 )
 {
@@ -246,6 +252,13 @@ void QskLinesNode::updateLine( const QColor& color,
         const QLineF line( p1, p2 );
         updateLines( color, lineWidth, stippleMetrics, transform, 1, &line );
     }
+}
+
+void QskLinesNode::updateLines( const QColor& color,
+    qreal lineWidth, const QVector< QLineF >& lines )
+{
+    updateLines( color, lineWidth, QskStippleMetrics(),
+        QTransform(), lines.count(), lines.constData() );
 }
 
 void QskLinesNode::updateLines( const QColor& color,

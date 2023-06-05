@@ -11,72 +11,13 @@
 #include <QskBoxShapeMetrics.h>
 #include <QskTextColors.h>
 #include <QskTextOptions.h>
+#include <QskLinesNode.h>
 #include <QskFunctions.h>
+#include <QskSGNode.h>
 
 #include <QFontMetrics>
 #include <QLineF>
-#include <QSGFlatColorMaterial>
-#include <QSGGeometryNode>
 #include <QtMath>
-
-namespace
-{
-    class LinesNode : public QSGGeometryNode
-    {
-      public:
-        LinesNode( int lineCount = 0 )
-            : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 2 * lineCount )
-        {
-            m_geometry.setDrawingMode( QSGGeometry::DrawLines );
-            m_geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
-
-            setGeometry( &m_geometry );
-            setMaterial( &m_material );
-        }
-
-        void setColor( const QColor& color )
-        {
-            if ( color != m_material.color() )
-            {
-                m_material.setColor( color );
-                markDirty( QSGNode::DirtyMaterial );
-            }
-        }
-
-      private:
-        QSGFlatColorMaterial m_material;
-        QSGGeometry m_geometry;
-    };
-
-    class TicksNode : public LinesNode
-    {
-      public:
-        TicksNode()
-        {
-        }
-    };
-
-    class NeedleNode : public LinesNode
-    {
-      public:
-        NeedleNode()
-            : LinesNode( 1 )
-        {
-        }
-
-        void setData( const QLineF& line, qreal width )
-        {
-            auto vertexData = geometry()->vertexDataAsPoint2D();
-            vertexData[ 0 ].set( line.x1(), line.y1() );
-            vertexData[ 1 ].set( line.x2(), line.y2() );
-
-            geometry()->setLineWidth( width );
-            geometry()->markVertexDataDirty();
-
-            markDirty( QSGNode::DirtyGeometry );
-        }
-    };
-}
 
 DialSkinlet::DialSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
@@ -141,21 +82,13 @@ QSGNode* DialSkinlet::updateLabelsNode(
     if ( labels.count() <= 1 )
         return nullptr;
 
-    auto ticksNode = static_cast< TicksNode* >( node );
-    if ( ticksNode == nullptr )
-        ticksNode = new TicksNode();
+    auto ticksNode = QskSGNode::ensureNode< QskLinesNode >( node );
 
     const auto color = dial->color( Q::TickLabels );
-    ticksNode->setColor( color );
 
     const auto startAngle = dial->minimum();
     const auto endAngle = dial->maximum();
     const auto step = ( endAngle - startAngle ) / ( labels.count() - 1 );
-
-    auto geometry = ticksNode->geometry();
-    geometry->allocate( labels.count() * 2 );
-
-    auto vertexData = geometry->vertexDataAsPoint2D();
 
     auto scaleRect = this->scaleRect( dial );
 
@@ -175,6 +108,7 @@ QSGNode* DialSkinlet::updateLabelsNode(
     // Create a series of tickmarks from minimum to maximum
 
     auto labelNode = ticksNode->firstChild();
+    QVector< QLineF > ticks;
 
     for ( int i = 0; i < labels.count(); ++i, angle += step )
     {
@@ -187,10 +121,7 @@ QSGNode* DialSkinlet::updateLabelsNode(
         const auto xEnd = center.x() + needleRadius * cos;
         const auto yEnd = center.y() + needleRadius * sin;
 
-        vertexData[ 0 ].set( xStart, yStart );
-        vertexData[ 1 ].set( xEnd, yEnd );
-
-        vertexData += 2;
+        ticks += QLineF( xStart, yStart, xEnd, yEnd );
 
         const auto& text = labels.at( i );
 
@@ -220,10 +151,7 @@ QSGNode* DialSkinlet::updateLabelsNode(
         }
     }
 
-    geometry->setLineWidth( tickSize.width() );
-    geometry->markVertexDataDirty();
-
-    ticksNode->markDirty( QSGNode::DirtyGeometry );
+    ticksNode->updateLines( color, tickSize.width(), ticks );
 
     return ticksNode;
 }
@@ -233,15 +161,13 @@ QSGNode* DialSkinlet::updateNeedleNode(
 {
     using Q = Dial;
 
-    auto needleNode = static_cast< NeedleNode* >( node );
-    if ( needleNode == nullptr )
-        needleNode = new NeedleNode();
-
-    const auto line = needlePoints( dial );
+    const auto color = dial->color( Q::Needle );
     const auto width = dial->metric( Q::Needle | QskAspect::Size );
 
-    needleNode->setData( line, width * 2 );
-    needleNode->setColor( dial->color( Q::Needle ) );
+    const auto line = needlePoints( dial );
+
+    auto needleNode = QskSGNode::ensureNode< QskLinesNode >( node );
+    needleNode->updateLine( color, width * 2, line.p1(), line.p2() );
 
     return needleNode;
 }
