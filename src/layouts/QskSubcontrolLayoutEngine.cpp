@@ -345,31 +345,8 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
         having to deal with the details of the layout classes.
      */
 
-    GraphicElement* graphicElement = nullptr;
-    if ( !graphicSize.isEmpty() && ( graphicSubControl != QskAspect::NoSubcontrol ) )
-    {
-        graphicElement = dynamic_cast< GraphicElement* >( element( graphicSubControl ) );
-        if ( graphicElement == nullptr )
-        {
-            graphicElement = new GraphicElement( skinnable, graphicSubControl );
-            m_data->elements.prepend( graphicElement );
-        }
-
-        graphicElement->setSourceSize( graphicSize );
-    }
-
-    TextElement* textElement = nullptr;
-    if ( !text.isEmpty() && ( textSubcontrol != QskAspect::NoSubcontrol ) )
-    {
-        textElement = dynamic_cast< TextElement* >( element( textSubcontrol ) );
-        if ( textElement == nullptr )
-        {
-            textElement = new TextElement( skinnable, textSubcontrol );
-            m_data->elements.append( textElement );
-        }
-
-        textElement->setText( text );
-    }
+    auto graphicElement = appendGraphicElement( skinnable, graphicSubControl, graphicSize );
+    auto textElement = appendTextElement( skinnable, textSubcontrol, text );
 
     /*
         Now the difficult part: setting up size policies and the preferred size.
@@ -417,6 +394,46 @@ void QskSubcontrolLayoutEngine::setGraphicTextElements( const QskSkinnable* skin
 
         graphicElement->setPreferredSize( size );
     }
+}
+
+QskSubcontrolLayoutEngine::GraphicElement* QskSubcontrolLayoutEngine::appendGraphicElement( const QskSkinnable* skinnable,
+    QskAspect::Subcontrol graphicSubcontrol, const QSizeF& graphicSize )
+{
+    GraphicElement* graphicElement = nullptr;
+
+    if ( !graphicSize.isEmpty() && ( graphicSubcontrol != QskAspect::NoSubcontrol ) )
+    {
+        graphicElement = dynamic_cast< GraphicElement* >( element( graphicSubcontrol ) );
+        if ( graphicElement == nullptr )
+        {
+            graphicElement = new GraphicElement( skinnable, graphicSubcontrol );
+            m_data->elements.prepend( graphicElement );
+        }
+
+        graphicElement->setSourceSize( graphicSize );
+    }
+
+    return graphicElement;
+}
+
+QskSubcontrolLayoutEngine::TextElement* QskSubcontrolLayoutEngine::appendTextElement( const QskSkinnable* skinnable,
+    QskAspect::Subcontrol textSubcontrol, const QString& text )
+{
+    TextElement* textElement = nullptr;
+
+    if ( !text.isEmpty() && ( textSubcontrol != QskAspect::NoSubcontrol ) )
+    {
+        textElement = dynamic_cast< TextElement* >( element( textSubcontrol ) );
+        if ( textElement == nullptr )
+        {
+            textElement = new TextElement( skinnable, textSubcontrol );
+            m_data->elements.append( textElement );
+        }
+
+        textElement->setText( text );
+    }
+
+    return textElement;
 }
 
 void QskSubcontrolLayoutEngine::setFixedContent(
