@@ -279,6 +279,11 @@ void Editor::setupComboBox()
 
 void Editor::setupDialogButtonBox()
 {
+    using Q = QskDialogButtonBox;
+
+    setPadding( Q::Panel, 24 );
+    setGradient( Q::Panel, theme.palette.background.fillColor.solidBackground.base );
+    setPadding(Q::Panel, 20 );
 }
 
 void Editor::setupFocusIndicator()
@@ -339,6 +344,9 @@ void Editor::setupPageIndicator()
 
 void Editor::setupPopup()
 {
+    using Q = QskPopup;
+
+    setGradient( Q::Overlay, theme.palette.background.fillColor.smoke.defaultColor );
 }
 
 void Editor::setupProgressBar()
@@ -860,6 +868,23 @@ void Editor::setupSwitchButton()
 
 void Editor::setupSubWindow()
 {
+    using Q = QskSubWindow;
+
+    setPadding( Q::Panel, { 0, 31, 0, 0 } );
+    setBoxShape( Q::Panel, 7 );
+    setBoxBorderMetrics( Q::Panel, 1 );
+    setBoxBorderColors( Q::Panel, theme.palette.strokeColor.surfaceStroke.defaultColor );
+    setGradient( Q::Panel, theme.palette.background.fillColor.layer.alt );
+    setShadowMetrics( Q::Panel, theme.shadow.dialog.first );
+    setShadowColor( Q::Panel, theme.shadow.dialog.second );
+
+    setHint( Q::TitleBarPanel | QskAspect::Style, Q::TitleBar | Q::Title );
+    setPadding( Q::TitleBarPanel, { 24, 31, 24, 0 } );
+
+    setFontRole( Q::TitleBarText, QskWindowsSkin::Subtitle );
+    setColor( Q::TitleBarText, theme.palette.fillColor.text.primary );
+    setAlignment( Q::TitleBarText, Qt::AlignLeft );
+    setTextOptions( Q::TitleBarText, Qt::ElideRight, QskTextOptions::NoWrap );
 }
 
 void Editor::setupVirtualKeyboard()
@@ -991,7 +1016,7 @@ QskWindowsTheme::QskWindowsTheme( Theme theme, std::array< QRgb, NumAccentColors
         palette.background.fillColor.cardBackground.secondary = QskRgb::toTransparentF( 0xffF6F6F6, 0.50 );
         palette.background.fillColor.cardBackground.tertiary = 0xffffffff;
 
-        palette.background.fillColor.stroke.defaultColor = QskRgb::toTransparentF( 0xff000000, 0.30 );
+        palette.background.fillColor.smoke.defaultColor = QskRgb::toTransparentF( 0xff000000, 0.30 );
 
         palette.background.fillColor.layer.defaultColor = QskRgb::toTransparentF( 0xffffffff, 0.50 );
         palette.background.fillColor.layer.alt = 0xffffffff;
@@ -1133,7 +1158,7 @@ QskWindowsTheme::QskWindowsTheme( Theme theme, std::array< QRgb, NumAccentColors
         palette.background.fillColor.cardBackground.secondary = QskRgb::toTransparentF( 0xffffffff, 0.0326 );
         palette.background.fillColor.cardBackground.tertiary = 0xffffffff; // not set in Figma
 
-        palette.background.fillColor.stroke.defaultColor = QskRgb::toTransparentF( 0xff000000, 0.30 );
+        palette.background.fillColor.smoke.defaultColor = QskRgb::toTransparentF( 0xff000000, 0.30 );
 
         palette.background.fillColor.layer.defaultColor = QskRgb::toTransparentF( 0xff3A3A3A, 0.30 );
         palette.background.fillColor.layer.alt = QskRgb::toTransparentF( 0xffffffff, 0.0538 );

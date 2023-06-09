@@ -244,7 +244,7 @@ class QSK_WINDOWS_EXPORT QskWindowsTheme
                 QRgb tertiary;
             };
 
-            struct Stroke
+            struct Smoke
             {
                 QRgb defaultColor;
             };
@@ -291,7 +291,7 @@ class QSK_WINDOWS_EXPORT QskWindowsTheme
             };
 
             CardBackground cardBackground;
-            Stroke stroke;
+            Smoke smoke;
             Layer layer;
             LayerOnAcrylic layerOnAcrylic;
             LayerOnAccentAcrylic layerOnAccentAcrylic;
