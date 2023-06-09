@@ -37,7 +37,7 @@ namespace
             , m_type( type )
         {
             setShape( 10 );
-            initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Ignored );
+            initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
 
             const int index = metaObject()->indexOfEnumerator( "ButtonType" );
             setText( metaObject()->enumerator( index ).key( m_type ) );
@@ -84,6 +84,8 @@ DialogPage::DialogPage( QQuickItem* parent )
     : Page( Qt::Horizontal, parent )
 {
     auto box = new QskLinearBox( Qt::Horizontal, 2, this );
+    box->setSpacing( 20 );
+    box->setExtraSpacingAt( Qt::BottomEdge );
 
     for ( int i = 0; i < Button::TypeCount; i++ )
         new Button( static_cast< Button::ButtonType >( i ), box );
