@@ -212,23 +212,11 @@ QSizeF QskSegmentedBarSkinlet::segmentSizeHint(
 {
     using Q = QskSegmentedBar;
 
-    const QSizeF sizeSymbol =
-        bar->symbolHint( Q::Icon | Q::Selected ).defaultSize();
-
     QSizeF segmentSize;
 
     for ( int i = 0; i < bar->count(); i++ )
     {
-        const auto option = bar->optionAt( i );
-
-        auto iconSize = option.icon().graphic().defaultSize();
-        iconSize = iconSize.expandedTo( sizeSymbol );
-
-        LayoutEngine layoutEngine( bar, i );
-        layoutEngine.setGraphicTextElements( bar,
-            Q::Text, option.text(), Q::Icon, iconSize );
-
-        const auto size = layoutEngine.sizeHint( which, QSizeF() );
+        const auto size = sampleSizeHint( bar, which, QSizeF(), Q::Segment, i );
         segmentSize = segmentSize.expandedTo( size );
     }
 
@@ -336,6 +324,30 @@ QskAspect::States QskSegmentedBarSkinlet::sampleStates(
     }
 
     return states;
+}
+
+QSizeF QskSegmentedBarSkinlet::sampleSizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& constraint, QskAspect::Subcontrol, int index ) const
+{
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    using Q = QskSegmentedBar;
+    auto bar = static_cast< const QskSegmentedBar* >( skinnable );
+    const auto option = bar->optionAt( index );
+
+    const QSizeF sizeSymbol =
+        bar->symbolHint( Q::Icon | Q::Selected ).defaultSize();
+
+    auto iconSize = option.icon().graphic().defaultSize();
+    iconSize = iconSize.expandedTo( sizeSymbol );
+
+    LayoutEngine layoutEngine( bar, index );
+    layoutEngine.setGraphicTextElements( bar,
+        Q::Text, option.text(), Q::Icon, iconSize );
+
+    const auto size = layoutEngine.sizeHint( which, constraint );
+    return size;
 }
 
 QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable,

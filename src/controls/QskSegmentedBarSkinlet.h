@@ -47,6 +47,9 @@ class QSK_EXPORT QskSegmentedBarSkinlet : public QskSkinlet
     QskAspect::States sampleStates( const QskSkinnable*,
         QskAspect::Subcontrol, int index ) const override;
 
+    QSizeF sampleSizeHint( const QskSkinnable*, Qt::SizeHint, const QSizeF&,
+        QskAspect::Subcontrol, int ) const override;
+
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
