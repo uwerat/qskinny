@@ -13,7 +13,7 @@
 class QskSizePolicy;
 class QskLayoutMetrics;
 
-class QskLayoutElement
+class QSK_EXPORT QskLayoutElement
 {
   public:
     QskLayoutElement();
@@ -54,7 +54,7 @@ inline qreal QskLayoutElement::widthForHeight( qreal height ) const
 
 class QQuickItem;
 
-class QskItemLayoutElement final : public QskLayoutElement
+class QSK_EXPORT QskItemLayoutElement final : public QskLayoutElement
 {
   public:
     QskItemLayoutElement( const QQuickItem* );
