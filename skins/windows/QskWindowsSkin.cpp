@@ -889,6 +889,20 @@ void Editor::setupSubWindow()
 
 void Editor::setupVirtualKeyboard()
 {
+    using Q = QskVirtualKeyboard;
+
+    setMargin( Q::ButtonPanel, 2 );
+    setGradient( Q::ButtonPanel, theme.palette.fillColor.control.defaultColor );
+    setGradient( Q::ButtonPanel | Q::Hovered, theme.palette.fillColor.control.secondary );
+    setGradient( Q::ButtonPanel | QskPushButton::Pressed, theme.palette.fillColor.control.tertiary );
+
+    setColor( Q::ButtonText, theme.palette.fillColor.text.primary );
+    setFontRole( Q::ButtonText, QskWindowsSkin::BodyLarge );
+    setColor( Q::ButtonText | QskPushButton::Pressed, theme.palette.fillColor.text.secondary );
+
+    setGradient( Q::Panel, theme.palette.background.fillColor.solidBackground.secondary );
+    setPadding( Q::Panel, 8 );
+
 }
 
 QskWindowsTheme::QskWindowsTheme( Theme lightness )
