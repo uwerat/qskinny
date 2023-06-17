@@ -3,10 +3,10 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_WINDOWS_SKIN_H
-#define QSK_WINDOWS_SKIN_H
+#ifndef QSK_FLUENT2_SKIN_H
+#define QSK_FLUENT2_SKIN_H
 
-#include "QskWindowsGlobal.h"
+#include "QskFluent2Global.h"
 
 #include <QskBoxShapeMetrics.h>
 #include <QskGradient.h>
@@ -15,7 +15,7 @@
 
 #include <array>
 
-class QSK_WINDOWS_EXPORT QskWindowsTheme
+class QSK_FLUENT2_EXPORT QskFluent2Theme
 {
   public:
     enum Theme
@@ -37,8 +37,8 @@ class QSK_WINDOWS_EXPORT QskWindowsTheme
         NumAccentColors
     };
 
-    QskWindowsTheme( Theme );
-    QskWindowsTheme( Theme, std::array< QRgb, NumAccentColors > );
+    QskFluent2Theme( Theme );
+    QskFluent2Theme( Theme, std::array< QRgb, NumAccentColors > );
 
     typedef std::array< QRgb, 2 > BorderGradient;
 
@@ -329,15 +329,15 @@ class QSK_WINDOWS_EXPORT QskWindowsTheme
     Shadow shadow;
 };
 
-class QSK_WINDOWS_EXPORT QskWindowsSkin : public QskSkin
+class QSK_FLUENT2_EXPORT QskFluent2Skin : public QskSkin
 {
     Q_OBJECT
 
     using Inherited = QskSkin;
 
   public:
-    QskWindowsSkin( const QskWindowsTheme&, QObject* parent = nullptr );
-    ~QskWindowsSkin() override;
+    QskFluent2Skin( const QskFluent2Theme&, QObject* parent = nullptr );
+      ~QskFluent2Skin() override;
 
     enum GraphicRole
     {
@@ -366,7 +366,7 @@ class QSK_WINDOWS_EXPORT QskWindowsSkin : public QskSkin
 
   private:
     void setupFonts();
-    void setupGraphicFilters( const QskWindowsTheme& palette );
+    void setupGraphicFilters( const QskFluent2Theme& palette );
     void setGraphicColor( GraphicRole, QRgb );
 };
 
