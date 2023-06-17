@@ -71,7 +71,7 @@ int main( int argc, char* argv[] )
     qskSkinManager->setPluginPaths( QStringList() ); // no plugins
     qskSkinManager->unregisterFactory( "material3factory" );
     qskSkinManager->unregisterFactory( "squiekfactory" );
-    qskSkinManager->unregisterFactory( "windowsfactory" );
+    qskSkinManager->unregisterFactory( "fluent2factory" );
 
     qskSkinManager->registerFactory(
         QStringLiteral( "SampleSkinFactory" ), new SkinFactory() );

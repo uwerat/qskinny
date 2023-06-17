@@ -4,10 +4,10 @@
 ############################################################################
 
 set(SOURCES
-    QskWindowsGlobal.h QskWindowsSkin.h QskWindowsSkin.cpp
-    QskWindowsSkinFactory.h QskWindowsSkinFactory.cpp
+    QskFluent2Global.h QskFluent2Skin.h QskFluent2Skin.cpp
+    QskFluent2SkinFactory.h QskFluent2SkinFactory.cpp
 )
 qt_add_resources(SOURCES icons.qrc)
 
-qsk_add_plugin(windowsskin skins QskWindowsSkinFactory ${SOURCES})
-set_target_properties(windowsskin PROPERTIES DEFINE_SYMBOL QSK_WINDOWS_MAKEDLL )
+qsk_add_plugin(fluent2skin skins QskFluent2SkinFactory ${SOURCES})
+set_target_properties(fluent2skin PROPERTIES DEFINE_SYMBOL QSK_FLUENT2_MAKEDLL )
