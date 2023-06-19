@@ -8,6 +8,7 @@
 #include "LinearLayoutPage.h"
 #include "GridLayoutPage.h"
 #include "StackLayoutPage.h"
+#include "SwipeViewPage.h"
 #include "TestRectangle.h"
 
 #include <SkinnyShortcut.h>
@@ -43,6 +44,7 @@ int main( int argc, char* argv[] )
     tabView->addTab( "Linear Layout", new LinearLayoutPage() );
     tabView->addTab( "Dynamic\nConstraints", new DynamicConstraintsPage() );
     tabView->addTab( "Stack Layout", new StackLayoutPage() );
+    tabView->addTab( "Swipe View", new SwipeViewPage() );
 
     tabView->setCurrentIndex( 0 );
 

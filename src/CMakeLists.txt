@@ -236,6 +236,7 @@ list(APPEND HEADERS
     controls/QskSubWindowSkinlet.h
     controls/QskSwitchButton.h
     controls/QskSwitchButtonSkinlet.h
+    controls/QskSwipeView.h
     controls/QskTabBar.h
     controls/QskTabButton.h
     controls/QskTabButtonSkinlet.h
@@ -334,6 +335,7 @@ list(APPEND SOURCES
     controls/QskSubWindowSkinlet.cpp
     controls/QskSwitchButton.cpp
     controls/QskSwitchButtonSkinlet.cpp
+    controls/QskSwipeView.cpp
     controls/QskTabBar.cpp
     controls/QskTabButton.cpp
     controls/QskTabButtonSkinlet.cpp
