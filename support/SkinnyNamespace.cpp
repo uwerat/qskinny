@@ -55,7 +55,9 @@ static bool pluginPath = initPluginPath();
 
     static void initSkins()
     {
-        if ( qskSkinManager->skinNames().isEmpty() )
+        auto skinNames = qskSkinManager->skinNames();
+
+        if ( skinNames.isEmpty() )
         {
             /*
                 To avoid having problems with not finding the skin plugins
@@ -67,17 +69,12 @@ static bool pluginPath = initPluginPath();
             qskSkinManager->registerFactory( "Fluent2Factory", new QskFluent2SkinFactory() );
 
             qWarning() << "Couldn't find skin plugins, adding some manually.";
+
+            skinNames = qskSkinManager->skinNames();
         }
 
-#if 1
-        /*
-             QskSkinManager is sorting in alphabetic order, but we want to have
-             the light material skin as initial skin. TODO ...
-         */
-        const auto names = qskSkinManager->skinNames();
-        if ( names.count() > 1 )
-            qskSetup->setSkin( names[1] );
-#endif
+        if ( !skinNames.isEmpty() )
+            qskSetup->setSkin( skinNames[0] );
     }
 
     Q_COREAPP_STARTUP_FUNCTION( initSkins )

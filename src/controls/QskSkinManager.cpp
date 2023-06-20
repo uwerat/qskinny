@@ -200,7 +200,7 @@ namespace
             if ( !m_isValid )
                 const_cast< FactoryMap* >( this )->rebuild();
 
-            return m_skinMap.keys();
+            return m_skinNames;
         }
 
         void insertFactory( FactoryLoader* loader )
@@ -269,6 +269,7 @@ namespace
         void rebuild()
         {
             m_skinMap.clear();
+            m_skinNames.clear();
 
             // first we try all factories, that have been added manually
             for ( auto it = m_factoryMap.constBegin(); it != m_factoryMap.constEnd(); ++it )
@@ -287,7 +288,6 @@ namespace
                     rebuild( it.key(), data.loader->skinNames() );
             }
 
-            m_skinNames = m_skinMap.keys();
             m_isValid = true;
         }
 
@@ -296,7 +296,10 @@ namespace
             for ( const auto& name : skinNames )
             {
                 if ( !m_skinMap.contains( name ) )
+                {
                     m_skinMap.insert( name, factoryId );
+                    m_skinNames += name;
+                }
             }
         }
 
@@ -487,16 +490,10 @@ QskSkin* QskSkinManager::createSkin( const QString& skinName ) const
     auto factory = map.factory( name );
     if ( factory == nullptr )
     {
-        /*
-            Once the Fusion skin has been implemented it will be used
-            as fallback. For the moment we implement
-            another stupid fallback. TODO ...
-         */
-
         const auto names = map.skinNames();
         if ( !names.isEmpty() )
         {
-            name = names.last();
+            name = names.first();
             factory = map.factory( name );
         }
     }
