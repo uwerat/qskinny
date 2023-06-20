@@ -170,14 +170,18 @@ void Editor::setupBox()
     using Q = QskBox;
     using A = QskAspect;
 
-    setGradient( Q::Panel, theme.palette.background.fillColor.solidBackground.base );
-    setGradient( Q::Panel | A::Header, theme.palette.background.fillColor.solidBackground.tertiary );
-    setGradient( Q::Panel | A::Footer, theme.palette.background.fillColor.solidBackground.tertiary );
+    const auto& pal = theme.palette;
+
+    setGradient( Q::Panel, pal.background.fillColor.solidBackground.base );
+    setGradient( Q::Panel | A::Header, pal.background.fillColor.solidBackground.tertiary );
+    setGradient( Q::Panel | A::Footer, pal.background.fillColor.solidBackground.tertiary );
 }
 
 void Editor::setupCheckBox()
 {
     using Q = QskCheckBox;
+
+    const auto& pal = theme.palette;
 
     setStrutSize( Q::Panel, 126, 38 );
     setSpacing( Q::Panel, 8 );
@@ -187,52 +191,54 @@ void Editor::setupCheckBox()
     setBoxBorderMetrics( Q::Box, 1 );
     setPadding( Q::Box, 5 ); // "icon size"
 
-    setGradient( Q::Box, theme.palette.fillColor.controlAlt.secondary );
-    setBoxBorderColors( Q::Box, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+    setGradient( Q::Box, pal.fillColor.controlAlt.secondary );
+    setBoxBorderColors( Q::Box, pal.strokeColor.controlStrongStroke.defaultColor );
 
-    setGradient( Q::Box | Q::Checked, theme.palette.fillColor.accent.defaultColor );
-    setBoxBorderColors( Q::Box | Q::Checked, theme.palette.fillColor.accent.defaultColor );
+    setGradient( Q::Box | Q::Checked, pal.fillColor.accent.defaultColor );
+    setBoxBorderColors( Q::Box | Q::Checked, pal.fillColor.accent.defaultColor );
 
     const auto checkMark = symbol( "checkmark" );
     setSymbol( Q::Indicator | Q::Checked, checkMark, { QskStateCombination::CombinationNoState, Q::Disabled } );
     setGraphicRole( Q::Indicator, QskFluent2Skin::GraphicRoleFillColorTextOnAccentPrimary );
 
     setFontRole( Q::Text, QskFluent2Skin::Body );
-    setColor( Q::Text, theme.palette.fillColor.text.primary );
+    setColor( Q::Text, pal.fillColor.text.primary );
 
 
-    setGradient( Q::Box | Q::Hovered, theme.palette.fillColor.controlAlt.tertiary );
-    setBoxBorderColors( Q::Box | Q::Hovered, theme.palette.strokeColor.controlStrongStroke.defaultColor );
-    setGradient( Q::Box | Q::Hovered | Q::Checked, theme.palette.fillColor.accent.secondary );
-    setBoxBorderColors( Q::Box | Q::Hovered | Q::Checked, theme.palette.fillColor.accent.secondary );
+    setGradient( Q::Box | Q::Hovered, pal.fillColor.controlAlt.tertiary );
+    setBoxBorderColors( Q::Box | Q::Hovered, pal.strokeColor.controlStrongStroke.defaultColor );
+    setGradient( Q::Box | Q::Hovered | Q::Checked, pal.fillColor.accent.secondary );
+    setBoxBorderColors( Q::Box | Q::Hovered | Q::Checked, pal.fillColor.accent.secondary );
     // indicator the same as in Rest state
 
-    setGradient( Q::Box | Q::Pressed, theme.palette.fillColor.controlAlt.quaternary );
-    setBoxBorderColors( Q::Box | Q::Pressed, theme.palette.strokeColor.controlStrongStroke.disabled );
-    setGradient( Q::Box | Q::Pressed | Q::Checked, theme.palette.fillColor.accent.tertiary );
-    setBoxBorderColors( Q::Box | Q::Pressed | Q::Checked, theme.palette.fillColor.accent.tertiary );
+    setGradient( Q::Box | Q::Pressed, pal.fillColor.controlAlt.quaternary );
+    setBoxBorderColors( Q::Box | Q::Pressed, pal.strokeColor.controlStrongStroke.disabled );
+    setGradient( Q::Box | Q::Pressed | Q::Checked, pal.fillColor.accent.tertiary );
+    setBoxBorderColors( Q::Box | Q::Pressed | Q::Checked, pal.fillColor.accent.tertiary );
     setGraphicRole( Q::Indicator | Q::Pressed | Q::Checked, QskFluent2Skin::GraphicRoleFillColorTextOnAccentSecondary );
 
-    setGradient( Q::Box | Q::Disabled, theme.palette.fillColor.controlAlt.disabled );
-    setBoxBorderColors( Q::Box | Q::Disabled, theme.palette.strokeColor.controlStrongStroke.disabled );
-    setGradient( Q::Box | Q::Disabled | Q::Checked, theme.palette.fillColor.accent.disabled );
-    setBoxBorderColors( Q::Box | Q::Disabled | Q::Checked, theme.palette.fillColor.accent.disabled );
+    setGradient( Q::Box | Q::Disabled, pal.fillColor.controlAlt.disabled );
+    setBoxBorderColors( Q::Box | Q::Disabled, pal.strokeColor.controlStrongStroke.disabled );
+    setGradient( Q::Box | Q::Disabled | Q::Checked, pal.fillColor.accent.disabled );
+    setBoxBorderColors( Q::Box | Q::Disabled | Q::Checked, pal.fillColor.accent.disabled );
     setGraphicRole( Q::Indicator | Q::Disabled | Q::Checked, QskFluent2Skin::GraphicRoleFillColorTextOnAccentDisabled );
-    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
+    setColor( Q::Text | Q::Disabled, pal.fillColor.text.disabled );
 }
 
 void Editor::setupComboBox()
 {
     using Q = QskComboBox;
 
+    const auto& pal = theme.palette;
+
     setStrutSize( Q::Panel, { -1, 32 } );
     setBoxBorderMetrics( Q::Panel, 1 );
     setBoxShape( Q::Panel, 3 );
     setPadding( Q::Panel, { 11, 0, 11, 0 } );
 
-    setGradient( Q::Panel, theme.palette.fillColor.control.defaultColor );
-    setBoxBorderGradient( Q::Panel, theme.palette.elevation.control.border,
-                         theme.palette.fillColor.control.defaultColor );
+    setGradient( Q::Panel, pal.fillColor.control.defaultColor );
+    setBoxBorderGradient( Q::Panel, pal.elevation.control.border,
+                         pal.fillColor.control.defaultColor );
 
     setStrutSize( Q::Icon, 12, 12 );
     setPadding( Q::Icon, { 0, 0, 8, 0 } );
@@ -240,7 +246,7 @@ void Editor::setupComboBox()
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setFontRole( Q::Text, QskFluent2Skin::Body );
-    setColor( Q::Text, theme.palette.fillColor.text.primary );
+    setColor( Q::Text, pal.fillColor.text.primary );
 
     setStrutSize( Q::StatusIndicator, 12, 12 );
     setSymbol( Q::StatusIndicator, symbol( "spin-box-arrow-down" ) );
@@ -250,28 +256,28 @@ void Editor::setupComboBox()
 
     // Hovered:
 
-    setGradient( Q::Panel | Q::Hovered, theme.palette.fillColor.control.secondary );
-    setBoxBorderGradient( Q::Panel | Q::Hovered, theme.palette.elevation.textControl.border,
-                         theme.palette.fillColor.control.secondary );
+    setGradient( Q::Panel | Q::Hovered, pal.fillColor.control.secondary );
+    setBoxBorderGradient( Q::Panel | Q::Hovered, pal.elevation.textControl.border,
+                         pal.fillColor.control.secondary );
 
 
     // Focused (Pressed doesn't exist yet):
 
     setBoxBorderMetrics( Q::Panel | Q::Focused, { 1, 1, 1, 2 } );
 
-    setGradient( Q::Panel | Q::Focused, theme.palette.fillColor.control.inputActive );
+    setGradient( Q::Panel | Q::Focused, pal.fillColor.control.inputActive );
 
-    auto gradient = theme.palette.elevation.textControl.border;
-    gradient.at( 1 ) = theme.palette.fillColor.accent.defaultColor;
+    auto gradient = pal.elevation.textControl.border;
+    gradient.at( 1 ) = pal.fillColor.accent.defaultColor;
 
-    setBoxBorderGradient( Q::Panel | Q::Focused, gradient, theme.palette.fillColor.control.inputActive );
+    setBoxBorderGradient( Q::Panel | Q::Focused, gradient, pal.fillColor.control.inputActive );
 
     // Disabled:
 
-    setGradient( Q::Panel | Q::Disabled, theme.palette.fillColor.control.disabled );
-    setBoxBorderColors( Q::Panel | Q::Disabled, theme.palette.strokeColor.controlStroke.defaultColor );
+    setGradient( Q::Panel | Q::Disabled, pal.fillColor.control.disabled );
+    setBoxBorderColors( Q::Panel | Q::Disabled, pal.strokeColor.controlStroke.defaultColor );
 
-    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
+    setColor( Q::Text | Q::Disabled, pal.fillColor.text.disabled );
     setGraphicRole( Q::Icon | Q::Disabled, QskFluent2Skin::GraphicRoleFillColorTextDisabled );
 
     setGraphicRole( Q::StatusIndicator | Q::Disabled, QskFluent2Skin::GraphicRoleFillColorTextDisabled );
@@ -280,20 +286,22 @@ void Editor::setupComboBox()
 void Editor::setupDialogButtonBox()
 {
     using Q = QskDialogButtonBox;
+    const auto& pal = theme.palette;
 
     setPadding( Q::Panel, 24 );
-    setGradient( Q::Panel, theme.palette.background.fillColor.solidBackground.base );
+    setGradient( Q::Panel, pal.background.fillColor.solidBackground.base );
     setPadding(Q::Panel, 20 );
 }
 
 void Editor::setupFocusIndicator()
 {
     using Q = QskFocusIndicator;
+    const auto& pal = theme.palette;
 
     setBoxBorderMetrics( Q::Panel, 2 );
     setPadding( Q::Panel, 3 );
     setBoxShape( Q::Panel, 4 );
-    setBoxBorderColors( Q::Panel, theme.palette.strokeColor.focusStroke.outer );
+    setBoxBorderColors( Q::Panel, pal.strokeColor.focusStroke.outer );
 }
 
 void Editor::setupInputPanel()
@@ -307,31 +315,32 @@ void Editor::setupListView()
 void Editor::setupMenu()
 {
     using Q = QskMenu;
+    const auto& pal = theme.palette;
 
     setPadding( Q::Panel, { 4, 6, 4, 6 } );
     setBoxBorderMetrics( Q::Panel, 1 );
-    setBoxBorderColors( Q::Panel, theme.palette.strokeColor.surfaceStroke.flyout );
+    setBoxBorderColors( Q::Panel, pal.strokeColor.surfaceStroke.flyout );
     setBoxShape( Q::Panel, 7 );
-    setGradient( Q::Panel, theme.palette.background.fillColor.acrylicBackground.defaultColor );
+    setGradient( Q::Panel, pal.background.fillColor.acrylicBackground.defaultColor );
     setShadowMetrics( Q::Panel, theme.shadow.flyout.first ); // ### metrics should be the same, just color differs
     setShadowColor( Q::Panel, theme.shadow.flyout.second );
 
     setPadding( Q::Segment, { 0, 10, 0, 10 } );
     setSpacing( Q::Segment, 15 );
 
-    setGradient( Q::Segment | Q::Selected, theme.palette.fillColor.subtle.secondary );
+    setGradient( Q::Segment | Q::Selected, pal.fillColor.subtle.secondary );
     setBoxBorderMetrics( Q::Segment | Q::Selected, { 3, 0, 0, 0 } );
 
-    QskGradient selectedGradient( { { 0.0, theme.palette.fillColor.subtle.secondary },
-                                    { 0.25, theme.palette.fillColor.subtle.secondary },
-                                    { 0.25, theme.palette.fillColor.accent.defaultColor },
-                                    { 0.75, theme.palette.fillColor.accent.defaultColor },
-                                    { 0.75, theme.palette.fillColor.subtle.secondary },
-                                    { 1.0, theme.palette.fillColor.subtle.secondary } } );
+    QskGradient selectedGradient( { { 0.0, pal.fillColor.subtle.secondary },
+                                    { 0.25, pal.fillColor.subtle.secondary },
+                                    { 0.25, pal.fillColor.accent.defaultColor },
+                                    { 0.75, pal.fillColor.accent.defaultColor },
+                                    { 0.75, pal.fillColor.subtle.secondary },
+                                    { 1.0, pal.fillColor.subtle.secondary } } );
     setBoxBorderColors( Q::Segment | Q::Selected, selectedGradient );
 
     setFontRole( Q::Text, QskFluent2Skin::Body );
-    setColor( Q::Text, theme.palette.fillColor.text.primary );
+    setColor( Q::Text, pal.fillColor.text.primary );
 
     setStrutSize( Q::Icon, 12, 12 );
     setPadding( Q::Icon, { 8, 8, 0, 8 } );
@@ -345,28 +354,31 @@ void Editor::setupPageIndicator()
 void Editor::setupPopup()
 {
     using Q = QskPopup;
+    const auto& pal = theme.palette;
 
-    setGradient( Q::Overlay, theme.palette.background.fillColor.smoke.defaultColor );
+    setGradient( Q::Overlay, pal.background.fillColor.smoke.defaultColor );
 }
 
 void Editor::setupProgressBar()
 {
     using Q = QskProgressBar;
     using A = QskAspect;
+    const auto& pal = theme.palette;
 
     setMetric( Q::Groove | A::Size, 1 );
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
-    setGradient( Q::Groove, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+    setGradient( Q::Groove, pal.strokeColor.controlStrongStroke.defaultColor );
 
     setMetric( Q::Bar| A::Size, 3 );
     setBoxShape( Q::Bar, 100, Qt::RelativeSize );
-    setGradient( Q::Bar, theme.palette.fillColor.accent.defaultColor );
+    setGradient( Q::Bar, pal.fillColor.accent.defaultColor );
 }
 
 void Editor::setupPushButton()
 {
     using Q = QskPushButton;
     using W = QskFluent2Skin;
+    const auto& pal = theme.palette;
 
     setStrutSize( Q::Panel, { 120, 32 } );
     setBoxShape( Q::Panel, 4 );
@@ -382,78 +394,79 @@ void Editor::setupPushButton()
 
     // Accent buttons:
 
-    setBoxBorderGradient( Q::Panel | W::Accent, theme.palette.elevation.accentControl.border,
-                         theme.palette.fillColor.accent.defaultColor );
+    setBoxBorderGradient( Q::Panel | W::Accent, pal.elevation.accentControl.border,
+                         pal.fillColor.accent.defaultColor );
 
-    setGradient( Q::Panel | W::Accent, theme.palette.fillColor.accent.defaultColor );
-    setColor( Q::Text | W::Accent, theme.palette.fillColor.textOnAccent.primary );
+    setGradient( Q::Panel | W::Accent, pal.fillColor.accent.defaultColor );
+    setColor( Q::Text | W::Accent, pal.fillColor.textOnAccent.primary );
     setGraphicRole( Q::Icon | W::Accent, QskFluent2Skin::GraphicRoleFillColorTextOnAccentPrimary );
 
 
-    setBoxBorderGradient( Q::Panel | W::Accent | Q::Hovered, theme.palette.elevation.accentControl.border,
-                         theme.palette.fillColor.accent.secondary );
+    setBoxBorderGradient( Q::Panel | W::Accent | Q::Hovered, pal.elevation.accentControl.border,
+                         pal.fillColor.accent.secondary );
 
 
-    setGradient( Q::Panel | W::Accent | Q::Hovered, theme.palette.fillColor.accent.secondary );
+    setGradient( Q::Panel | W::Accent | Q::Hovered, pal.fillColor.accent.secondary );
 
 
-    setGradient( Q::Panel | W::Accent | Q::Pressed, theme.palette.fillColor.accent.tertiary );
-    setColor( Q::Text | W::Accent | Q::Pressed, theme.palette.fillColor.textOnAccent.secondary );
+    setGradient( Q::Panel | W::Accent | Q::Pressed, pal.fillColor.accent.tertiary );
+    setColor( Q::Text | W::Accent | Q::Pressed, pal.fillColor.textOnAccent.secondary );
     setGraphicRole( Q::Icon | W::Accent | Q::Pressed, QskFluent2Skin::GraphicRoleFillColorTextOnAccentSecondary );
 
-    const QRgb accentPressedBorderColor = flattenedColor( theme.palette.strokeColor.controlStroke.onAccentDefault,
-                                                         theme.palette.fillColor.accent.tertiary );
+    const QRgb accentPressedBorderColor = flattenedColor( pal.strokeColor.controlStroke.onAccentDefault,
+                                                         pal.fillColor.accent.tertiary );
 
     setBoxBorderColors( Q::Panel | W::Accent | Q::Pressed, accentPressedBorderColor );
 
 
-    setGradient( Q::Panel | W::Accent | Q::Disabled, theme.palette.fillColor.accent.disabled );
-    setColor( Q::Text | W::Accent | Q::Disabled, theme.palette.fillColor.textOnAccent.disabled );
+    setGradient( Q::Panel | W::Accent | Q::Disabled, pal.fillColor.accent.disabled );
+    setColor( Q::Text | W::Accent | Q::Disabled, pal.fillColor.textOnAccent.disabled );
     setGraphicRole( Q::Icon | W::Accent | Q::Disabled, QskFluent2Skin::GraphicRoleFillColorTextOnAccentDisabled );
     setBoxBorderMetrics( Q::Panel | W::Accent | Q::Disabled, 0 );
 
 
     // Standard buttons:
 
-    setBoxBorderGradient( Q::Panel, theme.palette.elevation.control.border,
-                         theme.palette.fillColor.control.defaultColor );
+    setBoxBorderGradient( Q::Panel, pal.elevation.control.border,
+                         pal.fillColor.control.defaultColor );
 
 
-    setGradient( Q::Panel, theme.palette.fillColor.control.defaultColor );
-    setColor( Q::Text, theme.palette.fillColor.text.primary );
+    setGradient( Q::Panel, pal.fillColor.control.defaultColor );
+    setColor( Q::Text, pal.fillColor.text.primary );
     setGraphicRole( Q::Icon, QskFluent2Skin::GraphicRoleFillColorTextPrimary );
 
 
-    setBoxBorderGradient( Q::Panel | Q::Hovered, theme.palette.elevation.control.border,
-                         theme.palette.fillColor.control.secondary );
+    setBoxBorderGradient( Q::Panel | Q::Hovered, pal.elevation.control.border,
+                         pal.fillColor.control.secondary );
 
 
-    setGradient( Q::Panel | Q::Hovered, theme.palette.fillColor.control.secondary );
+    setGradient( Q::Panel | Q::Hovered, pal.fillColor.control.secondary );
 
 
-    const QRgb standardPressedBorderColor = flattenedColor( theme.palette.strokeColor.controlStroke.defaultColor,
-                                                           theme.palette.fillColor.control.tertiary );
+    const QRgb standardPressedBorderColor = flattenedColor( pal.strokeColor.controlStroke.defaultColor,
+                                                           pal.fillColor.control.tertiary );
 
     setBoxBorderColors( Q::Panel | Q::Pressed, standardPressedBorderColor );
 
-    setGradient( Q::Panel | Q::Pressed, theme.palette.fillColor.control.tertiary );
-    setColor( Q::Text | Q::Pressed, theme.palette.fillColor.text.secondary );
+    setGradient( Q::Panel | Q::Pressed, pal.fillColor.control.tertiary );
+    setColor( Q::Text | Q::Pressed, pal.fillColor.text.secondary );
     setGraphicRole( Q::Icon | Q::Pressed, QskFluent2Skin::GraphicRoleFillColorTextSecondary );
 
 
-    const QRgb standardDisabledBorderColor = flattenedColor( theme.palette.strokeColor.controlStroke.defaultColor,
-                                                            theme.palette.fillColor.control.disabled );
+    const QRgb standardDisabledBorderColor = flattenedColor( pal.strokeColor.controlStroke.defaultColor,
+                                                            pal.fillColor.control.disabled );
 
     setBoxBorderColors( Q::Panel | Q::Disabled, standardDisabledBorderColor );
 
-    setGradient( Q::Panel | Q::Disabled, theme.palette.fillColor.control.disabled );
-    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
+    setGradient( Q::Panel | Q::Disabled, pal.fillColor.control.disabled );
+    setColor( Q::Text | Q::Disabled, pal.fillColor.text.disabled );
     setGraphicRole( Q::Icon | Q::Disabled, QskFluent2Skin::GraphicRoleFillColorTextDisabled );
 }
 
 void Editor::setupRadioBox()
 {
     using Q = QskRadioBox;
+    const auto& pal = theme.palette;
 
     setSpacing( Q::Button, 8 );
     setStrutSize( Q::Button, { 115, 38 } );
@@ -462,71 +475,71 @@ void Editor::setupRadioBox()
     setBoxShape( Q::CheckIndicatorPanel, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::CheckIndicatorPanel, 1 );
     setFontRole( Q::Text, QskFluent2Skin::Body );
-    setColor( Q::Text, theme.palette.fillColor.text.primary );
+    setColor( Q::Text, pal.fillColor.text.primary );
 
     // Rest
 
-    setGradient( Q::CheckIndicatorPanel, theme.palette.fillColor.controlAlt.secondary );
-    setBoxBorderColors( Q::CheckIndicatorPanel, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+    setGradient( Q::CheckIndicatorPanel, pal.fillColor.controlAlt.secondary );
+    setBoxBorderColors( Q::CheckIndicatorPanel, pal.strokeColor.controlStrongStroke.defaultColor );
 
-    setGradient( Q::CheckIndicatorPanel | Q::Selected, theme.palette.fillColor.accent.defaultColor );
+    setGradient( Q::CheckIndicatorPanel | Q::Selected, pal.fillColor.accent.defaultColor );
     setBoxBorderMetrics( Q::CheckIndicatorPanel | Q::Selected, 0 );
 
     setPadding( Q::CheckIndicatorPanel | Q::Selected, { 5, 5 } ); // indicator "strut size"
 
     setBoxShape( Q::CheckIndicator | Q::Selected, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::CheckIndicator | Q::Selected, 1 );
-    setGradient( Q::CheckIndicator | Q::Selected, theme.palette.fillColor.textOnAccent.primary );
+    setGradient( Q::CheckIndicator | Q::Selected, pal.fillColor.textOnAccent.primary );
 
-    setBoxBorderGradient( Q::CheckIndicator | Q::Selected, theme.palette.elevation.circle.border,
-                         theme.palette.fillColor.accent.defaultColor );
+    setBoxBorderGradient( Q::CheckIndicator | Q::Selected, pal.elevation.circle.border,
+                         pal.fillColor.accent.defaultColor );
 
 
     // Hover
 
-    setGradient( Q::CheckIndicatorPanel | Q::Hovered, theme.palette.fillColor.controlAlt.tertiary );
+    setGradient( Q::CheckIndicatorPanel | Q::Hovered, pal.fillColor.controlAlt.tertiary );
 
-    setGradient( Q::CheckIndicatorPanel | Q::Hovered | Q::Selected, theme.palette.fillColor.accent.secondary );
+    setGradient( Q::CheckIndicatorPanel | Q::Hovered | Q::Selected, pal.fillColor.accent.secondary );
     setPadding( Q::CheckIndicatorPanel | Q::Hovered | Q::Selected, { 4, 4 } ); // indicator "strut size"
 
-    setBoxBorderGradient( Q::CheckIndicator | Q::Hovered, theme.palette.elevation.circle.border,
-                         theme.palette.fillColor.accent.secondary );
+    setBoxBorderGradient( Q::CheckIndicator | Q::Hovered, pal.elevation.circle.border,
+                         pal.fillColor.accent.secondary );
 
     // Pressed
 
-    setGradient( Q::CheckIndicatorPanel | Q::Pressed, theme.palette.fillColor.controlAlt.quaternary );
-    setBoxBorderColors( Q::CheckIndicatorPanel | Q::Pressed, theme.palette.strokeColor.controlStrongStroke.disabled );
+    setGradient( Q::CheckIndicatorPanel | Q::Pressed, pal.fillColor.controlAlt.quaternary );
+    setBoxBorderColors( Q::CheckIndicatorPanel | Q::Pressed, pal.strokeColor.controlStrongStroke.disabled );
 
     setPadding( Q::CheckIndicatorPanel | Q::Pressed, { 7, 7 } ); // indicator "strut size"
 
     setBoxShape( Q::CheckIndicator | Q::Pressed, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::CheckIndicator | Q::Pressed, 0 );
-    setGradient( Q::CheckIndicator | Q::Pressed, theme.palette.fillColor.textOnAccent.primary );
+    setGradient( Q::CheckIndicator | Q::Pressed, pal.fillColor.textOnAccent.primary );
 
-    setGradient( Q::CheckIndicatorPanel | Q::Pressed | Q::Selected, theme.palette.fillColor.accent.tertiary );
+    setGradient( Q::CheckIndicatorPanel | Q::Pressed | Q::Selected, pal.fillColor.accent.tertiary );
     setBoxBorderMetrics( Q::CheckIndicatorPanel | Q::Pressed | Q::Selected, 0 );
 
     setPadding( Q::CheckIndicatorPanel | Q::Pressed | Q::Selected, { 6, 6 } ); // indicator "strut size"
     setBoxBorderMetrics( Q::CheckIndicator | Q::Pressed, 1 );
 
-    setBoxBorderGradient( Q::CheckIndicator | Q::Pressed | Q::Selected, theme.palette.elevation.circle.border,
-                         theme.palette.fillColor.accent.tertiary );
+    setBoxBorderGradient( Q::CheckIndicator | Q::Pressed | Q::Selected, pal.elevation.circle.border,
+                         pal.fillColor.accent.tertiary );
 
     // Disabled
 
-    setGradient( Q::CheckIndicatorPanel | Q::Disabled, theme.palette.fillColor.controlAlt.disabled );
-    setBoxBorderColors( Q::CheckIndicatorPanel | Q::Disabled, theme.palette.strokeColor.controlStrongStroke.disabled );
+    setGradient( Q::CheckIndicatorPanel | Q::Disabled, pal.fillColor.controlAlt.disabled );
+    setBoxBorderColors( Q::CheckIndicatorPanel | Q::Disabled, pal.strokeColor.controlStrongStroke.disabled );
 
-    setGradient( Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, theme.palette.fillColor.accent.disabled );
+    setGradient( Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, pal.fillColor.accent.disabled );
     setBoxBorderMetrics( Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, 0 );
 
     setPadding( Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, { 6, 6 } ); // indicator "strut size"
 
     setBoxBorderMetrics( Q::CheckIndicator | Q::Disabled | Q::Selected, 0 );
-    setGradient( Q::CheckIndicator | Q::Disabled | Q::Selected, theme.palette.fillColor.textOnAccent.primary );
+    setGradient( Q::CheckIndicator | Q::Disabled | Q::Selected, pal.fillColor.textOnAccent.primary );
     setBoxShape( Q::CheckIndicator | Q::Disabled | Q::Selected, 100, Qt::RelativeSize );
 
-    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
+    setColor( Q::Text | Q::Disabled, pal.fillColor.text.disabled );
 }
 
 void Editor::setupScrollView()
@@ -537,22 +550,23 @@ void Editor::setupSegmentedBar()
 {
     using Q = QskSegmentedBar;
     using A = QskAspect;
+    const auto& pal = theme.palette;
 
     const QSizeF segmentStrutSize( 120, 32 );
 
     setBoxBorderMetrics( Q::Panel, 1 );
 
-    setBoxBorderGradient( Q::Panel, theme.palette.elevation.control.border,
-                         theme.palette.fillColor.control.defaultColor );
+    setBoxBorderGradient( Q::Panel, pal.elevation.control.border,
+                         pal.fillColor.control.defaultColor );
 
-    setGradient( Q::Panel, theme.palette.fillColor.control.defaultColor );
+    setGradient( Q::Panel, pal.fillColor.control.defaultColor );
     setSpacing( Q::Panel, 8 );
 
     setStrutSize( Q::Icon, { 12, 12 } );
     setGraphicRole( Q::Icon, QskFluent2Skin::GraphicRoleFillColorTextPrimary );
 
     setFontRole( Q::Text, QskFluent2Skin::Body );
-    setColor( Q::Text, theme.palette.fillColor.text.primary );
+    setColor( Q::Text, pal.fillColor.text.primary );
 
     setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
     setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
@@ -560,29 +574,29 @@ void Editor::setupSegmentedBar()
     setPadding( Q::Segment, { 8, 0, 8, 0 } );
 
     // Hovered:
-    setGradient( Q::Segment | Q::Hovered, theme.palette.fillColor.control.secondary );
+    setGradient( Q::Segment | Q::Hovered, pal.fillColor.control.secondary );
 
-    setBoxBorderGradient( Q::Segment | Q::Hovered, theme.palette.elevation.control.border,
-                         theme.palette.fillColor.control.secondary );
+    setBoxBorderGradient( Q::Segment | Q::Hovered, pal.elevation.control.border,
+                         pal.fillColor.control.secondary );
 
     // Selected:
-    setGradient( Q::Segment | Q::Selected, theme.palette.fillColor.accent.defaultColor );
+    setGradient( Q::Segment | Q::Selected, pal.fillColor.accent.defaultColor );
     setGraphicRole( Q::Icon | Q::Selected, QskFluent2Skin::GraphicRoleFillColorTextOnAccentPrimary );
-    setColor( Q::Text | Q::Selected, theme.palette.fillColor.textOnAccent.primary );
+    setColor( Q::Text | Q::Selected, pal.fillColor.textOnAccent.primary );
 
     // Disabled:
-    const QRgb standardDisabledBorderColor = flattenedColor( theme.palette.strokeColor.controlStroke.defaultColor,
-                                                            theme.palette.fillColor.control.disabled );
+    const QRgb standardDisabledBorderColor = flattenedColor( pal.strokeColor.controlStroke.defaultColor,
+                                                            pal.fillColor.control.disabled );
 
     setBoxBorderColors( Q::Segment | Q::Disabled, standardDisabledBorderColor );
 
-    setGradient( Q::Segment | Q::Disabled, theme.palette.fillColor.control.disabled );
-    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
+    setGradient( Q::Segment | Q::Disabled, pal.fillColor.control.disabled );
+    setColor( Q::Text | Q::Disabled, pal.fillColor.text.disabled );
     setGraphicRole( Q::Icon | Q::Disabled, QskFluent2Skin::GraphicRoleFillColorTextDisabled );
 
 
-    setGradient( Q::Segment | Q::Selected | Q::Disabled, theme.palette.fillColor.accent.disabled );
-    setColor( Q::Text | Q::Selected | Q::Disabled, theme.palette.fillColor.textOnAccent.disabled );
+    setGradient( Q::Segment | Q::Selected | Q::Disabled, pal.fillColor.accent.disabled );
+    setColor( Q::Text | Q::Selected | Q::Disabled, pal.fillColor.textOnAccent.disabled );
     setGraphicRole( Q::Icon | Q::Selected | Q::Disabled, QskFluent2Skin::GraphicRoleFillColorTextOnAccentDisabled );
     setBoxBorderMetrics( Q::Panel | Q::Selected | Q::Disabled, 0 );
 
@@ -590,12 +604,27 @@ void Editor::setupSegmentedBar()
 
 void Editor::setupSeparator()
 {
+    using A = QskAspect;
+    using Q = QskSeparator;
+
+    const auto& pal = theme.palette;
+
+    for ( auto variation : { A::Horizontal, A::Vertical } )
+    {
+        const auto aspect = Q::Panel | variation;
+
+        setMetric( aspect | A::Size, 1 );
+        setBoxShape( Q::Panel, 0 );
+        setBoxBorderMetrics( Q::Panel, 0 );
+        setGradient( aspect, pal.strokeColor.dividerStroke.defaultColor );
+    }
 }
 
 void Editor::setupSlider()
 {
     using Q = QskSlider;
     using A = QskAspect;
+    const auto& pal = theme.palette;
 
     const qreal extent = 22;
     setMetric( Q::Panel | A::Size, extent );
@@ -607,36 +636,37 @@ void Editor::setupSlider()
     setPadding( Q::Panel | A::Vertical, QskMargins( 0, 0.5 * extent ) );
 
     setMetric( Q::Groove | A::Size, 4 );
-    setGradient( Q::Groove, theme.palette.fillColor.controlStrong.defaultColor );
+    setGradient( Q::Groove, pal.fillColor.controlStrong.defaultColor );
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
 
     setMetric( Q::Fill | A::Size, 4 );
-    setGradient( Q::Fill, theme.palette.fillColor.accent.defaultColor );
+    setGradient( Q::Fill, pal.fillColor.accent.defaultColor );
     setBoxShape( Q::Fill, 100, Qt::RelativeSize );
 
     setStrutSize( Q::Handle, { 22, 22 } );
-    setGradient( Q::Handle, theme.palette.fillColor.controlSolid.defaultColor );
+    setGradient( Q::Handle, pal.fillColor.controlSolid.defaultColor );
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::Handle, 1 );
-    setBoxBorderGradient( Q::Handle, theme.palette.elevation.circle.border, theme.palette.fillColor.controlSolid.defaultColor );
+    setBoxBorderGradient( Q::Handle, pal.elevation.circle.border, pal.fillColor.controlSolid.defaultColor );
 
     setStrutSize( Q::Ripple, { 12, 12 } );
-    setGradient( Q::Ripple, theme.palette.fillColor.accent.defaultColor );
+    setGradient( Q::Ripple, pal.fillColor.accent.defaultColor );
     setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
 
     setStrutSize( Q::Ripple | Q::Hovered, { 14, 14 } );
 
     setStrutSize( Q::Ripple | Q::Pressed, { 10, 10 } );
-    setGradient( Q::Ripple | Q::Pressed, theme.palette.fillColor.accent.tertiary );
+    setGradient( Q::Ripple | Q::Pressed, pal.fillColor.accent.tertiary );
 
-    setGradient( Q::Groove | Q::Disabled, theme.palette.fillColor.controlStrong.disabled );
-    setGradient( Q::Fill | Q::Disabled, theme.palette.fillColor.accent.disabled );
-    setGradient( Q::Ripple | Q::Disabled, theme.palette.fillColor.controlStrong.disabled );
+    setGradient( Q::Groove | Q::Disabled, pal.fillColor.controlStrong.disabled );
+    setGradient( Q::Fill | Q::Disabled, pal.fillColor.accent.disabled );
+    setGradient( Q::Ripple | Q::Disabled, pal.fillColor.controlStrong.disabled );
 }
 
 void Editor::setupSpinBox()
 {
     using Q = QskSpinBox;
+    const auto& pal = theme.palette;
 
     setHint( Q::Panel | QskAspect::Style, Q::ButtonsRight );
     setStrutSize( Q::Panel, { -1, 32 } );
@@ -644,13 +674,13 @@ void Editor::setupSpinBox()
     setBoxShape( Q::Panel, 3 );
     setPadding( Q::Panel, { 11, 0, 11, 0 } );
 
-    setGradient( Q::Panel, theme.palette.fillColor.control.defaultColor );
-    setBoxBorderGradient( Q::Panel, theme.palette.elevation.control.border,
-                         theme.palette.fillColor.control.defaultColor );
+    setGradient( Q::Panel, pal.fillColor.control.defaultColor );
+    setBoxBorderGradient( Q::Panel, pal.elevation.control.border,
+                         pal.fillColor.control.defaultColor );
 
     setAlignment( Q::Text, Qt::AlignLeft );
     setFontRole( Q::Text, QskFluent2Skin::Body );
-    setColor( Q::Text, theme.palette.fillColor.text.primary );
+    setColor( Q::Text, pal.fillColor.text.primary );
 
     setPadding( Q::TextPanel, { 11, 5, 0, 0 } );
 
@@ -670,28 +700,28 @@ void Editor::setupSpinBox()
 
     // Hovered:
 
-    setGradient( Q::Panel | Q::Hovered, theme.palette.fillColor.control.secondary );
-    setBoxBorderGradient( Q::Panel | Q::Hovered, theme.palette.elevation.textControl.border,
-                         theme.palette.fillColor.control.secondary );
+    setGradient( Q::Panel | Q::Hovered, pal.fillColor.control.secondary );
+    setBoxBorderGradient( Q::Panel | Q::Hovered, pal.elevation.textControl.border,
+                         pal.fillColor.control.secondary );
 
 
     // Focused (Pressed doesn't exist yet):
 
     setBoxBorderMetrics( Q::Panel | Q::Focused, { 1, 1, 1, 2 } );
 
-    setGradient( Q::Panel | Q::Focused, theme.palette.fillColor.control.inputActive );
+    setGradient( Q::Panel | Q::Focused, pal.fillColor.control.inputActive );
 
-    auto gradient = theme.palette.elevation.textControl.border;
-    gradient.at( 1 ) = theme.palette.fillColor.accent.defaultColor;
+    auto gradient = pal.elevation.textControl.border;
+    gradient.at( 1 ) = pal.fillColor.accent.defaultColor;
 
-    setBoxBorderGradient( Q::Panel | Q::Focused, gradient, theme.palette.fillColor.control.inputActive );
+    setBoxBorderGradient( Q::Panel | Q::Focused, gradient, pal.fillColor.control.inputActive );
 
     // Disabled:
 
-    setGradient( Q::Panel | Q::Disabled, theme.palette.fillColor.control.disabled );
-    setBoxBorderColors( Q::Panel | Q::Disabled, theme.palette.strokeColor.controlStroke.defaultColor );
+    setGradient( Q::Panel | Q::Disabled, pal.fillColor.control.disabled );
+    setBoxBorderColors( Q::Panel | Q::Disabled, pal.strokeColor.controlStroke.defaultColor );
 
-    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
+    setColor( Q::Text | Q::Disabled, pal.fillColor.text.disabled );
 
     setGraphicRole( Q::UpIndicator | Q::Disabled, QskFluent2Skin::GraphicRoleFillColorTextDisabled );
     setGraphicRole( Q::DownIndicator | Q::Disabled, QskFluent2Skin::GraphicRoleFillColorTextDisabled );
@@ -704,52 +734,56 @@ void Editor::setupTabBar()
 void Editor::setupTabButton()
 {
     using Q = QskTabButton;
+    const auto& pal = theme.palette;
 
     setStrutSize( Q::Panel, { -1, 31 } );
     setPadding( Q::Panel, { 7, 0, 7, 0 } );
     setBoxShape( Q::Panel, { 7, 7, 0, 0 } );
 
-    setGradient( Q::Panel, theme.palette.fillColor.subtle.transparent );
+    setGradient( Q::Panel, pal.fillColor.subtle.transparent );
     setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1 } );
-    setBoxBorderColors( Q::Panel, theme.palette.strokeColor.cardStroke.defaultColor );
+    setBoxBorderColors( Q::Panel, pal.strokeColor.cardStroke.defaultColor );
 
-    setGradient( Q::Panel | Q::Checked, theme.palette.background.fillColor.solidBackground.tertiary );
+    setGradient( Q::Panel | Q::Checked, pal.background.fillColor.solidBackground.tertiary );
     setBoxBorderMetrics( Q::Panel | Q::Checked, { 1, 1, 1, 0 } );
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
 
     setFontRole( Q::Text, QskFluent2Skin::Body );
-    setColor( Q::Text, theme.palette.fillColor.text.secondary );
+    setColor( Q::Text, pal.fillColor.text.secondary );
 
     setFontRole( Q::Text | Q::Checked, QskFluent2Skin::BodyStrong );
-    setColor( Q::Text | Q::Checked, theme.palette.fillColor.text.primary );
+    setColor( Q::Text | Q::Checked, pal.fillColor.text.primary );
 
-    setGradient( Q::Panel | Q::Hovered, theme.palette.fillColor.subtle.secondary );
+    setGradient( Q::Panel | Q::Hovered, pal.fillColor.subtle.secondary );
 
-    setGradient( Q::Panel | Q::Pressed, theme.palette.fillColor.subtle.tertiary );
+    setGradient( Q::Panel | Q::Pressed, pal.fillColor.subtle.tertiary );
 }
 
 void Editor::setupTabView()
 {
     using Q = QskTabView;
+    const auto& pal = theme.palette;
 
-    setGradient( Q::Page, theme.palette.background.fillColor.solidBackground.tertiary );
+    setGradient( Q::Page, pal.background.fillColor.solidBackground.tertiary );
 }
 
 void Editor::setupTextLabel()
 {
     using Q = QskTextLabel;
+    const auto& pal = theme.palette;
 
     setPadding( Q::Panel, 10 );
 
     setFontRole( Q::Text, QskFluent2Skin::Body );
-    setColor( Q::Text, theme.palette.fillColor.text.primary );
+    setColor( Q::Text, pal.fillColor.text.primary );
 }
 
 
 void Editor::setupTextInput()
 {
     using Q = QskTextInput;
+    const auto& pal = theme.palette;
 
     setStrutSize( Q::Panel, { -1, 30 } );
     setBoxBorderMetrics( Q::Panel, 1 );
@@ -758,20 +792,20 @@ void Editor::setupTextInput()
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setFontRole( Q::Text, QskFluent2Skin::Body );
-    setColor( Q::Text, theme.palette.fillColor.text.secondary );
+    setColor( Q::Text, pal.fillColor.text.secondary );
 
-    setGradient( Q::Panel, theme.palette.fillColor.control.defaultColor );
-    setBoxBorderGradient( Q::Panel, theme.palette.elevation.textControl.border,
-                         theme.palette.fillColor.control.defaultColor );
+    setGradient( Q::Panel, pal.fillColor.control.defaultColor );
+    setBoxBorderGradient( Q::Panel, pal.elevation.textControl.border,
+                         pal.fillColor.control.defaultColor );
 
-    setColor( Q::PanelSelected, theme.palette.fillColor.accent.selectedTextBackground );
-    setColor( Q::TextSelected, theme.palette.fillColor.textOnAccent.selectedText );
+    setColor( Q::PanelSelected, pal.fillColor.accent.selectedTextBackground );
+    setColor( Q::TextSelected, pal.fillColor.textOnAccent.selectedText );
 
     // Hovered:
 
-    setGradient( Q::Panel | Q::Hovered, theme.palette.fillColor.control.secondary );
-    setBoxBorderGradient( Q::Panel | Q::Hovered, theme.palette.elevation.textControl.border,
-                         theme.palette.fillColor.control.secondary );
+    setGradient( Q::Panel | Q::Hovered, pal.fillColor.control.secondary );
+    setBoxBorderGradient( Q::Panel | Q::Hovered, pal.elevation.textControl.border,
+                         pal.fillColor.control.secondary );
 
 
     // Pressed & Focused:
@@ -780,26 +814,27 @@ void Editor::setupTextInput()
     {
         setBoxBorderMetrics( Q::Panel | state, { 1, 1, 1, 2 } );
 
-        setGradient( Q::Panel | state, theme.palette.fillColor.control.inputActive );
+        setGradient( Q::Panel | state, pal.fillColor.control.inputActive );
 
-        auto gradient = theme.palette.elevation.textControl.border;
-        gradient.at( 1 ) = theme.palette.fillColor.accent.defaultColor;
+        auto gradient = pal.elevation.textControl.border;
+        gradient.at( 1 ) = pal.fillColor.accent.defaultColor;
 
-        setBoxBorderGradient( Q::Panel | state, gradient, theme.palette.fillColor.control.inputActive );
+        setBoxBorderGradient( Q::Panel | state, gradient, pal.fillColor.control.inputActive );
     }
 
     // Disabled:
 
-    setGradient( Q::Panel | Q::Disabled, theme.palette.fillColor.control.disabled );
-    setBoxBorderColors( Q::Panel | Q::Disabled, theme.palette.strokeColor.controlStroke.defaultColor );
+    setGradient( Q::Panel | Q::Disabled, pal.fillColor.control.disabled );
+    setBoxBorderColors( Q::Panel | Q::Disabled, pal.strokeColor.controlStroke.defaultColor );
 
-    setColor( Q::Text | Q::Disabled, theme.palette.fillColor.text.disabled );
+    setColor( Q::Text | Q::Disabled, pal.fillColor.text.disabled );
 }
 
 void Editor::setupSwitchButton()
 {
     using Q = QskSwitchButton;
     using A = QskAspect;
+    const auto& pal = theme.palette;
 
     const QSizeF strutSize( 38, 18 );
     setStrutSize( Q::Groove | A::Horizontal, strutSize );
@@ -817,64 +852,65 @@ void Editor::setupSwitchButton()
 
     // ### big size during animation
 
-    setGradient( Q::Groove, theme.palette.fillColor.controlAlt.secondary );
-    setGradient( Q::Groove | Q::Checked, theme.palette.fillColor.accent.defaultColor );
-    setBoxBorderColors( Q::Groove, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+    setGradient( Q::Groove, pal.fillColor.controlAlt.secondary );
+    setGradient( Q::Groove | Q::Checked, pal.fillColor.accent.defaultColor );
+    setBoxBorderColors( Q::Groove, pal.strokeColor.controlStrongStroke.defaultColor );
 
     setStrutSize( Q::Handle, 12, 12 );
-    setGradient( Q::Handle, theme.palette.strokeColor.controlStrongStroke.defaultColor );
-    setGradient( Q::Handle | Q::Checked, theme.palette.fillColor.textOnAccent.primary );
+    setGradient( Q::Handle, pal.strokeColor.controlStrongStroke.defaultColor );
+    setGradient( Q::Handle | Q::Checked, pal.fillColor.textOnAccent.primary );
 
-    setBoxBorderGradient( Q::Handle | Q::Checked, theme.palette.elevation.circle.border,
-                         theme.palette.fillColor.accent.defaultColor );
+    setBoxBorderGradient( Q::Handle | Q::Checked, pal.elevation.circle.border,
+                         pal.fillColor.accent.defaultColor );
 
 
-    setGradient( Q::Groove | Q::Hovered, theme.palette.fillColor.controlAlt.tertiary );
-    setGradient( Q::Groove | Q::Hovered | Q::Checked, theme.palette.fillColor.accent.secondary );
-    setBoxBorderColors( Q::Groove | Q::Hovered, theme.palette.fillColor.text.secondary );
+    setGradient( Q::Groove | Q::Hovered, pal.fillColor.controlAlt.tertiary );
+    setGradient( Q::Groove | Q::Hovered | Q::Checked, pal.fillColor.accent.secondary );
+    setBoxBorderColors( Q::Groove | Q::Hovered, pal.fillColor.text.secondary );
 
     setStrutSize( Q::Handle | Q::Hovered, 14, 14, { QskStateCombination::CombinationNoState, Q::Checked } );
-    setGradient( Q::Handle | Q::Hovered, theme.palette.fillColor.text.secondary );
+    setGradient( Q::Handle | Q::Hovered, pal.fillColor.text.secondary );
     // Handle | Hovered | Checked is the same as in Rest state
 
-    setBoxBorderGradient( Q::Handle | Q::Hovered | Q::Checked, theme.palette.elevation.circle.border,
-                         theme.palette.fillColor.accent.secondary );
+    setBoxBorderGradient( Q::Handle | Q::Hovered | Q::Checked, pal.elevation.circle.border,
+                         pal.fillColor.accent.secondary );
 
 
-    setGradient( Q::Groove | Q::Pressed, theme.palette.fillColor.controlAlt.quaternary );
-    setGradient( Q::Groove | Q::Pressed | Q::Checked, theme.palette.fillColor.accent.tertiary );
-    setBoxBorderColors( Q::Groove | Q::Pressed, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+    setGradient( Q::Groove | Q::Pressed, pal.fillColor.controlAlt.quaternary );
+    setGradient( Q::Groove | Q::Pressed | Q::Checked, pal.fillColor.accent.tertiary );
+    setBoxBorderColors( Q::Groove | Q::Pressed, pal.strokeColor.controlStrongStroke.defaultColor );
 
     const QSizeF pressedSize( 17, 14 );
     setStrutSize( Q::Handle | Q::Pressed | A::Horizontal, pressedSize, { QskStateCombination::CombinationNoState, Q::Checked }  );
     setStrutSize( Q::Handle | Q::Pressed | A::Vertical, pressedSize.transposed(), { QskStateCombination::CombinationNoState, Q::Checked }  );
-    setGradient( Q::Handle | Q::Pressed, theme.palette.strokeColor.controlStrongStroke.defaultColor );
+    setGradient( Q::Handle | Q::Pressed, pal.strokeColor.controlStrongStroke.defaultColor );
     // Handle | Pressed | Checked is the same as in Rest state
 
-    setBoxBorderGradient( Q::Handle | Q::Pressed | Q::Checked, theme.palette.elevation.circle.border,
-                         theme.palette.fillColor.accent.tertiary );
+    setBoxBorderGradient( Q::Handle | Q::Pressed | Q::Checked, pal.elevation.circle.border,
+                         pal.fillColor.accent.tertiary );
 
 
-    setGradient( Q::Groove | Q::Disabled, theme.palette.fillColor.controlAlt.disabled );
-    setBoxBorderColors( Q::Groove | Q::Disabled, theme.palette.fillColor.text.disabled );
-    setGradient( Q::Groove | Q::Disabled | Q::Checked, theme.palette.fillColor.accent.disabled );
-    setBoxBorderColors( Q::Groove | Q::Disabled | Q::Checked, theme.palette.fillColor.accent.disabled );
+    setGradient( Q::Groove | Q::Disabled, pal.fillColor.controlAlt.disabled );
+    setBoxBorderColors( Q::Groove | Q::Disabled, pal.fillColor.text.disabled );
+    setGradient( Q::Groove | Q::Disabled | Q::Checked, pal.fillColor.accent.disabled );
+    setBoxBorderColors( Q::Groove | Q::Disabled | Q::Checked, pal.fillColor.accent.disabled );
 
     setStrutSize( Q::Handle | Q::Disabled, 12, 12, { QskStateCombination::CombinationNoState, Q::Checked } );
-    setGradient( Q::Handle | Q::Disabled, theme.palette.fillColor.text.disabled );
-    setGradient( Q::Handle | Q::Disabled | Q::Checked, theme.palette.fillColor.textOnAccent.disabled );
+    setGradient( Q::Handle | Q::Disabled, pal.fillColor.text.disabled );
+    setGradient( Q::Handle | Q::Disabled | Q::Checked, pal.fillColor.textOnAccent.disabled );
     setBoxBorderMetrics( Q::Handle | Q::Disabled | Q::Checked, 1 );
 }
 
 void Editor::setupSubWindow()
 {
     using Q = QskSubWindow;
+    const auto& pal = theme.palette;
 
     setPadding( Q::Panel, { 0, 31, 0, 0 } );
     setBoxShape( Q::Panel, 7 );
     setBoxBorderMetrics( Q::Panel, 1 );
-    setBoxBorderColors( Q::Panel, theme.palette.strokeColor.surfaceStroke.defaultColor );
-    setGradient( Q::Panel, theme.palette.background.fillColor.layer.alt );
+    setBoxBorderColors( Q::Panel, pal.strokeColor.surfaceStroke.defaultColor );
+    setGradient( Q::Panel, pal.background.fillColor.layer.alt );
     setShadowMetrics( Q::Panel, theme.shadow.dialog.first );
     setShadowColor( Q::Panel, theme.shadow.dialog.second );
 
@@ -882,7 +918,7 @@ void Editor::setupSubWindow()
     setPadding( Q::TitleBarPanel, { 24, 31, 24, 0 } );
 
     setFontRole( Q::TitleBarText, QskFluent2Skin::Subtitle );
-    setColor( Q::TitleBarText, theme.palette.fillColor.text.primary );
+    setColor( Q::TitleBarText, pal.fillColor.text.primary );
     setAlignment( Q::TitleBarText, Qt::AlignLeft );
     setTextOptions( Q::TitleBarText, Qt::ElideRight, QskTextOptions::NoWrap );
 }
@@ -890,19 +926,19 @@ void Editor::setupSubWindow()
 void Editor::setupVirtualKeyboard()
 {
     using Q = QskVirtualKeyboard;
+    const auto& pal = theme.palette;
 
     setMargin( Q::ButtonPanel, 2 );
-    setGradient( Q::ButtonPanel, theme.palette.fillColor.control.defaultColor );
-    setGradient( Q::ButtonPanel | Q::Hovered, theme.palette.fillColor.control.secondary );
-    setGradient( Q::ButtonPanel | QskPushButton::Pressed, theme.palette.fillColor.control.tertiary );
+    setGradient( Q::ButtonPanel, pal.fillColor.control.defaultColor );
+    setGradient( Q::ButtonPanel | Q::Hovered, pal.fillColor.control.secondary );
+    setGradient( Q::ButtonPanel | QskPushButton::Pressed, pal.fillColor.control.tertiary );
 
-    setColor( Q::ButtonText, theme.palette.fillColor.text.primary );
+    setColor( Q::ButtonText, pal.fillColor.text.primary );
     setFontRole( Q::ButtonText, QskFluent2Skin::BodyLarge );
-    setColor( Q::ButtonText | QskPushButton::Pressed, theme.palette.fillColor.text.secondary );
+    setColor( Q::ButtonText | QskPushButton::Pressed, pal.fillColor.text.secondary );
 
-    setGradient( Q::Panel, theme.palette.background.fillColor.solidBackground.secondary );
+    setGradient( Q::Panel, pal.background.fillColor.solidBackground.secondary );
     setPadding( Q::Panel, 8 );
-
 }
 
 QskFluent2Theme::QskFluent2Theme( Theme lightness )
@@ -1246,12 +1282,14 @@ void QskFluent2Skin::setGraphicColor( GraphicRole role, QRgb rgb )
 
 void QskFluent2Skin::setupGraphicFilters( const QskFluent2Theme& theme )
 {
-    setGraphicColor( GraphicRoleFillColorTextDisabled, theme.palette.fillColor.text.disabled );
-    setGraphicColor( GraphicRoleFillColorTextOnAccentDisabled, theme.palette.fillColor.textOnAccent.disabled );
-    setGraphicColor( GraphicRoleFillColorTextOnAccentPrimary, theme.palette.fillColor.textOnAccent.primary );
-    setGraphicColor( GraphicRoleFillColorTextOnAccentSecondary, theme.palette.fillColor.textOnAccent.secondary );
-    setGraphicColor( GraphicRoleFillColorTextPrimary, theme.palette.fillColor.text.primary );
-    setGraphicColor( GraphicRoleFillColorTextSecondary, theme.palette.fillColor.text.secondary );
+    const auto& colors = theme.palette.fillColor;
+
+    setGraphicColor( GraphicRoleFillColorTextDisabled, colors.text.disabled );
+    setGraphicColor( GraphicRoleFillColorTextOnAccentDisabled, colors.textOnAccent.disabled );
+    setGraphicColor( GraphicRoleFillColorTextOnAccentPrimary, colors.textOnAccent.primary );
+    setGraphicColor( GraphicRoleFillColorTextOnAccentSecondary, colors.textOnAccent.secondary );
+    setGraphicColor( GraphicRoleFillColorTextPrimary, colors.text.primary );
+    setGraphicColor( GraphicRoleFillColorTextSecondary, colors.text.secondary );
 }
 
 #include "moc_QskFluent2Skin.cpp"
