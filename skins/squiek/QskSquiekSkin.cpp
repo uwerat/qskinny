@@ -521,13 +521,15 @@ void Editor::setupProgressBar()
     using A = QskAspect;
     using Q = QskProgressBar;
 
-    setMetric( Q::Groove | A::Size, 8 );
-    setPadding( Q::Groove, 0 );
-    setGradient( Q::Groove, m_pal.darker200 );
-    setBoxShape( Q::Groove, 4 );
+    for ( auto subControl : { Q::Groove, Q::Bar } )
+    {
+        setMetric( subControl | A::Size, 6 );
+        setPadding( subControl, 0 );
+        setBoxShape( subControl, 4 );
+    }
 
+    setGradient( Q::Groove, m_pal.darker200 );
     setGradient( Q::Bar, m_pal.highlighted );
-    setBoxShape( Q::Bar, 4 );
 }
 
 void Editor::setupFocusIndicator()
