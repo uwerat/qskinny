@@ -30,6 +30,31 @@
 
 namespace
 {
+    QConicalGradient qskQConicalGradient(
+        const QskGradientStops& stops, qreal startAngle, qreal spanAngle )
+    {
+        QskGradientStops scaledStops;
+        scaledStops.reserve( stops.size() );
+
+        const auto ratio = qAbs( spanAngle ) / 360.0;
+
+        if ( spanAngle > 0.0 )
+        {
+            for ( auto it = stops.cbegin(); it != stops.cend(); ++it )
+                scaledStops += { ratio * it->position(), it->color() };
+        }
+        else
+        {
+            for ( auto it = stops.crbegin(); it != stops.crend(); ++it )
+                scaledStops += { 1.0 - ratio * it->position(), it->color() };
+        }
+
+        QConicalGradient qGradient( QPointF(), startAngle );
+        qGradient.setStops( qskToQGradientStops( scaledStops ) );
+
+        return qGradient;
+    }
+
     class PaintedArcNode : public QskPaintedNode
     {
       public:
@@ -98,26 +123,8 @@ namespace
     QBrush PaintedArcNode::fillBrush( const QskGradient& gradient,
         const QRectF& rect, qreal startAngle, qreal spanAngle ) const
     {
-        const auto stops = gradient.stops();
-
-        QskGradientStops scaledStops;
-        scaledStops.reserve( gradient.stops().size() );
-
-        const auto ratio = qAbs( spanAngle ) / 360.0;
-
-        if ( spanAngle > 0.0 )
-        {
-            for ( auto it = stops.cbegin(); it != stops.cend(); ++it )
-                scaledStops += { ratio* it->position(), it->color() };
-        }
-        else
-        {
-            for ( auto it = stops.crbegin(); it != stops.crend(); ++it )
-                scaledStops += { 1.0 - ratio * it->position(), it->color() };
-        }
-
-        QConicalGradient qGradient( QPointF(), startAngle );
-        qGradient.setStops( qskToQGradientStops( scaledStops ) );
+        const auto qGradient = qskQConicalGradient(
+            gradient.stops(), startAngle, spanAngle );
 
         const qreal sz = qMax( rect.width(), rect.height() );
         const qreal sx = rect.width() / sz;
@@ -332,15 +339,6 @@ QSGNode* CircularChartSkinlet::updateArcSegmentNode(
     QSGNode* node, qreal borderWidth, const QColor& borderColor,
     const QskGradient& gradient, const QskArcMetrics& metrics ) const
 {
-    auto fillGradient = gradient;
-
-    if ( fillGradient.type() == QskGradient::Stops )
-    {
-        fillGradient.setStretchMode( QskGradient::StretchToSize );
-        fillGradient.setConicDirection( 0.5, 0.5,
-            metrics.startAngle(), metrics.spanAngle() );
-    }
-
 #if PAINTED_NODE
     auto arcNode = static_cast< PaintedArcNode* >( node );
     if ( arcNode == nullptr )
@@ -349,9 +347,18 @@ QSGNode* CircularChartSkinlet::updateArcSegmentNode(
     const auto chart = static_cast< const CircularChart* >( skinnable );
 
     arcNode->setArcData( m_data->closedArcRect, metrics,
-        borderWidth, borderColor, fillGradient, chart->window() );
+        borderWidth, borderColor, gradient, chart->window() );
 #else
     Q_UNUSED( skinnable )
+
+    auto fillGradient = gradient;
+
+    if ( fillGradient.type() == QskGradient::Stops )
+    {
+        fillGradient.setStretchMode( QskGradient::StretchToSize );
+        fillGradient.setConicDirection( 0.5, 0.5,
+            metrics.startAngle(), metrics.spanAngle() );
+    }
 
     auto arcNode = static_cast< QskArcNode* >( node );
     if ( arcNode == nullptr )

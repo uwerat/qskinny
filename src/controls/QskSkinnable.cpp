@@ -23,6 +23,7 @@
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskShadowMetrics.h"
+#include "QskStippleMetrics.h"
 #include "QskBoxHints.h"
 #include "QskGradient.h"
 #include "QskTextOptions.h"
@@ -638,6 +639,24 @@ QskArcMetrics QskSkinnable::arcMetricsHint(
         this, aspect | QskAspect::Shape, status );
 }
 
+bool QskSkinnable::setStippleMetricsHint(
+    QskAspect aspect, const QskStippleMetrics& metrics )
+{
+    return qskSetMetric( this, aspect | QskAspect::Style, metrics );
+}
+
+bool QskSkinnable::resetStippleMetricsHint( QskAspect aspect )
+{
+    return resetMetric( aspect | QskAspect::Style );
+}
+
+QskStippleMetrics QskSkinnable::stippleMetricsHint(
+    QskAspect aspect, QskSkinHintStatus* status ) const
+{
+    return qskMetric< QskStippleMetrics >(
+        this, aspect | QskAspect::Style, status );
+}
+
 bool QskSkinnable::setSpacingHint( const QskAspect aspect, qreal spacing )
 {
     return qskSetMetric( this, aspect | QskAspect::Spacing, spacing );
@@ -689,14 +708,14 @@ int QskSkinnable::fontRoleHint(
     return qskFlag( this, aspect | QskAspect::FontRole, status );
 }
 
-QFont QskSkinnable::effectiveFont( const QskAspect::Subcontrol subControl ) const
+QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
 {
-    return effectiveSkin()->font( fontRoleHint( subControl ) );
+    return effectiveSkin()->font( fontRoleHint( aspect ) );
 }
 
-qreal QskSkinnable::effectiveFontHeight( const QskAspect::Subcontrol subControl ) const
+qreal QskSkinnable::effectiveFontHeight( const QskAspect aspect ) const
 {
-    const QFontMetricsF fm( effectiveFont( subControl ) );
+    const QFontMetricsF fm( effectiveFont( aspect ) );
     return fm.height();
 }
 

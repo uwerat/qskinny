@@ -1,12 +1,12 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2022 Edelhirsch Software GmbH
+ * QSkinny - Copyright (C) 2023 Edelhirsch Software GmbH
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_WINDOWS_SKIN_H
-#define QSK_WINDOWS_SKIN_H
+#ifndef QSK_FLUENT2_SKIN_H
+#define QSK_FLUENT2_SKIN_H
 
-#include "QskWindowsGlobal.h"
+#include "QskFluent2Global.h"
 
 #include <QskBoxShapeMetrics.h>
 #include <QskGradient.h>
@@ -15,7 +15,7 @@
 
 #include <array>
 
-class QSK_WINDOWS_EXPORT QskWindowsTheme
+class QSK_FLUENT2_EXPORT QskFluent2Theme
 {
   public:
     enum Theme
@@ -37,8 +37,10 @@ class QSK_WINDOWS_EXPORT QskWindowsTheme
         NumAccentColors
     };
 
-    QskWindowsTheme( Theme );
-    QskWindowsTheme( Theme, std::array< QRgb, NumAccentColors > );
+    QskFluent2Theme( Theme );
+    QskFluent2Theme( Theme, std::array< QRgb, NumAccentColors > );
+
+    typedef std::array< QRgb, 2 > BorderGradient;
 
     struct FillColor
     {
@@ -156,23 +158,23 @@ class QSK_WINDOWS_EXPORT QskWindowsTheme
     {
         struct Control
         {
-            std::array< QRgb, 2 > border;
+            BorderGradient border;
         };
 
         struct Circle
         {
-            std::array< QRgb, 2 > border;
+            BorderGradient border;
         };
 
         struct TextControl
         {
-            std::array< QRgb, 2 > border;
-            std::array< QRgb, 2 > borderFocused;
+            BorderGradient border;
+            BorderGradient borderFocused;
         };
 
         struct AccentControl
         {
-            std::array< QRgb, 2 > border;
+            BorderGradient border;
         };
 
         Control control;
@@ -242,7 +244,7 @@ class QSK_WINDOWS_EXPORT QskWindowsTheme
                 QRgb tertiary;
             };
 
-            struct Stroke
+            struct Smoke
             {
                 QRgb defaultColor;
             };
@@ -289,7 +291,7 @@ class QSK_WINDOWS_EXPORT QskWindowsTheme
             };
 
             CardBackground cardBackground;
-            Stroke stroke;
+            Smoke smoke;
             Layer layer;
             LayerOnAcrylic layerOnAcrylic;
             LayerOnAccentAcrylic layerOnAccentAcrylic;
@@ -327,15 +329,15 @@ class QSK_WINDOWS_EXPORT QskWindowsTheme
     Shadow shadow;
 };
 
-class QSK_WINDOWS_EXPORT QskWindowsSkin : public QskSkin
+class QSK_FLUENT2_EXPORT QskFluent2Skin : public QskSkin
 {
     Q_OBJECT
 
     using Inherited = QskSkin;
 
   public:
-    QskWindowsSkin( const QskWindowsTheme&, QObject* parent = nullptr );
-    ~QskWindowsSkin() override;
+    QskFluent2Skin( const QskFluent2Theme&, QObject* parent = nullptr );
+      ~QskFluent2Skin() override;
 
     enum GraphicRole
     {
@@ -349,14 +351,14 @@ class QSK_WINDOWS_EXPORT QskWindowsSkin : public QskSkin
 
     enum FontRole
     {
-        Caption = QskSkin::HugeFont + 1, // ### define QskSkin enums
-        Body,
-        BodyStrong,
-        BodyLarge,
-        Subtitle,
-        Title,
+        Caption = TinyFont,
+        Body = DefaultFont,
+        BodyStrong = SmallFont,
+        BodyLarge = MediumFont,
+        Subtitle = LargeFont,
+        Title = HugeFont,
         TitleLarge,
-        Display
+        Display,
     };
 
     static constexpr QskAspect::Variation Standard = QskAspect::NoVariation;
@@ -364,7 +366,7 @@ class QSK_WINDOWS_EXPORT QskWindowsSkin : public QskSkin
 
   private:
     void setupFonts();
-    void setupGraphicFilters( const QskWindowsTheme& palette );
+    void setupGraphicFilters( const QskFluent2Theme& palette );
     void setGraphicColor( GraphicRole, QRgb );
 };
 

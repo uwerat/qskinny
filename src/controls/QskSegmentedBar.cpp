@@ -11,9 +11,9 @@
 #include "QskSkinlet.h"
 #include "QskAspect.h"
 
-#include <QGuiApplication>
-#include <QStyleHints>
-#include <QFontMetricsF>
+#include <qguiapplication.h>
+#include <qstylehints.h>
+#include <qfontmetrics.h>
 
 QSK_SUBCONTROL( QskSegmentedBar, Panel )
 QSK_SUBCONTROL( QskSegmentedBar, Segment )

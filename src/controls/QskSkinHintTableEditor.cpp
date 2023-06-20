@@ -12,6 +12,7 @@
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
 #include "QskShadowMetrics.h"
+#include "QskStippleMetrics.h"
 #include "QskGraphic.h"
 
 namespace
@@ -129,6 +130,11 @@ namespace
     inline QskAspect aspectSymbol( QskAspect aspect )
     {
         return aspect | QskAspect::Symbol;
+    }
+
+    inline QskAspect aspectStipple( QskAspect aspect )
+    {
+        return aspect | QskAspect::Style;
     }
 }
 
@@ -583,8 +589,8 @@ void QskSkinHintTableEditor::setArcMetrics( QskAspect aspect,
     setMetricHint( aspectShape( aspect ), arcMetrics, combination );
 }
 
-bool QskSkinHintTableEditor::removeArcMetrics( QskAspect aspect,
-    QskStateCombination combination )
+bool QskSkinHintTableEditor::removeArcMetrics(
+    QskAspect aspect, QskStateCombination combination )
 {
     return removeMetricHint( aspectShape( aspect ), combination );
 }
@@ -592,6 +598,35 @@ bool QskSkinHintTableEditor::removeArcMetrics( QskAspect aspect,
 QskArcMetrics QskSkinHintTableEditor::arcMetrics( QskAspect aspect ) const
 {
     return metricHint< QskArcMetrics >( aspectShape( aspect ) );
+}
+
+void QskSkinHintTableEditor::setStippleMetrics( QskAspect aspect,
+    Qt::PenStyle penStyle, QskStateCombination combination )
+{
+    setStippleMetrics( aspect, QskStippleMetrics( penStyle ), combination );
+}
+
+void QskSkinHintTableEditor::setStippleMetrics( QskAspect aspect,
+    const QVector< qreal >& dashPattern, QskStateCombination combination )
+{
+    setStippleMetrics( aspect, QskStippleMetrics( dashPattern ), combination );
+}
+
+void QskSkinHintTableEditor::setStippleMetrics( QskAspect aspect,
+    const QskStippleMetrics& metrics, QskStateCombination combination )
+{
+    setMetricHint( aspectStipple( aspect ), metrics, combination );
+}
+
+bool QskSkinHintTableEditor::removeStippleMetrics(
+    QskAspect aspect, QskStateCombination combination )
+{
+    return removeMetricHint( aspectStipple( aspect ), combination );
+}
+
+QskStippleMetrics QskSkinHintTableEditor::stippleMetrics( QskAspect aspect ) const
+{
+    return metricHint< QskStippleMetrics >( aspectStipple( aspect ) );
 }
 
 void QskSkinHintTableEditor::setTextOptions( QskAspect aspect,

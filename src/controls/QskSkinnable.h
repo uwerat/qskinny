@@ -30,6 +30,7 @@ class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
 class QskShadowMetrics;
+class QskStippleMetrics;
 class QskTextOptions;
 class QskBoxHints;
 class QskGradient;
@@ -81,8 +82,8 @@ class QSK_EXPORT QskSkinnable
     void setSkinlet( const QskSkinlet* );
     const QskSkinlet* skinlet() const;
 
-    QFont effectiveFont( QskAspect::Subcontrol ) const;
-    qreal effectiveFontHeight( QskAspect::Subcontrol ) const;
+    QFont effectiveFont( QskAspect ) const;
+    qreal effectiveFontHeight( QskAspect ) const;
     QskColorFilter effectiveGraphicFilter( QskAspect::Subcontrol ) const;
 
     void setSubcontrolProxy( QskAspect::Subcontrol, QskAspect::Subcontrol proxy );
@@ -227,6 +228,10 @@ class QSK_EXPORT QskSkinnable
     bool setArcMetricsHint( QskAspect, const QskArcMetrics& );
     bool resetArcMetricsHint( QskAspect );
     QskArcMetrics arcMetricsHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    bool setStippleMetricsHint( QskAspect, const QskStippleMetrics& );
+    bool resetStippleMetricsHint( QskAspect );
+    QskStippleMetrics stippleMetricsHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     bool setSpacingHint( QskAspect, qreal );
     bool resetSpacingHint( QskAspect );

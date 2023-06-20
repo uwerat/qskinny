@@ -21,8 +21,10 @@
 #include "QskGradient.h"
 #include "QskGraphicNode.h"
 #include "QskGraphic.h"
+#include "QskLinesNode.h"
 #include "QskRectangleNode.h"
 #include "QskSGNode.h"
+#include "QskStippleMetrics.h"
 #include "QskTextColors.h"
 #include "QskTextNode.h"
 #include "QskTextOptions.h"
@@ -161,6 +163,11 @@ static inline bool qskIsArcVisible( const QskArcMetrics& arcMetrics,
     return gradient.isVisible();
 }
 
+static inline bool qskIsLineVisible( const QColor& lineColor, qreal lineWidth )
+{
+    return ( lineWidth > 0.0 ) && lineColor.isValid() && ( lineColor.alpha() > 0 );
+}
+
 static inline QskTextColors qskTextColors(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl )
 {
@@ -199,13 +206,10 @@ static inline QSGNode* qskUpdateBoxNode(
 
     if ( qskIsBoxVisible( absoluteMetrics, borderColors, gradient ) )
     {
-        auto boxNode = static_cast< QskBoxNode* >( node );
-        if ( boxNode == nullptr )
-            boxNode = new QskBoxNode();
-
         const auto absoluteShape = shape.toAbsolute( size );
         const auto absoluteShadowMetrics = shadowMetrics.toAbsolute( size );
 
+        auto boxNode = QskSGNode::ensureNode< QskBoxNode >( node );
         boxNode->updateNode( rect, absoluteShape, absoluteMetrics,
             borderColors, gradient, absoluteShadowMetrics, shadowColor );
 
@@ -226,13 +230,44 @@ static inline QSGNode* qskUpdateArcNode(
     if ( !qskIsArcVisible( metrics, borderWidth, borderColor, gradient ) )
         return nullptr;
 
-    auto arcNode = static_cast< QskArcNode* >( node );
-    if ( arcNode == nullptr )
-        arcNode = new QskArcNode();
-
+    auto arcNode = QskSGNode::ensureNode< QskArcNode >( node );
     arcNode->setArcData( rect, metrics, borderWidth, borderColor,  gradient );
 
     return arcNode;
+}
+
+static inline QSGNode* qskUpdateLineNode(
+    const QskSkinnable*, QSGNode* node, const QColor& lineColor,
+    qreal lineWidth, QskStippleMetrics& lineStipple, const QLineF& line )
+{
+    if ( line.isNull() )
+        return nullptr;
+
+    if ( !qskIsLineVisible( lineColor, lineWidth ) )
+        return nullptr;
+
+    auto linesNode = QskSGNode::ensureNode< QskLinesNode >( node );
+    linesNode->updateLine( lineColor, lineWidth, lineStipple,
+        QTransform(), line.p1(), line.p2() );
+
+    return linesNode;
+}
+
+static inline QSGNode* qskUpdateLinesNode(
+    const QskSkinnable*, QSGNode* node, const QColor& lineColor,
+    qreal lineWidth, QskStippleMetrics& lineStipple, const QVector< QLineF >& lines )
+{
+    if ( lines.isEmpty() )
+        return nullptr;
+
+    if ( !qskIsLineVisible( lineColor, lineWidth ) )
+        return nullptr;
+
+    auto linesNode = QskSGNode::ensureNode< QskLinesNode >( node );
+    linesNode->updateLines( lineColor, lineWidth, lineStipple,
+        QTransform(), lines );
+
+    return linesNode;
 }
 
 class QskSkinlet::PrivateData
@@ -573,6 +608,34 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     const auto r = rect.marginsRemoved( skinnable->marginHint( subControl ) );
     return updateArcNode( skinnable, node, r,
         borderWidth, borderColor, fillGradient, arcMetrics );
+}
+
+QSGNode* QskSkinlet::updateLineNode( const QskSkinnable* skinnable,
+     QSGNode* node, const QLineF& line, QskAspect::Subcontrol subControl )
+{
+    auto lineStipple = skinnable->stippleMetricsHint( subControl );
+    if ( !lineStipple.isValid() )
+        lineStipple = Qt::SolidLine;
+
+    const auto lineWidth = skinnable->metric( subControl | QskAspect::Size );
+    const auto lineColor = skinnable->color( subControl );
+
+    return qskUpdateLineNode( skinnable, node,
+        lineColor, lineWidth, lineStipple, line );
+}
+
+QSGNode* QskSkinlet::updateLinesNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QVector< QLineF >& lines, QskAspect::Subcontrol subControl )
+{
+    auto lineStipple = skinnable->stippleMetricsHint( subControl );
+    if ( !lineStipple.isValid() )
+        lineStipple = Qt::SolidLine;
+
+    const auto lineWidth = skinnable->metric( subControl | QskAspect::Size );
+    const auto lineColor = skinnable->color( subControl );
+
+    return qskUpdateLinesNode( skinnable, node,
+        lineColor, lineWidth, lineStipple, lines );
 }
 
 QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,

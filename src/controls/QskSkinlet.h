@@ -111,6 +111,12 @@ class QSK_EXPORT QskSkinlet
         const QRectF&, const QskGradient&, qreal startAngle, qreal spanAngle,
         QskAspect::Subcontrol );
 
+    static QSGNode* updateLineNode( const QskSkinnable*, QSGNode*,
+        const QLineF&, QskAspect::Subcontrol );
+
+    static QSGNode* updateLinesNode( const QskSkinnable*, 
+        QSGNode*, const QVector< QLineF >&, QskAspect::Subcontrol );
+
     static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
         const QRectF&, Qt::Alignment, const QString&, QskAspect::Subcontrol );
 

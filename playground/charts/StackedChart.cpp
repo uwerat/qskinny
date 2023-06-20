@@ -79,6 +79,7 @@ void StackedChart::setSeries( const QVector< ChartSample >& samples )
     {
         // caching the cumulated values
 
+        m_data->cumulatedValues.clear();
         m_data->cumulatedValues.reserve( samples.size() );
 
         qreal total = 0.0;

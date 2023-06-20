@@ -1,25 +1,25 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) 2023 Edelhirsch Software GmbH
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_WINDOWS_GLOBAL_H
-#define QSK_WINDOWS_GLOBAL_H
+#ifndef QSK_FLUENT2_GLOBAL_H
+#define QSK_FLUENT2_GLOBAL_H
 
 #include "QskGlobal.h"
 
 #ifdef QSK_DLL
 
-#if defined( QSK_WINDOWS_MAKEDLL )     // create a DLL library
-#define QSK_WINDOWS_EXPORT Q_DECL_EXPORT
+#if defined( QSK_FLUENT2_MAKEDLL )     // create a DLL library
+#define QSK_FLUENT2_EXPORT Q_DECL_EXPORT
 #else                        // use a DLL library
-#define QSK_WINDOWS_EXPORT Q_DECL_IMPORT
+#define QSK_FLUENT2_EXPORT Q_DECL_IMPORT
 #endif
 
 #endif // QSK_DLL
 
-#ifndef QSK_WINDOWS_EXPORT
-#define QSK_WINDOWS_EXPORT
+#ifndef QSK_FLUENT2_EXPORT
+#define QSK_FLUENT2_EXPORT
 #endif
 
 #endif

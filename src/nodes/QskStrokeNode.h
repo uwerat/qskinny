@@ -19,6 +19,7 @@ class QSK_EXPORT QskStrokeNode : public QSGGeometryNode
 {
   public:
     QskStrokeNode();
+    ~QskStrokeNode() override;
 
     /*
         We only support monochrome pens ( QPen::color() ) and using a

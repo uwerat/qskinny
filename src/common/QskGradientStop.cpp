@@ -413,7 +413,7 @@ QGradientStops qskToQGradientStops( const QskGradientStops& stops )
                 QGradient removes stops at the same position. So we have to insert
                 an invisible dummy offset
              */
-            qStop.first += 0.00001;
+            qStop.first = qMin( qStop.first + 0.00001, 1.0 );
         }
 
         qStops += qStop;

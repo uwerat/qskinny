@@ -16,7 +16,7 @@ class QQuickItem;
 class QSizeF;
 class QRectF;
 
-class QskGridLayoutEngine : public QskLayoutEngine2D
+class QSK_EXPORT QskGridLayoutEngine : public QskLayoutEngine2D
 {
   public:
     QskGridLayoutEngine();
@@ -61,8 +61,8 @@ class QskGridLayoutEngine : public QskLayoutEngine2D
 
     void invalidateElementCache() override;
 
-    void setupChain( Qt::Orientation,
-        const QskLayoutChain::Segments&, QskLayoutChain& ) const override;
+    void setupChain( Qt::Orientation, const QskLayoutChain::Segments&,
+        QskLayoutChain& ) const override final;
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

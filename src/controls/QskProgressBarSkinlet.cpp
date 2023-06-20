@@ -62,28 +62,29 @@ QRectF QskProgressBarSkinlet::subControlRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect,
     QskAspect::Subcontrol subControl ) const
 {
-    const auto bar = static_cast< const QskProgressBar* >( skinnable );
+    using Q = QskProgressBar;
+    const auto bar = static_cast< const Q* >( skinnable );
 
-    if( subControl == QskProgressBar::Groove )
+    if( subControl == Q::Groove )
     {
-        const auto extent = bar->extent();
+        const auto grooveSize = bar->metric( Q::Groove | QskAspect::Size );
 
         auto rect = contentsRect;
         if ( bar->orientation() == Qt::Horizontal )
         {
-            rect.setY( rect.y() + 0.5 * ( rect.height() - extent ) );
-            rect.setHeight( extent );
+            rect.setY( rect.y() + 0.5 * ( rect.height() - grooveSize ) );
+            rect.setHeight( grooveSize );
         }
         else
         {
-            rect.setX( rect.x() + 0.5 * ( rect.width() - extent ) );
-            rect.setWidth( extent );
+            rect.setX( rect.x() + 0.5 * ( rect.width() - grooveSize ) );
+            rect.setWidth( grooveSize );
         }
 
         return rect;
     }
 
-    if( subControl == QskProgressBar::Bar )
+    if( subControl == Q::Bar )
     {
         return barRect( bar );
     }
@@ -154,9 +155,22 @@ QSGNode* QskProgressBarSkinlet::updateBarNode(
 
 QRectF QskProgressBarSkinlet::barRect( const QskProgressBar* bar ) const
 {
-    const auto subControl = QskProgressBar::Groove;
+    using Q = QskProgressBar;
+    const auto subControl = Q::Groove;
 
+    const auto barSize = bar->metric( Q::Bar | QskAspect::Size );
     auto rect = bar->subControlRect( subControl );
+
+    if ( bar->orientation() == Qt::Horizontal )
+    {
+        rect.setY( rect.y() + 0.5 * ( rect.height() - barSize ) );
+        rect.setHeight( barSize );
+    }
+    else
+    {
+        rect.setX( rect.x() + 0.5 * ( rect.width() - barSize ) );
+        rect.setWidth( barSize );
+    }
 
     const auto borderMetrics = bar->boxBorderMetricsHint( subControl );
 

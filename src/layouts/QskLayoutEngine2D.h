@@ -15,7 +15,7 @@
 
 class QskLayoutElement;
 
-class QskLayoutEngine2D
+class QSK_EXPORT QskLayoutEngine2D
 {
   public:
     QskLayoutEngine2D();
