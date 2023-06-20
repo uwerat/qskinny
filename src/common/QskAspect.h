@@ -35,6 +35,8 @@ class QSK_EXPORT QskAspect
         Header,
         Footer,
 
+        Card,
+
         Floating
     };
     Q_ENUM( Section )
