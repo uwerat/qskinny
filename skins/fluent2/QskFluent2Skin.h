@@ -133,14 +133,6 @@ class QSK_FLUENT2_EXPORT QskFluent2Theme
             QRgb solidNeutralBackground;
         };
 
-        struct ControlOnImage
-        {
-            QRgb defaultColor;
-            QRgb secondary;
-            QRgb tertiary;
-            QRgb disabled;
-        };
-
         Text text;
         AccentText accentText;
         TextOnAccent textOnAccent;
@@ -151,7 +143,6 @@ class QSK_FLUENT2_EXPORT QskFluent2Theme
         ControlAlt controlAlt;
         Accent accent;
         System system;
-        ControlOnImage controlOnImage;
     };
 
     struct Elevation
