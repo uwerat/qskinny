@@ -38,7 +38,7 @@ class QSK_FLUENT2_EXPORT QskFluent2Theme
     };
 
     QskFluent2Theme( Theme );
-    QskFluent2Theme( Theme, std::array< QRgb, NumAccentColors > );
+    QskFluent2Theme( Theme, const std::array< QRgb, NumAccentColors >& );
 
     typedef std::array< QRgb, 2 > BorderGradient;
 
