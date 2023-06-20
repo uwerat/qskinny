@@ -44,139 +44,103 @@ class QSK_FLUENT2_EXPORT QskFluent2Theme
 
     struct FillColor
     {
-        struct Text
+        struct
         {
             QRgb primary;
             QRgb secondary;
             QRgb tertiary;
             QRgb disabled;
-        };
+        } text;
 
-        struct AccentText
+        struct
         {
             QRgb primary;
             QRgb secondary;
             QRgb tertiary;
             QRgb disabled;
-        };
+        } accentText;
 
-        struct TextOnAccent
+        struct
         {
             QRgb primary;
             QRgb secondary;
             QRgb tertiary;
             QRgb disabled;
             QRgb selectedText;
-        };
+        } textOnAccent;
 
-        struct Control
+        struct
         {
-            QRgb transparent;
             QRgb defaultColor;
             QRgb secondary;
             QRgb tertiary;
             QRgb inputActive;
             QRgb disabled;
-        };
+        } control;
 
-        struct ControlStrong
+        struct
         {
             QRgb defaultColor;
             QRgb disabled;
-        };
+        } controlStrong;
 
-        struct Subtle
+        struct
         {
-            QRgb transparent;
             QRgb secondary;
             QRgb tertiary;
             QRgb disabled;
-        };
+        } subtle;
 
-        struct ControlSolid
+        struct
         {
             QRgb defaultColor;
-        };
+        } controlSolid;
 
-        struct ControlAlt
+        struct
         {
-            QRgb transparent;
             QRgb secondary;
             QRgb tertiary;
             QRgb quaternary;
             QRgb disabled;
-        };
+        } controlAlt;
 
-        struct Accent
+        struct
         {
             QRgb defaultColor;
             QRgb secondary;
             QRgb tertiary;
             QRgb disabled;
             QRgb selectedTextBackground;
-        };
-
-        struct System
-        {
-            QRgb critical;
-            QRgb success;
-            QRgb attention;
-            QRgb caution;
-            QRgb attentionBackground;
-            QRgb successBackground;
-            QRgb cautionBackground;
-            QRgb criticalBackground;
-            QRgb neutral;
-            QRgb neutralBackground;
-            QRgb solidNeutral;
-            QRgb solidAttentionBackground;
-            QRgb solidNeutralBackground;
-        };
-
-        Text text;
-        AccentText accentText;
-        TextOnAccent textOnAccent;
-        Control control;
-        ControlStrong controlStrong;
-        Subtle subtle;
-        ControlSolid controlSolid;
-        ControlAlt controlAlt;
-        Accent accent;
-        System system;
+        } accent;
     };
 
     struct Elevation
     {
-        struct Control
+        struct
         {
             BorderGradient border;
-        };
+        } control;
 
-        struct Circle
+        struct
         {
             BorderGradient border;
-        };
+        } circle;
 
-        struct TextControl
+        struct
         {
             BorderGradient border;
             BorderGradient borderFocused;
-        };
+        } textControl;
 
-        struct AccentControl
+        struct
         {
             BorderGradient border;
-        };
-
-        Control control;
-        Circle circle;
-        TextControl textControl;
-        AccentControl accentControl;
+        } accentControl;
     };
 
     struct StrokeColor
     {
-        struct ControlStroke
+        struct
         {
             QRgb defaultColor;
             QRgb secondary;
@@ -184,140 +148,92 @@ class QSK_FLUENT2_EXPORT QskFluent2Theme
             QRgb onAccentSecondary;
             QRgb onAccentTertiary;
             QRgb onAccentDisabled;
-            QRgb forStrongFillWhenOnImage;
-        };
+        } control;
 
-        struct ControlStrongStroke
+        struct
         {
             QRgb defaultColor;
             QRgb disabled;
-        };
+        } controlStrong;
 
-        struct CardStroke
+        struct
         {
             QRgb defaultColor;
             QRgb defaultSolid;
-        };
+        } card;
 
-        struct DividerStroke
+        struct
         {
             QRgb defaultColor;
-        };
+        } divider;
 
-        struct SurfaceStroke
+        struct
         {
             QRgb defaultColor;
             QRgb flyout;
-        };
+        } surface;
 
-        struct FocusStroke
+        struct
         {
             QRgb outer;
             QRgb inner;
-        };
-
-        ControlStroke controlStroke;
-        ControlStrongStroke controlStrongStroke;
-        CardStroke cardStroke;
-        DividerStroke dividerStroke;
-        SurfaceStroke surfaceStroke;
-        FocusStroke focusStroke;
+        } focus;
     };
 
     struct Background
     {
-        struct FillColor
+        struct
         {
-            struct CardBackground
-            {
-                QRgb defaultColor;
-                QRgb secondary;
-                QRgb tertiary;
-            };
+            QRgb defaultColor;
+            QRgb secondary;
+            QRgb tertiary;
+        } card;
 
-            struct Smoke
-            {
-                QRgb defaultColor;
-            };
+        struct
+        {
+            QRgb defaultColor;
+        } overlay;
 
-            struct Layer
-            {
-                QRgb defaultColor;
-                QRgb alt;
-            };
+        struct
+        {
+            QRgb alt;
+        } layer;
 
-            struct LayerOnAcrylic
-            {
-                QRgb defaultColor;
-            };
+        struct
+        {
+            QRgb defaultColor;
+        } flyout;
 
-            struct LayerOnAccentAcrylic
-            {
-                QRgb defaultColor;
-            };
-
-            struct AcrylicBackground
-            {
-                QRgb defaultColor;
-                QRgb base;
-            };
-
-            struct AccentAcrylicBackground
-            {
-                QRgb base;
-                QRgb defaultColor;
-            };
-
-            struct MicaBackground
-            {
-                QRgb base;
-            };
-
-            struct SolidBackground
-            {
-                QRgb base;
-                QRgb secondary;
-                QRgb tertiary;
-                QRgb quaternary;
-            };
-
-            CardBackground cardBackground;
-            Smoke smoke;
-            Layer layer;
-            LayerOnAcrylic layerOnAcrylic;
-            LayerOnAccentAcrylic layerOnAccentAcrylic;
-            AcrylicBackground acrylicBackground;
-            AccentAcrylicBackground accentAcrylicBackground;
-            MicaBackground micaBackground;
-            SolidBackground solidBackground;
-        };
-
-        FillColor fillColor;
+        struct
+        {
+            QRgb base;
+            QRgb secondary;
+            QRgb tertiary;
+            QRgb quaternary;
+        } solid;
     };
 
-
-    struct Palette
+    struct
     {
         FillColor fillColor;
         Elevation elevation;
         StrokeColor strokeColor;
         Background background;
+    } palette;
+
+    struct ShadowSettings
+    {
+        QskShadowMetrics metrics;
+        QRgb color;
     };
 
-    Palette palette;
-
-    typedef QPair< QskShadowMetrics, QRgb > ShadowSettings;
-
-    struct Shadow
+    struct
     {
         ShadowSettings cardRest;
         ShadowSettings cardHover;
-        ShadowSettings tooltip;
         ShadowSettings flyout;
         ShadowSettings dialog;
-    };
-
-    Shadow shadow;
+    } shadow;
 };
 
 class QSK_FLUENT2_EXPORT QskFluent2Skin : public QskSkin
