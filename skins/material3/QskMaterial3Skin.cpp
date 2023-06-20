@@ -985,6 +985,11 @@ void Editor::setupTabButton()
     using Q = QskTabButton;
 
     setStrutSize( Q::Panel, 48_dp, 64_dp );
+#if 1
+    // couldn't find a value in the specs
+    setPadding( Q::Panel, 8, 0, 8, 0 );
+#endif
+
     setGradient( Q::Panel, m_pal.surface );
 
     setColor( Q::Text, m_pal.onSurfaceVariant );
