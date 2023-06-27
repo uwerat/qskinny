@@ -8,12 +8,14 @@
 
 #include <qdir.h>
 #include <qglobalstatic.h>
+#include <qguiapplication.h>
 #include <qjsonarray.h>
 #include <qjsonobject.h>
 #include <qmap.h>
 #include <qpluginloader.h>
 #include <qpointer.h>
 #include <qset.h>
+#include <qstylehints.h>
 
 static inline QStringList qskSplitPath( const QString& s )
 {
@@ -74,6 +76,8 @@ namespace
             const QLatin1String TokenData( "MetaData" );
             const QLatin1String TokenFactoryId( "FactoryId" );
             const QLatin1String TokenSkins( "Skins" );
+            const QLatin1String TokenName( "Name" );
+            const QLatin1String TokenScheme( "Scheme" );
 
             const QLatin1String InterfaceId( QskSkinFactoryIID );
 
@@ -94,10 +98,45 @@ namespace
                     m_factoryId = QStringLiteral( "skin_factory_" ) + QString::number( i++ );
                 }
 
-                const auto skinNames = factoryData.value( TokenSkins ).toArray();
+                const auto skins = factoryData.value( TokenSkins ).toArray();
 
-                for ( const auto& name : skinNames )
-                    m_skinNames += name.toString();
+                for ( const auto& skin : skins )
+                {
+                    const auto& skinObject = skin.toObject();
+                    const auto& name = skinObject.value( TokenName ).toString();
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
+                    const auto& schemeString = skinObject.value( TokenScheme ).toString();
+                    Qt::ColorScheme scheme;
+
+                    if( schemeString == QStringLiteral( "Light" ) )
+                    {
+                        scheme = Qt::ColorScheme::Light;
+                    }
+                    else if( schemeString == QStringLiteral( "Dark" ) )
+                    {
+                        scheme = Qt::ColorScheme::Dark;
+                    }
+                    else
+                    {
+                        scheme = Qt::ColorScheme::Unknown;
+                    }
+
+                    const auto systemScheme = qGuiApp->styleHints()->colorScheme();
+
+                    if( scheme == systemScheme )
+                    {
+                        m_skinNames.prepend( name );
+                    }
+                    else
+                    {
+                        m_skinNames.append( name );
+                    }
+#else
+                    Q_UNUSED( TokenScheme )
+                    m_skinNames += name;
+#endif
+                }
             }
 
             return !m_skinNames.isEmpty();
