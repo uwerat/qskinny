@@ -18,12 +18,6 @@
 class QSK_FLUENT2_EXPORT QskFluent2Theme
 {
   public:
-    enum Theme
-    {
-        Light,
-        Dark
-    };
-
     enum AccentColors
     {
         AccentLight3,
@@ -37,8 +31,8 @@ class QSK_FLUENT2_EXPORT QskFluent2Theme
         NumAccentColors
     };
 
-    QskFluent2Theme( Theme );
-    QskFluent2Theme( Theme, const std::array< QRgb, NumAccentColors >& );
+    QskFluent2Theme( QskSkin::ColorScheme );
+    QskFluent2Theme( QskSkin::ColorScheme, const std::array< QRgb, NumAccentColors >& );
 
     typedef std::array< QRgb, 2 > BorderGradient;
 

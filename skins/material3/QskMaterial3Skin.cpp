@@ -54,6 +54,7 @@
 
 #include <QGuiApplication>
 #include <QScreen>
+#include <QStyleHints>
 
 static const int qskDuration = 150;
 
@@ -1192,8 +1193,8 @@ void Editor::setupSubWindow()
 
 }
 
-QskMaterial3Theme::QskMaterial3Theme( Lightness lightness )
-    : QskMaterial3Theme( lightness,
+QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme )
+    : QskMaterial3Theme( colorScheme,
                         { // default Material colors:
                         0xff6750A4,
                         0xff625B71,
@@ -1205,11 +1206,11 @@ QskMaterial3Theme::QskMaterial3Theme( Lightness lightness )
 {
 }
 
-QskMaterial3Theme::QskMaterial3Theme( Lightness lightness,
+QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
         std::array< QskHctColor, NumPaletteTypes > palettes )
     : m_palettes( palettes )
 {
-    if ( lightness == Light )
+    if ( colorScheme == QskSkin::Light )
     {
         primary = m_palettes[ Primary ].toned( 40 ).rgb();
         onPrimary = m_palettes[ Primary ].toned( 100 ).rgb();
@@ -1243,7 +1244,7 @@ QskMaterial3Theme::QskMaterial3Theme( Lightness lightness,
 
         shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }
-    else if ( lightness == Dark )
+    else if ( colorScheme == QskSkin::Dark )
     {
         primary = m_palettes[ Primary ].toned( 80 ).rgb();
         onPrimary = m_palettes[ Primary ].toned( 20 ).rgb();

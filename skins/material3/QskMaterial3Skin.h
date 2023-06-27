@@ -18,12 +18,6 @@
 class QSK_MATERIAL3_EXPORT QskMaterial3Theme
 {
   public:
-    enum Lightness
-    {
-        Light,
-        Dark
-    };
-
     enum PaletteType
     {
         Primary,
@@ -36,8 +30,8 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
         NumPaletteTypes
     };
 
-    QskMaterial3Theme( Lightness );
-    QskMaterial3Theme( Lightness, std::array< QskHctColor, NumPaletteTypes > );
+    QskMaterial3Theme( QskSkin::ColorScheme );
+    QskMaterial3Theme( QskSkin::ColorScheme, std::array< QskHctColor, NumPaletteTypes > );
 
     QRgb primary;
     QRgb primary8; // ### rename to primaryHovered or so?
