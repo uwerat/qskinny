@@ -46,6 +46,16 @@ class QSK_EXPORT QskSkin : public QObject
 
     Q_ENUM( SkinFontRole )
 
+#if 1
+    // Use Qt::ColorScheme once minimum version is Qt 6.5
+    enum ColorScheme
+    {
+        Unknown,
+        Light,
+        Dark
+    };
+#endif
+
     QskSkin( QObject* parent = nullptr );
     ~QskSkin() override;
 
