@@ -1,4 +1,5 @@
 {
     "FactoryId": "Material3Factory",
-    "Skins": [ "Material3 Light", "Material3 Dark" ]
+    "Skins": [ { "Name": "Material3 Light", "Scheme": "Light" },
+               { "Name": "Material3 Dark", "Scheme": "Dark" } ]
 }
