@@ -6,8 +6,7 @@
 #include "QskMaterial3SkinFactory.h"
 #include "QskMaterial3Skin.h"
 
-static const QString materialLightSkinName = QStringLiteral( "Material3 Light" );
-static const QString materialDarkSkinName = QStringLiteral( "Material3 Dark" );
+static const QString materialSkinName = QStringLiteral( "Material3" );
 
 QskMaterial3SkinFactory::QskMaterial3SkinFactory( QObject* parent )
     : QskSkinFactory( parent )
@@ -18,21 +17,20 @@ QskMaterial3SkinFactory::~QskMaterial3SkinFactory()
 {
 }
 
-QStringList QskMaterial3SkinFactory::skinNames() const
+QVector< QskSkin::SkinInfo > QskMaterial3SkinFactory::skins() const
 {
-    return { materialLightSkinName, materialDarkSkinName };
+    return { qMakePair( materialSkinName, QskSkin::LightScheme ),
+            qMakePair( materialSkinName, QskSkin::DarkScheme ) };
 }
 
-QskSkin* QskMaterial3SkinFactory::createSkin( const QString& skinName )
+QskSkin* QskMaterial3SkinFactory::createSkin( QskSkin::SkinInfo info )
 {
-    if ( QString::compare( skinName, materialLightSkinName, Qt::CaseInsensitive ) == 0 )
+    // default to light:
+    const auto scheme = info.second == QskSkin::UnknownScheme ? QskSkin::LightScheme : info.second;
+
+    if( QString::compare( info.first, materialSkinName, Qt::CaseInsensitive ) == 0 )
     {
-        QskMaterial3Theme theme( QskSkin::LightScheme );
-        return new QskMaterial3Skin( theme );
-    }
-    else if ( QString::compare( skinName, materialDarkSkinName, Qt::CaseInsensitive ) == 0 )
-    {
-        QskMaterial3Theme theme( QskSkin::DarkScheme );
+        QskMaterial3Theme theme( scheme );
         return new QskMaterial3Skin( theme );
     }
 

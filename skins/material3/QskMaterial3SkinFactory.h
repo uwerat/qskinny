@@ -21,8 +21,8 @@ class QSK_MATERIAL3_EXPORT QskMaterial3SkinFactory : public QskSkinFactory
     QskMaterial3SkinFactory( QObject* parent = nullptr );
     ~QskMaterial3SkinFactory() override;
 
-    QStringList skinNames() const override;
-    QskSkin* createSkin( const QString& skinName ) override;
+    QVector< QskSkin::SkinInfo > skins() const override;
+    QskSkin* createSkin( QskSkin::SkinInfo ) override;
 };
 
 #endif

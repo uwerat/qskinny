@@ -8,11 +8,11 @@
 
 #include "QskGlobal.h"
 #include "QskQuickItem.h"
+#include "QskSkin.h"
 
 #include <qobject.h>
 #include <memory>
 
-class QskSkin;
 class QQuickItem;
 class QskGraphicProvider;
 
@@ -38,8 +38,8 @@ class QSK_EXPORT QskSetup : public QObject
     void resetItemUpdateFlag( QskQuickItem::UpdateFlag );
     bool testItemUpdateFlag( QskQuickItem::UpdateFlag );
 
-    QskSkin* setSkin( const QString& );
-    QString skinName() const;
+    QskSkin* setSkin( QskSkin::SkinInfo );
+    QskSkin::SkinInfo skinInfo() const;
 
     QskSkin* skin();
 

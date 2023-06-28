@@ -7,11 +7,11 @@
 #define QSK_SKIN_MANAGER_H
 
 #include "QskGlobal.h"
+#include "QskSkin.h"
 
 #include <qobject.h>
 #include <memory>
 
-class QskSkin;
 class QskSkinFactory;
 
 #if defined( qskSkinManager )
@@ -37,9 +37,9 @@ class QSK_EXPORT QskSkinManager : public QObject
     void unregisterFactory( const QString& factoryId );
     void unregisterFactories();
 
-    QStringList skinNames() const;
+    QVector< QskSkin::SkinInfo > skinInfos() const;
 
-    QskSkin* createSkin( const QString& skinName ) const;
+    QskSkin* createSkin( QskSkin::SkinInfo ) const;
 
   protected:
     QskSkinManager();

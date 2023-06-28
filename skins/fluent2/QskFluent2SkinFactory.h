@@ -21,8 +21,8 @@ class QSK_FLUENT2_EXPORT QskFluent2SkinFactory : public QskSkinFactory
     QskFluent2SkinFactory( QObject* parent = nullptr );
     ~QskFluent2SkinFactory() override;
 
-    QStringList skinNames() const override;
-    QskSkin* createSkin( const QString& skinName ) override;
+    QVector< QskSkin::SkinInfo > skins() const override;
+    QskSkin* createSkin( QskSkin::SkinInfo ) override;
 };
 
 #endif

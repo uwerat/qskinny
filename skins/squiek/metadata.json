@@ -1,4 +1,4 @@
 {
     "FactoryId": "SquiekFactory",
-    "Skins": [ { "Name": "Squiek", "Scheme": "Unknown" } ]
+    "Skins": [ { "Name": "Squiek", "Scheme": "UnknownScheme" } ]
 }

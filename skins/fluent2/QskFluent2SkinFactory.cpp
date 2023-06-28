@@ -7,8 +7,7 @@
 #include "QskFluent2Skin.h"
 #include "QskFluent2Theme.h"
 
-static const QString nameLight = QStringLiteral( "Fluent2 Light" );
-static const QString nameDark = QStringLiteral( "Fluent2 Dark" );
+static const QString fluent2SkinName = QStringLiteral( "Fluent2" );
 
 namespace
 {
@@ -27,27 +26,16 @@ QskFluent2SkinFactory::~QskFluent2SkinFactory()
 {
 }
 
-QStringList QskFluent2SkinFactory::skinNames() const
+QVector< QskSkin::SkinInfo > QskFluent2SkinFactory::skins() const
 {
-    return { nameLight, nameDark };
+    return { qMakePair( fluent2SkinName, QskSkin::LightScheme ),
+            qMakePair( fluent2SkinName, QskSkin::DarkScheme ) };
 }
 
-QskSkin* QskFluent2SkinFactory::createSkin( const QString& skinName )
+QskSkin* QskFluent2SkinFactory::createSkin( QskSkin::SkinInfo info )
 {
-    QskSkin::ColorScheme colorScheme;
-
-    if ( QString::compare( skinName, nameLight, Qt::CaseInsensitive ) == 0 )
-    {
-        colorScheme = QskSkin::LightScheme;
-    }
-    else if ( QString::compare( skinName, nameDark, Qt::CaseInsensitive ) == 0 )
-    {
-        colorScheme = QskSkin::DarkScheme;
-    }
-    else
-    {
-        return nullptr;
-    }
+    // default to light:
+    const auto colorScheme = info.second == QskSkin::UnknownScheme ? QskSkin::LightScheme : info.second;
 
     struct
     {

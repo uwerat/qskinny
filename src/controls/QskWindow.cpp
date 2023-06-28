@@ -655,10 +655,10 @@ QskWindow::EventAcceptance QskWindow::eventAcceptance() const
     return d_func()->eventAcceptance;
 }
 
-void QskWindow::setSkin( const QString& skinName )
+void QskWindow::setSkin( QskSkin::SkinInfo info )
 {
     // we should compare the skinName with the previous one
-    auto skin = QskSkinManager::instance()->createSkin( skinName );
+    auto skin = QskSkinManager::instance()->createSkin( info );
     setSkin( skin );
 }
 

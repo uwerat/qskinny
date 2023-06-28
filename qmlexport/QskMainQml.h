@@ -9,6 +9,7 @@
 #include "QskQmlGlobal.h"
 
 #include <QskSetup.h>
+#include <QskSkin.h>
 
 #include <qobject.h>
 #include <qqmllist.h>
@@ -32,10 +33,10 @@ class QskMain : public QObject
   public:
     Q_OBJECT
 
-    Q_PRIVATE_PROPERTY( setup(), QString skin READ skinName
+    Q_PRIVATE_PROPERTY( setup(), QskSkin::SkinInfo skin READ skinInfo
         WRITE setSkin NOTIFY skinChanged )
 
-    Q_PROPERTY( QStringList skinList READ skinList NOTIFY skinListChanged )
+    Q_PROPERTY( QVector< QskSkin::SkinInfo > skinList READ skinList NOTIFY skinListChanged )
 
     Q_PRIVATE_PROPERTY( setup(), QskSetupFlagsQml itemUpdateFlags
         READ itemUpdateFlags WRITE setItemUpdateFlags NOTIFY itemUpdateFlagsChanged )
@@ -46,7 +47,7 @@ class QskMain : public QObject
   public:
     QskMain( QObject* parent = nullptr );
 
-    QStringList skinList() const;
+    QVector< QskSkin::SkinInfo > skinList() const;
     QQmlListProperty< QObject > data();
 
   Q_SIGNALS:

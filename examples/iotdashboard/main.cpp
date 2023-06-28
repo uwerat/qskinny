@@ -33,21 +33,25 @@ namespace
         {
         }
 
-        QStringList skinNames() const override
+        QVector< QskSkin::SkinInfo > skins() const override
         {
-            return { "DaytimeSkin", "NighttimeSkin" };
+            return { qMakePair( QStringLiteral( "Skin" ), QskSkin::LightScheme ),
+                    qMakePair( QStringLiteral( "Skin" ), QskSkin::DarkScheme ) };
         }
 
-        QskSkin* createSkin( const QString& skinName ) override
+        QskSkin* createSkin( QskSkin::SkinInfo info ) override
         {
-            if( skinName == "DaytimeSkin" )
+            if( info.first == "Skin" )
             {
-                return new DaytimeSkin;
-            }
+                if( info.second == QskSkin::LightScheme )
+                {
+                    return new DaytimeSkin;
+                }
 
-            if( skinName == "NighttimeSkin" )
-            {
-                return new NighttimeSkin;
+                if( info.second == QskSkin::DarkScheme )
+                {
+                    return new NighttimeSkin;
+                }
             }
 
             return nullptr;
@@ -76,7 +80,7 @@ int main( int argc, char* argv[] )
     qskSkinManager->registerFactory(
         QStringLiteral( "SampleSkinFactory" ), new SkinFactory() );
 
-    qskSetup->setSkin( "DaytimeSkin" );
+    qskSetup->setSkin( { "Skin", QskSkin::LightScheme } );
 
 #ifdef USE_SHORTCUTS
     // With CTRL-B you can rotate a couple of visual debug modes

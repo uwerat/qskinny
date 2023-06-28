@@ -7,9 +7,9 @@
 #define QSK_SKIN_FACTORY_H
 
 #include "QskGlobal.h"
-#include <qobject.h>
+#include "QskSkin.h"
 
-class QskSkin;
+#include <qobject.h>
 
 class QSK_EXPORT QskSkinFactory : public QObject
 {
@@ -19,8 +19,8 @@ class QSK_EXPORT QskSkinFactory : public QObject
     QskSkinFactory( QObject* parent = nullptr );
     ~QskSkinFactory() override;
 
-    virtual QStringList skinNames() const = 0;
-    virtual QskSkin* createSkin( const QString& skinName ) = 0;
+    virtual QVector< QskSkin::SkinInfo > skins() const = 0;
+    virtual QskSkin* createSkin( QskSkin::SkinInfo ) = 0;
 };
 
 #define QskSkinFactoryIID "org.qskinny.Qsk.QskSkinFactory/1.0"

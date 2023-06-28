@@ -81,7 +81,7 @@ class QskSetup::PrivateData
     {
     }
 
-    QString skinName;
+    QskSkin::SkinInfo skinInfo;
     QPointer< QskSkin > skin;
 
     QskGraphicProviderMap graphicProviders;
@@ -91,6 +91,28 @@ class QskSetup::PrivateData
 QskSetup::QskSetup()
     : m_data( new PrivateData() )
 {
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
+        const auto* hints = qGuiApp->styleHints();
+
+        connect( hints, &QStyleHints::colorSchemeChanged, this, [this]( Qt::ColorScheme scheme )
+        {
+            auto info = m_data->skinInfo;
+
+            const auto currentScheme = static_cast< Qt::ColorScheme >( info.second );
+
+            if( currentScheme == scheme )
+                return;
+
+            info.second = static_cast< QskSkin::ColorScheme >( scheme );
+
+            const auto skins = QskSkinManager::instance()->skinInfos();
+
+            if( skins.contains( info ) )
+            {
+                setSkin( info );
+            }
+        } );
+#endif
 }
 
 QskSetup::~QskSetup()
@@ -152,12 +174,12 @@ bool QskSetup::testItemUpdateFlag( QskQuickItem::UpdateFlag flag )
     return m_data->itemUpdateFlags.testFlag( flag );
 }
 
-QskSkin* QskSetup::setSkin( const QString& skinName )
+QskSkin* QskSetup::setSkin( QskSkin::SkinInfo info )
 {
-    if ( m_data->skin && ( skinName == m_data->skinName ) )
+    if ( m_data->skin && ( info == m_data->skinInfo ) )
         return m_data->skin;
 
-    auto skin = QskSkinManager::instance()->createSkin( skinName );
+    auto skin = QskSkinManager::instance()->createSkin( info );
     if ( skin == nullptr )
         return nullptr;
 
@@ -167,7 +189,7 @@ QskSkin* QskSetup::setSkin( const QString& skinName )
     const auto oldSkin = m_data->skin;
 
     m_data->skin = skin;
-    m_data->skinName = skinName;
+    m_data->skinInfo = info;
 
     if ( oldSkin )
     {
@@ -180,20 +202,19 @@ QskSkin* QskSetup::setSkin( const QString& skinName )
     return m_data->skin;
 }
 
-QString QskSetup::skinName() const
+QskSkin::SkinInfo QskSetup::skinInfo() const
 {
-    return m_data->skinName;
+    return m_data->skinInfo;
 }
 
 QskSkin* QskSetup::skin()
 {
     if ( m_data->skin == nullptr )
     {
-        m_data->skin = QskSkinManager::instance()->createSkin( QString() );
+        m_data->skin = QskSkinManager::instance()->createSkin( {} );
         Q_ASSERT( m_data->skin );
 
         m_data->skin->setParent( this );
-        m_data->skinName = m_data->skin->objectName();
     }
 
     return m_data->skin;

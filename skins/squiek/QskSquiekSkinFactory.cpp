@@ -17,15 +17,17 @@ QskSquiekSkinFactory::~QskSquiekSkinFactory()
 {
 }
 
-QStringList QskSquiekSkinFactory::skinNames() const
+QVector< QskSkin::SkinInfo > QskSquiekSkinFactory::skins() const
 {
-    return { squiekSkinName };
+    return { qMakePair( squiekSkinName, QskSkin::UnknownScheme ) };
 }
 
-QskSkin* QskSquiekSkinFactory::createSkin( const QString& skinName )
+QskSkin* QskSquiekSkinFactory::createSkin( QskSkin::SkinInfo info )
 {
-    if ( QString::compare( skinName, squiekSkinName, Qt::CaseInsensitive ) == 0 )
+    if ( QString::compare( info.first, squiekSkinName, Qt::CaseInsensitive ) == 0 )
+    {
         return new QskSquiekSkin();
+    }
 
     return nullptr;
 }

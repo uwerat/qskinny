@@ -55,7 +55,7 @@ static bool pluginPath = initPluginPath();
 
     static void initSkins()
     {
-        auto skinNames = qskSkinManager->skinNames();
+        auto skinNames = qskSkinManager->skinInfos();
 
         if ( skinNames.isEmpty() )
         {
@@ -70,7 +70,7 @@ static bool pluginPath = initPluginPath();
 
             qWarning() << "Couldn't find skin plugins, adding some manually.";
 
-            skinNames = qskSkinManager->skinNames();
+            skinNames = qskSkinManager->skinInfos();
         }
 
         if ( !skinNames.isEmpty() )
@@ -133,10 +133,10 @@ Q_COREAPP_STARTUP_FUNCTION( initFonts )
 
 void Skinny::changeSkin( QskAnimationHint hint )
 {
-    const auto names = qskSkinManager->skinNames();
+        const auto names = qskSkinManager->skinInfos();
     if ( names.size() > 1 )
     {
-        auto index = names.indexOf( qskSetup->skinName() );
+        auto index = names.indexOf( qskSetup->skinInfo() );
         index = ( index + 1 ) % names.size();
 
         setSkin( index, hint );
@@ -145,11 +145,11 @@ void Skinny::changeSkin( QskAnimationHint hint )
 
 void Skinny::setSkin( int index, QskAnimationHint hint )
 {
-    const auto names = qskSkinManager->skinNames();
+    const auto names = qskSkinManager->skinInfos();
     if ( names.size() <= 1 )
         return;
 
-    if ( index == names.indexOf( qskSetup->skinName() ) )
+    if ( index == names.indexOf( qskSetup->skinInfo() ) )
         return;
 
     auto oldSkin = qskSetup->skin();

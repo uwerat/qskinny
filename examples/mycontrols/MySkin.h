@@ -13,6 +13,6 @@ class MySkinFactory : public QskSkinFactory
     using Inherited = QskSkinFactory;
 
   public:
-    QStringList skinNames() const override;
-    QskSkin* createSkin( const QString& skinName ) override;
+    virtual QVector< QskSkin::SkinInfo > skins() const override;
+    virtual QskSkin* createSkin( QskSkin::SkinInfo ) override;
 };

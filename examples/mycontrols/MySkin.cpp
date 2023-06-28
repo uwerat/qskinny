@@ -222,17 +222,18 @@ namespace
     };
 }
 
-QStringList MySkinFactory::skinNames() const
+QVector< QskSkin::SkinInfo > MySkinFactory::skins() const
 {
-    return { QStringLiteral( "Blue" ), QStringLiteral( "Pink" ) };
+    return { qMakePair( QStringLiteral( "Blue" ), QskSkin::UnknownScheme ),
+        qMakePair( QStringLiteral( "Pink" ), QskSkin::UnknownScheme ) };
 }
 
-QskSkin* MySkinFactory::createSkin( const QString& skinName )
+QskSkin* MySkinFactory::createSkin( QskSkin::SkinInfo info )
 {
-    if ( skinName == QStringLiteral( "Blue" ) )
+    if ( info.first == QStringLiteral( "Blue" ) )
         return new SkinBlue();
 
-    if ( skinName == QStringLiteral( "Pink" ) )
+    if ( info.first == QStringLiteral( "Pink" ) )
         return new SkinPink();
 
     return nullptr;

@@ -5,6 +5,7 @@
 
 #include "QskSkinManager.h"
 #include "QskSkinFactory.h"
+#include "QskSkin.h"
 
 #include <qdir.h>
 #include <qglobalstatic.h>
@@ -104,41 +105,42 @@ namespace
                     const auto& skinObject = skin.toObject();
                     const auto& name = skinObject.value( TokenName ).toString();
 
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
                     const auto& schemeString = skinObject.value( TokenScheme ).toString();
-                    Qt::ColorScheme scheme;
+                    QskSkin::ColorScheme scheme;
 
-                    if( schemeString == QStringLiteral( "Light" ) )
+                    if( schemeString == QStringLiteral( "LightScheme" ) )
                     {
-                        scheme = Qt::ColorScheme::Light;
+                        scheme = QskSkin::LightScheme;
                     }
-                    else if( schemeString == QStringLiteral( "Dark" ) )
+                    else if( schemeString == QStringLiteral( "DarkScheme" ) )
                     {
-                        scheme = Qt::ColorScheme::Dark;
+                        scheme = QskSkin::DarkScheme;
                     }
                     else
                     {
-                        scheme = Qt::ColorScheme::Unknown;
+                        scheme = QskSkin::UnknownScheme;
                     }
 
+                    const auto pair = qMakePair( name, scheme );
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
                     const auto systemScheme = qGuiApp->styleHints()->colorScheme();
 
-                    if( scheme == systemScheme )
+                    if( static_cast< Qt::ColorScheme >( scheme ) == systemScheme )
                     {
-                        m_skinNames.prepend( name );
+                        m_skins.prepend( pair );
                     }
                     else
                     {
-                        m_skinNames.append( name );
+                        m_skins.append( pair );
                     }
 #else
-                    Q_UNUSED( TokenScheme )
-                    m_skinNames += name;
+                    m_skins.append( pair );
 #endif
                 }
             }
 
-            return !m_skinNames.isEmpty();
+            return !m_skins.isEmpty();
         }
 
         inline QString factoryId() const
@@ -158,9 +160,9 @@ namespace
             return factory;
         }
 
-        inline QStringList skinNames() const
+        inline QVector< QskSkin::SkinInfo > skins() const
         {
-            return m_skinNames;
+            return m_skins;
         }
 
       private:
@@ -168,7 +170,7 @@ namespace
         QObject* instance() = delete;
 
         QString m_factoryId;
-        QStringList m_skinNames;
+        QVector< QskSkin::SkinInfo > m_skins;
     };
 
     class FactoryMap
@@ -210,17 +212,17 @@ namespace
 
         void reset()
         {
-            m_skinNames.clear();
+            m_skins.clear();
             m_skinMap.clear();
             m_factoryMap.clear();
         }
 
-        QskSkinFactory* factory( const QString& skinName )
+        QskSkinFactory* factory( QskSkin::SkinInfo info )
         {
             if ( !m_isValid )
                 rebuild();
 
-            const auto it = m_skinMap.constFind( skinName );
+            const auto it = m_skinMap.constFind( info );
             if ( it != m_skinMap.constEnd() )
             {
                 auto it2 = m_factoryMap.find( it.value() );
@@ -237,12 +239,12 @@ namespace
             return nullptr;
         }
 
-        QStringList skinNames() const
+        QVector< QskSkin::SkinInfo > skins() const
         {
             if ( !m_isValid )
                 const_cast< FactoryMap* >( this )->rebuild();
 
-            return m_skinNames;
+            return m_skins;
         }
 
         void insertFactory( FactoryLoader* loader )
@@ -269,7 +271,7 @@ namespace
                 data.factory = factory;
 
                 m_skinMap.clear();
-                m_skinNames.clear();
+                m_skins.clear();
                 m_isValid = false;
             }
         }
@@ -287,7 +289,7 @@ namespace
                 for ( auto it = m_skinMap.constBegin();
                     it != m_skinMap.constEnd(); ++it )
                 {
-                    if ( it.key() == factoryId )
+                    if ( it.key().first == factoryId )
                     {
                         m_isValid = false;
                         break;
@@ -296,7 +298,7 @@ namespace
 
                 if ( !m_isValid )
                 {
-                    m_skinNames.clear();
+                    m_skins.clear();
                     m_skinMap.clear();
                 }
             }
@@ -311,7 +313,7 @@ namespace
         void rebuild()
         {
             m_skinMap.clear();
-            m_skinNames.clear();
+            m_skins.clear();
 
             // first we try all factories, that have been added manually
             for ( auto it = m_factoryMap.constBegin(); it != m_factoryMap.constEnd(); ++it )
@@ -319,7 +321,7 @@ namespace
                 const auto& data = it.value();
 
                 if ( data.loader == nullptr && data.factory )
-                    rebuild( it.key(), data.factory->skinNames() );
+                    rebuild( it.key(), data.factory->skins() );
             }
 
             // all factories from plugins are following
@@ -327,27 +329,27 @@ namespace
             {
                 const auto& data = it.value();
                 if ( data.loader )
-                    rebuild( it.key(), data.loader->skinNames() );
+                    rebuild( it.key(), data.loader->skins() );
             }
 
             m_isValid = true;
         }
 
-        void rebuild( const QString& factoryId, const QStringList& skinNames )
+        void rebuild( const QString& factoryId, const QVector< QskSkin::SkinInfo >& skins )
         {
-            for ( const auto& name : skinNames )
+            for ( const auto& skin : skins )
             {
-                if ( !m_skinMap.contains( name ) )
+                if ( !m_skinMap.contains( skin ) )
                 {
-                    m_skinMap.insert( name, factoryId );
-                    m_skinNames += name;
+                    m_skinMap.insert( skin, factoryId );
+                    m_skins += skin;
                 }
             }
         }
 
         QMap< QString, Data > m_factoryMap; // factoryId -> data
-        QMap< QString, QString > m_skinMap; // skinName -> factoryId
-        QStringList m_skinNames;
+        QMap< QskSkin::SkinInfo, QString > m_skinMap; // skinName -> factoryId
+        QVector< QskSkin::SkinInfo > m_skins;
 
         bool m_isValid;
     };
@@ -515,32 +517,34 @@ void QskSkinManager::unregisterFactories()
     m_data->factoryMap.reset();
 }
 
-QStringList QskSkinManager::skinNames() const
+QVector< QskSkin::SkinInfo > QskSkinManager::skinInfos() const
 {
     m_data->ensurePlugins();
-    return m_data->factoryMap.skinNames();
+    return m_data->factoryMap.skins();
 }
 
-QskSkin* QskSkinManager::createSkin( const QString& skinName ) const
+QskSkin* QskSkinManager::createSkin( QskSkin::SkinInfo info ) const
 {
     m_data->ensurePlugins();
 
     auto& map = m_data->factoryMap;
 
-    auto name = skinName;
+    auto i = info;
 
-    auto factory = map.factory( name );
+    auto factory = map.factory( info );
+
     if ( factory == nullptr )
     {
-        const auto names = map.skinNames();
-        if ( !names.isEmpty() )
+        const auto infos = map.skins();
+
+        if ( !infos.isEmpty() )
         {
-            name = names.first();
-            factory = map.factory( name );
+            i = infos.first();
+            factory = map.factory( i );
         }
     }
 
-    return factory ? factory->createSkin( name ) : nullptr;
+    return factory ? factory->createSkin( info ) : nullptr;
 }
 
 #include "moc_QskSkinManager.cpp"

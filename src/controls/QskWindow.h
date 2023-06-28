@@ -7,11 +7,12 @@
 #define QSK_WINDOW_H
 
 #include "QskGlobal.h"
+#include "QskSkin.h"
+
 #include <qquickwindow.h>
 
 class QskWindowPrivate;
 class QskObjectAttributes;
-class QskSkin;
 
 class QSK_EXPORT QskWindow : public QQuickWindow
 {
@@ -72,7 +73,7 @@ class QSK_EXPORT QskWindow : public QQuickWindow
 
     // each window might have its own skin
     void setSkin( QskSkin* );
-    void setSkin( const QString& );
+    void setSkin( QskSkin::SkinInfo info );
     QskSkin* skin() const;
 
   Q_SIGNALS:

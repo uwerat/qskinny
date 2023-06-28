@@ -27,10 +27,10 @@ QskMain::QskMain( QObject* parent )
         this, &QskMain::itemUpdateFlagsChanged, Qt::QueuedConnection );
 }
 
-QStringList QskMain::skinList() const
+QVector< QskSkin::SkinInfo > QskMain::skinList() const
 {
     auto manager = QskSkinManager::instance();
-    return manager ? manager->skinNames() : QStringList();
+    return manager ? manager->skinInfos() : QVector< QskSkin::SkinInfo >();
 }
 
 QQmlListProperty< QObject > QskMain::data()

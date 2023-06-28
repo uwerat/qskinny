@@ -79,8 +79,8 @@ class Window : public QskWindow
     {
         auto button = new MyToggleButton();
 
-        button->setText( false, alternativeSkin( false ) );
-        button->setText( true, alternativeSkin( true ) );
+        button->setText( false, alternativeSkin( false ).first );
+        button->setText( true, alternativeSkin( true ).first );
         button->setLayoutAlignmentHint( Qt::AlignRight );
 
         auto box = new QskLinearBox( Qt::Vertical );
@@ -120,10 +120,10 @@ class Window : public QskWindow
             delete oldSkin;
     }
 
-    QString alternativeSkin( bool on ) const
+    QskSkin::SkinInfo alternativeSkin( bool on ) const
     {
-        const auto skinNames = qskSkinManager->skinNames();
-        return skinNames[ on ];
+        const auto skins = qskSkinManager->skinInfos();
+        return skins[ on ];
     }
 };
 

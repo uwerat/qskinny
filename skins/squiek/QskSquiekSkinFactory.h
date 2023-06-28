@@ -22,8 +22,8 @@ class QSK_SQUIEK_EXPORT QskSquiekSkinFactory : public QskSkinFactory
     QskSquiekSkinFactory( QObject* parent = nullptr );
     ~QskSquiekSkinFactory() override;
 
-    QStringList skinNames() const override;
-    QskSkin* createSkin( const QString& skinName ) override;
+    QVector< QskSkin::SkinInfo > skins() const override;
+    QskSkin* createSkin( QskSkin::SkinInfo ) override;
 };
 
 #endif

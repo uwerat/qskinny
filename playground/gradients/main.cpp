@@ -208,7 +208,7 @@ int main( int argc, char** argv )
 
     Skinny::init(); // we need a skin
     SkinnyShortcut::enable( SkinnyShortcut::Quit | SkinnyShortcut::DebugBackground );
-    qskSetup->setSkin( "squiek" );
+    qskSetup->setSkin( qMakePair( QStringLiteral( "squiek" ), QskSkin::UnknownScheme ) );
 
     QskWindow window;
     window.setColor( QskRgb::Wheat );

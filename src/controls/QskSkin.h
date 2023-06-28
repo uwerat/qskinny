@@ -58,6 +58,8 @@ class QSK_EXPORT QskSkin : public QObject
     Q_ENUM( ColorScheme )
 #endif
 
+    typedef QPair< QString, QskSkin::ColorScheme > SkinInfo;
+
     QskSkin( QObject* parent = nullptr );
     ~QskSkin() override;
 

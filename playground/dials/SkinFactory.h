@@ -12,6 +12,6 @@ class SkinFactory : public QskSkinFactory
     Q_OBJECT
 
   public:
-    QStringList skinNames() const override;
-    QskSkin* createSkin( const QString& ) override;
+    QVector< QskSkin::SkinInfo > skins() const override;
+    QskSkin* createSkin( QskSkin::SkinInfo ) override;
 };

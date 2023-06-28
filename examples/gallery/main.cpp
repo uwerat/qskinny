@@ -146,12 +146,25 @@ namespace
       private:
         void populateMenu( QskMenu* menu ) override
         {
-            const auto names = qskSkinManager->skinNames();
+            const auto skins = qskSkinManager->skinInfos();
 
-            for ( const auto& name : names )
-                menu->addOption( QUrl(), name );
+            for ( const auto& skin : skins )
+            {
+                auto text = skin.first;
 
-            if ( const auto index = names.indexOf( qskSetup->skinName() ) )
+                if( skin.second == QskSkin::LightScheme )
+                {
+                    text.append( " Light" );
+                }
+                else if( skin.second == QskSkin::DarkScheme )
+                {
+                    text.append( " Dark" );
+                }
+
+                menu->addOption( QUrl(),text );
+            }
+
+            if ( const auto index = skins.indexOf( qskSetup->skinInfo() ) )
                 menu->setCurrentIndex( index );
 
             connect( menu, &QskMenu::triggered, this, &SkinButton::changeSkin );
@@ -159,10 +172,10 @@ namespace
 
         void changeSkin( int index )
         {
-            const auto names = qskSkinManager->skinNames();
+            const auto names = qskSkinManager->skinInfos();
 
             if ( ( index >= 0 ) && ( index < names.size() )
-                 && ( index != names.indexOf( qskSetup->skinName() ) ) )
+                && ( index != names.indexOf( qskSetup->skinInfo() ) ) )
             {
                 Skinny::setSkin( index, 500 );
             }

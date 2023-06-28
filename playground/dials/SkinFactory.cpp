@@ -75,14 +75,14 @@ namespace
 
 }
 
-QStringList SkinFactory::skinNames() const
+QVector< QskSkin::SkinInfo > SkinFactory::skins() const
 {
-    return { "Skin" };
+    return { qMakePair( QStringLiteral( "Skin" ), QskSkin::UnknownScheme ) };
 }
 
-QskSkin* SkinFactory::createSkin( const QString& skinName )
+QskSkin* SkinFactory::createSkin( QskSkin::SkinInfo info )
 {
-    if ( skinName == "Skin" )
+    if ( info.first == "Skin" )
         return new Skin();
 
     return nullptr;
