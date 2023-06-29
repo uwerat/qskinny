@@ -102,23 +102,29 @@ namespace
 {
     double minorStepSize( double intervalSize, int maxSteps )
     {
-        const double minStep = divideInterval( intervalSize, maxSteps );
+        int steps = maxSteps;
 
-        if ( minStep != 0.0 )
+        while( steps > 0 )
         {
-            // # ticks per interval
-            const int numTicks = qCeil( qAbs( intervalSize / minStep ) ) - 1;
+            const double minStep = divideInterval( intervalSize, steps );
 
-            // Do the minor steps fit into the interval?
-            if ( fuzzyCompare( ( numTicks + 1 ) * qAbs( minStep ),
-                qAbs( intervalSize ), intervalSize ) > 0 )
+            if ( minStep != 0.0 )
             {
-                // The minor steps doesn't fit into the interval
-                return 0.5 * intervalSize;
+                // # ticks per interval
+                const int numTicks = qCeil( qAbs( intervalSize / minStep ) ) - 1;
+
+                // Do the minor steps fit into the interval?
+                if ( fuzzyCompare( ( numTicks + 1 ) * qAbs( minStep ),
+                    qAbs( intervalSize ), intervalSize ) <= 0 )
+                {
+                    return minStep;
+                }
             }
+
+            steps--;
         }
 
-        return minStep;
+        return 0.5 * intervalSize;
     }
 }
 
