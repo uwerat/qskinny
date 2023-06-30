@@ -724,6 +724,8 @@ void Editor::setupMenuColors(
     setGradient( Q::Panel, pal.background.flyout.defaultColor );
     setShadowColor( Q::Panel, theme.shadow.flyout.color );
 
+    setGradient( Q::Segment | Q::Hovered, pal.fillColor.subtle.secondary );
+
     setGradient( Q::Segment | Q::Selected, pal.fillColor.subtle.secondary );
 
     /*
@@ -734,7 +736,7 @@ void Editor::setupMenuColors(
     const auto c1 = pal.fillColor.subtle.secondary;
     const auto c2 = pal.fillColor.accent.defaultColor;
 
-    setBoxBorderColors( Q::Segment | Q::Selected, 
+    setBoxBorderColors( Q::Segment | Q::Selected,
         QskGradient( { { 0.25, c1 }, { 0.25, c2 }, { 0.75, c2 }, { 0.75, c1 } } ) );
 
     setColor( Q::Text, pal.fillColor.text.primary );

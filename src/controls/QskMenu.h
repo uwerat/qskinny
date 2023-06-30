@@ -68,6 +68,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     QVector< int > actions() const;
 
     int currentIndex() const;
+
     QString currentText() const;
 
     int triggeredIndex() const;
@@ -96,6 +97,10 @@ class QSK_EXPORT QskMenu : public QskPopup
   protected:
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
+
+    void hoverEnterEvent( QHoverEvent* ) override;
+    void hoverMoveEvent( QHoverEvent* ) override;
+    void hoverLeaveEvent( QHoverEvent* ) override;
 
 #ifndef QT_NO_WHEELEVENT
     void wheelEvent( QWheelEvent* ) override;
