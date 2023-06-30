@@ -72,6 +72,8 @@ QskMenu::QskMenu( QQuickItem* parent )
 
     connect( this, &QskMenu::opened, this,
         [this]() { m_data->triggeredIndex = -1; } );
+
+    setAcceptHoverEvents( true );
 }
 
 QskMenu::~QskMenu()
@@ -317,6 +319,30 @@ void QskMenu::keyReleaseEvent( QKeyEvent* )
             trigger( m_data->currentIndex );
         }
     }
+}
+
+void QskMenu::hoverEnterEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( Segment | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+    update();
+}
+
+void QskMenu::hoverMoveEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( Segment | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+    update();
+}
+
+void QskMenu::hoverLeaveEvent( QHoverEvent* )
+{
+    using A = QskAspect;
+
+    setSkinHint( Segment | Hovered | A::Metric | A::Position, QPointF() );
+    update();
 }
 
 #ifndef QT_NO_WHEELEVENT

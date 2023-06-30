@@ -340,8 +340,8 @@ void Editor::setupMenu()
 
     // The color here is primary with an opacity of 8% - we blend that
     // with the background, because we don't want the menu to have transparency:
-    const auto panel = flattenedColor( m_pal.primary, m_pal.background, 0.08 );
-    setGradient( Q::Panel, panel );
+    const auto panelColor = flattenedColor( m_pal.primary, m_pal.background, 0.08 );
+    setGradient( Q::Panel, panelColor );
 
     setShadowMetrics( Q::Panel, m_pal.elevation2 );
     setShadowColor( Q::Panel, m_pal.shadow );
@@ -355,7 +355,12 @@ void Editor::setupMenu()
     setSpacing( Q::Segment, 5_dp );
     setGradient( Q::Segment, Qt::transparent );
 
-    setGradient( Q::Cursor, m_pal.primary12 );
+    const auto hoverColor = flattenedColor( m_pal.onSurface, panelColor, m_pal.hoverOpacity );
+    setGradient( Q::Segment | Q::Hovered, hoverColor );
+
+    setGradient( Q::Segment | Q::Selected, m_pal.primary12 );
+    const auto hoverSelectedColor = flattenedColor( m_pal.onSurface, m_pal.primary12, m_pal.hoverOpacity );
+    setGradient( Q::Segment | Q::Selected | Q::Hovered, hoverSelectedColor );
 
     setPadding( Q::Icon, 7_dp );
     setStrutSize( Q::Icon, 24_dp, 24_dp );
