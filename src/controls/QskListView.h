@@ -14,7 +14,8 @@ class QSK_EXPORT QskListView : public QskScrollView
     Q_OBJECT
 
     Q_PROPERTY( bool alternatingRowColors READ alternatingRowColors
-        WRITE setAlternatingRowColors NOTIFY alternatingRowColorsChanged FINAL )
+        WRITE setAlternatingRowColors RESET resetAlternatingRowColors
+        NOTIFY alternatingRowColorsChanged FINAL )
 
     Q_PROPERTY( SelectionMode selectionMode READ selectionMode
         WRITE setSelectionMode NOTIFY selectionModeChanged FINAL )
@@ -23,7 +24,8 @@ class QSK_EXPORT QskListView : public QskScrollView
         WRITE setSelectedRow NOTIFY selectedRowChanged FINAL )
 
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
-        WRITE setTextOptions NOTIFY textOptionsChanged FINAL )
+        WRITE setTextOptions RESET resetTextOptions
+        NOTIFY textOptionsChanged FINAL )
 
     Q_PROPERTY( bool preferredWidthFromColumns READ preferredWidthFromColumns
         WRITE setPreferredWidthFromColumns NOTIFY preferredWidthFromColumnsChanged() )
@@ -49,12 +51,14 @@ class QSK_EXPORT QskListView : public QskScrollView
     bool preferredWidthFromColumns() const;
 
     void setAlternatingRowColors( bool );
+    void resetAlternatingRowColors();
     bool alternatingRowColors() const;
 
     void setSelectionMode( SelectionMode );
     SelectionMode selectionMode() const;
 
     void setTextOptions( const QskTextOptions& textOptions );
+    void resetTextOptions();
     QskTextOptions textOptions() const;
 
     Q_INVOKABLE int selectedRow() const;

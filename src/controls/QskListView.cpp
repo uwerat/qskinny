@@ -23,14 +23,12 @@ class QskListView::PrivateData
   public:
     PrivateData()
         : preferredWidthFromColumns( false )
-        , alternatingRowColors( false )
         , selectionMode( QskListView::SingleSelection )
         , selectedRow( -1 )
     {
     }
 
     bool preferredWidthFromColumns : 1;
-    bool alternatingRowColors : 1;
     SelectionMode selectionMode : 4;
 
     int selectedRow;
@@ -64,18 +62,19 @@ bool QskListView::preferredWidthFromColumns() const
 
 void QskListView::setAlternatingRowColors( bool on )
 {
-    if ( on != m_data->alternatingRowColors )
-    {
-        m_data->alternatingRowColors = on;
-        update();
-
+    if ( setFlagHint( Cell | QskAspect::Style, on ) )
         Q_EMIT alternatingRowColorsChanged();
-    }
 }
 
 bool QskListView::alternatingRowColors() const
 {
-    return m_data->alternatingRowColors;
+    return flagHint< bool >( Cell | QskAspect::Style, false );
+}
+
+void QskListView::resetAlternatingRowColors()
+{
+    if ( resetSkinHint( Cell | QskAspect::Style ) )
+        Q_EMIT alternatingRowColorsChanged();
 }
 
 void QskListView::setTextOptions( const QskTextOptions& textOptions )
@@ -90,6 +89,15 @@ void QskListView::setTextOptions( const QskTextOptions& textOptions )
 QskTextOptions QskListView::textOptions() const
 {
     return textOptionsHint( Text );
+}
+
+void QskListView::resetTextOptions()
+{
+    if ( resetTextOptionsHint( Text ) )
+    {
+        updateScrollableSize();
+        Q_EMIT textOptionsChanged();
+    }
 }
 
 void QskListView::setSelectedRow( int row )

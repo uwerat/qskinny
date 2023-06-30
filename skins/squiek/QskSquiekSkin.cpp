@@ -1056,6 +1056,8 @@ void Editor::setupListView()
 
     setColor( Q::Cell | Q::Selected, m_pal.highlighted );
     setColor( Q::Text | Q::Selected, m_pal.highlightedText );
+
+    setFlag( Q::Cell | QskAspect::Style, true ); // alternating colors
 }
 
 void Editor::setupSubWindow()
