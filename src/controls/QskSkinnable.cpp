@@ -1382,7 +1382,19 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
 bool QskSkinnable::startHintTransitions(
     QskAspect::States oldStates, QskAspect::States newStates, int index )
 {
-    if ( !isTransitionAccepted( QskAspect() ) )
+    QVector< QskAspect::Subcontrol > subControls;
+
+    if ( const auto control = qskControlCast( owningItem() ) )
+        subControls = control->subControls();
+
+    return startHintTransitions( subControls, oldStates, newStates, index );
+}
+
+bool QskSkinnable::startHintTransitions(
+    const QVector< QskAspect::Subcontrol >& subControls,
+    QskAspect::States oldStates, QskAspect::States newStates, int index )
+{
+    if ( !isTransitionAccepted( QskAspect() ) || subControls.isEmpty() )
     {
         // the control does not like any animated transition at the moment
         return false;
@@ -1401,7 +1413,6 @@ bool QskSkinnable::startHintTransitions(
 
     const auto primitiveCount = QskAspect::primitiveCount();
 
-    const auto subControls = control->subControls();
     for ( const auto subControl : subControls )
     {
         aspect.setSubcontrol( subControl );
