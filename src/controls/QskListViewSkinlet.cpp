@@ -13,7 +13,6 @@
 
 #include <qmath.h>
 #include <qsgnode.h>
-#include <qsgsimplerectnode.h>
 #include <qtransform.h>
 
 class QskListViewNode final : public QSGTransformNode
@@ -113,10 +112,12 @@ QSGNode* QskListViewSkinlet::updateContentsNode(
 void QskListViewSkinlet::updateBackgroundNodes(
     const QskListView* listView, QskListViewNode* listViewNode ) const
 {
+    using Q = QskListView;
+
     QSGNode* backgroundNode = listViewNode->backgroundNode();
 
     const qreal cellHeight = listView->rowHeight();
-    const QRectF viewRect = listView->viewContentsRect();
+    const auto viewRect = listView->viewContentsRect();
 
     const QPointF scrolledPos = listView->scrollPos();
     const int rowMin = qFloor( scrolledPos.y() / cellHeight );
@@ -129,32 +130,25 @@ void QskListViewSkinlet::updateBackgroundNodes(
     const double x0 = viewRect.left() + scrolledPos.x();
     const double y0 = viewRect.top();
 
-    auto* rowNode = static_cast< QSGSimpleRectNode* >( backgroundNode->firstChild() );
+    auto rowNode = backgroundNode->firstChild();
 
     if ( listView->alternatingRowColors() )
     {
-#if 1
-        /*
-            Cell might be better for regular cells, while ( Cell | AlternateColor )
-            could be used for the alternate color TODO ...
-         */
-#endif
-        const auto color = listView->color( QskListView::Cell );
-
         for ( int row = rowMin; row <= rowMax; row++ )
         {
             if ( row % 2 )
             {
-                if ( rowNode == nullptr )
+                const QRectF rect( x0, y0 + row * cellHeight,
+                    viewRect.width(), cellHeight );
+
+                auto newNode = updateBoxNode( listView, rowNode, rect, Q::Cell );
+                if ( newNode )
                 {
-                    rowNode = new QSGSimpleRectNode();
-                    backgroundNode->appendChildNode( rowNode );
+                    if ( newNode->parent() != backgroundNode )
+                        backgroundNode->appendChildNode( newNode );
+                    else
+                        rowNode = newNode->nextSibling();
                 }
-
-                rowNode->setRect( x0, y0 + row * cellHeight, viewRect.width(), cellHeight );
-                rowNode->setColor( color );
-
-                rowNode = static_cast< QSGSimpleRectNode* >( rowNode->nextSibling() );
             }
         }
     }
@@ -164,27 +158,15 @@ void QskListViewSkinlet::updateBackgroundNodes(
         QskSkinStateChanger stateChanger( listView );
         stateChanger.setStates( listView->skinStates() | QskListView::Selected );
 
-        const QColor color = listView->color( QskListView::Cell );
-
-        if ( rowNode == nullptr )
-        {
-            rowNode = new QSGSimpleRectNode();
+        const QRectF rect( x0, y0 + rowSelected * cellHeight,
+            viewRect.width(), cellHeight );
+        
+        rowNode = updateBoxNode( listView, rowNode, rect, Q::Cell );
+        if ( rowNode && rowNode->parent() != backgroundNode )
             backgroundNode->appendChildNode( rowNode );
-        }
-
-        rowNode->setRect( x0, y0 + rowSelected * cellHeight, viewRect.width(), cellHeight );
-        rowNode->setColor( color );
-
-        rowNode = static_cast< QSGSimpleRectNode* >( rowNode->nextSibling() );
     }
 
-    QSGNode* nextNode = rowNode;
-    while ( nextNode != nullptr )
-    {
-        QSGNode* tmpNode = nextNode;
-        nextNode = nextNode->nextSibling();
-        delete tmpNode;
-    }
+    QskSGNode::removeAllChildNodesAfter( backgroundNode, rowNode );
 }
 
 void QskListViewSkinlet::updateForegroundNodes(
