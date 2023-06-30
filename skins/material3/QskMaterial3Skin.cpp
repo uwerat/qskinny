@@ -278,6 +278,10 @@ void Editor::setupComboBox()
         m_pal.surfaceVariant, m_pal.focusOpacity );
     setGradient( Q::Panel | Q::Focused, focusColor );
 
+    const auto pressedColor = flattenedColor( m_pal.onSurfaceVariant,
+        m_pal.surfaceVariant, m_pal.pressedOpacity );
+    setGradient( Q::Panel | Q::Pressed, pressedColor );
+
     const auto activeColor = flattenedColor( m_pal.onSurfaceVariant,
         m_pal.surfaceVariant, m_pal.pressedOpacity );
     setGradient( Q::Panel | Q::PopupOpen, activeColor );

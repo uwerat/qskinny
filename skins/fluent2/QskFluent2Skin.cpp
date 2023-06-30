@@ -514,7 +514,7 @@ void Editor::setupComboBoxColors(
 
     const auto& pal = theme.palette;
 
-    for ( const auto state : { QskAspect::NoState, Q::Hovered, Q::Focused, Q::Disabled } )
+    for ( const auto state : { QskAspect::NoState, Q::Hovered, Q::Focused, Q::Pressed, Q::Disabled } )
     {
         QRgb panelColor, borderColor1, borderColor2, textColor;
 
@@ -535,11 +535,17 @@ void Editor::setupComboBoxColors(
         }
         else if ( state == Q::Focused )
         {
-
             panelColor = pal.fillColor.control.inputActive;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.fillColor.accent.defaultColor;
             textColor = pal.fillColor.text.primary;
+        }
+        else if ( state == Q::Pressed )
+        {
+            panelColor = pal.fillColor.control.inputActive;
+            borderColor1 = pal.elevation.textControl.border[0];
+            borderColor2 = pal.fillColor.accent.defaultColor;
+            textColor = pal.fillColor.text.secondary;
         }
         else if ( state == Q::Disabled )
         {
@@ -564,6 +570,11 @@ void Editor::setupComboBoxColors(
         {
             setGraphicRole( icon, W::GraphicRoleFillColorTextDisabled );
             setGraphicRole( indicator, W::GraphicRoleFillColorTextDisabled );
+        }
+        else if( state == Q::Pressed )
+        {
+            setGraphicRole( icon, W::GraphicRoleFillColorTextSecondary );
+            setGraphicRole( indicator, W::GraphicRoleFillColorTextSecondary );
         }
         else
         {
