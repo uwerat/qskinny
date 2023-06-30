@@ -725,6 +725,7 @@ void Editor::setupMenuColors(
     setShadowColor( Q::Panel, theme.shadow.flyout.color );
 
     setGradient( Q::Segment | Q::Hovered, pal.fillColor.subtle.secondary );
+    setGradient( Q::Segment | Q::Selected | Q::Pressed, pal.fillColor.subtle.tertiary );
 
     setGradient( Q::Segment | Q::Selected, pal.fillColor.subtle.secondary );
 
@@ -739,9 +740,14 @@ void Editor::setupMenuColors(
     setBoxBorderColors( Q::Segment | Q::Selected,
         QskGradient( { { 0.25, c1 }, { 0.25, c2 }, { 0.75, c2 }, { 0.75, c1 } } ) );
 
+    setBoxBorderColors( Q::Segment | Q::Selected | Q::Pressed,
+        QskGradient( { { 0.33, c1 }, { 0.33, c2 }, { 0.67, c2 }, { 0.67, c1 } } ) );
+
     setColor( Q::Text, pal.fillColor.text.primary );
+    setColor( Q::Text | Q::Selected | Q::Pressed, pal.fillColor.text.secondary );
 
     setGraphicRole( Q::Icon, QskFluent2Skin::GraphicRoleFillColorTextPrimary );
+    setGraphicRole( Q::Icon | Q::Selected | Q::Pressed, QskFluent2Skin::GraphicRoleFillColorTextSecondary );
 }
 
 void Editor::setupPageIndicatorMetrics()

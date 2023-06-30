@@ -27,6 +27,7 @@ QSK_SUBCONTROL( QskMenu, Icon )
 QSK_SUBCONTROL( QskMenu, Separator )
 
 QSK_SYSTEM_STATE( QskMenu, Selected, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskMenu, Pressed, QskAspect::FirstSystemState << 3 )
 
 static inline int qskActionIndex( const QVector< int >& actions, int index )
 {
@@ -309,7 +310,7 @@ void QskMenu::keyPressEvent( QKeyEvent* event )
 
 void QskMenu::keyReleaseEvent( QKeyEvent* )
 {
-    if( m_data->isPressed )
+    if( isPressed() )
     {
         m_data->isPressed = false;
 
@@ -416,7 +417,7 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
 {
     if ( event->button() == Qt::LeftButton )
     {
-        if( m_data->isPressed )
+        if( isPressed() )
         {
             m_data->isPressed = false;
 
@@ -479,6 +480,11 @@ int QskMenu::indexAtPosition( const QPointF& pos ) const
         this, contentsRect(), QskMenu::Segment, pos );
 
     return m_data->actions.value( index, -1 );
+}
+
+bool QskMenu::isPressed() const
+{
+    return m_data->isPressed;
 }
 
 void QskMenu::trigger( int index )
