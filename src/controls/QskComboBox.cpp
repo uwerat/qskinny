@@ -18,7 +18,8 @@ QSK_SUBCONTROL( QskComboBox, Icon )
 QSK_SUBCONTROL( QskComboBox, Text )
 QSK_SUBCONTROL( QskComboBox, StatusIndicator )
 
-QSK_SYSTEM_STATE( QskComboBox, PopupOpen, QskAspect::FirstSystemState << 1 )
+QSK_SYSTEM_STATE( QskComboBox, Pressed, QskAspect::FirstSystemState << 1 )
+QSK_SYSTEM_STATE( QskComboBox, PopupOpen, QskAspect::FirstSystemState << 2 )
 
 static inline void qskTraverseOptions( QskComboBox* comboBox, int steps )
 {
@@ -87,6 +88,25 @@ QskComboBox::QskComboBox( QQuickItem* parent )
 
 QskComboBox::~QskComboBox()
 {
+}
+
+bool QskComboBox::isPressed() const
+{
+    return hasSkinState( Pressed );
+}
+
+void QskComboBox::setPressed( bool on )
+{
+    if ( on == isPressed() )
+        return;
+
+    setSkinStateFlag( Pressed, on );
+    Q_EMIT pressedChanged( on );
+
+    if ( on )
+        Q_EMIT pressed();
+    else
+        Q_EMIT released();
 }
 
 void QskComboBox::setPopupOpen( bool on )
@@ -246,11 +266,13 @@ void QskComboBox::closePopup()
 
 void QskComboBox::mousePressEvent( QMouseEvent* )
 {
+    setPressed( true );
     setPopupOpen( true );
 }
 
 void QskComboBox::mouseReleaseEvent( QMouseEvent* )
 {
+    setPressed( false );
 }
 
 void QskComboBox::keyPressEvent( QKeyEvent* event )
@@ -259,6 +281,7 @@ void QskComboBox::keyPressEvent( QKeyEvent* event )
     {
         if ( !event->isAutoRepeat() )
         {
+            setPressed( true );
             setPopupOpen( true );
             return;
         }
@@ -270,6 +293,7 @@ void QskComboBox::keyPressEvent( QKeyEvent* event )
         case Qt::Key_F4:
         {
             // QComboBox does this ???
+            setPressed( true );
             setPopupOpen( true );
             return;
         }
