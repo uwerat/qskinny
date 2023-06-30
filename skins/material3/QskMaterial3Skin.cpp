@@ -361,6 +361,8 @@ void Editor::setupMenu()
     setGradient( Q::Segment | Q::Selected, m_pal.primary12 );
     const auto hoverSelectedColor = flattenedColor( m_pal.onSurface, m_pal.primary12, m_pal.hoverOpacity );
     setGradient( Q::Segment | Q::Selected | Q::Hovered, hoverSelectedColor );
+    const auto pressedSelectedColor = flattenedColor( m_pal.onSurface, m_pal.primary12, m_pal.pressedOpacity );
+    setGradient( Q::Segment | Q::Pressed | Q::Selected, pressedSelectedColor );
 
     setPadding( Q::Icon, 7_dp );
     setStrutSize( Q::Icon, 24_dp, 24_dp );
