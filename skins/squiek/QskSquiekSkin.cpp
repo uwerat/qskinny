@@ -1023,19 +1023,14 @@ void Editor::setupScrollView()
         const qreal bw = 1.0;
 
         setButton( subControl, Raised, bw );
+        setButton( subControl | Q::Pressed, Sunken, bw );
 
         const auto extent = 40_dp;
 
         if ( subControl == Q::HorizontalScrollHandle )
-        {
             setStrutSize( subControl, extent, 0.0 );
-            setButton( subControl | Q::HorizontalHandlePressed, Sunken, bw );
-        }
         else
-        {
             setStrutSize( subControl, 0.0, extent );
-            setButton( subControl | Q::VerticalHandlePressed, Sunken, bw );
-        }
 
         setAnimation( subControl | A::Color, qskDuration );
     }

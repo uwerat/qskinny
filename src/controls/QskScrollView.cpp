@@ -15,24 +15,47 @@ QSK_SUBCONTROL( QskScrollView, HorizontalScrollHandle )
 QSK_SUBCONTROL( QskScrollView, VerticalScrollBar )
 QSK_SUBCONTROL( QskScrollView, VerticalScrollHandle )
 
-QSK_SYSTEM_STATE( QskScrollView, VerticalHandlePressed, QskAspect::FirstSystemState << 1 )
-QSK_SYSTEM_STATE( QskScrollView, HorizontalHandlePressed, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskScrollView, Pressed, QskAspect::FirstSystemState << 1 )
 
 class QskScrollView::PrivateData
 {
   public:
-    PrivateData()
-        : horizontalScrollBarPolicy( Qt::ScrollBarAsNeeded )
-        , verticalScrollBarPolicy( Qt::ScrollBarAsNeeded )
-        , isScrolling( 0 )
+    inline void resetScrolling( QskScrollView* scrollView )
     {
+        setScrolling( scrollView, 0, 0.0 );
     }
 
-    Qt::ScrollBarPolicy horizontalScrollBarPolicy;
-    Qt::ScrollBarPolicy verticalScrollBarPolicy;
+    inline void setScrolling( QskScrollView* scrollView, int scrolling, qreal pos )
+    {
+        if ( isScrolling == scrolling )
+            return;
+
+        QskAspect::Subcontrol subControl;
+        if ( ( isScrolling == Qt::Horizontal ) || ( scrolling == Qt::Horizontal ) )
+            subControl = HorizontalScrollHandle;
+        else
+            subControl = VerticalScrollHandle;
+
+        this->isScrolling = scrolling;
+        this->scrollPressPos = pos;
+
+        scrollView->update();
+
+        auto oldStates = scrollView->skinStates();
+        auto newStates = oldStates | QskScrollView::Pressed;
+
+        if ( scrolling == 0 )
+            qSwap( oldStates, newStates );
+
+        scrollView->startHintTransitions( { subControl }, oldStates, newStates );
+
+    }
+
+    Qt::ScrollBarPolicy horizontalScrollBarPolicy = Qt::ScrollBarAsNeeded;
+    Qt::ScrollBarPolicy verticalScrollBarPolicy = Qt::ScrollBarAsNeeded;
 
     qreal scrollPressPos;
-    int isScrolling;
+    int isScrolling = 0;
 };
 
 QskScrollView::QskScrollView( QQuickItem* parent )
@@ -88,6 +111,15 @@ bool QskScrollView::isScrolling( Qt::Orientation orientation ) const
     return m_data->isScrolling == orientation;
 }
 
+QskAspect::States QskScrollView::scrollHandleStates( Qt::Orientation orientation ) const
+{
+    auto states = skinStates();
+    if ( m_data->isScrolling == orientation )
+        states |= Pressed;
+
+    return states;
+}
+
 QRectF QskScrollView::viewContentsRect() const
 {
     // This code should be done in the skinlet. TODO ...
@@ -107,10 +139,7 @@ void QskScrollView::mousePressEvent( QMouseEvent* event )
 
         if ( handleRect.contains( mousePos ) )
         {
-            m_data->isScrolling = Qt::Vertical;
-            m_data->scrollPressPos = mousePos.y();
-
-            setSkinStateFlag( VerticalHandlePressed, true );
+            m_data->setScrolling( this, Qt::Vertical, mousePos.y() );
         }
         else
         {
@@ -135,10 +164,7 @@ void QskScrollView::mousePressEvent( QMouseEvent* event )
 
         if ( handleRect.contains( mousePos ) )
         {
-            m_data->isScrolling = Qt::Horizontal;
-            m_data->scrollPressPos = mousePos.x();
-
-            setSkinStateFlag( HorizontalHandlePressed, true );
+            m_data->setScrolling( this, Qt::Horizontal, mousePos.x() );
         }
         else
         {
@@ -200,11 +226,12 @@ void QskScrollView::mouseReleaseEvent( QMouseEvent* event )
         return;
     }
 
-    m_data->isScrolling = 0;
-    m_data->scrollPressPos = 0;
+    m_data->resetScrolling( this );
+}
 
-    setSkinStateFlag( HorizontalHandlePressed, false );
-    setSkinStateFlag( VerticalHandlePressed, false );
+void QskScrollView::mouseUngrabEvent()
+{
+    m_data->resetScrolling( this );
 }
 
 #ifndef QT_NO_WHEELEVENT
