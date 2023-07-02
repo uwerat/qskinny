@@ -5,6 +5,7 @@
 
 #include "QskFluent2SkinFactory.h"
 #include "QskFluent2Skin.h"
+#include "QskFluent2Theme.h"
 
 static const QString fluent2LightSkinName = QStringLiteral( "Fluent2 Light" );
 static const QString fluent2DarkSkinName = QStringLiteral( "Fluent2 Dark" );

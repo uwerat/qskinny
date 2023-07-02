@@ -6,7 +6,7 @@
 #ifndef QSK_FLUENT2_GLOBAL_H
 #define QSK_FLUENT2_GLOBAL_H
 
-#include "QskGlobal.h"
+#include <QskGlobal.h>
 
 #ifdef QSK_DLL
 
