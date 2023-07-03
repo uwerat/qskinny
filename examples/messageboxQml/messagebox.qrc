@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/qml">
-        <file>messagebox.qml</file>
-    </qresource>
-</RCC>

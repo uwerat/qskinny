@@ -15,80 +15,106 @@ namespace
 {
     class Button : public QskPushButton
     {
-        Q_OBJECT
-
       public:
-        enum ButtonType
+        Button( const QString& text, QQuickItem* parent = nullptr )
+            : QskPushButton( text, parent )
         {
-            Message,
-            Information,
-            Warning,
-            Critical,
+        }
+    };
 
-            Question,
-            Selection,
-
-            TypeCount
-        };
-        Q_ENUM( ButtonType )
-
-        Button( ButtonType type, QQuickItem* parent = nullptr )
-            : QskPushButton( parent )
-            , m_type( type )
+    class ButtonBox : public QskLinearBox
+    {
+      public:
+        ButtonBox( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Horizontal, 2, parent )
         {
-            setShape( 10 );
-            initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Fixed );
+            setObjectName( "ButtonBox" );
 
-            const int index = metaObject()->indexOfEnumerator( "ButtonType" );
-            setText( metaObject()->enumerator( index ).key( m_type ) );
+            setMargins( 10 );
+            setSpacing( 20 );
 
-            connect( this, &QskPushButton::clicked, this, &Button::showDialog );
+            auto messageButton = new Button( "Message", this );
+            connect( messageButton, &Button::clicked, this, &ButtonBox::execMessage );
+
+            auto informationButton = new Button( "Information", this );
+            connect( informationButton, &Button::clicked, this, &ButtonBox::execInformation );
+
+            auto questionButton = new Button( "Question", this );
+            connect( questionButton, &Button::clicked, this, &ButtonBox::execQuestion );
+
+            auto warningButton = new Button( "Warning", this );
+            connect( warningButton, &Button::clicked, this, &ButtonBox::execWarning );
+
+            auto criticalButton = new Button( "Critical", this );
+            connect( criticalButton, &Button::clicked, this, &ButtonBox::execCritical );
+
+            auto selectButton = new Button( "Selection", this );
+            connect( selectButton, &Button::clicked, this, &ButtonBox::execSelection );
+
+            setExtraSpacingAt( Qt::BottomEdge );
         }
 
       private:
-        void showDialog()
+        void execMessage()
         {
-            switch( static_cast< int >( m_type ) )
-            {
-                case Message:
-                    qskDialog->message( text(), text(), QskStandardSymbol::Ok );
-                    break;
-
-                case Information:
-                    qskDialog->information( text(), text() );
-                    break;
-
-                case Warning:
-                    qskDialog->warning( text(), text() );
-                    break;
-
-                case Critical:
-                    qskDialog->critical( text(), text() );
-                    break;
-
-                case Question:
-                    qskDialog->question( text(), text() );
-                    break;
-
-                case Selection:
-                    qskDialog->select( text(), text(), { "yes", "no", "maybe" } );
-                    break;
-            }
+            qskDialog->message( "Message", "Request vector, over.",
+                QskStandardSymbol::NoSymbol, QskDialog::Close );
         }
 
-        const ButtonType m_type;
+        void execInformation()
+        {
+            qskDialog->information( "Information",
+                "We have clearance, Clarence." );
+        }
+
+        void execQuestion()
+        {
+            qskDialog->question( "Question",
+                "Roger, Roger. Do we have a vector, Victor ?" );
+        }
+
+        void execWarning()
+        {
+            qskDialog->warning( "Warning", "We have clearance, Clarence." );
+        }
+
+        void execCritical()
+        {
+            qskDialog->critical( "Critical", "That's Clarence Oveur. Over." );
+        }
+
+        void execSelection()
+        {
+            // of course we all love "The Teens"
+            const QStringList entries =
+            {
+                "Give Me More",
+                "Gimme Gimme Your Love",
+                "1-2-3-4 Red Light",
+                "New York",
+                "If You Walk Away",
+                "Eloise",
+                "On The Radio",
+                "We Are The Teens",
+                "Never Gonna Tell No Lie To You",
+                "Walking On Sunshine ",
+                "Get Out Of My Mind",
+                "Cover Girl ",
+                "Here I Stand",
+                "Gypsy Caravan",
+                "It´s Good To Have A Friend",
+                "We´ll Have A Party Tonite ´nite",
+                "Automatic World",
+                "Gimme Gimme Gimme Gimme Gimme Your Love"
+            };
+
+            qskDialog->select( "Here we go ...", "Hot Hot Hot", entries, 7 );
+        }
     };
 }
 
 DialogPage::DialogPage( QQuickItem* parent )
     : Page( Qt::Horizontal, parent )
 {
-    auto box = new QskLinearBox( Qt::Horizontal, 2, this );
-    box->setSpacing( 20 );
-    box->setExtraSpacingAt( Qt::BottomEdge );
-
-    for ( int i = 0; i < Button::TypeCount; i++ )
-        new Button( static_cast< Button::ButtonType >( i ), box );
+    ( void ) new ButtonBox( this );
 }
-
-#include "DialogPage.moc"
