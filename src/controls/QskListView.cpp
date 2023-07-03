@@ -276,6 +276,14 @@ void QskListView::mouseReleaseEvent( QMouseEvent* event )
     Inherited::mouseReleaseEvent( event );
 }
 
+void QskListView::changeEvent( QEvent* event )
+{
+    if ( event->type() == QEvent::StyleChange )
+        updateScrollableSize();
+
+    Inherited::changeEvent( event );
+}
+
 #ifndef QT_NO_WHEELEVENT
 
 static qreal qskAlignedToRows( const qreal y0, qreal dy,

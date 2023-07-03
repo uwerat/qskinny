@@ -87,6 +87,8 @@ class QSK_EXPORT QskListView : public QskScrollView
     void textOptionsChanged();
 
   protected:
+    void changeEvent( QEvent* ) override;
+
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
 
