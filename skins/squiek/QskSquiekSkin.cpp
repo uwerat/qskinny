@@ -780,7 +780,7 @@ void Editor::setupTabButton()
     {
         const auto aspect = Q::Panel | variation;
 
-        QskMargins margins0, margins1, padding;
+        QskMargins margins0, margins1;
         QskBoxBorderMetrics border( 1 );
         QskBoxShapeMetrics shape( 4 );
 
@@ -832,7 +832,7 @@ void Editor::setupTabButton()
         for ( const auto state : { Q::Checked | A::NoState, Q::Checked | Q::Pressed } )
             setMargin( aspect | state, margins1 );
 
-        setPadding( aspect, padding );
+        setPadding( aspect, { 6, 12, 6, 12 } );
 
         setBoxBorderMetrics( aspect, border );
         setBoxShape( aspect, shape );
