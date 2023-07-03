@@ -28,7 +28,7 @@ class GraphicLabel : public QskGraphicLabel
   public:
     enum Role
     {
-        Normal,
+        Normal = 1000,
         Inverted
     };
 
@@ -94,7 +94,8 @@ MainWindow::MainWindow()
     invertButton->setLayoutAlignmentHint( Qt::AlignRight );
 
     auto box = new QskLinearBox( Qt::Vertical );
-    box->setMargins( 5 );
+    box->setPanel( true );
+    box->setPadding( 5 );
     box->addItem( invertButton );
     box->addItem( m_tabView );
 

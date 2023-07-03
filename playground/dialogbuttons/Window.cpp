@@ -14,7 +14,8 @@ Window::Window( Qt::Orientation orientation )
 {
     m_layoutBox = new QskLinearBox( invertedOrientation() );
     m_layoutBox->setObjectName( "MainBox" );
-    m_layoutBox->setMargins( 10 );
+    m_layoutBox->setPanel( true );
+    m_layoutBox->setPadding( 10 );
     m_layoutBox->setExtraSpacingAt( Qt::BottomEdge | Qt::RightEdge );
 
     addBox( QskDialog::Ok );

@@ -271,8 +271,11 @@ int main( int argc, char* argv[] )
     Qsk::addGraphicProvider( QString(), new GraphicProvider() );
     Qsk::addGraphicProvider( "shapes", new SkinnyShapeProvider() );
 
-    // dialogs in faked windows -> QskSubWindow
-    QskDialog::instance()->setPolicy( QskDialog::EmbeddedBox );
+    if ( true ) // environment variable, TODO ...
+    {
+        // dialogs in faked windows -> QskSubWindow
+        QskDialog::instance()->setPolicy( QskDialog::EmbeddedBox );
+    }
 
     QGuiApplication app( argc, argv );
 

@@ -65,7 +65,8 @@ class GridBox : public QskGridBox
     GridBox( QQuickItem* parent = nullptr )
         : QskGridBox( parent )
     {
-        setMargins( 5 );
+        setPanel( true );
+        setPadding( 5 );
         setColumnStretchFactor( 1, 1 );
 
         auto sliderX = new Slider( -50, 50, 1, 10 );

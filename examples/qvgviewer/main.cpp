@@ -20,7 +20,8 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
+    SkinnyShortcut::enable( SkinnyShortcut::DebugBackground |
+        SkinnyShortcut::DebugStatistics | SkinnyShortcut::Quit );
 
     auto focusIndicator = new QskFocusIndicator();
     focusIndicator->setObjectName( "FocusIndicator" );
