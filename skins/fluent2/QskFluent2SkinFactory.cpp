@@ -28,12 +28,12 @@ QskSkin* QskFluent2SkinFactory::createSkin( const QString& skinName )
 {
     if ( QString::compare( skinName, fluent2LightSkinName, Qt::CaseInsensitive ) == 0 )
     {
-        QskFluent2Theme theme( QskSkin::Light );
+        QskFluent2Theme theme( QskSkin::LightScheme );
         return new QskFluent2Skin( theme );
     }
     else if ( QString::compare( skinName, fluent2DarkSkinName, Qt::CaseInsensitive ) == 0 )
     {
-        QskFluent2Theme theme( QskSkin::Dark );
+        QskFluent2Theme theme( QskSkin::DarkScheme );
         return new QskFluent2Skin( theme );
     }
 

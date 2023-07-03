@@ -8,14 +8,17 @@
 
 #include <qdir.h>
 #include <qglobalstatic.h>
-#include <qguiapplication.h>
 #include <qjsonarray.h>
 #include <qjsonobject.h>
 #include <qmap.h>
 #include <qpluginloader.h>
 #include <qpointer.h>
 #include <qset.h>
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
+#include <qguiapplication.h>
 #include <qstylehints.h>
+#endif
 
 static inline QStringList qskSplitPath( const QString& s )
 {

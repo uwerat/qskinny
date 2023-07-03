@@ -54,7 +54,6 @@
 
 #include <QGuiApplication>
 #include <QScreen>
-#include <QStyleHints>
 
 static const int qskDuration = 150;
 
@@ -1210,7 +1209,7 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
         std::array< QskHctColor, NumPaletteTypes > palettes )
     : m_palettes( palettes )
 {
-    if ( colorScheme == QskSkin::Light )
+    if ( colorScheme == QskSkin::LightScheme )
     {
         primary = m_palettes[ Primary ].toned( 40 ).rgb();
         onPrimary = m_palettes[ Primary ].toned( 100 ).rgb();
@@ -1244,7 +1243,7 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
 
         shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }
-    else if ( colorScheme == QskSkin::Dark )
+    else if ( colorScheme == QskSkin::DarkScheme )
     {
         primary = m_palettes[ Primary ].toned( 80 ).rgb();
         onPrimary = m_palettes[ Primary ].toned( 20 ).rgb();

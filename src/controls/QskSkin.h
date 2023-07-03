@@ -50,10 +50,12 @@ class QSK_EXPORT QskSkin : public QObject
     // Use Qt::ColorScheme once minimum version is Qt 6.5
     enum ColorScheme
     {
-        Unknown,
-        Light,
-        Dark
+        UnknownScheme,
+
+        LightScheme,
+        DarkScheme
     };
+    Q_ENUM( ColorScheme )
 #endif
 
     QskSkin( QObject* parent = nullptr );

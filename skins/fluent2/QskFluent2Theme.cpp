@@ -31,7 +31,7 @@ QskFluent2Theme::QskFluent2Theme( QskSkin::ColorScheme colorScheme )
 QskFluent2Theme::QskFluent2Theme( QskSkin::ColorScheme colorScheme,
     const std::array< QRgb, NumAccentColors >& accentColors )
 {
-    if( colorScheme == QskSkin::Light )
+    if( colorScheme == QskSkin::LightScheme )
     {
         // Fill color:
 
@@ -133,7 +133,7 @@ QskFluent2Theme::QskFluent2Theme( QskSkin::ColorScheme colorScheme,
         // ### should actually be drawn twice with different values:
         shadow.dialog = { QskShadowMetrics( 0, 21, QPointF( 0, 2 ) ), rgbGray( 0, 0.1474 ) };
     }
-    else if( colorScheme == QskSkin::Dark )
+    else if( colorScheme == QskSkin::DarkScheme )
     {
         // Fill color:
 

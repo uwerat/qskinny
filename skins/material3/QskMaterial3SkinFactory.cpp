@@ -27,12 +27,12 @@ QskSkin* QskMaterial3SkinFactory::createSkin( const QString& skinName )
 {
     if ( QString::compare( skinName, materialLightSkinName, Qt::CaseInsensitive ) == 0 )
     {
-        QskMaterial3Theme theme( QskSkin::Light );
+        QskMaterial3Theme theme( QskSkin::LightScheme );
         return new QskMaterial3Skin( theme );
     }
     else if ( QString::compare( skinName, materialDarkSkinName, Qt::CaseInsensitive ) == 0 )
     {
-        QskMaterial3Theme theme( QskSkin::Dark );
+        QskMaterial3Theme theme( QskSkin::DarkScheme );
         return new QskMaterial3Skin( theme );
     }
 
