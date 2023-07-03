@@ -18,8 +18,11 @@ class QSK_FLUENT2_EXPORT QskFluent2Skin : public QskSkin
     using Inherited = QskSkin;
 
   public:
-    QskFluent2Skin( const QskFluent2Theme&, QObject* parent = nullptr );
+    QskFluent2Skin( QObject* parent = nullptr );
     ~QskFluent2Skin() override;
+
+    void addTheme( QskAspect::Section, const QskFluent2Theme& );
+    void setup();
 
     enum GraphicRole
     {
