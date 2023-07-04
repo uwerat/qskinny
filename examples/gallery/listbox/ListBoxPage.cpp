@@ -16,10 +16,6 @@ namespace
             : QskSimpleListBox( parent )
         {
             setMargins( QMarginsF( 15, 10, 10, 10 ) );
-
-            // increasing the padding of each row: usually the job of the skin !
-            setPaddingHint( Cell, QMargins( 10, 20, 10, 20 ) );
-
             populate();
 
             setSelectedRow( 5 );

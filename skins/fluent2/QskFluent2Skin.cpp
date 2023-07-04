@@ -34,6 +34,7 @@
 
       - hover state is not implemented
       - Indicator subcontrol might be better than using the border of the selection box
+      - cell padding unclear
 
     - using qskDpToPixels ?
  */
@@ -607,6 +608,10 @@ void Editor::setupListViewMetrics()
     using Q = QskListView;
 
     setBoxBorderMetrics( Q::Cell | Q::Selected, { 3, 0, 0, 0 } );
+#if 1
+    // taken from M3 - what are the actual values, TODO ...
+    setPadding( Q::Cell, { 16, 12, 16, 12 } );
+#endif
 }
 
 void Editor::setupListViewColors(
