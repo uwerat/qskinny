@@ -522,6 +522,8 @@ void Editor::setupSegmentedBar()
 
         setStrutSize( Q::Panel | A::Horizontal, panelStrutSize );
         setStrutSize( Q::Panel | A::Vertical, panelStrutSize.transposed() );
+
+        setFlag( Q::Panel | A::Option, true ); // adjust segments to the panel radius
     }
 
     {
@@ -530,53 +532,20 @@ void Editor::setupSegmentedBar()
         setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
         setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
 
-        setBoxBorderMetrics( Q::Segment | A::Horizontal, { 0, 1_dp, 0, 1_dp } );
-        setBoxBorderMetrics( Q::Segment | Q::Minimum | A::Horizontal, { 1_dp, 1_dp, 0, 1_dp } );
-        setBoxBorderMetrics( Q::Segment | Q::Maximum | A::Horizontal, { 0, 1_dp, 1_dp, 1_dp } );
+        setGradient( Q::Segment | Q::Hovered, m_pal.onSurface8 );
+        setGradient( Q::Segment | Q::Focused, m_pal.onSurface12 );
+        setGradient( Q::Segment | Q::Selected, m_pal.secondaryContainer );
 
-        setBoxBorderMetrics( Q::Segment | A::Vertical, { 1_dp, 0,  1_dp, 0 } );
-        setBoxBorderMetrics( Q::Segment | Q::Minimum | A::Vertical, { 1_dp, 1_dp, 1_dp, 0 } );
-        setBoxBorderMetrics( Q::Segment | Q::Maximum | A::Vertical, { 1_dp, 0, 1_dp, 1_dp } );
-
-        setBoxBorderColors( Q::Segment, Qt::transparent );
-
-        setGradient( Q::Segment | Q::Hovered, m_pal.onSurface8,
-                     { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum } );
-
-        setGradient( Q::Segment | Q::Focused, m_pal.onSurface12,
-                     { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum } );
-
-        setGradient( Q::Segment | Q::Selected, m_pal.secondaryContainer,
-                    { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum } );
         setGradient( Q::Segment | Q::Selected | Q::Hovered,
-                    flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.hoverOpacity ),
-                                    { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum } );
+            flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.hoverOpacity ) );
+                                    
         setGradient( Q::Segment | Q::Selected | Q::Focused,
-                    flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.focusOpacity ),
-                                    { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum } );
+            flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.focusOpacity ) );
 
-        setGradient( Q::Segment | Q::Selected | Q::Disabled, m_pal.onSurface12,
-                     { QskStateCombination::CombinationNoState, Q::Minimum | Q::Maximum } );
+        setGradient( Q::Segment | Q::Selected | Q::Disabled, m_pal.onSurface12 );
 
         setPadding( Q::Segment | A::Horizontal, 12_dp, 0, 12_dp, 0 );
         setPadding( Q::Segment | A::Vertical, 0, 12_dp, 0, 12_dp );
-
-        for( const auto subcontrol : { Q::Segment, Q::Splash } )
-        {
-            setBoxShape( subcontrol | Q::Minimum | A::Horizontal,
-                         { 100, 0, 100, 0, Qt::RelativeSize },
-                         { QskStateCombination::CombinationNoState, Q::Disabled } );
-            setBoxShape( subcontrol | Q::Maximum | A::Horizontal,
-                         { 0, 100, 0, 100, Qt::RelativeSize },
-                         { QskStateCombination::CombinationNoState, Q::Disabled } );
-
-            setBoxShape( subcontrol | Q::Minimum | A::Vertical,
-                         { 100, 100, 0, 0, Qt::RelativeSize },
-                         { QskStateCombination::CombinationNoState, Q::Disabled } );
-            setBoxShape( subcontrol | Q::Maximum | A::Vertical,
-                         { 0, 0, 100, 100, Qt::RelativeSize },
-                         { QskStateCombination::CombinationNoState, Q::Disabled } );
-        }
     }
 
     {

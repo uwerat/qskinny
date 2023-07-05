@@ -24,10 +24,8 @@ QSK_SUBCONTROL( QskSegmentedBar, Cursor )
 QSK_SUBCONTROL( QskSegmentedBar, Text )
 QSK_SUBCONTROL( QskSegmentedBar, Icon )
 
-QSK_SYSTEM_STATE( QskSegmentedBar, Minimum, QskAspect::FirstSystemState << 1 )
-QSK_SYSTEM_STATE( QskSegmentedBar, Maximum, QskAspect::FirstSystemState << 2 )
-QSK_SYSTEM_STATE( QskSegmentedBar, Selected, QskAspect::FirstSystemState << 3 )
-QSK_SYSTEM_STATE( QskSegmentedBar, Pressed, QskAspect::FirstSystemState << 4 )
+QSK_SYSTEM_STATE( QskSegmentedBar, Selected, QskAspect::FirstSystemState << 1 )
+QSK_SYSTEM_STATE( QskSegmentedBar, Pressed, QskAspect::FirstSystemState << 2 )
 
 class QskSegmentedBar::PrivateData
 {

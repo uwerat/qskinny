@@ -14,19 +14,81 @@
 #include "QskSkin.h"
 #include "QskSkinStateChanger.h"
 #include "QskSubcontrolLayoutEngine.h"
+#include "QskBoxHints.h"
 
 #include <qfontmetrics.h>
 #include <qmath.h>
 
 namespace
 {
+    QskBoxHints effectiveBoxHints( QskAspect::Subcontrol subControl,
+        const QskSegmentedBar* bar, int index )
+    {
+        using Q = QskSegmentedBar;
+
+        auto boxHints = bar->boxHints( subControl );
+
+        const bool leading = ( index == 0 );
+        const bool trailing = ( index == bar->count() - 1 );
+
+        if ( !( leading || trailing ) )
+            return boxHints;
+
+        // something more expressive than just a boolean. TODO ...
+        if ( !bar->flagHint< bool >( Q::Panel | QskAspect::Option, false ) )
+            return boxHints;
+
+        const auto panelShape = bar->boxShapeHint( Q::Panel );
+        auto& shape = boxHints.shape;
+
+        // when there is only 1 segment we have to fit both ends
+
+        if ( leading )
+        {
+            Qt::Corner corners[2];
+
+            corners[0] = Qt::TopLeftCorner;
+
+            if ( bar->orientation() == Qt::Vertical )
+                corners[1] = Qt::TopRightCorner;
+            else
+                corners[1] = Qt::BottomLeftCorner;
+
+            shape.setSizeMode( panelShape.sizeMode() );
+            shape.setRadius( corners[0], panelShape.radius( corners[0] ) );
+            shape.setRadius( corners[1], panelShape.radius( corners[1] ) );
+        }
+
+        if ( trailing )
+        {
+            Qt::Corner corners[2];
+
+            corners[0] = Qt::BottomRightCorner;
+
+            if ( bar->orientation() == Qt::Vertical )
+                corners[1] = Qt::BottomLeftCorner;
+            else
+                corners[1] = Qt::TopRightCorner;
+
+            shape.setSizeMode( panelShape.sizeMode() );
+            shape.setRadius( corners[0], panelShape.radius( corners[0] ) );
+            shape.setRadius( corners[1], panelShape.radius( corners[1] ) );
+        }
+
+        boxHints.borderMetrics = bar->boxBorderMetricsHint( Q::Panel );
+        boxHints.borderColors = QColor();
+
+        return boxHints;
+    }
+
+
     QskGraphic iconAt( const QskSegmentedBar* bar, const int index )
     {
         using Q = QskSegmentedBar;
 
         if ( bar->selectedIndex() == index )
         {
-            /* 
+            /*
                 Material 3 replaces the icon of the selected element by a checkmark,
                 when icon and text are set. So this code is actually not correct
                 as it also replaces the icon when there is no text
@@ -386,7 +448,8 @@ QskAspect::States QskSegmentedBarSkinlet::sampleStates(
             states |= Q::Disabled;
         }
 
-        const auto cursorPos = bar->effectiveSkinHint( Q::Segment | Q::Hovered | A::Metric | A::Position ).toPointF();
+        const auto cursorPos = bar->effectiveSkinHint(
+            Q::Segment | Q::Hovered | A::Metric | A::Position ).toPointF();
 
         if( !cursorPos.isNull() && bar->indexAtPosition( cursorPos ) == index )
         {
@@ -408,25 +471,6 @@ QskAspect::States QskSegmentedBarSkinlet::sampleStates(
             else
             {
                 states &= ~Q::Focused;
-            }
-        }
-
-        if( bar->count() > 0 )
-        {
-            if( index == 0 )
-            {
-                states &= ~Q::Maximum;
-                states |= Q::Minimum;
-            }
-            else if( index == bar->count() - 1 )
-            {
-                states &= ~Q::Minimum;
-                states |= Q::Maximum;
-            }
-            else
-            {
-                states &= ~Q::Minimum;
-                states &= ~Q::Maximum;
             }
         }
     }
@@ -455,9 +499,15 @@ QSGNode* QskSegmentedBarSkinlet::updateSampleNode( const QskSkinnable* skinnable
 
     const auto rect = sampleRect( bar, bar->contentsRect(), subControl, index );
 
-    if ( subControl == Q::Segment || subControl == Q::Separator || subControl == Q::Cursor )
+    if ( subControl == Q::Separator )
     {
         return updateBoxNode( skinnable, node, rect, subControl );
+    }
+
+    if ( subControl == Q::Segment )
+    {
+        const auto boxHints = effectiveBoxHints( subControl, bar, index );
+        return updateBoxNode( bar, node, rect, boxHints );
     }
 
     const auto alignment = bar->alignmentHint( subControl, Qt::AlignCenter );
@@ -509,23 +559,34 @@ QSGNode* QskSegmentedBarSkinlet::updateSplashNode(
     if ( splashRect.isEmpty() )
         return nullptr;
 
-    auto clipNode = updateBoxClipNode( bar, node,
-        bar->subControlRect( Q::Cursor ), Q::Cursor );
+    auto panelClipNode = updateBoxClipNode(
+        bar, node, bar->subControlRect( Q::Panel ), Q::Panel );
 
-    if ( clipNode )
+    if ( panelClipNode )
     {
-        auto boxNode = QskSGNode::findChildNode( clipNode, SplashRole );
+        const auto segmentRect = sampleRect(
+            bar, bar->contentsRect(), Q::Segment, bar->selectedIndex() );
+
+        auto segmentClipNode = updateBoxClipNode(
+            bar, panelClipNode->firstChild(), segmentRect, Q::Segment );
+
+        if ( segmentClipNode == nullptr )
+            return nullptr;
+
+        if ( segmentClipNode->parent() == nullptr )
+            panelClipNode->appendChildNode( segmentClipNode );
+
+        auto boxNode = segmentClipNode->firstChild();
         boxNode = updateBoxNode( bar, boxNode, splashRect, Q::Splash );
 
         if ( boxNode == nullptr )
             return nullptr;
 
-        QskSGNode::setNodeRole( boxNode, SplashRole );
-        if ( boxNode->parent() != clipNode )
-            clipNode->appendChildNode( boxNode );
+        if ( boxNode->parent() == nullptr )
+            segmentClipNode->appendChildNode( boxNode );
     }
 
-    return clipNode;
+    return panelClipNode;
 }
 
 #include "moc_QskSegmentedBarSkinlet.cpp"

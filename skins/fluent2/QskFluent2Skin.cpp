@@ -1180,7 +1180,7 @@ void Editor::setupSegmentedBarColors(
 
                 graphicRole = W::GraphicRoleFillColorTextPrimary;
             }
-            else if ( states & Q::Hovered )
+            else if ( states == Q::Hovered )
             {
                 segmentColor = pal.fillColor.control.secondary;
                 borderColor1 = pal.elevation.control.border[0];
@@ -1206,7 +1206,7 @@ void Editor::setupSegmentedBarColors(
 
                 graphicRole = W::GraphicRoleFillColorTextOnAccentPrimary;
             }
-            else if ( states == Q::Disabled )
+            else if ( states & Q::Disabled )
             {
                 segmentColor = pal.fillColor.control.disabled;
                 borderColor1 = borderColor2 = pal.strokeColor.control.defaultColor;
