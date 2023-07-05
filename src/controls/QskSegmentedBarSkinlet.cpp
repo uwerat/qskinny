@@ -436,7 +436,7 @@ QskAspect::States QskSegmentedBarSkinlet::sampleStates(
 
     const auto* bar = static_cast< const QskSegmentedBar* >( skinnable );
 
-    if ( subControl == Q::Segment || subControl == Q::Cursor )
+    if ( subControl == Q::Segment )
     {
         if ( bar->isSegmentEnabled( index ) )
         {
