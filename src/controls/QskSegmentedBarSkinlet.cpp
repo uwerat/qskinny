@@ -550,43 +550,21 @@ QSGNode* QskSegmentedBarSkinlet::updateSplashNode(
 {
     using Q = QskSegmentedBar;
 
-    // get Minimum / Maximum right:
-    QskSkinStateChanger stateChanger( bar );
-    const auto states = sampleStates( bar, Q::Segment, bar->selectedIndex() );
-    stateChanger.setStates( states );
-
     const auto splashRect = bar->subControlRect( Q::Splash );
     if ( splashRect.isEmpty() )
         return nullptr;
 
-    auto panelClipNode = updateBoxClipNode(
+    auto clipNode = updateBoxClipNode(
         bar, node, bar->subControlRect( Q::Panel ), Q::Panel );
 
-    if ( panelClipNode )
+    if ( clipNode )
     {
-        const auto segmentRect = sampleRect(
-            bar, bar->contentsRect(), Q::Segment, bar->selectedIndex() );
-
-        auto segmentClipNode = updateBoxClipNode(
-            bar, panelClipNode->firstChild(), segmentRect, Q::Segment );
-
-        if ( segmentClipNode == nullptr )
-            return nullptr;
-
-        if ( segmentClipNode->parent() == nullptr )
-            panelClipNode->appendChildNode( segmentClipNode );
-
-        auto boxNode = segmentClipNode->firstChild();
-        boxNode = updateBoxNode( bar, boxNode, splashRect, Q::Splash );
-
-        if ( boxNode == nullptr )
-            return nullptr;
-
+        auto boxNode = updateBoxNode( bar, clipNode->firstChild(), splashRect, Q::Splash );
         if ( boxNode->parent() == nullptr )
-            segmentClipNode->appendChildNode( boxNode );
+            clipNode->appendChildNode( boxNode );
     }
 
-    return panelClipNode;
+    return clipNode;
 }
 
 #include "moc_QskSegmentedBarSkinlet.cpp"
