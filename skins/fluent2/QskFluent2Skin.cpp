@@ -139,18 +139,11 @@ namespace
         return qRgba( value, value, value, qRound( opacity * 255 ) );
     }
 
-    inline constexpr QRgb rgbFlattened( QRgb foreground, QRgb background )
+    inline QRgb rgbFlattened( QRgb foreground, QRgb background )
     {
-        //Q_ASSERT( qAlpha( background ) == 255 );
+        const auto alpha = qAlpha( foreground ) / 255.0;
 
-        const auto r2 = qAlpha( foreground ) / 255.0;
-        const auto r1 = 1.0 - r2;
-
-        const auto r = qRound( r1 * qRed( background ) + r2 * qRed( foreground ) );
-        const auto g = qRound( r1 * qGreen( background ) + r2 * qGreen( foreground ) );
-        const auto b = qRound( r1 * qBlue( background ) + r2 * qBlue( foreground ) );
-
-        return qRgb( r, g, b );
+        return QskRgb::interpolated( background, foreground, alpha );
     }
 
     inline constexpr QRgb rgbSolid( QRgb foreground, QRgb background )
