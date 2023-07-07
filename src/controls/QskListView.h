@@ -33,7 +33,7 @@ class QSK_EXPORT QskListView : public QskScrollView
     using Inherited = QskScrollView;
 
   public:
-    QSK_SUBCONTROLS( Cell, Text )
+    QSK_SUBCONTROLS( Viewport, Cell, Text )
     QSK_STATES( Selected )
 
     enum SelectionMode

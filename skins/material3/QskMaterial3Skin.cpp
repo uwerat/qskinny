@@ -1153,13 +1153,14 @@ void Editor::setupListView()
 {
     using Q = QskListView;
 
+    setGradient( Q::Viewport, m_pal.surface );
+
+    setStrutSize( Q::Cell, { -1, 56 } );
     setPadding( Q::Cell, { 16_dp, 12_dp, 16_dp, 12_dp } );
-    setBoxBorderMetrics( Q::Cell, { 0, 0, 0, 1_dp } );
     setBoxBorderColors( Q::Cell, m_pal.outline );
-    setColor( Q::Cell, m_pal.surface );
     setColor( Q::Cell | Q::Selected, m_pal.primary12 );
 
-    setColor( Q::Text, m_pal.onSurfaceVariant );
+    setColor( Q::Text, m_pal.onSurface );
 }
 
 void Editor::setupSubWindow()

@@ -13,6 +13,7 @@
 
 #include <qmath.h>
 
+QSK_SUBCONTROL( QskListView, Viewport )
 QSK_SUBCONTROL( QskListView, Cell )
 QSK_SUBCONTROL( QskListView, Text )
 
@@ -38,6 +39,7 @@ QskListView::QskListView( QQuickItem* parent )
     : QskScrollView( parent )
     , m_data( new PrivateData() )
 {
+    setSubcontrolProxy( Inherited::Viewport, Viewport );
 }
 
 QskListView::~QskListView()
