@@ -1587,7 +1587,7 @@ void Editor::setupTextInputColors(
 
     for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
     {
-        QRgb panelColor, borderColor1, borderColor2, textColor;
+        QRgb panelColor = Qt::black, borderColor1 = Qt::black, borderColor2 = Qt::black, textColor = Qt::black;
 
         if ( state == A::NoState )
         {
