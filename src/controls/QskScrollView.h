@@ -54,11 +54,17 @@ class QSK_EXPORT QskScrollView : public QskScrollBox
     void mouseReleaseEvent( QMouseEvent* ) override;
     void mouseUngrabEvent() override;
 
+    void hoverEnterEvent( QHoverEvent* ) override;
+    void hoverMoveEvent( QHoverEvent* ) override;
+    void hoverLeaveEvent( QHoverEvent* ) override;
+
 #ifndef QT_NO_WHEELEVENT
     QPointF scrollOffset( const QWheelEvent* ) const override;
 #endif
 
   private:
+    void updateHoverHints( QHoverEvent* );
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

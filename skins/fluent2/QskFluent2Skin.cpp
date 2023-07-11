@@ -1095,7 +1095,18 @@ void Editor::setupScrollViewMetrics()
     using Q = QskScrollView;
 
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
+    {
         setMetric( subControl | A::Size, 2 );
+        setMetric( subControl | A::Size | Q::Hovered, 6,
+            { QskStateCombination::CombinationNoState, Q::Pressed } );
+        setAlignment( subControl, Qt::AlignRight );
+    }
+
+    for ( auto subControl : { Q::HorizontalScrollHandle, Q::VerticalScrollHandle } )
+    {
+        setBoxShape( subControl, { 100, Qt::RelativeSize },
+            { QskStateCombination::CombinationNoState, Q::Hovered | Q::Pressed } );
+    }
 
     const auto handleExtent = 40.0;
     setStrutSize( Q::HorizontalScrollHandle, handleExtent, 0.0 );

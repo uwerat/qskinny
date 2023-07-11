@@ -252,6 +252,8 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
         QskSkinStateChanger stateChanger( scrollView );
         stateChanger.setStates( scrollView->scrollHandleStates( orientation ) );
 
+        const auto width = scrollView->metric( Q::VerticalScrollBar | QskAspect::Size );
+
         const auto padding = scrollView->paddingHint( Q::VerticalScrollBar );
         const auto strut = scrollView->strutSizeHint( Q::VerticalScrollHandle );
 
@@ -262,6 +264,19 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
         qskAlignedHandle( y1, y2, sbRect.height(), strut.height(), top, bottom );
 
         handleRect = sbRect;
+        handleRect.setWidth( width );
+
+        const auto alignment = scrollView->alignmentHint( Q::VerticalScrollBar );
+
+        if( alignment & Qt::AlignHCenter )
+        {
+            handleRect.moveCenter( sbRect.center() );
+        }
+        else if( alignment & Qt::AlignRight )
+        {
+            handleRect.moveRight( sbRect.right() );
+        }
+
         handleRect.setTop( sbRect.y() + top );
         handleRect.setBottom( sbRect.y() + bottom );
         handleRect.adjust( padding.left(), 0, -padding.right(), 0 );
@@ -272,6 +287,8 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
 
         QskSkinStateChanger stateChanger( scrollView );
         stateChanger.setStates( scrollView->scrollHandleStates( orientation ) );
+
+        const auto height = scrollView->metric( Q::HorizontalScrollBar | QskAspect::Size );
 
         const auto padding = scrollView->paddingHint( Q::HorizontalScrollBar );
 
@@ -284,6 +301,19 @@ QRectF QskScrollViewSkinlet::scrollHandleRect( const QskScrollView* scrollView,
         qskAlignedHandle( x1, x2, sbRect.width(), strut.width(), left, right );
 
         handleRect = sbRect;
+        handleRect.setHeight( height );
+
+        const auto alignment = scrollView->alignmentHint( Q::HorizontalScrollBar );
+
+        if( alignment & Qt::AlignVCenter )
+        {
+            handleRect.moveCenter( sbRect.center() );
+        }
+        else if( alignment & Qt::AlignBottom )
+        {
+            handleRect.moveBottom( sbRect.bottom() );
+        }
+
         handleRect.setLeft( sbRect.x() + left );
         handleRect.setRight( sbRect.x() + right );
         handleRect.adjust( 0, padding.top(), 0, -padding.bottom() );
@@ -307,25 +337,27 @@ QRectF QskScrollViewSkinlet::scrollBarRect( const QskScrollView* scrollView,
     QskSkinStateChanger stateChanger( scrollView );
     stateChanger.setStates( scrollView->scrollHandleStates( orientation ) );
 
+    const auto h = qMax( scrollView->metric( Q::HorizontalScrollBar | A::Size ),
+        scrollView->metric( Q::HorizontalScrollBar | A::Size | Q::Hovered ) );
+
+    const qreal w = qMax( scrollView->metric( Q::VerticalScrollBar | A::Size ),
+        scrollView->metric( Q::VerticalScrollBar | A::Size | Q::Hovered ) );
+
     if ( orientation == Qt::Horizontal )
     {
-        const qreal h = scrollView->metric( Q::HorizontalScrollBar | A::Size );
         r.setTop( r.bottom() - h );
 
         if ( scrollOrientations & Qt::Vertical )
         {
-            const qreal w = scrollView->metric( Q::VerticalScrollBar | A::Size );
             r.setRight( r.right() - w );
         }
     }
     else
     {
-        const qreal w = scrollView->metric( Q::VerticalScrollBar | A::Size );
         r.setLeft( r.right() - w );
 
         if ( scrollOrientations & Qt::Horizontal )
         {
-            const qreal h = scrollView->metric( Q::HorizontalScrollBar | A::Size );
             r.setBottom( r.bottom() - h );
         }
     }

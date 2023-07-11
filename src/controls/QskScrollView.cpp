@@ -62,6 +62,7 @@ QskScrollView::QskScrollView( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
+    setAcceptHoverEvents( true );
 }
 
 QskScrollView::~QskScrollView()
@@ -116,6 +117,17 @@ QskAspect::States QskScrollView::scrollHandleStates( Qt::Orientation orientation
     auto states = skinStates();
     if ( m_data->isScrolling == orientation )
         states |= Pressed;
+
+    const auto subControl = ( orientation == Qt::Horizontal ) ? HorizontalScrollBar : VerticalScrollBar;
+
+    if( effectiveSkinHint( subControl | Hovered ).toBool() )
+    {
+        states |= Hovered;
+    }
+    else
+    {
+        states &= ~Hovered;
+    }
 
     return states;
 }
@@ -234,6 +246,21 @@ void QskScrollView::mouseUngrabEvent()
     m_data->resetScrolling( this );
 }
 
+void QskScrollView::hoverEnterEvent( QHoverEvent* event )
+{
+    updateHoverHints( event );
+}
+
+void QskScrollView::hoverMoveEvent( QHoverEvent* event )
+{
+    updateHoverHints( event );
+}
+
+void QskScrollView::hoverLeaveEvent( QHoverEvent* event )
+{
+    updateHoverHints( event );
+}
+
 #ifndef QT_NO_WHEELEVENT
 
 QPointF QskScrollView::scrollOffset( const QWheelEvent* event ) const
@@ -323,6 +350,17 @@ Qt::Orientations QskScrollView::scrollableOrientations() const
         orientations |= Qt::Vertical;
 
     return orientations;
+}
+
+void QskScrollView::updateHoverHints( QHoverEvent* event )
+{
+    const auto pos = qskHoverPosition( event );
+
+    const bool hBarHovered = subControlRect( HorizontalScrollBar ).contains( pos );
+    setSkinHint( HorizontalScrollBar | Hovered, hBarHovered );
+
+    const bool yBarHovered = subControlRect( VerticalScrollBar ).contains( pos );
+    setSkinHint( VerticalScrollBar | Hovered, yBarHovered );
 }
 
 #include "moc_QskScrollView.cpp"
