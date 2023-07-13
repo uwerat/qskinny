@@ -1589,14 +1589,7 @@ void Editor::setupTextInputColors(
     {
         QRgb panelColor = Qt::black, borderColor1 = Qt::black, borderColor2 = Qt::black, textColor = Qt::black;
 
-        if ( state == A::NoState )
-        {
-            panelColor = pal.fillColor.control.defaultColor;
-            borderColor1 = pal.elevation.textControl.border[0];
-            borderColor2 = pal.elevation.textControl.border[1];
-            textColor = pal.fillColor.text.secondary;
-        }
-        else if ( state == Q::Disabled )
+        if ( state == Q::Disabled )
         {
             panelColor = pal.fillColor.control.secondary;
             borderColor1 = pal.elevation.textControl.border[0];
@@ -1615,6 +1608,13 @@ void Editor::setupTextInputColors(
             panelColor = pal.fillColor.control.disabled;
             borderColor1 = borderColor2 = pal.strokeColor.control.defaultColor;
             textColor = pal.fillColor.text.disabled;
+        }
+        else
+        {
+            panelColor = pal.fillColor.control.defaultColor;
+            borderColor1 = pal.elevation.textControl.border[0];
+            borderColor2 = pal.elevation.textControl.border[1];
+            textColor = pal.fillColor.text.secondary;
         }
 
         const auto panel = Q::Panel | section | state;
