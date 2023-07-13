@@ -5,7 +5,7 @@
 
 class LevelingSensor;
 
-class LevelingSensorSkinlet : public QskSkinlet
+class QSK_EXPORT LevelingSensorSkinlet : public QskSkinlet
 {
     Q_GADGET
 

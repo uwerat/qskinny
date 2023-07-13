@@ -16,7 +16,7 @@
 ///   /
 ///  /
 /// v z+
-class LevelingSensor : public QskControl
+class QSK_EXPORT LevelingSensor : public QskControl
 {
     Q_OBJECT
         using Inherited = QskControl;
@@ -40,7 +40,7 @@ public Q_SLOTS:
     void setTickmarksLabels(Qt::Axis axis, TickmarksLabels labels);
     void setAngle(const QVector3D& degree);
     void setAngle(Qt::Axis axis, float degree);
-signals:
+Q_SIGNALS:
     void rotationXChanged(qreal degree);
     void rotationYChanged(qreal degree);
     void rotationZChanged(qreal degree);

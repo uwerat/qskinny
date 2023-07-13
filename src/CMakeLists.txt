@@ -422,6 +422,22 @@ list(APPEND SOURCES
     inputpanel/QskVirtualKeyboard.cpp
 )
 
+list(APPEND HEADERS
+    controls/LevelingSensor/QsgNodeUtility.h
+    controls/LevelingSensor/QskLevelingSensor.h
+    controls/LevelingSensor/QskLevelingSensorNodes.h
+    controls/LevelingSensor/QskLevelingSensorSkinlet.h
+    controls/LevelingSensor/QskLevelingSensorUtility.h
+)
+
+list(APPEND SOURCES
+    controls/LevelingSensor/QsgNodeUtility.cpp
+    controls/LevelingSensor/QskLevelingSensor.cpp
+    controls/LevelingSensor/QskLevelingSensorNodes.cpp
+    controls/LevelingSensor/QskLevelingSensorSkinlet.cpp
+    controls/LevelingSensor/QskLevelingSensorUtility.cpp
+)
+
 if(ENABLE_PINYIN)
     list(APPEND HEADERS inputpanel/QskPinyinTextPredictor.h)
     list(APPEND SOURCES inputpanel/QskPinyinTextPredictor.cpp)
@@ -485,3 +501,6 @@ set_target_properties(${target} PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR} )
 
 install(TARGETS ${target} )
+
+enable_testing()
+add_subdirectory(tests)
