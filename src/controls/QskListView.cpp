@@ -7,6 +7,7 @@
 #include "QskAspect.h"
 #include "QskColorFilter.h"
 #include "QskEvent.h"
+#include "QskSkinlet.h"
 
 #include <qguiapplication.h>
 #include <qstylehints.h>
@@ -40,6 +41,8 @@ QskListView::QskListView( QQuickItem* parent )
     , m_data( new PrivateData() )
 {
     setSubcontrolProxy( Inherited::Viewport, Viewport );
+
+    connect( this, &QskScrollView::scrollPosChanged, this, &QskControl::focusIndicatorRectChanged );
 }
 
 QskListView::~QskListView()
@@ -125,6 +128,7 @@ void QskListView::setSelectedRow( int row )
     {
         m_data->selectedRow = row;
         Q_EMIT selectedRowChanged( row );
+        Q_EMIT focusIndicatorRectChanged();
 
         update();
     }
@@ -159,6 +163,21 @@ QskColorFilter QskListView::graphicFilterAt( int row, int col ) const
     Q_UNUSED( col )
 
     return QskColorFilter();
+}
+
+QRectF QskListView::focusIndicatorRect() const
+{
+    if( selectedRow() >= 0 )
+    {
+        auto rect = effectiveSkinlet()->sampleRect( this,
+            contentsRect(), Cell, selectedRow() );
+
+        const auto p = scrollPos();
+        rect.adjust( -p.x(), -p.y(), -p.x(), -p.y() );
+        return rect;
+    }
+
+    return Inherited::focusIndicatorRect();
 }
 
 void QskListView::keyPressEvent( QKeyEvent* event )
@@ -208,8 +227,19 @@ void QskListView::keyPressEvent( QKeyEvent* event )
         }
         default:
         {
-            Inherited::keyPressEvent( event );
-            return;
+            if ( const int steps = qskFocusChainIncrement( event ) )
+            {
+                row += steps;
+
+                if( row < 0 )
+                {
+                    row += rowCount();
+                }
+                else if( row >= rowCount() )
+                {
+                    row %= rowCount();
+                }
+            }
         }
     }
 

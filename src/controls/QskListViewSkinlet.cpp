@@ -127,8 +127,6 @@ void QskListViewSkinlet::updateBackgroundNodes(
         rowMax = listView->rowCount() - 1;
 
     const int rowSelected = listView->selectedRow();
-    const double x0 = viewRect.left() + scrolledPos.x();
-    const double y0 = viewRect.top();
 
     auto rowNode = backgroundNode->firstChild();
 
@@ -138,8 +136,7 @@ void QskListViewSkinlet::updateBackgroundNodes(
         {
             if ( row % 2 )
             {
-                const QRectF rect( x0, y0 + row * cellHeight,
-                    viewRect.width(), cellHeight );
+                const auto rect = sampleRect( listView, listView->contentsRect(), Q::Cell, row );
 
                 auto newNode = updateBoxNode( listView, rowNode, rect, Q::Cell );
                 if ( newNode )
@@ -158,8 +155,7 @@ void QskListViewSkinlet::updateBackgroundNodes(
         QskSkinStateChanger stateChanger( listView );
         stateChanger.setStates( listView->skinStates() | QskListView::Selected );
 
-        const QRectF rect( x0, y0 + rowSelected * cellHeight,
-            viewRect.width(), cellHeight );
+        const auto rect = sampleRect( listView, listView->contentsRect(), Q::Cell, rowSelected );
         
         rowNode = updateBoxNode( listView, rowNode, rect, Q::Cell );
         if ( rowNode && rowNode->parent() != backgroundNode )
@@ -488,6 +484,28 @@ QSizeF QskListViewSkinlet::sizeHint( const QskSkinnable* skinnable,
     }
 
     return QSizeF( w, -1.0 );
+}
+
+QRectF QskListViewSkinlet::sampleRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl, int index ) const
+{
+    using Q = QskListView;
+    const auto listView = static_cast< const QskListView* >( skinnable );
+
+    if ( subControl == Q::Cell )
+    {
+        const auto cellHeight = listView->rowHeight();
+        const auto viewRect = listView->viewContentsRect();
+        const auto scrolledPos = listView->scrollPos();
+
+        const double x0 = viewRect.left() + scrolledPos.x();
+        const double y0 = viewRect.top();
+
+        const QRectF rect( x0, y0 + index * cellHeight, viewRect.width(), cellHeight );
+        return rect;
+    }
+
+    return Inherited::sampleRect( skinnable, contentsRect, subControl, index );
 }
 
 #include "moc_QskListViewSkinlet.cpp"

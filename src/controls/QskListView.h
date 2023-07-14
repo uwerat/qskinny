@@ -75,6 +75,8 @@ class QSK_EXPORT QskListView : public QskScrollView
     virtual QskColorFilter graphicFilterAt( int row, int col ) const;
 #endif
 
+    QRectF focusIndicatorRect() const override;
+
   public Q_SLOTS:
     void setSelectedRow( int row );
 
