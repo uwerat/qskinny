@@ -27,7 +27,7 @@
 using Q = LevelingSensor;
 using R = LevelingSensorSkinlet::NodeRole;
 
-using namespace qsg;
+using namespace QskSGNode;
 
 float LevelingSensorSkinlet::radius2(const QskSkinnable* const skinnable)
 {
@@ -137,7 +137,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::OuterDisk>(const LevelingSensor
 
     const auto cX = center(sensor).x();
     const auto cY = center(sensor).y();
-    const auto rZ = sensor->arcMetricsHint(subControl).startAngle();
+    const auto rZ = 0.0;
 
     const auto matrix =
         matrix_deg(0.0, 0.0, 0.0, cX, cY, 0) *
@@ -157,7 +157,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::Horizon>(const LevelingSensor* 
     const auto cX = center(sensor).x();
     const auto cY = center(sensor).y();
     const auto rX = sensor->rotation().x();
-    const auto rZ = sensor->arcMetricsHint(subControl).startAngle();
+    const auto rZ = 0.0;
     const auto dY = 2 * sensor->angle().y();
     const auto p = qBound(0.0, 0.5 + (-rX / dY), 1.0);
 

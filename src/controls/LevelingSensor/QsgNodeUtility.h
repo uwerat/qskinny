@@ -3,7 +3,7 @@
 #include <QSGNode>
 #include <type_traits>
 
-namespace qsg
+namespace QskSGNode
 {
     using NodeType = QSGNode;
 

@@ -5,17 +5,6 @@
 #include <QVector3D>
 #include <QskAspect.h>
 
-/// @brief This control can display the pitch, roll and yaw angles
-/// @note x = pitch, y = yaw, z = roll
-/// 
-///    ^y+
-///    |
-///    |
-///    |
-///    +------------->x+
-///   /
-///  /
-/// v z+
 class QSK_EXPORT LevelingSensor : public QskControl
 {
     Q_OBJECT
@@ -52,7 +41,6 @@ public:
     Q_REQUIRED_RESULT const TickmarksLabels& tickmarkLabels(Qt::Axis axis) const;
     Q_REQUIRED_RESULT const QVector3D& angle() const noexcept;
 private:
-    /// @brief The sensors rotation per axis: x := roll, y := pitch, z := yaw
     QVector3D m_rotation;
     QVector3D m_angle = { 45,45,45 };
     Tickmarks m_tickmarks[3];

@@ -4,6 +4,7 @@
 #include <qmatrix4x4.h>
 
 #include <QskScaleTickmarks.h>
+#include <QskFunctions.h>
 
 // create a homogenous transformation matrix
 inline Q_REQUIRED_RESULT QMatrix4x4 matrix_deg(
@@ -51,7 +52,7 @@ inline bool compare_exchange(T& dst, const T& src)
 template<>
 inline bool compare_exchange<float>(float& dst, const float& src)
 {
-    if (!qFuzzyCompare(dst, src))
+    if (!qskFuzzyCompare (dst, src))
     {
         dst = src;
         return true;
@@ -62,7 +63,7 @@ inline bool compare_exchange<float>(float& dst, const float& src)
 template<>
 inline bool compare_exchange<qreal>(qreal& dst, const qreal& src)
 {
-    if (!qFuzzyCompare(dst, src))
+    if (!qskFuzzyCompare (dst, src))
     {
         dst = src;
         return true;
