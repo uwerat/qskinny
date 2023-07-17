@@ -501,6 +501,3 @@ set_target_properties(${target} PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR} )
 
 install(TARGETS ${target} )
-
-enable_testing()
-add_subdirectory(tests)
