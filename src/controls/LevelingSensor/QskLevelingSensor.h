@@ -5,7 +5,7 @@
 #include <QVector3D>
 #include <QskAspect.h>
 
-class QSK_EXPORT LevelingSensor : public QskControl
+class QSK_EXPORT QskLevelingSensor : public QskControl
 {
     Q_OBJECT
         using Inherited = QskControl;
@@ -21,7 +21,7 @@ public:
         TickmarksZLabels)
         using Tickmarks = QskScaleTickmarks;
         using TickmarksLabels = QVector<QPair<qreal, QString>>;
-    explicit LevelingSensor(QQuickItem* parent = nullptr);
+    explicit QskLevelingSensor(QQuickItem* parent = nullptr);
 public Q_SLOTS:
     void setRotation(const QVector3D& degree);
     void setRotation(Qt::Axis axis, float degree);

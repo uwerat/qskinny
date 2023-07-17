@@ -3,9 +3,9 @@
 #include <QskSkinlet.h>
 #include <QSGNode>
 
-class LevelingSensor;
+class QskLevelingSensor;
 
-class QSK_EXPORT LevelingSensorSkinlet : public QskSkinlet
+class QSK_EXPORT QskLevelingSensorSkinlet : public QskSkinlet
 {
     Q_GADGET
 
@@ -28,8 +28,8 @@ public:
         RoleCount
     };
 
-    Q_INVOKABLE LevelingSensorSkinlet(QskSkin* skin = nullptr);
-    ~LevelingSensorSkinlet() override = default;
+    Q_INVOKABLE QskLevelingSensorSkinlet(QskSkin* skin = nullptr);
+    ~QskLevelingSensorSkinlet() override = default;
 
     static Q_REQUIRED_RESULT float outerRadius(const QskSkinnable* const skinnable);
     static Q_REQUIRED_RESULT float innerRadius(const QskSkinnable* const skinnable);
@@ -44,10 +44,10 @@ protected:
         quint8 nodeRole, QSGNode* node) const override;
 
     template<NodeRole>
-    Q_REQUIRED_RESULT QRectF subControlRect(const LevelingSensor* sensor,
+    Q_REQUIRED_RESULT QRectF subControlRect(const QskLevelingSensor* sensor,
         const QRectF& contentsRect) const;
 
     template<NodeRole>
-    Q_REQUIRED_RESULT QSGNode* updateSubNode(const LevelingSensor* sensor,
+    Q_REQUIRED_RESULT QSGNode* updateSubNode(const QskLevelingSensor* sensor,
         quint8 nodeRole, QSGNode* node) const;
 };

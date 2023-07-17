@@ -24,31 +24,31 @@
 #include <QSGGeometryNode>
 #include <qmath.h>
 
-using Q = LevelingSensor;
-using R = LevelingSensorSkinlet::NodeRole;
+using Q = QskLevelingSensor;
+using R = QskLevelingSensorSkinlet::NodeRole;
 
 using namespace QskSGNode;
 
-float LevelingSensorSkinlet::outerRadius(const QskSkinnable* const skinnable)
+float QskLevelingSensorSkinlet::outerRadius(const QskSkinnable* const skinnable)
 {
     const auto* const sensor = static_cast<const Q*>(skinnable);
     const auto contentsRect = sensor->contentsRect();
     return 0.5f * qMin(contentsRect.width(), contentsRect.height());
 }
 
-float LevelingSensorSkinlet::innerRadius(const QskSkinnable* const skinnable)
+float QskLevelingSensorSkinlet::innerRadius(const QskSkinnable* const skinnable)
 {
     const auto scale = skinnable->strutSizeHint(Q::Horizon);
     return outerRadius(skinnable) * scale.width();
 }
 
-QPointF LevelingSensorSkinlet::center(const QskSkinnable* const skinnable)
+QPointF QskLevelingSensorSkinlet::center(const QskSkinnable* const skinnable)
 {
     const auto* const sensor = static_cast<const Q*>(skinnable);
     return sensor->contentsRect().center();
 }
 
-LevelingSensorSkinlet::LevelingSensorSkinlet(QskSkin* skin)
+QskLevelingSensorSkinlet::QskLevelingSensorSkinlet(QskSkin* skin)
     : Inherited(skin)
 {
     setNodeRoles({         
@@ -63,12 +63,12 @@ LevelingSensorSkinlet::LevelingSensorSkinlet(QskSkin* skin)
         TickmarksZLabels, });
 }
 
-template<LevelingSensorSkinlet::NodeRole>
-Q_REQUIRED_RESULT QRectF LevelingSensorSkinlet::subControlRect(const LevelingSensor* const sensor,
+template<QskLevelingSensorSkinlet::NodeRole>
+Q_REQUIRED_RESULT QRectF QskLevelingSensorSkinlet::subControlRect(const QskLevelingSensor* const sensor,
     const QRectF& contentsRect) const = delete;
 
 template<>
-Q_REQUIRED_RESULT QRectF LevelingSensorSkinlet::subControlRect<R::OuterDisk>(const LevelingSensor* const sensor,
+Q_REQUIRED_RESULT QRectF QskLevelingSensorSkinlet::subControlRect<R::OuterDisk>(const QskLevelingSensor* const sensor,
     const QRectF& contentsRect) const
 {
     const auto radius = outerRadius(sensor);
@@ -81,7 +81,7 @@ Q_REQUIRED_RESULT QRectF LevelingSensorSkinlet::subControlRect<R::OuterDisk>(con
 }
 
 template<>
-Q_REQUIRED_RESULT QRectF LevelingSensorSkinlet::subControlRect<R::Horizon>(const LevelingSensor* const sensor,
+Q_REQUIRED_RESULT QRectF QskLevelingSensorSkinlet::subControlRect<R::Horizon>(const QskLevelingSensor* const sensor,
     const QRectF& contentsRect) const
 {
     const auto scale = sensor->strutSizeHint(Q::Horizon);
@@ -95,7 +95,7 @@ Q_REQUIRED_RESULT QRectF LevelingSensorSkinlet::subControlRect<R::Horizon>(const
     };
 }
 
-QRectF LevelingSensorSkinlet::subControlRect(const QskSkinnable* skinnable,
+QRectF QskLevelingSensorSkinlet::subControlRect(const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl) const
 {
     const auto* const sensor = static_cast<const Q*>(skinnable);
@@ -112,12 +112,12 @@ QRectF LevelingSensorSkinlet::subControlRect(const QskSkinnable* skinnable,
     return Inherited::subControlRect(skinnable, contentsRect, subControl);
 }
 
-template<LevelingSensorSkinlet::NodeRole>
-QSGNode* LevelingSensorSkinlet::updateSubNode(const LevelingSensor* const sensor,
+template<QskLevelingSensorSkinlet::NodeRole>
+QSGNode* QskLevelingSensorSkinlet::updateSubNode(const QskLevelingSensor* const sensor,
     const quint8 nodeRole, QSGNode* const node) const = delete;
 
 template<>
-QSGNode* LevelingSensorSkinlet::updateSubNode<R::OuterDisk>(const LevelingSensor* const sensor,
+QSGNode* QskLevelingSensorSkinlet::updateSubNode<R::OuterDisk>(const QskLevelingSensor* const sensor,
     const quint8 nodeRole, QSGNode* const node) const
 {
     const auto subControl = Q::OuterDisk;
@@ -148,7 +148,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::OuterDisk>(const LevelingSensor
 }
 
 template<>
-QSGNode* LevelingSensorSkinlet::updateSubNode<R::Horizon>(const LevelingSensor* const sensor,
+QSGNode* QskLevelingSensorSkinlet::updateSubNode<R::Horizon>(const QskLevelingSensor* const sensor,
     const quint8 nodeRole, QSGNode* const node) const
 {
     const auto subControl = Q::Horizon;
@@ -188,7 +188,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::Horizon>(const LevelingSensor* 
 }
 
 template<>
-QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksX>(const LevelingSensor* const sensor,
+QSGNode* QskLevelingSensorSkinlet::updateSubNode<R::TickmarksX>(const QskLevelingSensor* const sensor,
     const quint8 nodeRole, QSGNode* const node) const
 {
     const auto subControl = Q::TickmarksX;
@@ -228,7 +228,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksX>(const LevelingSenso
 }
 
 template<>
-QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksY>(const LevelingSensor* const sensor,
+QSGNode* QskLevelingSensorSkinlet::updateSubNode<R::TickmarksY>(const QskLevelingSensor* const sensor,
     const quint8 nodeRole, QSGNode* const node) const
 {
     const auto subControl = Q::TickmarksY;
@@ -270,7 +270,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksY>(const LevelingSenso
 }
 
 template<>
-QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksZ>(const LevelingSensor* const sensor,
+QSGNode* QskLevelingSensorSkinlet::updateSubNode<R::TickmarksZ>(const QskLevelingSensor* const sensor,
     const quint8 nodeRole, QSGNode* const node) const
 {
     const auto subControl = Q::TickmarksZ;
@@ -296,7 +296,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksZ>(const LevelingSenso
 }
 
 template<>
-QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksXLabels>(const LevelingSensor* const sensor,
+QSGNode* QskLevelingSensorSkinlet::updateSubNode<R::TickmarksXLabels>(const QskLevelingSensor* const sensor,
     const quint8 nodeRole, QSGNode* const node) const
 {
     const auto subControl = Q::TickmarksXLabels;
@@ -321,7 +321,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksXLabels>(const Levelin
 }
 
 template<>
-QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksYLabels>(const LevelingSensor* const sensor,
+QSGNode* QskLevelingSensorSkinlet::updateSubNode<R::TickmarksYLabels>(const QskLevelingSensor* const sensor,
     const quint8 nodeRole, QSGNode* const node) const
 {
     const auto subControl = Q::TickmarksYLabels;
@@ -341,7 +341,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksYLabels>(const Levelin
 }
 
 template<>
-QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksZLabels>(const LevelingSensor* const sensor,
+QSGNode* QskLevelingSensorSkinlet::updateSubNode<R::TickmarksZLabels>(const QskLevelingSensor* const sensor,
     const quint8 nodeRole, QSGNode* const node) const
 {
     const auto subControl = Q::TickmarksZLabels;
@@ -358,7 +358,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksZLabels>(const Levelin
 }
 
 template<>
-QSGNode* LevelingSensorSkinlet::updateSubNode<R::HorizonClip>(const LevelingSensor* const sensor,
+QSGNode* QskLevelingSensorSkinlet::updateSubNode<R::HorizonClip>(const QskLevelingSensor* const sensor,
     const quint8 nodeRole, QSGNode* const node) const
 {
     const auto cX = center(sensor).x();
@@ -370,7 +370,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::HorizonClip>(const LevelingSens
     return clipNode;
 }
 
-QSGNode* LevelingSensorSkinlet::updateSubNode(
+QSGNode* QskLevelingSensorSkinlet::updateSubNode(
     const QskSkinnable* const skinnable, const quint8 nodeRole, QSGNode* const node) const
 {
     const auto* const sensor = static_cast<const Q*>(skinnable);

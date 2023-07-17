@@ -31,23 +31,23 @@ namespace
     }
 }
 
-QSK_SUBCONTROL(LevelingSensor, OuterDisk)
-QSK_SUBCONTROL(LevelingSensor, Horizon)
-QSK_SUBCONTROL(LevelingSensor, TickmarksX)
-QSK_SUBCONTROL(LevelingSensor, TickmarksXLabels)
-QSK_SUBCONTROL(LevelingSensor, TickmarksY)
-QSK_SUBCONTROL(LevelingSensor, TickmarksYLabels)
-QSK_SUBCONTROL(LevelingSensor, TickmarksZ)
-QSK_SUBCONTROL(LevelingSensor, TickmarksZLabels)
+QSK_SUBCONTROL(QskLevelingSensor, OuterDisk)
+QSK_SUBCONTROL(QskLevelingSensor, Horizon)
+QSK_SUBCONTROL(QskLevelingSensor, TickmarksX)
+QSK_SUBCONTROL(QskLevelingSensor, TickmarksXLabels)
+QSK_SUBCONTROL(QskLevelingSensor, TickmarksY)
+QSK_SUBCONTROL(QskLevelingSensor, TickmarksYLabels)
+QSK_SUBCONTROL(QskLevelingSensor, TickmarksZ)
+QSK_SUBCONTROL(QskLevelingSensor, TickmarksZLabels)
 
 #define RETURN_IF_FALSE(expr) if(!(expr)) return;
 
-LevelingSensor::LevelingSensor(QQuickItem* const parent)
+QskLevelingSensor::QskLevelingSensor(QQuickItem* const parent)
     : Inherited(parent)
 {
 }
 
-void LevelingSensor::setRotation(const QVector3D& degree)
+void QskLevelingSensor::setRotation(const QVector3D& degree)
 {
     if (m_rotation != degree)
     {
@@ -57,7 +57,7 @@ void LevelingSensor::setRotation(const QVector3D& degree)
     }
 }
 
-void LevelingSensor::setRotation(const Qt::Axis axis, const float degree)
+void QskLevelingSensor::setRotation(const Qt::Axis axis, const float degree)
 {
     RETURN_IF_FALSE(isAxis(axis));
 
@@ -74,7 +74,7 @@ void LevelingSensor::setRotation(const Qt::Axis axis, const float degree)
     }
 }
 
-void LevelingSensor::setTickmarks(const Qt::Axis axis, QskScaleTickmarks tickmarks)
+void QskLevelingSensor::setTickmarks(const Qt::Axis axis, QskScaleTickmarks tickmarks)
 {
     RETURN_IF_FALSE(isAxis(axis));
 
@@ -82,7 +82,7 @@ void LevelingSensor::setTickmarks(const Qt::Axis axis, QskScaleTickmarks tickmar
     update();
 }
 
-void LevelingSensor::setTickmarksLabels(const Qt::Axis axis, TickmarksLabels labels)
+void QskLevelingSensor::setTickmarksLabels(const Qt::Axis axis, TickmarksLabels labels)
 {
     RETURN_IF_FALSE(isAxis(axis));
     
@@ -90,7 +90,7 @@ void LevelingSensor::setTickmarksLabels(const Qt::Axis axis, TickmarksLabels lab
     update();
 }
 
-void LevelingSensor::setAngle(const QVector3D& degree)
+void QskLevelingSensor::setAngle(const QVector3D& degree)
 {
     if (compareExchange(m_angle, degree))
     {
@@ -99,7 +99,7 @@ void LevelingSensor::setAngle(const QVector3D& degree)
     }
 }
 
-void LevelingSensor::setAngle(const Qt::Axis axis, const float degree)
+void QskLevelingSensor::setAngle(const Qt::Axis axis, const float degree)
 {
     RETURN_IF_FALSE(isAxis(axis));
 
@@ -110,7 +110,7 @@ void LevelingSensor::setAngle(const Qt::Axis axis, const float degree)
     }
 }
 
-const QskScaleTickmarks& LevelingSensor::tickmarks(Qt::Axis axis) const
+const QskScaleTickmarks& QskLevelingSensor::tickmarks(Qt::Axis axis) const
 {
     if (isAxis(axis))
     {
@@ -120,22 +120,22 @@ const QskScaleTickmarks& LevelingSensor::tickmarks(Qt::Axis axis) const
     return invalid;
 }
 
-const LevelingSensor::TickmarksLabels& LevelingSensor::tickmarkLabels(Qt::Axis axis) const
+const QskLevelingSensor::TickmarksLabels& QskLevelingSensor::tickmarkLabels(Qt::Axis axis) const
 {
     if (isAxis(axis))
     {
         return m_tickmarksLabels[axis];
     }
-    static const LevelingSensor::TickmarksLabels invalid;
+    static const QskLevelingSensor::TickmarksLabels invalid;
     return invalid;
 }
 
-const QVector3D& LevelingSensor::angle() const noexcept
+const QVector3D& QskLevelingSensor::angle() const noexcept
 {
     return m_angle;
 }
 
-const QVector3D& LevelingSensor::rotation() const noexcept
+const QVector3D& QskLevelingSensor::rotation() const noexcept
 {
     return m_rotation;
 }
