@@ -29,18 +29,17 @@ using R = LevelingSensorSkinlet::NodeRole;
 
 using namespace QskSGNode;
 
-float LevelingSensorSkinlet::radius2(const QskSkinnable* const skinnable)
+float LevelingSensorSkinlet::outerRadius(const QskSkinnable* const skinnable)
 {
-    // outer radius
     const auto* const sensor = static_cast<const Q*>(skinnable);
     const auto contentsRect = sensor->contentsRect();
     return 0.5f * qMin(contentsRect.width(), contentsRect.height());
 }
 
-float LevelingSensorSkinlet::radius1(const QskSkinnable* const skinnable)
+float LevelingSensorSkinlet::innerRadius(const QskSkinnable* const skinnable)
 {
     const auto scale = skinnable->strutSizeHint(Q::Horizon);
-    return radius2(skinnable) * scale.width();
+    return outerRadius(skinnable) * scale.width();
 }
 
 QPointF LevelingSensorSkinlet::center(const QskSkinnable* const skinnable)
@@ -72,7 +71,7 @@ template<>
 Q_REQUIRED_RESULT QRectF LevelingSensorSkinlet::subControlRect<R::OuterDisk>(const LevelingSensor* const sensor,
     const QRectF& contentsRect) const
 {
-    const auto radius = radius2(sensor);
+    const auto radius = outerRadius(sensor);
     const auto scale = sensor->strutSizeHint(Q::OuterDisk);
     const auto width = 2 * radius * scale.width();
     const auto height = width;
@@ -86,7 +85,7 @@ Q_REQUIRED_RESULT QRectF LevelingSensorSkinlet::subControlRect<R::Horizon>(const
     const QRectF& contentsRect) const
 {
     const auto scale = sensor->strutSizeHint(Q::Horizon);
-    const auto width = 2 * radius1(sensor) * scale.width();
+    const auto width = 2 * innerRadius(sensor) * scale.width();
     const auto height = width;
     return {
         center(sensor).x() - width / 2,
@@ -132,7 +131,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::OuterDisk>(const LevelingSensor
     auto* const root = ensure<QSGTransformNode, par<1, QskBoxNode>>::node(node);
     auto* const bNode = static_cast<QskBoxNode*>(root->firstChild());
 
-    const auto size = radius2(sensor) * sensor->strutSizeHint(Q::OuterDisk).width();
+    const auto size = outerRadius(sensor) * sensor->strutSizeHint(Q::OuterDisk).width();
     updateBoxNode(sensor, bNode, { 0, 0, 2 * size, 2 * size }, boxShapeMetrics, boxBorderMetrics, boxBorderColors, boxGradient);
 
     const auto cX = center(sensor).x();
@@ -153,7 +152,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::Horizon>(const LevelingSensor* 
     const quint8 nodeRole, QSGNode* const node) const
 {
     const auto subControl = Q::Horizon;
-    const auto r1 = radius1(sensor);
+    const auto r1 = innerRadius(sensor);
     const auto cX = center(sensor).x();
     const auto cY = center(sensor).y();
     const auto rX = sensor->rotation().x();
@@ -203,7 +202,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksX>(const LevelingSenso
     const auto rY = sensor->rotation().y();
     const auto rZ = sensor->arcMetricsHint(subControl).startAngle();
 
-    const auto r1 = radius1(sensor);
+    const auto r1 = innerRadius(sensor);
     const auto r3 = r1 * scale.height();
 
     const auto sX = r1 / sensor->angle().x();
@@ -236,7 +235,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksY>(const LevelingSenso
     const auto color = sensor->color(subControl);
     const auto scale = sensor->strutSizeHint(subControl);
 
-    const auto r1 = radius1(sensor);
+    const auto r1 = innerRadius(sensor);
     const auto r3 = r1 * scale.width();
     
     const auto rX = 0.00;
@@ -278,8 +277,8 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksZ>(const LevelingSenso
     const auto color = sensor->color(subControl);
     const auto scale = sensor->strutSizeHint(subControl);
     
-    const auto r1 = radius1(sensor);
-    const auto r2 = radius2(sensor);
+    const auto r1 = innerRadius(sensor);
+    const auto r2 = outerRadius(sensor);
     const auto r3 = qvariant_cast<QVector3D>(sensor->effectiveSkinHint(subControl)) * (r2 - r1) + QVector3D{r1, r1, r1};
 
     auto* const transform = ensure<QSGTransformNode, par<1,RadialTickmarksNode>>::node(node);    
@@ -302,7 +301,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksXLabels>(const Levelin
 {
     const auto subControl = Q::TickmarksXLabels;
         
-    const auto r1 = radius1(sensor);
+    const auto r1 = innerRadius(sensor);
     const auto r3 = static_cast<float>(r1 * sensor->strutSizeHint(Q::TickmarksX).height());
     const auto sX = r1 / sensor->angle().x();
     const auto sY = r1 / sensor->angle().y();
@@ -326,7 +325,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksYLabels>(const Levelin
     const quint8 nodeRole, QSGNode* const node) const
 {
     const auto subControl = Q::TickmarksYLabels;
-    const auto r1 = radius1(sensor);
+    const auto r1 = innerRadius(sensor);
     const auto r3 = static_cast<float>(r1 * sensor->strutSizeHint(Q::TickmarksY).width());
     const auto cX = static_cast<float>(center(sensor).x());
     const auto cY = static_cast<float>(center(sensor).y());
@@ -348,7 +347,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::TickmarksZLabels>(const Levelin
     const auto subControl = Q::TickmarksZLabels;
     auto* const tNode = ensure<QSGTransformNode, par<1,RadialTickmarksLabelsNode>>::node(node);
     auto* const lNode = static_cast<RadialTickmarksLabelsNode*>(tNode->firstChild());
-    const auto r1 = radius1(sensor);
+    const auto r1 = innerRadius(sensor);
     const auto r3 = static_cast<float>(r1 * sensor->strutSizeHint(subControl).width());
     const auto cX = static_cast<float>(center(sensor).x());
     const auto cY = static_cast<float>(center(sensor).y());
@@ -364,7 +363,7 @@ QSGNode* LevelingSensorSkinlet::updateSubNode<R::HorizonClip>(const LevelingSens
 {
     const auto cX = center(sensor).x();
     const auto cY = center(sensor).y();
-    const auto r1 = radius1(sensor);
+    const auto r1 = innerRadius(sensor);
 
     auto* const clipNode = ensure<PolygonClipNode>::node(node);
     clipNode->setGeometryProperties(r1, cX, cY);

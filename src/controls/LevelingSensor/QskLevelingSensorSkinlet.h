@@ -31,11 +31,8 @@ public:
     Q_INVOKABLE LevelingSensorSkinlet(QskSkin* skin = nullptr);
     ~LevelingSensorSkinlet() override = default;
 
-    /// @returns Returns the inner radius of the @p skinnable
-    static Q_REQUIRED_RESULT float radius2(const QskSkinnable* const skinnable);
-    /// @returns Returns the outer radius of the @p skinnable
-    static Q_REQUIRED_RESULT float radius1(const QskSkinnable* const skinnable);
-    /// @returns Returns the center point of the control
+    static Q_REQUIRED_RESULT float outerRadius(const QskSkinnable* const skinnable);
+    static Q_REQUIRED_RESULT float innerRadius(const QskSkinnable* const skinnable);
     static Q_REQUIRED_RESULT QPointF center(const QskSkinnable* const skinnable);
 
 protected:
