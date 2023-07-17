@@ -1,5 +1,6 @@
 #include "QskLevelingSensor.h"
 #include <QskScaleTickmarks.h>
+#include <QskFunctions.h>
 
 namespace
 {
@@ -17,7 +18,7 @@ namespace
     template<>
     bool compareExchange<float>(float& dst, const float& src)
     {
-        if (!qFuzzyCompare(dst, src))
+        if (!qskFuzzyCompare(dst, src))
         {
             dst = src;
             return true;
