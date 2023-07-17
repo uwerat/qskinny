@@ -423,7 +423,7 @@ list(APPEND SOURCES
 )
 
 list(APPEND HEADERS
-    controls/LevelingSensor/QsgNodeUtility.h
+    controls/LevelingSensor/QskSGNodeUtility.h
     controls/LevelingSensor/QskLevelingSensor.h
     controls/LevelingSensor/QskLevelingSensorNodes.h
     controls/LevelingSensor/QskLevelingSensorSkinlet.h
@@ -431,7 +431,7 @@ list(APPEND HEADERS
 )
 
 list(APPEND SOURCES
-    controls/LevelingSensor/QsgNodeUtility.cpp
+    controls/LevelingSensor/QskSGNodeUtility.cpp
     controls/LevelingSensor/QskLevelingSensor.cpp
     controls/LevelingSensor/QskLevelingSensorNodes.cpp
     controls/LevelingSensor/QskLevelingSensorSkinlet.cpp

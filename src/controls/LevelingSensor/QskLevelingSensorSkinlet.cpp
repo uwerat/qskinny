@@ -2,7 +2,7 @@
 #include "QskLevelingSensor.h"
 #include "QskLevelingSensorUtility.h"
 #include "QskLevelingSensorNodes.h"
-#include "QsgNodeUtility.h"
+#include "QskSGNodeUtility.h"
 
 #include <QskArcMetrics.h>
 #include <QskBoxBorderColors.h>
