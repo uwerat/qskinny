@@ -1596,7 +1596,7 @@ void Editor::setupTextInputColors(
             borderColor2 = pal.elevation.textControl.border[1];
             textColor = pal.fillColor.text.secondary;
         }
-        else if ( state == Q::Disabled )
+        else if ( state == Q::Hovered )
         {
             panelColor = pal.fillColor.control.secondary;
             borderColor1 = pal.elevation.textControl.border[0];
