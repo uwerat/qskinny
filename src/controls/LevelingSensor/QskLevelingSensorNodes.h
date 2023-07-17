@@ -36,9 +36,9 @@ public:
             m_geometry.setLineWidth(lineWidth);
         }
 
-        dirty |= compare_exchange(m_r1, r1);
-        dirty |= compare_exchange(m_r2, r2);
-        dirty |= compare_exchange(m_tickmarksHash, tickmarks.hash());
+        dirty |= compareExchange(m_r1, r1);
+        dirty |= compareExchange(m_r2, r2);
+        dirty |= compareExchange(m_tickmarksHash, tickmarks.hash());
 
         if (dirty)
         {
@@ -122,9 +122,9 @@ public:
         }
 
         dirty |= m_geometry.vertexCount() != tickmarks.tickCount() * 2;
-        dirty |= compare_exchange(m_tickmarkSize, tickmarkSize);
-        dirty |= compare_exchange(m_scale, scale);
-        dirty |= compare_exchange(m_offset, offset);
+        dirty |= compareExchange(m_tickmarkSize, tickmarkSize);
+        dirty |= compareExchange(m_scale, scale);
+        dirty |= compareExchange(m_offset, offset);
 
         if (dirty)
         {
@@ -186,10 +186,10 @@ public:
     void setGeometryProperties(const qreal radius = 1.0, const qreal cx = 0.0, const qreal cy = 0.0, const int count = 360)
     {
         auto dirty = false;
-        dirty |= compare_exchange(m_radius, radius);
-        dirty |= compare_exchange(m_cx, cx);
-        dirty |= compare_exchange(m_cy, cy);
-        dirty |= compare_exchange(m_count, count);
+        dirty |= compareExchange(m_radius, radius);
+        dirty |= compareExchange(m_cx, cx);
+        dirty |= compareExchange(m_cy, cy);
+        dirty |= compareExchange(m_count, count);
 
         if (dirty)
         {
