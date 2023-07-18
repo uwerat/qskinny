@@ -708,7 +708,7 @@ void Editor::setupMenuMetrics()
     setBoxBorderMetrics( Q::Panel, 1 );
     setBoxShape( Q::Panel, 7 );
 
-    setPadding( Q::Segment, { 0, 10, 0, 10 } );
+    setPadding( Q::Segment, { 0, 10, 10, 10 } );
     setSpacing( Q::Segment, 15 );
     setBoxBorderMetrics( Q::Segment | Q::Selected, { 3, 0, 0, 0 } );
 
