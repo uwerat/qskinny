@@ -1129,7 +1129,7 @@ void Editor::setupScrollView()
 
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
-        setMetric( subControl | A::Size, 10_dp );
+        setMetric( subControl | A::Size, 6_dp );
         setPadding( subControl, 0 );
     }
 
@@ -1139,9 +1139,9 @@ void Editor::setupScrollView()
 
     for ( auto subControl : { Q::HorizontalScrollHandle, Q::VerticalScrollHandle } )
     {
-        setBoxShape( subControl, 3_dp );
+        setBoxShape( subControl, { 100, Qt::RelativeSize } );
         setBoxBorderMetrics( subControl, 0 );
-        setGradient( subControl, m_pal.primary );
+        setGradient( subControl, m_pal.secondary );
         setAnimation( subControl | A::Color, qskDuration );
     }
 
