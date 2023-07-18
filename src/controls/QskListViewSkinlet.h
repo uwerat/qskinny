@@ -37,6 +37,9 @@ class QSK_EXPORT QskListViewSkinlet : public QskScrollViewSkinlet
     QSizeF sizeHint( const QskSkinnable*,
         Qt::SizeHint, const QSizeF& ) const override;
 
+    QRectF sampleRect( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol, int index ) const override;
+
   protected:
     QSGNode* updateContentsNode(
         const QskScrollView*, QSGNode* ) const override;

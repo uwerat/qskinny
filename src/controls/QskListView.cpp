@@ -7,6 +7,7 @@
 #include "QskAspect.h"
 #include "QskColorFilter.h"
 #include "QskEvent.h"
+#include "QskSkinlet.h"
 
 #include <qguiapplication.h>
 #include <qstylehints.h>
@@ -24,20 +25,26 @@ class QskListView::PrivateData
     PrivateData()
         : preferredWidthFromColumns( false )
         , selectionMode( QskListView::SingleSelection )
-        , selectedRow( -1 )
     {
     }
+
+    /*
+        Currently we only support single selection. We can't navigate
+        the current item ( = focus ) without changing the selection.
+        So for the moment the selected row is always the currentRow.
+     */
 
     bool preferredWidthFromColumns : 1;
     SelectionMode selectionMode : 4;
 
-    int selectedRow;
+    int selectedRow = -1;
 };
 
 QskListView::QskListView( QQuickItem* parent )
     : QskScrollView( parent )
     , m_data( new PrivateData() )
 {
+    connect( this, &QskScrollView::scrollPosChanged, &QskControl::focusIndicatorRectChanged );
 }
 
 QskListView::~QskListView()
@@ -123,6 +130,7 @@ void QskListView::setSelectedRow( int row )
     {
         m_data->selectedRow = row;
         Q_EMIT selectedRowChanged( row );
+        Q_EMIT focusIndicatorRectChanged();
 
         update();
     }
@@ -157,6 +165,19 @@ QskColorFilter QskListView::graphicFilterAt( int row, int col ) const
     Q_UNUSED( col )
 
     return QskColorFilter();
+}
+
+QRectF QskListView::focusIndicatorRect() const
+{
+    if( m_data->selectedRow >= 0 )
+    {
+        const auto rect = effectiveSkinlet()->sampleRect(
+            this, contentsRect(), Cell, m_data->selectedRow );
+
+        return rect.translated( -scrollPos() );
+    }
+
+    return Inherited::focusIndicatorRect();
 }
 
 void QskListView::keyPressEvent( QKeyEvent* event )
@@ -206,8 +227,19 @@ void QskListView::keyPressEvent( QKeyEvent* event )
         }
         default:
         {
-            Inherited::keyPressEvent( event );
-            return;
+            if ( const int steps = qskFocusChainIncrement( event ) )
+            {
+                row += steps;
+
+                if( row < 0 )
+                {
+                    row += rowCount();
+                }
+                else if( row >= rowCount() )
+                {
+                    row %= rowCount();
+                }
+            }
         }
     }
 
