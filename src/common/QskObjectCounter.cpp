@@ -12,6 +12,7 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qhooks_p.h>
+#include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
 #define QSK_OBJECT_INFO 0
@@ -20,19 +21,8 @@ QSK_QT_PRIVATE_END
 #include <qset.h>
 #endif
 
-#if QT_VERSION < QT_VERSION_CHECK( 6, 4, 0 )
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qquickitem_p.h>
-QSK_QT_PRIVATE_END
-
-#endif
-
 static inline bool qskIsItem( const QObject* object )
 {
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 4, 0 )
-    return object->isQuickItemType();
-#else
     /*
         The addObject hook is called from the constructor of QObject,
         where we don't have the derived class constructed yet.
@@ -42,7 +32,6 @@ static inline bool qskIsItem( const QObject* object )
 
     auto o_p = QObjectPrivate::get( const_cast< QObject* >( object ) );
     return dynamic_cast< QQuickItemPrivate* >( o_p ) != nullptr;
-#endif
 }
 
 namespace
