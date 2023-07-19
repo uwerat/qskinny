@@ -1102,11 +1102,31 @@ void Editor::setupScrollViewMetrics()
     using Q = QskScrollView;
 
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
-        setMetric( subControl | A::Size, 2 );
+    {
+        const auto aspect = subControl | A::Size;
+
+        setMetric( aspect, 2 );
+        setMetric( aspect | Q::Hovered, 6 );
+        setMetric( aspect | Q::Pressed, 6 );
+    }
+
+    /*
+        The scroll bars are actually above the viewport, what is not
+        supported by the skinlet. Do we want to have this. TODO ...
+     */
+
+    setAlignment( Q::VerticalScrollBar, Qt::AlignHCenter );
+    setAlignment( Q::HorizontalScrollBar, Qt::AlignVCenter );
+
+    setBoxShape( Q::HorizontalScrollHandle, 100, Qt::RelativeSize );
+    setBoxShape( Q::VerticalScrollHandle, 100, Qt::RelativeSize );
 
     const auto handleExtent = 40.0;
     setStrutSize( Q::HorizontalScrollHandle, handleExtent, 0.0 );
     setStrutSize( Q::VerticalScrollHandle, 0.0, handleExtent );
+
+    for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
+        setAnimation( subControl | A::Metric, 100 );
 }
 
 void Editor::setupScrollViewColors(
@@ -1114,17 +1134,10 @@ void Editor::setupScrollViewColors(
 {
     using Q = QskScrollView;
 
-    const auto& pal = theme.palette;
+    const auto fillColor = theme.palette.fillColor.controlStrong.defaultColor;
 
-#if 1
-    setGradient( Q::Panel, QColor() );
-    setGradient( Q::Viewport, QColor() );
-#endif
-
-    for ( auto subControl : { Q::HorizontalScrollHandle, Q::VerticalScrollHandle } )
-    {
-        setGradient( subControl | section, pal.fillColor.controlStrong.defaultColor );
-    }
+    setGradient( Q::HorizontalScrollHandle | section, fillColor );
+    setGradient( Q::VerticalScrollHandle | section, fillColor );
 }
 
 void Editor::setupSegmentedBarMetrics()

@@ -30,11 +30,12 @@ class QskScrollView::PrivateData
         if ( isScrolling == scrolling )
             return;
 
-        QskAspect::Subcontrol subControl;
+        Qt::Orientation orientation;
+            
         if ( ( isScrolling == Qt::Horizontal ) || ( scrolling == Qt::Horizontal ) )
-            subControl = HorizontalScrollHandle;
+            orientation = Qt::Horizontal;
         else
-            subControl = VerticalScrollHandle;
+            orientation = Qt::Vertical;
 
         this->isScrolling = scrolling;
         this->scrollPressPos = pos;
@@ -47,7 +48,16 @@ class QskScrollView::PrivateData
         if ( scrolling == 0 )
             qSwap( oldStates, newStates );
 
-        scrollView->startHintTransitions( { subControl }, oldStates, newStates );
+        if ( orientation == Qt::Horizontal )
+        {
+            scrollView->startHintTransitions( { HorizontalScrollHandle }, oldStates, newStates );
+            scrollView->startHintTransitions( { HorizontalScrollBar }, oldStates, newStates );
+        }
+        else
+        {
+            scrollView->startHintTransitions( { VerticalScrollHandle }, oldStates, newStates );
+            scrollView->startHintTransitions( { VerticalScrollBar }, oldStates, newStates );
+        }
     }
 
     Qt::ScrollBarPolicy horizontalScrollBarPolicy = Qt::ScrollBarAsNeeded;
