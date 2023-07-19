@@ -39,7 +39,25 @@ void QskBoxClipNode::setBox( const QRectF& rect,
     m_rect = rect;
     m_hash = hash;
 
+    bool isRectangular = false;
+
+#if 0
+    /*
+        Depending on isRectangular the "renderer can use scissoring instead of stencil,
+        which is significantly faster."
+
+        However the batch renderer ( qsgbatchrenderer.cpp ) is rounding the clip rectangle
+        to integers and the clip might become too small/large.
+
+        So we always have to use stencil clipping - even if it might have a negative
+        impact on the performance. TODO ...
+     */
+
     if ( shape.isRectangle() )
+        isRectangular = true;
+#endif
+
+    if ( isRectangular )
     {
         if ( m_geometry.vertexCount() > 0 )
             m_geometry.allocate( 0 );
