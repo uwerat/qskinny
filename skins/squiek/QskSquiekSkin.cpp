@@ -1041,18 +1041,20 @@ void Editor::setupScrollView()
 
 void Editor::setupListView()
 {
+    using A = QskAspect;
     using Q = QskListView;
 
     // padding for each cell
     setPadding( Q::Cell, QskMargins( 4, 8 ) );
 
     setColor( Q::Text, m_pal.themeForeground );
-    setColor( Q::Cell, m_pal.contrasted );
+
+    // alternating row colors
+    setColor( Q::Cell | A::Lower, Qt::white );
+    setColor( Q::Cell | A::Upper, m_pal.contrasted );
 
     setColor( Q::Cell | Q::Selected, m_pal.highlighted );
     setColor( Q::Text | Q::Selected, m_pal.highlightedText );
-
-    setFlag( Q::Cell | QskAspect::Style, true ); // alternating colors
 }
 
 void Editor::setupSubWindow()

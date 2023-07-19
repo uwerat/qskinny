@@ -48,7 +48,6 @@ class QskScrollView::PrivateData
             qSwap( oldStates, newStates );
 
         scrollView->startHintTransitions( { subControl }, oldStates, newStates );
-
     }
 
     Qt::ScrollBarPolicy horizontalScrollBarPolicy = Qt::ScrollBarAsNeeded;
@@ -122,11 +121,10 @@ QskAspect::States QskScrollView::scrollHandleStates( Qt::Orientation orientation
 
 QRectF QskScrollView::viewContentsRect() const
 {
-    // This code should be done in the skinlet. TODO ...
-    const qreal bw = boxBorderMetricsHint( Viewport ).widthAt( Qt::TopEdge );
+    const auto borderMetrics = boxBorderMetricsHint( Viewport );
 
     const QRectF r = subControlRect( Viewport );
-    return r.adjusted( bw, bw, -bw, -bw );
+    return r.marginsRemoved( borderMetrics.widths() );
 }
 
 void QskScrollView::mousePressEvent( QMouseEvent* event )

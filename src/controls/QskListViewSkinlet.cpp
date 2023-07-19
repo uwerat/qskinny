@@ -8,6 +8,7 @@
 
 #include "QskColorFilter.h"
 #include "QskGraphic.h"
+#include "QskBoxHints.h"
 #include "QskSGNode.h"
 #include "QskSkinStateChanger.h"
 
@@ -113,49 +114,56 @@ void QskListViewSkinlet::updateBackgroundNodes(
     const QskListView* listView, QskListViewNode* listViewNode ) const
 {
     using Q = QskListView;
+    using A = QskAspect;
 
-    QSGNode* backgroundNode = listViewNode->backgroundNode();
+    auto backgroundNode = listViewNode->backgroundNode();
 
-    const qreal cellHeight = listView->rowHeight();
+    const auto cellHeight = listView->rowHeight();
     const auto viewRect = listView->viewContentsRect();
 
-    const QPointF scrolledPos = listView->scrollPos();
+    const auto scrolledPos = listView->scrollPos();
     const int rowMin = qFloor( scrolledPos.y() / cellHeight );
 
     int rowMax = qCeil( ( scrolledPos.y() + viewRect.height() ) / cellHeight );
     if ( rowMax >= listView->rowCount() )
         rowMax = listView->rowCount() - 1;
 
-    const int rowSelected = listView->selectedRow();
+    const auto x0 = viewRect.left() + scrolledPos.x();
+    const auto y0 = viewRect.top();
 
     auto rowNode = backgroundNode->firstChild();
 
-    if ( listView->alternatingRowColors() )
-    {
-        for ( int row = rowMin; row <= rowMax; row++ )
-        {
-            if ( row % 2 )
-            {
-                const auto rect = sampleRect( listView, listView->contentsRect(), Q::Cell, row );
+    const auto boxHints1 = listView->boxHints( Q::Cell | A::Lower );
+    const auto boxHints2 = listView->boxHints( Q::Cell | A::Upper );
 
-                auto newNode = updateBoxNode( listView, rowNode, rect, Q::Cell );
-                if ( newNode )
-                {
-                    if ( newNode->parent() != backgroundNode )
-                        backgroundNode->appendChildNode( newNode );
-                    else
-                        rowNode = newNode->nextSibling();
-                }
-            }
+    for ( int row = rowMin; row <= rowMax; row++ )
+    {
+        /*
+            We do not use sampleRect to avoid doing the calculation
+            of viewRect for each row.
+         */
+        const QRectF rect( x0, y0 + row * cellHeight, viewRect.width(), cellHeight );
+
+        auto newNode = updateBoxNode( listView, rowNode, rect,
+            ( row % 2 ) ? boxHints2 : boxHints1 );
+
+        if ( newNode )
+        {
+            if ( newNode->parent() != backgroundNode )
+                backgroundNode->appendChildNode( newNode );
+            else
+                rowNode = newNode->nextSibling();
         }
     }
 
+    const int rowSelected = listView->selectedRow();
     if ( rowSelected >= rowMin && rowSelected <= rowMax )
     {
         QskSkinStateChanger stateChanger( listView );
         stateChanger.setStates( listView->skinStates() | QskListView::Selected );
 
-        const auto rect = sampleRect( listView, listView->contentsRect(), Q::Cell, rowSelected );
+        const QRectF rect( x0, y0 + rowSelected * cellHeight,
+            viewRect.width(), cellHeight );
         
         rowNode = updateBoxNode( listView, rowNode, rect, Q::Cell );
         if ( rowNode && rowNode->parent() != backgroundNode )
@@ -239,8 +247,8 @@ void QskListViewSkinlet::updateForegroundNodes(
     // finally putting the nodes into their position
     auto node = parentNode->firstChild();
 
-    const qreal rowHeight = listView->rowHeight();
-    qreal y = cr.top() + rowMin * rowHeight;
+    const auto rowHeight = listView->rowHeight();
+    auto y = cr.top() + rowMin * rowHeight;
 
     for ( int row = rowMin; row <= rowMax; row++ )
     {
@@ -286,11 +294,11 @@ void QskListViewSkinlet::updateVisibleForegroundNodes(
 
         for ( int row = rowMin; row <= rowMax; row++ )
         {
-            const qreal h = listView->rowHeight() - ( margins.top() + margins.bottom() );
+            const auto h = listView->rowHeight() - ( margins.top() + margins.bottom() );
 
             for ( int col = 0; col < listView->columnCount(); col++ )
             {
-                const qreal w = listView->columnWidth( col ) - ( margins.left() + margins.right() );
+                const auto w = listView->columnWidth( col ) - ( margins.left() + margins.right() );
 
                 node = updateForegroundNode( listView,
                     parentNode, static_cast< QSGTransformNode* >( node ),
@@ -313,7 +321,7 @@ void QskListViewSkinlet::updateVisibleForegroundNodes(
 
             for ( int col = listView->columnCount() - 1; col >= 0; col-- )
             {
-                const qreal w = listView->columnWidth( col ) - ( margins.left() + margins.right() );
+                const auto w = listView->columnWidth( col ) - ( margins.left() + margins.right() );
 
                 node = updateForegroundNode( listView,
                     parentNode, static_cast< QSGTransformNode* >( node ),
@@ -501,8 +509,7 @@ QRectF QskListViewSkinlet::sampleRect( const QskSkinnable* skinnable,
         const double x0 = viewRect.left() + scrolledPos.x();
         const double y0 = viewRect.top();
 
-        const QRectF rect( x0, y0 + index * cellHeight, viewRect.width(), cellHeight );
-        return rect;
+        return QRectF( x0, y0 + index * cellHeight, viewRect.width(), cellHeight );
     }
 
     return Inherited::sampleRect( skinnable, contentsRect, subControl, index );

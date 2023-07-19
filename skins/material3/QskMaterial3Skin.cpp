@@ -1124,7 +1124,6 @@ void Editor::setupScrollView()
     using Q = QskScrollView;
 
     setGradient( Q::Panel, m_pal.background );
-
     setGradient( Q::Viewport, m_pal.secondaryContainer );
 
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
@@ -1153,13 +1152,14 @@ void Editor::setupListView()
 {
     using Q = QskListView;
 
+    setStrutSize( Q::Cell, { -1, 56 } );
     setPadding( Q::Cell, { 16_dp, 12_dp, 16_dp, 12_dp } );
-    setBoxBorderMetrics( Q::Cell, { 0, 0, 0, 1_dp } );
-    setBoxBorderColors( Q::Cell, m_pal.outline );
-    setColor( Q::Cell, m_pal.surface );
-    setColor( Q::Cell | Q::Selected, m_pal.primary12 );
 
-    setColor( Q::Text, m_pal.onSurfaceVariant );
+    setBoxBorderColors( Q::Cell, m_pal.outline );
+    setGradient( Q::Cell, m_pal.surface );
+    setGradient( Q::Cell | Q::Selected, m_pal.primary12 );
+
+    setColor( Q::Text, m_pal.onSurface );
 }
 
 void Editor::setupSubWindow()

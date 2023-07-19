@@ -67,23 +67,6 @@ bool QskListView::preferredWidthFromColumns() const
     return m_data->preferredWidthFromColumns;
 }
 
-void QskListView::setAlternatingRowColors( bool on )
-{
-    if ( setFlagHint( Cell | QskAspect::Style, on ) )
-        Q_EMIT alternatingRowColorsChanged();
-}
-
-bool QskListView::alternatingRowColors() const
-{
-    return flagHint< bool >( Cell | QskAspect::Style, false );
-}
-
-void QskListView::resetAlternatingRowColors()
-{
-    if ( resetSkinHint( Cell | QskAspect::Style ) )
-        Q_EMIT alternatingRowColorsChanged();
-}
-
 void QskListView::setTextOptions( const QskTextOptions& textOptions )
 {
     if ( setTextOptionsHint( Text, textOptions ) )

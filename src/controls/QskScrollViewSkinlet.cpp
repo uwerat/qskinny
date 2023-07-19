@@ -123,9 +123,13 @@ QSGNode* QskScrollViewSkinlet::updateSubNode(
         }
 
         case HorizontalScrollBarRole:
+        {
+            return updateBoxNode( skinnable, node, Q::HorizontalScrollBar );
+        }
+
         case VerticalScrollBarRole:
         {
-            return nullptr;
+            return updateBoxNode( skinnable, node, Q::VerticalScrollBar );
         }
     }
 

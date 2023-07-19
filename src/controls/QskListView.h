@@ -13,10 +13,6 @@ class QSK_EXPORT QskListView : public QskScrollView
 {
     Q_OBJECT
 
-    Q_PROPERTY( bool alternatingRowColors READ alternatingRowColors
-        WRITE setAlternatingRowColors RESET resetAlternatingRowColors
-        NOTIFY alternatingRowColorsChanged FINAL )
-
     Q_PROPERTY( SelectionMode selectionMode READ selectionMode
         WRITE setSelectionMode NOTIFY selectionModeChanged FINAL )
 
@@ -50,10 +46,6 @@ class QSK_EXPORT QskListView : public QskScrollView
     void setPreferredWidthFromColumns( bool );
     bool preferredWidthFromColumns() const;
 
-    void setAlternatingRowColors( bool );
-    void resetAlternatingRowColors();
-    bool alternatingRowColors() const;
-
     void setSelectionMode( SelectionMode );
     SelectionMode selectionMode() const;
 
@@ -84,7 +76,6 @@ class QSK_EXPORT QskListView : public QskScrollView
     void selectedRowChanged( int row );
 
     void selectionModeChanged();
-    void alternatingRowColorsChanged();
     void preferredWidthFromColumnsChanged();
     void textOptionsChanged();
 
