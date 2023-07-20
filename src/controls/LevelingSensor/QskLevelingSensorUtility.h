@@ -39,7 +39,7 @@ inline Q_REQUIRED_RESULT QMatrix4x4 matrix_deg(
 }
 
 template<typename T>
-inline bool compareExchange(T& dst, const T& src)
+inline Q_REQUIRED_RESULT bool compareExchange(T& dst, const T& src)
 {
     if (dst != src)
     {
@@ -50,7 +50,7 @@ inline bool compareExchange(T& dst, const T& src)
 }
 
 template<>
-inline bool compareExchange<float>(float& dst, const float& src)
+inline Q_REQUIRED_RESULT bool compareExchange<float>(float& dst, const float& src)
 {
     if (!qskFuzzyCompare (dst, src))
     {
@@ -61,7 +61,7 @@ inline bool compareExchange<float>(float& dst, const float& src)
 }
 
 template<>
-inline bool compareExchange<qreal>(qreal& dst, const qreal& src)
+inline Q_REQUIRED_RESULT bool compareExchange<qreal>(qreal& dst, const qreal& src)
 {
     if (!qskFuzzyCompare (dst, src))
     {

@@ -1,10 +1,13 @@
 #pragma once
 
+#include "QskLevelingSensorUtility.h"
+
 #include <QSGGeometry>
 #include <QSGGeometryNode>
 #include <QSGFlatColorMaterial>
 
 #include <QFontMetricsF>
+#include <qmath.h>
 
 class RadialTickmarksNode final : public QSGGeometryNode
 {
