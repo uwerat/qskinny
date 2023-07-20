@@ -1012,9 +1012,13 @@ void Editor::setupScrollView()
     // scroll bars
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
-        setMetric( subControl | A::Size, 12_dp );
-        setPadding( subControl, 0 );
+        setMetric( subControl | A::Size, 14 );
+        setPadding( subControl, 2 );
         setMargin( subControl, 0 );
+
+        setPanel( subControl, Sunken );
+        setBoxShape( subControl, 100, Qt::RelativeSize );
+        setBoxBorderMetrics( subControl, 1 );
     }
 
     // scrollbar handles
@@ -1024,6 +1028,8 @@ void Editor::setupScrollView()
 
         setButton( subControl, Raised, bw );
         setButton( subControl | Q::Pressed, Sunken, bw );
+        setBoxShape( subControl, 100, Qt::RelativeSize );
+        setBoxShape( subControl | Q::Pressed, 100, Qt::RelativeSize );
 
         const auto extent = 40_dp;
 
