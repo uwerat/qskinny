@@ -42,50 +42,23 @@ QSK_SUBCONTROL(QskLevelingSensor, TickmarksZLabels)
 
 #define RETURN_IF_FALSE(expr) if(!(expr)) return;
 
+using Q = QskLevelingSensor;
+
 QskLevelingSensor::QskLevelingSensor(QQuickItem* const parent)
     : Inherited(parent)
 {
 }
 
-void QskLevelingSensor::setRotation(const QVector3D& degree)
-{
-    if (m_rotation != degree)
-    {
-        setRotation(Qt::XAxis, degree.x());
-        setRotation(Qt::YAxis, degree.y());
-        setRotation(Qt::ZAxis, degree.z());
-    }
-}
-
-void QskLevelingSensor::setRotation(const Qt::Axis axis, const float degree)
-{
-    RETURN_IF_FALSE(isAxis(axis));
-
-    if (compareExchange(m_rotation[axis], degree))
-    {
-        update();
-        switch(axis)
-        {
-        case Qt::XAxis: Q_EMIT rotationXChanged(m_rotation[axis]); break;
-        case Qt::YAxis: Q_EMIT rotationYChanged(m_rotation[axis]); break;
-        case Qt::ZAxis: Q_EMIT rotationZChanged(m_rotation[axis]); break;
-        }
-        Q_EMIT rotationChanged(m_rotation);
-    }
-}
-
 void QskLevelingSensor::setTickmarks(const Qt::Axis axis, QskScaleTickmarks tickmarks)
 {
     RETURN_IF_FALSE(isAxis(axis));
-
     m_tickmarks[axis] = std::move(tickmarks);
     update();
 }
 
 void QskLevelingSensor::setTickmarksLabels(const Qt::Axis axis, TickmarksLabels labels)
 {
-    RETURN_IF_FALSE(isAxis(axis));
-    
+    RETURN_IF_FALSE(isAxis(axis));    
     m_tickmarksLabels[axis] = std::move(labels);
     update();
 }
@@ -135,9 +108,46 @@ const QVector3D& QskLevelingSensor::angle() const noexcept
     return m_angle;
 }
 
-const QVector3D& QskLevelingSensor::rotation() const noexcept
+const QVector3D& QskLevelingSensor::subControlRotation(const QskAspect::Subcontrol subControl) const noexcept
 {
-    return m_rotation;
+    static const QVector3D notFound;
+    const auto found = m_subControlRotation.find(subControl);
+    if(found == m_subControlRotation.end()) {
+        return notFound;
+    }
+    return found->second;
+}
+
+void QskLevelingSensor::setSubControlRotation(const QskAspect::Subcontrol subControl, const QVector3D& degree)
+{
+    auto updateSubControlRotation = [this](const QskAspect::Subcontrol subControl, const QVector3D& degree)
+    {
+        if ( compareExchange( m_subControlRotation[ subControl ], degree ) )
+        {
+            Q_EMIT subControlRotationChanged(subControl, degree);
+            update();
+        }
+    };
+
+    if(subControl == Q::TickmarksX || subControl == Q::TickmarksXLabels) 
+    {
+        updateSubControlRotation(Q::TickmarksX, degree);
+        updateSubControlRotation(Q::TickmarksXLabels, degree);
+    }
+    else if(subControl == Q::TickmarksY || subControl == Q::TickmarksYLabels) 
+    {
+        updateSubControlRotation(Q::TickmarksY, degree);
+        updateSubControlRotation(Q::TickmarksYLabels, degree);
+    }
+    else if(subControl == Q::TickmarksZ || subControl == TickmarksZLabels) 
+    {
+        updateSubControlRotation(TickmarksZ, degree);
+        updateSubControlRotation(TickmarksZLabels, degree);
+    }
+    else 
+    {
+        updateSubControlRotation(subControl, degree);
+    }
 }
 
 #include "moc_QskLevelingSensor.cpp"

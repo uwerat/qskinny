@@ -96,7 +96,7 @@ namespace
         }
 
         template<>
-        void style< QskLevelingSensor >( QskSkinHintTableEditor& ed )
+        void style< QskLevelingSensor >( QskSkinHintTableEditor& editor )
         {
             using Q = QskLevelingSensor;
 
@@ -111,34 +111,36 @@ namespace
             } };
             gradient.setLinearDirection( Qt::Vertical );
 
-            ed.setColor( Q::Background, "dimgray" );
+            editor.setColor( Q::Background, "dimgray" );
 
-            ed.setStrutSize( Q::OuterDisk, { r2, r2 } );
-            ed.setColor( Q::OuterDisk, Qt::white );
+            editor.setStrutSize( Q::OuterDisk, { r2, r2 } );
+            editor.setColor( Q::OuterDisk, Qt::white );
 
-            ed.setGradient( Q::Horizon, gradient );
-            ed.setStrutSize( Q::Horizon, { r1, r1 } );
+            editor.setGradient( Q::Horizon, gradient );
+            editor.setStrutSize( Q::Horizon, { r1, r1 } );
 
-            ed.setColor( Q::TickmarksX, Qt::black );
-            ed.setStrutSize( Q::TickmarksX, { r1, 0.2 } );             // w %, h %
-            ed.setHint( Q::TickmarksX, QVector3D{ 0.50, 0.75, 1.0 } ); // %
+            editor.setColor( Q::TickmarksX, Qt::black );
+            editor.setStrutSize( Q::TickmarksX, { r1, 0.2 } );             // w %, h %
+            editor.setHint( Q::TickmarksX, QVector3D{ 0.50, 0.75, 1.0 } ); // %
+            editor.setAlignment(Q::TickmarksX, Qt::AlignCenter);
 
-            ed.setStrutSize( Q::TickmarksXLabels, { r1, 0.15 } ); // w %, h %
-            ed.setAlignment( Q::TickmarksXLabels, Qt::AlignTop | Qt::AlignHCenter );
+            editor.setStrutSize( Q::TickmarksXLabels, { r1, 0.15 } ); // w %, h %
+            editor.setAlignment( Q::TickmarksXLabels, Qt::AlignTop | Qt::AlignHCenter );
 
-            ed.setColor( Q::TickmarksY, Qt::black );
-            ed.setStrutSize( Q::TickmarksY, { 0.1, r1 } );              // w %, h %
-            ed.setHint( Q::TickmarksY, QVector3D{ 0.50, 0.75, 1.00 } ); // %
+            editor.setColor( Q::TickmarksY, Qt::black );
+            editor.setStrutSize( Q::TickmarksY, { 0.1, r1 } );              // w %, h %
+            editor.setHint( Q::TickmarksY, QVector3D{ 0.50, 0.75, 1.00 } ); // %
+            editor.setAlignment(Q::TickmarksY, Qt::AlignCenter);
 
-            ed.setStrutSize( Q::TickmarksYLabels, { 0.15, r1 } ); // w %, h %
-            ed.setAlignment( Q::TickmarksYLabels, Qt::AlignCenter );
+            editor.setStrutSize( Q::TickmarksYLabels, { 0.15, r1 } ); // w %, h %
+            editor.setAlignment( Q::TickmarksYLabels, Qt::AlignCenter );
 
-            ed.setColor( Q::TickmarksZ, "silver" );
-            ed.setStrutSize( Q::TickmarksZ, { 0.90, 0.95 } );
-            ed.setHint( Q::TickmarksZ, QVector3D{ 0.50, 0.75, 1.00 } ); // %
+            editor.setColor( Q::TickmarksZ, "silver" );
+            editor.setStrutSize( Q::TickmarksZ, { 0.90, 0.95 } );
+            editor.setHint( Q::TickmarksZ, QVector3D{ 0.50, 0.75, 1.00 } ); // %
 
-            ed.setStrutSize( Q::TickmarksZLabels, { 0.9, 0.0 } ); // r1 %, r2 %
-            ed.setAlignment( Q::TickmarksZLabels, Qt::AlignCenter );
+            editor.setStrutSize( Q::TickmarksZLabels, { 0.9, 0.0 } ); // r1 %, r2 %
+            editor.setAlignment( Q::TickmarksZLabels, Qt::AlignCenter );
         }
 
       public:
