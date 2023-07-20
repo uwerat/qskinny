@@ -47,6 +47,8 @@ class QSK_EXPORT QskScrollViewSkinlet : public QskSkinlet
 
   private:
     QSGNode* updateContentsRootNode( const QskScrollView*, QSGNode* ) const;
+    QSGNode* updateScrollBarNode(
+        const QskScrollView*, QskAspect::Subcontrol, QSGNode* ) const;
 
     QRectF viewportRect( const QskScrollView*, const QRectF& ) const;
     QRectF scrollBarRect( const QskScrollView*, const QRectF&, Qt::Orientation ) const;

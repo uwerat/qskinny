@@ -1108,6 +1108,9 @@ void Editor::setupScrollViewMetrics()
         setMetric( aspect, 2 );
         setMetric( aspect | Q::Hovered, 6 );
         setMetric( aspect | Q::Pressed, 6 );
+
+        setBoxShape( subControl, 100, Qt::RelativeSize );
+        setAnimation( subControl | A::Metric, 100 );
     }
 
     /*
@@ -1118,26 +1121,57 @@ void Editor::setupScrollViewMetrics()
     setAlignment( Q::VerticalScrollBar, Qt::AlignHCenter );
     setAlignment( Q::HorizontalScrollBar, Qt::AlignVCenter );
 
+    // handles
+
     setBoxShape( Q::HorizontalScrollHandle, 100, Qt::RelativeSize );
     setBoxShape( Q::VerticalScrollHandle, 100, Qt::RelativeSize );
 
     const auto handleExtent = 40.0;
     setStrutSize( Q::HorizontalScrollHandle, handleExtent, 0.0 );
     setStrutSize( Q::VerticalScrollHandle, 0.0, handleExtent );
-
-    for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
-        setAnimation( subControl | A::Metric, 100 );
 }
 
 void Editor::setupScrollViewColors(
     QskAspect::Section section, const QskFluent2Theme& theme )
 {
+    using A = QskAspect;
     using Q = QskScrollView;
 
-    const auto fillColor = theme.palette.fillColor.controlStrong.defaultColor;
+    const auto& pal = theme.palette;
 
-    setGradient( Q::HorizontalScrollHandle | section, fillColor );
-    setGradient( Q::VerticalScrollHandle | section, fillColor );
+    {
+        const auto fillColor = pal.fillColor.controlStrong.defaultColor;
+
+        setGradient( Q::HorizontalScrollHandle | section, fillColor );
+        setGradient( Q::VerticalScrollHandle | section, fillColor );
+    }
+
+    for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
+    {
+        auto fillColor = pal.fillColor.acrylic.background;
+
+#if 1
+        /*
+            With Fluent2 the scroll bar is supposed to be on top of scrollable
+            item. QskScrollViewSkinlet does not support this yet and we
+            always have the scrollbar on top of the panel. For the light
+            scheme this leads to white on white, so we better shade the scrollbar
+            for the moment: TODO ...
+         */
+        const auto v = qBlue( fillColor );
+        if ( v > 250 )
+        {
+            if ( v == qRed( fillColor ) && v == qGreen( fillColor ) )
+                fillColor = qRgba( 240, 240, 240, qAlpha( fillColor ) );
+        }
+#endif
+
+        setGradient( subControl, QskRgb::toTransparent( fillColor, 0 ) );
+        setGradient( subControl | Q::Hovered, fillColor );
+        setGradient( subControl | Q::Pressed, fillColor );
+
+        setAnimation( subControl | A::Color, 100 );
+    }
 }
 
 void Editor::setupSegmentedBarMetrics()

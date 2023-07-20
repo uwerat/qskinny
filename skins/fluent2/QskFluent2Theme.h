@@ -107,6 +107,11 @@ class QSK_FLUENT2_EXPORT QskFluent2Theme
             QRgb disabled;
             QRgb selectedTextBackground;
         } accent;
+
+        struct
+        {
+            QRgb background;
+        } acrylic;
     };
 
     struct Elevation

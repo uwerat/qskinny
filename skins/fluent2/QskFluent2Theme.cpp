@@ -77,6 +77,8 @@ QskFluent2Theme::QskFluent2Theme( QskSkin::ColorScheme colorScheme,
             colors.accent.tertiary = toTransparentF( accentColors.secondary, 0.80 );
             colors.accent.disabled = rgbGray( 0, 0.2169 );
             colors.accent.selectedTextBackground = accentColors.primary;
+
+            colors.acrylic.background = rgbGray( 252, 0.85 );
         }
 
 #if 0
@@ -198,6 +200,8 @@ QskFluent2Theme::QskFluent2Theme( QskSkin::ColorScheme colorScheme,
             colors.accent.tertiary = toTransparentF( accentColors.tertiary, 0.80 );
             colors.accent.disabled = rgbGray( 255, 0.1581 );
             colors.accent.selectedTextBackground = accentColors.primary;
+
+            colors.acrylic.background = rgbGray( 44, 0.96 );
         }
 
 #if 0

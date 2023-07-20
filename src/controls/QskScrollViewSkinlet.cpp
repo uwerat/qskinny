@@ -39,6 +39,16 @@ static void qskAlignedHandle( qreal start, qreal end,
     }
 }
 
+static inline Qt::Orientation qskSubcontrolOrientation( QskAspect::Subcontrol subControl )
+{
+    using Q = QskScrollView;
+
+    if ( subControl == Q::HorizontalScrollBar || subControl == Q::HorizontalScrollHandle )
+        return Qt::Horizontal;
+    else
+        return Qt::Vertical;
+}
+
 QskScrollViewSkinlet::QskScrollViewSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
@@ -87,53 +97,43 @@ QSGNode* QskScrollViewSkinlet::updateSubNode(
     switch ( nodeRole )
     {
         case PanelRole:
-        {
             return updateBoxNode( skinnable, node, Q::Panel );
-        }
+
         case ViewportRole:
-        {
             return updateBoxNode( skinnable, node, Q::Viewport );
-        }
 
         case HorizontalScrollHandleRole:
-        {
-            const auto rect = subControlRect( skinnable,
-                scrollView->contentsRect(), Q::HorizontalScrollHandle );
-
-            QskSkinStateChanger stateChanger( scrollView );
-            stateChanger.setStates( scrollView->scrollHandleStates( Qt::Horizontal ) );
-
-            return updateBoxNode( skinnable, node, rect, Q::HorizontalScrollHandle );
-        }
+            return updateScrollBarNode( scrollView, Q::HorizontalScrollHandle, node );
 
         case VerticalScrollHandleRole:
-        {
-            const auto rect = subControlRect( skinnable,
-                scrollView->contentsRect(), Q::VerticalScrollHandle );
-
-            QskSkinStateChanger stateChanger( scrollView );
-            stateChanger.setStates( scrollView->scrollHandleStates( Qt::Vertical ) );
-
-            return updateBoxNode( skinnable, node, rect, Q::VerticalScrollHandle );
-        }
-
-        case ContentsRootRole:
-        {
-            return updateContentsRootNode( scrollView, node );
-        }
+            return updateScrollBarNode( scrollView, Q::VerticalScrollHandle, node );
 
         case HorizontalScrollBarRole:
-        {
-            return updateBoxNode( skinnable, node, Q::HorizontalScrollBar );
-        }
+            return updateScrollBarNode( scrollView, Q::HorizontalScrollBar, node );
 
         case VerticalScrollBarRole:
-        {
-            return updateBoxNode( skinnable, node, Q::VerticalScrollBar );
-        }
+            return updateScrollBarNode( scrollView, Q::VerticalScrollBar, node );
+
+        case ContentsRootRole:
+            return updateContentsRootNode( scrollView, node );
+
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
+}
+
+QSGNode* QskScrollViewSkinlet::updateScrollBarNode( const QskScrollView* scrollView,
+    QskAspect::Subcontrol subControl, QSGNode* node ) const
+{
+    const auto rect = subControlRect( scrollView,
+        scrollView->contentsRect(), subControl );
+    
+    const auto orientation = qskSubcontrolOrientation( subControl );
+
+    QskSkinStateChanger stateChanger( scrollView );
+    stateChanger.setStates( scrollView->scrollHandleStates( orientation ) );
+
+    return updateBoxNode( scrollView, node, rect, subControl );
 }
 
 QSGNode* QskScrollViewSkinlet::updateContentsRootNode(
