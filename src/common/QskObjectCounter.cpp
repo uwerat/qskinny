@@ -162,7 +162,7 @@ void CounterHook::addObject( QObject* object )
 {
     const bool isItem = qskIsItem( object );
 
-    for ( auto counterData : qAsConst( m_counterDataSet ) )
+    for ( auto counterData : std::as_const( m_counterDataSet ) )
     {
         counterData->counter[ QskObjectCounter::Objects ].increment();
 
@@ -182,7 +182,7 @@ void CounterHook::removeObject( QObject* object )
 {
     const bool isItem = qskIsItem( object );
 
-    for ( auto counterData : qAsConst( m_counterDataSet ) )
+    for ( auto counterData : std::as_const( m_counterDataSet ) )
     {
         counterData->counter[ QskObjectCounter::Objects ].decrement();
 

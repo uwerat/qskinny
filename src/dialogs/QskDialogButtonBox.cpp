@@ -118,7 +118,7 @@ QskDialogButtonBox::~QskDialogButtonBox()
 {
     for ( int i = 0; i < QskDialog::NActionRoles; i++ )
     {
-        for ( auto button : qAsConst( m_data->buttons[ i ] ) )
+        for ( auto button : std::as_const( m_data->buttons[ i ] ) )
         {
             /*
                 The destructor of QQuickItem sets the parentItem of

@@ -365,7 +365,7 @@ class QskSkinManager::PrivateData
     {
         if ( !pluginsRegistered )
         {
-            for ( const auto& path : qAsConst( pluginPaths ) )
+            for ( const auto& path : std::as_const( pluginPaths ) )
                 registerPlugins( path + QStringLiteral( "/skins" ) );
 
             pluginsRegistered = true;
