@@ -100,6 +100,14 @@ namespace
             auto scrollArea = new QskScrollArea();
             scrollArea->setMargins( 5 );
 
+#if 1
+            /*
+                We need a mode, where the focus policy gets adjusted
+                when a scroll bar becomes visible. TODO ...
+             */
+            scrollArea->setFocusPolicy( Qt::NoFocus );
+#endif
+
             // hiding the viewport
             scrollArea->setGradientHint( QskScrollView::Viewport, QskGradient() );
             scrollArea->setBoxShapeHint( QskScrollView::Viewport, 0 );
