@@ -19,6 +19,8 @@ QSK_SUBCONTROL( QskListView, Text )
 
 QSK_STATE( QskListView, Selected, QskAspect::FirstUserState )
 
+#define FOCUS_ON_CURRENT 1
+
 class QskListView::PrivateData
 {
   public:
@@ -44,7 +46,9 @@ QskListView::QskListView( QQuickItem* parent )
     : QskScrollView( parent )
     , m_data( new PrivateData() )
 {
+#if FOCUS_ON_CURRENT
     connect( this, &QskScrollView::scrollPosChanged, &QskControl::focusIndicatorRectChanged );
+#endif
 }
 
 QskListView::~QskListView()
@@ -152,13 +156,17 @@ QskColorFilter QskListView::graphicFilterAt( int row, int col ) const
 
 QRectF QskListView::focusIndicatorRect() const
 {
+#if FOCUS_ON_CURRENT
     if( m_data->selectedRow >= 0 )
     {
-        const auto rect = effectiveSkinlet()->sampleRect(
+        auto rect = effectiveSkinlet()->sampleRect(
             this, contentsRect(), Cell, m_data->selectedRow );
 
-        return rect.translated( -scrollPos() );
+        rect = rect.translated( -scrollPos() );
+        if ( rect.intersects( viewContentsRect() ) )
+            return rect;
     }
+#endif
 
     return Inherited::focusIndicatorRect();
 }
@@ -210,19 +218,8 @@ void QskListView::keyPressEvent( QKeyEvent* event )
         }
         default:
         {
-            if ( const int steps = qskFocusChainIncrement( event ) )
-            {
-                row += steps;
-
-                if( row < 0 )
-                {
-                    row += rowCount();
-                }
-                else if( row >= rowCount() )
-                {
-                    row %= rowCount();
-                }
-            }
+            Inherited::keyPressEvent( event );
+            return;
         }
     }
 
