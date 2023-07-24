@@ -175,10 +175,10 @@ private:
     QVector3D m_tickmarkSize = { 1.0, 2.0, 4.0 };
 };
 
-class PolygonClipNode final : public QSGClipNode
+class RadialClipNode final : public QSGClipNode
 {
 public:
-    PolygonClipNode() : m_geometry(QSGGeometry::defaultAttributes_Point2D(), 0)
+    RadialClipNode() : m_geometry(QSGGeometry::defaultAttributes_Point2D(), 0)
     {
         m_geometry.setVertexDataPattern(QSGGeometry::DynamicPattern);
         m_geometry.setDrawingMode(QSGGeometry::DrawTriangleFan);

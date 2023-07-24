@@ -252,7 +252,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksX >(
     const auto r3 = state.r1 * scale.height();
 
     auto* const clipping =
-        ensureNode< PolygonClipNode, QSGTransformNode, LinearTickmarksNode >(
+        ensureNode< RadialClipNode, QSGTransformNode, LinearTickmarksNode >(
             node );
     auto* const transform = static_cast< QSGTransformNode* >( clipping->firstChild() );
     auto* const tickmarks = static_cast< LinearTickmarksNode* >( transform->firstChild() );
@@ -285,7 +285,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksY >(
     const auto rotation = sensor->subControlRotation( subControl );
 
     auto* const cNode =
-        ensureNode< PolygonClipNode,QSGTransformNode, LinearTickmarksNode>(
+        ensureNode< RadialClipNode,QSGTransformNode, LinearTickmarksNode>(
             node );
     auto* const tNode = static_cast< QSGTransformNode* >( cNode->firstChild() );
     auto* const lNode = static_cast< LinearTickmarksNode* >( tNode->firstChild() );
@@ -336,7 +336,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksXLabels >(
     const auto translation = state.translation().toVector2D() + QVector2D{0, r3};
 
     auto* const cNode =
-        ensureNode< PolygonClipNode, QSGTransformNode, LinearTickmarksLabelsNode >( node );
+        ensureNode< RadialClipNode, QSGTransformNode, LinearTickmarksLabelsNode >( node );
     auto* const tNode = static_cast< QSGTransformNode* >( cNode->firstChild() );
     auto* const lNode = static_cast< LinearTickmarksLabelsNode* >( tNode->firstChild() );
     cNode->setGeometryProperties( state.r1, state.cX, state.cY );
@@ -359,7 +359,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksYLabels >(
     const auto rotation = sensor->subControlRotation( subControl );
     const auto translation = state.translation().toVector2D() + QVector2D( r3, 0 );
 
-    auto* const cNode = ensureNode< PolygonClipNode, QSGTransformNode, LinearTickmarksLabelsNode >( node );
+    auto* const cNode = ensureNode< RadialClipNode, QSGTransformNode, LinearTickmarksLabelsNode >( node );
     auto* const tNode = static_cast< QSGTransformNode* >( cNode->firstChild() );
     auto* const lNode = static_cast< LinearTickmarksLabelsNode* >( tNode->firstChild() );
     cNode->setGeometryProperties( state.r1, state.cX, state.cY );
@@ -391,7 +391,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::HorizonClip >(
     const auto cY = center( sensor ).y();
     const auto r1 = innerRadius( sensor );
 
-    auto* const clipNode = ensureNode< PolygonClipNode >( node );
+    auto* const clipNode = ensureNode< RadialClipNode >( node );
     clipNode->setGeometryProperties( r1, cX, cY );
     return clipNode;
 }
