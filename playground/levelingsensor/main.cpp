@@ -16,6 +16,7 @@
 #include <QskLinearBox.h>
 #include <QskSlider.h>
 #include <QskTextLabel.h>
+#include <QskScaleTickmarks.h>
 
 #include <QGuiApplication>
 #include <QQuickWindow>
