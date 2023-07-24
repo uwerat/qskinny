@@ -433,9 +433,7 @@ list(APPEND HEADERS
 list(APPEND SOURCES
     controls/LevelingSensor/QskSGNodeUtility.cpp
     controls/LevelingSensor/QskLevelingSensor.cpp
-    controls/LevelingSensor/QskLevelingSensorNodes.cpp
     controls/LevelingSensor/QskLevelingSensorSkinlet.cpp
-    controls/LevelingSensor/QskLevelingSensorUtility.cpp
 )
 
 if(ENABLE_PINYIN)

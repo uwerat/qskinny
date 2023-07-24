@@ -243,14 +243,17 @@ public:
 
     void update(const QskSkinnable* const skinnable, const QskAspect::Subcontrol subControl, const QVector<QPair<double, QString>>& labels, const QVector2D& scale = { 1.0, 0.0 }, const QVector2D& offset = {})
     {
-        if (childCount() != labels.count())
+        const auto count = labels.count();
+
+        for ( int i = childCount(); i > count; --i ) 
         {
-            removeAllChildNodes();
-            for (const auto& label : qAsConst(labels))
-            {
-                appendChildNode(new QskTextNode);
-            }
+            removeChildNode(lastChild());
         }
+
+        for ( int i = childCount(); i < count; ++i ) 
+        {
+            appendChildNode(new QskTextNode);
+        }        
 
         const QFontMetricsF metrics(skinnable->effectiveFont(subControl));
         const auto h = skinnable->effectiveFontHeight(subControl);
