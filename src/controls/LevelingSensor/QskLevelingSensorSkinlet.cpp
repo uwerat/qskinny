@@ -96,6 +96,12 @@ using R = QskLevelingSensorSkinlet::NodeRole;
 
 using namespace QskSGNode;
 
+template< typename Root, typename... Children >
+inline Q_REQUIRED_RESULT Root* ensureNodes( QSGNode* root = nullptr )
+{
+    return ensureNodes<AppendMode::Recursive, Root, Children...>(root);
+}
+
 float QskLevelingSensorSkinlet::outerRadius( const QskSkinnable* const skinnable )
 {
     const auto* const sensor = static_cast< const Q* >( skinnable );
@@ -191,7 +197,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::OuterDisk >(
     const auto boxBorderColors = sensor->boxBorderColorsHint( subControl );
     const auto boxGradient = sensor->gradientHint( subControl );
 
-    auto* const root = ensureNode< QSGTransformNode, QskBoxNode >( node );
+    auto* const root = ensureNodes<QSGTransformNode, QskBoxNode >( node );
     auto* const bNode = static_cast< QskBoxNode* >( root->firstChild() );
 
     const auto size = outerRadius( sensor ) * sensor->strutSizeHint( Q::OuterDisk ).width();
@@ -230,7 +236,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::Horizon >(
     gradient.setStops( { { 0.0, gradient.startColor() }, { pY, gradient.startColor() },
         { pY, gradient.endColor() }, { 1.0, gradient.endColor() } } );
 
-    auto* const tNode = ensureNode< QSGTransformNode, QskBoxNode >( node );
+    auto* const tNode = ensureNodes< QSGTransformNode, QskBoxNode >( node );
     auto* const boxNode = static_cast< QskBoxNode* >( tNode->firstChild() );
     updateBoxNode( sensor, boxNode, { 0, 0, 2 * state.r1, 2 * state.r1 }, shape, metrics, colors, gradient );
 
@@ -252,7 +258,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksX >(
     const auto r3 = state.r1 * scale.height();
 
     auto* const clipping =
-        ensureNode< RadialClipNode, QSGTransformNode, LinearTickmarksNode >(
+        ensureNodes< RadialClipNode, QSGTransformNode, LinearTickmarksNode >(
             node );
     auto* const transform = static_cast< QSGTransformNode* >( clipping->firstChild() );
     auto* const tickmarks = static_cast< LinearTickmarksNode* >( transform->firstChild() );
@@ -285,7 +291,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksY >(
     const auto rotation = sensor->subControlRotation( subControl );
 
     auto* const cNode =
-        ensureNode< RadialClipNode,QSGTransformNode, LinearTickmarksNode>(
+        ensureNodes< RadialClipNode,QSGTransformNode, LinearTickmarksNode>(
             node );
     auto* const tNode = static_cast< QSGTransformNode* >( cNode->firstChild() );
     auto* const lNode = static_cast< LinearTickmarksNode* >( tNode->firstChild() );
@@ -316,7 +322,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksZ >(
         qvariant_cast< QVector3D >( sensor->effectiveSkinHint( subControl ) ) * ( state.r2 - state.r1 ) +
         QVector3D{ (float)state.r1, (float)state.r1, (float)state.r1 };
 
-    auto* const transform = ensureNode< QSGTransformNode, RadialTickmarksNode >( node );
+    auto* const transform = ensureNodes< QSGTransformNode, RadialTickmarksNode >( node );
     auto* const tickmarksNode = static_cast< RadialTickmarksNode* >( transform->firstChild() );
     tickmarksNode->setMaterialProperties( color );
     tickmarksNode->setGeometryProperties( sensor->tickmarks( Qt::ZAxis ), state.r1, r3 );
@@ -336,7 +342,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksXLabels >(
     const auto translation = state.translation().toVector2D() + QVector2D{0, r3};
 
     auto* const cNode =
-        ensureNode< RadialClipNode, QSGTransformNode, LinearTickmarksLabelsNode >( node );
+        ensureNodes< RadialClipNode, QSGTransformNode, LinearTickmarksLabelsNode >( node );
     auto* const tNode = static_cast< QSGTransformNode* >( cNode->firstChild() );
     auto* const lNode = static_cast< LinearTickmarksLabelsNode* >( tNode->firstChild() );
     cNode->setGeometryProperties( state.r1, state.cX, state.cY );
@@ -359,7 +365,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksYLabels >(
     const auto rotation = sensor->subControlRotation( subControl );
     const auto translation = state.translation().toVector2D() + QVector2D( r3, 0 );
 
-    auto* const cNode = ensureNode< RadialClipNode, QSGTransformNode, LinearTickmarksLabelsNode >( node );
+    auto* const cNode = ensureNodes< RadialClipNode, QSGTransformNode, LinearTickmarksLabelsNode >( node );
     auto* const tNode = static_cast< QSGTransformNode* >( cNode->firstChild() );
     auto* const lNode = static_cast< LinearTickmarksLabelsNode* >( tNode->firstChild() );
     cNode->setGeometryProperties( state.r1, state.cX, state.cY );
@@ -375,7 +381,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksZLabels >(
 {
     const auto subControl = Q::TickmarksZLabels;
     const State< QskAspect::Subcontrol > state( sensor, subControl );    
-    auto* const tNode = ensureNode< QSGTransformNode, RadialTickmarksLabelsNode>( node );
+    auto* const tNode = ensureNodes< QSGTransformNode, RadialTickmarksLabelsNode>( node );
     auto* const lNode = static_cast< RadialTickmarksLabelsNode* >( tNode->firstChild() );    
     const auto r3 = static_cast< float >( state.r1 * sensor->strutSizeHint( subControl ).width() );
     lNode->update( sensor, subControl, sensor->tickmarkLabels( Qt::ZAxis ), { r3, r3 } );
@@ -391,7 +397,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::HorizonClip >(
     const auto cY = center( sensor ).y();
     const auto r1 = innerRadius( sensor );
 
-    auto* const clipNode = ensureNode< RadialClipNode >( node );
+    auto* const clipNode = ensureNodes< RadialClipNode >( node );
     clipNode->setGeometryProperties( r1, cX, cY );
     return clipNode;
 }
@@ -400,38 +406,6 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode(
     const QskSkinnable* const skinnable, const quint8 nodeRole, QSGNode* const node ) const
 {
     const auto* const sensor = static_cast< const Q* >( skinnable );
-
-    const auto subControl = [ nodeRole, sensor ]() {
-        switch ( static_cast< R >( nodeRole ) )
-        {
-            case OuterDisk:
-                return Q::OuterDisk;
-            case Horizon:
-                return Q::Horizon;
-            case HorizonClip:
-                return Q::Horizon;
-            case TickmarksX:
-                return Q::TickmarksX;
-            case TickmarksXLabels:
-                return Q::TickmarksXLabels;
-            case TickmarksY:
-                return Q::TickmarksY;
-            case TickmarksYLabels:
-                return Q::TickmarksYLabels;
-            case TickmarksZ:
-                return Q::TickmarksZ;
-            case TickmarksZLabels:
-                return Q::TickmarksZLabels;
-            default:
-                return QskAspect::NoSubcontrol;
-        }
-    }();
-
-    // use the subcontrol's option hint to hide it (default is visible)
-    if ( qvariant_cast< bool >( sensor->effectiveSkinHint( subControl | QskAspect::Option ) ) )
-    {
-        return nullptr;
-    }
 
     switch ( static_cast< R >( nodeRole ) )
     {
