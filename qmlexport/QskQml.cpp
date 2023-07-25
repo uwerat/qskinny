@@ -33,6 +33,7 @@
 #include <QskPlacementPolicy.h>
 #include <QskPopup.h>
 #include <QskProgressBar.h>
+#include <QskProgressRing.h>
 #include <QskPushButton.h>
 #include <QskRadioBox.h>
 #include <QskScrollArea.h>
@@ -220,6 +221,7 @@ void QskQml::registerTypes()
     registerObject< QskFocusIndicator >();
     registerObject< QskSeparator >();
     registerObject< QskProgressBar >();
+    registerObject< QskProgressRing >();
     registerObject< QskPushButton >();
     registerObject< QskScrollView >();
     registerObject< QskScrollArea >();

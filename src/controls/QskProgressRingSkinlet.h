@@ -1,24 +1,24 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) 2023 Uwe Rathmann
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_PROGRESS_BAR_SKINLET_H
-#define QSK_PROGRESS_BAR_SKINLET_H
+#ifndef QSK_PROGRESS_RING_SKINLET_H
+#define QSK_PROGRESS_RING_SKINLET_H
 
 #include "QskProgressIndicatorSkinlet.h"
 
-class QskProgressBar;
+class QskProgressRing;
 
-class QSK_EXPORT QskProgressBarSkinlet : public QskProgressIndicatorSkinlet
+class QSK_EXPORT QskProgressRingSkinlet : public QskProgressIndicatorSkinlet
 {
     Q_GADGET
 
     using Inherited = QskProgressIndicatorSkinlet;
 
   public:
-    Q_INVOKABLE QskProgressBarSkinlet( QskSkin* = nullptr );
-    ~QskProgressBarSkinlet() override;
+    Q_INVOKABLE QskProgressRingSkinlet( QskSkin* = nullptr );
+    ~QskProgressRingSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const override;
@@ -29,9 +29,6 @@ class QSK_EXPORT QskProgressBarSkinlet : public QskProgressIndicatorSkinlet
   protected:
     QSGNode* updateGrooveNode( const QskProgressIndicator*, QSGNode* ) const override;
     QSGNode* updateFillNode( const QskProgressIndicator*, QSGNode* ) const override;
-
-  private:
-    QRectF barRect( const QskProgressBar* ) const;
 };
 
 #endif

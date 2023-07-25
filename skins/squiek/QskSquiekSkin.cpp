@@ -20,6 +20,7 @@
 #include <QskPageIndicator.h>
 #include <QskPopup.h>
 #include <QskProgressBar.h>
+#include <QskProgressRing.h>
 #include <QskPushButton.h>
 #include <QskRadioBox.h>
 #include <QskScrollView.h>
@@ -162,6 +163,7 @@ namespace
         void setupPageIndicator();
         void setupPopup();
         void setupProgressBar();
+        void setupProgressRing();
         void setupPushButton();
         void setupRadioBox();
         void setupScrollView();
@@ -287,6 +289,7 @@ void Editor::setup()
     setupPageIndicator();
     setupPopup();
     setupProgressBar();
+    setupProgressRing();
     setupPushButton();
     setupRadioBox();
     setupScrollView();
@@ -521,15 +524,35 @@ void Editor::setupProgressBar()
     using A = QskAspect;
     using Q = QskProgressBar;
 
-    for ( auto subControl : { Q::Groove, Q::Bar } )
+    for ( auto subControl : { Q::Groove, Q::Fill } )
     {
         setMetric( subControl | A::Size, 6 );
         setPadding( subControl, 0 );
         setBoxShape( subControl, 4 );
     }
 
-    setGradient( Q::Groove, m_pal.darker200 );
-    setGradient( Q::Bar, m_pal.highlighted );
+    setGradient( Q::Groove, m_pal.lighter110 );
+    setGradient( Q::Fill, m_pal.highlighted );
+}
+
+void Editor::setupProgressRing()
+{
+    using A = QskAspect;
+    using Q = QskProgressRing;
+
+    for ( auto subControl : { Q::Groove, Q::Fill } )
+    {
+        setMetric( subControl | A::Size, 6 );
+        setPadding( subControl, 0 );
+        setBoxShape( subControl, 4 );
+    }
+
+    setArcMetrics( Q::Groove, 90, -360, 6 );
+    setGradient( Q::Groove, m_pal.lighter110 );
+
+    setStrutSize( Q::Fill, { 60, 60 } );
+    setGradient( Q::Fill, m_pal.highlighted );
+    setArcMetrics( Q::Fill, 90, -360, 6 );
 }
 
 void Editor::setupFocusIndicator()
