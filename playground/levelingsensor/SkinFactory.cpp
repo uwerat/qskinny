@@ -14,8 +14,8 @@
 #include <QskSkinHintTableEditor.h>
 #include <QskTextLabel.h>
 
-#include <LevelingSensor/QskLevelingSensor.h>
-#include <LevelingSensor/QskLevelingSensorSkinlet.h>
+#include <QskLevelingSensor.h>
+#include <QskLevelingSensorSkinlet.h>
 
 #include <QskSlider.h>
 #include <QskSliderSkinlet.h>

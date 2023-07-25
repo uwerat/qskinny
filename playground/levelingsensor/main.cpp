@@ -11,7 +11,7 @@
 #include <QskSkinManager.h>
 #include <QskWindow.h>
 
-#include <LevelingSensor/QskLevelingSensor.h>
+#include <QskLevelingSensor.h>
 #include <QskIntervalF.h>
 #include <QskLinearBox.h>
 #include <QskSlider.h>
