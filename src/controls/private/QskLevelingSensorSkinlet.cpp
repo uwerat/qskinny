@@ -1,5 +1,5 @@
-#include "QskLevelingSensorSkinlet.h"
-#include "QskLevelingSensor.h"
+#include <QskLevelingSensorSkinlet.h>
+#include <QskLevelingSensor.h>
 #include "QskLevelingSensorUtility.h"
 #include "QskLevelingSensorNodes.h"
 #include "QskSGNodeUtility.h"

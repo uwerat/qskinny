@@ -423,17 +423,20 @@ list(APPEND SOURCES
 )
 
 list(APPEND HEADERS
-    controls/LevelingSensor/QskSGNodeUtility.h
-    controls/LevelingSensor/QskLevelingSensor.h
-    controls/LevelingSensor/QskLevelingSensorNodes.h
-    controls/LevelingSensor/QskLevelingSensorSkinlet.h
-    controls/LevelingSensor/QskLevelingSensorUtility.h
+    controls/QskLevelingSensor.h
+    controls/QskLevelingSensorSkinlet.h
+)
+
+list(APPEND PRIVATE_HEADERS
+    controls/private/QskSGNodeUtility.h
+    controls/private/QskLevelingSensorNodes.h
+    controls/private/QskLevelingSensorUtility.h
 )
 
 list(APPEND SOURCES
-    controls/LevelingSensor/QskSGNodeUtility.cpp
-    controls/LevelingSensor/QskLevelingSensor.cpp
-    controls/LevelingSensor/QskLevelingSensorSkinlet.cpp
+    controls/private/QskSGNodeUtility.cpp
+    controls/private/QskLevelingSensor.cpp
+    controls/private/QskLevelingSensorSkinlet.cpp
 )
 
 if(ENABLE_PINYIN)
@@ -468,6 +471,9 @@ target_include_directories(${target} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/layouts>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/nodes>)
 
+target_include_directories(${target} PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/controls/private>)
+
 target_link_libraries(${target}
     PUBLIC Qt::Core Qt::CorePrivate Qt::Quick Qt::QuickPrivate)
 
@@ -495,6 +501,10 @@ set_target_properties(${target}
 
 list(TRANSFORM HEADERS PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
 set_target_properties(${target} PROPERTIES PUBLIC_HEADER "${HEADERS}")
+
+list(TRANSFORM PRIVATE_HEADERS PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
+set_target_properties(${target} PROPERTIES PRIVATE_HEADER "${PRIVATE_HEADERS}")
+
 set_target_properties(${target} PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR} )
 
