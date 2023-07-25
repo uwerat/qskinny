@@ -471,9 +471,6 @@ target_include_directories(${target} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/layouts>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/nodes>)
 
-target_include_directories(${target} PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/controls/private>)
-
 target_link_libraries(${target}
     PUBLIC Qt::Core Qt::CorePrivate Qt::Quick Qt::QuickPrivate)
 
