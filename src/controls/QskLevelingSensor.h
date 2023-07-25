@@ -23,21 +23,18 @@ class QSK_EXPORT QskLevelingSensor : public QskControl
   public Q_SLOTS:
     void setTickmarks( Qt::Axis axis, Tickmarks tickmarks );
     void setTickmarksLabels( Qt::Axis axis, TickmarksLabels labels );
-    void setAngle( const QVector3D& degree );
-    void setAngle( Qt::Axis axis, float degree );
-
-    void setSubControlRotation( QskAspect::Subcontrol subControl, const QVector3D& degree );
+    void setAngle( const QVector3D& degrees );
+    void setSubControlRotation( QskAspect::Subcontrol subControl, const QVector3D& degrees );
 
   Q_SIGNALS:
     void anglesChanged( const QVector3D& degree );
-    void subControlRotationChanged( QskAspect::Subcontrol subControl, const QVector3D& degree );
+    void subControlRotationChanged( QskAspect::Subcontrol subControl, const QVector3D& degrees );
 
   public:
     Q_REQUIRED_RESULT const Tickmarks& tickmarks( Qt::Axis axis ) const;
     Q_REQUIRED_RESULT const TickmarksLabels& tickmarkLabels( Qt::Axis axis ) const;
-    Q_REQUIRED_RESULT const QVector3D& angle() const noexcept;
-    Q_REQUIRED_RESULT const QVector3D& subControlRotation(
-        QskAspect::Subcontrol subControl ) const noexcept;
+    Q_REQUIRED_RESULT const QVector3D& angle() const;
+    Q_REQUIRED_RESULT const QVector3D& subControlRotation( QskAspect::Subcontrol subControl ) const;
 
   private:
     class PrivateData;
