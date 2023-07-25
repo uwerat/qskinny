@@ -17,7 +17,7 @@ namespace QskSGNode
         {
             root = new Root;
         }
-        
+
         if constexpr ( mode == Recursive )
         {
             QSGNode* current = root;

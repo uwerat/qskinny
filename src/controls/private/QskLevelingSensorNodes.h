@@ -2,83 +2,85 @@
 
 #include "QskLevelingSensorUtility.h"
 
+#include <QSGFlatColorMaterial>
 #include <QSGGeometry>
 #include <QSGGeometryNode>
-#include <QSGFlatColorMaterial>
 
 #include <QFontMetricsF>
 #include <qmath.h>
 
 class RadialTickmarksNode final : public QSGGeometryNode
 {
-public:
-    RadialTickmarksNode() : m_geometry(QSGGeometry::defaultAttributes_Point2D(), 0)
+  public:
+    RadialTickmarksNode()
+        : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
     {
-        m_geometry.setDrawingMode(QSGGeometry::DrawLines);
-        m_geometry.setVertexDataPattern(QSGGeometry::StaticPattern);
+        m_geometry.setDrawingMode( QSGGeometry::DrawLines );
+        m_geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
 
-        setGeometry(&m_geometry);
-        setMaterial(&m_material);
+        setGeometry( &m_geometry );
+        setMaterial( &m_material );
     }
 
-    void setMaterialProperties(const QColor& color)
+    void setMaterialProperties( const QColor& color )
     {
-        if (m_material.color() != color)
+        if ( m_material.color() != color )
         {
-            m_material.setColor(color);
-            markDirty(QSGNode::DirtyMaterial);
+            m_material.setColor( color );
+            markDirty( QSGNode::DirtyMaterial );
         }
     }
 
-    void setGeometryProperties(const QskScaleTickmarks& tickmarks, const qreal r1 = 0.0, const QVector3D& r2 = { 0.5, 0.75, 1.0 }, float lineWidth = 1.0)
+    void setGeometryProperties( const QskScaleTickmarks& tickmarks, const qreal r1 = 0.0,
+        const QVector3D& r2 = { 0.5, 0.75, 1.0 }, float lineWidth = 1.0 )
     {
         auto dirty = false;
 
-        if (dirty |= (m_geometry.lineWidth() != lineWidth))
+        if ( dirty |= ( m_geometry.lineWidth() != lineWidth ) )
         {
-            m_geometry.setLineWidth(lineWidth);
+            m_geometry.setLineWidth( lineWidth );
         }
 
-        dirty |= compareExchange(m_r1, r1);
-        dirty |= compareExchange(m_r2, r2);
-        dirty |= compareExchange(m_tickmarksHash, tickmarks.hash());
+        dirty |= compareExchange( m_r1, r1 );
+        dirty |= compareExchange( m_r2, r2 );
+        dirty |= compareExchange( m_tickmarksHash, tickmarks.hash() );
 
-        if (dirty)
+        if ( dirty )
         {
-            update(tickmarks);
+            update( tickmarks );
         }
     }
 
-private:
-    void update(const QskScaleTickmarks& tickmarks)
+  private:
+    void update( const QskScaleTickmarks& tickmarks )
     {
-        if (m_geometry.vertexCount() != tickmarks.tickCount())
+        if ( m_geometry.vertexCount() != tickmarks.tickCount() )
         {
-            m_geometry.allocate(tickmarks.tickCount() * 2);
+            m_geometry.allocate( tickmarks.tickCount() * 2 );
         }
 
         auto* vertexData = m_geometry.vertexDataAsPoint2D();
 
         using T = QskScaleTickmarks::TickType;
-        for (auto type : { T::MinorTick, T::MediumTick, T::MajorTick })
+        for ( auto type : { T::MinorTick, T::MediumTick, T::MajorTick } )
         {
-            for (const auto tick : tickmarks.ticks(type))
+            for ( const auto tick : tickmarks.ticks( type ) )
             {
-                const auto i = static_cast<int>(type);
-                const auto angleRad = qDegreesToRadians(tick);
-                const auto x1 = qFastCos(angleRad) * m_r1;
-                const auto y1 = qFastSin(angleRad) * m_r1;
-                const auto x2 = qFastCos(angleRad) * m_r2[i];
-                const auto y2 = qFastSin(angleRad) * m_r2[i];
+                const auto i = static_cast< int >( type );
+                const auto angleRad = qDegreesToRadians( tick );
+                const auto x1 = qFastCos( angleRad ) * m_r1;
+                const auto y1 = qFastSin( angleRad ) * m_r1;
+                const auto x2 = qFastCos( angleRad ) * m_r2[ i ];
+                const auto y2 = qFastSin( angleRad ) * m_r2[ i ];
 
-                vertexData[0].set(x1, y1);
-                vertexData[1].set(x2, y2);
+                vertexData[ 0 ].set( x1, y1 );
+                vertexData[ 1 ].set( x2, y2 );
                 vertexData += 2;
             }
         }
 
         m_geometry.markVertexDataDirty();
-        markDirty(QSGNode::DirtyGeometry);
+        markDirty( QSGNode::DirtyGeometry );
     }
 
     QSGGeometry m_geometry;
@@ -90,77 +92,80 @@ private:
 
 class LinearTickmarksNode final : public QSGGeometryNode
 {
-public:
-    LinearTickmarksNode() : m_geometry(QSGGeometry::defaultAttributes_Point2D(), 0)
+  public:
+    LinearTickmarksNode()
+        : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
     {
-        m_geometry.setDrawingMode(QSGGeometry::DrawLines);
-        m_geometry.setVertexDataPattern(QSGGeometry::StaticPattern);
+        m_geometry.setDrawingMode( QSGGeometry::DrawLines );
+        m_geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
 
-        setGeometry(&m_geometry);
-        setMaterial(&m_material);
+        setGeometry( &m_geometry );
+        setMaterial( &m_material );
     }
 
-    void setMaterialProperties(const QColor& color)
+    void setMaterialProperties( const QColor& color )
     {
         auto dirty = false;
 
-        if (dirty |= (m_material.color() != color))
+        if ( dirty |= ( m_material.color() != color ) )
         {
-            m_material.setColor(color);
+            m_material.setColor( color );
         }
 
-        if (dirty)
+        if ( dirty )
         {
-            markDirty(QSGNode::DirtyMaterial);
+            markDirty( QSGNode::DirtyMaterial );
         }
     }
 
-    void setGeometryProperties(const QskScaleTickmarks& tickmarks, const QVector3D& tickmarkSize, const QVector2D& scale = { 1.0,0.0f }, const QVector2D& offset = {}, const float lineWidth = 1.0f, const bool forceDirty = false)
+    void setGeometryProperties( const QskScaleTickmarks& tickmarks, const QVector3D& tickmarkSize,
+        const QVector2D& scale = { 1.0, 0.0f }, const QVector2D& offset = {},
+        const float lineWidth = 1.0f, const bool forceDirty = false )
     {
         auto dirty = forceDirty;
 
-        if (dirty |= !qFuzzyCompare(m_geometry.lineWidth(), lineWidth))
+        if ( dirty |= !qFuzzyCompare( m_geometry.lineWidth(), lineWidth ) )
         {
-            m_geometry.setLineWidth(lineWidth);
+            m_geometry.setLineWidth( lineWidth );
         }
 
         dirty |= m_geometry.vertexCount() != tickmarks.tickCount() * 2;
-        dirty |= compareExchange(m_tickmarkSize, tickmarkSize);
-        dirty |= compareExchange(m_scale, scale);
-        dirty |= compareExchange(m_offset, offset);
+        dirty |= compareExchange( m_tickmarkSize, tickmarkSize );
+        dirty |= compareExchange( m_scale, scale );
+        dirty |= compareExchange( m_offset, offset );
 
-        if (dirty)
+        if ( dirty )
         {
-            update(tickmarks);
-            markDirty(QSGNode::DirtyGeometry);
+            update( tickmarks );
+            markDirty( QSGNode::DirtyGeometry );
         }
     }
 
-private:
-    void update(const QskScaleTickmarks& tickmarks)
+  private:
+    void update( const QskScaleTickmarks& tickmarks )
     {
-        if (m_geometry.vertexCount() != tickmarks.tickCount() * 2)
+        if ( m_geometry.vertexCount() != tickmarks.tickCount() * 2 )
         {
-            m_geometry.allocate(tickmarks.tickCount() * 2);
+            m_geometry.allocate( tickmarks.tickCount() * 2 );
         }
 
         auto* vertexData = m_geometry.vertexDataAsPoint2D();
 
         using T = QskScaleTickmarks::TickType;
-        for (auto type : { T::MinorTick, T::MediumTick, T::MajorTick })
+        for ( auto type : { T::MinorTick, T::MediumTick, T::MajorTick } )
         {
-            for (const auto tick : tickmarks.ticks(type))
+            for ( const auto tick : tickmarks.ticks( type ) )
             {
-                const auto i = static_cast<int>(type);
+                const auto i = static_cast< int >( type );
 
                 const auto p = m_scale * tick;
-                const auto d = QVector2D(-m_scale.y(), m_scale.x()).normalized();
+                const auto d = QVector2D( -m_scale.y(), m_scale.x() ).normalized();
 
-                const auto p1 = m_tickmarkSize[i] * +1 * d + p + m_offset;
-                const auto p2 = m_tickmarkSize[i] * -1 * d + p + m_offset;
+                const auto p1 = m_tickmarkSize[ i ] * +1 * d + p + m_offset;
+                const auto p2 = m_tickmarkSize[ i ] * -1 * d + p + m_offset;
 
-                vertexData[0].set(p1.x(), p1.y());
-                vertexData[1].set(p2.x(), p2.y());
+                vertexData[ 0 ].set( p1.x(), p1.y() );
+                vertexData[ 1 ].set( p2.x(), p2.y() );
                 vertexData += 2;
             }
         }
@@ -177,53 +182,55 @@ private:
 
 class RadialClipNode final : public QSGClipNode
 {
-public:
-    RadialClipNode() : m_geometry(QSGGeometry::defaultAttributes_Point2D(), 0)
+  public:
+    RadialClipNode()
+        : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
     {
-        m_geometry.setVertexDataPattern(QSGGeometry::DynamicPattern);
-        m_geometry.setDrawingMode(QSGGeometry::DrawTriangleFan);
-        setGeometry(&m_geometry);
-        setIsRectangular(false);
+        m_geometry.setVertexDataPattern( QSGGeometry::DynamicPattern );
+        m_geometry.setDrawingMode( QSGGeometry::DrawTriangleFan );
+        setGeometry( &m_geometry );
+        setIsRectangular( false );
     }
 
-    void setGeometryProperties(const qreal radius = 1.0, const qreal cx = 0.0, const qreal cy = 0.0, const int count = 360)
+    void setGeometryProperties( const qreal radius = 1.0, const qreal cx = 0.0,
+        const qreal cy = 0.0, const int count = 360 )
     {
         auto dirty = false;
-        dirty |= compareExchange(m_radius, radius);
-        dirty |= compareExchange(m_cx, cx);
-        dirty |= compareExchange(m_cy, cy);
-        dirty |= compareExchange(m_count, count);
+        dirty |= compareExchange( m_radius, radius );
+        dirty |= compareExchange( m_cx, cx );
+        dirty |= compareExchange( m_cy, cy );
+        dirty |= compareExchange( m_count, count );
 
-        if (dirty)
+        if ( dirty )
         {
             update();
         }
     }
 
-private:
+  private:
     void update()
     {
         const auto step = 2.0 * M_PI / m_count;
 
-        if (m_geometry.vertexCount() != m_count)
+        if ( m_geometry.vertexCount() != m_count )
         {
-            m_geometry.allocate(m_count);
+            m_geometry.allocate( m_count );
         }
 
         auto* vertices = m_geometry.vertexDataAsPoint2D();
 
-        for (int i = 0; i < m_count; ++i)
+        for ( int i = 0; i < m_count; ++i )
         {
-            vertices[i].x = qFastCos(i * step) * m_radius + m_cx;
-            vertices[i].y = qFastSin(i * step) * m_radius + m_cy;
+            vertices[ i ].x = qFastCos( i * step ) * m_radius + m_cx;
+            vertices[ i ].y = qFastSin( i * step ) * m_radius + m_cy;
         }
 
         m_geometry.markVertexDataDirty();
-        markDirty(QSGNode::DirtyGeometry);
+        markDirty( QSGNode::DirtyGeometry );
     }
 
-    using QSGClipNode::setIsRectangular;
     using QSGClipNode::setClipRect;
+    using QSGClipNode::setIsRectangular;
 
     QSGGeometry m_geometry;
     qreal m_radius = 1.0;
@@ -232,72 +239,75 @@ private:
     int m_count = 360;
 };
 
-template<typename CRTP>
+template< typename CRTP >
 struct TickmarksLabelsNode : public QSGNode
 {
-public:
-    QVector2D value(const QVector2D& v, const QVector2D& s, const QVector2D& o) const
+  public:
+    QVector2D value( const QVector2D& v, const QVector2D& s, const QVector2D& o ) const
     {
-        return static_cast<const CRTP*>(this)->value(v, s, o);
+        return static_cast< const CRTP* >( this )->value( v, s, o );
     }
 
-    void update(const QskSkinnable* const skinnable, const QskAspect::Subcontrol subControl, const QVector<QPair<double, QString>>& labels, const QVector2D& scale = { 1.0, 0.0 }, const QVector2D& offset = {})
+    void update( const QskSkinnable* const skinnable, const QskAspect::Subcontrol subControl,
+        const QVector< QPair< double, QString > >& labels, const QVector2D& scale = { 1.0, 0.0 },
+        const QVector2D& offset = {} )
     {
         const auto count = labels.count();
 
-        for ( int i = childCount(); i > count; --i ) 
+        for ( int i = childCount(); i > count; --i )
         {
-            removeChildNode(lastChild());
+            removeChildNode( lastChild() );
         }
 
-        for ( int i = childCount(); i < count; ++i ) 
+        for ( int i = childCount(); i < count; ++i )
         {
-            appendChildNode(new QskTextNode);
-        }        
+            appendChildNode( new QskTextNode );
+        }
 
-        const QFontMetricsF metrics(skinnable->effectiveFont(subControl));
-        const auto h = skinnable->effectiveFontHeight(subControl);
-        const auto a = skinnable->alignmentHint(subControl);
+        const QFontMetricsF metrics( skinnable->effectiveFont( subControl ) );
+        const auto h = skinnable->effectiveFontHeight( subControl );
+        const auto a = skinnable->alignmentHint( subControl );
 
-        auto* textNode = static_cast<QskTextNode*>(firstChild());
-        for (const auto& label : qAsConst(labels))
+        auto* textNode = static_cast< QskTextNode* >( firstChild() );
+        for ( const auto& label : qAsConst( labels ) )
         {
-            const auto v = value({ (float)label.first, (float)label.first }, scale, offset);
+            const auto v = value( { ( float ) label.first, ( float ) label.first }, scale, offset );
             auto x = v.x();
             auto y = v.y();
 
-            const auto w = metrics.horizontalAdvance(label.second);
+            const auto w = metrics.horizontalAdvance( label.second );
 
-            x -= a.testFlag(Qt::AlignRight) ? w : 0;
-            x -= a.testFlag(Qt::AlignHCenter) ? w / 2 : 0;
+            x -= a.testFlag( Qt::AlignRight ) ? w : 0;
+            x -= a.testFlag( Qt::AlignHCenter ) ? w / 2 : 0;
 
-            y -= a.testFlag(Qt::AlignBottom) ? h : 0;
-            y -= a.testFlag(Qt::AlignVCenter) ? h / 2 : 0;
+            y -= a.testFlag( Qt::AlignBottom ) ? h : 0;
+            y -= a.testFlag( Qt::AlignVCenter ) ? h / 2 : 0;
 
-            QskSkinlet::updateTextNode(skinnable, textNode, { x,y,w,h }, a, label.second, subControl);
+            QskSkinlet::updateTextNode(
+                skinnable, textNode, { x, y, w, h }, a, label.second, subControl );
 
-            textNode = static_cast<QskTextNode*>(textNode->nextSibling());
+            textNode = static_cast< QskTextNode* >( textNode->nextSibling() );
         }
     }
 };
 
-struct LinearTickmarksLabelsNode final : public TickmarksLabelsNode<LinearTickmarksLabelsNode>
+struct LinearTickmarksLabelsNode final : public TickmarksLabelsNode< LinearTickmarksLabelsNode >
 {
-public:
-    QVector2D value(const QVector2D& v, const QVector2D& s, const QVector2D& o) const
+  public:
+    QVector2D value( const QVector2D& v, const QVector2D& s, const QVector2D& o ) const
     {
         return v * s + o;
     }
 };
 
-struct RadialTickmarksLabelsNode final : public TickmarksLabelsNode<RadialTickmarksLabelsNode>
+struct RadialTickmarksLabelsNode final : public TickmarksLabelsNode< RadialTickmarksLabelsNode >
 {
-public:
-    QVector2D value(const QVector2D& v, const QVector2D& s, const QVector2D& o) const
+  public:
+    QVector2D value( const QVector2D& v, const QVector2D& s, const QVector2D& o ) const
     {
         return QVector2D{
-            (float)qFastCos(qDegreesToRadians(v.x())),
-            (float)qFastSin(qDegreesToRadians(v.y()))
-        } *s + o;
+            ( float ) qFastCos( qDegreesToRadians( v.x() ) ),
+            ( float ) qFastSin( qDegreesToRadians( v.y() ) )
+        } * s + o;
     }
 };

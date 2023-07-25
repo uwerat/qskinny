@@ -11,12 +11,12 @@
 #include <QskSkinManager.h>
 #include <QskWindow.h>
 
-#include <QskLevelingSensor.h>
 #include <QskIntervalF.h>
+#include <QskLevelingSensor.h>
 #include <QskLinearBox.h>
+#include <QskScaleTickmarks.h>
 #include <QskSlider.h>
 #include <QskTextLabel.h>
-#include <QskScaleTickmarks.h>
 
 #include <QGuiApplication>
 #include <QQuickWindow>

@@ -31,11 +31,11 @@ namespace
         void style( QskSkinHintTableEditor& editor );
 
         template< typename Skinnable, typename Skinlet >
-        void declareSkinlet( )
+        void declareSkinlet()
         {
             QskSkin::declareSkinlet< Skinnable, Skinlet >();
         }
-        
+
         template< typename Skinnable, typename Skinlet >
         void declareSkinlet( QskSkinHintTableEditor& editor )
         {
@@ -122,7 +122,7 @@ namespace
             editor.setColor( Q::TickmarksX, Qt::black );
             editor.setStrutSize( Q::TickmarksX, { r1, 0.2 } );             // w %, h %
             editor.setHint( Q::TickmarksX, QVector3D{ 0.50, 0.75, 1.0 } ); // %
-            editor.setAlignment(Q::TickmarksX, Qt::AlignCenter);
+            editor.setAlignment( Q::TickmarksX, Qt::AlignCenter );
 
             editor.setStrutSize( Q::TickmarksXLabels, { r1, 0.15 } ); // w %, h %
             editor.setAlignment( Q::TickmarksXLabels, Qt::AlignTop | Qt::AlignHCenter );
@@ -130,7 +130,7 @@ namespace
             editor.setColor( Q::TickmarksY, Qt::black );
             editor.setStrutSize( Q::TickmarksY, { 0.1, r1 } );              // w %, h %
             editor.setHint( Q::TickmarksY, QVector3D{ 0.50, 0.75, 1.00 } ); // %
-            editor.setAlignment(Q::TickmarksY, Qt::AlignCenter);
+            editor.setAlignment( Q::TickmarksY, Qt::AlignCenter );
 
             editor.setStrutSize( Q::TickmarksYLabels, { 0.15, r1 } ); // w %, h %
             editor.setAlignment( Q::TickmarksYLabels, Qt::AlignCenter );
