@@ -434,7 +434,6 @@ list(APPEND PRIVATE_HEADERS
 )
 
 list(APPEND SOURCES
-    controls/private/QskSGNodeUtility.cpp
     controls/private/QskLevelingSensor.cpp
     controls/private/QskLevelingSensorSkinlet.cpp
 )
