@@ -406,7 +406,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode(
     const QskSkinnable* const skinnable, const quint8 nodeRole, QSGNode* const node ) const
 {
     const auto* const sensor = static_cast< const Q* >( skinnable );
-
+    
     switch ( static_cast< R >( nodeRole ) )
     {
         case OuterDisk:
