@@ -6,91 +6,30 @@
 #include "QskProgressBar.h"
 
 #include "QskIntervalF.h"
-#include "QskFunctions.h"
-#include "QskAnimator.h"
-#include "QskAspect.h"
 
 QSK_SUBCONTROL( QskProgressBar, Groove )
-QSK_SUBCONTROL( QskProgressBar, Bar )
-
-namespace
-{
-    class PositionAnimator : public QskAnimator
-    {
-      public:
-        PositionAnimator( QskProgressBar* progressBar )
-            : m_progressBar( progressBar )
-        {
-            setAutoRepeat( true );
-            setDuration( 1300 );
-
-            setWindow( progressBar->window() );
-        }
-
-        void advance( qreal value ) override
-        {
-            if ( m_progressBar->setPositionHint( QskProgressBar::Bar, value ) )
-                m_progressBar->update();
-        }
-
-      private:
-        QskProgressBar* m_progressBar;
-    };
-}
+QSK_SUBCONTROL( QskProgressBar, Fill )
 
 class QskProgressBar::PrivateData
 {
   public:
-    void updateIndeterminateAnimator( QskProgressBar* progressBar )
-    {
-        if ( !isIndeterminate )
-        {
-            delete animator;
-            animator = nullptr;
-
-            return;
-        }
-
-        if ( progressBar->window() && progressBar->isVisible() )
-        {
-            if ( animator == nullptr )
-                animator = new PositionAnimator( progressBar );
-
-            animator->start();
-        }
-        else
-        {
-            if ( animator )
-                animator->stop();
-        }
-    }
-
-    PositionAnimator* animator = nullptr;
-
-    qreal value = 0.0;
-    qreal origin = 0.0;
-
-    bool hasOrigin = false;
-    bool isIndeterminate = false;
-
     Qt::Orientation orientation;
 };
 
 QskProgressBar::QskProgressBar( Qt::Orientation orientation,
         qreal min, qreal max, QQuickItem* parent )
-    : QskBoundedControl( min, max, parent )
+    : Inherited( min, max, parent )
     , m_data( new PrivateData )
 {
     m_data->orientation = orientation;
-    m_data->value = minimum();
 
     if ( orientation == Qt::Horizontal )
         initSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::Fixed );
     else
         initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::MinimumExpanding );
 
-    connect( this, &QskBoundedControl::boundariesChanged,
-        this, &QskProgressBar::adjustValue );
+    setSubcontrolProxy( Inherited::Groove, Groove );
+    setSubcontrolProxy( Inherited::Fill, Fill );
 }
 
 QskProgressBar::QskProgressBar( Qt::Orientation orientation, QQuickItem* parent )
@@ -115,7 +54,12 @@ QskProgressBar::QskProgressBar( QQuickItem* parent )
 
 QskProgressBar::~QskProgressBar()
 {
-    delete m_data->animator;
+}
+
+QskAspect::Variation QskProgressBar::effectiveVariation() const
+{
+    // so you can define different hints depending on the orientation
+    return static_cast< QskAspect::Variation >( m_data->orientation );
 }
 
 Qt::Orientation QskProgressBar::orientation() const
@@ -135,165 +79,6 @@ void QskProgressBar::setOrientation( Qt::Orientation orientation )
 
         Q_EMIT orientationChanged( m_data->orientation );
     }
-}
-
-bool QskProgressBar::isIndeterminate() const
-{
-    return m_data->isIndeterminate;
-}
-
-void QskProgressBar::setIndeterminate( bool on )
-{
-    if ( on == m_data->isIndeterminate )
-        return;
-
-    m_data->isIndeterminate = on;
-    m_data->updateIndeterminateAnimator( this );
-
-    update();
-    Q_EMIT indeterminateChanged( on );
-}
-
-QskAspect::Variation QskProgressBar::effectiveVariation() const
-{
-    // so you can define different hints depending on the orientation
-    return static_cast< QskAspect::Variation >( m_data->orientation );
-}
-
-void QskProgressBar::setBarGradient( const QskGradient& gradient )
-{
-    setGradientHint( Bar, gradient );
-}
-
-void QskProgressBar::resetBarGradient()
-{
-    resetColor( Bar );
-}
-
-QskGradient QskProgressBar::barGradient() const
-{
-    return gradientHint( QskProgressBar::Bar );
-}
-
-void QskProgressBar::setExtent( qreal extent )
-{
-    if ( extent < 0.0 )
-        extent = 0.0;
-
-    if ( setMetric( Groove | QskAspect::Size, extent ) )
-        Q_EMIT extentChanged( extent );
-}
-
-void QskProgressBar::resetExtent()
-{
-    if ( resetMetric( Groove | QskAspect::Size ) )
-        Q_EMIT extentChanged( extent() );
-}
-
-qreal QskProgressBar::extent() const
-{
-    auto grooveSize = metric( Groove | QskAspect::Size );
-    auto barSize = metric( Bar | QskAspect::Size );
-    return qMax( grooveSize, barSize );
-}
-
-void QskProgressBar::setOrigin( qreal origin )
-{
-    if ( isComponentComplete() )
-        origin = boundedValue( origin );
-
-    if( !m_data->hasOrigin || !qskFuzzyCompare( m_data->origin, origin ) )
-    {
-        m_data->hasOrigin = true;
-        m_data->origin = origin;
-
-        update();
-        Q_EMIT originChanged( origin );
-    }
-}
-
-void QskProgressBar::resetOrigin()
-{
-    if ( m_data->hasOrigin )
-    {
-        m_data->hasOrigin = false;
-
-        update();
-        Q_EMIT originChanged( origin() );
-    }
-}
-
-qreal QskProgressBar::origin() const
-{
-    if ( m_data->hasOrigin )
-    {
-        return boundedValue( m_data->origin );
-    }
-
-    return minimum();
-}
-
-void QskProgressBar::setValue( qreal value )
-{
-    if ( isComponentComplete() )
-        value = boundedValue( value );
-
-    setValueInternal( value );
-}
-
-qreal QskProgressBar::value() const
-{
-    return m_data->value;
-}
-
-void QskProgressBar::setValueAsRatio( qreal ratio )
-{
-    ratio = qBound( 0.0, ratio, 1.0 );
-    setValue( minimum() + ratio * boundaryLength() );
-}
-
-qreal QskProgressBar::valueAsRatio() const
-{
-    return valueAsRatio( m_data->value );
-}
-
-void QskProgressBar::componentComplete()
-{
-    Inherited::componentComplete();
-    adjustValue();
-}
-
-void QskProgressBar::adjustValue()
-{
-    if ( isComponentComplete() )
-        setValueInternal( boundedValue( m_data->value ) );
-}
-
-void QskProgressBar::setValueInternal( qreal value )
-{
-    if ( !qskFuzzyCompare( value, m_data->value ) )
-    {
-        m_data->value = value;
-        Q_EMIT valueChanged( value );
-
-        update();
-    }
-}
-
-void QskProgressBar::itemChange( QQuickItem::ItemChange change,
-    const QQuickItem::ItemChangeData& value )
-{
-    switch( static_cast< int >( change ) )
-    {
-        case QQuickItem::ItemVisibleHasChanged:
-        case QQuickItem::ItemSceneChange:
-        {
-            m_data->updateIndeterminateAnimator( this );
-            break;
-        }
-    }
-
-    Inherited::itemChange( change, value );
 }
 
 #include "moc_QskProgressBar.cpp"

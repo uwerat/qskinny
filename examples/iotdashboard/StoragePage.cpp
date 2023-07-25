@@ -5,9 +5,6 @@
 
 #include "StoragePage.h"
 #include "Box.h"
-#include "CircularProgressBar.h"
-#include "Diagram.h"
-#include "EnergyMeter.h"
 #include "StorageBar.h"
 #include "StorageMeter.h"
 #include <QTimer>
@@ -17,7 +14,6 @@
 #include <QskGradient.h>
 #include <QskGradientStop.h>
 #include <QskGraphicLabel.h>
-#include <QskProgressBar.h>
 #include <QskPushButton.h>
 #include <QskSkin.h>
 #include <QskStackBox.h>

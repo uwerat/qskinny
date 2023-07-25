@@ -80,6 +80,7 @@
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
 #include <QskProgressBar.h>
+#include <QskProgressRing.h>
 #include <QskRadioBox.h>
 #include <QskScrollView.h>
 #include <QskSegmentedBar.h>
@@ -212,6 +213,9 @@ namespace
         void setupProgressBarMetrics();
         void setupProgressBarColors( QskAspect::Section, const QskFluent2Theme& );
 
+        void setupProgressRingMetrics();
+        void setupProgressRingColors( QskAspect::Section, const QskFluent2Theme& );
+
         void setupPushButtonMetrics();
         void setupPushButtonColors( QskAspect::Section, const QskFluent2Theme& );
 
@@ -291,6 +295,7 @@ void Editor::setupMetrics()
     setupMenuMetrics();
     setupPageIndicatorMetrics();
     setupProgressBarMetrics();
+    setupProgressRingMetrics();
     setupPushButtonMetrics();
     setupRadioBoxMetrics();
     setupScrollViewMetrics();
@@ -327,6 +332,7 @@ void Editor::setupColors( QskAspect::Section section, const QskFluent2Theme& the
     setupMenuColors( section, theme );
     setupPageIndicatorColors( section, theme );
     setupProgressBarColors( section, theme );
+    setupProgressRingColors( section, theme );
     setupPushButtonColors( section, theme );
     setupRadioBoxColors( section, theme );
     setupScrollViewColors( section, theme );
@@ -675,7 +681,7 @@ void Editor::setupListViewColors(
             const auto text = Q::Text | section | state1 | state2;
 
             setGradient( cell, cellColor );
-        
+
             {
                 /*
                     We are using a section of the left border to display a
@@ -839,8 +845,8 @@ void Editor::setupProgressBarMetrics()
     setMetric( Q::Groove | A::Size, 1 );
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
 
-    setMetric( Q::Bar | A::Size, 3 );
-    setBoxShape( Q::Bar, 100, Qt::RelativeSize );
+    setMetric( Q::Fill | A::Size, 3 );
+    setBoxShape( Q::Fill, 100, Qt::RelativeSize );
 }
 
 void Editor::setupProgressBarColors(
@@ -851,7 +857,36 @@ void Editor::setupProgressBarColors(
     const auto& pal = theme.palette;
 
     setGradient( Q::Groove | section, pal.strokeColor.controlStrong.defaultColor );
-    setGradient( Q::Bar | section, pal.fillColor.accent.defaultColor );
+    setGradient( Q::Fill | section, pal.fillColor.accent.defaultColor );
+}
+
+void Editor::setupProgressRingMetrics()
+{
+    using Q = QskProgressRing;
+    using A = QskAspect;
+
+    static constexpr QskAspect::Variation SmallSize = A::Small;
+    static constexpr QskAspect::Variation NormalSize = A::NoVariation;
+    static constexpr QskAspect::Variation LargeSize = A::Large;
+
+    setStrutSize( Q::Fill | SmallSize, { 16, 16 } );
+    setStrutSize( Q::Fill | NormalSize, { 32, 32 } );
+    setStrutSize( Q::Fill | LargeSize, { 64, 64 } );
+
+    const auto startAngle = 90, spanAngle = -360;
+    setArcMetrics( Q::Fill | SmallSize, startAngle, spanAngle, 1.5 );
+    setArcMetrics( Q::Fill | NormalSize, startAngle, spanAngle, 3 );
+    setArcMetrics( Q::Fill | LargeSize, startAngle, spanAngle, 6 );
+}
+
+void Editor::setupProgressRingColors(
+    QskAspect::Section section, const QskFluent2Theme& theme )
+{
+    using Q = QskProgressRing;
+
+    const auto& pal = theme.palette;
+
+    setGradient( Q::Fill | section, pal.fillColor.accent.defaultColor );
 }
 
 void Editor::setupPushButtonMetrics()

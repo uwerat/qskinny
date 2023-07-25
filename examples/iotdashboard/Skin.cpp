@@ -33,7 +33,6 @@
 #include <QskBoxShapeMetrics.h>
 #include <QskColorFilter.h>
 #include <QskFunctions.h>
-#include <QskProgressBar.h>
 #include <QskShadowMetrics.h>
 #include <QskSkinHintTableEditor.h>
 #include <QskStateCombination.h>

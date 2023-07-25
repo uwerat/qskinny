@@ -23,6 +23,7 @@
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
 #include <QskProgressBar.h>
+#include <QskProgressRing.h>
 #include <QskRadioBox.h>
 #include <QskScrollView.h>
 #include <QskSegmentedBar.h>
@@ -94,6 +95,7 @@ namespace
         void setupPageIndicator();
         void setupPopup();
         void setupProgressBar();
+        void setupProgressRing();
         void setupRadioBox();
         void setupPushButton();
         void setupScrollView();
@@ -161,6 +163,7 @@ void Editor::setup()
     setupPageIndicator();
     setupPopup();
     setupProgressBar();
+    setupProgressRing();
     setupPushButton();
     setupRadioBox();
     setupScrollView();
@@ -431,9 +434,9 @@ void Editor::setupProgressBar()
     using A = QskAspect;
     using Q = QskProgressBar;
 
-    auto size = 5_dp;
+    auto size = 4_dp;
 
-    for ( auto subControl : { Q::Groove, Q::Bar } )
+    for ( auto subControl : { Q::Groove, Q::Fill } )
     {
         setMetric( subControl | A::Size, size );
         setPadding( subControl, 0 );
@@ -443,12 +446,21 @@ void Editor::setupProgressBar()
     }
 
     setMetric( Q::Groove | A::Size, size );
-    setGradient( Q::Groove, m_pal.primaryContainer );
+    setGradient( Q::Groove, m_pal.surfaceContainerHighest );
 
     setGradient( Q::Groove | Q::Disabled, m_pal.onSurface12 );
 
-    setGradient( Q::Bar, m_pal.primary );
-    setGradient( Q::Bar | Q::Disabled, m_pal.onSurface38 );
+    setGradient( Q::Fill, m_pal.primary );
+    setGradient( Q::Fill | Q::Disabled, m_pal.onSurface38 );
+}
+
+void Editor::setupProgressRing()
+{
+    using Q = QskProgressRing;
+
+    setStrutSize( Q::Fill, { 48_dp, 48_dp } );
+    setGradient( Q::Fill, m_pal.primary );
+    setArcMetrics( Q::Fill, 90, -360, 4_dp );
 }
 
 void Editor::setupRadioBox()
@@ -538,7 +550,7 @@ void Editor::setupSegmentedBar()
 
         setGradient( Q::Segment | Q::Selected | Q::Hovered,
             flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.hoverOpacity ) );
-                                    
+
         setGradient( Q::Segment | Q::Selected | Q::Focused,
             flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.focusOpacity ) );
 
@@ -1249,6 +1261,8 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
         outline = m_palettes[ NeutralVariant ].toned( 50 ).rgb();
         outlineVariant = m_palettes[ NeutralVariant ].toned( 80 ).rgb();
 
+        surfaceContainerHighest = m_palettes[ NeutralVariant ].toned( 90 ).rgb();
+
         shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }
     else if ( colorScheme == QskSkin::DarkScheme )
@@ -1282,6 +1296,8 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
         onSurfaceVariant = m_palettes[ NeutralVariant ].toned( 80 ).rgb();
         outline = m_palettes[ NeutralVariant ].toned( 60 ).rgb();
         outlineVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
+
+        surfaceContainerHighest = m_palettes[ NeutralVariant ].toned( 22 ).rgb();
 
         shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }

@@ -53,6 +53,9 @@
 #include "QskProgressBar.h"
 #include "QskProgressBarSkinlet.h"
 
+#include "QskProgressRing.h"
+#include "QskProgressRingSkinlet.h"
+
 #include "QskRadioBox.h"
 #include "QskRadioBoxSkinlet.h"
 
@@ -178,6 +181,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskTextLabel, QskTextLabelSkinlet >();
     declareSkinlet< QskTextInput, QskTextInputSkinlet >();
     declareSkinlet< QskProgressBar, QskProgressBarSkinlet >();
+    declareSkinlet< QskProgressRing, QskProgressRingSkinlet >();
     declareSkinlet< QskRadioBox, QskRadioBoxSkinlet >();
 
     const QFont font = QGuiApplication::font();

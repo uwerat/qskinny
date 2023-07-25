@@ -4,12 +4,17 @@
  *****************************************************************************/
 
 #include "ProgressBarPage.h"
-#include <QskProgressBar.h>
+
+#include <QskAnimator.h>
 #include <QskGraphicProvider.h>
 #include <QskGraphic.h>
 #include <QskGradient.h>
 #include <QskHctColor.h>
+#include <QskProgressBar.h>
+#include <QskProgressRing.h>
 #include <QskRgbValue.h>
+
+#include <QQuickWindow>
 
 namespace
 {
@@ -35,8 +40,31 @@ namespace
             colors += hctColor.toned( 45 ).rgb();
             colors += hctColor.toned( 30 ).rgb();
 
-            setBarGradient( qskBuildGradientStops( colors, true ) );
+            setFillGradient( qskBuildGradientStops( colors, true ) );
         }
+    };
+
+    class DeterminateIndicatorsAnimator : public QskAnimator
+    {
+      public:
+        DeterminateIndicatorsAnimator( const QVector< QskProgressIndicator* >& indicators )
+              : QskAnimator()
+              , m_indicators( indicators )
+        {
+            setAutoRepeat( true );
+            setDuration( 3000 );
+        }
+
+        void advance( qreal value ) override
+        {
+            for( auto* indicator : m_indicators )
+            {
+                indicator->setValueAsRatio( value );
+            }
+        }
+
+      private:
+        const QVector< QskProgressIndicator* > m_indicators;
     };
 }
 
@@ -53,10 +81,7 @@ void ProgressBarPage::populate()
     hBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
     hBox->setSpacing( 20 );
 
-    {
-        auto bar = new ProgressBar( hBox );
-        bar->setValue( 35 );
-    }
+    QVector< QskProgressIndicator* > determinateIndicators;
 
     {
         auto bar = new ProgressBar( hBox );
@@ -75,6 +100,11 @@ void ProgressBarPage::populate()
         bar->setTheme( QskRgb::DodgerBlue );
         bar->setOrigin( 60 );
         bar->setValue( 25 );
+    }
+
+    {
+        auto bar = new ProgressBar( hBox );
+        determinateIndicators.append( bar );
     }
 
     {
@@ -108,6 +138,53 @@ void ProgressBarPage::populate()
 
     {
         auto bar = new ProgressBar( vBox );
+        determinateIndicators.append( bar );
+    }
+
+    {
+        auto bar = new ProgressBar( vBox );
         bar->setIndeterminate( true );
     }
+
+    const auto sizes = { QskProgressRing::SmallSize, QskProgressRing::NormalSize,
+                        QskProgressRing::LargeSize };
+
+    auto determinateRingsHBox = new QskLinearBox( Qt::Horizontal, vBox );
+
+    auto indeterminateRingsHBox = new QskLinearBox( Qt::Horizontal, vBox );
+
+    for( const auto size : sizes )
+    {
+        for( const auto indeterminate : { true, false } )
+        {
+            auto* ring = new QskProgressRing( determinateRingsHBox );
+            ring->setSize( size );
+
+            QQuickItem* parentItem;
+
+            if( indeterminate )
+            {
+                parentItem = indeterminateRingsHBox;
+                ring->setIndeterminate( true );
+            }
+            else
+            {
+                parentItem = determinateRingsHBox;
+                determinateIndicators.append( ring );
+            }
+
+            ring->setParent( parentItem );
+            ring->setParentItem( parentItem );
+        }
+    }
+
+    connect( this, &QskQuickItem::windowChanged, this, [this, determinateIndicators]( QQuickWindow* window )
+    {
+        if( window )
+        {
+            m_determinateIndicatorsAnimator.reset( new DeterminateIndicatorsAnimator( determinateIndicators ) );
+            m_determinateIndicatorsAnimator->setWindow( window );
+            m_determinateIndicatorsAnimator->start();
+        }
+    } );
 }

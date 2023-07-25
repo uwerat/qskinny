@@ -7,6 +7,8 @@
 
 #include "Page.h"
 
+class QskAnimator;
+
 class ProgressBarPage : public Page
 {
   public:
@@ -14,4 +16,6 @@ class ProgressBarPage : public Page
 
   private:
     void populate();
+
+    std::unique_ptr< QskAnimator > m_determinateIndicatorsAnimator;
 };

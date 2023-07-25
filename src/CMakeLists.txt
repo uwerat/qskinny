@@ -196,10 +196,14 @@ list(APPEND HEADERS
     controls/QskPanGestureRecognizer.h
     controls/QskPopup.h
     controls/QskPopupSkinlet.h
-    controls/QskPushButton.h
-    controls/QskPushButtonSkinlet.h
     controls/QskProgressBar.h
     controls/QskProgressBarSkinlet.h
+    controls/QskProgressIndicator.h
+    controls/QskProgressIndicatorSkinlet.h
+    controls/QskProgressRing.h
+    controls/QskProgressRingSkinlet.h
+    controls/QskPushButton.h
+    controls/QskPushButtonSkinlet.h
     controls/QskQuick.h
     controls/QskQuickItem.h
     controls/QskRadioBox.h
@@ -294,10 +298,14 @@ list(APPEND SOURCES
     controls/QskPanGestureRecognizer.cpp
     controls/QskPopup.cpp
     controls/QskPopupSkinlet.cpp
-    controls/QskPushButton.cpp
-    controls/QskPushButtonSkinlet.cpp
     controls/QskProgressBar.cpp
     controls/QskProgressBarSkinlet.cpp
+    controls/QskProgressIndicator.cpp
+    controls/QskProgressIndicatorSkinlet.cpp
+    controls/QskProgressRing.cpp
+    controls/QskProgressRingSkinlet.cpp
+    controls/QskPushButton.cpp
+    controls/QskPushButtonSkinlet.cpp
     controls/QskQuick.cpp
     controls/QskQuickItem.cpp
     controls/QskQuickItemPrivate.cpp
