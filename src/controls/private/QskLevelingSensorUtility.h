@@ -2,31 +2,18 @@
 
 #include <qmath.h>
 #include <qmatrix4x4.h>
+#include <qtransform.h>
 
 #include <QskFunctions.h>
 #include <QskScaleTickmarks.h>
 
-// create a homogenous transformation matrix
-inline Q_REQUIRED_RESULT QMatrix4x4 matrix_deg( float rX = 0.0f, float rY = 0.0f, float rZ = 0.0f,
+inline Q_REQUIRED_RESULT QMatrix4x4 matrix_deg( float rZ = 0.0f,
     float tX = 0.0f, float tY = 0.0f, float tZ = 0.0f )
 {
-    // Convert rotation angles to radians
-    float rotationX = qDegreesToRadians( rX );
-    float rotationY = qDegreesToRadians( rY );
-    float rotationZ = qDegreesToRadians( rZ );
-
-    // Calculate sin and cos of the rotation angles
-    float cosX = qCos( rotationX );
-    float sinX = qSin( rotationX );
-    float cosY = qCos( rotationY );
-    float sinY = qSin( rotationY );
-    float cosZ = qCos( rotationZ );
-    float sinZ = qSin( rotationZ );
-
-    // Create the transform matrix
-    return QMatrix4x4( cosY * cosZ, sinX * sinY * cosZ - cosX * sinZ,
-        cosX * sinY * cosZ + sinX * sinZ, tX, cosY * sinZ, sinX * sinY * sinZ + cosX * cosZ,
-        cosX * sinY * sinZ - sinX * cosZ, tY, -sinY, sinX * cosY, cosX * cosY, tZ, 0, 0, 0, 1 );
+    QTransform transform;
+    transform.translate( tX, tY );
+    transform.rotate(rZ, Qt::ZAxis);
+    return transform.toAffine();
 }
 
 template< typename T >

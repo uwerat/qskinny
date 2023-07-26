@@ -73,6 +73,23 @@ namespace
         sensor->setTickmarksLabels( axis, labels );
     }
 
+    Q_REQUIRED_RESULT QskSlider* makeAngleSlider( const Qt::Axis axis,
+        QskLevelingSensor* const sensor, double min = 0, double max = 90, QQuickItem* const parent = nullptr)
+    {
+        auto* const slider = new QskSlider( Qt::Horizontal, parent );
+        slider->setMinimum( min );
+        slider->setMaximum( max );
+        slider->setValue( sensor->angle()[ axis ] );
+
+        QObject::connect(slider, &QskSlider::valueChanged, sensor, [axis, sensor](const qreal v){
+            auto angles = sensor->angle();
+            angles[axis] = v;
+            sensor->setAngle(angles);
+        });
+
+        return slider;
+    }
+
     Q_REQUIRED_RESULT QskSlider* makeTickmarksSlider( const Qt::Axis axis,
         QskLevelingSensor* const sensor, int min, int max,
         std::function< QskIntervalF( qreal ) > intervalA,
@@ -139,13 +156,16 @@ namespace
                 return { 180 - degree, 180 + degree };
             };
 
-            ( void ) new QskTextLabel( "Tickmarks X", right );
+            ( void ) new QskTextLabel( "Angles XYZ", right );
+            (void) makeAngleSlider(Qt::XAxis, sensor, 0, 45, right);
+            (void) makeAngleSlider(Qt::YAxis, sensor, 0, 45, right);
+            (void) makeAngleSlider(Qt::ZAxis, sensor, 0, 45, right);
+
+            ( void ) new QskTextLabel( "Tickmarks XXZ", right );
             auto* const sliderTickmarksX = makeTickmarksSlider(
                 Qt::XAxis, sensor, 0, 90, linearIntervalA, linearIntervalB, right );
-            ( void ) new QskTextLabel( "Tickmarks Y", right );
             auto* const sliderTickmarksY = makeTickmarksSlider(
                 Qt::YAxis, sensor, 0, 90, linearIntervalA, linearIntervalB, right );
-            ( void ) new QskTextLabel( "Tickmarks Z", right );
             auto* const sliderTickmarksZ = makeTickmarksSlider(
                 Qt::ZAxis, sensor, 0, 90, radialIntervalA, radialIntervalB, right );
 
@@ -161,6 +181,10 @@ namespace
             ( void ) makeRotationSlider( Qt::XAxis, sensor, QskLevelingSensor::TickmarksZ, right );
             ( void ) makeRotationSlider( Qt::YAxis, sensor, QskLevelingSensor::TickmarksZ, right );
             ( void ) makeRotationSlider( Qt::ZAxis, sensor, QskLevelingSensor::TickmarksZ, right );
+            ( void ) new QskTextLabel( "Horizon", right );
+            ( void ) makeRotationSlider( Qt::XAxis, sensor, QskLevelingSensor::Horizon, right );
+            ( void ) makeRotationSlider( Qt::YAxis, sensor, QskLevelingSensor::Horizon, right );
+            ( void ) makeRotationSlider( Qt::ZAxis, sensor, QskLevelingSensor::Horizon, right );
 
             sliderTickmarksX->setValue( 15 );
             sliderTickmarksY->setValue( 15 );

@@ -23,6 +23,11 @@
 #include <QSGFlatColorMaterial>
 #include <QSGGeometryNode>
 #include <qmath.h>
+#include <QTransform>
+
+#include <array>
+#include <optional>
+#include <utility>
 
 namespace
 {
@@ -51,6 +56,11 @@ namespace
         {
         }
 
+        Q_REQUIRED_RESULT QVector2D center() const noexcept
+        {
+            return { ( float ) cX, ( float ) cY};
+        }
+
         Q_REQUIRED_RESULT QVector3D scale() const noexcept
         {
             return { ( float ) sX, ( float ) sY, ( float ) sZ };
@@ -76,7 +86,7 @@ namespace
             , tY( rX * sY )
             , tZ( 0.0 )
         {
-        }
+        }       
 
         Q_REQUIRED_RESULT QVector3D translation() const noexcept
         {
@@ -85,9 +95,62 @@ namespace
 
         Q_REQUIRED_RESULT QMatrix4x4 matrix() const noexcept
         {
-            return matrix_deg( 0, 0, rZ, cX, cY );
+            return matrix_deg( rZ, cX, cY );
         }
     };
+
+    Q_REQUIRED_RESULT std::optional< std::pair< qreal, qreal > > minmax(
+        const QVector< qreal >& tickmarks )
+    {
+        if ( tickmarks.empty() )
+        {
+            return {};
+        }
+
+        const auto [ pmin, pmax ] = std::minmax_element( tickmarks.begin(), tickmarks.end() );
+        return std::make_pair( *pmin, *pmax );
+    }
+
+    Q_REQUIRED_RESULT std::optional< std::pair< qreal, qreal > > minmax(
+        const QskScaleTickmarks& tickmarks )
+    {
+        if ( tickmarks.tickCount() == 0 )
+        {
+            return {};
+        }
+
+        const auto majorTicks = tickmarks.majorTicks();
+        const auto mediumTicks = tickmarks.mediumTicks();
+        const auto minorTicks = tickmarks.minorTicks();
+
+        const auto item = !majorTicks.empty()    ? majorTicks[ 0 ]
+                          : !mediumTicks.empty() ? mediumTicks[ 0 ]
+                          : !minorTicks.empty()  ? minorTicks[ 0 ]
+                                                 : std::numeric_limits< qreal >::quiet_NaN();
+
+        Q_ASSERT_X( !std::isnan( item ), __func__, "NaN should not be possible!" );
+
+        std::array< qreal, 6 > local = { item };
+
+        if ( const auto opt = minmax( tickmarks.majorTicks() ) )
+        {
+            local[ 0 ] = opt->first;
+            local[ 1 ] = opt->second;
+        }
+        if ( const auto opt = minmax( tickmarks.mediumTicks() ) )
+        {
+            local[ 2 ] = opt->first;
+            local[ 3 ] = opt->second;
+        }
+        if ( const auto opt = minmax( tickmarks.minorTicks() ) )
+        {
+            local[ 4 ] = opt->first;
+            local[ 5 ] = opt->second;
+        }
+
+        const auto [ pmin, pmax ] = std::minmax_element( local.begin(), local.end() );
+        return std::make_pair( *pmin, *pmax );
+    }
 
 }
 
@@ -208,9 +271,9 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::OuterDisk >(
     const auto cY = center( sensor ).y();
     const auto rZ = 0.0;
 
-    const auto matrix = matrix_deg( 0.0, 0.0, 0.0, cX, cY, 0 ) *
-                        matrix_deg( 0.0, 0.0, rZ, 0, 0, 0 ) *
-                        matrix_deg( 0.0, 0.0, 0.0, -size, -size, 0 );
+    const auto matrix = matrix_deg( 0.0, cX, cY ) *
+                        matrix_deg( rZ, 0, 0 ) *
+                        matrix_deg( 0.0, -size, -size );
 
     root->setMatrix( matrix );
     return root;
@@ -241,71 +304,64 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::Horizon >(
     updateBoxNode(
         sensor, boxNode, { 0, 0, 2 * state.r1, 2 * state.r1 }, shape, metrics, colors, gradient );
 
-    const auto matrix = matrix_deg( 0, 0, 0, state.cX, state.cY, 0 ) *
-                        matrix_deg( 0, 0, 0, -state.r1, -state.r1, 0 );
+    const auto matrix = matrix_deg( 0, state.cX, state.cY ) * matrix_deg( state.rZ, 0, 0 ) *
+                        matrix_deg( 0, -state.r1, -state.r1 );
 
     tNode->setMatrix( matrix );
     return tNode;
+}
+
+Q_REQUIRED_RESULT QSGNode* updateLinearTickmarksNode(
+    const QskLevelingSensor* const sensor,
+    const QskAspect::Subcontrol subControl,
+    const QskScaleTickmarks& tickmarks, 
+    const Qt::Orientation orientation,
+    QSGNode* const node )
+{
+    const auto state = State< QskAspect::Subcontrol >( sensor, subControl );
+    const auto color = sensor->color( subControl );
+    const auto scale = sensor->strutSizeHint( subControl );
+    const auto width = state.r1 * scale.width();
+    const auto height = state.r1 * scale.height();
+    const auto alignment = sensor->alignmentHint( subControl );
+
+    const auto opt = minmax( tickmarks );
+    const auto min = opt ? opt->first : 0.0;
+    const auto max = opt ? opt->second : 0.0;
+    const auto interval = QskIntervalF{min,max};
+
+    const auto rect =
+        orientation == Qt::Horizontal
+            ? QRectF{ QPointF{ min * state.sX, -height }, QPointF{ max * state.sX, +height } }
+            : QRectF{ QPointF{ -width, min * state.sY }, QPointF{ +width, max * state.sY } };
+
+    const auto translation = QPointF{state.tX + state.cX, state.tY + state.cY};
+
+    auto* const cNode = ensureNodes< RadialClipNode, QSGTransformNode, QskTickmarksNode >( node );
+    auto* const tNode = static_cast< QSGTransformNode* >( cNode->firstChild() );
+    auto* const qNode = static_cast< QskTickmarksNode* >( tNode->firstChild() );
+       
+    cNode->setGeometryProperties( state.r1, state.cX, state.cY );
+    tNode->setMatrix( matrix_deg( state.rZ, translation.x(), translation.y() ));
+    qNode->update( color, rect, interval, tickmarks, 1, orientation, alignment );
+
+    return cNode;
 }
 
 template<>
 QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksX >(
     const QskLevelingSensor* const sensor, const quint8 nodeRole, QSGNode* const node ) const
 {
-    const auto subControl = Q::TickmarksX;
-    State< QskAspect::Subcontrol > state( sensor, subControl );
-    const auto color = sensor->color( subControl );
-    const auto scale = sensor->strutSizeHint( subControl );
-    const auto r3 = state.r1 * scale.height();
-
-    auto* const clipping =
-        ensureNodes< RadialClipNode, QSGTransformNode, LinearTickmarksNode >( node );
-    auto* const transform = static_cast< QSGTransformNode* >( clipping->firstChild() );
-    auto* const tickmarks = static_cast< LinearTickmarksNode* >( transform->firstChild() );
-
-    auto size = qvariant_cast< QVector3D >( sensor->effectiveSkinHint( subControl ) ) * r3;
-
-    clipping->setGeometryProperties( state.r1, state.cX, state.cY );
-
-    tickmarks->setMaterialProperties( color );
-    tickmarks->setGeometryProperties( sensor->tickmarks( Qt::XAxis ), size,
-        { state.scale().x(), 0.0f }, state.translation().toVector2D() );
-
-    const auto matrix = matrix_deg( 0, 0, state.rZ, state.cX, state.cY );
-    transform->setMatrix( matrix );
-    return clipping;
+    return updateLinearTickmarksNode(
+        sensor, Q::TickmarksX, sensor->tickmarks( Qt::XAxis ), Qt::Horizontal, node );
 }
 
 template<>
 QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksY >(
     const QskLevelingSensor* const sensor, const quint8 nodeRole, QSGNode* const node ) const
 {
-    const auto subControl = Q::TickmarksY;
-    const State< QskAspect::Subcontrol > state( sensor, subControl );
-
-    const auto color = sensor->color( subControl );
-    const auto scale = sensor->strutSizeHint( subControl );
-
-    const auto r3 = state.r1 * scale.width();
-
-    const auto rotation = sensor->subControlRotation( subControl );
-
-    auto* const cNode =
-        ensureNodes< RadialClipNode, QSGTransformNode, LinearTickmarksNode >( node );
-    auto* const tNode = static_cast< QSGTransformNode* >( cNode->firstChild() );
-    auto* const lNode = static_cast< LinearTickmarksNode* >( tNode->firstChild() );
-
-    auto size = qvariant_cast< QVector3D >( sensor->effectiveSkinHint( subControl ) ) * r3;
-
-    cNode->setGeometryProperties( state.r1, state.cX, state.cY );
-
-    const auto sY = static_cast< float >( state.r1 / sensor->angle().y() );
-    lNode->setMaterialProperties( color );
-    lNode->setGeometryProperties( sensor->tickmarks( Qt::YAxis ), size, { 0.0f, state.scale().y() },
-        { ( float ) state.tX, ( float ) state.tY } );
-
-    tNode->setMatrix( state.matrix() );
-    return cNode;
+    return updateLinearTickmarksNode(
+        sensor, Q::TickmarksY, sensor->tickmarks( Qt::YAxis ), Qt::Vertical, node );
 }
 
 template<>
@@ -326,7 +382,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksZ >(
     tickmarksNode->setMaterialProperties( color );
     tickmarksNode->setGeometryProperties( sensor->tickmarks( Qt::ZAxis ), state.r1, r3 );
 
-    const auto matrix = matrix_deg( 0.0, 0.0, state.rZ, state.cX, state.cY );
+    const auto matrix = matrix_deg( state.rZ, state.cX, state.cY );
     transform->setMatrix( matrix );
     return transform;
 }
@@ -337,18 +393,16 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksXLabels >(
 {
     const auto subControl = Q::TickmarksXLabels;
     const State< QskAspect::Subcontrol > state( sensor, subControl );
-    const auto r3 =
-        static_cast< float >( state.r1 * sensor->strutSizeHint( Q::TickmarksX ).height() );
-    const auto translation = state.translation().toVector2D() + QVector2D{ 0, r3 };
+    const auto r3 = state.r1 * sensor->strutSizeHint( Q::TickmarksX ).height();    
+    const auto dX = qFastCos(qDegreesToRadians(90 + state.rZ)) * r3;
+    const auto dY = qFastSin(qDegreesToRadians(90 + state.rZ)) * r3;
 
-    auto* const cNode =
-        ensureNodes< RadialClipNode, QSGTransformNode, LinearTickmarksLabelsNode >( node );
+    auto* const cNode = ensureNodes< RadialClipNode, QSGTransformNode, LinearTickmarksLabelsNode >( node );
     auto* const tNode = static_cast< QSGTransformNode* >( cNode->firstChild() );
     auto* const lNode = static_cast< LinearTickmarksLabelsNode* >( tNode->firstChild() );
     cNode->setGeometryProperties( state.r1, state.cX, state.cY );
-    tNode->setMatrix( state.matrix() );
-    lNode->update( sensor, subControl, sensor->tickmarkLabels( Qt::XAxis ),
-        { state.scale().x(), 0.0 }, translation );
+    tNode->setMatrix( matrix_deg( state.rZ, state.cX + state.tX + dX, state.cY + state.tY + dY) );
+    lNode->update( sensor, subControl, sensor->tickmarkLabels( Qt::XAxis ), { state.scale().x(), 0.0 } );
     return cNode;
 }
 
@@ -358,22 +412,16 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksYLabels >(
 {
     const auto subControl = Q::TickmarksYLabels;
     const State< QskAspect::Subcontrol > state( sensor, subControl );
-    const auto r3 =
-        static_cast< float >( state.r1 * sensor->strutSizeHint( Q::TickmarksY ).width() );
+    const auto r3 = state.r1 * sensor->strutSizeHint( Q::TickmarksY ).width();
+    const auto dX = qFastCos(qDegreesToRadians(state.rZ)) * r3;
+    const auto dY = qFastSin(qDegreesToRadians(state.rZ)) * r3;
 
-    const auto scale = sensor->strutSizeHint( subControl );
-    const auto angles = sensor->angle();
-    const auto rotation = sensor->subControlRotation( subControl );
-    const auto translation = state.translation().toVector2D() + QVector2D( r3, 0 );
-
-    auto* const cNode =
-        ensureNodes< RadialClipNode, QSGTransformNode, LinearTickmarksLabelsNode >( node );
+    auto* const cNode = ensureNodes< RadialClipNode, QSGTransformNode, LinearTickmarksLabelsNode >( node );
     auto* const tNode = static_cast< QSGTransformNode* >( cNode->firstChild() );
     auto* const lNode = static_cast< LinearTickmarksLabelsNode* >( tNode->firstChild() );
     cNode->setGeometryProperties( state.r1, state.cX, state.cY );
-    tNode->setMatrix( state.matrix() );
-    lNode->update( sensor, subControl, sensor->tickmarkLabels( Qt::YAxis ),
-        { 0.0, state.scale().y() }, translation );
+    tNode->setMatrix( matrix_deg( state.rZ, state.cX + state.tX + dX, state.cY + state.tY + dY) );
+    lNode->update( sensor, subControl, sensor->tickmarkLabels( Qt::YAxis ), { 0.0, state.scale().y() } );
     return cNode;
 }
 

@@ -2,12 +2,17 @@
 
 #include "QskLevelingSensorUtility.h"
 
+#include <QskScaleTickmarks.h>
+#include <QskAspect.h>
+
 #include <QSGFlatColorMaterial>
 #include <QSGGeometry>
 #include <QSGGeometryNode>
 
 #include <QFontMetricsF>
 #include <qmath.h>
+
+class QskSkinnable;
 
 class RadialTickmarksNode final : public QSGGeometryNode
 {
