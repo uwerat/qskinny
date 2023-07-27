@@ -9,7 +9,6 @@
 #include "QskScrollViewSkinlet.h"
 
 class QskListView;
-class QskListViewNode;
 
 class QMarginsF;
 class QSizeF;
@@ -40,25 +39,27 @@ class QSK_EXPORT QskListViewSkinlet : public QskScrollViewSkinlet
     QRectF sampleRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol, int index ) const override;
 
+    QskAspect::States sampleStates( const QskSkinnable*,
+        QskAspect::Subcontrol, int index ) const override;
+
   protected:
     QSGNode* updateContentsNode(
         const QskScrollView*, QSGNode* ) const override;
 
-    virtual QSGNode* updateCellNode( const QskListView*,
-        QSGNode*, const QRectF&, int row, int col ) const;
-
   private:
-    void updateForegroundNodes( const QskListView*, QskListViewNode* ) const;
-    void updateBackgroundNodes( const QskListView*, QskListViewNode* ) const;
+    void updateForegroundNodes( const QskListView*, QSGNode* ) const;
+    void updateBackgroundNodes( const QskListView*, QSGNode* ) const;
 
     void updateVisibleForegroundNodes(
-        const QskListView*, QskListViewNode*,
-        int rowMin, int rowMax, int colMin, int colMax,
-        const QMarginsF& margin, bool forward ) const;
+        const QskListView*, QSGNode*,
+        int rowMin, int rowMax, const QMarginsF& margin ) const;
 
     QSGTransformNode* updateForegroundNode( const QskListView*,
         QSGNode* parentNode, QSGTransformNode* cellNode,
-        int row, int col, const QSizeF&, bool forward ) const;
+        int row, int col, const QSizeF& ) const;
+
+    QSGNode* updateCellNode( const QskListView*,
+        QSGNode*, const QRectF&, int row, int col ) const;
 };
 
 #endif

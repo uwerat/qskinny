@@ -1057,9 +1057,11 @@ void Editor::setupListView()
 
     // alternating row colors
     setColor( Q::Cell | A::Lower, Qt::white );
-    setColor( Q::Cell | A::Upper, m_pal.contrasted );
+    setColor( Q::Cell | Q::Selected | A::Lower, m_pal.highlighted );
 
-    setColor( Q::Cell | Q::Selected, m_pal.highlighted );
+    setColor( Q::Cell | A::Upper, m_pal.contrasted );
+    setColor( Q::Cell | Q::Selected | A::Upper, m_pal.highlighted );
+
     setColor( Q::Text | Q::Selected, m_pal.highlightedText );
 }
 

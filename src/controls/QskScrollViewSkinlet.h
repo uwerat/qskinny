@@ -43,7 +43,6 @@ class QSK_EXPORT QskScrollViewSkinlet : public QskSkinlet
         quint8 nodeRole, QSGNode* ) const override;
 
     virtual QSGNode* updateContentsNode( const QskScrollView*, QSGNode* ) const;
-    QSGNode* contentsNode( const QskScrollView* );
 
   private:
     QSGNode* updateContentsRootNode( const QskScrollView*, QSGNode* ) const;

@@ -29,7 +29,7 @@ class QSK_EXPORT QskListView : public QskScrollView
     using Inherited = QskScrollView;
 
   public:
-    QSK_SUBCONTROLS( Cell, Text )
+    QSK_SUBCONTROLS( Cell, Text, Graphic )
     QSK_STATES( Selected )
 
     enum SelectionMode
@@ -62,10 +62,6 @@ class QSK_EXPORT QskListView : public QskScrollView
     virtual qreal rowHeight() const = 0;
 
     Q_INVOKABLE virtual QVariant valueAt( int row, int col ) const = 0;
-
-#if 1
-    virtual QskColorFilter graphicFilterAt( int row, int col ) const;
-#endif
 
     QRectF focusIndicatorRect() const override;
 

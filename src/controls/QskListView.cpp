@@ -16,10 +16,26 @@
 
 QSK_SUBCONTROL( QskListView, Cell )
 QSK_SUBCONTROL( QskListView, Text )
+QSK_SUBCONTROL( QskListView, Graphic )
 
 QSK_STATE( QskListView, Selected, QskAspect::FirstUserState )
 
 #define FOCUS_ON_CURRENT 1
+
+static inline int qskRowAt( const QskListView* listView, const QPointF& pos )
+{
+    const auto rect = listView->viewContentsRect();
+    if ( rect.contains( pos ) )
+    {
+        const auto y = pos.y() - rect.top() + listView->scrollPos().y();
+
+        const int row = y / listView->rowHeight();
+        if ( row >= 0 && row < listView->rowCount() )
+            return row;
+    }
+
+    return -1;
+}
 
 class QskListView::PrivateData
 {
@@ -146,14 +162,6 @@ QskListView::SelectionMode QskListView::selectionMode() const
     return m_data->selectionMode;
 }
 
-QskColorFilter QskListView::graphicFilterAt( int row, int col ) const
-{
-    Q_UNUSED( row )
-    Q_UNUSED( col )
-
-    return QskColorFilter();
-}
-
 QRectF QskListView::focusIndicatorRect() const
 {
 #if FOCUS_ON_CURRENT
@@ -269,13 +277,10 @@ void QskListView::mousePressEvent( QMouseEvent* event )
 {
     if ( m_data->selectionMode != NoSelection )
     {
-        const QRectF vr = viewContentsRect();
-        if ( vr.contains( event->pos() ) )
+        const int row = qskRowAt( this, qskMousePosition( event ) );
+        if ( row >= 0 )
         {
-            const int row = ( event->pos().y() - vr.top() + scrollPos().y() ) / rowHeight();
-            if ( row >= 0 && row < rowCount() )
-                setSelectedRow( row );
-
+            setSelectedRow( row );
             return;
         }
     }

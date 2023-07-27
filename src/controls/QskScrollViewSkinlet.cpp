@@ -17,7 +17,9 @@ static void qskAlignedHandle( qreal start, qreal end,
     qreal scrollBarLength, qreal minHandleLength,
     qreal& handleStart, qreal& handleEnd )
 {
-    minHandleLength = qBound( 4.0, minHandleLength, scrollBarLength );
+    // no qBound: scrollBarLength might be < 4.0
+    minHandleLength = qMax( 4.0, minHandleLength );
+    minHandleLength = qMin( minHandleLength, scrollBarLength );
 
     handleStart = start * scrollBarLength;
     handleEnd = end * scrollBarLength;
@@ -175,22 +177,6 @@ QSGNode* QskScrollViewSkinlet::updateContentsRootNode(
 QSGNode* QskScrollViewSkinlet::updateContentsNode(
     const QskScrollView*, QSGNode* ) const
 {
-    return nullptr;
-}
-
-QSGNode* QskScrollViewSkinlet::contentsNode( const QskScrollView* scrollView )
-{
-    if ( auto node = const_cast< QSGNode* >( qskPaintNode( scrollView ) ) )
-    {
-        node = QskSGNode::findChildNode( node, ContentsRootRole );
-        if ( node )
-        {
-            node = node->firstChild();
-            if ( node )
-                return node->firstChild();
-        }
-    }
-
     return nullptr;
 }
 
