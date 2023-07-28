@@ -26,13 +26,8 @@
 
         - QskPageIndicator
 
-    - QskScrollView
-
-      The extended mode of the scrollbar needs to be implemented
-
     - QskListView
 
-      - hover state is not implemented
       - Indicator subcontrol might be better than using the border of the selection box
       - cell padding unclear
 
@@ -1103,11 +1098,19 @@ void Editor::setupScrollViewMetrics()
 
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
-        const auto aspect = subControl | A::Size;
+        setMetric( subControl | A::Size, 6 );
 
-        setMetric( aspect, 2 );
-        setMetric( aspect | Q::Hovered, 6 );
-        setMetric( aspect | Q::Pressed, 6 );
+        // The scrollbar is expanding, when being hovered/pressed
+
+        const qreal padding = 4;
+
+        if ( subControl == Q::HorizontalScrollBar )
+            setPadding( Q::HorizontalScrollBar, 0, padding, 0, 0 );
+        else
+            setPadding( Q::VerticalScrollBar, padding, 0, 0, 0 );
+
+        setPadding( subControl | Q::Hovered, 0 );
+        setPadding( subControl | Q::Pressed, 0 );
 
         setBoxShape( subControl, 100, Qt::RelativeSize );
         setAnimation( subControl | A::Metric, 100 );
@@ -1117,9 +1120,6 @@ void Editor::setupScrollViewMetrics()
         The scroll bars are actually above the viewport, what is not
         supported by the skinlet. Do we want to have this. TODO ...
      */
-
-    setAlignment( Q::VerticalScrollBar, Qt::AlignHCenter );
-    setAlignment( Q::HorizontalScrollBar, Qt::AlignVCenter );
 
     // handles
 
