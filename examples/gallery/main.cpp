@@ -10,6 +10,7 @@
 #include "button/ButtonPage.h"
 #include "selector/SelectorPage.h"
 #include "dialog/DialogPage.h"
+#include "listbox/ListBoxPage.h"
 
 #include <SkinnyShortcut.h>
 #include <SkinnyShapeProvider.h>
@@ -99,6 +100,14 @@ namespace
         {
             auto scrollArea = new QskScrollArea();
             scrollArea->setMargins( 5 );
+
+#if 1
+            /*
+                We need a mode, where the focus policy gets adjusted
+                when a scroll bar becomes visible. TODO ...
+             */
+            scrollArea->setFocusPolicy( Qt::NoFocus );
+#endif
 
             // hiding the viewport
             scrollArea->setGradientHint( QskScrollView::Viewport, QskGradient() );
@@ -232,6 +241,7 @@ namespace
             tabView->addPage( "Progress\nBars", new ProgressBarPage() );
             tabView->addPage( "Selectors", new SelectorPage() );
             tabView->addPage( "Dialogs", new DialogPage() );
+            tabView->addPage( "ListBox", new ListBoxPage() );
 
             connect( header, &Header::enabledToggled,
                 tabView, &TabView::setPagesEnabled );
@@ -251,8 +261,11 @@ int main( int argc, char* argv[] )
     Qsk::addGraphicProvider( QString(), new GraphicProvider() );
     Qsk::addGraphicProvider( "shapes", new SkinnyShapeProvider() );
 
-    // dialogs in faked windows -> QskSubWindow
-    QskDialog::instance()->setPolicy( QskDialog::EmbeddedBox );
+    if ( true ) // environment variable, TODO ...
+    {
+        // dialogs in faked windows -> QskSubWindow
+        QskDialog::instance()->setPolicy( QskDialog::EmbeddedBox );
+    }
 
     QGuiApplication app( argc, argv );
 

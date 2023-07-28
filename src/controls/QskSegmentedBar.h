@@ -36,8 +36,8 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Segment, Separator, Cursor, Text, Icon )
-    QSK_STATES( Selected, Minimum, Maximum )
+    QSK_SUBCONTROLS( Panel, Splash, Segment, Separator, Cursor, Text, Icon )
+    QSK_STATES( Selected, Pressed )
 
     QskSegmentedBar( QQuickItem* parent = nullptr );
     QskSegmentedBar( Qt::Orientation, QQuickItem* parent = nullptr );
@@ -94,7 +94,12 @@ class QSK_EXPORT QskSegmentedBar : public QskControl
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
 
+    void hoverEnterEvent( QHoverEvent* ) override;
+    void hoverMoveEvent( QHoverEvent* ) override;
+    void hoverLeaveEvent( QHoverEvent* ) override;
+
     void focusInEvent( QFocusEvent* ) override;
+    void focusOutEvent( QFocusEvent* ) override;
 
   private:
     int nextIndex( int index, bool forward ) const;

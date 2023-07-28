@@ -260,6 +260,8 @@ class QSK_EXPORT QskSkinnable
     const QskSkinHintTable& hintTable() const;
 
     bool startHintTransitions( QskAspect::States, QskAspect::States, int index = -1 );
+    bool startHintTransitions( const QVector< QskAspect::Subcontrol >&,
+        QskAspect::States, QskAspect::States, int index = -1 );
 
   protected:
     virtual void updateNode( QSGNode* );

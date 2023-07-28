@@ -306,6 +306,7 @@ void QskPushButton::mousePressEvent( QMouseEvent* event )
     using A = QskAspect;
 
     const auto hint = animationHint( Splash | A::Color );
+
     if( hint.isValid() )
     {
         setPositionHint( Splash, qskMousePosition( event ).x() );

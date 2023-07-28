@@ -10,6 +10,7 @@ set(SOURCES
     button/ButtonPage.h button/ButtonPage.cpp
     selector/SelectorPage.h selector/SelectorPage.cpp
     dialog/DialogPage.h dialog/DialogPage.cpp
+    listbox/ListBoxPage.h listbox/ListBoxPage.cpp
     Page.h Page.cpp
     main.cpp
 )

@@ -4,7 +4,9 @@
 ############################################################################
 
 set(SOURCES
-    QskFluent2Global.h QskFluent2Skin.h QskFluent2Skin.cpp
+    QskFluent2Global.h
+    QskFluent2Theme.h QskFluent2Theme.cpp
+    QskFluent2Skin.h QskFluent2Skin.cpp
     QskFluent2SkinFactory.h QskFluent2SkinFactory.cpp
 )
 qt_add_resources(SOURCES icons.qrc)

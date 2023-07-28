@@ -27,6 +27,7 @@ QSK_SUBCONTROL( QskMenu, Icon )
 QSK_SUBCONTROL( QskMenu, Separator )
 
 QSK_SYSTEM_STATE( QskMenu, Selected, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskMenu, Pressed, QskAspect::FirstSystemState << 3 )
 
 static inline int qskActionIndex( const QVector< int >& actions, int index )
 {
@@ -72,6 +73,8 @@ QskMenu::QskMenu( QQuickItem* parent )
 
     connect( this, &QskMenu::opened, this,
         [this]() { m_data->triggeredIndex = -1; } );
+
+    setAcceptHoverEvents( true );
 }
 
 QskMenu::~QskMenu()
@@ -307,7 +310,7 @@ void QskMenu::keyPressEvent( QKeyEvent* event )
 
 void QskMenu::keyReleaseEvent( QKeyEvent* )
 {
-    if( m_data->isPressed )
+    if( isPressed() )
     {
         m_data->isPressed = false;
 
@@ -317,6 +320,30 @@ void QskMenu::keyReleaseEvent( QKeyEvent* )
             trigger( m_data->currentIndex );
         }
     }
+}
+
+void QskMenu::hoverEnterEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( Segment | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+    update();
+}
+
+void QskMenu::hoverMoveEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( Segment | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+    update();
+}
+
+void QskMenu::hoverLeaveEvent( QHoverEvent* )
+{
+    using A = QskAspect;
+
+    setSkinHint( Segment | Hovered | A::Metric | A::Position, QPointF() );
+    update();
 }
 
 #ifndef QT_NO_WHEELEVENT
@@ -390,7 +417,7 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
 {
     if ( event->button() == Qt::LeftButton )
     {
-        if( m_data->isPressed )
+        if( isPressed() )
         {
             m_data->isPressed = false;
 
@@ -453,6 +480,11 @@ int QskMenu::indexAtPosition( const QPointF& pos ) const
         this, contentsRect(), QskMenu::Segment, pos );
 
     return m_data->actions.value( index, -1 );
+}
+
+bool QskMenu::isPressed() const
+{
+    return m_data->isPressed;
 }
 
 void QskMenu::trigger( int index )

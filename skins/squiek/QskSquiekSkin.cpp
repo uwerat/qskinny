@@ -521,13 +521,15 @@ void Editor::setupProgressBar()
     using A = QskAspect;
     using Q = QskProgressBar;
 
-    setMetric( Q::Groove | A::Size, 8 );
-    setPadding( Q::Groove, 0 );
-    setGradient( Q::Groove, m_pal.darker200 );
-    setBoxShape( Q::Groove, 4 );
+    for ( auto subControl : { Q::Groove, Q::Bar } )
+    {
+        setMetric( subControl | A::Size, 6 );
+        setPadding( subControl, 0 );
+        setBoxShape( subControl, 4 );
+    }
 
+    setGradient( Q::Groove, m_pal.darker200 );
     setGradient( Q::Bar, m_pal.highlighted );
-    setBoxShape( Q::Bar, 4 );
 }
 
 void Editor::setupFocusIndicator()
@@ -778,7 +780,7 @@ void Editor::setupTabButton()
     {
         const auto aspect = Q::Panel | variation;
 
-        QskMargins margins0, margins1, padding;
+        QskMargins margins0, margins1;
         QskBoxBorderMetrics border( 1 );
         QskBoxShapeMetrics shape( 4 );
 
@@ -830,7 +832,7 @@ void Editor::setupTabButton()
         for ( const auto state : { Q::Checked | A::NoState, Q::Checked | Q::Pressed } )
             setMargin( aspect | state, margins1 );
 
-        setPadding( aspect, padding );
+        setPadding( aspect, { 6, 12, 6, 12 } );
 
         setBoxBorderMetrics( aspect, border );
         setBoxShape( aspect, shape );
@@ -1010,9 +1012,13 @@ void Editor::setupScrollView()
     // scroll bars
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
-        setMetric( subControl | A::Size, 12_dp );
-        setPadding( subControl, 0 );
+        setMetric( subControl | A::Size, 14 );
+        setPadding( subControl, 2 );
         setMargin( subControl, 0 );
+
+        setPanel( subControl, Sunken );
+        setBoxShape( subControl, 100, Qt::RelativeSize );
+        setBoxBorderMetrics( subControl, 1 );
     }
 
     // scrollbar handles
@@ -1021,19 +1027,16 @@ void Editor::setupScrollView()
         const qreal bw = 1.0;
 
         setButton( subControl, Raised, bw );
+        setButton( subControl | Q::Pressed, Sunken, bw );
+        setBoxShape( subControl, 100, Qt::RelativeSize );
+        setBoxShape( subControl | Q::Pressed, 100, Qt::RelativeSize );
 
         const auto extent = 40_dp;
 
         if ( subControl == Q::HorizontalScrollHandle )
-        {
             setStrutSize( subControl, extent, 0.0 );
-            setButton( subControl | Q::HorizontalHandlePressed, Sunken, bw );
-        }
         else
-        {
             setStrutSize( subControl, 0.0, extent );
-            setButton( subControl | Q::VerticalHandlePressed, Sunken, bw );
-        }
 
         setAnimation( subControl | A::Color, qskDuration );
     }
@@ -1044,15 +1047,21 @@ void Editor::setupScrollView()
 
 void Editor::setupListView()
 {
+    using A = QskAspect;
     using Q = QskListView;
 
     // padding for each cell
     setPadding( Q::Cell, QskMargins( 4, 8 ) );
 
     setColor( Q::Text, m_pal.themeForeground );
-    setColor( Q::Cell, m_pal.contrasted );
 
-    setColor( Q::Cell | Q::Selected, m_pal.highlighted );
+    // alternating row colors
+    setColor( Q::Cell | A::Lower, Qt::white );
+    setColor( Q::Cell | Q::Selected | A::Lower, m_pal.highlighted );
+
+    setColor( Q::Cell | A::Upper, m_pal.contrasted );
+    setColor( Q::Cell | Q::Selected | A::Upper, m_pal.highlighted );
+
     setColor( Q::Text | Q::Selected, m_pal.highlightedText );
 }
 

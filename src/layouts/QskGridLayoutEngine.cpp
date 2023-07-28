@@ -524,6 +524,8 @@ bool QskGridLayoutEngine::clear()
     m_data->rowSettings.clear();
     m_data->columnSettings.clear();
 
+    m_data->rowCount = m_data->columnCount = 0;
+
     invalidate();
     return true;
 }

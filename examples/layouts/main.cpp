@@ -20,6 +20,29 @@
 
 #include <QGuiApplication>
 
+namespace
+{
+    class TabView : public QskTabView
+    {
+      public:
+        TabView( QQuickItem* parent = nullptr )
+            : QskTabView( parent )
+        {
+            setMargins( 10 );
+            setTabBarEdge( Qt::LeftEdge );
+            setAutoFitTabs( true );
+    
+            addTab( "Grid Layout", new GridLayoutPage() );
+            addTab( "Flow Layout", new FlowLayoutPage() );
+            addTab( "Linear Layout", new LinearLayoutPage() );
+            addTab( "Dynamic\nConstraints", new DynamicConstraintsPage() );
+            addTab( "Stack Layout", new StackLayoutPage() );
+    
+            setCurrentIndex( 0 );
+        }
+    };
+}
+
 int main( int argc, char* argv[] )
 {
 #ifdef ITEM_STATISTICS
@@ -32,25 +55,16 @@ int main( int argc, char* argv[] )
 
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-    auto tabView = new QskTabView();
+    auto box = new QskBox(); // to have a themed application background
+    box->setAutoLayoutChildren( true );
 
-    tabView->setMargins( 10 );
-    tabView->setTabBarEdge( Qt::LeftEdge );
-    tabView->setAutoFitTabs( true );
-
-    tabView->addTab( "Grid Layout", new GridLayoutPage() );
-    tabView->addTab( "Flow Layout", new FlowLayoutPage() );
-    tabView->addTab( "Linear Layout", new LinearLayoutPage() );
-    tabView->addTab( "Dynamic\nConstraints", new DynamicConstraintsPage() );
-    tabView->addTab( "Stack Layout", new StackLayoutPage() );
-
-    tabView->setCurrentIndex( 0 );
+    (void) new TabView( box );
 
     QSize size( 800, 600 );
-    size = size.expandedTo( tabView->sizeHint().toSize() );
+    size = size.expandedTo( box->sizeHint().toSize() );
 
     QskWindow window;
-    window.addItem( tabView );
+    window.addItem( box );
     window.addItem( new QskFocusIndicator() );
 
     window.resize( size );

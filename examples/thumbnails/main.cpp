@@ -77,8 +77,6 @@ class Thumbnail : public QskPushButton
 
         setBoxShapeHint( QskPushButton::Panel, QskBoxShapeMetrics( 20, Qt::RelativeSize ) );
         setStrutSizeHint( QskPushButton::Icon, -1, -1 );
-
-        setSection( QskAspect::Header ); // to make them flat
     }
 
   private:
@@ -191,7 +189,8 @@ class ScrollArea : public QskScrollArea
     {
         // settings usually done in the skins
         setBoxBorderMetricsHint( Viewport, 2 );
-        setBoxShapeHint( Viewport, 20 );
+        setBoxBorderColorsHint( Viewport, Qt::gray ); // works with most color schemes
+        setBoxShapeHint( Viewport, 40 ); // a radius to see that clipping works
 
         for ( auto subControl : { HorizontalScrollBar, VerticalScrollBar } )
             setMetric( subControl | QskAspect::Size, 20 );
@@ -257,7 +256,8 @@ int main( int argc, char* argv[] )
      */
 
     auto box = new QskLinearBox( Qt::Vertical );
-    box->setMargins( 20 );
+    box->setPanel( true );
+    box->setPadding( 20 );
 
     auto buttonBox = new QskLinearBox( Qt::Horizontal, box );
     buttonBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
@@ -280,7 +280,6 @@ int main( int argc, char* argv[] )
 
     QskWindow window;
     window.resize( 600, 600 );
-    window.setColor( "SteelBlue" );
     window.addItem( box );
     window.addItem( focusIndicator );
 

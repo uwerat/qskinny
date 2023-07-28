@@ -23,6 +23,7 @@ class QSK_EXPORT QskSegmentedBarSkinlet : public QskSkinlet
         SegmentRole,
         SeparatorRole,
         CursorRole,
+        SplashRole,
 
         TextRole,
         IconRole,
@@ -60,6 +61,9 @@ class QSK_EXPORT QskSegmentedBarSkinlet : public QskSkinlet
     QRectF segmentRect( const QskSegmentedBar*, const QRectF&, int index ) const;
     QRectF separatorRect( const QskSegmentedBar*, const QRectF&, int index ) const;
     QRectF cursorRect( const QskSegmentedBar*, const QRectF& ) const;
+    QRectF splashRect( const QskSegmentedBar*, const QRectF& ) const;
+
+    QSGNode* updateSplashNode( const QskSegmentedBar*, QSGNode* ) const;
 };
 
 #endif

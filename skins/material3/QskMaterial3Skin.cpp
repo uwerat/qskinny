@@ -278,6 +278,10 @@ void Editor::setupComboBox()
         m_pal.surfaceVariant, m_pal.focusOpacity );
     setGradient( Q::Panel | Q::Focused, focusColor );
 
+    const auto pressedColor = flattenedColor( m_pal.onSurfaceVariant,
+        m_pal.surfaceVariant, m_pal.pressedOpacity );
+    setGradient( Q::Panel | Q::Pressed, pressedColor );
+
     const auto activeColor = flattenedColor( m_pal.onSurfaceVariant,
         m_pal.surfaceVariant, m_pal.pressedOpacity );
     setGradient( Q::Panel | Q::PopupOpen, activeColor );
@@ -340,8 +344,8 @@ void Editor::setupMenu()
 
     // The color here is primary with an opacity of 8% - we blend that
     // with the background, because we don't want the menu to have transparency:
-    const auto panel = flattenedColor( m_pal.primary, m_pal.background, 0.08 );
-    setGradient( Q::Panel, panel );
+    const auto panelColor = flattenedColor( m_pal.primary, m_pal.background, 0.08 );
+    setGradient( Q::Panel, panelColor );
 
     setShadowMetrics( Q::Panel, m_pal.elevation2 );
     setShadowColor( Q::Panel, m_pal.shadow );
@@ -355,7 +359,14 @@ void Editor::setupMenu()
     setSpacing( Q::Segment, 5_dp );
     setGradient( Q::Segment, Qt::transparent );
 
-    setGradient( Q::Cursor, m_pal.primary12 );
+    const auto hoverColor = flattenedColor( m_pal.onSurface, panelColor, m_pal.hoverOpacity );
+    setGradient( Q::Segment | Q::Hovered, hoverColor );
+
+    setGradient( Q::Segment | Q::Selected, m_pal.primary12 );
+    const auto hoverSelectedColor = flattenedColor( m_pal.onSurface, m_pal.primary12, m_pal.hoverOpacity );
+    setGradient( Q::Segment | Q::Selected | Q::Hovered, hoverSelectedColor );
+    const auto pressedSelectedColor = flattenedColor( m_pal.onSurface, m_pal.primary12, m_pal.pressedOpacity );
+    setGradient( Q::Segment | Q::Pressed | Q::Selected, pressedSelectedColor );
 
     setPadding( Q::Icon, 7_dp );
     setStrutSize( Q::Icon, 24_dp, 24_dp );
@@ -489,7 +500,6 @@ void Editor::setupFocusIndicator()
 
 void Editor::setupSegmentedBar()
 {
-    // copied from Squiek: we need something similar to a tab bar here. TODO ...
     using A = QskAspect;
     using Q = QskSegmentedBar;
 
@@ -507,18 +517,33 @@ void Editor::setupSegmentedBar()
 
         setBoxBorderMetrics( Q::Panel, 1_dp );
         setBoxBorderColors( Q::Panel, m_pal.outline );
+
         setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface12 );
 
         setStrutSize( Q::Panel | A::Horizontal, panelStrutSize );
         setStrutSize( Q::Panel | A::Vertical, panelStrutSize.transposed() );
+
+        setFlag( Q::Panel | A::Option, true ); // adjust segments to the panel radius
     }
 
     {
-        // Segment
+        // Segment / Splash
 
         setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
         setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
-        setGradient( Q::Segment, Qt::transparent );
+
+        setGradient( Q::Segment | Q::Hovered, m_pal.onSurface8 );
+        setGradient( Q::Segment | Q::Focused, m_pal.onSurface12 );
+        setGradient( Q::Segment | Q::Selected, m_pal.secondaryContainer );
+
+        setGradient( Q::Segment | Q::Selected | Q::Hovered,
+            flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.hoverOpacity ) );
+                                    
+        setGradient( Q::Segment | Q::Selected | Q::Focused,
+            flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.focusOpacity ) );
+
+        setGradient( Q::Segment | Q::Selected | Q::Disabled, m_pal.onSurface12 );
+
         setPadding( Q::Segment | A::Horizontal, 12_dp, 0, 12_dp, 0 );
         setPadding( Q::Segment | A::Vertical, 0, 12_dp, 0, 12_dp );
     }
@@ -534,30 +559,10 @@ void Editor::setupSegmentedBar()
     }
 
     {
-        // Cursor
-        setBoxShape( Q::Cursor, 0 );
+        // Splash
 
-        setBoxShape( Q::Cursor | Q::Minimum | A::Horizontal,
-            { 100, 0, 100, 0, Qt::RelativeSize },
-            { QskStateCombination::CombinationNoState, Q::Disabled } );
-
-        setBoxShape( Q::Cursor | Q::Maximum | A::Horizontal,
-            { 0, 100, 0, 100, Qt::RelativeSize },
-            { QskStateCombination::CombinationNoState, Q::Disabled } );
-
-        setBoxShape( Q::Cursor | Q::Minimum | A::Vertical,
-            { 100, 100, 0, 0, Qt::RelativeSize },
-            { QskStateCombination::CombinationNoState, Q::Disabled } );
-
-        setBoxShape( Q::Cursor | Q::Maximum | A::Vertical,
-            { 0, 0, 100, 100, Qt::RelativeSize },
-            { QskStateCombination::CombinationNoState, Q::Disabled } );
-
-        setGradient( Q::Cursor, m_pal.secondaryContainer );
-        setGradient( Q::Cursor | Q::Disabled, m_pal.onSurface12 );
-
-        setBoxBorderMetrics( Q::Cursor, 1_dp );
-        setBoxBorderColors( Q::Cursor, Qt::transparent );
+        setGradient( Q::Splash, stateLayerColor( m_pal.onSecondaryContainer, m_pal.pressedOpacity ) );
+        setAnimation( Q::Splash | A::Color, qskDuration );
     }
 
     {
@@ -634,6 +639,7 @@ void Editor::setupPushButton()
     setSpacing( Q::Panel, 8_dp );
     setPadding( Q::Panel, { 24_dp, 0, 24_dp, 0 } );
     setBoxShape( Q::Panel, 100, Qt::RelativeSize );
+    setShadowColor( Q::Panel, m_pal.shadow );
 
     setStrutSize( Q::Icon, 18_dp, 18_dp );
     setPadding( Q::Icon, { 0, 0, 8_dp, 0 } );
@@ -642,8 +648,7 @@ void Editor::setupPushButton()
     setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
     setPadding( Q::Text, 0 );
 
-    setShadowColor( Q::Panel, m_pal.shadow );
-
+    setBoxShape( Q::Splash, 40_dp );
     setAnimation( Q::Splash | QskAspect::Color, qskDuration );
 
 
@@ -985,6 +990,11 @@ void Editor::setupTabButton()
     using Q = QskTabButton;
 
     setStrutSize( Q::Panel, 48_dp, 64_dp );
+#if 1
+    // couldn't find a value in the specs
+    setPadding( Q::Panel, 8, 0, 8, 0 );
+#endif
+
     setGradient( Q::Panel, m_pal.surface );
 
     setColor( Q::Text, m_pal.onSurfaceVariant );
@@ -1114,12 +1124,11 @@ void Editor::setupScrollView()
     using Q = QskScrollView;
 
     setGradient( Q::Panel, m_pal.background );
-
     setGradient( Q::Viewport, m_pal.secondaryContainer );
 
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
-        setMetric( subControl | A::Size, 10_dp );
+        setMetric( subControl | A::Size, 6_dp );
         setPadding( subControl, 0 );
     }
 
@@ -1129,9 +1138,9 @@ void Editor::setupScrollView()
 
     for ( auto subControl : { Q::HorizontalScrollHandle, Q::VerticalScrollHandle } )
     {
-        setBoxShape( subControl, 3_dp );
+        setBoxShape( subControl, { 100, Qt::RelativeSize } );
         setBoxBorderMetrics( subControl, 0 );
-        setGradient( subControl, m_pal.primary );
+        setGradient( subControl, m_pal.secondary );
         setAnimation( subControl | A::Color, qskDuration );
     }
 
@@ -1143,13 +1152,14 @@ void Editor::setupListView()
 {
     using Q = QskListView;
 
+    setStrutSize( Q::Cell, { -1, 56 } );
     setPadding( Q::Cell, { 16_dp, 12_dp, 16_dp, 12_dp } );
-    setBoxBorderMetrics( Q::Cell, { 0, 0, 0, 1_dp } );
-    setBoxBorderColors( Q::Cell, m_pal.outline );
-    setColor( Q::Cell, m_pal.surface );
-    setColor( Q::Cell | Q::Selected, m_pal.primary12 );
 
-    setColor( Q::Text, m_pal.onSurfaceVariant );
+    setBoxBorderColors( Q::Cell, m_pal.outline );
+    setGradient( Q::Cell, m_pal.surface );
+    setGradient( Q::Cell | Q::Selected, m_pal.primary12 );
+
+    setColor( Q::Text, m_pal.onSurface );
 }
 
 void Editor::setupSubWindow()
@@ -1187,8 +1197,8 @@ void Editor::setupSubWindow()
 
 }
 
-QskMaterial3Theme::QskMaterial3Theme( Lightness lightness )
-    : QskMaterial3Theme( lightness,
+QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme )
+    : QskMaterial3Theme( colorScheme,
                         { // default Material colors:
                         0xff6750A4,
                         0xff625B71,
@@ -1200,11 +1210,11 @@ QskMaterial3Theme::QskMaterial3Theme( Lightness lightness )
 {
 }
 
-QskMaterial3Theme::QskMaterial3Theme( Lightness lightness,
+QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
         std::array< QskHctColor, NumPaletteTypes > palettes )
     : m_palettes( palettes )
 {
-    if ( lightness == Light )
+    if ( colorScheme == QskSkin::LightScheme )
     {
         primary = m_palettes[ Primary ].toned( 40 ).rgb();
         onPrimary = m_palettes[ Primary ].toned( 100 ).rgb();
@@ -1238,7 +1248,7 @@ QskMaterial3Theme::QskMaterial3Theme( Lightness lightness,
 
         shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }
-    else if ( lightness == Dark )
+    else if ( colorScheme == QskSkin::DarkScheme )
     {
         primary = m_palettes[ Primary ].toned( 80 ).rgb();
         onPrimary = m_palettes[ Primary ].toned( 20 ).rgb();

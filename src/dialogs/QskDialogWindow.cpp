@@ -42,7 +42,8 @@ QskDialogWindow::QskDialogWindow( QWindow* parent )
     // doing the layout manually instead ???
     setAutoLayoutChildren( true );
     m_data->layoutBox = new QskLinearBox( Qt::Vertical, contentItem() );
-    m_data->layoutBox->setMargins( 5 );
+    m_data->layoutBox->setPadding( 5 );
+    m_data->layoutBox->setPanel( true ); // for a themed background
 }
 
 QskDialogWindow::~QskDialogWindow()

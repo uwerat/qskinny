@@ -160,8 +160,9 @@ int main( int argc, char* argv[] )
 
     auto layoutBox = new QskLinearBox( Qt::Vertical );
     layoutBox->setDefaultAlignment( Qt::AlignLeft );
-    layoutBox->setMargins( 20 );
+    layoutBox->setPadding( 20 );
     layoutBox->setSpacing( 10 );
+    layoutBox->setPanel( true );
     layoutBox->addItem( buttonBox );
     layoutBox->addItem( tabView );
 

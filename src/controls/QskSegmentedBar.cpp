@@ -10,12 +10,14 @@
 #include "QskEvent.h"
 #include "QskSkinlet.h"
 #include "QskAspect.h"
+#include "QskAnimationHint.h"
 
 #include <qguiapplication.h>
 #include <qstylehints.h>
 #include <qfontmetrics.h>
 
 QSK_SUBCONTROL( QskSegmentedBar, Panel )
+QSK_SUBCONTROL( QskSegmentedBar, Splash )
 QSK_SUBCONTROL( QskSegmentedBar, Segment )
 QSK_SUBCONTROL( QskSegmentedBar, Separator )
 QSK_SUBCONTROL( QskSegmentedBar, Cursor )
@@ -23,8 +25,7 @@ QSK_SUBCONTROL( QskSegmentedBar, Text )
 QSK_SUBCONTROL( QskSegmentedBar, Icon )
 
 QSK_SYSTEM_STATE( QskSegmentedBar, Selected, QskAspect::FirstSystemState << 1 )
-QSK_SYSTEM_STATE( QskSegmentedBar, Minimum, QskAspect::FirstSystemState << 2 )
-QSK_SYSTEM_STATE( QskSegmentedBar, Maximum, QskAspect::FirstSystemState << 3 )
+QSK_SYSTEM_STATE( QskSegmentedBar, Pressed, QskAspect::FirstSystemState << 2 )
 
 class QskSegmentedBar::PrivateData
 {
@@ -53,6 +54,8 @@ QskSegmentedBar::QskSegmentedBar( Qt::Orientation orientation, QQuickItem* paren
     : Inherited( parent )
     , m_data( new PrivateData( orientation ) )
 {
+    setAcceptHoverEvents( true );
+
     if( orientation == Qt::Horizontal )
         initSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::Fixed );
     else
@@ -148,6 +151,8 @@ QskAspect::Variation QskSegmentedBar::effectiveVariation() const
 
 void QskSegmentedBar::mousePressEvent( QMouseEvent* event )
 {
+    using A = QskAspect;
+
     const int index = indexAtPosition( qskMousePosition( event ) );
 
     if( isSegmentEnabled( index ) )
@@ -162,6 +167,14 @@ void QskSegmentedBar::mousePressEvent( QMouseEvent* event )
                     setCurrentIndex( index );
             }
         }
+    }
+
+    const auto hint = animationHint( Splash | A::Color );
+
+    if( hint.isValid() )
+    {
+        setSkinHint( Splash | A::Metric | A::Position, qskMousePosition( event ) );
+        startTransition( Splash | A::Metric | A::Size, hint, 0.0, 1.0 );
     }
 }
 
@@ -260,6 +273,30 @@ void QskSegmentedBar::keyReleaseEvent( QKeyEvent* event )
     Inherited::keyReleaseEvent( event );
 }
 
+void QskSegmentedBar::hoverEnterEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( Segment | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+    update();
+}
+
+void QskSegmentedBar::hoverMoveEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( Segment | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+    update();
+}
+
+void QskSegmentedBar::hoverLeaveEvent( QHoverEvent* )
+{
+    using A = QskAspect;
+
+    setSkinHint( Segment | Hovered | A::Metric | A::Position, QPointF() );
+    update();
+}
+
 void QskSegmentedBar::focusInEvent( QFocusEvent* event )
 {
     int index = m_data->currentIndex;
@@ -289,6 +326,12 @@ void QskSegmentedBar::focusInEvent( QFocusEvent* event )
         setCurrentIndex( index );
 
     Inherited::focusInEvent( event );
+}
+
+void QskSegmentedBar::focusOutEvent( QFocusEvent* event )
+{
+    setCurrentIndex( -1 );
+    Inherited::focusOutEvent( event );
 }
 
 void QskSegmentedBar::clear()
@@ -322,6 +365,8 @@ void QskSegmentedBar::setCurrentIndex( int index )
     if( index != m_data->currentIndex )
     {
         m_data->currentIndex = index;
+        setPositionHint( Segment | Focused, index );
+
         Q_EMIT currentIndexChanged( index );
     }
 }
@@ -353,9 +398,6 @@ void QskSegmentedBar::setSelectedIndex( int index )
         update();
 
         Q_EMIT selectedIndexChanged( index );
-
-        setSkinStateFlag( Minimum, ( m_data->selectedIndex == 0 ) );
-        setSkinStateFlag( Maximum, ( m_data->selectedIndex == count() - 1 ) );
 
         const auto states = skinStates();
 

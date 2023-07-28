@@ -44,12 +44,20 @@ static inline QRectF qskFocusIndicatorClipRect( const QQuickItem* item )
     return rect;
 }
 
+static inline QskAspect::Section qskItemSection( const QQuickItem* item )
+{
+    if ( auto control = qskControlCast( item ) )
+        return control->section();
+
+    return QskAspect::Body;
+}
+
 class QskFocusIndicator::PrivateData
 {
   public:
     void resetConnections()
     {
-        for ( const auto& connection : qAsConst( connections ) )
+        for ( const auto& connection : std::as_const( connections ) )
             QObject::disconnect( connection );
 
         connections.clear();
@@ -122,6 +130,8 @@ void QskFocusIndicator::onFocusItemChanged()
 
     if ( focusItem && ( focusItem != window()->contentItem() ) )
     {
+        setSection( qskItemSection( focusItem ) );
+
         auto item = focusItem;
         m_data->connections += connectItem( item );
 

@@ -8,15 +8,15 @@ Qsk.Window
     width: 600
     height: 600
 
-    color: "Beige"
-
     Qsk.LinearBox
     {
         orientation: Qt.Horizontal
+        panel: true
+
         dimension: 3
 
-        //margins: 10
-        margins { left: 10; top: 10; right: 10; bottom: 10 }
+        //padding: 10
+        padding { left: 10; top: 10; right: 10; bottom: 10 }
         spacing: 20
 
         Repeater

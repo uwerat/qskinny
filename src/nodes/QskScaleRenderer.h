@@ -23,6 +23,7 @@ class QskColorFilter;
 class QSGNode;
 class QVariant;
 class QRectF;
+class QSizeF;
 
 class QSK_EXPORT QskScaleRenderer
 {

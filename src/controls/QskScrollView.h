@@ -25,7 +25,7 @@ class QSK_EXPORT QskScrollView : public QskScrollBox
         HorizontalScrollBar, HorizontalScrollHandle,
         VerticalScrollBar, VerticalScrollHandle )
 
-    QSK_STATES( VerticalHandlePressed, HorizontalHandlePressed )
+    QSK_STATES( Pressed )
 
     QskScrollView( QQuickItem* parent = nullptr );
     ~QskScrollView() override;
@@ -39,6 +39,7 @@ class QSK_EXPORT QskScrollView : public QskScrollBox
     Qt::Orientations scrollableOrientations() const;
 
     bool isScrolling( Qt::Orientation ) const;
+    QskAspect::States scrollBarStates( QskAspect::Subcontrol ) const;
 
     QRectF viewContentsRect() const override;
     QskAnimationHint flickHint() const override;
@@ -51,6 +52,11 @@ class QSK_EXPORT QskScrollView : public QskScrollBox
     void mouseMoveEvent( QMouseEvent* ) override;
     void mousePressEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;
+    void mouseUngrabEvent() override;
+
+    void hoverEnterEvent( QHoverEvent* ) override;
+    void hoverMoveEvent( QHoverEvent* ) override;
+    void hoverLeaveEvent( QHoverEvent* ) override;
 
 #ifndef QT_NO_WHEELEVENT
     QPointF scrollOffset( const QWheelEvent* ) const override;

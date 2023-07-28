@@ -15,30 +15,134 @@ QSK_SUBCONTROL( QskScrollView, HorizontalScrollHandle )
 QSK_SUBCONTROL( QskScrollView, VerticalScrollBar )
 QSK_SUBCONTROL( QskScrollView, VerticalScrollHandle )
 
-QSK_SYSTEM_STATE( QskScrollView, VerticalHandlePressed, QskAspect::FirstSystemState << 1 )
-QSK_SYSTEM_STATE( QskScrollView, HorizontalHandlePressed, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskScrollView, Pressed, QskAspect::FirstSystemState << 1 )
+
+static inline QskAspect::Subcontrol qskSubControlAt(
+    const QskScrollView* scrollView, const QPointF& pos )
+{
+    using Q = QskScrollView;
+
+    const auto rect = scrollView->contentsRect();
+
+    // order is important as the handles are inside the bars !
+
+    for ( auto subControl : { Q::VerticalScrollHandle, Q::VerticalScrollBar,
+        Q::HorizontalScrollHandle, Q::HorizontalScrollBar } )
+    {
+        if ( scrollView->subControlRect( rect, subControl ).contains( pos ) )
+            return subControl;
+    }
+
+    return QskAspect::NoSubcontrol;
+}
 
 class QskScrollView::PrivateData
 {
   public:
-    PrivateData()
-        : horizontalScrollBarPolicy( Qt::ScrollBarAsNeeded )
-        , verticalScrollBarPolicy( Qt::ScrollBarAsNeeded )
-        , isScrolling( 0 )
+    inline void resetScrolling( QskScrollView* scrollView )
     {
+        setScrolling( scrollView, QskAspect::NoSubcontrol, 0.0 );
     }
 
-    Qt::ScrollBarPolicy horizontalScrollBarPolicy;
-    Qt::ScrollBarPolicy verticalScrollBarPolicy;
+    inline void setScrolling( QskScrollView* scrollView,
+        QskAspect::Subcontrol subControl, qreal pos )
+    {
+        if ( subControl == pressedSubControl )
+            return;
 
-    qreal scrollPressPos;
-    int isScrolling;
+        QskAspect::Subcontrol subControls[2];
+        if ( subControl == VerticalScrollHandle || pressedSubControl == VerticalScrollHandle )
+        {
+            subControls[0] = VerticalScrollHandle;
+            subControls[1] = VerticalScrollBar;
+        }
+        else
+        {
+            subControls[0] = HorizontalScrollHandle;;
+            subControls[1] = HorizontalScrollBar;
+        }
+
+        pressedSubControl = subControl;
+        scrollPressPos = pos;
+
+        scrollView->update();
+
+        auto oldStates = scrollView->skinStates() | scrollView->scrollBarStates( subControl );
+        auto newStates = oldStates | QskScrollView::Pressed;
+
+        if ( pressedSubControl == QskAspect::NoSubcontrol )
+            qSwap( oldStates, newStates );
+
+        scrollView->startHintTransitions( { subControls[0] }, oldStates, newStates );
+        scrollView->startHintTransitions( { subControls[1] }, oldStates, newStates );
+    }
+
+    void setHovered( QskScrollView* scrollView, QskAspect::Subcontrol subControl )
+    {
+        if ( subControl == this->hoveredSubControl )
+            return;
+
+        QskAspect::Subcontrol subControls[2];
+        if ( subControl == VerticalScrollHandle
+            || hoveredSubControl == VerticalScrollHandle
+            || subControl == VerticalScrollBar
+            || hoveredSubControl == VerticalScrollBar )
+        {
+            subControls[0] = VerticalScrollHandle;
+            subControls[1] = VerticalScrollBar;
+        }
+        else
+        {
+            subControls[0] = HorizontalScrollHandle;;
+            subControls[1] = HorizontalScrollBar;
+        }
+
+        hoveredSubControl = subControl;
+
+        auto oldStates = scrollView->skinStates();
+        auto newStates = oldStates | QskScrollView::Hovered;
+
+        if ( hoveredSubControl == QskAspect::NoSubcontrol )
+            qSwap( oldStates, newStates );
+
+        scrollView->startHintTransitions( { subControls[0] }, oldStates, newStates );
+        scrollView->startHintTransitions( { subControls[1] }, oldStates, newStates );
+    }
+
+    bool hasState( QskAspect::Subcontrol subControl, QskAspect::State state ) const
+    {
+        if ( subControl == QskAspect::NoSubcontrol )
+            return false;
+
+        const auto stateSubcontrol =
+            ( state == QskControl::Hovered ) ? hoveredSubControl : pressedSubControl;
+
+        if ( subControl == stateSubcontrol )
+            return true;
+
+        if ( subControl == VerticalScrollBar )
+            return stateSubcontrol == VerticalScrollHandle;
+
+        if ( subControl == HorizontalScrollBar )
+            return stateSubcontrol == HorizontalScrollHandle;
+
+        return false;
+    }
+
+    Qt::ScrollBarPolicy horizontalScrollBarPolicy = Qt::ScrollBarAsNeeded;
+    Qt::ScrollBarPolicy verticalScrollBarPolicy = Qt::ScrollBarAsNeeded;
+
+    qreal scrollPressPos = 0.0;
+
+    QskAspect::Subcontrol pressedSubControl = QskAspect::NoSubcontrol;
+    QskAspect::Subcontrol hoveredSubControl = QskAspect::NoSubcontrol;
 };
 
 QskScrollView::QskScrollView( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
+    setAcceptHoverEvents( true );
 }
 
 QskScrollView::~QskScrollView()
@@ -85,16 +189,32 @@ Qt::ScrollBarPolicy QskScrollView::horizontalScrollBarPolicy() const
 
 bool QskScrollView::isScrolling( Qt::Orientation orientation ) const
 {
-    return m_data->isScrolling == orientation;
+    if ( orientation == Qt::Vertical )
+        return m_data->pressedSubControl == VerticalScrollHandle;
+    else
+        return m_data->pressedSubControl == HorizontalScrollHandle;
+}
+
+QskAspect::States QskScrollView::scrollBarStates(
+    QskAspect::Subcontrol subControl ) const
+{
+    auto states = skinStates();
+
+    if ( m_data->hasState( subControl, Pressed ) )
+        states |= Pressed;
+
+    if ( m_data->hasState( subControl, Hovered ) )
+        states |= Hovered;
+
+    return states;
 }
 
 QRectF QskScrollView::viewContentsRect() const
 {
-    // This code should be done in the skinlet. TODO ...
-    const qreal bw = boxBorderMetricsHint( Viewport ).widthAt( Qt::TopEdge );
+    const auto borderMetrics = boxBorderMetricsHint( Viewport );
 
     const QRectF r = subControlRect( Viewport );
-    return r.adjusted( bw, bw, -bw, -bw );
+    return r.marginsRemoved( borderMetrics.widths() );
 }
 
 void QskScrollView::mousePressEvent( QMouseEvent* event )
@@ -103,14 +223,11 @@ void QskScrollView::mousePressEvent( QMouseEvent* event )
 
     if ( subControlRect( VerticalScrollBar ).contains( mousePos ) )
     {
-        const QRectF handleRect = subControlRect( VerticalScrollHandle );
+        const auto handleRect = subControlRect( VerticalScrollHandle );
 
         if ( handleRect.contains( mousePos ) )
         {
-            m_data->isScrolling = Qt::Vertical;
-            m_data->scrollPressPos = mousePos.y();
-
-            setSkinStateFlag( VerticalHandlePressed, true );
+            m_data->setScrolling( this, VerticalScrollHandle, mousePos.y() );
         }
         else
         {
@@ -135,10 +252,7 @@ void QskScrollView::mousePressEvent( QMouseEvent* event )
 
         if ( handleRect.contains( mousePos ) )
         {
-            m_data->isScrolling = Qt::Horizontal;
-            m_data->scrollPressPos = mousePos.x();
-
-            setSkinStateFlag( HorizontalHandlePressed, true );
+            m_data->setScrolling( this, HorizontalScrollHandle, mousePos.x() );
         }
         else
         {
@@ -162,7 +276,7 @@ void QskScrollView::mousePressEvent( QMouseEvent* event )
 
 void QskScrollView::mouseMoveEvent( QMouseEvent* event )
 {
-    if ( !m_data->isScrolling )
+    if ( m_data->pressedSubControl == QskAspect::NoSubcontrol )
     {
         Inherited::mouseMoveEvent( event );
         return;
@@ -171,7 +285,7 @@ void QskScrollView::mouseMoveEvent( QMouseEvent* event )
     const auto mousePos = qskMousePosition( event );
     QPointF pos = scrollPos();
 
-    if ( m_data->isScrolling == Qt::Horizontal )
+    if ( m_data->pressedSubControl == HorizontalScrollHandle )
     {
         const qreal dx = mousePos.x() - m_data->scrollPressPos;
         const qreal w = subControlRect( HorizontalScrollBar ).width();
@@ -179,7 +293,7 @@ void QskScrollView::mouseMoveEvent( QMouseEvent* event )
         pos.rx() += dx / w * scrollableSize().width();
         m_data->scrollPressPos = mousePos.x();
     }
-    else if ( m_data->isScrolling == Qt::Vertical )
+    else
     {
         const qreal dy = mousePos.y() - m_data->scrollPressPos;
         const qreal h = subControlRect( VerticalScrollBar ).height();
@@ -194,17 +308,35 @@ void QskScrollView::mouseMoveEvent( QMouseEvent* event )
 
 void QskScrollView::mouseReleaseEvent( QMouseEvent* event )
 {
-    if ( !m_data->isScrolling )
+    if ( m_data->pressedSubControl == QskAspect::NoSubcontrol )
     {
         Inherited::mouseReleaseEvent( event );
         return;
     }
 
-    m_data->isScrolling = 0;
-    m_data->scrollPressPos = 0;
+    m_data->resetScrolling( this );
+}
 
-    setSkinStateFlag( HorizontalHandlePressed, false );
-    setSkinStateFlag( VerticalHandlePressed, false );
+void QskScrollView::mouseUngrabEvent()
+{
+    m_data->resetScrolling( this );
+}
+
+void QskScrollView::hoverEnterEvent( QHoverEvent* event )
+{
+    const auto subControl = qskSubControlAt( this, qskHoverPosition( event ) );
+    m_data->setHovered( this, subControl );
+}
+
+void QskScrollView::hoverMoveEvent( QHoverEvent* event )
+{
+    const auto subControl = qskSubControlAt( this, qskHoverPosition( event ) );
+    m_data->setHovered( this, subControl );
+}
+
+void QskScrollView::hoverLeaveEvent( QHoverEvent* )
+{
+    m_data->setHovered( this, QskAspect::NoSubcontrol );
 }
 
 #ifndef QT_NO_WHEELEVENT

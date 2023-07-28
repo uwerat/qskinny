@@ -329,7 +329,8 @@ class Window : public QskWindow
     {
         auto box = new QskLinearBox( Qt::Horizontal );
         box->setSpacing( 10 );
-        box->setMargins( 20 );
+        box->setPadding( 10 );
+        box->setPanel( true );
 
         auto listView = new LocaleListView( box );
         auto inputBox = new InputBox( box );
@@ -367,14 +368,14 @@ int main( int argc, char* argv[] )
 
     Window window1;
     window1.setObjectName( "Window 1" );
-    window1.setColor( "PapayaWhip" );
+    window1.setTitle( "Window 1" );
     window1.resize( 600, 600 );
     window1.show();
 
 #if 1
     Window window2;
     window2.setObjectName( "Window 2" );
-    window2.setColor( "Pink" );
+    window2.setTitle( "Window 2" );
     window2.setX( window1.x() + 100 );
     window2.resize( 600, 600 );
     window2.show();

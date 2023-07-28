@@ -7,6 +7,7 @@
 #include "QskAspect.h"
 #include "QskColorFilter.h"
 #include "QskEvent.h"
+#include "QskSkinlet.h"
 
 #include <qguiapplication.h>
 #include <qstylehints.h>
@@ -15,31 +16,55 @@
 
 QSK_SUBCONTROL( QskListView, Cell )
 QSK_SUBCONTROL( QskListView, Text )
+QSK_SUBCONTROL( QskListView, Graphic )
 
 QSK_STATE( QskListView, Selected, QskAspect::FirstUserState )
+
+#define FOCUS_ON_CURRENT 1
+
+static inline int qskRowAt( const QskListView* listView, const QPointF& pos )
+{
+    const auto rect = listView->viewContentsRect();
+    if ( rect.contains( pos ) )
+    {
+        const auto y = pos.y() - rect.top() + listView->scrollPos().y();
+
+        const int row = y / listView->rowHeight();
+        if ( row >= 0 && row < listView->rowCount() )
+            return row;
+    }
+
+    return -1;
+}
 
 class QskListView::PrivateData
 {
   public:
     PrivateData()
         : preferredWidthFromColumns( false )
-        , alternatingRowColors( false )
         , selectionMode( QskListView::SingleSelection )
-        , selectedRow( -1 )
     {
     }
 
+    /*
+        Currently we only support single selection. We can't navigate
+        the current item ( = focus ) without changing the selection.
+        So for the moment the selected row is always the currentRow.
+     */
+
     bool preferredWidthFromColumns : 1;
-    bool alternatingRowColors : 1;
     SelectionMode selectionMode : 4;
 
-    int selectedRow;
+    int selectedRow = -1;
 };
 
 QskListView::QskListView( QQuickItem* parent )
     : QskScrollView( parent )
     , m_data( new PrivateData() )
 {
+#if FOCUS_ON_CURRENT
+    connect( this, &QskScrollView::scrollPosChanged, &QskControl::focusIndicatorRectChanged );
+#endif
 }
 
 QskListView::~QskListView()
@@ -62,22 +87,6 @@ bool QskListView::preferredWidthFromColumns() const
     return m_data->preferredWidthFromColumns;
 }
 
-void QskListView::setAlternatingRowColors( bool on )
-{
-    if ( on != m_data->alternatingRowColors )
-    {
-        m_data->alternatingRowColors = on;
-        update();
-
-        Q_EMIT alternatingRowColorsChanged();
-    }
-}
-
-bool QskListView::alternatingRowColors() const
-{
-    return m_data->alternatingRowColors;
-}
-
 void QskListView::setTextOptions( const QskTextOptions& textOptions )
 {
     if ( setTextOptionsHint( Text, textOptions ) )
@@ -90,6 +99,15 @@ void QskListView::setTextOptions( const QskTextOptions& textOptions )
 QskTextOptions QskListView::textOptions() const
 {
     return textOptionsHint( Text );
+}
+
+void QskListView::resetTextOptions()
+{
+    if ( resetTextOptionsHint( Text ) )
+    {
+        updateScrollableSize();
+        Q_EMIT textOptionsChanged();
+    }
 }
 
 void QskListView::setSelectedRow( int row )
@@ -115,6 +133,7 @@ void QskListView::setSelectedRow( int row )
     {
         m_data->selectedRow = row;
         Q_EMIT selectedRowChanged( row );
+        Q_EMIT focusIndicatorRectChanged();
 
         update();
     }
@@ -143,12 +162,21 @@ QskListView::SelectionMode QskListView::selectionMode() const
     return m_data->selectionMode;
 }
 
-QskColorFilter QskListView::graphicFilterAt( int row, int col ) const
+QRectF QskListView::focusIndicatorRect() const
 {
-    Q_UNUSED( row )
-    Q_UNUSED( col )
+#if FOCUS_ON_CURRENT
+    if( m_data->selectedRow >= 0 )
+    {
+        auto rect = effectiveSkinlet()->sampleRect(
+            this, contentsRect(), Cell, m_data->selectedRow );
 
-    return QskColorFilter();
+        rect = rect.translated( -scrollPos() );
+        if ( rect.intersects( viewContentsRect() ) )
+            return rect;
+    }
+#endif
+
+    return Inherited::focusIndicatorRect();
 }
 
 void QskListView::keyPressEvent( QKeyEvent* event )
@@ -249,13 +277,10 @@ void QskListView::mousePressEvent( QMouseEvent* event )
 {
     if ( m_data->selectionMode != NoSelection )
     {
-        const QRectF vr = viewContentsRect();
-        if ( vr.contains( event->pos() ) )
+        const int row = qskRowAt( this, qskMousePosition( event ) );
+        if ( row >= 0 )
         {
-            const int row = ( event->pos().y() - vr.top() + scrollPos().y() ) / rowHeight();
-            if ( row >= 0 && row < rowCount() )
-                setSelectedRow( row );
-
+            setSelectedRow( row );
             return;
         }
     }
@@ -266,6 +291,14 @@ void QskListView::mousePressEvent( QMouseEvent* event )
 void QskListView::mouseReleaseEvent( QMouseEvent* event )
 {
     Inherited::mouseReleaseEvent( event );
+}
+
+void QskListView::changeEvent( QEvent* event )
+{
+    if ( event->type() == QEvent::StyleChange )
+        updateScrollableSize();
+
+    Inherited::changeEvent( event );
 }
 
 #ifndef QT_NO_WHEELEVENT

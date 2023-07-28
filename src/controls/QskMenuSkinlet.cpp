@@ -385,6 +385,7 @@ QskAspect::States QskMenuSkinlet::sampleStates(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl, int index ) const
 {
     using Q = QskMenu;
+    using A = QskAspect;
 
     auto states = Inherited::sampleStates( skinnable, subControl, index );
 
@@ -393,7 +394,29 @@ QskAspect::States QskMenuSkinlet::sampleStates(
         const auto menu = static_cast< const QskMenu* >( skinnable );
 
         if ( menu->currentIndex() == menu->actions()[ index ] )
-            states |= QskMenu::Selected;
+        {
+            states |= Q::Selected;
+
+            if( menu->isPressed() )
+            {
+                states |= Q::Pressed;
+            }
+            else
+            {
+                states &= ~Q::Pressed;
+            }
+        }
+
+        const auto cursorPos = menu->effectiveSkinHint( Q::Segment | Q::Hovered | A::Metric | A::Position ).toPointF();
+
+        if( !cursorPos.isNull() && menu->indexAtPosition( cursorPos ) == index )
+        {
+            states |= Q::Hovered;
+        }
+        else
+        {
+            states &= ~Q::Hovered;
+        }
     }
 
     return states;

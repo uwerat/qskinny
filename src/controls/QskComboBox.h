@@ -34,15 +34,21 @@ class QSK_EXPORT QskComboBox : public QskControl
     Q_PROPERTY( int indexInPopup READ indexInPopup
         NOTIFY indexInPopupChanged )
 
+    Q_PROPERTY( bool pressed READ isPressed
+        WRITE setPressed NOTIFY pressedChanged FINAL )
+
     using Inherited = QskControl;
 
   public:
     QSK_SUBCONTROLS( Panel, Icon, Text, StatusIndicator )
-    QSK_STATES( PopupOpen )
+    QSK_STATES( Pressed, PopupOpen )
 
     QskComboBox( QQuickItem* parent = nullptr );
 
     ~QskComboBox() override;
+
+    void setPressed( bool on );
+    bool isPressed() const;
 
     void setPopupOpen( bool );
     bool isPopupOpen() const;
@@ -78,6 +84,10 @@ class QSK_EXPORT QskComboBox : public QskControl
     void setCurrentIndex( int );
 
   Q_SIGNALS:
+    void pressed();
+    void released();
+    void pressedChanged( bool );
+
     void currentIndexChanged( int );
     void indexInPopupChanged( int );
 

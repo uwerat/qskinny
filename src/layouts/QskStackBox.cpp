@@ -318,7 +318,7 @@ void QskStackBox::autoRemoveItem( QQuickItem* item )
 
 void QskStackBox::clear( bool autoDelete )
 {
-    for ( const auto item : qAsConst( m_data->items ) )
+    for ( const auto item : std::as_const( m_data->items ) )
     {
         if( autoDelete && ( item->parent() == this ) )
             delete item;
@@ -380,7 +380,7 @@ QSizeF QskStackBox::layoutSizeHint(
     qreal w = -1.0;
     qreal h = -1.0;
 
-    for ( const auto item : qAsConst( m_data->items ) )
+    for ( const auto item : std::as_const( m_data->items ) )
     {
         /*
             We ignore the retainSizeWhenVisible flag and include all

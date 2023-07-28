@@ -27,6 +27,7 @@ QskMainView::QskMainView( QQuickItem* parent )
     setPanel( true );
 
     setFlag( QQuickItem::ItemIsFocusScope, true );
+    setTabFence( true );
     setFocusPolicy( Qt::StrongFocus );
 }
 

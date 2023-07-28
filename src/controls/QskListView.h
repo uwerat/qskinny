@@ -13,9 +13,6 @@ class QSK_EXPORT QskListView : public QskScrollView
 {
     Q_OBJECT
 
-    Q_PROPERTY( bool alternatingRowColors READ alternatingRowColors
-        WRITE setAlternatingRowColors NOTIFY alternatingRowColorsChanged FINAL )
-
     Q_PROPERTY( SelectionMode selectionMode READ selectionMode
         WRITE setSelectionMode NOTIFY selectionModeChanged FINAL )
 
@@ -23,7 +20,8 @@ class QSK_EXPORT QskListView : public QskScrollView
         WRITE setSelectedRow NOTIFY selectedRowChanged FINAL )
 
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
-        WRITE setTextOptions NOTIFY textOptionsChanged FINAL )
+        WRITE setTextOptions RESET resetTextOptions
+        NOTIFY textOptionsChanged FINAL )
 
     Q_PROPERTY( bool preferredWidthFromColumns READ preferredWidthFromColumns
         WRITE setPreferredWidthFromColumns NOTIFY preferredWidthFromColumnsChanged() )
@@ -31,7 +29,7 @@ class QSK_EXPORT QskListView : public QskScrollView
     using Inherited = QskScrollView;
 
   public:
-    QSK_SUBCONTROLS( Cell, Text )
+    QSK_SUBCONTROLS( Cell, Text, Graphic )
     QSK_STATES( Selected )
 
     enum SelectionMode
@@ -48,13 +46,11 @@ class QSK_EXPORT QskListView : public QskScrollView
     void setPreferredWidthFromColumns( bool );
     bool preferredWidthFromColumns() const;
 
-    void setAlternatingRowColors( bool );
-    bool alternatingRowColors() const;
-
     void setSelectionMode( SelectionMode );
     SelectionMode selectionMode() const;
 
     void setTextOptions( const QskTextOptions& textOptions );
+    void resetTextOptions();
     QskTextOptions textOptions() const;
 
     Q_INVOKABLE int selectedRow() const;
@@ -67,9 +63,7 @@ class QSK_EXPORT QskListView : public QskScrollView
 
     Q_INVOKABLE virtual QVariant valueAt( int row, int col ) const = 0;
 
-#if 1
-    virtual QskColorFilter graphicFilterAt( int row, int col ) const;
-#endif
+    QRectF focusIndicatorRect() const override;
 
   public Q_SLOTS:
     void setSelectedRow( int row );
@@ -78,11 +72,12 @@ class QSK_EXPORT QskListView : public QskScrollView
     void selectedRowChanged( int row );
 
     void selectionModeChanged();
-    void alternatingRowColorsChanged();
     void preferredWidthFromColumnsChanged();
     void textOptionsChanged();
 
   protected:
+    void changeEvent( QEvent* ) override;
+
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
 
