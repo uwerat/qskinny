@@ -64,6 +64,8 @@ class QSK_EXPORT QskScrollBox : public QskControl
   protected:
     void geometryChangeEvent( QskGeometryChangeEvent* ) override;
     void windowChangeEvent( QskWindowChangeEvent* ) override;
+
+    void mousePressEvent( QMouseEvent* ) override;
     void gestureEvent( QskGestureEvent* ) override;
 
 #ifndef QT_NO_WHEELEVENT

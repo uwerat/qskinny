@@ -79,6 +79,17 @@ class Thumbnail : public QskPushButton
         setStrutSizeHint( QskPushButton::Icon, -1, -1 );
     }
 
+#if 0
+    void mousePressEvent( QMouseEvent* event ) override
+    {
+        /*
+            rgnore events: to check if the pae gesture recoognizer of the scroll
+            area becomes active without timeout ( see QskScrollBox::mousePressEvent )
+         */
+        event->setAccepted( false );
+    }
+#endif
+
   private:
     QskGraphic thumbnailGraphic( const QColor& color,
         int shape, const QSizeF& size ) const
