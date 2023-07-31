@@ -1057,12 +1057,17 @@ void Editor::setupListView()
 
     // alternating row colors
     setColor( Q::Cell | A::Lower, Qt::white );
-    setColor( Q::Cell | Q::Selected | A::Lower, m_pal.highlighted );
-
     setColor( Q::Cell | A::Upper, m_pal.contrasted );
-    setColor( Q::Cell | Q::Selected | A::Upper, m_pal.highlighted );
 
-    setColor( Q::Text | Q::Selected, m_pal.highlightedText );
+    for ( auto state : { A::NoState, Q::Hovered, Q::Pressed } )
+    {
+        const auto aspect = Q::Cell | state | Q::Selected;
+
+        setColor( aspect | A::Lower, m_pal.highlighted );
+        setColor( aspect | A::Upper, m_pal.highlighted );
+
+        setColor( Q::Text | state | Q::Selected, m_pal.highlightedText );
+    }
 }
 
 void Editor::setupSubWindow()

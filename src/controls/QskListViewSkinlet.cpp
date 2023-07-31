@@ -470,12 +470,7 @@ QskAspect::States QskListViewSkinlet::sampleStates( const QskSkinnable* skinnabl
     if ( subControl == Q::Cell || subControl == Q::Text || subControl == Q::Graphic )
     {
         const auto listView = static_cast< const QskListView* >( skinnable );
-
-        auto states = listView->skinStates();
-        if ( index == listView->selectedRow() )
-            states |= Q::Selected;
-
-        return states;
+        return listView->rowStates( index );
     }
 
     return Inherited::sampleStates( skinnable, subControl, index );

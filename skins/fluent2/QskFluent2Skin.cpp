@@ -612,8 +612,10 @@ void Editor::setupFocusIndicatorColors(
 void Editor::setupListViewMetrics()
 {
     using Q = QskListView;
+    using A = QskAspect;
 
-    setBoxBorderMetrics( Q::Cell | Q::Selected, { 3, 0, 0, 0 } );
+    for ( auto state : { A::NoState, Q::Hovered, Q::Pressed } )
+        setBoxBorderMetrics( Q::Cell | state | Q::Selected, { 3, 0, 0, 0 } );
 #if 1
     // taken from M3 - what are the actual values, TODO ...
     setPadding( Q::Cell, { 16, 12, 16, 12 } );
@@ -693,6 +695,9 @@ void Editor::setupListViewColors(
             setColor( text, textColor );
         }
     }
+
+    setAnimation( Q::Cell | A::Color, 100 );
+    setAnimation( Q::Text | A::Color, 100 );
 }
 
 void Editor::setupMenuMetrics()

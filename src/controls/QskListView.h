@@ -54,6 +54,7 @@ class QSK_EXPORT QskListView : public QskScrollView
     QskTextOptions textOptions() const;
 
     Q_INVOKABLE int selectedRow() const;
+    QskAspect::States rowStates( int ) const;
 
     virtual int rowCount() const = 0;
     virtual int columnCount() const = 0;
@@ -83,6 +84,11 @@ class QSK_EXPORT QskListView : public QskScrollView
 
     void mousePressEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;
+    void mouseUngrabEvent() override;
+
+    void hoverEnterEvent( QHoverEvent* ) override;
+    void hoverMoveEvent( QHoverEvent* ) override;
+    void hoverLeaveEvent( QHoverEvent* ) override;
 
 #ifndef QT_NO_WHEELEVENT
     virtual QPointF scrollOffset( const QWheelEvent* ) const override;

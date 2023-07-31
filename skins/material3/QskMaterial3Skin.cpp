@@ -1150,6 +1150,7 @@ void Editor::setupScrollView()
 
 void Editor::setupListView()
 {
+    using A = QskAspect;
     using Q = QskListView;
 
     setStrutSize( Q::Cell, { -1, 56 } );
@@ -1157,7 +1158,9 @@ void Editor::setupListView()
 
     setBoxBorderColors( Q::Cell, m_pal.outline );
     setGradient( Q::Cell, m_pal.surface );
-    setGradient( Q::Cell | Q::Selected, m_pal.primary12 );
+
+    for ( auto state : { A::NoState, Q::Hovered, Q::Pressed } )
+        setGradient( Q::Cell | state | Q::Selected, m_pal.primary12 );
 
     setColor( Q::Text, m_pal.onSurface );
 }

@@ -46,6 +46,48 @@ class QskListView::PrivateData
     {
     }
 
+    void setRowState( QskListView* listView, int row, QskAspect::State state )
+    {
+        using Q = QskListView;
+
+        auto& storedRow = ( state == Q::Hovered )
+            ? hoveredRow : ( ( state == Q::Pressed ) ? pressedRow : selectedRow );
+
+        if ( row == storedRow )
+            return;
+
+        if ( storedRow >= 0 )
+        {
+            const auto states = listView->rowStates( storedRow );
+            startTransitions( listView, storedRow, states, states & ~state );
+        }
+
+        if ( row >= 0 )
+        {
+            const auto states = listView->rowStates( row );
+            startTransitions( listView, row, states, states | state );
+        }
+
+        storedRow = row;
+    }
+
+  private:
+    inline void startTransitions( QskListView* listView, int row,
+        QskAspect::States oldStates, QskAspect::States newStates )
+    {
+        /*
+            working implementation can be found in
+            https://github.com/uwerat/qskinny/tree/features/listview
+         */
+
+        Q_UNUSED( row );
+        Q_UNUSED( oldStates );
+        Q_UNUSED( newStates );
+
+        listView->update();
+    }
+
+  public:
     /*
         Currently we only support single selection. We can't navigate
         the current item ( = focus ) without changing the selection.
@@ -55,6 +97,8 @@ class QskListView::PrivateData
     bool preferredWidthFromColumns : 1;
     SelectionMode selectionMode : 4;
 
+    int hoveredRow = -1;
+    int pressedRow = -1;
     int selectedRow = -1;
 };
 
@@ -131,7 +175,8 @@ void QskListView::setSelectedRow( int row )
 
     if ( row != m_data->selectedRow )
     {
-        m_data->selectedRow = row;
+        m_data->setRowState( this, row, Selected );
+
         Q_EMIT selectedRowChanged( row );
         Q_EMIT focusIndicatorRectChanged();
 
@@ -280,6 +325,7 @@ void QskListView::mousePressEvent( QMouseEvent* event )
         const int row = qskRowAt( this, qskMousePosition( event ) );
         if ( row >= 0 )
         {
+            m_data->setRowState( this, row, Pressed );
             setSelectedRow( row );
             return;
         }
@@ -290,7 +336,42 @@ void QskListView::mousePressEvent( QMouseEvent* event )
 
 void QskListView::mouseReleaseEvent( QMouseEvent* event )
 {
+    m_data->setRowState( this, -1, Pressed );
     Inherited::mouseReleaseEvent( event );
+}
+
+void QskListView::mouseUngrabEvent()
+{
+    m_data->setRowState( this, -1, Pressed );
+    Inherited::mouseUngrabEvent();
+}
+
+void QskListView::hoverEnterEvent( QHoverEvent* event )
+{
+    if ( m_data->selectionMode != NoSelection )
+    {
+        const int row = qskRowAt( this, qskHoverPosition( event ) );
+        m_data->setRowState( this, row, Hovered );
+    }
+    
+    Inherited::hoverEnterEvent( event );
+}
+
+void QskListView::hoverMoveEvent( QHoverEvent* event )
+{
+    if ( m_data->selectionMode != NoSelection )
+    {
+        const int row = qskRowAt( this, qskHoverPosition( event ) );
+        m_data->setRowState( this, row, Hovered );
+    }
+
+    Inherited::hoverMoveEvent( event );
+}
+
+void QskListView::hoverLeaveEvent( QHoverEvent* event )
+{
+    m_data->setRowState( this, -1, Hovered );
+    Inherited::hoverLeaveEvent( event );
 }
 
 void QskListView::changeEvent( QEvent* event )
@@ -299,6 +380,25 @@ void QskListView::changeEvent( QEvent* event )
         updateScrollableSize();
 
     Inherited::changeEvent( event );
+}
+
+QskAspect::States QskListView::rowStates( int row ) const
+{
+    auto states = skinStates();
+
+    if ( row >= 0 )
+    {
+        if ( row == m_data->selectedRow )
+            states |= Selected;
+
+        if ( row == m_data->hoveredRow )
+            states |= Hovered;
+
+        if ( row == m_data->pressedRow )
+            states |= Pressed;
+    }
+
+    return states;
 }
 
 #ifndef QT_NO_WHEELEVENT
