@@ -2,9 +2,8 @@
 #define QSK_LEVELING_SENSOR_H
 
 #include <QskControl.h>
+#include <QskScaleTickmarks.h>
 #include <memory>
-
-class QskScaleTickmarks;
 
 class QSK_EXPORT QskLevelingSensor : public QskControl
 {

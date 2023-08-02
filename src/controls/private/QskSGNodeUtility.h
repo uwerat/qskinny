@@ -21,9 +21,8 @@ namespace QskSGNode
 
         if constexpr ( mode == Recursive )
         {
-            QSGNode* current = root;
             (
-                [ & ]( QSGNode* const child ) {
+                [ current = root ]( QSGNode* const child ) mutable {
                     current->appendChildNode( child );
                     current = child;
                 }( new Children ),

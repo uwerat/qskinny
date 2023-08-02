@@ -199,10 +199,6 @@ QskLevelingSensorSkinlet::QskLevelingSensorSkinlet( QskSkin* skin )
     } );
 }
 
-template< QskLevelingSensorSkinlet::NodeRole >
-Q_REQUIRED_RESULT QRectF QskLevelingSensorSkinlet::subControlRect(
-    const QskLevelingSensor* const sensor, const QRectF& contentsRect ) const = delete;
-
 template<>
 Q_REQUIRED_RESULT QRectF QskLevelingSensorSkinlet::subControlRect< R::OuterDisk >(
     const QskLevelingSensor* const sensor, const QRectF& contentsRect ) const
@@ -243,10 +239,6 @@ QRectF QskLevelingSensorSkinlet::subControlRect( const QskSkinnable* skinnable,
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
-
-template< QskLevelingSensorSkinlet::NodeRole >
-QSGNode* QskLevelingSensorSkinlet::updateSubNode( const QskLevelingSensor* const sensor,
-    const quint8 nodeRole, QSGNode* const node ) const = delete;
 
 template<>
 QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::OuterDisk >(
@@ -378,7 +370,6 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::TickmarksZ >(
     const auto subControl = Q::TickmarksZ;
     const State< QskAspect::Subcontrol > state( sensor, subControl );
     const auto color = sensor->color( subControl );
-    const auto scale = sensor->strutSizeHint( subControl );
 
     const auto r3 = qvariant_cast< QVector3D >( sensor->effectiveSkinHint( subControl ) ) *
                         ( state.r2 - state.r1 ) +

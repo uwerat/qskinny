@@ -3,10 +3,12 @@
 
 #include "QskLevelingSensorUtility.h"
 
-#include <QskScaleTickmarks.h>
 #include <QskAspect.h>
-#include <QskTextNode.h>
+#include <QskScaleTickmarks.h>
+#include <QskSkinlet.h>
 #include <QskSkinnable.h>
+#include <QskTextNode.h>
+#include <QskTextOptions.h>
 
 #include <QSGFlatColorMaterial>
 #include <QSGGeometry>
