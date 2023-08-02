@@ -8,8 +8,7 @@
 #include <QskFunctions.h>
 #include <QskScaleTickmarks.h>
 
-inline Q_REQUIRED_RESULT QMatrix4x4 matrix_deg( float rZ = 0.0f,
-    float tX = 0.0f, float tY = 0.0f, float tZ = 0.0f )
+inline Q_REQUIRED_RESULT QMatrix4x4 matrix_deg( float rZ = 0.0f, float tX = 0.0f, float tY = 0.0f )
 {
     QTransform transform;
     transform.translate( tX, tY );

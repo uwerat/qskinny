@@ -32,17 +32,6 @@ namespace
         return false;
     }
 
-    template<>
-    bool compareExchange< double >( double& dst, const double& src )
-    {
-        if ( !qskFuzzyCompare( dst, src ) )
-        {
-            dst = src;
-            return true;
-        }
-        return false;
-    }
-
     inline bool isAxis( const Qt::Axis axis )
     {
         return axis == Qt::XAxis || axis == Qt::YAxis || axis == Qt::ZAxis;
