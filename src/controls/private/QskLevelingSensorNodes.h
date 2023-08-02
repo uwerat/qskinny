@@ -6,6 +6,7 @@
 #include <QskScaleTickmarks.h>
 #include <QskAspect.h>
 #include <QskTextNode.h>
+#include <QskSkinnable.h>
 
 #include <QSGFlatColorMaterial>
 #include <QSGGeometry>
@@ -13,8 +14,6 @@
 
 #include <QFontMetricsF>
 #include <qmath.h>
-
-class QskSkinnable;
 
 class RadialTickmarksNode final : public QSGGeometryNode
 {
