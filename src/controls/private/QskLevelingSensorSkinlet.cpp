@@ -23,7 +23,6 @@
 #include <QSGFlatColorMaterial>
 #include <QSGGeometryNode>
 #include <qmath.h>
-#include <QTransform>
 
 #include <array>
 #include <optional>

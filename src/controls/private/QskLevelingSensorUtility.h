@@ -14,7 +14,7 @@ inline Q_REQUIRED_RESULT QMatrix4x4 matrix_deg( float rZ = 0.0f,
     QTransform transform;
     transform.translate( tX, tY );
     transform.rotate(rZ, Qt::ZAxis);
-    return transform.toAffine();
+    return transform;
 }
 
 template< typename T >
