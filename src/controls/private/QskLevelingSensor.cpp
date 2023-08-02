@@ -32,6 +32,17 @@ namespace
         return false;
     }
 
+    template<>
+    bool compareExchange< QVector3D >( QVector3D& dst, const QVector3D& src )
+    {
+        auto dirty = false;
+        dirty |= compareExchange(dst[Qt::XAxis], src[Qt::XAxis]);
+        dirty |= compareExchange(dst[Qt::YAxis], src[Qt::YAxis]);
+        dirty |= compareExchange(dst[Qt::ZAxis], src[Qt::ZAxis]);
+        return dirty;
+    }
+
+
     inline bool isAxis( const Qt::Axis axis )
     {
         return axis == Qt::XAxis || axis == Qt::YAxis || axis == Qt::ZAxis;
