@@ -79,10 +79,10 @@ namespace
         auto* const slider = new QskSlider( Qt::Horizontal, parent );
         slider->setMinimum( min );
         slider->setMaximum( max );
-        slider->setValue( sensor->angle()[ axis ] );
+        slider->setValue( sensor->angles()[ axis ] );
 
         QObject::connect(slider, &QskSlider::valueChanged, sensor, [axis, sensor](const qreal v){
-            auto angles = sensor->angle();
+            auto angles = sensor->angles();
             angles[axis] = v;
             sensor->setAngle(angles);
         });

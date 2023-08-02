@@ -32,10 +32,10 @@ class QSK_EXPORT QskLevelingSensor : public QskControl
     void subControlRotationChanged( QskAspect::Subcontrol subControl, const QVector3D& degrees );
 
   public:
-    Q_REQUIRED_RESULT const Tickmarks& tickmarks( Qt::Axis axis ) const;
-    Q_REQUIRED_RESULT const TickmarksLabels& tickmarkLabels( Qt::Axis axis ) const;
-    Q_REQUIRED_RESULT const QVector3D& angle() const;
-    Q_REQUIRED_RESULT const QVector3D& subControlRotation( QskAspect::Subcontrol subControl ) const;
+    Q_REQUIRED_RESULT Tickmarks tickmarks( Qt::Axis axis ) const;
+    Q_REQUIRED_RESULT TickmarksLabels tickmarkLabels( Qt::Axis axis ) const;
+    Q_REQUIRED_RESULT QVector3D angles() const;
+    Q_REQUIRED_RESULT QVector3D subControlRotation( QskAspect::Subcontrol subControl ) const;
 
   private:
     class PrivateData;

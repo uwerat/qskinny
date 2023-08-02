@@ -65,7 +65,7 @@ QSK_SUBCONTROL( QskLevelingSensor, TickmarksZLabels )
 class QskLevelingSensor::PrivateData
 {
   public:
-    QVector3D m_angle = { 45, 45, 45 };
+    QVector3D m_angles = { 45, 45, 45 };
     Tickmarks m_tickmarks[ 3 ];
     TickmarksLabels m_tickmarksLabels[ 3 ];
     std::unordered_map< QskAspect::Subcontrol, QVector3D > m_subControlRotation;
@@ -95,14 +95,14 @@ void QskLevelingSensor::setTickmarksLabels( const Qt::Axis axis, TickmarksLabels
 
 void QskLevelingSensor::setAngle( const QVector3D& degrees )
 {
-    if ( compareExchange( m_data->m_angle, degrees ) )
+    if ( compareExchange( m_data->m_angles, degrees ) )
     {
         update();
-        Q_EMIT anglesChanged( m_data->m_angle );
+        Q_EMIT anglesChanged( m_data->m_angles );
     }
 }
 
-const QskScaleTickmarks& QskLevelingSensor::tickmarks( const Qt::Axis axis ) const
+QskScaleTickmarks QskLevelingSensor::tickmarks( const Qt::Axis axis ) const
 {
     if ( isAxis( axis ) )
     {
@@ -112,7 +112,7 @@ const QskScaleTickmarks& QskLevelingSensor::tickmarks( const Qt::Axis axis ) con
     return invalid;
 }
 
-const QskLevelingSensor::TickmarksLabels& QskLevelingSensor::tickmarkLabels(
+QskLevelingSensor::TickmarksLabels QskLevelingSensor::tickmarkLabels(
     const Qt::Axis axis ) const
 {
     if ( isAxis( axis ) )
@@ -123,12 +123,12 @@ const QskLevelingSensor::TickmarksLabels& QskLevelingSensor::tickmarkLabels(
     return invalid;
 }
 
-const QVector3D& QskLevelingSensor::angle() const
+QVector3D QskLevelingSensor::angles() const
 {
-    return m_data->m_angle;
+    return m_data->m_angles;
 }
 
-const QVector3D& QskLevelingSensor::subControlRotation(
+QVector3D QskLevelingSensor::subControlRotation(
     const QskAspect::Subcontrol subControl ) const
 {
     static const QVector3D notFound;

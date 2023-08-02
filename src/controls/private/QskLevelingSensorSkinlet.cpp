@@ -50,9 +50,9 @@ namespace
             , r2( QskLevelingSensorSkinlet::outerRadius( sensor ) )
             , cX( QskLevelingSensorSkinlet::center( sensor ).x() )
             , cY( QskLevelingSensorSkinlet::center( sensor ).y() )
-            , sX( r1 / sensor->angle().x() )
-            , sY( r1 / sensor->angle().y() )
-            , sZ( r1 / sensor->angle().z() )
+            , sX( r1 / sensor->angles().x() )
+            , sY( r1 / sensor->angles().y() )
+            , sZ( r1 / sensor->angles().z() )
         {
         }
 
@@ -286,7 +286,7 @@ QSGNode* QskLevelingSensorSkinlet::updateSubNode< R::Horizon >(
     const auto subControl = Q::Horizon;
     const State< QskAspect::Subcontrol > state( sensor, subControl );
 
-    const auto dY = 2 * sensor->angle().y();
+    const auto dY = 2 * sensor->angles().y();
     const auto pY = qBound( 0.0, 0.5 + ( -state.rX / dY ), 1.0 );
 
     const auto shape = QskBoxShapeMetrics{ state.r1 };
