@@ -5,6 +5,7 @@
 
 #include <QskScaleTickmarks.h>
 #include <QskAspect.h>
+#include <QskTextNode.h>
 
 #include <QSGFlatColorMaterial>
 #include <QSGGeometry>
