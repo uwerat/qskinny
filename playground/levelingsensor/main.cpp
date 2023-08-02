@@ -147,7 +147,7 @@ namespace
             auto linearIntervalA = []( const qreal degree ) -> QskIntervalF {
                 return { -degree, +degree };
             };
-            auto linearIntervalB = []( const qreal degree ) -> QskIntervalF { return {}; };
+            auto linearIntervalB = []( const qreal /*degree*/ ) -> QskIntervalF { return {}; };
 
             auto radialIntervalA = []( const qreal degree ) -> QskIntervalF {
                 return { -degree, +degree };
