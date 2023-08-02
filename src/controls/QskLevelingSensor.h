@@ -1,4 +1,5 @@
-#pragma once
+#ifndef QSK_LEVELING_SENSOR_H
+#define QSK_LEVELING_SENSOR_H
 
 #include <QskControl.h>
 #include <memory>
@@ -40,3 +41,5 @@ class QSK_EXPORT QskLevelingSensor : public QskControl
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
+
+#endif

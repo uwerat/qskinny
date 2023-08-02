@@ -1,4 +1,5 @@
-#pragma once
+#ifndef QSK_LEVELING_SENSOR_NODES_H
+#define QSK_LEVELING_SENSOR_NODES_H
 
 #include "QskLevelingSensorUtility.h"
 
@@ -316,3 +317,5 @@ struct RadialTickmarksLabelsNode final : public TickmarksLabelsNode< RadialTickm
         } * s + o;
     }
 };
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef QSK_SGNODE_UTILITY_H
+#define QSK_SGNODE_UTILITY_H
 
 #include <QSGNode>
 
@@ -36,3 +37,5 @@ namespace QskSGNode
         return static_cast< Root* >( root );
     }
 }
+
+#endif

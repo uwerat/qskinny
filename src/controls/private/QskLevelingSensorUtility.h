@@ -1,4 +1,5 @@
-#pragma once
+#ifndef QSK_LEVELING_SENSOR_UTILITY_H
+#define QSK_LEVELING_SENSOR_UTILITY_H
 
 #include <qmath.h>
 #include <qmatrix4x4.h>
@@ -72,3 +73,5 @@ inline QskScaleTickmarks filtered( const QskScaleTickmarks& tickmarks,
     result.setMajorTicks( ticks[ QskScaleTickmarks::MajorTick ] );
     return result;
 }
+
+#endif

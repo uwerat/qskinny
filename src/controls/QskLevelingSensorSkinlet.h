@@ -1,4 +1,5 @@
-#pragma once
+#ifndef QSK_LEVELING_SENSOR_SKINLET_H
+#define QSK_LEVELING_SENSOR_SKINLET_H
 
 #include <QSGNode>
 #include <QskSkinlet.h>
@@ -50,3 +51,5 @@ class QSK_EXPORT QskLevelingSensorSkinlet : public QskSkinlet
     Q_REQUIRED_RESULT QSGNode* updateSubNode(
         const QskLevelingSensor* sensor, quint8 nodeRole, QSGNode* node ) const;
 };
+
+#endif
