@@ -1054,18 +1054,11 @@ void Editor::setupListView()
     setPadding( Q::Cell, QskMargins( 4, 8 ) );
 
     setColor( Q::Text, m_pal.themeForeground );
-
-    // alternating row colors
-    setColor( Q::Cell | A::Lower, Qt::white );
-    setColor( Q::Cell | A::Upper, m_pal.contrasted );
+    setColor( Q::Cell, Qt::white );
 
     for ( auto state : { A::NoState, Q::Hovered, Q::Pressed } )
     {
-        const auto aspect = Q::Cell | state | Q::Selected;
-
-        setColor( aspect | A::Lower, m_pal.highlighted );
-        setColor( aspect | A::Upper, m_pal.highlighted );
-
+        setColor( Q::Cell | state | Q::Selected, m_pal.highlighted );
         setColor( Q::Text | state | Q::Selected, m_pal.highlightedText );
     }
 }

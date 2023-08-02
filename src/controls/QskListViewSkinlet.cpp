@@ -196,7 +196,6 @@ void QskListViewSkinlet::updateBackgroundNodes(
     const QskListView* listView, QSGNode* backgroundNode ) const
 {
     using Q = QskListView;
-    using A = QskAspect;
 
     auto listViewNode = static_cast< const ListViewNode* >( backgroundNode->parent() );
 
@@ -209,10 +208,7 @@ void QskListViewSkinlet::updateBackgroundNodes(
 
         const auto rect = sampleRect( listView, listView->contentsRect(), Q::Cell, row );
 
-        const QskAspect aspect = Q::Cell | ( ( row % 2 ) ? A::Upper : A::Lower );
-        const auto boxHints = listView->boxHints( aspect );
-
-        auto newNode = updateBoxNode( listView, rowNode, rect, boxHints );
+        auto newNode = updateBoxNode( listView, rowNode, rect, Q::Cell );
         if ( newNode )
         {
             if ( newNode->parent() != backgroundNode )
