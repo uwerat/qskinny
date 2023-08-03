@@ -41,12 +41,11 @@ namespace
     bool compareExchange< QVector3D >( QVector3D& dst, const QVector3D& src )
     {
         auto dirty = false;
-        dirty |= compareExchange(dst[Qt::XAxis], src[Qt::XAxis]);
-        dirty |= compareExchange(dst[Qt::YAxis], src[Qt::YAxis]);
-        dirty |= compareExchange(dst[Qt::ZAxis], src[Qt::ZAxis]);
+        dirty |= compareExchange( dst[ Qt::XAxis ], src[ Qt::XAxis ] );
+        dirty |= compareExchange( dst[ Qt::YAxis ], src[ Qt::YAxis ] );
+        dirty |= compareExchange( dst[ Qt::ZAxis ], src[ Qt::ZAxis ] );
         return dirty;
     }
-
 
     inline bool isAxis( const Qt::Axis axis )
     {
@@ -78,7 +77,7 @@ class QskLevelingSensor::PrivateData
 
 QskLevelingSensor::QskLevelingSensor( QQuickItem* const parent )
     : Inherited( parent )
-    , m_data( std::make_unique< QskLevelingSensor::PrivateData >() )
+    , m_data( new QskLevelingSensor::PrivateData )
 {
 }
 
@@ -109,23 +108,13 @@ void QskLevelingSensor::setAngle( const QVector3D& degrees )
 
 QskScaleTickmarks QskLevelingSensor::tickmarks( const Qt::Axis axis ) const
 {
-    if ( isAxis( axis ) )
-    {
-        return m_data->m_tickmarks[ axis ];
-    }
-    static const QskScaleTickmarks invalid;
-    return invalid;
+    return isAxis( axis ) ? m_data->m_tickmarks[ axis ] : QskScaleTickmarks{};
 }
 
-QskLevelingSensor::TickmarksLabels QskLevelingSensor::tickmarkLabels(
-    const Qt::Axis axis ) const
+QskLevelingSensor::TickmarksLabels QskLevelingSensor::tickmarkLabels( const Qt::Axis axis ) const
 {
-    if ( isAxis( axis ) )
-    {
-        return m_data->m_tickmarksLabels[ axis ];
-    }
-    static const QskLevelingSensor::TickmarksLabels invalid;
-    return invalid;
+    return isAxis( axis ) ? m_data->m_tickmarksLabels[ axis ]
+                          : QskLevelingSensor::TickmarksLabels{};
 }
 
 QVector3D QskLevelingSensor::angles() const
@@ -133,16 +122,10 @@ QVector3D QskLevelingSensor::angles() const
     return m_data->m_angles;
 }
 
-QVector3D QskLevelingSensor::subControlRotation(
-    const QskAspect::Subcontrol subControl ) const
+QVector3D QskLevelingSensor::subControlRotation( const QskAspect::Subcontrol subControl ) const
 {
-    static const QVector3D notFound;
     const auto found = m_data->m_subControlRotation.find( subControl );
-    if ( found == m_data->m_subControlRotation.end() )
-    {
-        return notFound;
-    }
-    return found->second;
+    return found != m_data->m_subControlRotation.end() ? found->second : QVector3D{};
 }
 
 void QskLevelingSensor::setSubControlRotation(
