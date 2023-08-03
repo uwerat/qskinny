@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
 #include <QskFunctions.h>
 #include <QskLevelingSensor.h>
 #include <QskScaleTickmarks.h>

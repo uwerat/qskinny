@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
 #include "QskLevelingSensorNodes.h"
 #include "QskLevelingSensorUtility.h"
 #include "QskSGNodeUtility.h"
@@ -159,7 +164,7 @@ using R = QskLevelingSensorSkinlet::NodeRole;
 using namespace QskSGNode;
 
 template< typename Root, typename... Children >
-inline Q_REQUIRED_RESULT Root* ensureNodes( QSGNode* root = nullptr )
+Q_REQUIRED_RESULT inline Root* ensureNodes( QSGNode* root = nullptr )
 {
     return ensureNodes< AppendMode::Recursive, Root, Children... >( root );
 }

@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
 #ifndef QSK_LEVELING_SENSOR_SKINLET_H
 #define QSK_LEVELING_SENSOR_SKINLET_H
 
@@ -32,9 +37,9 @@ class QSK_EXPORT QskLevelingSensorSkinlet : public QskSkinlet
     Q_INVOKABLE QskLevelingSensorSkinlet( QskSkin* skin = nullptr );
     ~QskLevelingSensorSkinlet() override = default;
 
-    static Q_REQUIRED_RESULT float outerRadius( const QskSkinnable* const skinnable );
-    static Q_REQUIRED_RESULT float innerRadius( const QskSkinnable* const skinnable );
-    static Q_REQUIRED_RESULT QPointF center( const QskSkinnable* const skinnable );
+    Q_REQUIRED_RESULT static float outerRadius( const QskSkinnable* const skinnable );
+    Q_REQUIRED_RESULT static float innerRadius( const QskSkinnable* const skinnable );
+    Q_REQUIRED_RESULT static QPointF center( const QskSkinnable* const skinnable );
 
   protected:
     Q_REQUIRED_RESULT QRectF subControlRect( const QskSkinnable* skinnable,
