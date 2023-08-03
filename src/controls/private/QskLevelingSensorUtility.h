@@ -17,7 +17,7 @@ Q_REQUIRED_RESULT inline QMatrix4x4 matrix_deg( float rZ = 0.0f, float tX = 0.0f
 {
     QTransform transform;
     transform.translate( tX, tY );
-    transform.rotate(rZ, Qt::ZAxis);
+    transform.rotate( rZ, Qt::ZAxis );
     return transform;
 }
 
