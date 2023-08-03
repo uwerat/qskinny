@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
 #ifndef QSK_LEVELING_SENSOR_UTILITY_H
 #define QSK_LEVELING_SENSOR_UTILITY_H
 
@@ -8,7 +13,7 @@
 #include <QskFunctions.h>
 #include <QskScaleTickmarks.h>
 
-inline Q_REQUIRED_RESULT QMatrix4x4 matrix_deg( float rZ = 0.0f, float tX = 0.0f, float tY = 0.0f )
+Q_REQUIRED_RESULT inline QMatrix4x4 matrix_deg( float rZ = 0.0f, float tX = 0.0f, float tY = 0.0f )
 {
     QTransform transform;
     transform.translate( tX, tY );
@@ -17,7 +22,7 @@ inline Q_REQUIRED_RESULT QMatrix4x4 matrix_deg( float rZ = 0.0f, float tX = 0.0f
 }
 
 template< typename T >
-inline Q_REQUIRED_RESULT bool compareExchange( T& dst, const T& src )
+Q_REQUIRED_RESULT inline bool compareExchange( T& dst, const T& src )
 {
     if ( dst != src )
     {
@@ -28,7 +33,7 @@ inline Q_REQUIRED_RESULT bool compareExchange( T& dst, const T& src )
 }
 
 template<>
-inline Q_REQUIRED_RESULT bool compareExchange< float >( float& dst, const float& src )
+Q_REQUIRED_RESULT inline bool compareExchange< float >( float& dst, const float& src )
 {
     if ( !qskFuzzyCompare( dst, src ) )
     {
@@ -39,7 +44,7 @@ inline Q_REQUIRED_RESULT bool compareExchange< float >( float& dst, const float&
 }
 
 template<>
-inline Q_REQUIRED_RESULT bool compareExchange< qreal >( qreal& dst, const qreal& src )
+Q_REQUIRED_RESULT inline bool compareExchange< qreal >( qreal& dst, const qreal& src )
 {
     if ( !qskFuzzyCompare( dst, src ) )
     {
@@ -49,7 +54,7 @@ inline Q_REQUIRED_RESULT bool compareExchange< qreal >( qreal& dst, const qreal&
     return false;
 }
 
-inline QskScaleTickmarks filtered( const QskScaleTickmarks& tickmarks,
+Q_REQUIRED_RESULT inline QskScaleTickmarks filtered( const QskScaleTickmarks& tickmarks,
     const std::function< bool( QskScaleTickmarks::TickType, qreal ) >& predicate )
 {
     QskScaleTickmarks result;

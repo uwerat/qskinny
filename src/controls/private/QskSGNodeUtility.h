@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
 #ifndef QSK_SGNODE_UTILITY_H
 #define QSK_SGNODE_UTILITY_H
 
@@ -12,7 +17,7 @@ namespace QskSGNode
     };
 
     template< AppendMode mode, typename Root, typename... Children >
-    inline Q_REQUIRED_RESULT Root* ensureNodes( QSGNode* root = nullptr )
+    Q_REQUIRED_RESULT inline Root* ensureNodes( QSGNode* root = nullptr )
     {
         if ( root == nullptr )
         {
