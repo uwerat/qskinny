@@ -105,6 +105,6 @@ inline void ChartSample::setSample(
 #ifndef QT_NO_DEBUG_STREAM
 
     class QDebug;
-    QSK_EXPORT QDebug operator<<( QDebug, const ChartSample& );
+    QDebug operator<<( QDebug, const ChartSample& );
 
 #endif
