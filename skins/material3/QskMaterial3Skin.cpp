@@ -1151,41 +1151,71 @@ void Editor::setupScrollView()
 void Editor::setupListView()
 {
     using Q = QskListView;
+    using A = QskAspect;
 
     setStrutSize( Q::Cell, { -1, 56_dp } );
     setPadding( Q::Cell, { 16_dp, 8_dp, 24_dp, 8_dp } );
 
     setBoxBorderColors( Q::Cell, m_pal.outline );
 
+    for ( const auto state1 : { A::NoState, Q::Hovered, Q::Focused, Q::Pressed, Q::Disabled } )
+    {
+        for ( const auto state2 : { A::NoState, Q::Selected } )
+        {
+            QRgb cellColor;
 
-    setGradient( Q::Cell, m_pal.surface );
-    setGradient( Q::Cell | Q::Disabled, m_pal.surface );
+            if ( state2 == A::NoState )
+            {
+                if ( state1 == Q::Hovered )
+                {
+                    cellColor = flattenedColor( m_pal.onSurface,
+                        m_pal.surface, m_pal.hoverOpacity );
+                }
+                else if ( state1 == Q::Pressed )
+                {
+                    cellColor = flattenedColor( m_pal.onSurface,
+                        m_pal.primary12, m_pal.pressedOpacity );
+                }
+                else
+                {
+                    cellColor = m_pal.surface;
+                }
+            }
+            else
+            {
+                if ( state1 == Q::Hovered )
+                {
+                    cellColor = flattenedColor( m_pal.onSurface,
+                        m_pal.primary12, m_pal.focusOpacity );
+                }
+                else if ( state1 == Q::Focused )
+                {
+                    cellColor = flattenedColor( m_pal.onSurface,
+                        m_pal.primary12, m_pal.focusOpacity );
+                }
+                else if ( state1 == Q::Disabled )
+                {
+                    cellColor = m_pal.surfaceVariant;
+                }
+                else
+                {
+                    cellColor = m_pal.primary12;
+                }
+            }
 
-    const auto hoveredColor = flattenedColor( m_pal.onSurface,
-        m_pal.surface, m_pal.hoverOpacity );
-    setGradient( Q::Cell | Q::Hovered, hoveredColor );
-
-    const auto pressedColor = flattenedColor( m_pal.onSurface,
-        m_pal.primary12, m_pal.pressedOpacity );
-    setGradient( Q::Cell | Q::Pressed, pressedColor );
-
-    setGradient( Q::Cell | Q::Selected, m_pal.primary12 );
-
-    const auto selectedHoveredColor = flattenedColor( m_pal.onSurface,
-        m_pal.primary12, m_pal.focusOpacity );
-    setGradient( Q::Cell | Q::Selected | Q::Hovered, selectedHoveredColor );
-
-    const auto selectedFocusedColor = flattenedColor( m_pal.onSurface,
-        m_pal.primary12, m_pal.focusOpacity );
-    setGradient( Q::Cell | Q::Selected | Q::Focused, selectedFocusedColor );
-
-    setGradient( Q::Cell | Q::Selected | Q::Disabled, m_pal.surfaceVariant );
-
+            setGradient( Q::Cell | state1 | state2, cellColor );
+        }
+    }
 
     setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
 
     setColor( Q::Text, m_pal.onSurface );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+
+#if 1
+    setAnimation( Q::Cell | A::Color, 100 );
+    setAnimation( Q::Text | A::Color, 100 );
+#endif
 }
 
 void Editor::setupSubWindow()

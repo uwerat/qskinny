@@ -639,7 +639,7 @@ void Editor::setupListViewColors(
             textColor = pal.fillColor.text.disabled;
             indicatorColor = pal.fillColor.accent.disabled;
         }
-        if ( state1 == Q::Pressed )
+        else if ( state1 == Q::Pressed )
         {
             textColor = pal.fillColor.text.secondary;
             indicatorColor = pal.fillColor.accent.defaultColor;

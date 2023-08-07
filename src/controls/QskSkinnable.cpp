@@ -122,6 +122,16 @@ static inline T qskColor( const QskSkinnable* skinnable,
         aspect | QskAspect::Color, status ).value< T >();
 }
 
+static inline constexpr QskAspect qskAnimatorAspect( const QskAspect aspect )
+{
+    /*
+        We do not need the extra bits that would slow down resolving
+        the effective aspect in animatedHint.
+     */
+
+    return aspect.type() | aspect.subControl() | aspect.primitive(); 
+}
+
 static inline void qskTriggerUpdates( QskAspect aspect, QQuickItem* item )
 {
     /*
@@ -1296,15 +1306,7 @@ void QskSkinnable::startHintTransition( QskAspect aspect, int index,
         v2.setValue( skin->graphicFilter( v2.toInt() ) );
     }
 
-    /*
-        We do not need the extra bits that would slow down resolving
-        the effective aspect in animatedHint.
-     */
-
-    aspect.clearStates();
-    aspect.setSection( QskAspect::Body );
-    aspect.setVariation( QskAspect::NoVariation );
-    aspect.setAnimator( false );
+    aspect = qskAnimatorAspect( aspect );
 
 #if DEBUG_ANIMATOR
     qDebug() << aspect << animationHint.duration;

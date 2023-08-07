@@ -69,6 +69,7 @@ class QskListView::PrivateData
         }
 
         storedRow = row;
+        listView->update();
     }
 
   private:
@@ -83,8 +84,6 @@ class QskListView::PrivateData
         Q_UNUSED( row );
         Q_UNUSED( oldStates );
         Q_UNUSED( newStates );
-
-        listView->update();
     }
 
   public:
