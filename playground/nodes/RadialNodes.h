@@ -2,9 +2,9 @@
 
 #include <QskControl.h>
 
-class RadialNodes : public QskControl
+class RadialTickmarks : public QskControl
 {
 public:
-    QSK_SUBCONTROLS(Foreground, Text, Lines)
-    explicit RadialNodes( QQuickItem* parent = nullptr );
+    QSK_SUBCONTROLS(Lines)
+    explicit RadialTickmarks( QQuickItem* parent = nullptr );
 };

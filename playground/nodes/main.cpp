@@ -45,8 +45,8 @@ int main( int argc, char* argv[] )
     auto* const layout = new QskLinearBox(Qt::Horizontal, window.contentItem() );
     auto* const left = new QskLinearBox(Qt::Vertical, layout);
     auto* const right = new QskLinearBox(Qt::Vertical, layout);
-    auto* const control = new RadialNodes( left );
-    auto* const skinlet = new RadialNodesSkinlet;
+    auto* const control = new RadialTickmarks( left );
+    auto* const skinlet = new RadialTickmarksSkinlet;
     {
         (void) new QskTextLabel("Tickmark Alignment", right);
         auto* const alignment = new QskSegmentedBar(right);
@@ -54,7 +54,7 @@ int main( int argc, char* argv[] )
         QObject::connect(alignment, &QskSegmentedBar::selectedIndexChanged, control, [=](const int i){
                 static const Qt::Alignment a[ 3 ]{ Qt::AlignVCenter, Qt::AlignBottom,
                     Qt::AlignTop };
-                control->setAlignmentHint(RadialNodes::Lines, a[i]);
+                control->setAlignmentHint(RadialTickmarks::Lines, a[i]);
         });
 
         (void) new QskTextLabel("Tickmark Size", right);
@@ -69,7 +69,7 @@ int main( int argc, char* argv[] )
         auto updateStrutSizeHint = [=](const qreal){
             const auto width = sliderW->value();
             const auto height = sliderH->value() * control->height();
-            control->setStrutSizeHint(RadialNodes::Lines, width, height );
+            control->setStrutSizeHint(RadialTickmarks::Lines, width, height );
         };
 
         QObject::connect( sliderW, &QskSlider::valueChanged, control, updateStrutSizeHint );

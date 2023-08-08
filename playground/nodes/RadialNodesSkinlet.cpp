@@ -164,41 +164,29 @@ namespace
     };
 }
 
-RadialNodesSkinlet::RadialNodesSkinlet( QskSkin* const skin )
+RadialTickmarksSkinlet::RadialTickmarksSkinlet( QskSkin* const skin )
     : QskSkinlet( skin )
 {
     setNodeRoles( { Lines } );
 }
 
-QRectF RadialNodesSkinlet::subControlRect( const QskSkinnable* const skinnable,
+QRectF RadialTickmarksSkinlet::subControlRect( const QskSkinnable* const skinnable,
     const QRectF& contentsRect, const QskAspect::Subcontrol subControl ) const
 {
-    if ( subControl == RadialNodes::Text )
-    {
-        return contentsRect.adjusted( +20, +20, -20, -20 );
-    }
-    else if ( subControl == RadialNodes::Foreground )
-    {
-        return contentsRect.adjusted( +10, +10, -10, -10 );
-    }
-    else if ( subControl == RadialNodes::Lines )
+    if ( subControl == RadialTickmarks::Lines )
     {
         return contentsRect;
     }
     return QskSkinlet::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QSGNode* RadialNodesSkinlet::updateSubNode(
+QSGNode* RadialTickmarksSkinlet::updateSubNode(
     const QskSkinnable* const skinnable, const quint8 nodeRole, QSGNode* const node ) const
 {
-    using Q = RadialNodes;
+    using Q = RadialTickmarks;
 
     switch ( static_cast< NodeRole >( nodeRole ) )
     {
-        case Text:
-            return updateTextNode( skinnable, node, "RadialNodes", RadialNodes::Text );
-        case Foreground:
-            return updateBoxNode( skinnable, node, RadialNodes::Foreground );
         case Lines: {
             const auto* const control = static_cast< const Q* >( skinnable );
 

@@ -2,19 +2,17 @@
 
 #include <QskSkinlet.h>
 
-class RadialNodesSkinlet : public QskSkinlet
+class RadialTickmarksSkinlet : public QskSkinlet
 {
     Q_GADGET
 public:
     enum NodeRole
     {
-        Text,
-        Foreground,
         Lines,
         RoleCount
     };
 
-    Q_INVOKABLE RadialNodesSkinlet( QskSkin* skin = nullptr );
+    Q_INVOKABLE RadialTickmarksSkinlet( QskSkin* skin = nullptr );
 
 protected:
     Q_REQUIRED_RESULT QRectF subControlRect( const QskSkinnable* skinnable, const QRectF& contentsRect, QskAspect::Subcontrol subControl) const override;
