@@ -108,6 +108,6 @@ SpacesInSquareBrackets: true
 Standard:        Cpp11
 TabWidth:        4
 UseTab:          Never
-UseCRLF:         True
+UseCRLF:         true
 ...
 
