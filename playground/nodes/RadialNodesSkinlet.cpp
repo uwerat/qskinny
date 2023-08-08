@@ -175,7 +175,8 @@ QRectF RadialTickmarksSkinlet::subControlRect( const QskSkinnable* const skinnab
 {
     if ( subControl == RadialTickmarks::Lines )
     {
-        return contentsRect;
+        const auto a = skinnable->strutSizeHint(RadialTickmarks::Lines).height() / 2;
+        return contentsRect.adjusted(+a, +a, -a, -a);
     }
     return QskSkinlet::subControlRect( skinnable, contentsRect, subControl );
 }
@@ -189,22 +190,6 @@ QSGNode* RadialTickmarksSkinlet::updateSubNode(
     {
         case Lines: {
             const auto* const control = static_cast< const Q* >( skinnable );
-
-            QskScaleTickmarks tickmarks;
-            QVector< qreal > major, medium, minor;
-            for ( int deg = 0; deg < 360; deg += 1 )
-            {
-                if ( deg % 10 == 0 )
-                    major << deg;
-                else if ( deg % 5 == 0 )
-                    medium << deg;
-                else
-                    minor << deg;
-            }
-            tickmarks.setMajorTicks( major );
-            tickmarks.setMediumTicks( medium );
-            tickmarks.setMinorTicks( minor );
-
             const auto subControlRect = control->subControlContentsRect( Q::Lines );
             const auto alignment = control->alignmentHint( Q::Lines );
             const auto size = control->strutSizeHint( Q::Lines );
@@ -221,7 +206,7 @@ QSGNode* RadialTickmarksSkinlet::updateSubNode(
 
             auto* const root = QskSGNode::ensureNode< QskRadialTickmarksNode >( node );
             root->setMaterialProperties( skinnable->color( Q::Lines ) );
-            root->setGeometryProperties( tickmarks, radius, height, c, alignment, size.width() );
+            root->setGeometryProperties( control->tickmarks(), radius, height, c, alignment, size.width() );
             return root;
         }
         default:
