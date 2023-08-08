@@ -131,35 +131,10 @@ QVector3D QskLevelingSensor::subControlRotation( const QskAspect::Subcontrol sub
 void QskLevelingSensor::setSubControlRotation(
     const QskAspect::Subcontrol subControl, const QVector3D& degrees )
 {
-    auto updateSubControlRotation = [ this ]( const QskAspect::Subcontrol subControl,
-                                        const QVector3D& degrees ) {
-        if ( compareExchange( m_data->m_subControlRotation[ subControl ], degrees ) )
-        {
-            Q_EMIT subControlRotationChanged( subControl, degrees );
-            update();
-        }
-    };
-
-    using Q = QskLevelingSensor;
-
-    if ( subControl == Q::TickmarksX || subControl == Q::TickmarksXLabels )
+    if ( compareExchange( m_data->m_subControlRotation[ subControl ], degrees ) )
     {
-        updateSubControlRotation( Q::TickmarksX, degrees );
-        updateSubControlRotation( Q::TickmarksXLabels, degrees );
-    }
-    else if ( subControl == Q::TickmarksY || subControl == Q::TickmarksYLabels )
-    {
-        updateSubControlRotation( Q::TickmarksY, degrees );
-        updateSubControlRotation( Q::TickmarksYLabels, degrees );
-    }
-    else if ( subControl == Q::TickmarksZ || subControl == TickmarksZLabels )
-    {
-        updateSubControlRotation( TickmarksZ, degrees );
-        updateSubControlRotation( TickmarksZLabels, degrees );
-    }
-    else
-    {
-        updateSubControlRotation( subControl, degrees );
+        update();
+        Q_EMIT subControlRotationChanged( subControl, degrees );
     }
 }
 
