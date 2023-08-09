@@ -74,7 +74,7 @@ class MainItem : public QskControl
 
   protected:
     bool eventFilter(QObject* obj, QEvent* event) override final;
-    bool gestureFilter( QQuickItem*, QEvent* ) override final;
+    bool gestureFilter( const QQuickItem*, const QEvent* ) override final;
     void gestureEvent( QskGestureEvent* ) override final;
 
   private:

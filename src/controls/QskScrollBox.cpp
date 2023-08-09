@@ -446,7 +446,7 @@ void QskScrollBox::wheelEvent( QWheelEvent* event )
 
 #endif
 
-bool QskScrollBox::gestureFilter( QQuickItem* item, QEvent* event )
+bool QskScrollBox::gestureFilter( const QQuickItem* item, const QEvent* event )
 {
     if ( event->type() == QEvent::MouseButtonPress )
     {
@@ -501,7 +501,7 @@ bool QskScrollBox::gestureFilter( QQuickItem* item, QEvent* event )
             its parent, finally ending up here for a second time.
          */
 
-        const auto mouseEvent = static_cast< QMouseEvent* >( event );
+        auto mouseEvent = static_cast< const QMouseEvent* >( event );
         if ( recognizer.hasProcessedBefore( mouseEvent ) )
         {
             /*

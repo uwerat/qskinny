@@ -295,7 +295,7 @@ QskGestureRecognizer::State QskGestureRecognizer::state() const
 }
 
 bool QskGestureRecognizer::processEvent(
-    QQuickItem* item, QEvent* event, bool blockReplayedEvents )
+    const QQuickItem* item, const QEvent* event, bool blockReplayedEvents )
 {
     if ( m_data->isReplayingEvents && blockReplayedEvents )
     {
@@ -331,7 +331,7 @@ bool QskGestureRecognizer::processEvent(
         if ( buttons == Qt::NoButton )
             buttons = watchedItem->acceptedMouseButtons();
 
-        auto mouseEvent = static_cast< QMouseEvent* >( event );
+        auto mouseEvent = static_cast< const QMouseEvent* >( event );
         if ( !( buttons & mouseEvent->button() ) )
             return false;
 
@@ -383,7 +383,7 @@ bool QskGestureRecognizer::processEvent(
         {
             case QEvent::MouseButtonPress:
             {
-                auto mouseEvent = static_cast< QMouseEvent* >( event );
+                auto mouseEvent = static_cast< const QMouseEvent* >( event );
                 m_data->pendingEvents += qskClonedMouseEvent( mouseEvent );
 
                 pressEvent( mouseEvent );
@@ -392,7 +392,7 @@ bool QskGestureRecognizer::processEvent(
 
             case QEvent::MouseMove:
             {
-                auto mouseEvent = static_cast< QMouseEvent* >( event );
+                auto mouseEvent = static_cast< const QMouseEvent* >( event );
                 m_data->pendingEvents += qskClonedMouseEvent( mouseEvent );
 
                 moveEvent( mouseEvent );
@@ -401,7 +401,7 @@ bool QskGestureRecognizer::processEvent(
 
             case QEvent::MouseButtonRelease:
             {
-                auto mouseEvent = static_cast< QMouseEvent* >( event );
+                auto mouseEvent = static_cast< const QMouseEvent* >( event );
                 m_data->pendingEvents += qskClonedMouseEvent( mouseEvent );
 
                 if ( m_data->state == Pending )

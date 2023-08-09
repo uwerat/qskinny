@@ -196,7 +196,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     void hoverLeaveEvent( QHoverEvent* ) override;
 
     bool childMouseEventFilter( QQuickItem*, QEvent* ) override;
-    virtual bool gestureFilter( QQuickItem*, QEvent* );
+    virtual bool gestureFilter( const QQuickItem*, const QEvent* );
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void geometryChange( const QRectF&, const QRectF& ) override;

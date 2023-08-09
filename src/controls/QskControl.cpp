@@ -809,7 +809,7 @@ bool QskControl::childMouseEventFilter( QQuickItem* item, QEvent* event )
     return d_func()->maybeGesture( item, event );
 }
 
-bool QskControl::gestureFilter( QQuickItem*, QEvent* )
+bool QskControl::gestureFilter( const QQuickItem*, const QEvent* )
 {
     return false;
 }

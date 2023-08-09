@@ -73,7 +73,7 @@ class QSK_EXPORT QskScrollBox : public QskControl
     virtual QPointF scrollOffset( const QWheelEvent* ) const;
 #endif
 
-    bool gestureFilter( QQuickItem*, QEvent* ) override;
+    bool gestureFilter( const QQuickItem*, const QEvent* ) override;
     void setScrollableSize( const QSizeF& );
 
   private:

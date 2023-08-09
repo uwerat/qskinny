@@ -345,13 +345,13 @@ bool MainItem::eventFilter( QObject* object, QEvent* event )
     }
 }
 
-bool MainItem::gestureFilter( QQuickItem* item, QEvent* event )
+bool MainItem::gestureFilter( const QQuickItem* item, const QEvent* event )
 {
     auto& recognizer = m_panRecognizer;
 
     if( event->type() == QEvent::MouseButtonPress )
     {
-        const auto mouseEvent = static_cast< QMouseEvent* >( event );
+        auto mouseEvent = static_cast< const QMouseEvent* >( event );
 
         if( ( item != this ) || ( recognizer.timeout() < 0 ) )
         {

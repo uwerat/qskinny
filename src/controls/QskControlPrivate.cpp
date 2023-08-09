@@ -309,7 +309,7 @@ QSizeF QskControlPrivate::explicitSizeHint( Qt::SizeHint whichHint ) const
     return QSizeF();
 }
 
-bool QskControlPrivate::maybeGesture( QQuickItem* child, QEvent* event )
+bool QskControlPrivate::maybeGesture( const QQuickItem* child, const QEvent* event )
 {
     Q_Q( QskControl );
 
