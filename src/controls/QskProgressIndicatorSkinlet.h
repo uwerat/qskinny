@@ -23,10 +23,11 @@ class QSK_EXPORT QskProgressIndicatorSkinlet : public QskSkinlet
         RoleCount
     };
 
-    QskProgressIndicatorSkinlet( QskSkin* = nullptr );
     ~QskProgressIndicatorSkinlet() override;
 
   protected:
+    QskProgressIndicatorSkinlet( QskSkin* = nullptr );
+
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 

@@ -81,6 +81,7 @@ class QskListView::PrivateData
             https://github.com/uwerat/qskinny/tree/features/listview
          */
 
+        Q_UNUSED( listView );
         Q_UNUSED( row );
         Q_UNUSED( oldStates );
         Q_UNUSED( newStates );
