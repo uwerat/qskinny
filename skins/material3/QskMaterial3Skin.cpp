@@ -812,8 +812,9 @@ void Editor::setupDrawer()
 
     setPadding( Q::Panel, 5_dp );
     setGradient( Q::Panel, m_pal.background );
-    setAnimation( Q::Panel | QskAspect::Position, qskDuration );
     setHint( Q::Overlay | QskAspect::Style, false );
+
+    setAnimation( Q::Panel | QskAspect::Position, qskDuration );
 }
 
 void Editor::setupSlider()

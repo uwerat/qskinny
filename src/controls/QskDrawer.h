@@ -15,15 +15,15 @@ class QSK_EXPORT QskDrawer : public QskPopup
   public:
     QSK_SUBCONTROLS( Panel, Overlay )
 
-    QskDrawer( QQuickItem* parentItem = nullptr );
+    QskDrawer( QQuickItem* = nullptr );
     ~QskDrawer() override;
 
-    void setEdge( Qt::Edge edge );
+    void setEdge( Qt::Edge );
     Qt::Edge edge() const;
 
     void updateLayout() override;
 
-    void setContent( QskControl* t );
+    void setContent( QskControl* );
 
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );

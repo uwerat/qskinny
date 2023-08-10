@@ -73,6 +73,7 @@
 #include <QskCheckBox.h>
 #include <QskComboBox.h>
 #include <QskDialogButtonBox.h>
+#include <QskDrawer.h>
 #include <QskFocusIndicator.h>
 #include <QskGraphicLabel.h>
 #include <QskListView.h>
@@ -195,6 +196,9 @@ namespace
         void setupDialogButtonBoxMetrics();
         void setupDialogButtonBoxColors( QskAspect::Section, const QskFluent2Theme& );
 
+        void setupDrawerMetrics();
+        void setupDrawerColors( QskAspect::Section, const QskFluent2Theme& );
+
         void setupFocusIndicatorMetrics();
         void setupFocusIndicatorColors( QskAspect::Section, const QskFluent2Theme& );
 
@@ -289,6 +293,7 @@ void Editor::setupMetrics()
     setupCheckBoxMetrics();
     setupComboBoxMetrics();
     setupDialogButtonBoxMetrics();
+    setupDrawerMetrics();
     setupFocusIndicatorMetrics();
     setupGraphicLabelMetrics();
     setupListViewMetrics();
@@ -325,6 +330,7 @@ void Editor::setupColors( QskAspect::Section section, const QskFluent2Theme& the
     setupCheckBoxColors( section, theme );
     setupComboBoxColors( section, theme );
     setupDialogButtonBoxColors( section, theme );
+    setupDrawerColors( section, theme );
     setupFocusIndicatorColors( section, theme );
     setupGraphicLabelColors( section, theme );
     setupGraphicLabelMetrics();
@@ -595,6 +601,26 @@ void Editor::setupDialogButtonBoxColors(
 {
     setGradient( QskDialogButtonBox::Panel | section,
         theme.palette.background.solid.base );
+}
+
+void Editor::setupDrawerMetrics()
+{
+    using Q = QskDrawer;
+
+    setPadding( Q::Panel, 5 );
+    setHint( Q::Overlay | QskAspect::Style, false );
+
+#if 1
+    setAnimation( Q::Panel | QskAspect::Position, 200 );
+#endif
+}
+
+void Editor::setupDrawerColors(
+    QskAspect::Section section, const QskFluent2Theme& theme )
+{
+    using Q = QskDrawer;
+
+    setGradient( Q::Panel | section, theme.palette.background.solid.base );
 }
 
 void Editor::setupFocusIndicatorMetrics()
