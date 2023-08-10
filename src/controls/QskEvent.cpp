@@ -154,6 +154,28 @@ bool qskIsButtonPressKey( const QKeyEvent* event )
 #endif
 }
 
+bool qskIsTouchOrMouseEvent( QEvent::Type type )
+{
+    switch ( type )
+    {
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseMove:
+        case QEvent::MouseButtonRelease:
+        case QEvent::MouseButtonDblClick:
+        case QEvent::UngrabMouse:
+
+        case QEvent::TouchBegin:
+        case QEvent::TouchCancel:
+        case QEvent::TouchUpdate:
+        case QEvent::TouchEnd:
+
+            return true;
+
+        default:
+            return false;
+    }
+}
+
 QskEvent::QskEvent( QskEvent::Type type )
     : QEvent( static_cast< QEvent::Type >( type ) )
 {
@@ -248,4 +270,20 @@ QskAnimatorEvent::QskAnimatorEvent( QskAspect aspect, int index, State state )
 QskAnimatorEvent* QskAnimatorEvent::clone() const
 {
     return new QskAnimatorEvent( *this );
+}
+
+// -- QskGestureFilterEvent
+
+QskGestureFilterEvent::QskGestureFilterEvent(
+        const QQuickItem* item, const QEvent* event )
+    : QskEvent( QskEvent::GestureFilter )
+    , m_item( item )
+    , m_event( event )
+    , m_maybeGesture( false )
+{
+}
+
+QskGestureFilterEvent* QskGestureFilterEvent::clone() const
+{
+    return new QskGestureFilterEvent( *this );
 }

@@ -36,8 +36,6 @@ class QskControlPrivate : public QskQuickItemPrivate
     void implicitSizeChanged() override final;
     void layoutConstraintChanged() override final;
 
-    bool maybeGesture( const QQuickItem*, const QEvent* );
-
     QskPlacementPolicy::Policy placementPolicy( bool visible ) const noexcept;
     void setPlacementPolicy( bool visible, QskPlacementPolicy::Policy );
 

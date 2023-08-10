@@ -47,6 +47,7 @@ class QSK_EXPORT QskEvent : public QEvent
         PopupRemoved,
 
         Gesture,
+        GestureFilter,
 
         Animator,
 
@@ -118,6 +119,29 @@ class QSK_EXPORT QskPopupEvent : public QskEvent
     QskPopup* m_popup;
 };
 
+class QSK_EXPORT QskGestureFilterEvent : public QskEvent
+{
+  public:
+    QskGestureFilterEvent( const QQuickItem*, const QEvent* );
+
+    inline const QQuickItem* item() const { return m_item; }
+    inline const QEvent* event() const { return m_event; }
+
+    inline void setMaybeGesture( bool on ) { m_maybeGesture = on; }
+    inline bool maybeGesture() const { return m_maybeGesture; }
+
+    QskGestureFilterEvent* clone() const override;
+
+  protected:
+    QSK_EVENT_DISABLE_COPY( QskGestureFilterEvent )
+
+  private:
+    const QQuickItem* m_item;
+    const QEvent* m_event;
+
+    bool m_maybeGesture;
+};
+
 class QSK_EXPORT QskGestureEvent : public QskEvent
 {
   public:
@@ -177,5 +201,7 @@ QSK_EXPORT qreal qskWheelIncrement( const QWheelEvent* );
 
 QSK_EXPORT bool qskIsStandardKeyInput( const QKeyEvent*, QKeySequence::StandardKey );
 QSK_EXPORT bool qskIsButtonPressKey( const QKeyEvent* );
+
+QSK_EXPORT bool qskIsTouchOrMouseEvent( QEvent::Type );
 
 #endif

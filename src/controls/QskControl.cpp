@@ -31,6 +31,20 @@ static inline void qskSendEventTo( QObject* object, QEvent::Type type )
     QCoreApplication::sendEvent( object, &event );
 }
 
+static inline bool qskMaybeGesture( QQuickItem* item,
+    const QQuickItem* child, const QEvent* event )
+{
+    if ( qskIsTouchOrMouseEvent( event->type() ) )
+    {
+        QskGestureFilterEvent ev( child, event );
+        QCoreApplication::sendEvent( item, &ev );
+
+        return ev.maybeGesture();
+    }
+
+    return false;
+}
+
 QskControl::QskControl( QQuickItem* parent )
     : QskQuickItem( *( new QskControlPrivate() ), parent )
 {
@@ -791,6 +805,33 @@ bool QskControl::event( QEvent* event )
 
             break;
         }
+        case QskEvent::GestureFilter:
+        {
+            /*
+                qskMaybeGesture is sending an event, so that it can be manipulated
+                by event filters. F.e QskDrawer wants to add a gesture to
+                some other control to initiate its appearance. 
+             */
+
+            auto ev = static_cast< QskGestureFilterEvent* >( event );
+
+            if ( ev->event()->type() == QEvent::MouseButtonPress )
+            {
+                auto mouseEvent = static_cast< const QMouseEvent* >( ev->event() );
+                const auto pos =
+                    mapFromItem( ev->item(), qskMousePosition( mouseEvent ) );
+
+                if ( !gestureRect().contains( pos ) )
+                {
+                    ev->setMaybeGesture( false );
+                    break;
+                }
+            }
+
+            ev->setMaybeGesture( gestureFilter( ev->item(), ev->event() ) );
+
+            break;
+        }
         case QskEvent::Gesture:
         {
             gestureEvent( static_cast< QskGestureEvent* >( event ) );
@@ -798,15 +839,15 @@ bool QskControl::event( QEvent* event )
         }
     }
 
-    if ( d_func()->maybeGesture( this, event ) )
+    if ( qskMaybeGesture( this, this, event ) )
         return true;
 
     return Inherited::event( event );
 }
 
-bool QskControl::childMouseEventFilter( QQuickItem* item, QEvent* event )
+bool QskControl::childMouseEventFilter( QQuickItem* child, QEvent* event )
 {
-    return d_func()->maybeGesture( item, event );
+    return qskMaybeGesture( this, child, event );
 }
 
 bool QskControl::gestureFilter( const QQuickItem*, const QEvent* )
