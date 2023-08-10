@@ -11,6 +11,7 @@ set(SOURCES
     LinearLayoutPage.h LinearLayoutPage.cpp
     DynamicConstraintsPage.h DynamicConstraintsPage.cpp
     StackLayoutPage.h StackLayoutPage.cpp
+    SwipeViewPage.h SwipeViewPage.cpp
     main.cpp
 )
 qt_add_resources(SOURCES layouts.qrc)
