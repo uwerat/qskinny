@@ -8,14 +8,13 @@
 
 #include "QskStackBox.h"
 
-class QskTabBar;
-class QskTabButton;
-
 class QSK_EXPORT QskSwipeView : public QskStackBox
 {
     Q_OBJECT
 
-    typedef QskStackBox Inherited;
+    Q_PROPERTY( int duration READ duration WRITE setDuration RESET resetDuration )
+
+    using Inherited = QskStackBox;
 
   public:
     QSK_SUBCONTROLS( Panel )
@@ -25,12 +24,17 @@ class QSK_EXPORT QskSwipeView : public QskStackBox
 
     int duration() const;
     void setDuration( int );
+    void resetDuration();
+
+    QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol ) const;
 
   protected:
-    bool gestureFilter( QQuickItem*, QEvent* ) override final;
-    void gestureEvent( QskGestureEvent* ) override final;
+    bool gestureFilter( const QQuickItem*, const QEvent* ) override;
+    void gestureEvent( QskGestureEvent* ) override;
 
   private:
+    void setAnimator( QskStackBoxAnimator* ) = delete;
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

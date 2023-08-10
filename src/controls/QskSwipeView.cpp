@@ -14,8 +14,7 @@ class QskSwipeView::PrivateData
 {
   public:
     QskPanGestureRecognizer panRecognizer;
-    int panRecognizerTimeout = 100;
-    int duration = 500;
+    int duration = -1; // should be a skinHint
 };
 
 QSK_SUBCONTROL( QskSwipeView, Panel )
@@ -24,21 +23,33 @@ QskSwipeView::QskSwipeView( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    setSubcontrolProxy( QskBox::Panel, Panel );
-
     setFiltersChildMouseEvents( true );
-
     setAcceptedMouseButtons( Qt::LeftButton );
 
-    m_data->panRecognizer.setWatchedItem( this );
-    m_data->panRecognizer.setOrientations( Qt::Horizontal );
-    m_data->panRecognizer.setMinDistance( 50 );
+    auto& recognizer = m_data->panRecognizer;
+
+    recognizer.setWatchedItem( this );
+
+    // should be skin hints
+    recognizer.setOrientations( Qt::Horizontal );
+    recognizer.setMinDistance( 50 );
+    recognizer.setTimeout( 100 );
+
+    resetDuration();
 }
 
 QskSwipeView::~QskSwipeView()
 {
 }
 
+QskAspect::Subcontrol QskSwipeView::effectiveSubcontrol(
+    QskAspect::Subcontrol subControl ) const
+{
+    if ( subControl == QskBox::Panel )
+        return QskSwipeView::Panel;
+
+    return Inherited::effectiveSubcontrol( subControl );
+}
 
 int QskSwipeView::duration() const
 {
@@ -50,8 +61,12 @@ void QskSwipeView::setDuration( int duration )
     m_data->duration = duration;
 }
 
+void QskSwipeView::resetDuration()
+{
+    m_data->duration = 500;
+}
 
-bool QskSwipeView::gestureFilter( QQuickItem* item, QEvent* event )
+bool QskSwipeView::gestureFilter( const QQuickItem* item, const QEvent* event )
 {
     // see QskScrollBox.cpp
 
@@ -59,26 +74,21 @@ bool QskSwipeView::gestureFilter( QQuickItem* item, QEvent* event )
 
     if ( event->type() == QEvent::MouseButtonPress )
     {
-        if ( ( item != this ) && ( recognizer.timeout() < 0 ) )
-        {
-            const auto mouseEvent = static_cast< QMouseEvent* >( event );
-
-            if ( recognizer.hasProcessedBefore( mouseEvent ) )
-                return false;
-        }
-
-        recognizer.setTimeout( ( item == this ) ? -1 : m_data->panRecognizerTimeout );
+        auto mouseEvent = static_cast< const QMouseEvent* >( event );
+        if ( recognizer.hasProcessedBefore( mouseEvent ) )
+            return false;
     }
 
-    return m_data->panRecognizer.processEvent( item, event );
+    return recognizer.processEvent( item, event );
+
 }
 
 void QskSwipeView::gestureEvent( QskGestureEvent* event )
 {
-    if( event->gesture()->type() == QskGesture::Pan && event->gesture()->state() == QskGesture::Started )
-    {
-        const auto gesture = static_cast< const QskPanGesture* >( event->gesture().get() );
+    const auto gesture = static_cast< const QskPanGesture* >( event->gesture().get() );
 
+    if( gesture->type() == QskGesture::Pan && gesture->state() == QskGesture::Started )
+    {
         auto animator = dynamic_cast< QskStackBoxAnimator1* >( this->animator() );
 
         if ( animator == nullptr )
@@ -88,7 +98,7 @@ void QskSwipeView::gestureEvent( QskGestureEvent* event )
         }
 
         animator->setDuration( m_data->duration );
-        setAnimator( animator );
+        QskStackBox::setAnimator( animator );
 
         const auto direction = ( ( gesture->angle() < 90.0 ) || ( gesture->angle() > 270.0 ) )
             ? Qsk::LeftToRight : Qsk::RightToLeft;
@@ -101,12 +111,10 @@ void QskSwipeView::gestureEvent( QskGestureEvent* event )
         newIndex %= itemCount();
 
         setCurrentIndex( newIndex );
-    }
-    else
-    {
-        Inherited::gestureEvent( event );
+        return;
     }
 
+    Inherited::gestureEvent( event );
 }
 
 #include "moc_QskSwipeView.cpp"
