@@ -15,7 +15,7 @@ class QskSkinStateChanger
     QskSkinStateChanger( const QskSkinnable* );
     ~QskSkinStateChanger();
 
-    void setStates( QskAspect::States );
+    void setStates( QskAspect::States, int sampleIndex = -1 );
     void resetStates();
 
   private:
@@ -34,16 +34,15 @@ inline QskSkinStateChanger::~QskSkinStateChanger()
     resetStates();
 }
 
-inline void QskSkinStateChanger::setStates( QskAspect::States states )
+inline void QskSkinStateChanger::setStates(
+    QskAspect::States states, int sampleIndex )
 {
-    if ( states != m_skinnable->skinStates() )
-        m_skinnable->replaceSkinStates( states );
+    m_skinnable->replaceSkinStates( states, sampleIndex );
 }
 
 inline void QskSkinStateChanger::resetStates()
 {
-    if ( m_oldStates != m_skinnable->skinStates() )
-        m_skinnable->replaceSkinStates( m_oldStates );
+    m_skinnable->replaceSkinStates( m_oldStates, -1 );
 }
 
 #endif

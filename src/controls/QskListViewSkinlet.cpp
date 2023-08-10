@@ -204,7 +204,7 @@ void QskListViewSkinlet::updateBackgroundNodes(
     for ( int row = listViewNode->rowMin(); row <= listViewNode->rowMax(); row++ )
     {
         QskSkinStateChanger stateChanger( listView );
-        stateChanger.setStates( sampleStates( listView, Q::Cell, row ) );
+        stateChanger.setStates( sampleStates( listView, Q::Cell, row ), row );
 
         const auto rect = sampleRect( listView, listView->contentsRect(), Q::Cell, row );
 
@@ -391,7 +391,7 @@ QSGNode* QskListViewSkinlet::updateCellNode( const QskListView* listView,
     using namespace QskSGNode;
 
     QskSkinStateChanger stateChanger( listView );
-    stateChanger.setStates( sampleStates( listView, Q::Cell, row ) );
+    stateChanger.setStates( sampleStates( listView, Q::Cell, row ), row );
 
     QSGNode* newNode = nullptr;
 

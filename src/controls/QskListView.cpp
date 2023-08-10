@@ -76,15 +76,10 @@ class QskListView::PrivateData
     inline void startTransitions( QskListView* listView, int row,
         QskAspect::States oldStates, QskAspect::States newStates )
     {
-        /*
-            working implementation can be found in
-            https://github.com/uwerat/qskinny/tree/features/listview
-         */
+        using Q = QskListView;
 
-        Q_UNUSED( listView );
-        Q_UNUSED( row );
-        Q_UNUSED( oldStates );
-        Q_UNUSED( newStates );
+        listView->startHintTransitions(
+            { Q::Cell, Q::Text }, oldStates, newStates, row );
     }
 
   public:
