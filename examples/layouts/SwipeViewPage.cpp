@@ -23,6 +23,7 @@ class SwipeView : public QskSwipeView
 
             setBackgroundColor( Qt::white );
             setDefaultAlignment( Qt::AlignCenter );
+            setOrientation( Qt::Horizontal );
 
             addRectangle( "Gold" );
             addRectangle( "SeaGreen" );

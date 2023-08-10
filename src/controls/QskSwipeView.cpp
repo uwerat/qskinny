@@ -9,6 +9,7 @@
 #include "QskGesture.h"
 #include "QskPanGestureRecognizer.h"
 #include "QskStackBoxAnimator.h"
+#include "QskPlatform.h"
 
 class QskSwipeView::PrivateData
 {
@@ -30,11 +31,11 @@ QskSwipeView::QskSwipeView( QQuickItem* parent )
 
     recognizer.setWatchedItem( this );
 
-    // should be skin hints
+    // should be skin hints, TODO
     recognizer.setOrientations( Qt::Horizontal );
-    recognizer.setMinDistance( 50 );
     recognizer.setTimeout( 100 );
 
+    resetSwipeDistance();
     resetDuration();
 }
 
@@ -42,13 +43,38 @@ QskSwipeView::~QskSwipeView()
 {
 }
 
-QskAspect::Subcontrol QskSwipeView::effectiveSubcontrol(
-    QskAspect::Subcontrol subControl ) const
+void QskSwipeView::setOrientation( Qt::Orientation orientation )
 {
-    if ( subControl == QskBox::Panel )
-        return QskSwipeView::Panel;
+    if ( orientation != this->orientation() )
+    {
+        m_data->panRecognizer.setOrientations( orientation );
+        Q_EMIT orientationChanged( orientation );
+    }
+}
 
-    return Inherited::effectiveSubcontrol( subControl );
+Qt::Orientation QskSwipeView::orientation() const
+{
+    return ( m_data->panRecognizer.orientations() == Qt::Vertical )
+        ? Qt::Vertical : Qt::Horizontal;
+}
+
+int QskSwipeView::swipeDistance() const
+{
+    return m_data->panRecognizer.minDistance();
+}
+
+void QskSwipeView::setSwipeDistance( int distance )
+{
+    const auto oldDistance = m_data->panRecognizer.minDistance();
+    m_data->panRecognizer.setMinDistance( distance );
+
+    if ( oldDistance != m_data->panRecognizer.minDistance() )
+        Q_EMIT swipeDistanceChanged( m_data->panRecognizer.minDistance() );
+}
+
+void QskSwipeView::resetSwipeDistance()
+{
+    setSwipeDistance( qRound( qskDpToPixels( 40 ) ) );
 }
 
 int QskSwipeView::duration() const
@@ -58,12 +84,16 @@ int QskSwipeView::duration() const
 
 void QskSwipeView::setDuration( int duration )
 {
-    m_data->duration = duration;
+    if ( duration != m_data->duration )
+    {
+        m_data->duration = duration;
+        Q_EMIT durationChanged( duration );
+    }
 }
 
 void QskSwipeView::resetDuration()
 {
-    m_data->duration = 500;
+    setDuration( 500 );
 }
 
 bool QskSwipeView::gestureFilter( const QQuickItem* item, const QEvent* event )
@@ -94,16 +124,20 @@ void QskSwipeView::gestureEvent( QskGestureEvent* event )
         if ( animator == nullptr )
         {
             animator = new QskStackBoxAnimator1( this );
-            animator->setOrientation( Qt::Horizontal );
+            animator->setOrientation( orientation() );
         }
 
         animator->setDuration( m_data->duration );
         QskStackBox::setAnimator( animator );
 
-        const auto direction = ( ( gesture->angle() < 90.0 ) || ( gesture->angle() > 270.0 ) )
-            ? Qsk::LeftToRight : Qsk::RightToLeft;
+        bool forwards;
 
-        auto newIndex = ( direction == Qsk::LeftToRight ) ? currentIndex() - 1 : currentIndex() + 1;
+        if ( orientation() == Qt::Horizontal )
+            forwards = gesture->angle() >= 90.0 && gesture->angle() <= 270.0;
+        else
+            forwards = gesture->angle() >= 180.0;
+
+        auto newIndex = forwards ? currentIndex() + 1 : currentIndex() - 1;
 
         if( newIndex < 0 )
             newIndex += itemCount();
@@ -116,5 +150,15 @@ void QskSwipeView::gestureEvent( QskGestureEvent* event )
 
     Inherited::gestureEvent( event );
 }
+
+QskAspect::Subcontrol QskSwipeView::effectiveSubcontrol(
+    QskAspect::Subcontrol subControl ) const
+{
+    if ( subControl == QskBox::Panel )
+        return QskSwipeView::Panel;
+
+    return Inherited::effectiveSubcontrol( subControl );
+}
+
 
 #include "moc_QskSwipeView.cpp"
