@@ -40,22 +40,19 @@ class Cube : public QskStackBox
     explicit Cube( QQuickItem* parent = nullptr );
 
   public Q_SLOTS:
-    void switchPosition( const Qsk::Direction direction );
-    void switchToPosition( const Cube::Position position );
+    void switchPosition( const Qsk::Direction );
+    void switchToPosition( const Cube::Position );
 
   Q_SIGNALS:
     // might be different from indexChanged:
     void cubeIndexChanged( const int index );
 
-  protected:
-    void keyPressEvent( QKeyEvent* event ) override;
-
   private:
     Position currentPosition() const;
-    Position neighbor( const Position position, const Qsk::Direction direction ) const;
+    Position neighbor( const Position, const Qsk::Direction ) const;
     Qsk::Direction direction( const Position from, const Position to ) const;
-    void updateEdge( Qsk::Direction direction, Position position );
-    void doSwitch( Qsk::Direction direction, Position position );
+    void updateEdge( Qsk::Direction, Position );
+    void doSwitch( Qsk::Direction, Position );
 
     Position m_destination;
     Edge m_currentEdge;
@@ -73,7 +70,8 @@ class MainItem : public QskControl
     MainItem( QQuickItem* parent = nullptr );
 
   protected:
-    bool eventFilter(QObject* obj, QEvent* event) override final;
+    void keyPressEvent( QKeyEvent* ) override final;
+
     bool gestureFilter( const QQuickItem*, const QEvent* ) override final;
     void gestureEvent( QskGestureEvent* ) override final;
 

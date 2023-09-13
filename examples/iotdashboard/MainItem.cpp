@@ -193,35 +193,6 @@ void Cube::switchToPosition( const Position position )
     doSwitch( direction, nextPosition );
 }
 
-void Cube::keyPressEvent( QKeyEvent* event )
-{
-    Qsk::Direction direction;
-
-    switch( event->key() )
-    {
-        case Qt::Key_Up:
-            direction = Qsk::TopToBottom;
-            break;
-
-        case Qt::Key_Down:
-            direction = Qsk::BottomToTop;
-            break;
-
-        case Qt::Key_Left:
-            direction = Qsk::LeftToRight;
-            break;
-
-        case Qt::Key_Right:
-            direction = Qsk::RightToLeft;
-            break;
-
-        default:
-            return;
-    }
-
-    switchPosition( direction );
-}
-
 Cube::Position Cube::currentPosition() const
 {
     return static_cast< Position >( currentIndex() );
@@ -304,8 +275,6 @@ MainItem::MainItem( QQuickItem* parent )
 
     // the current item needs to be the one at the Front:
     m_cube->setCurrentItem( dashboardPage );
-
-    installEventFilter( this );
 }
 
 void MainItem::gestureEvent( QskGestureEvent* event )
@@ -332,19 +301,36 @@ void MainItem::gestureEvent( QskGestureEvent* event )
     }
 }
 
-bool MainItem::eventFilter( QObject* object, QEvent* event )
+void MainItem::keyPressEvent( QKeyEvent* event )
 {
-    if ( event->type() == QEvent::KeyPress )
-    {
-        QCoreApplication::sendEvent( m_cube, event );
-        return true;
-    }
-    else
-    {
-        return QObject::eventFilter( object, event );
-    }
-}
+    // maybe using shortcuts ?
 
+    Qsk::Direction direction;
+
+    switch( event->key() )
+    {
+        case Qt::Key_Up:
+            direction = Qsk::TopToBottom;
+            break;
+
+        case Qt::Key_Down:
+            direction = Qsk::BottomToTop;
+            break;
+
+        case Qt::Key_Left:
+            direction = Qsk::LeftToRight;
+            break;
+
+        case Qt::Key_Right:
+            direction = Qsk::RightToLeft;
+            break;
+
+        default:
+            return;
+    }
+
+    m_cube->switchPosition( direction );
+}
 bool MainItem::gestureFilter( const QQuickItem* item, const QEvent* event )
 {
     auto& recognizer = m_panRecognizer;
@@ -356,9 +342,7 @@ bool MainItem::gestureFilter( const QQuickItem* item, const QEvent* event )
         if( ( item != this ) || ( recognizer.timeout() < 0 ) )
         {
             if( recognizer.hasProcessedBefore( mouseEvent ) )
-            {
                 return false;
-            }
         }
 
         recognizer.setTimeout( ( item == this ) ? -1 : 100 );
