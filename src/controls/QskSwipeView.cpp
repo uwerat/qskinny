@@ -119,6 +119,9 @@ void QskSwipeView::gestureEvent( QskGestureEvent* event )
 
     if( gesture->type() == QskGesture::Pan && gesture->state() == QskGesture::Started )
     {
+        if ( itemCount() <= 1 )
+            return;
+
         auto animator = dynamic_cast< QskStackBoxAnimator1* >( this->animator() );
 
         if ( animator == nullptr )
