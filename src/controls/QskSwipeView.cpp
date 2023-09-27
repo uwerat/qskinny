@@ -122,17 +122,6 @@ void QskSwipeView::gestureEvent( QskGestureEvent* event )
         if ( itemCount() <= 1 )
             return;
 
-        auto animator = dynamic_cast< QskStackBoxAnimator1* >( this->animator() );
-
-        if ( animator == nullptr )
-        {
-            animator = new QskStackBoxAnimator1( this );
-            animator->setOrientation( orientation() );
-        }
-
-        animator->setDuration( m_data->duration );
-        QskStackBox::setAnimator( animator );
-
         bool forwards;
 
         if ( orientation() == Qt::Horizontal )
@@ -140,8 +129,20 @@ void QskSwipeView::gestureEvent( QskGestureEvent* event )
         else
             forwards = gesture->angle() >= 180.0;
 
-        auto newIndex = forwards ? currentIndex() + 1 : currentIndex() - 1;
+        auto animator = qobject_cast< QskStackBoxAnimator1* >( this->animator() );
 
+        if ( animator == nullptr )
+            animator = new QskStackBoxAnimator1( this );
+
+        if ( orientation() == Qt::Horizontal )
+            animator->setDirection( forwards ? Qsk::LeftToRight : Qsk::RightToLeft );
+        else
+            animator->setDirection( forwards ? Qsk::TopToBottom : Qsk::BottomToTop );
+
+        animator->setDuration( m_data->duration );
+        QskStackBox::setAnimator( animator );
+
+        auto newIndex = forwards ? currentIndex() + 1 : currentIndex() - 1;
         if( newIndex < 0 )
             newIndex += itemCount();
 
