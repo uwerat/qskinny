@@ -122,6 +122,16 @@ static inline T qskColor( const QskSkinnable* skinnable,
         aspect | QskAspect::Color, status ).value< T >();
 }
 
+static inline constexpr QskAspect qskAnimatorAspect( const QskAspect aspect )
+{
+    /*
+        We do not need the extra bits that would slow down resolving
+        the effective aspect in animatedHint.
+     */
+
+    return aspect.type() | aspect.subControl() | aspect.primitive(); 
+}
+
 static inline void qskTriggerUpdates( QskAspect aspect, QQuickItem* item )
 {
     /*
@@ -237,6 +247,8 @@ class QskSkinnable::PrivateData
 
     QskSkinHintTable hintTable;
     QskHintAnimatorTable animators;
+
+    int sampleIndex = -1; // for the ugly QskSkinStateChanger hack
 
     typedef std::map< QskAspect::Subcontrol, QskAspect::Subcontrol > ProxyMap;
     ProxyMap* subcontrolProxies = nullptr;
@@ -983,11 +995,11 @@ QVariant QskSkinnable::animatedHint(
 
     if ( !m_data->animators.isEmpty() )
     {
-        const int index = effectiveSkinlet()->animatorIndex();
+        const auto a = qskAnimatorAspect( aspect );
 
-        v = m_data->animators.currentValue( aspect, index );
-        if ( !v.isValid() && index >= 0 )
-            v = m_data->animators.currentValue( aspect, -1 );
+        v = m_data->animators.currentValue( a, m_data->sampleIndex );
+        if ( !v.isValid() && m_data->sampleIndex >= 0 )
+            v = m_data->animators.currentValue( a, -1 );
     }
 
     if ( status && v.isValid() )
@@ -1296,18 +1308,10 @@ void QskSkinnable::startHintTransition( QskAspect aspect, int index,
         v2.setValue( skin->graphicFilter( v2.toInt() ) );
     }
 
-    /*
-        We do not need the extra bits that would slow down resolving
-        the effective aspect in animatedHint.
-     */
-
-    aspect.clearStates();
-    aspect.setSection( QskAspect::Body );
-    aspect.setVariation( QskAspect::NoVariation );
-    aspect.setAnimator( false );
+    aspect = qskAnimatorAspect( aspect );
 
 #if DEBUG_ANIMATOR
-    qDebug() << aspect << animationHint.duration;
+    qDebug() << aspect << index <<  animationHint.duration;
 #endif
 
     auto animator = m_data->animators.animator( aspect, index );
@@ -1326,9 +1330,20 @@ void QskSkinnable::setSkinStateFlag( QskAspect::State stateFlag, bool on )
     setSkinStates( newState );
 }
 
-void QskSkinnable::replaceSkinStates( QskAspect::States newStates )
+void QskSkinnable::replaceSkinStates(
+    QskAspect::States newStates, int sampleIndex )
 {
+    /*
+        Hack time: we might need different hints for a specific instance
+        of a subcontrol ( f.e the selected row in a list box ), what is not
+        supported by QskAspect.
+
+        As a workaround we use QskSkinStateChanger, that sets/restores this state/index
+        while retrieving the skin hints.
+     */
+
     m_data->skinStates = newStates;
+    m_data->sampleIndex = sampleIndex; // needed to find specific animators
 }
 
 void QskSkinnable::addSkinStates( QskAspect::States states )

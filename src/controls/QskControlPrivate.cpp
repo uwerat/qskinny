@@ -8,20 +8,12 @@
 #include "QskLayoutMetrics.h"
 #include "QskObjectTree.h"
 #include "QskWindow.h"
+#include "QskEvent.h"
 
 static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 {
     QEvent event( type );
     QCoreApplication::sendEvent( object, &event );
-}
-
-static inline QPointF qskScenePosition( const QMouseEvent* event )
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    return event->scenePosition();
-#else
-    return event->windowPos();
-#endif
 }
 
 extern bool qskInheritLocale( QskWindow*, const QLocale& );
@@ -307,41 +299,6 @@ QSizeF QskControlPrivate::explicitSizeHint( Qt::SizeHint whichHint ) const
         return explicitSizeHints[ whichHint ];
 
     return QSizeF();
-}
-
-bool QskControlPrivate::maybeGesture( QQuickItem* child, QEvent* event )
-{
-    Q_Q( QskControl );
-
-    switch ( event->type() )
-    {
-        case QEvent::MouseButtonPress:
-        {
-            const auto mouseEvent = static_cast< const QMouseEvent* >( event );
-
-            auto pos = qskScenePosition( mouseEvent );
-            pos = q->mapFromScene( pos );
-
-            if ( !q->gestureRect().contains( pos ) )
-                return false;
-
-            break;
-        }
-
-        case QEvent::MouseMove:
-        case QEvent::MouseButtonRelease:
-        case QEvent::MouseButtonDblClick:
-        case QEvent::UngrabMouse:
-        case QEvent::TouchBegin:
-        case QEvent::TouchCancel:
-        case QEvent::TouchUpdate:
-            break;
-
-        default:
-            return false;
-    }
-
-    return q->gestureFilter( child, event );
 }
 
 bool QskControlPrivate::inheritLocale( QskControl* control, const QLocale& locale )

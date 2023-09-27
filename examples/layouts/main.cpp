@@ -8,6 +8,7 @@
 #include "LinearLayoutPage.h"
 #include "GridLayoutPage.h"
 #include "StackLayoutPage.h"
+#include "SwipeViewPage.h"
 #include "TestRectangle.h"
 
 #include <SkinnyShortcut.h>
@@ -37,7 +38,8 @@ namespace
             addTab( "Linear Layout", new LinearLayoutPage() );
             addTab( "Dynamic\nConstraints", new DynamicConstraintsPage() );
             addTab( "Stack Layout", new StackLayoutPage() );
-    
+            addTab( "Swipe View", new SwipeViewPage() );
+            
             setCurrentIndex( 0 );
         }
     };

@@ -101,7 +101,7 @@ namespace
 
         void incrementScrolling( Qt::Orientation orientation, int offset )
         {
-            auto animator = dynamic_cast< QskStackBoxAnimator1* >( this->animator() );
+            auto animator = qobject_cast< QskStackBoxAnimator1* >( this->animator() );
 
             if ( animator == nullptr )
             {
@@ -109,7 +109,11 @@ namespace
                 animator->setDuration( 1000 );
             }
 
-            animator->setOrientation( orientation );
+            if ( orientation == Qt::Horizontal )
+                animator->setDirection( offset > 0 ? Qsk::LeftToRight : Qsk::RightToLeft );
+            else
+                animator->setDirection( offset > 0 ? Qsk::TopToBottom : Qsk::BottomToTop );
+
             setAnimator( animator );
 
             setCurrentIndex( incrementedIndex( offset ) );

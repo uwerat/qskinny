@@ -540,7 +540,6 @@ void qskUngrabMouse( QQuickItem* item )
 
         if ( qskIsMouseGrabber( item ) )
             item->ungrabMouse();
-
     }
 }
 

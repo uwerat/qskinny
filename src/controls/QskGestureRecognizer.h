@@ -41,7 +41,7 @@ class QSK_EXPORT QskGestureRecognizer
     // timestamp, when the Idle state had been left
     ulong timestamp() const;
 
-    bool processEvent( QQuickItem*, QEvent*, bool blockReplayedEvents = true );
+    bool processEvent( const QQuickItem*, const QEvent*, bool blockReplayedEvents = true );
 
     void reject();
     void accept();

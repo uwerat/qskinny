@@ -64,6 +64,8 @@ class QSK_EXPORT QskScrollBox : public QskControl
   protected:
     void geometryChangeEvent( QskGeometryChangeEvent* ) override;
     void windowChangeEvent( QskWindowChangeEvent* ) override;
+
+    void mousePressEvent( QMouseEvent* ) override;
     void gestureEvent( QskGestureEvent* ) override;
 
 #ifndef QT_NO_WHEELEVENT
@@ -71,7 +73,7 @@ class QSK_EXPORT QskScrollBox : public QskControl
     virtual QPointF scrollOffset( const QWheelEvent* ) const;
 #endif
 
-    bool gestureFilter( QQuickItem*, QEvent* ) override;
+    bool gestureFilter( const QQuickItem*, const QEvent* ) override;
     void setScrollableSize( const QSizeF& );
 
   private:

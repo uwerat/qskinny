@@ -79,6 +79,8 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QRgb outline;
     QRgb outlineVariant;
 
+    QRgb surfaceContainerHighest;
+
     QRgb shadow;
 
     QskShadowMetrics elevation0;

@@ -49,14 +49,14 @@ class QSK_EXPORT QskStackBoxAnimator1 : public QskStackBoxAnimator
 {
     Q_OBJECT
 
-    Q_PROPERTY( Qt::Orientation orientation READ orientation WRITE setOrientation )
+    Q_PROPERTY( Qsk::Direction direction READ direction WRITE setDirection )
 
   public:
     QskStackBoxAnimator1( QskStackBox* );
     ~QskStackBoxAnimator1() override;
 
-    void setOrientation( Qt::Orientation );
-    Qt::Orientation orientation() const;
+    void setDirection( Qsk::Direction );
+    Qsk::Direction direction() const;
 
   protected:
     bool eventFilter( QObject*, QEvent* ) override;
@@ -68,7 +68,6 @@ class QSK_EXPORT QskStackBoxAnimator1 : public QskStackBoxAnimator
   private:
     qreal m_itemOffset[ 2 ];
 
-    Qt::Orientation m_orientation : 2;
     Qsk::Direction m_direction : 4;
     bool m_isDirty : 1;
     bool m_hasClip : 1;

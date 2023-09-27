@@ -39,6 +39,7 @@ class QskGraphic;
 class QskSkin;
 class QskSkinlet;
 class QskSkinHintTable;
+class QskSkinStateChanger;
 
 class QSK_EXPORT QskSkinHintStatus
 {
@@ -148,8 +149,6 @@ class QSK_EXPORT QskSkinnable
 
     void addSkinStates( QskAspect::States );
     void clearSkinStates( QskAspect::States );
-
-    void replaceSkinStates( QskAspect::States );
 
     bool hasSkinState( QskAspect::State ) const;
     QskAspect::States skinStates() const;
@@ -280,6 +279,9 @@ class QSK_EXPORT QskSkinnable
     QVariant animatedHint( QskAspect, QskSkinHintStatus* ) const;
     QVariant interpolatedHint( QskAspect, QskSkinHintStatus* ) const;
     const QVariant& storedHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+
+    friend class QskSkinStateChanger;
+    void replaceSkinStates( QskAspect::States, int sampleIndex = -1 );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

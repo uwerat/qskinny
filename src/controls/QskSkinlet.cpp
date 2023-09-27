@@ -282,8 +282,6 @@ class QskSkinlet::PrivateData
     QskSkin* skin;
     QVector< quint8 > nodeRoles;
 
-    int animatorIndex = -1;
-
     bool ownedBySkinnable : 1;
 };
 
@@ -309,21 +307,6 @@ void QskSkinlet::setOwnedBySkinnable( bool on )
 bool QskSkinlet::isOwnedBySkinnable() const
 {
     return m_data->ownedBySkinnable;
-}
-
-void QskSkinlet::setAnimatorIndex( int index )
-{
-    m_data->animatorIndex = index;
-}
-
-void QskSkinlet::resetAnimatorIndex()
-{
-    m_data->animatorIndex = -1;
-}
-
-int QskSkinlet::animatorIndex() const
-{
-    return m_data->animatorIndex;
 }
 
 void QskSkinlet::setNodeRoles( const QVector< quint8 >& nodeRoles )
@@ -796,26 +779,7 @@ QSGNode* QskSkinlet::updateSeriesNode( const QskSkinnable* skinnable,
             const auto newStates = sampleStates( skinnable, subControl, i );
 
             QskSkinStateChanger stateChanger( skinnable );
-            stateChanger.setStates( newStates );
-
-            class IndexChanger
-            {
-              public:
-                inline IndexChanger( const QskSkinlet* skinlet, int index )
-                    : m_skinlet( const_cast< QskSkinlet* >( skinlet ) )
-                {
-                    m_skinlet->setAnimatorIndex( index );
-                }
-
-                inline ~IndexChanger()
-                {
-                    m_skinlet->resetAnimatorIndex();
-                }
-              private:
-                QskSkinlet* m_skinlet;
-            };
-
-            IndexChanger indexChanger( this, i );
+            stateChanger.setStates( newStates, i );
 
             newNode = updateSampleNode( skinnable, subControl, i, node );
         }

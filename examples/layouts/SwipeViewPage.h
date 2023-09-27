@@ -5,17 +5,10 @@
 
 #pragma once
 
-#include "Page.h"
+#include <QskLinearBox.h>
 
-class QskAnimator;
-
-class ProgressBarPage : public Page
+class SwipeViewPage : public QskLinearBox
 {
   public:
-    ProgressBarPage( QQuickItem* = nullptr );
-
-  private:
-    void populate();
-
-    std::unique_ptr< QskAnimator > m_determinateIndicatorsAnimator;
+    SwipeViewPage( QQuickItem* parent = nullptr );
 };

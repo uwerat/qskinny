@@ -71,10 +71,6 @@ class QSK_EXPORT QskSkinlet
     void setOwnedBySkinnable( bool on );
     bool isOwnedBySkinnable() const;
 
-    void setAnimatorIndex( int );
-    void resetAnimatorIndex();
-    int animatorIndex() const;
-
     // Helper functions for creating nodes
 
     static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,

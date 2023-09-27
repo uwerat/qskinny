@@ -362,6 +362,25 @@ void QskScrollBox::geometryChangeEvent( QskGeometryChangeEvent* event )
     Inherited::geometryChangeEvent( event );
 }
 
+void QskScrollBox::mousePressEvent( QMouseEvent* event )
+{
+    auto& recognizer = m_data->panRecognizer;
+    if ( recognizer.hasProcessedBefore( event ) )
+    {
+        if ( m_data->panRecognizerTimeout != 0 )
+        {
+            recognizer.abort();
+            recognizer.setTimeout( -1 );
+
+            recognizer.processEvent( this, event, false );
+        }
+
+        return;
+    }
+
+    return Inherited::mousePressEvent( event );
+}
+
 void QskScrollBox::gestureEvent( QskGestureEvent* event )
 {
     if ( event->gesture()->type() == QskGesture::Pan )
@@ -427,7 +446,7 @@ void QskScrollBox::wheelEvent( QWheelEvent* event )
 
 #endif
 
-bool QskScrollBox::gestureFilter( QQuickItem* item, QEvent* event )
+bool QskScrollBox::gestureFilter( const QQuickItem* item, const QEvent* event )
 {
     if ( event->type() == QEvent::MouseButtonPress )
     {
@@ -458,38 +477,39 @@ bool QskScrollBox::gestureFilter( QQuickItem* item, QEvent* event )
             return false;
     }
 
-    /*
-        This code is a bit tricky as the filter is called in different situations:
-
-        a) The press was on a child of the view
-        b) The press was on the view
-
-        In case of b) things are simple and we can let the recognizer
-        decide without timeout if it is was a gesture or not.
-
-        In case of a) we give the recognizer some time to decide - usually
-        based on the distances of the following mouse events. If no decision
-        could be made the recognizer aborts and replays the mouse events, so
-        that the children can process them.
-
-        But if a child does not accept a mouse event it will be sent to
-        its parent. So we might finally receive the reposted events, but then
-        we can proceed as in b).
-     */
 
     auto& recognizer = m_data->panRecognizer;
+    recognizer.setTimeout( m_data->panRecognizerTimeout );
 
     if ( event->type() == QEvent::MouseButtonPress )
     {
-        if ( ( item != this ) && ( recognizer.timeout() < 0 ) )
+        /*
+            This code is a bit tricky as the filter is called in different situations:
+
+            a) The press was on a child of the view
+            b) The press was on the view
+
+            In case of b) things are simple and we can let the recognizer
+            decide without timeout if it is was a gesture or not.
+
+            In case of a) we give the recognizer some time to decide - usually
+            based on the distances of the following mouse events. If no decision
+            could be made the recognizer aborts and replays the mouse events, so
+            that the children can process them.
+
+            But if a child does not accept the mouse event it will be sent to
+            its parent, finally ending up here for a second time.
+         */
+
+        auto mouseEvent = static_cast< const QMouseEvent* >( event );
+        if ( recognizer.hasProcessedBefore( mouseEvent ) )
         {
-            const auto mouseEvent = static_cast< QMouseEvent* >( event );
-
-            if ( recognizer.hasProcessedBefore( mouseEvent ) )
-                return false;
+            /*
+                Note that the recognizer will be restarted without timout if the
+                event ends up in  in mousePressEvent ( = nobody else was interested )
+             */
+            return false;
         }
-
-        recognizer.setTimeout( ( item == this ) ? -1 : m_data->panRecognizerTimeout );
     }
 
     return recognizer.processEvent( item, event );

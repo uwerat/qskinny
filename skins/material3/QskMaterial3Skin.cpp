@@ -23,6 +23,7 @@
 #include <QskPageIndicator.h>
 #include <QskPushButton.h>
 #include <QskProgressBar.h>
+#include <QskProgressRing.h>
 #include <QskRadioBox.h>
 #include <QskScrollView.h>
 #include <QskSegmentedBar.h>
@@ -94,6 +95,7 @@ namespace
         void setupPageIndicator();
         void setupPopup();
         void setupProgressBar();
+        void setupProgressRing();
         void setupRadioBox();
         void setupPushButton();
         void setupScrollView();
@@ -161,6 +163,7 @@ void Editor::setup()
     setupPageIndicator();
     setupPopup();
     setupProgressBar();
+    setupProgressRing();
     setupPushButton();
     setupRadioBox();
     setupScrollView();
@@ -431,9 +434,9 @@ void Editor::setupProgressBar()
     using A = QskAspect;
     using Q = QskProgressBar;
 
-    auto size = 5_dp;
+    auto size = 4_dp;
 
-    for ( auto subControl : { Q::Groove, Q::Bar } )
+    for ( auto subControl : { Q::Groove, Q::Fill } )
     {
         setMetric( subControl | A::Size, size );
         setPadding( subControl, 0 );
@@ -443,12 +446,21 @@ void Editor::setupProgressBar()
     }
 
     setMetric( Q::Groove | A::Size, size );
-    setGradient( Q::Groove, m_pal.primaryContainer );
+    setGradient( Q::Groove, m_pal.surfaceContainerHighest );
 
     setGradient( Q::Groove | Q::Disabled, m_pal.onSurface12 );
 
-    setGradient( Q::Bar, m_pal.primary );
-    setGradient( Q::Bar | Q::Disabled, m_pal.onSurface38 );
+    setGradient( Q::Fill, m_pal.primary );
+    setGradient( Q::Fill | Q::Disabled, m_pal.onSurface38 );
+}
+
+void Editor::setupProgressRing()
+{
+    using Q = QskProgressRing;
+
+    setStrutSize( Q::Fill, { 48_dp, 48_dp } );
+    setGradient( Q::Fill, m_pal.primary );
+    setArcMetrics( Q::Fill, 90, -360, 4_dp );
 }
 
 void Editor::setupRadioBox()
@@ -538,7 +550,7 @@ void Editor::setupSegmentedBar()
 
         setGradient( Q::Segment | Q::Selected | Q::Hovered,
             flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.hoverOpacity ) );
-                                    
+
         setGradient( Q::Segment | Q::Selected | Q::Focused,
             flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.focusOpacity ) );
 
@@ -800,8 +812,9 @@ void Editor::setupDrawer()
 
     setPadding( Q::Panel, 5_dp );
     setGradient( Q::Panel, m_pal.background );
-    setAnimation( Q::Panel | QskAspect::Position, qskDuration );
     setHint( Q::Overlay | QskAspect::Style, false );
+
+    setAnimation( Q::Panel | QskAspect::Position, qskDuration );
 }
 
 void Editor::setupSlider()
@@ -1151,15 +1164,71 @@ void Editor::setupScrollView()
 void Editor::setupListView()
 {
     using Q = QskListView;
+    using A = QskAspect;
 
-    setStrutSize( Q::Cell, { -1, 56 } );
-    setPadding( Q::Cell, { 16_dp, 12_dp, 16_dp, 12_dp } );
+    setStrutSize( Q::Cell, { -1, 56_dp } );
+    setPadding( Q::Cell, { 16_dp, 8_dp, 24_dp, 8_dp } );
 
     setBoxBorderColors( Q::Cell, m_pal.outline );
-    setGradient( Q::Cell, m_pal.surface );
-    setGradient( Q::Cell | Q::Selected, m_pal.primary12 );
+
+    for ( const auto state1 : { A::NoState, Q::Hovered, Q::Focused, Q::Pressed, Q::Disabled } )
+    {
+        for ( const auto state2 : { A::NoState, Q::Selected } )
+        {
+            QRgb cellColor;
+
+            if ( state2 == A::NoState )
+            {
+                if ( state1 == Q::Hovered )
+                {
+                    cellColor = flattenedColor( m_pal.onSurface,
+                        m_pal.surface, m_pal.hoverOpacity );
+                }
+                else if ( state1 == Q::Pressed )
+                {
+                    cellColor = flattenedColor( m_pal.onSurface,
+                        m_pal.primary12, m_pal.pressedOpacity );
+                }
+                else
+                {
+                    cellColor = m_pal.surface;
+                }
+            }
+            else
+            {
+                if ( state1 == Q::Hovered )
+                {
+                    cellColor = flattenedColor( m_pal.onSurface,
+                        m_pal.primary12, m_pal.focusOpacity );
+                }
+                else if ( state1 == Q::Focused )
+                {
+                    cellColor = flattenedColor( m_pal.onSurface,
+                        m_pal.primary12, m_pal.focusOpacity );
+                }
+                else if ( state1 == Q::Disabled )
+                {
+                    cellColor = m_pal.surfaceVariant;
+                }
+                else
+                {
+                    cellColor = m_pal.primary12;
+                }
+            }
+
+            setGradient( Q::Cell | state1 | state2, cellColor );
+        }
+    }
+
+    setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
 
     setColor( Q::Text, m_pal.onSurface );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+
+#if 1
+    setAnimation( Q::Cell | A::Color, 100 );
+    setAnimation( Q::Text | A::Color, 100 );
+#endif
 }
 
 void Editor::setupSubWindow()
@@ -1246,6 +1315,8 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
         outline = m_palettes[ NeutralVariant ].toned( 50 ).rgb();
         outlineVariant = m_palettes[ NeutralVariant ].toned( 80 ).rgb();
 
+        surfaceContainerHighest = m_palettes[ NeutralVariant ].toned( 90 ).rgb();
+
         shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }
     else if ( colorScheme == QskSkin::DarkScheme )
@@ -1279,6 +1350,8 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
         onSurfaceVariant = m_palettes[ NeutralVariant ].toned( 80 ).rgb();
         outline = m_palettes[ NeutralVariant ].toned( 60 ).rgb();
         outlineVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
+
+        surfaceContainerHighest = m_palettes[ NeutralVariant ].toned( 22 ).rgb();
 
         shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
     }

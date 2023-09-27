@@ -13,53 +13,6 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
-static Qsk::Direction qskDirection(
-    Qt::Orientation orientation, int from, int to, int itemCount )
-{
-    Qsk::Direction direction;
-
-    if ( orientation == Qt::Horizontal )
-    {
-        direction = Qsk::RightToLeft;
-
-        if ( to > from )
-        {
-            const bool isWrapping = ( from == 0 ) && ( to == itemCount - 1 );
-
-            if ( !isWrapping )
-                direction = Qsk::LeftToRight;
-        }
-        else
-        {
-            const bool isWrapping = ( to == 0 ) && ( from == itemCount - 1 );
-
-            if ( isWrapping )
-                direction = Qsk::LeftToRight;
-        }
-    }
-    else
-    {
-        direction = Qsk::BottomToTop;
-
-        if ( to > from )
-        {
-            const bool isWrapping = ( from == 0 ) && ( to == itemCount - 1 );
-
-            if ( !isWrapping )
-                direction = Qsk::TopToBottom;
-        }
-        else
-        {
-            const bool isWrapping = ( to == 0 ) && ( from == itemCount - 1 );
-
-            if ( isWrapping )
-                direction = Qsk::TopToBottom;
-        }
-    }
-
-    return direction;
-}
-
 namespace
 {
     class RotationTransform : public QQuickTransform
@@ -240,7 +193,7 @@ void QskStackBoxAnimator::advance( qreal progress )
 
 QskStackBoxAnimator1::QskStackBoxAnimator1( QskStackBox* parent )
     : QskStackBoxAnimator( parent )
-    , m_orientation( Qt::Horizontal )
+    , m_direction( Qsk::LeftToRight )
     , m_isDirty( false )
     , m_hasClip( false )
 {
@@ -251,26 +204,23 @@ QskStackBoxAnimator1::~QskStackBoxAnimator1()
 {
 }
 
-void QskStackBoxAnimator1::setOrientation( Qt::Orientation orientation )
+void QskStackBoxAnimator1::setDirection( Qsk::Direction direction )
 {
-    if ( m_orientation != orientation )
+    if ( m_direction != direction )
     {
         stop();
-        m_orientation = orientation;
+        m_direction = direction;
     }
 }
 
-Qt::Orientation QskStackBoxAnimator1::orientation() const
+Qsk::Direction QskStackBoxAnimator1::direction() const
 {
-    return m_orientation;
+    return m_direction;
 }
 
 void QskStackBoxAnimator1::setup()
 {
     auto stackBox = this->stackBox();
-
-    m_direction = qskDirection( m_orientation,
-        startIndex(), endIndex(), stackBox->itemCount() );
 
     m_hasClip = stackBox->clip();
     if ( !m_hasClip )
@@ -283,7 +233,9 @@ void QskStackBoxAnimator1::setup()
 void QskStackBoxAnimator1::advanceIndex( qreal value )
 {
     auto stackBox = this->stackBox();
-    const bool isHorizontal = m_orientation == Qt::Horizontal;
+
+    const bool isHorizontal = ( m_direction == Qsk::LeftToRight )
+        || ( m_direction == Qsk::RightToLeft );
 
     for ( int i = 0; i < 2; i++ )
     {
