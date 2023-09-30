@@ -1236,6 +1236,8 @@ void Editor::setupSubWindow()
     using A = QskAspect;
     using Q = QskSubWindow;
 
+    setAnimation( Q::Panel | QskAspect::Position, 150 );
+
     // Panel
 
     setPadding( Q::Panel, { 24_dp, 0, 24_dp, 24_dp } );

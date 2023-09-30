@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskSubWindow.h"
+#include "QskAnimationHint.h"
 #include "QskAspect.h"
 #include "QskPlatform.h"
 #include "QskGraphic.h"
@@ -49,7 +50,15 @@ QskSubWindow::QskSubWindow( QQuickItem* parent )
     setMargins( 0 );
     initSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::MinimumExpanding );
 
+    setFaderAspect( Panel | QskAspect::Metric );
+
     setAutoLayoutChildren( true );
+
+    connect(this, &QskSubWindow::closed, this, [this]() {
+        startTransition( Panel | QskAspect::Metric,
+            animationHint( Panel | QskAspect::Position ),
+            0.0, 1.0 );
+    });
 }
 
 QskSubWindow::~QskSubWindow()
@@ -189,6 +198,12 @@ bool QskSubWindow::event( QEvent* event )
 
 void QskSubWindow::updateLayout()
 {
+    if( isFading() )
+    {
+        const auto opacity = 1 - metric( faderAspect() );
+        setOpacity( opacity );
+    }
+
     if ( m_data->isWindowIconSourceDirty )
     {
         if ( !m_data->windowIconSource.isEmpty() )

@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskPopup.h"
+#include "QskAnimationHint.h"
 #include "QskAspect.h"
 #include "QskInputGrabber.h"
 #include "QskQuick.h"
@@ -638,8 +639,23 @@ int QskPopup::execPopup()
              */
 
             connect( popup, &QObject::destroyed, this, &EventLoop::reject );
-            connect( popup, &QskPopup::fadingChanged, this, &EventLoop::maybeQuit );
-            connect( popup, &QskPopup::openChanged, this, &EventLoop::maybeQuit );
+
+            connect( popup, &QskPopup::fadingChanged, this, [this, popup]()
+            {
+                if ( !popup->isOpen() && !popup->isFading() )
+                {
+                    QEventLoop::exit( 0 );
+                }
+            });
+
+            connect( popup, &QskPopup::openChanged, this, [this, popup]()
+            {
+                if( popup->faderAspect().value() == 0
+                    || popup->animationHint( popup->faderAspect().subControl() | QskAspect::Position ).duration <= 0 )
+                {
+                    QEventLoop::exit( 0 );
+                } // otherwise wait for the fading to finish
+            });
         }
 
       private:
@@ -647,17 +663,6 @@ int QskPopup::execPopup()
         {
             setParent( nullptr );
             QEventLoop::exit( 1 );
-        }
-
-        void maybeQuit()
-        {
-            if ( auto popup = qobject_cast< const QskPopup* >( parent() ) )
-            {
-                if ( popup->isOpen() || popup->isFading() )
-                    return;
-            }
-
-            QEventLoop::exit( 0 );
         }
     };
 

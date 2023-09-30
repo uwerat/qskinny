@@ -1877,6 +1877,8 @@ void Editor::setupSubWindow( const QskFluent2Theme& theme )
     using Q = QskSubWindow;
     const auto& pal = theme.palette;
 
+    setAnimation( Q::Panel | QskAspect::Position, 150 );
+
     setPadding( Q::Panel, { 0, 31, 0, 0 } );
     setBoxShape( Q::Panel, 7 );
     setBoxBorderMetrics( Q::Panel, 1 );
