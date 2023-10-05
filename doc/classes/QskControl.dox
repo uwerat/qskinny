@@ -346,15 +346,6 @@
 */
 
 /*!
-    \fn QskControl::gestureRect
-
-    Returns the area where to accept gestures.
-    The default implementation returns QskQuickItem::rect().
-
-    \sa gestureFilter(), gestureEvent()
-*/
-
-/*!
     \fn QskControl::focusIndicatorRect
 
     Returns the rectangle where to draw the focus indicator
@@ -894,10 +885,6 @@
 /*!
     \fn QskControl::childMouseEventFilter
 
-*/
-
-/*!
-    \fn QskControl::gestureFilter
 */
 
 /*!

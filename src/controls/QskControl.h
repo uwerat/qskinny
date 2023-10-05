@@ -80,7 +80,6 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     QRectF layoutRect() const;
 
     virtual QRectF layoutRectForSize( const QSizeF& ) const;
-    virtual QRectF gestureRect() const;
 
     virtual QRectF focusIndicatorRect() const;
     virtual QRectF focusIndicatorClipRect() const;
@@ -196,7 +195,6 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     void hoverLeaveEvent( QHoverEvent* ) override;
 
     bool childMouseEventFilter( QQuickItem*, QEvent* ) override;
-    virtual bool gestureFilter( const QQuickItem*, const QEvent* );
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void geometryChange( const QRectF&, const QRectF& ) override;

@@ -12,6 +12,7 @@
 #include <QskEvent.h>
 #include <QskLinearBox.h>
 #include <QskStackBoxAnimator.h>
+#include <QskPanGestureRecognizer.h>
 
 #include <QQuickFramebufferObject>
 #include <QGuiApplication>
@@ -19,6 +20,23 @@
 #include <QtMath>
 
 #include <QTimer>
+
+namespace
+{
+    class PanRecognizer final : public QskPanGestureRecognizer
+    {
+      public:
+        PanRecognizer( MainItem* mainItem )
+            : QskPanGestureRecognizer( mainItem )
+        {
+            setOrientations( Qt::Horizontal | Qt::Vertical );
+            setMinDistance( 50 );
+            setTimeout( 100 );
+
+            setWatchedItem( mainItem );
+        }
+    };
+}
 
 QPair< Cube::Position, Cube::Edge > Cube::s_neighbors[ Cube::NumPositions ][ Cube::NumEdges ] =
 {
@@ -245,9 +263,7 @@ MainItem::MainItem( QQuickItem* parent )
     setAcceptedMouseButtons( Qt::LeftButton );
     setFiltersChildMouseEvents( true );
 
-    m_panRecognizer.setOrientations( Qt::Horizontal | Qt::Vertical );
-    m_panRecognizer.setMinDistance( 50 );
-    m_panRecognizer.setWatchedItem( this );
+    (void) new PanRecognizer( this );
 
     m_mainLayout->setSpacing( 0 );
 
@@ -330,25 +346,6 @@ void MainItem::keyPressEvent( QKeyEvent* event )
     }
 
     m_cube->switchPosition( direction );
-}
-bool MainItem::gestureFilter( const QQuickItem* item, const QEvent* event )
-{
-    auto& recognizer = m_panRecognizer;
-
-    if( event->type() == QEvent::MouseButtonPress )
-    {
-        auto mouseEvent = static_cast< const QMouseEvent* >( event );
-
-        if( ( item != this ) || ( recognizer.timeout() < 0 ) )
-        {
-            if( recognizer.hasProcessedBefore( mouseEvent ) )
-                return false;
-        }
-
-        recognizer.setTimeout( ( item == this ) ? -1 : 100 );
-    }
-
-    return recognizer.processEvent( item, event, false );
 }
 
 #include "moc_MainItem.cpp"

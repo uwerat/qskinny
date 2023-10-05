@@ -57,7 +57,6 @@ class QSK_EXPORT QskSwipeView : public QskStackBox
     void swipeDistanceChanged( int );
 
   protected:
-    bool gestureFilter( const QQuickItem*, const QEvent* ) override;
     void gestureEvent( QskGestureEvent* ) override;
 
   private:

@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
 #include "QskPanGestureRecognizer.h"
 #include "QskEvent.h"
 #include "QskGesture.h"
@@ -139,20 +144,12 @@ namespace
 class QskPanGestureRecognizer::PrivateData
 {
   public:
-    PrivateData()
-        : orientations( Qt::Horizontal | Qt::Vertical )
-        , minDistance( 15 )
-        , timestamp( 0.0 )
-        , angle( 0.0 )
-    {
-    }
+    Qt::Orientations orientations = Qt::Horizontal | Qt::Vertical;
 
-    Qt::Orientations orientations;
+    int minDistance = 15;
 
-    int minDistance;
-
-    ulong timestamp; // timestamp of the last mouse event
-    qreal angle;
+    quint64 timestampVelocity = 0.0; // timestamp of the last mouse event
+    qreal angle = 0.0;
 
     QPointF origin;
     QPointF pos; // position of the last mouse event
@@ -160,9 +157,11 @@ class QskPanGestureRecognizer::PrivateData
     VelocityTracker velocityTracker;
 };
 
-QskPanGestureRecognizer::QskPanGestureRecognizer()
-    : m_data( new PrivateData() )
+QskPanGestureRecognizer::QskPanGestureRecognizer( QObject* parent )
+    : QskGestureRecognizer( parent )
+    , m_data( new PrivateData() )
 {
+    setTimeout( 100 ); // value from the platform ???
 }
 
 QskPanGestureRecognizer::~QskPanGestureRecognizer()
@@ -189,23 +188,29 @@ int QskPanGestureRecognizer::minDistance() const
     return m_data->minDistance;
 }
 
-void QskPanGestureRecognizer::pressEvent( const QMouseEvent* event )
+void QskPanGestureRecognizer::processPress( const QPointF& pos, quint64, bool isFinal )
 {
-    m_data->origin = m_data->pos = qskMousePosition( event );
-    m_data->timestamp = timestamp();
+    /*
+        When nobody was interested in the press we can disable the timeout and let
+        the distance of the mouse moves be the only criterion.
+     */
+    setRejectOnTimeout( !isFinal );
+
+    m_data->origin = m_data->pos = pos;
+    m_data->timestampVelocity = timestampStarted();
 
     m_data->velocityTracker.reset();
 }
 
-void QskPanGestureRecognizer::moveEvent( const QMouseEvent* event )
+void QskPanGestureRecognizer::processMove( const QPointF& pos, quint64 timestamp )
 {
-    const ulong elapsed = event->timestamp() - m_data->timestamp;
-    const ulong elapsedTotal = event->timestamp() - timestamp();
+    const ulong elapsed = timestamp - m_data->timestampVelocity;
+    const ulong elapsedTotal = timestamp - timestampStarted();
 
     const QPointF oldPos = m_data->pos;
 
-    m_data->timestamp = event->timestamp();
-    m_data->pos = qskMousePosition( event );
+    m_data->timestampVelocity = timestamp;
+    m_data->pos = pos;
 
     if ( elapsedTotal > 0 ) // ???
     {
@@ -249,11 +254,11 @@ void QskPanGestureRecognizer::moveEvent( const QMouseEvent* event )
     }
 }
 
-void QskPanGestureRecognizer::releaseEvent( const QMouseEvent* event )
+void QskPanGestureRecognizer::processRelease( const QPointF&, quint64 timestamp )
 {
     if ( state() == QskGestureRecognizer::Accepted )
     {
-        const ulong elapsedTotal = event->timestamp() - timestamp();
+        const ulong elapsedTotal = timestamp - timestampStarted();
         const qreal velocity = m_data->velocityTracker.velocity( elapsedTotal );
 
         qskSendPanGestureEvent( watchedItem(), QskGesture::Finished,
