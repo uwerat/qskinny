@@ -508,7 +508,14 @@ void QskVirtualKeyboard::updateLocale( const QLocale& locale )
 
         case QLocale::English:
         {
-            switch ( locale.country() )
+            const auto territory =
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 2, 0 )
+                locale.territory();
+#else
+                locale.country();
+#endif
+
+            switch ( territory )
             {
                 case QLocale::Canada:
                 case QLocale::UnitedStates:
