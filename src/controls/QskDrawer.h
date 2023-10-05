@@ -18,7 +18,7 @@ class QSK_EXPORT QskDrawer : public QskPopup
     Q_PROPERTY( Qt::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged )
 
   public:
-    QSK_SUBCONTROLS( Panel, Overlay )
+    QSK_SUBCONTROLS( Panel )
 
     QskDrawer( QQuickItem* = nullptr );
     ~QskDrawer() override;
@@ -29,16 +29,12 @@ class QSK_EXPORT QskDrawer : public QskPopup
     QRectF layoutRectForSize( const QSizeF& ) const override;
     void updateLayout() override;
 
-    void setContent( QskControl* );
-
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
 
   protected:
     void aboutToShow() override;
     void itemChange( ItemChange, const ItemChangeData& ) override;
-
-    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     void startFading( bool );

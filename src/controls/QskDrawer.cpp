@@ -13,8 +13,8 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitemchangelistener_p.h>
 QSK_QT_PRIVATE_END
 
+// we need a skinlet to draw the panel TODO ...
 QSK_SUBCONTROL( QskDrawer, Panel )
-QSK_SUBCONTROL( QskDrawer, Overlay )
 
 static QRectF qskDrawerRect( const QRectF& rect,
     Qt::Edge edge, qreal pos, const QSizeF& size )
@@ -82,9 +82,7 @@ namespace
 class QskDrawer::PrivateData
 {
   public:
-    QskControl* content = nullptr;
     Qt::Edge edge = Qt::LeftEdge;
-
     GeometryListener* listener = nullptr;
 };
 
@@ -94,10 +92,9 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
 {
     setZ( 1 );
 
+    setAutoLayoutChildren( true );
+
     setPopupFlag( PopupFlag::CloseOnPressOutside, true );
-
-    setSubcontrolProxy( Inherited::Overlay, Overlay );
-
     setFaderAspect( Panel | QskAspect::Position | QskAspect::Metric );
 
     connect( this, &QskDrawer::closed,
@@ -133,40 +130,6 @@ void QskDrawer::setEdge( Qt::Edge edge )
     edgeChanged( edge );
 }
 
-void QskDrawer::setContent( QskControl* content )
-{
-    if ( content == m_data->content )
-        return;
-
-    if ( m_data->content )
-    {
-        if ( m_data->content->parent() == this )
-            delete m_data->content;
-        else
-            m_data->content->setParentItem( nullptr );
-    }
-
-    if ( content )
-    {
-        content->setParentItem( this );
-        if ( content->parent() == nullptr )
-            content->setParent( this );
-    }
-
-    m_data->content = content;
-    polish();
-}
-
-QSizeF QskDrawer::layoutSizeHint(
-    Qt::SizeHint which, const QSizeF& constraint ) const
-{
-    // we need to handle QEvent::LayoutRequest
-    if ( m_data->content )
-        return m_data->content->effectiveSizeHint( which, constraint );
-
-    return Inherited::layoutSizeHint( which, constraint );
-}
-
 QRectF QskDrawer::layoutRectForSize( const QSizeF& size ) const
 {
     return Inherited::layoutRectForSize( size );
@@ -177,16 +140,13 @@ void QskDrawer::updateLayout()
     if ( !( isOpen() || isFading() ) )
         return;
 
-    if ( m_data->content == nullptr )
-        return;
-
     const auto targetRect = qskItemRect( parentItem() );
     const auto size = qskConstrainedItemSize( this, targetRect.size() );
 
     const auto rect = qskDrawerRect( targetRect,
         m_data->edge, metric( faderAspect() ), size );
 
-    qskSetItemGeometry( m_data->content, rect );
+    qskSetItemGeometry( this, rect );
     Inherited::updateLayout();
 }
 
