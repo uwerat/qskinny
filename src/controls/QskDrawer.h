@@ -21,6 +21,7 @@ class QSK_EXPORT QskDrawer : public QskPopup
     void setEdge( Qt::Edge );
     Qt::Edge edge() const;
 
+    QRectF layoutRectForSize( const QSizeF& ) const override;
     void updateLayout() override;
 
     void setContent( QskControl* );
@@ -30,8 +31,13 @@ class QSK_EXPORT QskDrawer : public QskPopup
 
   protected:
     void aboutToShow() override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
+
+    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
+    void startFading( bool );
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

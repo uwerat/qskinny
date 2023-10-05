@@ -7,15 +7,104 @@
 #include <QskAnimationHint.h>
 #include <QskQuick.h>
 
+QSK_QT_PRIVATE_BEGIN
+#include <private/qquickitem_p.h>
+#include <private/qquickitemchangelistener_p.h>
+QSK_QT_PRIVATE_END
+
 QSK_SUBCONTROL( QskDrawer, Panel )
 QSK_SUBCONTROL( QskDrawer, Overlay )
+
+static QRectF qskDrawerRect( const QRectF& rect,
+    Qt::Edge edge, qreal pos, const QSizeF& size )
+{
+    QRectF r( 0.0, 0.0, size.width(), size.height() );
+
+    const auto progress = pos = 1.0 - pos;
+
+    switch( edge )
+    {
+        case Qt::LeftEdge:
+        {
+            r.moveRight( rect.left() + progress * size.width() );
+            break;
+        }
+        case Qt::RightEdge:
+        {
+            r.moveLeft( rect.right() - progress * size.width() );
+            break;
+        }
+
+        case Qt::TopEdge:
+        {
+            r.moveBottom( rect.top() + progress * size.height() );
+            break;
+        }
+
+        case Qt::BottomEdge:
+        {
+            r.moveTop( rect.bottom() - progress * size.height() );
+            break;
+        }
+    }
+
+    return r;
+}
+
+namespace
+{
+    class GeometryListener final : public QQuickItemChangeListener
+    {
+      public:
+        GeometryListener( QskDrawer* drawer )
+            : m_drawer( drawer )
+        {
+            if ( drawer->parentItem() )
+            {
+                auto d = QQuickItemPrivate::get( drawer->parentItem() );
+                d->addItemChangeListener( this, QQuickItemPrivate::Geometry );
+            }
+        }
+
+      private:
+        void itemGeometryChanged( QQuickItem*, 
+            QQuickGeometryChange, const QRectF& ) override
+        {
+            m_drawer->polish();
+        }
+
+      private:
+        QskDrawer* m_drawer = nullptr;
+    };
+
+    class Box : public QskBox
+    {
+        using Inherited = QskBox;
+
+      public:
+        Box( QskDrawer* drawer )
+            : QskBox( drawer )
+        {
+            setSubcontrolProxy( QskBox::Panel, Panel );
+            setPanel( true );
+            setAutoLayoutChildren( true );
+
+#if 0
+            setBackgroundColor( Qt::darkCyan );
+            setMargins( 20 );
+#endif
+        }
+    };
+}
 
 class QskDrawer::PrivateData
 {
   public:
     QskControl* content = nullptr;
-    QskBox* contentBox = nullptr;
+    Box* contentBox = nullptr;
     Qt::Edge edge = Qt::LeftEdge;
+
+    GeometryListener* listener = nullptr;
 };
 
 QskDrawer::QskDrawer( QQuickItem* parentItem )
@@ -26,23 +115,28 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
 
     setPopupFlag( PopupFlag::CloseOnPressOutside, true );
 
-    m_data->contentBox = new QskBox(this);
-    m_data->contentBox->setSubcontrolProxy( QskBox::Panel, Panel );
-    m_data->contentBox->setPanel( true );
+    m_data->contentBox = new Box(this);
 
     setSubcontrolProxy( Inherited::Overlay, Overlay );
 
-    setFaderAspect( Panel | QskAspect::Metric );
+    setFaderAspect( Panel | QskAspect::Position | QskAspect::Metric );
 
-    connect(this, &QskDrawer::closed, this, [this]() {
-        startTransition( Panel | QskAspect::Metric,
-            animationHint( Panel | QskAspect::Position ),
-            0.0, 1.0 );
-    });
+    connect( this, &QskDrawer::closed,
+        this, [this]() { startFading( false ); } );
+
+    /*
+        The drawer wants to be on top of the parent - not being
+        layouted into its layoutRect(). So we opt out and do
+        the layout updates manually.
+     */
+    setPlacementPolicy( QskPlacementPolicy::Ignore );
+    if ( parentItem )
+        m_data->listener = new GeometryListener( this );
 }
 
 QskDrawer::~QskDrawer()
 {
+    delete m_data->listener;
 }
 
 Qt::Edge QskDrawer::edge() const
@@ -69,70 +163,58 @@ void QskDrawer::setContent( QskControl* content )
     m_data->content = content;
 }
 
+QSizeF QskDrawer::layoutSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    // we need to handle QEvent::LayoutRequest
+    return m_data->contentBox->effectiveSizeHint( which, constraint );
+}
+
+QRectF QskDrawer::layoutRectForSize( const QSizeF& size ) const
+{
+    return Inherited::layoutRectForSize( size );
+}
+
 void QskDrawer::updateLayout()
 {
-    if ( !isOpen() && !isFading() )
+    if ( !( isOpen() || isFading() ) )
         return;
 
-    const auto padding = paddingHint( Panel );
+    const auto targetRect = qskItemRect( parentItem() );
+    const auto size = qskConstrainedItemSize( this, targetRect.size() );
 
-    auto contentSize = m_data->content->preferredSize();
-    contentSize = contentSize.grownBy( padding );
+    const auto rect = qskDrawerRect( targetRect,
+        m_data->edge, metric( faderAspect() ), size );
 
-    const auto parentSize = parentItem()->size();
-
-    switch( m_data->edge )
-    {
-        case Qt::Edge::LeftEdge:
-        {
-            qreal x = metric( faderAspect() ) * contentSize.width() * -1.0;
-
-            qskSetItemGeometry( m_data->contentBox,
-                x, 0, contentSize.width(), parentSize.height() );
-            break;
-        }
-        case Qt::Edge::RightEdge:
-        {
-            qreal x = ( metric( faderAspect() ) * contentSize.width() )
-                + parentSize.width() - contentSize.width();
-
-            qskSetItemGeometry( m_data->contentBox,
-                x, 0, contentSize.width(), parentSize.height() );
-            break;
-        }
-
-        case Qt::Edge::TopEdge:
-        {
-            qreal y = metric( faderAspect() ) * contentSize.height();
-
-            qskSetItemGeometry( m_data->contentBox,
-                0, -y, parentSize.width(), contentSize.height() );
-            break;
-        }
-
-        case Qt::Edge::BottomEdge:
-        {
-            qreal y = metric( faderAspect() ) * contentSize.height() + parentSize.height() -
-                contentSize.height();
-
-            qskSetItemGeometry( m_data->contentBox,
-                0, y, parentSize.width(), contentSize.height() );
-            break;
-        }
-    }
-
-    m_data->content->setGeometry( QPointF( padding.left(), padding.top() ),
-        m_data->contentBox->size().shrunkBy( padding ) );
-
+    qskSetItemGeometry( m_data->contentBox, rect );
     Inherited::updateLayout();
 }
 
 void QskDrawer::aboutToShow()
 {
-    startTransition( Panel | QskAspect::Metric,
-        animationHint( Panel | QskAspect::Position ), 1.0, 0.0 );
-
+    startFading( true );
     Inherited::aboutToShow();
+}
+
+void QskDrawer::itemChange( QQuickItem::ItemChange change,
+    const QQuickItem::ItemChangeData& value )
+{
+    Inherited::itemChange( change, value );
+
+    if ( change == QQuickItem::ItemParentHasChanged )
+    {
+        delete m_data->listener;
+        m_data->listener = new GeometryListener( this );
+    }
+}
+
+void QskDrawer::startFading( bool open )
+{
+    const auto from = open ? 1.0 : 0.0;
+    const auto to = open ? 0.0 : 1.0;
+
+    const auto hint = animationHint( Panel | QskAspect::Position );
+    startTransition( faderAspect(), hint, from, to );
 }
 
 #include "moc_QskDrawer.cpp"

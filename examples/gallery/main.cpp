@@ -230,6 +230,7 @@ namespace
 
             {
                 auto drawer = new Drawer( parentItem() );
+                drawer->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
                 drawer->setEdge( Qt::RightEdge );
 
                 auto burger = new QskPushButton( "≡", this );
