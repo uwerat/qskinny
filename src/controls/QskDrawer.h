@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
 #ifndef QSK_DRAWER_H
 #define QSK_DRAWER_H
 

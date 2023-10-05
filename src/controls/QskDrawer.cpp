@@ -1,11 +1,12 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
 #include "QskDrawer.h"
 #include "QskAspect.h"
-#include "QskControl.h"
-
-#include <QskPopup.h>
-#include <QskBox.h>
-#include <QskAnimationHint.h>
-#include <QskQuick.h>
+#include "QskAnimationHint.h"
+#include "QskQuick.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
@@ -76,32 +77,12 @@ namespace
       private:
         QskDrawer* m_drawer = nullptr;
     };
-
-    class Box : public QskBox
-    {
-        using Inherited = QskBox;
-
-      public:
-        Box( QskDrawer* drawer )
-            : QskBox( drawer )
-        {
-            setSubcontrolProxy( QskBox::Panel, Panel );
-            setPanel( true );
-            setAutoLayoutChildren( true );
-
-#if 0
-            setBackgroundColor( Qt::darkCyan );
-            setMargins( 20 );
-#endif
-        }
-    };
 }
 
 class QskDrawer::PrivateData
 {
   public:
     QskControl* content = nullptr;
-    Box* contentBox = nullptr;
     Qt::Edge edge = Qt::LeftEdge;
 
     GeometryListener* listener = nullptr;
@@ -114,8 +95,6 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
     setZ( 1 );
 
     setPopupFlag( PopupFlag::CloseOnPressOutside, true );
-
-    m_data->contentBox = new Box(this);
 
     setSubcontrolProxy( Inherited::Overlay, Overlay );
 
@@ -156,18 +135,36 @@ void QskDrawer::setEdge( Qt::Edge edge )
 
 void QskDrawer::setContent( QskControl* content )
 {
-    content->setParentItem( m_data->contentBox );
-    if ( content->parent() == nullptr )
-        content->setParent( m_data->contentBox );
+    if ( content == m_data->content )
+        return;
+
+    if ( m_data->content )
+    {
+        if ( m_data->content->parent() == this )
+            delete m_data->content;
+        else
+            m_data->content->setParentItem( nullptr );
+    }
+
+    if ( content )
+    {
+        content->setParentItem( this );
+        if ( content->parent() == nullptr )
+            content->setParent( this );
+    }
 
     m_data->content = content;
+    polish();
 }
 
 QSizeF QskDrawer::layoutSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
     // we need to handle QEvent::LayoutRequest
-    return m_data->contentBox->effectiveSizeHint( which, constraint );
+    if ( m_data->content )
+        return m_data->content->effectiveSizeHint( which, constraint );
+
+    return Inherited::layoutSizeHint( which, constraint );
 }
 
 QRectF QskDrawer::layoutRectForSize( const QSizeF& size ) const
@@ -180,13 +177,16 @@ void QskDrawer::updateLayout()
     if ( !( isOpen() || isFading() ) )
         return;
 
+    if ( m_data->content == nullptr )
+        return;
+
     const auto targetRect = qskItemRect( parentItem() );
     const auto size = qskConstrainedItemSize( this, targetRect.size() );
 
     const auto rect = qskDrawerRect( targetRect,
         m_data->edge, metric( faderAspect() ), size );
 
-    qskSetItemGeometry( m_data->contentBox, rect );
+    qskSetItemGeometry( m_data->content, rect );
     Inherited::updateLayout();
 }
 
