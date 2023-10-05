@@ -92,18 +92,12 @@ void QskPanGesture::setPosition( const QPointF& pos )
 
 QskSwipeGesture::QskSwipeGesture()
     : QskGesture( Swipe )
-    , m_velocity( 0.0 )
     , m_angle( 0.0 )
 {
 }
 
 QskSwipeGesture::~QskSwipeGesture()
 {
-}
-
-void QskSwipeGesture::setVelocity( qreal velocity )
-{
-    m_velocity = velocity;
 }
 
 void QskSwipeGesture::setAngle( qreal angle )

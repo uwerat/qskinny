@@ -805,37 +805,44 @@ bool QskControl::event( QEvent* event )
 
             break;
         }
-        case QskEvent::GestureFilter:
-        {
-            /*
-                qskMaybeGesture is sending an event, so that it can be manipulated
-                by event filters. F.e QskDrawer wants to add a gesture to
-                some other control to initiate its appearance. 
-             */
-
-            auto ev = static_cast< QskGestureFilterEvent* >( event );
-
-            if ( ev->event()->type() == QEvent::MouseButtonPress )
-            {
-                auto mouseEvent = static_cast< const QMouseEvent* >( ev->event() );
-                const auto pos =
-                    mapFromItem( ev->item(), qskMousePosition( mouseEvent ) );
-
-                if ( !gestureRect().contains( pos ) )
-                {
-                    ev->setMaybeGesture( false );
-                    break;
-                }
-            }
-
-            ev->setMaybeGesture( gestureFilter( ev->item(), ev->event() ) );
-
-            break;
-        }
         case QskEvent::Gesture:
         {
             gestureEvent( static_cast< QskGestureEvent* >( event ) );
             return true;
+        }
+        case QEvent::MouseButtonPress:
+        {
+            /*
+                We need to do a gesture detection with abort criterions
+                first. When it fails the input events will be processed
+                in ascending order along the item tree until an item accepts
+                the event.
+
+                This detection can be done in childMouseEventFilter() for all
+                children - but not for the filtering control ( = this ) itself.
+                So we need to do this here.
+             */
+            if ( qskMaybeGesture( this, this, event ) )
+                return true;
+
+            const bool ok = Inherited::event( event );
+
+            if ( !event->isAccepted() )
+            {
+                /*
+                    When the initial gesture detection failed and the event
+                    has not been handled here we do a second gesture detection
+                    without passing a child. It can be used for detections
+                    without abort criterions.
+
+                    An example is the pan gesture detection, that can be started without
+                    any timeouts now.
+                 */
+                if ( qskMaybeGesture( this, nullptr, event ) )
+                    return true;
+            }
+
+            return ok;
         }
     }
 
@@ -847,12 +854,25 @@ bool QskControl::event( QEvent* event )
 
 bool QskControl::childMouseEventFilter( QQuickItem* child, QEvent* event )
 {
-    return qskMaybeGesture( this, child, event );
-}
+    /*
+        The strategy implemented in many classes of the Qt development is
+        to analyze the events without blocking the handling of the child. 
+        Once a gesture is detected the gesture handling trys to steal the
+        mouse grab hoping for the child to abort its operation.
 
-bool QskControl::gestureFilter( const QQuickItem*, const QEvent* )
-{
-    return false;
+        This approach has obvious problems:
+
+        - operations already started on press can't be aborted anymore
+        - the child needs to agree on losing the grab ( setKeepMouseGrab( false ) )
+        - ...
+
+        We implement a different strategy: processing of the events
+        by the children is blocked until the gesture detection has accepted
+        or rejected. In case of a rejection the events will be replayed.
+        ( see QskGestureRecognizer )
+     */
+
+    return qskMaybeGesture( this, child, event );
 }
 
 void QskControl::gestureEvent( QskGestureEvent* )
@@ -976,11 +996,6 @@ QRectF QskControl::layoutRectForSize( const QSizeF& size ) const
 {
     const QRectF r( 0.0, 0.0, size.width(), size.height() );
     return qskValidOrEmptyInnerRect( r, margins() );
-}
-
-QRectF QskControl::gestureRect() const
-{
-    return rect();
 }
 
 QRectF QskControl::focusIndicatorRect() const

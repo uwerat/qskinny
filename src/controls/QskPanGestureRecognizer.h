@@ -14,7 +14,7 @@ class QSK_EXPORT QskPanGestureRecognizer : public QskGestureRecognizer
     using Inherited = QskGestureRecognizer;
 
   public:
-    QskPanGestureRecognizer();
+    QskPanGestureRecognizer( QObject* = nullptr );
     ~QskPanGestureRecognizer() override;
 
     void setMinDistance( int pixels );
@@ -24,9 +24,9 @@ class QSK_EXPORT QskPanGestureRecognizer : public QskGestureRecognizer
     Qt::Orientations orientations() const;
 
   private:
-    void pressEvent( const QMouseEvent* ) override;
-    void moveEvent( const QMouseEvent* ) override;
-    void releaseEvent( const QMouseEvent* ) override;
+    void processPress( const QPointF&, quint64 timestamp, bool isFinal ) override;
+    void processMove( const QPointF&, quint64 timestamp ) override;
+    void processRelease( const QPointF&, quint64 timestamp ) override;
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

@@ -96,23 +96,6 @@ void QskSwipeView::resetDuration()
     setDuration( 500 );
 }
 
-bool QskSwipeView::gestureFilter( const QQuickItem* item, const QEvent* event )
-{
-    // see QskScrollBox.cpp
-
-    auto& recognizer = m_data->panRecognizer;
-
-    if ( event->type() == QEvent::MouseButtonPress )
-    {
-        auto mouseEvent = static_cast< const QMouseEvent* >( event );
-        if ( recognizer.hasProcessedBefore( mouseEvent ) )
-            return false;
-    }
-
-    return recognizer.processEvent( item, event );
-
-}
-
 void QskSwipeView::gestureEvent( QskGestureEvent* event )
 {
     const auto gesture = static_cast< const QskPanGesture* >( event->gesture().get() );

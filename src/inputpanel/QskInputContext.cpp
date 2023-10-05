@@ -197,6 +197,14 @@ static void qskInputContextHook()
 
 Q_COREAPP_STARTUP_FUNCTION( qskInputContextHook )
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 2, 0 )
+    static inline QLocale::Territory qskTerritory( const QLocale& locale )
+        { return locale.territory(); }
+#else
+    static inline QLocale::Country qskTerritory( const QLocale& locale )
+        { return locale.country(); }
+#endif
+
 void QskInputContext::setInstance( QskInputContext* inputContext )
 {
     if ( inputContext != qskInputContext )
@@ -527,10 +535,10 @@ std::shared_ptr< QskTextPredictor > QskInputContextFactory::setupPredictor( cons
 {
     if( !m_data->predictor
         || m_data->predictorLocale.language() != locale.language()
-        || m_data->predictorLocale.country() != locale.country() )
+        || qskTerritory( m_data->predictorLocale ) != qskTerritory( locale ) )
     {
         m_data->predictor = std::shared_ptr< QskTextPredictor >( createPredictor( locale ) );
-        m_data->predictorLocale = QLocale( locale.language(), locale.country() );
+        m_data->predictorLocale = QLocale( locale.language(), qskTerritory( locale ) );
 
         if( m_data->predictor )
         {

@@ -1,10 +1,7 @@
 #pragma once
 
 #include <QskControl.h>
-#include <QskPanGestureRecognizer.h>
 #include <QskStackBox.h>
-
-#include <QQuickWindow>
 
 class MenuBar;
 class QskBox;
@@ -66,18 +63,17 @@ class MainItem : public QskControl
 {
     Q_OBJECT
 
+    using Inherited = QskControl;
+
   public:
     MainItem( QQuickItem* parent = nullptr );
 
   protected:
     void keyPressEvent( QKeyEvent* ) override final;
-
-    bool gestureFilter( const QQuickItem*, const QEvent* ) override final;
     void gestureEvent( QskGestureEvent* ) override final;
 
   private:
     QskLinearBox* m_mainLayout;
     MenuBar* m_menuBar;
     Cube* m_cube;
-    QskPanGestureRecognizer m_panRecognizer;
 };

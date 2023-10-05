@@ -20,6 +20,30 @@ static inline constexpr qreal qskViewportPadding()
     return 10.0; // should be from the skin, TODO ...
 }
 
+static inline bool qskIsScrollable(
+    const QskScrollBox* scrollBox, Qt::Orientations orientations )
+{
+    if ( orientations )
+    {
+        const QSizeF viewSize = scrollBox->viewContentsRect().size();
+        const QSizeF& scrollableSize = scrollBox->scrollableSize();
+
+        if ( orientations & Qt::Vertical )
+        {
+            if ( viewSize.height() < scrollableSize.height() )
+                return true;
+        }
+
+        if ( orientations & Qt::Horizontal )
+        {
+            if ( viewSize.width() < scrollableSize.width() )
+                return true;
+        }
+    }
+
+    return false;
+}
+
 namespace
 {
     class FlickAnimator final : public QskFlickAnimator
@@ -100,6 +124,29 @@ namespace
         QPointF m_from;
         QPointF m_to;
     };
+
+    class PanRecognizer final : public QskPanGestureRecognizer
+    {
+        using Inherited = QskPanGestureRecognizer;
+
+      public:
+        PanRecognizer( QObject* parent = nullptr )
+            : QskPanGestureRecognizer( parent )
+        {
+            setOrientations( Qt::Horizontal | Qt::Vertical );
+        }
+
+        QRectF gestureRect() const override
+        {
+            if ( auto scrollBox = qobject_cast< const QskScrollBox* >( watchedItem() ) )
+            {
+                if ( qskIsScrollable( scrollBox, orientations() ) )
+                    return scrollBox->viewContentsRect();
+            }
+
+            return QRectF( 0.0, 0.0, -1.0, -1.0 ); // empty
+        }
+    };
 }
 
 class QskScrollBox::PrivateData
@@ -108,8 +155,7 @@ class QskScrollBox::PrivateData
     QPointF scrollPos;
     QSizeF scrollableSize = QSize( 0.0, 0.0 );
 
-    QskPanGestureRecognizer panRecognizer;
-    int panRecognizerTimeout = 100; // value coming from the platform ???
+    PanRecognizer panRecognizer;
 
     FlickAnimator flicker;
     ScrollAnimator scroller;
@@ -125,13 +171,11 @@ QskScrollBox::QskScrollBox( QQuickItem* parent )
     m_data->scroller.setScrollBox( this );
 
     m_data->panRecognizer.setWatchedItem( this );
-    m_data->panRecognizer.setOrientations( Qt::Horizontal | Qt::Vertical );
-
-    setFiltersChildMouseEvents( true );
 
     setAcceptedMouseButtons( Qt::LeftButton );
-    setWheelEnabled( true );
+    setFiltersChildMouseEvents( true );
 
+    setWheelEnabled( true );
     setFocusPolicy( Qt::StrongFocus );
 
     connectWindow( window(), true );
@@ -185,12 +229,12 @@ void QskScrollBox::setFlickRecognizerTimeout( int timeout )
     if ( timeout < 0 )
         timeout = -1;
 
-    m_data->panRecognizerTimeout = timeout;
+    m_data->panRecognizer.setTimeout( timeout );
 }
 
 int QskScrollBox::flickRecognizerTimeout() const
 {
-    return m_data->panRecognizerTimeout;
+    return m_data->panRecognizer.timeout();
 }
 
 void QskScrollBox::setFlickableOrientations( Qt::Orientations orientations )
@@ -248,11 +292,6 @@ void QskScrollBox::setScrollableSize( const QSizeF& size )
 QSizeF QskScrollBox::scrollableSize() const
 {
     return m_data->scrollableSize;
-}
-
-QRectF QskScrollBox::gestureRect() const
-{
-    return viewContentsRect();
 }
 
 void QskScrollBox::ensureItemVisible( const QQuickItem* item )
@@ -362,25 +401,6 @@ void QskScrollBox::geometryChangeEvent( QskGeometryChangeEvent* event )
     Inherited::geometryChangeEvent( event );
 }
 
-void QskScrollBox::mousePressEvent( QMouseEvent* event )
-{
-    auto& recognizer = m_data->panRecognizer;
-    if ( recognizer.hasProcessedBefore( event ) )
-    {
-        if ( m_data->panRecognizerTimeout != 0 )
-        {
-            recognizer.abort();
-            recognizer.setTimeout( -1 );
-
-            recognizer.processEvent( this, event, false );
-        }
-
-        return;
-    }
-
-    return Inherited::mousePressEvent( event );
-}
-
 void QskScrollBox::gestureEvent( QskGestureEvent* event )
 {
     if ( event->gesture()->type() == QskGesture::Pan )
@@ -445,75 +465,6 @@ void QskScrollBox::wheelEvent( QWheelEvent* event )
 }
 
 #endif
-
-bool QskScrollBox::gestureFilter( const QQuickItem* item, const QEvent* event )
-{
-    if ( event->type() == QEvent::MouseButtonPress )
-    {
-        // Checking first if panning is possible at all
-
-        bool maybeGesture = false;
-
-        const auto orientations = m_data->panRecognizer.orientations();
-        if ( orientations )
-        {
-            const QSizeF viewSize = viewContentsRect().size();
-            const QSizeF& scrollableSize = m_data->scrollableSize;
-
-            if ( orientations & Qt::Vertical )
-            {
-                if ( viewSize.height() < scrollableSize.height() )
-                    maybeGesture = true;
-            }
-
-            if ( orientations & Qt::Horizontal )
-            {
-                if ( viewSize.width() < scrollableSize.width() )
-                    maybeGesture = true;
-            }
-        }
-
-        if ( !maybeGesture )
-            return false;
-    }
-
-
-    auto& recognizer = m_data->panRecognizer;
-    recognizer.setTimeout( m_data->panRecognizerTimeout );
-
-    if ( event->type() == QEvent::MouseButtonPress )
-    {
-        /*
-            This code is a bit tricky as the filter is called in different situations:
-
-            a) The press was on a child of the view
-            b) The press was on the view
-
-            In case of b) things are simple and we can let the recognizer
-            decide without timeout if it is was a gesture or not.
-
-            In case of a) we give the recognizer some time to decide - usually
-            based on the distances of the following mouse events. If no decision
-            could be made the recognizer aborts and replays the mouse events, so
-            that the children can process them.
-
-            But if a child does not accept the mouse event it will be sent to
-            its parent, finally ending up here for a second time.
-         */
-
-        auto mouseEvent = static_cast< const QMouseEvent* >( event );
-        if ( recognizer.hasProcessedBefore( mouseEvent ) )
-        {
-            /*
-                Note that the recognizer will be restarted without timout if the
-                event ends up in  in mousePressEvent ( = nobody else was interested )
-             */
-            return false;
-        }
-    }
-
-    return recognizer.processEvent( item, event );
-}
 
 QPointF QskScrollBox::boundedScrollPos( const QPointF& pos ) const
 {

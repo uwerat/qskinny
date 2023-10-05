@@ -136,14 +136,10 @@ class QSK_EXPORT QskSwipeGesture : public QskGesture
     QskSwipeGesture();
     ~QskSwipeGesture() override;
 
-    void setVelocity( qreal velocity );
-    inline qreal velocity() const { return m_velocity; }
-
     void setAngle( qreal angle );
-    inline qreal angle() const;
+    inline qreal angle() const { return m_angle; };
 
   private:
-    qreal m_velocity;
     qreal m_angle;
 };
 

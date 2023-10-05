@@ -16,8 +16,10 @@
 #include <QskObjectCounter.h>
 #include <QskPushButton.h>
 #include <QskScrollArea.h>
+#include <QskSwipeView.h>
 #include <QskQuick.h>
 #include <QskWindow.h>
+#include <QskRgbValue.h>
 
 #include <QGuiApplication>
 #include <QPainter>
@@ -83,8 +85,9 @@ class Thumbnail : public QskPushButton
     void mousePressEvent( QMouseEvent* event ) override
     {
         /*
-            rgnore events: to check if the pae gesture recoognizer of the scroll
-            area becomes active without timeout ( see QskScrollBox::mousePressEvent )
+            ignore events: to check if the pan gesture recoognizer of the scroll
+            area works, when the event arrives as regular event
+            ( not via childMouseEventFilter )
          */
         event->setAccepted( false );
     }
@@ -198,6 +201,8 @@ class ScrollArea : public QskScrollArea
     ScrollArea( QQuickItem* parentItem = nullptr )
         : QskScrollArea( parentItem )
     {
+        setMargins( QMarginsF( 25, 25, 5, 5 ) );
+
         // settings usually done in the skins
         setBoxBorderMetricsHint( Viewport, 2 );
         setBoxBorderColorsHint( Viewport, Qt::gray ); // works with most color schemes
@@ -282,18 +287,42 @@ int main( int argc, char* argv[] )
     iconGrid->setSizePolicy( QskSizePolicy::MinimumExpanding,
         QskSizePolicy::MinimumExpanding );
 
-    auto scrollArea = new ScrollArea( box );
-    scrollArea->setMargins( QMarginsF( 25, 25, 5, 5 ) );
+    auto scrollArea = new ScrollArea();
     scrollArea->setScrolledItem( iconGrid );
+
+#if 0
+    // for testing nested gestures 
+    auto swipeView = new QskSwipeView();
+
+    swipeView->addItem( scrollArea );
+
+    for ( int i = 0; i < 1; i++ )
+    {
+        using namespace QskRgb;
+
+        const QRgb colors[] = { FireBrick, DodgerBlue, OliveDrab, Gold, Wheat };
+
+        auto page = new QskControl();
+
+        const auto index = i % ( sizeof( colors ) / sizeof( colors[0] ) );
+        page->setBackgroundColor( colors[ index ] );
+
+        swipeView->addItem( page );
+    }
+
+    box->addItem( swipeView );
+#else
+    box->addItem( scrollArea );
+#endif
 
     auto focusIndicator = new QskFocusIndicator();
     focusIndicator->setBoxBorderColorsHint( QskFocusIndicator::Panel, Qt::darkRed );
 
     QskWindow window;
-    window.resize( 600, 600 );
     window.addItem( box );
     window.addItem( focusIndicator );
 
+    window.resize( 600, 600 );
     window.show();
 
     return app.exec();
