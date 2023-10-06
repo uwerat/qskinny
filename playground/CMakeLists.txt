@@ -6,6 +6,7 @@ add_subdirectory(invoker)
 add_subdirectory(shadows)
 add_subdirectory(shapes)
 add_subdirectory(charts)
+add_subdirectory(drawer)
 
 if (BUILD_INPUTCONTEXT)
     add_subdirectory(inputpanel)

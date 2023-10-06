@@ -232,20 +232,17 @@ namespace
             }
 
             {
-                auto drawer = new Drawer( parentItem() );
-                drawer->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
-                drawer->setEdge( Qt::RightEdge );
-
                 auto burger = new QskPushButton( "≡", this );
                 burger->setEmphasis( QskPushButton::LowEmphasis );
 
                 connect( burger, &QskPushButton::clicked,
-                    drawer, &QskPopup::open );
+                    this, &Header::drawerRequested );
             }
         }
 
       Q_SIGNALS:
         void enabledToggled( bool );
+        void drawerRequested();
     };
 
     class MainView : public QskMainView
@@ -267,6 +264,13 @@ namespace
 
             connect( header, &Header::enabledToggled,
                 tabView, &TabView::setPagesEnabled );
+
+            auto drawer = new Drawer( this );
+            drawer->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+            drawer->setEdge( Qt::RightEdge );
+
+            connect( header, &Header::drawerRequested,
+                drawer, &QskPopup::open );
 
             setHeader( header );
             setBody( tabView );
