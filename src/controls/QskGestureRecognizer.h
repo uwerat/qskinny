@@ -22,6 +22,7 @@ class QSK_EXPORT QskGestureRecognizer : public QObject
 
     Q_PROPERTY( State state READ state NOTIFY stateChanged )
     Q_PROPERTY( QQuickItem* watchedItem READ watchedItem WRITE setWatchedItem )
+    Q_PROPERTY( QQuickItem* targetItem READ targetItem WRITE setTargetItem )
 
     Q_PROPERTY( Qt::MouseButtons acceptedMouseButtons
         READ acceptedMouseButtons WRITE setAcceptedMouseButtons )
