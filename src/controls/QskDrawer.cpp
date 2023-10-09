@@ -63,12 +63,14 @@ namespace
       public:
         GeometryListener( QskDrawer* drawer )
             : m_drawer( drawer )
+            , m_parent( drawer->parentItem() )
         {
-            if ( drawer->parentItem() )
-            {
-                auto d = QQuickItemPrivate::get( drawer->parentItem() );
-                d->addItemChangeListener( this, QQuickItemPrivate::Geometry );
-            }
+            setEnabled( true );
+        }
+
+        ~GeometryListener()
+        {
+            setEnabled( false );
         }
 
       private:
@@ -79,7 +81,22 @@ namespace
         }
 
       private:
+        void setEnabled( bool on )
+        {
+            if ( m_parent )
+            {
+                const auto changeTypes = QQuickItemPrivate::Geometry;
+
+                auto d = QQuickItemPrivate::get( m_parent );
+                if ( on )
+                    d->addItemChangeListener( this, changeTypes );
+                else
+                    d->removeItemChangeListener( this, changeTypes );
+            }
+        }
+
         QskDrawer* m_drawer = nullptr;
+        QQuickItem* m_parent = nullptr;
     };
 
     class GestureRecognizer : public QskPanGestureRecognizer
@@ -154,7 +171,13 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
      */
     setPlacementPolicy( QskPlacementPolicy::Ignore );
     if ( parentItem )
+    {
+        /*
+            QskPopup has an internal QskInputGrabber, that does something
+            very similar. Maybe we can make use of it ... TODO
+         */
         m_data->listener = new GeometryListener( this );
+    }
 
     (void) new GestureRecognizer( this );
 #if 1
@@ -230,7 +253,10 @@ void QskDrawer::itemChange( QQuickItem::ItemChange change,
     if ( change == QQuickItem::ItemParentHasChanged )
     {
         delete m_data->listener;
-        m_data->listener = new GeometryListener( this );
+        m_data->listener = nullptr;
+
+        if ( parentItem() )
+            m_data->listener = new GeometryListener( this );
     }
 }
 
