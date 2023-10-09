@@ -43,10 +43,15 @@ class QSK_EXPORT QskGestureRecognizer : public QObject
     QskGestureRecognizer( QObject* parent = nullptr );
     ~QskGestureRecognizer() override;
 
-    bool eventFilter( QObject* object, QEvent* event) override;
+    bool eventFilter( QObject*, QEvent* ) override;
 
+    // the item where the gesture happens
     void setWatchedItem( QQuickItem* );
     QQuickItem* watchedItem() const;
+
+    // the item processing the gesture events
+    void setTargetItem( QQuickItem* );
+    QQuickItem* targetItem() const;
 
     // Qt::NoButton means: all buttons accepted
     void setAcceptedMouseButtons( Qt::MouseButtons );

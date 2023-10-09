@@ -61,9 +61,14 @@ static inline qreal qskAngle(
 }
 
 static void qskSendPanGestureEvent(
-    QQuickItem* item, QskGesture::State state, qreal velocity, qreal angle,
-    const QPointF& origin, const QPointF& lastPosition, const QPointF& position )
+    QskGestureRecognizer* recognizer, QskGesture::State state,
+    qreal velocity, qreal angle, const QPointF& origin,
+    const QPointF& lastPosition, const QPointF& position )
 {
+    auto item = recognizer->targetItem();
+    if ( item == nullptr )
+        item = recognizer->watchedItem();
+
     auto gesture = std::make_shared< QskPanGesture >();
     gesture->setState( state );
 
@@ -244,12 +249,12 @@ void QskPanGestureRecognizer::processMove( const QPointF& pos, quint64 timestamp
 
         if ( started )
         {
-            qskSendPanGestureEvent( watchedItem(), QskGesture::Started,
+            qskSendPanGestureEvent( this, QskGesture::Started,
                 velocity, m_data->angle, m_data->origin, m_data->origin, m_data->pos );
         }
         else
         {
-            qskSendPanGestureEvent( watchedItem(), QskGesture::Updated,
+            qskSendPanGestureEvent( this, QskGesture::Updated,
                 velocity, m_data->angle, m_data->origin, oldPos, m_data->pos );
         }
     }
@@ -262,7 +267,7 @@ void QskPanGestureRecognizer::processRelease( const QPointF&, quint64 timestamp 
         const ulong elapsedTotal = timestamp - timestampStarted();
         const qreal velocity = m_data->velocityTracker.velocity( elapsedTotal );
 
-        qskSendPanGestureEvent( watchedItem(), QskGesture::Finished,
+        qskSendPanGestureEvent( this, QskGesture::Finished,
             velocity, m_data->angle, m_data->origin, m_data->pos, m_data->pos );
     }
 }

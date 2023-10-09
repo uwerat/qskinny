@@ -68,7 +68,8 @@ class QskGestureRecognizer::PrivateData
         return watchedItem->acceptedMouseButtons();
     }
 
-    QQuickItem* watchedItem = nullptr;
+    QPointer< QQuickItem > watchedItem = nullptr;
+    QPointer< QQuickItem > targetItem = nullptr;
 
     QVector< QMouseEvent* > pendingEvents;
 
@@ -119,6 +120,16 @@ void QskGestureRecognizer::setWatchedItem( QQuickItem* item )
 QQuickItem* QskGestureRecognizer::watchedItem() const
 {
     return m_data->watchedItem;
+}
+
+void QskGestureRecognizer::setTargetItem( QQuickItem* item )
+{
+    m_data->targetItem = item;
+}
+
+QQuickItem* QskGestureRecognizer::targetItem() const
+{
+    return m_data->targetItem;
 }
 
 void QskGestureRecognizer::setAcceptedMouseButtons( Qt::MouseButtons buttons )
