@@ -7,10 +7,11 @@
 #include "QskEvent.h"
 #include "QskGesture.h"
 
-#include <qcoreapplication.h>
 #include <qline.h>
 #include <qmath.h>
 #include <qquickitem.h>
+#include <qguiapplication.h>
+#include <qstylehints.h>
 
 static inline bool qskIsInOrientation(
     const QPointF& from, const QPointF& to, Qt::Orientations orientations )
@@ -60,9 +61,14 @@ static inline qreal qskAngle(
 }
 
 static void qskSendPanGestureEvent(
-    QQuickItem* item, QskGesture::State state, qreal velocity, qreal angle,
-    const QPointF& origin, const QPointF& lastPosition, const QPointF& position )
+    QskGestureRecognizer* recognizer, QskGesture::State state,
+    qreal velocity, qreal angle, const QPointF& origin,
+    const QPointF& lastPosition, const QPointF& position )
 {
+    auto item = recognizer->targetItem();
+    if ( item == nullptr )
+        item = recognizer->watchedItem();
+
     auto gesture = std::make_shared< QskPanGesture >();
     gesture->setState( state );
 
@@ -146,7 +152,7 @@ class QskPanGestureRecognizer::PrivateData
   public:
     Qt::Orientations orientations = Qt::Horizontal | Qt::Vertical;
 
-    int minDistance = 15;
+    int minDistance = QGuiApplication::styleHints()->startDragDistance() + 5;
 
     quint64 timestampVelocity = 0.0; // timestamp of the last mouse event
     qreal angle = 0.0;
@@ -243,12 +249,12 @@ void QskPanGestureRecognizer::processMove( const QPointF& pos, quint64 timestamp
 
         if ( started )
         {
-            qskSendPanGestureEvent( watchedItem(), QskGesture::Started,
+            qskSendPanGestureEvent( this, QskGesture::Started,
                 velocity, m_data->angle, m_data->origin, m_data->origin, m_data->pos );
         }
         else
         {
-            qskSendPanGestureEvent( watchedItem(), QskGesture::Updated,
+            qskSendPanGestureEvent( this, QskGesture::Updated,
                 velocity, m_data->angle, m_data->origin, oldPos, m_data->pos );
         }
     }
@@ -261,7 +267,7 @@ void QskPanGestureRecognizer::processRelease( const QPointF&, quint64 timestamp 
         const ulong elapsedTotal = timestamp - timestampStarted();
         const qreal velocity = m_data->velocityTracker.velocity( elapsedTotal );
 
-        qskSendPanGestureEvent( watchedItem(), QskGesture::Finished,
+        qskSendPanGestureEvent( this, QskGesture::Finished,
             velocity, m_data->angle, m_data->origin, m_data->pos, m_data->pos );
     }
 }

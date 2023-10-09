@@ -36,6 +36,8 @@ class QSK_EXPORT QskDrawer : public QskPopup
     void aboutToShow() override;
     void itemChange( ItemChange, const ItemChangeData& ) override;
 
+    void gestureEvent( QskGestureEvent* ) override;
+
   private:
     void startFading( bool );
 

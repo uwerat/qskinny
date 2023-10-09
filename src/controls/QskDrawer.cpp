@@ -7,6 +7,10 @@
 #include "QskAspect.h"
 #include "QskAnimationHint.h"
 #include "QskQuick.h"
+#include "QskEvent.h"
+
+#include "QskPanGestureRecognizer.h"
+#include "QskGesture.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
@@ -77,6 +81,49 @@ namespace
       private:
         QskDrawer* m_drawer = nullptr;
     };
+
+    class GestureRecognizer : public QskPanGestureRecognizer
+    {
+        using Inherited = QskPanGestureRecognizer;
+
+      public:
+        GestureRecognizer( QskDrawer* drawer )
+            : QskPanGestureRecognizer( drawer )
+        {
+            setWatchedItem( drawer->parentItem() );
+            setTargetItem( drawer );
+        }
+
+      protected:
+        QRectF gestureRect() const override
+        {
+            auto drawer = qobject_cast< QskDrawer* >( parent() );
+
+            const auto dist = 50;
+            auto rect = qskItemRect( watchedItem() );
+
+            switch( drawer->edge() )
+            {
+                case Qt::LeftEdge:
+                    rect.setRight( rect.left() + dist );
+                    break;
+
+                case Qt::RightEdge:
+                    rect.setLeft( rect.right() - dist );
+                    break;
+
+                case Qt::TopEdge:
+                    rect.setBottom( rect.top() + dist );
+                    break;
+
+                case Qt::BottomEdge:
+                    rect.setTop( rect.bottom() - dist );
+                    break;
+            }
+
+            return rect;
+        }
+    };
 }
 
 class QskDrawer::PrivateData
@@ -108,6 +155,11 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
     setPlacementPolicy( QskPlacementPolicy::Ignore );
     if ( parentItem )
         m_data->listener = new GeometryListener( this );
+
+    (void) new GestureRecognizer( this );
+#if 1
+    parentItem->setAcceptedMouseButtons( Qt::LeftButton );
+#endif
 }
 
 QskDrawer::~QskDrawer()
@@ -128,6 +180,20 @@ void QskDrawer::setEdge( Qt::Edge edge )
     update();
     m_data->edge = edge;
     edgeChanged( edge );
+}
+
+void QskDrawer::gestureEvent( QskGestureEvent* event )
+{
+    if ( event->gesture()->type() == QskGesture::Pan )
+    {
+        const auto gesture = static_cast< const QskPanGesture* >( event->gesture().get() );
+        if ( gesture->state() == QskGesture::Finished )
+            open();
+
+        return;
+    }
+
+    Inherited::gestureEvent( event );
 }
 
 QRectF QskDrawer::layoutRectForSize( const QSizeF& size ) const

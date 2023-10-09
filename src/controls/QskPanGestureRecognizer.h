@@ -23,11 +23,12 @@ class QSK_EXPORT QskPanGestureRecognizer : public QskGestureRecognizer
     void setOrientations( Qt::Orientations );
     Qt::Orientations orientations() const;
 
-  private:
+  protected:
     void processPress( const QPointF&, quint64 timestamp, bool isFinal ) override;
     void processMove( const QPointF&, quint64 timestamp ) override;
     void processRelease( const QPointF&, quint64 timestamp ) override;
 
+  private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
