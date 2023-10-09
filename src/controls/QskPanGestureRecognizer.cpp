@@ -7,10 +7,11 @@
 #include "QskEvent.h"
 #include "QskGesture.h"
 
-#include <qcoreapplication.h>
 #include <qline.h>
 #include <qmath.h>
 #include <qquickitem.h>
+#include <qguiapplication.h>
+#include <qstylehints.h>
 
 static inline bool qskIsInOrientation(
     const QPointF& from, const QPointF& to, Qt::Orientations orientations )
@@ -146,7 +147,7 @@ class QskPanGestureRecognizer::PrivateData
   public:
     Qt::Orientations orientations = Qt::Horizontal | Qt::Vertical;
 
-    int minDistance = 15;
+    int minDistance = QGuiApplication::styleHints()->startDragDistance() + 5;
 
     quint64 timestampVelocity = 0.0; // timestamp of the last mouse event
     qreal angle = 0.0;
