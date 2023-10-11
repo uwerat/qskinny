@@ -136,15 +136,15 @@ namespace
             setOrientations( Qt::Horizontal | Qt::Vertical );
         }
 
-        QRectF gestureRect() const override
+        bool isAcceptedPos( const QPointF& pos ) const override
         {
             if ( auto scrollBox = qobject_cast< const QskScrollBox* >( watchedItem() ) )
             {
                 if ( qskIsScrollable( scrollBox, orientations() ) )
-                    return scrollBox->viewContentsRect();
+                    return scrollBox->viewContentsRect().contains( pos );
             }
 
-            return QRectF( 0.0, 0.0, -1.0, -1.0 ); // empty
+            return false;
         }
     };
 }
