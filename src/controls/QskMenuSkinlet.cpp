@@ -9,11 +9,13 @@
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
 #include "QskTextOptions.h"
-#include "QskSGNode.h"
 #include "QskFunctions.h"
 #include "QskMargins.h"
 #include "QskFunctions.h"
 #include "QskLabelData.h"
+
+#include "QskSGNode.h"
+#include "QskSlideInNode.h"
 
 #include <qfontmetrics.h>
 #include <qmath.h>
@@ -209,10 +211,43 @@ QskMenuSkinlet::QskMenuSkinlet( QskSkin* skin )
     : Inherited( skin )
     , m_data( new PrivateData() )
 {
-    appendNodeRoles( { PanelRole } );
+    appendNodeRoles( { ContentsRole, PanelRole } );
 }
 
 QskMenuSkinlet::~QskMenuSkinlet() = default;
+
+QSGNode* QskMenuSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
+{
+    switch ( nodeRole )
+    {
+        case ContentsRole:
+        {
+            /*
+                QskSlideInNode works for controls made of nodes - not for
+                containers of other quick items. TODO ...
+             */
+
+            const auto popup = static_cast< const QskPopup* >( skinnable );
+
+            auto rect = popup->contentsRect();
+            if ( rect.isEmpty() )
+                return nullptr;
+
+            auto slideInNode = QskSGNode::ensureNode< QskSlideInNode >( node );
+
+            const auto progress = popup->metric( popup->faderAspect() );
+            slideInNode->updateTranslation( rect, Qt::TopEdge, progress );
+
+            auto contentsNode = updateContentsNode( popup, slideInNode->contentsNode() );
+            slideInNode->setContentsNode( contentsNode );
+
+            return slideInNode;
+        }
+    }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
+}
 
 QRectF QskMenuSkinlet::cursorRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect, int index ) const
@@ -407,7 +442,8 @@ QskAspect::States QskMenuSkinlet::sampleStates(
             }
         }
 
-        const auto cursorPos = menu->effectiveSkinHint( Q::Segment | Q::Hovered | A::Metric | A::Position ).toPointF();
+        const auto cursorPos = menu->effectiveSkinHint(
+            Q::Segment | Q::Hovered | A::Metric | A::Position ).toPointF();
 
         if( !cursorPos.isNull() && menu->indexAtPosition( cursorPos ) == index )
         {

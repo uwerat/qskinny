@@ -20,8 +20,6 @@ class QSK_EXPORT QskPopupSkinlet : public QskSkinlet
     enum NodeRole
     {
         OverlayRole,
-        ContentsRole,
-
         RoleCount
     };
 
@@ -35,10 +33,7 @@ class QSK_EXPORT QskPopupSkinlet : public QskSkinlet
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-    virtual QSGNode* updateContentsNode( const QskPopup*, QSGNode* ) const;
-
   private:
-    QSGNode* updateExtraNode( const QskPopup*, QSGNode* ) const;
     QSGNode* updateOverlayNode( const QskPopup*, QSGNode* ) const;
 };
 

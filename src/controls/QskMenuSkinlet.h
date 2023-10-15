@@ -20,7 +20,9 @@ class QSK_EXPORT QskMenuSkinlet : public QskPopupSkinlet
   public:
     enum NodeRole
     {
-        PanelRole = QskPopupSkinlet::RoleCount,
+        ContentsRole = Inherited::RoleCount,
+        PanelRole,
+
         RoleCount
     };
 
@@ -48,7 +50,10 @@ class QSK_EXPORT QskMenuSkinlet : public QskPopupSkinlet
         Qt::SizeHint, const QSizeF& ) const override;
 
   protected:
-    QSGNode* updateContentsNode( const QskPopup*, QSGNode* ) const override;
+    QSGNode* updateSubNode( const QskSkinnable*,
+        quint8 nodeRole, QSGNode* ) const override;
+
+    QSGNode* updateContentsNode( const QskPopup*, QSGNode* ) const;
     QSGNode* updateMenuNode( const QskSkinnable*, QSGNode* ) const;
 
     QSGNode* updateSampleNode( const QskSkinnable*,

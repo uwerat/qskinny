@@ -115,6 +115,7 @@ list(APPEND HEADERS
     nodes/QskRichTextRenderer.h
     nodes/QskScaleRenderer.h
     nodes/QskSGNode.h
+    nodes/QskSlideInNode.h
     nodes/QskStrokeNode.h
     nodes/QskStippledLineRenderer.h
     nodes/QskShapeNode.h
@@ -146,6 +147,7 @@ list(APPEND SOURCES
     nodes/QskRichTextRenderer.cpp
     nodes/QskScaleRenderer.cpp
     nodes/QskSGNode.cpp
+    nodes/QskSlideInNode.cpp
     nodes/QskStrokeNode.cpp
     nodes/QskStippledLineRenderer.cpp
     nodes/QskShapeNode.cpp
