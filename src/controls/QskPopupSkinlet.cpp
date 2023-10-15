@@ -28,8 +28,6 @@ QRectF QskPopupSkinlet::subControlRect( const QskSkinnable* skinnable,
 QSGNode* QskPopupSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    const auto popup = static_cast< const QskPopup* >( skinnable );
-
     switch ( nodeRole )
     {
         case OverlayRole:
