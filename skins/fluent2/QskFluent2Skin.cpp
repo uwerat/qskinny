@@ -735,6 +735,7 @@ void Editor::setupListViewColors(
 void Editor::setupMenuMetrics()
 {
     using Q = QskMenu;
+    using A = QskAspect;
 
     setPadding( Q::Panel, { 4, 6, 4, 6 } );
     setBoxBorderMetrics( Q::Panel, 1 );
@@ -748,6 +749,14 @@ void Editor::setupMenuMetrics()
 
     setStrutSize( Q::Icon, 12, 12 );
     setPadding( Q::Icon, { 8, 8, 0, 8 } );
+
+#if 1
+    setPosition( Q::Panel, 0 );
+    setPosition( Q::Panel | QskPopup::Closed, 1 );
+
+    // copied from Mat3 - what are the correct values for Fluent2 ???
+    setAnimation( Q::Panel | A::Metric, 150 );
+#endif
 }
 
 void Editor::setupMenuColors(
