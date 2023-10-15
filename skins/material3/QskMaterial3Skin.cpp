@@ -379,7 +379,7 @@ void Editor::setupMenu()
     setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
 
     setPosition( Q::Panel, 0 );
-    setPosition( Q::Panel | QskPopup::Closed, 1_dp );
+    setPosition( Q::Panel | QskPopup::Closed, 1 );
 
     setAnimation( Q::Panel | A::Metric, 150 );
     setAnimation( Q::Cursor | A::Position | A::Metric, 75, QEasingCurve::OutCubic );
