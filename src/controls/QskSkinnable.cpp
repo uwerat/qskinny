@@ -1259,13 +1259,19 @@ bool QskSkinnable::isTransitionAccepted( QskAspect aspect ) const
 {
     Q_UNUSED( aspect )
 
-    /*
-        Usually we only need smooth transitions, when state changes
-        happen while the skinnable is visible. There are few exceptions
-        like QskPopup::Closed, that is used to slide/fade in.
-     */
     if ( auto control = qskControlCast( owningItem() ) )
-        return control->isInitiallyPainted();
+    {
+        /*
+            Usually we only need smooth transitions, when state changes
+            happen while the skinnable is visible. There are few exceptions
+            like QskPopup::Closed, that is used to slide/fade in.
+         */
+
+        if ( control->flags() & QQuickItem::ItemHasContents )
+            return control->isInitiallyPainted();
+
+        return true;
+    }
 
     return false;
 }
