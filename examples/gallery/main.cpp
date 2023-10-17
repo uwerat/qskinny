@@ -266,7 +266,6 @@ namespace
                 tabView, &TabView::setPagesEnabled );
 
             auto drawer = new Drawer( this );
-            drawer->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
             drawer->setEdge( Qt::RightEdge );
 
             connect( header, &Header::drawerRequested,
