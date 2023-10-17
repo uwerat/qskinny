@@ -18,7 +18,10 @@ class QSK_EXPORT QskDrawer : public QskPopup
     Q_PROPERTY( Qt::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged )
 
     Q_PROPERTY( qreal dragMargin READ dragMargin
-        WRITE setDragMargin NOTIFY dragMarginChanged )
+        WRITE setDragMargin RESET resetDragMargin NOTIFY dragMarginChanged )
+
+    Q_PROPERTY( bool interactive READ isInteractive
+        WRITE setInteractive NOTIFY interactiveChanged )
 
   public:
     QSK_SUBCONTROLS( Panel )
@@ -29,7 +32,11 @@ class QSK_EXPORT QskDrawer : public QskPopup
     void setEdge( Qt::Edge );
     Qt::Edge edge() const;
 
+    void setInteractive( bool );
+    bool isInteractive() const;
+
     void setDragMargin( qreal );
+    void resetDragMargin();
     qreal dragMargin() const;
 
     QRectF layoutRectForSize( const QSizeF& ) const override;
@@ -37,6 +44,7 @@ class QSK_EXPORT QskDrawer : public QskPopup
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
     void dragMarginChanged( qreal );
+    void interactiveChanged( bool );
 
   protected:
     void itemChange( ItemChange, const ItemChangeData& ) override;
