@@ -218,7 +218,6 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
     setZ( 1 );
 #endif
 
-    setOverlay( true );
     setPolishOnResize( true );
 
     setPopupFlag( PopupFlag::CloseOnPressOutside, true );
@@ -399,6 +398,17 @@ void QskDrawer::itemChange( QQuickItem::ItemChange change,
 
     switch( static_cast< int >( change ) )
     {
+        case QQuickItem::ItemChildAddedChange:
+        case QQuickItem::ItemChildRemovedChange:
+        {
+            if ( qskIsVisibleToLayout( value.item ) )
+                resetImplicitSize();
+
+            if ( qskIsAdjustableByLayout( value.item ) )
+                polish();
+
+            break;
+        }
         case QQuickItem::ItemParentHasChanged:
         {
             if ( parentItem() )
@@ -427,7 +437,7 @@ void QskDrawer::setFading( bool on )
     const auto aspect = faderAspect();
 
     auto hint = animationHint( aspect );
-    hint.updateFlags = QskAnimationHint::UpdatePolish | QskAnimationHint::UpdateNode;
+    hint.updateFlags = QskAnimationHint::UpdatePolish;
 
     startTransition( aspect, hint, from, to );
 }
