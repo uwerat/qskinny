@@ -72,6 +72,8 @@ class QSK_EXPORT QskPopup : public QskControl
   public Q_SLOTS:
     void open();
     void close();
+    void toggle();
+
     void setOpen( bool );
 
   Q_SIGNALS:

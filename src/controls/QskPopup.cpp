@@ -196,6 +196,11 @@ void QskPopup::close()
     setOpen( false );
 }
 
+void QskPopup::toggle()
+{
+    setOpen( !isOpen() );
+}
+
 void QskPopup::setOpen( bool on )
 {
     if ( on == isOpen() )
