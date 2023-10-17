@@ -809,12 +809,9 @@ void Editor::setupDialogButtonBox()
 void Editor::setupDrawer()
 {
     using Q = QskDrawer;
+    using A = QskAspect;
 
-    setPadding( Q::Panel, 5_dp );
-    setGradient( Q::Panel, m_pal.background );
-    setHint( Q::Overlay | QskAspect::Style, false );
-
-    setAnimation( Q::Panel | QskAspect::Position, qskDuration );
+    setAnimation( Q::Panel | A::Metric | A::Position, qskDuration );
 }
 
 void Editor::setupSlider()

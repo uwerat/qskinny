@@ -606,21 +606,15 @@ void Editor::setupDialogButtonBoxColors(
 void Editor::setupDrawerMetrics()
 {
     using Q = QskDrawer;
-
-    setPadding( Q::Panel, 5 );
-    setHint( Q::Overlay | QskAspect::Style, false );
+    using A = QskAspect;
 
 #if 1
-    setAnimation( Q::Panel | QskAspect::Position, 200 );
+    setAnimation( Q::Panel | A::Metric | A::Position, 200 );
 #endif
 }
 
-void Editor::setupDrawerColors(
-    QskAspect::Section section, const QskFluent2Theme& theme )
+void Editor::setupDrawerColors( QskAspect::Section, const QskFluent2Theme& )
 {
-    using Q = QskDrawer;
-
-    setGradient( Q::Panel | section, theme.palette.background.solid.base );
 }
 
 void Editor::setupFocusIndicatorMetrics()

@@ -62,7 +62,8 @@ namespace
         Drawer( QQuickItem* parent = nullptr )
             : QskDrawer( parent )
         {
-            auto box = new QskLinearBox( Qt::Vertical );
+            auto box = new QskLinearBox( Qt::Vertical, this );
+
             box->setSection( QskAspect::Header );
             box->setPanel( true );
             box->setPaddingHint( QskBox::Panel, 20 );
@@ -75,8 +76,6 @@ namespace
 
             auto btn = new QskPushButton( "Close", box );
             connect( btn, &QskPushButton::clicked, this, &QskDrawer::close );
-
-            setContent( box );
         }
     };
 
