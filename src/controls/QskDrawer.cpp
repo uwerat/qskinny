@@ -196,30 +196,35 @@ namespace
         bool isAcceptedPos( const QPointF& pos ) const override
         {
             auto drawer = qobject_cast< const QskDrawer* >( targetItem() );
-
-            const auto dragMargin = drawer->dragMargin();
-            if ( dragMargin <= 0.0 )
+            if ( drawer->isFading() )
                 return false;
 
             auto rect = qskItemRect( watchedItem() );
 
-            switch( drawer->edge() )
+            if ( !drawer->isOpen() )
             {
-                case Qt::LeftEdge:
-                    rect.setRight( rect.left() + dragMargin );
-                    break;
+                const auto dragMargin = drawer->dragMargin();
+                if ( dragMargin <= 0.0 )
+                    return false;
 
-                case Qt::RightEdge:
-                    rect.setLeft( rect.right() - dragMargin );
-                    break;
+                switch( drawer->edge() )
+                {
+                    case Qt::LeftEdge:
+                        rect.setRight( rect.left() + dragMargin );
+                        break;
 
-                case Qt::TopEdge:
-                    rect.setBottom( rect.top() + dragMargin );
-                    break;
+                    case Qt::RightEdge:
+                        rect.setLeft( rect.right() - dragMargin );
+                        break;
 
-                case Qt::BottomEdge:
-                    rect.setTop( rect.bottom() - dragMargin );
-                    break;
+                    case Qt::TopEdge:
+                        rect.setBottom( rect.top() + dragMargin );
+                        break;
+
+                    case Qt::BottomEdge:
+                        rect.setTop( rect.bottom() - dragMargin );
+                        break;
+                }
             }
 
             return rect.contains( pos );
@@ -324,8 +329,9 @@ void QskDrawer::gestureEvent( QskGestureEvent* event )
         const auto gesture = static_cast< const QskPanGesture* >( event->gesture().get() );
         if ( gesture->state() == QskGesture::Finished )
         {
-            if ( qskCheckDirection( m_data->edge, gesture ) )
-                open();
+            const auto forwards = qskCheckDirection( m_data->edge, gesture );
+            if ( forwards != isOpen() )
+                setOpen( forwards );
         }
 
         return;
