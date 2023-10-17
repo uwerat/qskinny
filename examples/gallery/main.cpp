@@ -62,6 +62,8 @@ namespace
         Drawer( QQuickItem* parent = nullptr )
             : QskDrawer( parent )
         {
+            setOverlay( false );
+
             auto box = new QskLinearBox( Qt::Vertical, this );
 
             box->setSection( QskAspect::Header );
@@ -261,11 +263,11 @@ namespace
             connect( header, &Header::enabledToggled,
                 tabView, &TabView::setPagesEnabled );
 
-            auto drawer = new Drawer( this );
+            auto drawer = new Drawer( tabView );
             drawer->setEdge( Qt::RightEdge );
 
             connect( header, &Header::drawerRequested,
-                drawer, &QskPopup::open );
+                drawer, &QskPopup::toggle );
 
             setHeader( header );
             setBody( tabView );

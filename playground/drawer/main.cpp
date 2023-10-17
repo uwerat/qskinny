@@ -28,7 +28,7 @@ namespace
 #endif
 
             setEdge( edge );
-            setOverlay( true );
+            setOverlay( false );
 
             auto content = new QskControl( this );
             content->setObjectName( "Content" );

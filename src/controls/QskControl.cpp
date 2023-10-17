@@ -915,10 +915,16 @@ void QskControl::itemChange( QQuickItem::ItemChange change,
             break;
         }
         case QQuickItem::ItemChildAddedChange:
+        case QQuickItem::ItemChildRemovedChange:
         {
-            if ( autoLayoutChildren() && qskIsAdjustableByLayout( value.item ) )
-                polish();
+            if ( autoLayoutChildren() )
+            {
+                if ( qskIsVisibleToLayout( value.item ) )
+                    resetImplicitSize();
 
+                if ( qskIsAdjustableByLayout( value.item ) )
+                    polish();
+            }
             break;
         }
         case QQuickItem::ItemActiveFocusHasChanged:
