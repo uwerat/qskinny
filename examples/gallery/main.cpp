@@ -62,8 +62,6 @@ namespace
         Drawer( QQuickItem* parent = nullptr )
             : QskDrawer( parent )
         {
-            setOverlay( false );
-
             auto box = new QskLinearBox( Qt::Vertical, this );
 
             box->setSection( QskAspect::Header );
