@@ -99,29 +99,29 @@ static void qskLayoutDrawer( const QRectF& rect, QskDrawer* drawer )
 static inline QRectF qskSlidingRect(
     const QSizeF& size, Qt::Edge edge, qreal ratio )
 {
-    auto dx = 0.0;
-    auto dy = 0.0;
+    auto x = 0.0;
+    auto y = 0.0;
 
     switch( edge )
     {
         case Qt::LeftEdge:
-            dx = -ratio * size.width();
+            x = -ratio * size.width();
             break;
 
         case Qt::RightEdge:
-            dx = ratio * size.width();
+            x = ratio * size.width();
             break;
 
         case Qt::TopEdge:
-            dy = -ratio * size.height();
+            y = -ratio * size.height();
             break;
 
         case Qt::BottomEdge:
-            dy = ratio * size.height();
+            y = ratio * size.height();
             break;
     }
 
-    return QRectF( dx, dy, size.width(), size.height() );
+    return QRectF( x, y, size.width(), size.height() );
 }
 
 namespace
