@@ -26,6 +26,12 @@ QSK_QT_PRIVATE_END
  */
 QSK_SUBCONTROL( QskDrawer, Panel )
 
+static inline qreal qskDefaultDragMargin()
+{
+    // a skin hint ???
+    return QGuiApplication::styleHints()->startDragDistance();
+}
+
 static void qskCatchMouseEvents( QQuickItem* item )
 {
 #if 1
@@ -196,30 +202,35 @@ namespace
         bool isAcceptedPos( const QPointF& pos ) const override
         {
             auto drawer = qobject_cast< const QskDrawer* >( targetItem() );
-
-            const auto dragMargin = drawer->dragMargin();
-            if ( dragMargin <= 0.0 )
+            if ( drawer->isFading() )
                 return false;
 
             auto rect = qskItemRect( watchedItem() );
 
-            switch( drawer->edge() )
+            if ( !drawer->isOpen() )
             {
-                case Qt::LeftEdge:
-                    rect.setRight( rect.left() + dragMargin );
-                    break;
+                const auto dragMargin = drawer->dragMargin();
+                if ( dragMargin <= 0.0 )
+                    return false;
 
-                case Qt::RightEdge:
-                    rect.setLeft( rect.right() - dragMargin );
-                    break;
+                switch( drawer->edge() )
+                {
+                    case Qt::LeftEdge:
+                        rect.setRight( rect.left() + dragMargin );
+                        break;
 
-                case Qt::TopEdge:
-                    rect.setBottom( rect.top() + dragMargin );
-                    break;
+                    case Qt::RightEdge:
+                        rect.setLeft( rect.right() - dragMargin );
+                        break;
 
-                case Qt::BottomEdge:
-                    rect.setTop( rect.bottom() - dragMargin );
-                    break;
+                    case Qt::TopEdge:
+                        rect.setBottom( rect.top() + dragMargin );
+                        break;
+
+                    case Qt::BottomEdge:
+                        rect.setTop( rect.bottom() - dragMargin );
+                        break;
+                }
             }
 
             return rect.contains( pos );
@@ -234,8 +245,7 @@ class QskDrawer::PrivateData
     GestureRecognizer* gestureRecognizer = nullptr;
     GeometryListener* listener = nullptr;
 
-    // a skin hint ???
-    qreal dragMargin = QGuiApplication::styleHints()->startDragDistance();
+    qreal dragMargin = qskDefaultDragMargin();
 };
 
 QskDrawer::QskDrawer( QQuickItem* parentItem )
@@ -247,6 +257,7 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
 #endif
 
     setAutoLayoutChildren( true );
+    setInteractive( true );
 
     setPopupFlag( PopupFlag::CloseOnPressOutside, true );
     setFaderAspect( Panel | QskAspect::Position | QskAspect::Metric );
@@ -258,13 +269,7 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
      */
     setPlacementPolicy( QskPlacementPolicy::Ignore );
     if ( parentItem )
-    {
         m_data->listener = new GeometryListener( parentItem, this );
-        qskCatchMouseEvents( parentItem );
-    }
-
-    m_data->gestureRecognizer = new GestureRecognizer( this );
-
 
     connect( this, &QskPopup::openChanged, this, &QskDrawer::setFading );
 
@@ -297,6 +302,32 @@ void QskDrawer::setEdge( Qt::Edge edge )
     edgeChanged( edge );
 }
 
+void QskDrawer::setInteractive( bool on )
+{
+    if ( on == isInteractive() )
+        return;
+
+    if ( on )
+    {
+        m_data->gestureRecognizer = new GestureRecognizer( this );
+        if ( parentItem() )
+            qskCatchMouseEvents( parentItem() );
+    }
+    else
+    {
+        // how to revert qskCatchMouseEvents properly ???
+        delete m_data->gestureRecognizer;
+        m_data->gestureRecognizer = nullptr;
+    }
+
+    Q_EMIT interactiveChanged( on );
+}
+
+bool QskDrawer::isInteractive() const
+{
+    return m_data->gestureRecognizer != nullptr;
+}
+
 void QskDrawer::setDragMargin( qreal margin )
 {
     margin = std::max( margin, 0.0 );
@@ -306,6 +337,11 @@ void QskDrawer::setDragMargin( qreal margin )
         m_data->dragMargin = margin;
         Q_EMIT dragMarginChanged( margin );
     }
+}
+
+void QskDrawer::resetDragMargin()
+{
+    setDragMargin( qskDefaultDragMargin() );
 }
 
 qreal QskDrawer::dragMargin() const
@@ -324,8 +360,9 @@ void QskDrawer::gestureEvent( QskGestureEvent* event )
         const auto gesture = static_cast< const QskPanGesture* >( event->gesture().get() );
         if ( gesture->state() == QskGesture::Finished )
         {
-            if ( qskCheckDirection( m_data->edge, gesture ) )
-                open();
+            const auto forwards = qskCheckDirection( m_data->edge, gesture );
+            if ( forwards != isOpen() )
+                setOpen( forwards );
         }
 
         return;
@@ -355,7 +392,7 @@ void QskDrawer::itemChange( QQuickItem::ItemChange change,
     {
         case QQuickItem::ItemParentHasChanged:
         {
-            if ( parentItem() )
+            if ( parentItem() && isInteractive() )
                 qskCatchMouseEvents( parentItem() );
 
             Q_FALLTHROUGH();
