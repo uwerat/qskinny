@@ -32,7 +32,7 @@ class QSK_EXPORT QskDrawer : public QskPopup
     void setDragMargin( qreal );
     qreal dragMargin() const;
 
-    void updateLayout() override;
+    QRectF layoutRectForSize( const QSizeF& ) const override;
 
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
@@ -40,8 +40,6 @@ class QSK_EXPORT QskDrawer : public QskPopup
 
   protected:
     void itemChange( ItemChange, const ItemChangeData& ) override;
-
-    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
     void gestureEvent( QskGestureEvent* ) override;
 
   private:
