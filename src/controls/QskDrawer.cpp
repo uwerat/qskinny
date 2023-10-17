@@ -377,7 +377,7 @@ void QskDrawer::updateLayout()
                 break;
         }
     }
-    
+
     const QRectF layoutRect( dx, dy, width(), height() );
 
     const auto children = childItems();
