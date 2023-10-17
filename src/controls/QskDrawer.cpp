@@ -96,6 +96,34 @@ static void qskLayoutDrawer( const QRectF& rect, QskDrawer* drawer )
     drawer->setGeometry( r );
 }
 
+static inline QRectF qskSlidingRect(
+    const QSizeF& size, Qt::Edge edge, qreal ratio )
+{
+    auto x = 0.0;
+    auto y = 0.0;
+
+    switch( edge )
+    {
+        case Qt::LeftEdge:
+            x = -ratio * size.width();
+            break;
+
+        case Qt::RightEdge:
+            x = ratio * size.width();
+            break;
+
+        case Qt::TopEdge:
+            y = -ratio * size.height();
+            break;
+
+        case Qt::BottomEdge:
+            y = ratio * size.height();
+            break;
+    }
+
+    return QRectF( x, y, size.width(), size.height() );
+}
+
 namespace
 {
     class GeometryListener final : public QQuickItemChangeListener
@@ -218,7 +246,7 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
     setZ( 1 );
 #endif
 
-    setPolishOnResize( true );
+    setAutoLayoutChildren( true );
 
     setPopupFlag( PopupFlag::CloseOnPressOutside, true );
     setFaderAspect( Panel | QskAspect::Position | QskAspect::Metric );
@@ -306,89 +334,16 @@ void QskDrawer::gestureEvent( QskGestureEvent* event )
     Inherited::gestureEvent( event );
 }
 
-QSizeF QskDrawer::layoutSizeHint(
-    Qt::SizeHint which, const QSizeF& constraint ) const
+QRectF QskDrawer::layoutRectForSize( const QSizeF& size ) const
 {
-    if ( which == Qt::MaximumSize )
-        return QSizeF();
-
-    qreal w = -1.0;
-    qreal h = -1.0;
-
-    const auto children = childItems();
-
-    for ( const auto child : children )
-    {
-        if ( !qskIsVisibleToLayout( child ) )
-            continue;
-
-        const auto policy = qskSizePolicy( child );
-
-        if ( constraint.width() >= 0.0 && policy.isConstrained( Qt::Vertical ) )
-        {
-            const auto hint = qskSizeConstraint( child, which, constraint );
-            h = qMax( h, hint.height() );
-        }
-        else if ( constraint.height() >= 0.0 && policy.isConstrained( Qt::Horizontal ) )
-        {
-            const auto hint = qskSizeConstraint( child, which, constraint );
-            w = qMax( w, hint.width() );
-        }
-        else
-        {
-            const auto hint = qskSizeConstraint( child, which );
-
-            w = qMax( w, hint.width() );
-            h = qMax( h, hint.height() );
-        }
-    }
-
-    return QSizeF( w, h );
-}
-
-void QskDrawer::updateLayout()
-{
-    if ( !( isOpen() || isFading() ) || size().isEmpty() )
-        return;
-
-    auto dx = 0.0;
-    auto dy = 0.0;
+    qreal ratio;
 
     if ( isFading() )
-    {
-        const auto f = metric( faderAspect() );
+        ratio = metric( faderAspect() );
+    else
+        ratio = isOpen() ? 0.0 : 1.0;
 
-        switch( m_data->edge )
-        {
-            case Qt::LeftEdge:
-                dx = -f * width();
-                break;
-
-            case Qt::RightEdge:
-                dx = f * width();
-                break;
-
-            case Qt::TopEdge:
-                dy = -f * height();
-                break;
-
-            case Qt::BottomEdge:
-                dy = f * height();
-                break;
-        }
-    }
-
-    const QRectF layoutRect( dx, dy, width(), height() );
-
-    const auto children = childItems();
-    for ( auto child : children )
-    {
-        if ( qskIsAdjustableByLayout( child ) )
-        {
-            const auto r = qskConstrainedItemRect( child, layoutRect );
-            qskSetItemGeometry( child, r );
-        }
-    }
+    return qskSlidingRect( size, m_data->edge, ratio );
 }
 
 void QskDrawer::itemChange( QQuickItem::ItemChange change,
@@ -398,17 +353,6 @@ void QskDrawer::itemChange( QQuickItem::ItemChange change,
 
     switch( static_cast< int >( change ) )
     {
-        case QQuickItem::ItemChildAddedChange:
-        case QQuickItem::ItemChildRemovedChange:
-        {
-            if ( qskIsVisibleToLayout( value.item ) )
-                resetImplicitSize();
-
-            if ( qskIsAdjustableByLayout( value.item ) )
-                polish();
-
-            break;
-        }
         case QQuickItem::ItemParentHasChanged:
         {
             if ( parentItem() )
