@@ -759,13 +759,12 @@ void Editor::setupDialogButtonBox()
     setBoxShape( Q::Panel, 2 );
 }
 
-void Editor::setupDrawer() {
+void Editor::setupDrawer()
+{
+    using A = QskAspect;
     using Q = QskDrawer;
 
-    setPadding( Q::Panel, 5 );
-    setGradient( Q::Panel, m_pal.darker125 );
-    setAnimation( Q::Panel | QskAspect::Position, qskDuration );
-    setHint( Q::Overlay | QskAspect::Style, false );
+    setAnimation( Q::Panel | A::Metric | A::Position, qskDuration );
 }
 
 void Editor::setupTabButton()

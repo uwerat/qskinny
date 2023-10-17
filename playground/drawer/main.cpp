@@ -24,33 +24,34 @@ namespace
             : QskDrawer( parent )
         {
 #if 1
-            setAnimationHint( Panel | QskAspect::Position, 1000 );
+            setAnimationHint( faderAspect(), 1000 );
 #endif
 
             setEdge( edge );
             setOverlay( true );
 
             auto content = new QskControl( this );
+            content->setObjectName( "Content" );
 
             switch( edge )
             {
                 case Qt::LeftEdge:
                     content->setBackgroundColor( QskRgb::Tomato );
-                    setFixedWidth( 100 );
+                    content->setFixedWidth( 100 );
                     break;
 
                 case Qt::RightEdge:
-                    setFixedWidth( 200 );
+                    content->setFixedWidth( 200 );
                     content->setBackgroundColor( QskRgb::Orchid );
                     break;
 
                 case Qt::TopEdge:
-                    setFixedHeight( 100 );
-                    content->setBackgroundColor( QskRgb::Wheat );
+                    content->setFixedHeight( 100 );
+                    content->setBackgroundColor( QskRgb::Chartreuse );
                     break;
 
                 case Qt::BottomEdge:
-                    setFixedHeight( 200 );
+                    content->setFixedHeight( 200 );
                     content->setBackgroundColor( QskRgb::Wheat );
                     break;
             }
@@ -65,16 +66,26 @@ namespace
         {
             setBackgroundColor( QskRgb::LightSteelBlue );
 
-            setMargins( 50 );
+            setMargins( 10 );
             setAutoLayoutChildren( true );
-
-            (void) new QskPushButton( this );
 
             for ( int i = 0; i < 4; i++ )
             {
                 const auto edge = static_cast< Qt::Edge >( 1 << i );
                 m_drawers[i] = new Drawer( edge, this );
+
+                auto dragMargin = 30; // the default setting is pretty small
+                if ( edge == Qt::TopEdge )
+                {
+                    // to check if dragging works above the button
+                    dragMargin = 120;
+                }
+
+                m_drawers[i]->setDragMargin( dragMargin );
             }
+
+            auto button = new QskPushButton( "Push Me", this );
+            button->setPreferredHeight( 100 );
         }
 
       private:
@@ -87,7 +98,6 @@ namespace
         MainBox( QQuickItem* parent = nullptr )
             : QskControl( parent )
         {
-            setBackgroundColor( QskRgb::LemonChiffon );
             setMargins( 40 );
             setAutoLayoutChildren( true );
 

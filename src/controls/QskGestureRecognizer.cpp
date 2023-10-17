@@ -142,12 +142,9 @@ Qt::MouseButtons QskGestureRecognizer::acceptedMouseButtons() const
     return m_data->buttons;
 }
 
-QRectF QskGestureRecognizer::gestureRect() const
+bool QskGestureRecognizer::isAcceptedPos( const QPointF& pos ) const
 {
-    if ( m_data->watchedItem )
-        return qskItemRect( m_data->watchedItem );
-
-    return QRectF( 0.0, 0.0, -1.0, -1.0 );
+    return m_data->watchedItem && m_data->watchedItem->contains( pos );
 }
 
 void QskGestureRecognizer::setRejectOnTimeout( bool on )
@@ -313,7 +310,7 @@ bool QskGestureRecognizer::processMouseEvent(
 
     if ( event->type() == QEvent::MouseButtonPress )
     {
-        if ( !gestureRect().contains( pos ) )
+        if ( !isAcceptedPos( pos ) )
             return false;
 
         if ( m_data->state != Idle )

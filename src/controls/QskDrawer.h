@@ -17,6 +17,9 @@ class QSK_EXPORT QskDrawer : public QskPopup
 
     Q_PROPERTY( Qt::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged )
 
+    Q_PROPERTY( qreal dragMargin READ dragMargin
+        WRITE setDragMargin NOTIFY dragMarginChanged )
+
   public:
     QSK_SUBCONTROLS( Panel )
 
@@ -26,20 +29,23 @@ class QSK_EXPORT QskDrawer : public QskPopup
     void setEdge( Qt::Edge );
     Qt::Edge edge() const;
 
-    QRectF layoutRectForSize( const QSizeF& ) const override;
+    void setDragMargin( qreal );
+    qreal dragMargin() const;
+
     void updateLayout() override;
 
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
+    void dragMarginChanged( qreal );
 
   protected:
-    void aboutToShow() override;
     void itemChange( ItemChange, const ItemChangeData& ) override;
 
+    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
     void gestureEvent( QskGestureEvent* ) override;
 
   private:
-    void startFading( bool );
+    void setFading( bool );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

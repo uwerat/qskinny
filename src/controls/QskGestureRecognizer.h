@@ -73,7 +73,7 @@ class QSK_EXPORT QskGestureRecognizer : public QObject
 
     State state() const;
 
-    virtual QRectF gestureRect() const;
+    virtual bool isAcceptedPos( const QPointF& ) const;
 
   Q_SIGNALS:
     void stateChanged( State from, State to );

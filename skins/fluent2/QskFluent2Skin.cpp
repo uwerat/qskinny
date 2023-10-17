@@ -606,21 +606,15 @@ void Editor::setupDialogButtonBoxColors(
 void Editor::setupDrawerMetrics()
 {
     using Q = QskDrawer;
-
-    setPadding( Q::Panel, 5 );
-    setHint( Q::Overlay | QskAspect::Style, false );
+    using A = QskAspect;
 
 #if 1
-    setAnimation( Q::Panel | QskAspect::Position, 200 );
+    setAnimation( Q::Panel | A::Metric | A::Position, 200 );
 #endif
 }
 
-void Editor::setupDrawerColors(
-    QskAspect::Section section, const QskFluent2Theme& theme )
+void Editor::setupDrawerColors( QskAspect::Section, const QskFluent2Theme& )
 {
-    using Q = QskDrawer;
-
-    setGradient( Q::Panel | section, theme.palette.background.solid.base );
 }
 
 void Editor::setupFocusIndicatorMetrics()
@@ -735,6 +729,7 @@ void Editor::setupListViewColors(
 void Editor::setupMenuMetrics()
 {
     using Q = QskMenu;
+    using A = QskAspect;
 
     setPadding( Q::Panel, { 4, 6, 4, 6 } );
     setBoxBorderMetrics( Q::Panel, 1 );
@@ -748,6 +743,14 @@ void Editor::setupMenuMetrics()
 
     setStrutSize( Q::Icon, 12, 12 );
     setPadding( Q::Icon, { 8, 8, 0, 8 } );
+
+#if 1
+    setPosition( Q::Panel, 0 );
+    setPosition( Q::Panel | QskPopup::Closed, 1 );
+
+    // copied from Mat3 - what are the correct values for Fluent2 ???
+    setAnimation( Q::Panel | A::Metric, 150 );
+#endif
 }
 
 void Editor::setupMenuColors(
