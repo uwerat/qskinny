@@ -218,6 +218,7 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
     setZ( 1 );
 #endif
 
+    setOverlay( true );
     setPolishOnResize( true );
 
     setPopupFlag( PopupFlag::CloseOnPressOutside, true );
