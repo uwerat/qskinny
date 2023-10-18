@@ -446,8 +446,8 @@ void Editor::setupMenu()
     setGraphicRole( Q::Icon | Q::Disabled, DisabledSymbol );
     setGraphicRole( Q::Icon | Q::Selected, CursorSymbol );
 
-    setPosition( Q::Panel, 0 );
-    setPosition( Q::Panel | QskPopup::Closed, 1 );
+    setPosition( Q::Panel, 1 );
+    setPosition( Q::Panel | QskPopup::Closed, 0 );
 
     setAnimation( Q::Panel | A::Metric, 150 );
     setAnimation( Q::Cursor | A::Position | A::Metric, 75, QEasingCurve::OutCubic );

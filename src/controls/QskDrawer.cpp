@@ -108,6 +108,8 @@ static inline QRectF qskSlidingRect(
     auto x = 0.0;
     auto y = 0.0;
 
+    ratio = 1.0 - ratio;
+
     switch( edge )
     {
         case Qt::LeftEdge:
@@ -437,7 +439,7 @@ QRectF QskDrawer::layoutRectForSize( const QSizeF& size ) const
     if ( isFading() )
         ratio = metric( faderAspect() );
     else
-        ratio = isOpen() ? 0.0 : 1.0;
+        ratio = isOpen() ? 1.0 : 0.0;
 
     return qskSlidingRect( size, m_data->edge, ratio );
 }
@@ -467,8 +469,8 @@ void QskDrawer::itemChange( QQuickItem::ItemChange change,
 
 void QskDrawer::setFading( bool on )
 {
-    const qreal from = on ? 1.0 : 0.0;
-    const qreal to = on ? 0.0 : 1.0;
+    const qreal from = on ? 0.0 : 1.0;
+    const qreal to = on ? 1.0 : 0.0;
 
     const auto aspect = faderAspect();
 
