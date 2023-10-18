@@ -59,7 +59,7 @@ void QskSlideInNode::updateTranslation( const QRectF& rect,
     {
         // clipping
 
-        if ( progress > 0.0 && progress <= 1.0 )
+        if ( progress >= 0.0 && progress < 1.0 )
         {
             if ( d->clipNode == nullptr )
             {
@@ -85,7 +85,7 @@ void QskSlideInNode::updateTranslation( const QRectF& rect,
         // translation
 
         qreal dx = 0.0;
-        qreal dy = -progress* rect.height();
+        qreal dy = ( progress - 1.0 ) * rect.height();
 
         if ( dx != 0.0 || dy != 0.0 )
         {

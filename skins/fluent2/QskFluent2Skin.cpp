@@ -745,8 +745,8 @@ void Editor::setupMenuMetrics()
     setPadding( Q::Icon, { 8, 8, 0, 8 } );
 
 #if 1
-    setPosition( Q::Panel, 0 );
-    setPosition( Q::Panel | QskPopup::Closed, 1 );
+    setPosition( Q::Panel, 1 );
+    setPosition( Q::Panel | QskPopup::Closed, 0 );
 
     // copied from Mat3 - what are the correct values for Fluent2 ???
     setAnimation( Q::Panel | A::Metric, 150 );
