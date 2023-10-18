@@ -469,6 +469,9 @@ void QskDrawer::itemChange( QQuickItem::ItemChange change,
 
 void QskDrawer::setFading( bool on )
 {
+    if ( !hasFaderEffect() )
+        return;
+
     const qreal from = on ? 0.0 : 1.0;
     const qreal to = on ? 1.0 : 0.0;
 
