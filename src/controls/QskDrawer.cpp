@@ -241,6 +241,15 @@ namespace
 class QskDrawer::PrivateData
 {
   public:
+    inline void resetListener( QskDrawer* drawer )
+    {
+        delete listener;
+        listener = nullptr;
+
+        if ( drawer->parentItem() && drawer->isVisible() )
+            listener = new GeometryListener( drawer->parentItem(), drawer );
+    }
+
     Qt::Edge edge = Qt::LeftEdge;
     GestureRecognizer* gestureRecognizer = nullptr;
     GeometryListener* listener = nullptr;
@@ -268,18 +277,10 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
         the layout updates manually.
      */
     setPlacementPolicy( QskPlacementPolicy::Ignore );
-    if ( parentItem )
-        m_data->listener = new GeometryListener( parentItem, this );
+    m_data->resetListener( this );
 
     connect( this, &QskPopup::openChanged, this, &QskDrawer::setFading );
-
-    /*
-        When the content of the parentItem does not fit we will have
-        a difference between fading and normal state. To overcome this problem
-        we need to expand the rectangle of the QQuickDefaultClipNode manually to
-        the window borders: TODO ...
-     */
-    connect( this, &QskPopup::fadingChanged, parentItem, &QQuickItem::setClip );
+    connect( this, &QskPopup::fadingChanged, this, &QskDrawer::setIntermediate );
 }
 
 QskDrawer::~QskDrawer()
@@ -349,6 +350,64 @@ qreal QskDrawer::dragMargin() const
     return m_data->dragMargin;
 }
 
+void QskDrawer::keyPressEvent( QKeyEvent* event )
+{
+    if ( isOpen() )
+    {
+        bool doClose = false;
+
+        const auto key = event->key();
+
+        switch( key )
+        {
+            case Qt::Key_Escape:
+            case Qt::Key_Cancel:
+            {
+                doClose = true;
+                break;
+            }
+
+#if 0
+            /*
+                Do we want to have this - and what about opening with
+                the same keys ???
+             */
+            case Qt::Key_Up:
+            case Qt::Key_Down:
+            case Qt::Key_Left:
+            case Qt::Key_Right:
+            {
+                switch( m_data->edge )
+                {
+                    case Qt::TopEdge:
+                        doClose = ( key == Qt::Key_Up );
+                        break;
+                    case Qt::BottomEdge:
+                        doClose = ( key == Qt::Key_Down );
+                        break;
+                    case Qt::LeftEdge:
+                        doClose = ( key == Qt::Key_Left );
+                        break;
+                    case Qt::RightEdge:
+                        doClose = ( key == Qt::Key_Right );
+                        break;
+                }
+
+                break;
+            }
+#endif
+        }
+
+        if ( doClose )
+        {
+            close();
+            return;
+        }
+    }
+
+    Inherited::keyPressEvent( event );
+}
+
 void QskDrawer::gestureEvent( QskGestureEvent* event )
 {
     if ( event->gesture()->type() == QskGesture::Pan )
@@ -395,16 +454,12 @@ void QskDrawer::itemChange( QQuickItem::ItemChange change,
             if ( parentItem() && isInteractive() )
                 qskCatchMouseEvents( parentItem() );
 
-            Q_FALLTHROUGH();
+            m_data->resetListener( this );
+            break;
         }
         case QQuickItem::ItemVisibleHasChanged:
         {
-            delete m_data->listener;
-            m_data->listener = nullptr;
-
-            if ( parentItem() && isVisible() )
-                m_data->listener = new GeometryListener( parentItem(), this );
-
+            m_data->resetListener( this );
             break;
         }
     }
@@ -421,6 +476,63 @@ void QskDrawer::setFading( bool on )
     hint.updateFlags = QskAnimationHint::UpdatePolish;
 
     startTransition( aspect, hint, from, to );
+}
+
+QRectF QskDrawer::clipRect() const
+{
+    if ( !isFading() )
+        return Inherited::clipRect();
+
+    /*
+        When fading we want to clip against the edge, where the drawer
+        slides in/out. However the size of the drawer is often smaller than the
+        one of the parent and we would clip the overlay node
+        and all content, that is located outside the drawer geometry.
+
+        So we expand the clip rectangle to "unbounded" at the other edges.
+
+        Note, that clipping against "rounded" rectangles can't be done
+        properly by overloading clipRect. We would have to manipulate the clip node
+        manually - like it is done in QskScrollArea. TODO ..
+     */
+    constexpr qreal d = std::numeric_limits< short >::max();
+
+    QRectF r( -d, -d, 2.0 * d, 2.0 * d );
+
+    switch( m_data->edge )
+    {
+        case Qt::LeftEdge:
+            r.setLeft( 0.0 );
+            break;
+
+        case Qt::RightEdge:
+            r.setRight( width() );
+            break;
+
+        case Qt::TopEdge:
+            r.setTop( 0.0 );
+            break;
+
+        case Qt::BottomEdge:
+            r.setBottom( height() );
+            break;
+    }
+
+    return r;
+}
+
+void QskDrawer::setIntermediate( bool on )
+{
+    setClip( on );
+    Q_EMIT focusIndicatorRectChanged();
+}
+
+QRectF QskDrawer::focusIndicatorRect() const
+{
+    if ( isFading() )
+        return QRectF();
+
+    return Inherited::focusIndicatorRect();
 }
 
 #include "moc_QskDrawer.cpp"

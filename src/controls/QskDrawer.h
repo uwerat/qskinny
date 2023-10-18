@@ -41,6 +41,9 @@ class QSK_EXPORT QskDrawer : public QskPopup
 
     QRectF layoutRectForSize( const QSizeF& ) const override;
 
+    QRectF clipRect() const override;
+    QRectF focusIndicatorRect() const override;
+
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
     void dragMarginChanged( qreal );
@@ -49,9 +52,13 @@ class QSK_EXPORT QskDrawer : public QskPopup
   protected:
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void gestureEvent( QskGestureEvent* ) override;
+    void keyPressEvent( QKeyEvent* ) override;
 
   private:
     void setFading( bool );
+    void setFadingClip( bool );
+
+    void setIntermediate( bool );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
