@@ -280,7 +280,7 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
     m_data->resetListener( this );
 
     connect( this, &QskPopup::openChanged, this, &QskDrawer::setFading );
-    connect( this, &QskPopup::fadingChanged, this, &QQuickItem::setClip );
+    connect( this, &QskPopup::fadingChanged, this, &QskDrawer::setIntermediate );
 }
 
 QskDrawer::~QskDrawer()
@@ -348,6 +348,64 @@ void QskDrawer::resetDragMargin()
 qreal QskDrawer::dragMargin() const
 {
     return m_data->dragMargin;
+}
+
+void QskDrawer::keyPressEvent( QKeyEvent* event )
+{
+    if ( isOpen() )
+    {
+        bool doClose = false;
+
+        const auto key = event->key();
+
+        switch( key )
+        {
+            case Qt::Key_Escape:
+            case Qt::Key_Cancel:
+            {
+                doClose = true;
+                break;
+            }
+
+#if 0
+            /*
+                Do we want to have this - and what about opening with
+                the same keys ???
+             */
+            case Qt::Key_Up:
+            case Qt::Key_Down:
+            case Qt::Key_Left:
+            case Qt::Key_Right:
+            {
+                switch( m_data->edge )
+                {
+                    case Qt::TopEdge:
+                        doClose = ( key == Qt::Key_Up );
+                        break;
+                    case Qt::BottomEdge:
+                        doClose = ( key == Qt::Key_Down );
+                        break;
+                    case Qt::LeftEdge:
+                        doClose = ( key == Qt::Key_Left );
+                        break;
+                    case Qt::RightEdge:
+                        doClose = ( key == Qt::Key_Right );
+                        break;
+                }
+
+                break;
+            }
+#endif
+        }
+
+        if ( doClose )
+        {
+            close();
+            return;
+        }
+    }
+
+    Inherited::keyPressEvent( event );
 }
 
 void QskDrawer::gestureEvent( QskGestureEvent* event )
@@ -461,6 +519,20 @@ QRectF QskDrawer::clipRect() const
     }
 
     return r;
+}
+
+void QskDrawer::setIntermediate( bool on )
+{
+    setClip( on );
+    Q_EMIT focusIndicatorRectChanged();
+}
+
+QRectF QskDrawer::focusIndicatorRect() const
+{
+    if ( isFading() )
+        return QRectF();
+
+    return Inherited::focusIndicatorRect();
 }
 
 #include "moc_QskDrawer.cpp"
