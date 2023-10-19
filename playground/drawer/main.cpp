@@ -24,7 +24,7 @@ namespace
             : QskDrawer( parent )
         {
 #if 1
-            setAnimationHint( faderAspect(), 1000 );
+            setAnimationHint( transitionAspect(), 1000 );
 #endif
 
             setEdge( edge );
@@ -71,7 +71,6 @@ namespace
             for ( int i = 0; i < 4; i++ )
             {
                 const auto edge = static_cast< Qt::Edge >( 1 << i );
-                m_drawers[i] = new Drawer( edge, this );
 
                 auto dragMargin = 30; // the default setting is pretty small
                 if ( edge == Qt::TopEdge )
@@ -80,7 +79,13 @@ namespace
                     dragMargin = 120;
                 }
 
-                m_drawers[i]->setDragMargin( dragMargin );
+                auto drawer = new Drawer( edge, this );
+                drawer->setDragMargin( dragMargin );
+
+                connect( drawer, &QskPopup::openChanged,
+                    this, &DrawerBox::setDrawersLocked );
+                
+                m_drawers[i] = drawer;
             }
 
             auto button = new QskPushButton( "Push Me", this );
@@ -88,6 +93,15 @@ namespace
         }
 
       private:
+        void setDrawersLocked( bool locked )
+        {
+            for ( auto drawer : m_drawers )
+            {
+                if ( !drawer->isOpen() )
+                    drawer->setInteractive( !locked );
+            }
+        }
+
         Drawer* m_drawers[4];
     };
 
