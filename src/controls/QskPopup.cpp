@@ -130,7 +130,6 @@ class QskPopup::PrivateData
     PrivateData()
         : flags( 0 )
         , isModal( false )
-        , hasFaderEffect( true )
         , autoGrabFocus( true )
         , handoverFocus( true )
     {
@@ -139,11 +138,10 @@ class QskPopup::PrivateData
     InputGrabber* inputGrabber = nullptr;
 
     uint priority = 0;
-    QskAspect faderAspect;
+    QskAspect transitionAspect;
 
     int flags           : 4;
     bool isModal        : 1;
-    bool hasFaderEffect : 1;
 
     const bool autoGrabFocus : 1;
     const bool handoverFocus : 1;
@@ -218,9 +216,9 @@ void QskPopup::setOpen( bool on )
     else
         Q_EMIT closed();
 
-    if ( isFading() )
+    if ( isTransitioning() )
     {
-        Q_EMIT fadingChanged( true );
+        Q_EMIT transitioningChanged( true );
     }
     else
     {
@@ -239,13 +237,13 @@ bool QskPopup::isOpen() const
     return !hasSkinState( QskPopup::Closed );
 }
 
-bool QskPopup::isFading() const
+bool QskPopup::isTransitioning() const
 {
-    if ( m_data->faderAspect.value() == 0 )
+    if ( m_data->transitionAspect.value() == 0 )
         return false;
 
     QskSkinHintStatus status;
-    (void) effectiveSkinHint( m_data->faderAspect, &status );
+    (void) effectiveSkinHint( m_data->transitionAspect, &status );
 
     return status.source == QskSkinHintStatus::Animator;
 }
@@ -298,37 +296,37 @@ void QskPopup::updateInputGrabber()
     }
 }
 
-QskAspect QskPopup::faderAspect() const
+QskAspect QskPopup::transitionAspect() const
 {
-    return m_data->faderAspect;
+    return m_data->transitionAspect;
 }
 
-void QskPopup::setFaderAspect( QskAspect aspect )
+void QskPopup::setTransitionAspect( QskAspect aspect )
 {
-    auto faderAspect = aspect;
-    faderAspect.clearStates(); // animated values are always stateless
+    auto transitionAspect = aspect;
+    transitionAspect.clearStates(); // animated values are always stateless
 
-    if ( faderAspect == m_data->faderAspect )
+    if ( transitionAspect == m_data->transitionAspect )
         return;
 
-    if ( isFading() )
+    if ( isTransitioning() )
     {
         // stop the running animation TODO ...
     }
 
-    m_data->faderAspect = faderAspect;
+    m_data->transitionAspect = transitionAspect;
 }
 
 bool QskPopup::isTransitionAccepted( QskAspect aspect ) const
 {
-    if ( isVisible() && m_data->hasFaderEffect )
+    if ( isVisible() )
     {
         if ( ( aspect.value() == 0 ) )
         {
             return true;
         }
 
-        if ( aspect == m_data->faderAspect )
+        if ( aspect == m_data->transitionAspect )
             return true;
 
         if ( aspect.isColor() )
@@ -369,20 +367,6 @@ void QskPopup::setModal( bool on )
 bool QskPopup::isModal() const
 {
     return m_data->isModal;
-}
-
-void QskPopup::setFaderEffect( bool on )
-{
-    if ( on != m_data->hasFaderEffect )
-    {
-        m_data->hasFaderEffect = on;
-        Q_EMIT faderEffectChanged( on );
-    }
-}
-
-bool QskPopup::hasFaderEffect() const
-{
-    return m_data->hasFaderEffect;
 }
 
 void QskPopup::setPopupFlags( PopupFlags flags )
@@ -496,7 +480,7 @@ bool QskPopup::event( QEvent* event )
             const auto animtorEvent = static_cast< QskAnimatorEvent* >( event );
 
             if ( ( animtorEvent->state() == QskAnimatorEvent::Terminated )
-                && ( animtorEvent->aspect() == m_data->faderAspect ) )
+                && ( animtorEvent->aspect() == m_data->transitionAspect ) )
             {
                 if ( !isOpen() )
                 {
@@ -506,7 +490,7 @@ bool QskPopup::event( QEvent* event )
                         deleteLater();
                 }
 
-                Q_EMIT fadingChanged( false );
+                Q_EMIT transitioningChanged( false );
             }
 
             break;
@@ -643,7 +627,7 @@ int QskPopup::execPopup()
              */
 
             connect( popup, &QObject::destroyed, this, &EventLoop::reject );
-            connect( popup, &QskPopup::fadingChanged, this, &EventLoop::maybeQuit );
+            connect( popup, &QskPopup::transitioningChanged, this, &EventLoop::maybeQuit );
             connect( popup, &QskPopup::openChanged, this, &EventLoop::maybeQuit );
         }
 
@@ -658,7 +642,7 @@ int QskPopup::execPopup()
         {
             if ( auto popup = qobject_cast< const QskPopup* >( parent() ) )
             {
-                if ( popup->isOpen() || popup->isFading() )
+                if ( popup->isOpen() || popup->isTransitioning() )
                     return;
             }
 
@@ -666,7 +650,7 @@ int QskPopup::execPopup()
         }
     };
 
-    if ( isOpen() || isFading() )
+    if ( isOpen() || isTransitioning() )
     {
         qWarning() << "QskPopup::exec: popup is already opened";
         return -1;

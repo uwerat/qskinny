@@ -55,8 +55,7 @@ class QSK_EXPORT QskDrawer : public QskPopup
     void keyPressEvent( QKeyEvent* ) override;
 
   private:
-    void setFading( bool );
-    void setFadingClip( bool );
+    void setSliding( bool );
 
     void setIntermediate( bool );
 

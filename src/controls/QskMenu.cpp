@@ -58,7 +58,7 @@ QskMenu::QskMenu( QQuickItem* parent )
     , m_data( new PrivateData )
 {
     setModal( true );
-    setFaderAspect( QskMenu::Panel | QskAspect::Position | QskAspect::Metric );
+    setTransitionAspect( QskMenu::Panel | QskAspect::Position | QskAspect::Metric );
 
     setPopupFlag( QskPopup::CloseOnPressOutside, true );
     setPopupFlag( QskPopup::DeleteOnClose, true );
@@ -67,8 +67,8 @@ QskMenu::QskMenu( QQuickItem* parent )
 
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
-    // we hide the focus indicator while fading
-    connect( this, &QskMenu::fadingChanged, this,
+    // we hide the focus indicator while sliding
+    connect( this, &QskMenu::transitioningChanged, this,
         &QskControl::focusIndicatorRectChanged );
 
     connect( this, &QskMenu::opened, this,
@@ -452,7 +452,7 @@ void QskMenu::aboutToShow()
 
 QRectF QskMenu::focusIndicatorRect() const
 {
-    if ( isFading() )
+    if ( isTransitioning() )
         return QRectF();
 
     if( currentIndex() >= 0 )

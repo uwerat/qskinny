@@ -204,7 +204,7 @@ namespace
         bool isAcceptedPos( const QPointF& pos ) const override
         {
             auto drawer = qobject_cast< const QskDrawer* >( targetItem() );
-            if ( drawer->isFading() )
+            if ( drawer->isTransitioning() )
                 return false;
 
             auto rect = qskItemRect( watchedItem() );
@@ -271,7 +271,7 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
     setInteractive( true );
 
     setPopupFlag( PopupFlag::CloseOnPressOutside, true );
-    setFaderAspect( Panel | QskAspect::Position | QskAspect::Metric );
+    setTransitionAspect( Panel | QskAspect::Position | QskAspect::Metric );
 
     /*
         The drawer wants to be on top of the parent - not being
@@ -281,8 +281,8 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
     setPlacementPolicy( QskPlacementPolicy::Ignore );
     m_data->resetListener( this );
 
-    connect( this, &QskPopup::openChanged, this, &QskDrawer::setFading );
-    connect( this, &QskPopup::fadingChanged, this, &QskDrawer::setIntermediate );
+    connect( this, &QskPopup::openChanged, this, &QskDrawer::setSliding );
+    connect( this, &QskPopup::transitioningChanged, this, &QskDrawer::setIntermediate );
 }
 
 QskDrawer::~QskDrawer()
@@ -436,8 +436,8 @@ QRectF QskDrawer::layoutRectForSize( const QSizeF& size ) const
 {
     qreal ratio;
 
-    if ( isFading() )
-        ratio = metric( faderAspect() );
+    if ( isTransitioning() )
+        ratio = metric( transitionAspect() );
     else
         ratio = isOpen() ? 1.0 : 0.0;
 
@@ -467,15 +467,12 @@ void QskDrawer::itemChange( QQuickItem::ItemChange change,
     }
 }
 
-void QskDrawer::setFading( bool on )
+void QskDrawer::setSliding( bool on )
 {
-    if ( !hasFaderEffect() )
-        return;
-
     const qreal from = on ? 0.0 : 1.0;
     const qreal to = on ? 1.0 : 0.0;
 
-    const auto aspect = faderAspect();
+    const auto aspect = transitionAspect();
 
     auto hint = animationHint( aspect );
     hint.updateFlags = QskAnimationHint::UpdatePolish;
@@ -485,7 +482,7 @@ void QskDrawer::setFading( bool on )
 
 QRectF QskDrawer::clipRect() const
 {
-    if ( !isFading() )
+    if ( !isTransitioning() )
         return Inherited::clipRect();
 
     /*
@@ -534,7 +531,7 @@ void QskDrawer::setIntermediate( bool on )
 
 QRectF QskDrawer::focusIndicatorRect() const
 {
-    if ( isFading() )
+    if ( isTransitioning() )
         return QRectF();
 
     return Inherited::focusIndicatorRect();
