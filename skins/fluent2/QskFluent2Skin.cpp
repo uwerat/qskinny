@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 /*
-    Definitions ( where possible ) taken from 
+    Definitions ( where possible ) taken from
     https://www.figma.com/file/NAWMapFlXnoOb86Q2H5GKr/Windows-UI-(Community)
  */
 
@@ -35,35 +35,18 @@
  */
 
 /*
-    The palette is made of a specific configurable colors and
-    predefined semitransparent shades of gray. Both need to
-    be resolved to opaque colors with the base colors of the sections. 
+    The palette is made of a couple of configurable base/accent colors and a
+    predefined set of semitransparent shades of gray. These grays are used
+    to create darkened/lightend colors from the configurable colors that can
+    be used for borders etc.
 
-    Resolving the colors can be done in 2 ways:
+    However borders need to be darkened for light base colors and lightened for
+    dark ones. So we actually have 2 different sets of grays for light/dark
+    colors schemes.
 
-        - render time
-
-          This actually means, that we do not create opaque colors and
-          create the scene graph nodes with semitransparent colors.
-
-        - definition time
-
-          We create opaque colors for the base colors of the sections
-          and set them as skin hints.
-
-    Resolving at render time sounds like the right solution as we
-    background colors set in application code will just work.
-
-    Unfortunately we have 2 different sets of grays for light/dark
-    base colors and when applications are setting a light color, where a
-    dark color ( or v.v ) is expected we might end up with unacceptable
-    results: ( white on light or black on dark ).
-
-    So there are pros and cons and we do not have a final opinion
-    about waht to do. For the moment we implement resolving at definition
-    time as an option to be able to play with both solutions.
+    The main advantage of this concept is, that a working color schemes
+    can be defined by setting the accent/base colors only.
  */
-
 #include "QskFluent2Skin.h"
 #include "QskFluent2Theme.h"
 
@@ -139,9 +122,30 @@ namespace
         return qRgba( value, value, value, qRound( opacity * 255 ) );
     }
 
+    /*
+        When application code is manipulating base colors manually the colors of
+        the borders will be lightened/darkened from it like expected - as long
+        as the application color matches the color scheme. Otherwise we end
+        up with lightened borders on light backgrounds or v.v.
+
+        To avoid this problem we could resolve the grays with the background
+        colors of the sections at definition time. This solves the problem with
+        applications using backgrounds from the "wrong" color scheme, but requires
+        more work for customizing controls hen using the "correct" scheme
+        ( -> border colors need to be set as well ).
+
+        When enabling QSK_RESOLVE_COLORS a code path is enabled that is intended
+        to play with resolving the grays at definition time. But I'm not decided
+        if it is worth to make a feature from it. TODO ...
+     */
+
+#define QSK_RESOLVE_COLORS 0
+
+#if QSK_RESOLVE_COLORS
+
     inline constexpr QRgb rgbFlattened( QRgb foreground, QRgb background )
     {
-        //Q_ASSERT( qAlpha( background ) == 255 );
+        Q_ASSERT( qAlpha( background ) == 255 );
 
         const auto r2 = qAlpha( foreground ) / 255.0;
         const auto r1 = 1.0 - r2;
@@ -160,14 +164,24 @@ namespace
             or without resolving the foreground alpha value
          */
 
-#if 0
         return rgbFlattened( foreground, background );
-#else
-        //Q_ASSERT( qAlpha( background ) == 255 );
+    }
+
+#else // !QSK_RESOLVE_COLORS
+
+    inline QRgb rgbFlattened( QRgb foreground, QRgb background )
+    {
+        const auto alpha = qAlpha( foreground ) / 255.0;
+        return QskRgb::interpolated( background, foreground, alpha );
+    }
+
+    inline constexpr QRgb rgbSolid( QRgb foreground, QRgb background )
+    {
         Q_UNUSED( background );
         return foreground;
-#endif
     }
+
+#endif
 
     class Editor : private QskSkinHintTableEditor
     {
@@ -521,7 +535,8 @@ void Editor::setupComboBoxColors(
 
     const auto& pal = theme.palette;
 
-    for ( const auto state : { QskAspect::NoState, Q::Hovered, Q::Focused, Q::Pressed, Q::Disabled } )
+    for ( const auto state :
+          { QskAspect::NoState, Q::Hovered, Q::Focused, Q::Pressed, Q::Disabled } )
     {
         QRgb panelColor, borderColor1, borderColor2, textColor;
 
@@ -693,7 +708,7 @@ void Editor::setupListViewColors(
             {
                 if ( state1 == Q::Hovered )
                     cellColor = pal.fillColor.subtle.tertiary;
-                else 
+                else
                     cellColor = pal.fillColor.subtle.secondary;
             }
 
@@ -793,7 +808,8 @@ void Editor::setupMenuColors(
     setColor( Q::Text | Q::Selected | Q::Pressed, pal.fillColor.text.secondary );
 
     setGraphicRole( Q::Icon, QskFluent2Skin::GraphicRoleFillColorTextPrimary );
-    setGraphicRole( Q::Icon | Q::Selected | Q::Pressed, QskFluent2Skin::GraphicRoleFillColorTextSecondary );
+    setGraphicRole( Q::Icon | Q::Selected | Q::Pressed,
+        QskFluent2Skin::GraphicRoleFillColorTextSecondary );
 }
 
 void Editor::setupPageIndicatorMetrics()
@@ -811,7 +827,7 @@ void Editor::setupPageIndicatorMetrics()
 
     /*
         Pressed/Hovered are not yet implemented.
-        Sizes would be: 
+        Sizes would be:
 
             - Q::Pressed : 3
             - Q::Pressed | Q::Selected : 5
@@ -1048,7 +1064,7 @@ void Editor::setupRadioBoxMetrics()
         However the colors of the inner side of the border are not solid for
         the selected states and we use a dummy indicator to get this done.
 
-        How to solve this in a better way, TODO ... 
+        How to solve this in a better way, TODO ...
      */
 
     setBoxShape( Q::CheckIndicator, 100, Qt::RelativeSize );
@@ -1098,7 +1114,7 @@ void Editor::setupRadioBoxColors(
             if ( states & Q::Disabled )
                 textColor = pal.fillColor.text.disabled;
 
-            QRgb panelBorderColor; 
+            QRgb panelBorderColor;
             if ( states & ( Q::Disabled | Q::Pressed ) )
                 panelBorderColor = pal.strokeColor.controlStrong.disabled;
             else
@@ -1411,7 +1427,7 @@ void Editor::setupSliderColors(
         setBoxBorderGradient( Q::Handle, pal.elevation.circle.border, handleColor );
     }
 
-    for ( auto state : { A::NoState , Q::Pressed , Q::Disabled } )
+    for ( auto state : { A::NoState, Q::Pressed, Q::Disabled } )
     {
         QRgb grooveColor, fillColor, rippleColor;
 
@@ -1571,7 +1587,7 @@ void Editor::setupTabButtonColors(
     using Q = QskTabButton;
     const auto& pal = theme.palette;
 
-    for ( const auto state : { QskAspect::NoState, 
+    for ( const auto state : { QskAspect::NoState,
         Q::Checked, Q::Hovered, Q::Pressed, Q::Disabled } )
     {
         QRgb panelColor, textColor;
