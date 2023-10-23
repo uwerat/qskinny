@@ -25,6 +25,7 @@ class QQuickItem;
 class QskArcMetrics;
 class QskControl;
 class QskAnimationHint;
+class QskHintAnimator;
 class QskColorFilter;
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
@@ -261,6 +262,8 @@ class QSK_EXPORT QskSkinnable
     bool startHintTransitions( QskAspect::States, QskAspect::States, int index = -1 );
     bool startHintTransitions( const QVector< QskAspect::Subcontrol >&,
         QskAspect::States, QskAspect::States, int index = -1 );
+
+    const QskHintAnimator* runningHintAnimator( QskAspect, int index = -1 ) const;
 
   protected:
     virtual void updateNode( QSGNode* );

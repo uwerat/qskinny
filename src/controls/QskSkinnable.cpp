@@ -988,6 +988,23 @@ bool QskSkinnable::moveSkinHint( QskAspect aspect, const QVariant& value )
     return moveSkinHint( aspect, effectiveSkinHint( aspect ), value );
 }
 
+const QskHintAnimator* QskSkinnable::runningHintAnimator(
+    QskAspect aspect, int index ) const
+{
+    const auto& animators = m_data->animators;
+
+    if ( animators.isEmpty() )
+        return nullptr;
+
+    aspect = qskAnimatorAspect( aspect );
+
+    auto animator = animators.animator( aspect, index );
+    if ( animator == nullptr && index >= 0 )
+        animator = animators.animator( aspect, -1 );
+
+    return animator;
+}
+
 QVariant QskSkinnable::animatedHint(
     QskAspect aspect, QskSkinHintStatus* status ) const
 {

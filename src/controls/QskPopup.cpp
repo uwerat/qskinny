@@ -10,6 +10,7 @@
 #include "QskWindow.h"
 #include "QskEvent.h"
 #include "QskPlatform.h"
+#include "QskHintAnimator.h"
 
 #include <qpa/qplatformintegration.h>
 
@@ -239,13 +240,7 @@ bool QskPopup::isOpen() const
 
 bool QskPopup::isTransitioning() const
 {
-    if ( m_data->transitionAspect.value() == 0 )
-        return false;
-
-    QskSkinHintStatus status;
-    (void) effectiveSkinHint( m_data->transitionAspect, &status );
-
-    return status.source == QskSkinHintStatus::Animator;
+    return runningHintAnimator( m_data->transitionAspect ) != nullptr;
 }
 
 QRectF QskPopup::overlayRect() const
