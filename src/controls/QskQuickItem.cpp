@@ -180,6 +180,11 @@ QskQuickItem::~QskQuickItem()
         We set componentComplete to false, so that operations
         that are triggered by detaching the item from its parent
         can be aware of the about-to-delete state.
+
+        Note, that since Qt >= 6.5 this information is stored
+        in QQuickItemPrivate::inDestructor.
+
+        s.a: qskIsItemInDestructor
      */
     d_func()->componentComplete = false;
 

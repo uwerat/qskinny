@@ -24,6 +24,7 @@ template< typename T > class QList;
     of QQuickItem.
  */
 
+QSK_EXPORT bool qskIsItemInDestructor( const QQuickItem* );
 QSK_EXPORT bool qskIsItemComplete( const QQuickItem* );
 QSK_EXPORT bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child );
 QSK_EXPORT bool qskIsTabFence( const QQuickItem* );

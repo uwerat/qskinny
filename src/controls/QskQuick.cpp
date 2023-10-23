@@ -47,6 +47,21 @@ bool qskIsItemComplete( const QQuickItem* item )
     return QQuickItemPrivate::get( item )->componentComplete;
 }
 
+bool qskIsItemInDestructor( const QQuickItem* item )
+{
+    auto d = QQuickItemPrivate::get( item );
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
+    return d->inDestructor;
+#else
+    /*
+        QskQuickItem sets componentComplete to false in its destructor,
+        but for other items we will will return the wrong information
+     */
+    return !d->componentComplete;
+#endif
+}
+
 bool qskIsAncestorOf( const QQuickItem* item, const QQuickItem* child )
 {
     if ( item == nullptr || child == nullptr )
