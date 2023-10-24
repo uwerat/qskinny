@@ -868,7 +868,7 @@ void Editor::setupPopup( const QskFluent2Theme& theme )
     setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, pal.background.overlay.defaultColor );
 
-    setAnimation( Q::Popup, 200 );
+    setAnimation( Q::Popup, 150 );
 }
 
 void Editor::setupProgressBarMetrics()
