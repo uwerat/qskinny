@@ -210,6 +210,7 @@ list(APPEND HEADERS
     controls/QskQuickItem.h
     controls/QskRadioBox.h
     controls/QskRadioBoxSkinlet.h
+    controls/QskSlideIn.h
     controls/QskScrollArea.h
     controls/QskScrollBox.h
     controls/QskScrollView.h
@@ -316,6 +317,7 @@ list(APPEND SOURCES
     controls/QskScrollBox.cpp
     controls/QskScrollView.cpp
     controls/QskScrollViewSkinlet.cpp
+    controls/QskSlideIn.cpp
     controls/QskRadioBox.cpp
     controls/QskRadioBoxSkinlet.cpp
     controls/QskSegmentedBar.cpp

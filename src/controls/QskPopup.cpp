@@ -19,8 +19,15 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
+QSK_SUBCONTROL( QskPopup, Popup )
 QSK_SUBCONTROL( QskPopup, Overlay )
+
 QSK_SYSTEM_STATE( QskPopup, Closed, QskAspect::FirstSystemState << 1 )
+
+static QskAspect qskTransitioningAspect()
+{
+    return QskPopup::Popup | QskAspect::Metric;
+}
 
 static void qskSetFocus( QQuickItem* item, bool on )
 {
@@ -74,6 +81,23 @@ static bool qskReplayMousePress()
     }
 
     return false;
+}
+
+static void qskStartTransition( QskPopup* popup, bool on )
+{
+    const auto aspect = qskTransitioningAspect();
+
+    auto hint = popup->animationHint( aspect.subControl() );
+
+    if ( hint.isValid() )
+    {
+        hint.updateFlags = QskAnimationHint::UpdatePolish | QskAnimationHint::UpdateNode;
+
+        const qreal from = on ? 0.0 : 1.0;
+        const qreal to = on ? 1.0 : 0.0;
+
+        popup->startTransition( aspect, hint, from, to );
+    }
 }
 
 namespace
@@ -139,7 +163,6 @@ class QskPopup::PrivateData
     InputGrabber* inputGrabber = nullptr;
 
     uint priority = 0;
-    QskAspect transitionAspect;
 
     int flags           : 4;
     bool isModal        : 1;
@@ -217,6 +240,8 @@ void QskPopup::setOpen( bool on )
     else
         Q_EMIT closed();
 
+    qskStartTransition( this, on );
+
     if ( isTransitioning() )
     {
         Q_EMIT transitioningChanged( true );
@@ -240,7 +265,15 @@ bool QskPopup::isOpen() const
 
 bool QskPopup::isTransitioning() const
 {
-    return runningHintAnimator( m_data->transitionAspect ) != nullptr;
+    return runningHintAnimator( qskTransitioningAspect() ) != nullptr;
+}
+
+qreal QskPopup::transitioningFactor() const
+{
+    if ( auto animator = runningHintAnimator( qskTransitioningAspect() ) )
+        return animator->currentValue().value< qreal >();
+
+    return isOpen() ? 1.0 : 0.0;
 }
 
 QRectF QskPopup::overlayRect() const
@@ -291,44 +324,23 @@ void QskPopup::updateInputGrabber()
     }
 }
 
-QskAspect QskPopup::transitionAspect() const
-{
-    return m_data->transitionAspect;
-}
-
-void QskPopup::setTransitionAspect( QskAspect aspect )
-{
-    auto transitionAspect = aspect;
-    transitionAspect.clearStates(); // animated values are always stateless
-
-    if ( transitionAspect == m_data->transitionAspect )
-        return;
-
-    if ( isTransitioning() )
-    {
-        // stop the running animation TODO ...
-    }
-
-    m_data->transitionAspect = transitionAspect;
-}
-
 bool QskPopup::isTransitionAccepted( QskAspect aspect ) const
 {
-    if ( isVisible() )
+    if ( isVisible() && !isInitiallyPainted() )
     {
+        /*
+            Usually we suppress transitions, when a control has never been
+            painted before as there is no valid starting point. Popups are
+            different as we want to have smooth fade/slide appearances.
+         */
         if ( ( aspect.value() == 0 ) )
-        {
-            return true;
-        }
-
-        if ( aspect == m_data->transitionAspect )
             return true;
 
-        if ( aspect.isColor() )
-        {
-            if ( aspect.subControl() == effectiveSubcontrol( QskPopup::Overlay ) )
-                return true;
-        }
+        if ( aspect.subControl() == effectiveSubcontrol( QskPopup::Popup ) )
+            return true;
+
+        if ( aspect.subControl() == effectiveSubcontrol( QskPopup::Overlay ) )
+            return true;
     }
 
     return Inherited::isTransitionAccepted( aspect );
@@ -472,10 +484,10 @@ bool QskPopup::event( QEvent* event )
         }
         case QskEvent::Animator:
         {
-            const auto animtorEvent = static_cast< QskAnimatorEvent* >( event );
+            const auto animatorEvent = static_cast< QskAnimatorEvent* >( event );
 
-            if ( ( animtorEvent->state() == QskAnimatorEvent::Terminated )
-                && ( animtorEvent->aspect() == m_data->transitionAspect ) )
+            if ( ( animatorEvent->state() == QskAnimatorEvent::Terminated )
+                && ( animatorEvent->aspect() == qskTransitioningAspect() ) )
             {
                 if ( !isOpen() )
                 {

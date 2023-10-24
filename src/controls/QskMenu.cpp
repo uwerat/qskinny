@@ -58,7 +58,6 @@ QskMenu::QskMenu( QQuickItem* parent )
     , m_data( new PrivateData )
 {
     setModal( true );
-    setTransitionAspect( QskMenu::Panel | QskAspect::Position | QskAspect::Metric );
 
     setPopupFlag( QskPopup::CloseOnPressOutside, true );
     setPopupFlag( QskPopup::DeleteOnClose, true );

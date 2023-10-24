@@ -23,10 +23,6 @@ namespace
         Drawer( Qt::Edge edge,  QQuickItem* parent )
             : QskDrawer( parent )
         {
-#if 1
-            setAnimationHint( transitionAspect(), 1000 );
-#endif
-
             setEdge( edge );
 
             auto content = new QskControl( this );

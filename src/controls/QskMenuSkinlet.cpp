@@ -236,8 +236,8 @@ QSGNode* QskMenuSkinlet::updateSubNode(
 
             auto slideInNode = QskSGNode::ensureNode< QskSlideInNode >( node );
 
-            const auto progress = popup->metric( popup->transitionAspect() );
-            slideInNode->updateTranslation( rect, Qt::TopEdge, progress );
+            slideInNode->updateTranslation(
+                rect, Qt::TopEdge, popup->transitioningFactor() );
 
             auto contentsNode = updateContentsNode( popup, slideInNode->contentsNode() );
             slideInNode->setContentsNode( contentsNode );

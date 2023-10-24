@@ -5,7 +5,6 @@
 
 #include "QskDrawer.h"
 #include "QskAspect.h"
-#include "QskAnimationHint.h"
 #include "QskQuick.h"
 #include "QskEvent.h"
 
@@ -15,24 +14,13 @@
 #include <qguiapplication.h>
 #include <qstylehints.h>
 
-QSK_QT_PRIVATE_BEGIN
-#include <private/qquickitem_p.h>
-#include <private/qquickitemchangelistener_p.h>
-QSK_QT_PRIVATE_END
-
-/*
-    Only used for the sliding in animation. Do we want to
-    introduce a specific panel as background ???
- */
-QSK_SUBCONTROL( QskDrawer, Panel )
-
 static inline qreal qskDefaultDragMargin()
 {
     // a skin hint ???
     return QGuiApplication::styleHints()->startDragDistance();
 }
 
-static void qskCatchMouseEvents( QQuickItem* item )
+static inline void qskCatchMouseEvents( QQuickItem* item )
 {
 #if 1
     // manipulating other items - do we really want to do this ?
@@ -63,13 +51,12 @@ static bool qskCheckDirection( Qt::Edge edge, const QskPanGesture* gesture )
     return false;
 }
 
-static void qskLayoutDrawer( const QRectF& rect, QskDrawer* drawer )
+static inline QRectF qskAlignedToEdge(
+    const QRectF& rect, const QSizeF& size, Qt::Edge edge )
 {
-    const auto size = qskSizeConstraint( drawer, Qt::PreferredSize );
-
     QRectF r( 0.0, 0.0, size.width(), size.height() );
 
-    switch( drawer->edge() )
+    switch( edge )
     {
         case Qt::LeftEdge:
         {
@@ -99,91 +86,7 @@ static void qskLayoutDrawer( const QRectF& rect, QskDrawer* drawer )
         }
     }
 
-    drawer->setGeometry( r );
-}
-
-static inline QRectF qskSlidingRect(
-    const QSizeF& size, Qt::Edge edge, qreal ratio )
-{
-    auto x = 0.0;
-    auto y = 0.0;
-
-    ratio = 1.0 - ratio;
-
-    switch( edge )
-    {
-        case Qt::LeftEdge:
-            x = -ratio * size.width();
-            break;
-
-        case Qt::RightEdge:
-            x = ratio * size.width();
-            break;
-
-        case Qt::TopEdge:
-            y = -ratio * size.height();
-            break;
-
-        case Qt::BottomEdge:
-            y = ratio * size.height();
-            break;
-    }
-
-    return QRectF( x, y, size.width(), size.height() );
-}
-
-namespace
-{
-    class GeometryListener final : public QQuickItemChangeListener
-    {
-      public:
-        GeometryListener( QQuickItem* item, QQuickItem* adjustedItem )
-            : m_item( item )
-            , m_adjustedItem( adjustedItem )
-        {
-            adjust();
-            setEnabled( true );
-        }
-
-        ~GeometryListener()
-        {
-            setEnabled( false );
-        }
-
-      private:
-        void itemGeometryChanged( QQuickItem*,
-            QQuickGeometryChange, const QRectF& ) override
-        {
-            adjust();
-        }
-
-      private:
-        void adjust()
-        {
-#if 0
-            const auto pos = m_adjustedItem->mapFromItem( m_item, QPointF() );
-            qskSetItemGeometry( m_adjustedItem,
-                pos.x(), pos.y(), m_item->width(), m_item->height() );
-#else
-            qskLayoutDrawer( QRectF( QPointF(), m_item->size() ),
-                qobject_cast< QskDrawer* >( m_adjustedItem ) );
-#endif
-        }
-
-        void setEnabled( bool on )
-        {
-            const auto changeTypes = QQuickItemPrivate::Geometry;
-
-            auto d = QQuickItemPrivate::get( m_item );
-            if ( on )
-                d->addItemChangeListener( this, changeTypes );
-            else
-                d->removeItemChangeListener( this, changeTypes );
-        }
-
-        QQuickItem* m_item;
-        QQuickItem* m_adjustedItem;
-    };
+    return r;
 }
 
 namespace
@@ -243,18 +146,8 @@ namespace
 class QskDrawer::PrivateData
 {
   public:
-    inline void resetListener( QskDrawer* drawer )
-    {
-        delete listener;
-        listener = nullptr;
-
-        if ( drawer->parentItem() && drawer->isVisible() )
-            listener = new GeometryListener( drawer->parentItem(), drawer );
-    }
-
     Qt::Edge edge = Qt::LeftEdge;
     GestureRecognizer* gestureRecognizer = nullptr;
-    GeometryListener* listener = nullptr;
 
     qreal dragMargin = qskDefaultDragMargin();
 };
@@ -269,25 +162,11 @@ QskDrawer::QskDrawer( QQuickItem* parentItem )
 
     setAutoLayoutChildren( true );
     setInteractive( true );
-
-    setPopupFlag( PopupFlag::CloseOnPressOutside, true );
-    setTransitionAspect( Panel | QskAspect::Position | QskAspect::Metric );
-
-    /*
-        The drawer wants to be on top of the parent - not being
-        layouted into its layoutRect(). So we opt out and do
-        the layout updates manually.
-     */
-    setPlacementPolicy( QskPlacementPolicy::Ignore );
-    m_data->resetListener( this );
-
-    connect( this, &QskPopup::openChanged, this, &QskDrawer::setSliding );
-    connect( this, &QskPopup::transitioningChanged, this, &QskDrawer::setIntermediate );
+    setAdjustingToParentGeometry( true );
 }
 
 QskDrawer::~QskDrawer()
 {
-    delete m_data->listener;
 }
 
 Qt::Edge QskDrawer::edge() const
@@ -350,6 +229,24 @@ void QskDrawer::resetDragMargin()
 qreal QskDrawer::dragMargin() const
 {
     return m_data->dragMargin;
+}
+
+bool QskDrawer::event( QEvent* event )
+{
+    if ( event->type() == QEvent::PolishRequest )
+    {
+        if ( isAdjustingToParentGeometry() && parentItem() )
+        {
+            auto r = qskItemRect( parentItem() );
+            r = qskAlignedToEdge( r, sizeConstraint( Qt::PreferredSize ), edge() );
+
+            setGeometry( r );
+
+            return true;
+        }
+    }
+
+    return Inherited::event( event );
 }
 
 void QskDrawer::keyPressEvent( QKeyEvent* event )
@@ -432,18 +329,6 @@ void QskDrawer::gestureEvent( QskGestureEvent* event )
     Inherited::gestureEvent( event );
 }
 
-QRectF QskDrawer::layoutRectForSize( const QSizeF& size ) const
-{
-    qreal ratio;
-
-    if ( isTransitioning() )
-        ratio = metric( transitionAspect() );
-    else
-        ratio = isOpen() ? 1.0 : 0.0;
-
-    return qskSlidingRect( size, m_data->edge, ratio );
-}
-
 void QskDrawer::itemChange( QQuickItem::ItemChange change,
     const QQuickItem::ItemChangeData& value )
 {
@@ -456,85 +341,9 @@ void QskDrawer::itemChange( QQuickItem::ItemChange change,
             if ( parentItem() && isInteractive() )
                 qskCatchMouseEvents( parentItem() );
 
-            m_data->resetListener( this );
-            break;
-        }
-        case QQuickItem::ItemVisibleHasChanged:
-        {
-            m_data->resetListener( this );
             break;
         }
     }
-}
-
-void QskDrawer::setSliding( bool on )
-{
-    const qreal from = on ? 0.0 : 1.0;
-    const qreal to = on ? 1.0 : 0.0;
-
-    const auto aspect = transitionAspect();
-
-    auto hint = animationHint( aspect );
-    hint.updateFlags = QskAnimationHint::UpdatePolish;
-
-    startTransition( aspect, hint, from, to );
-}
-
-QRectF QskDrawer::clipRect() const
-{
-    if ( !isTransitioning() )
-        return Inherited::clipRect();
-
-    /*
-        When fading we want to clip against the edge, where the drawer
-        slides in/out. However the size of the drawer is often smaller than the
-        one of the parent and we would clip the overlay node
-        and all content, that is located outside the drawer geometry.
-
-        So we expand the clip rectangle to "unbounded" at the other edges.
-
-        Note, that clipping against "rounded" rectangles can't be done
-        properly by overloading clipRect. We would have to manipulate the clip node
-        manually - like it is done in QskScrollArea. TODO ..
-     */
-    constexpr qreal d = std::numeric_limits< short >::max();
-
-    QRectF r( -d, -d, 2.0 * d, 2.0 * d );
-
-    switch( m_data->edge )
-    {
-        case Qt::LeftEdge:
-            r.setLeft( 0.0 );
-            break;
-
-        case Qt::RightEdge:
-            r.setRight( width() );
-            break;
-
-        case Qt::TopEdge:
-            r.setTop( 0.0 );
-            break;
-
-        case Qt::BottomEdge:
-            r.setBottom( height() );
-            break;
-    }
-
-    return r;
-}
-
-void QskDrawer::setIntermediate( bool on )
-{
-    setClip( on );
-    Q_EMIT focusIndicatorRectChanged();
-}
-
-QRectF QskDrawer::focusIndicatorRect() const
-{
-    if ( isTransitioning() )
-        return QRectF();
-
-    return Inherited::focusIndicatorRect();
 }
 
 #include "moc_QskDrawer.cpp"

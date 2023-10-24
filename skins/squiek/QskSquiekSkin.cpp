@@ -409,7 +409,9 @@ void Editor::setupPopup()
     using Q = QskPopup;
 
     setHint( Q::Overlay | A::Style, true );
-    setGradient( Q::Overlay, QColor( 220, 220, 220, 150 ) );
+    setGradient( Q::Overlay, qRgba( 220, 220, 220, 150 ) );
+
+    setAnimation( Q::Popup, 200 );
 }
 
 void Editor::setupMenu()
@@ -446,10 +448,6 @@ void Editor::setupMenu()
     setGraphicRole( Q::Icon | Q::Disabled, DisabledSymbol );
     setGraphicRole( Q::Icon | Q::Selected, CursorSymbol );
 
-    setPosition( Q::Panel, 1 );
-    setPosition( Q::Panel | QskPopup::Closed, 0 );
-
-    setAnimation( Q::Panel | A::Metric, 150 );
     setAnimation( Q::Cursor | A::Position | A::Metric, 75, QEasingCurve::OutCubic );
 }
 
@@ -761,10 +759,6 @@ void Editor::setupDialogButtonBox()
 
 void Editor::setupDrawer()
 {
-    using A = QskAspect;
-    using Q = QskDrawer;
-
-    setAnimation( Q::Panel | A::Metric | A::Position, qskDuration );
 }
 
 void Editor::setupTabButton()

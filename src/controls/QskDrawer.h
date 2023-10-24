@@ -6,14 +6,13 @@
 #ifndef QSK_DRAWER_H
 #define QSK_DRAWER_H
 
-#include "QskPopup.h"
-#include <qnamespace.h>
+#include "QskSlideIn.h"
 
-class QSK_EXPORT QskDrawer : public QskPopup
+class QSK_EXPORT QskDrawer : public QskSlideIn
 {
     Q_OBJECT
 
-    using Inherited = QskPopup;
+    using Inherited = QskSlideIn;
 
     Q_PROPERTY( Qt::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged )
 
@@ -24,13 +23,11 @@ class QSK_EXPORT QskDrawer : public QskPopup
         WRITE setInteractive NOTIFY interactiveChanged )
 
   public:
-    QSK_SUBCONTROLS( Panel )
-
     QskDrawer( QQuickItem* = nullptr );
     ~QskDrawer() override;
 
     void setEdge( Qt::Edge );
-    Qt::Edge edge() const;
+    Qt::Edge edge() const override final;
 
     void setInteractive( bool );
     bool isInteractive() const;
@@ -39,26 +36,19 @@ class QSK_EXPORT QskDrawer : public QskPopup
     void resetDragMargin();
     qreal dragMargin() const;
 
-    QRectF layoutRectForSize( const QSizeF& ) const override;
-
-    QRectF clipRect() const override;
-    QRectF focusIndicatorRect() const override;
-
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
     void dragMarginChanged( qreal );
     void interactiveChanged( bool );
 
   protected:
+    bool event( QEvent* ) override;
+
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void gestureEvent( QskGestureEvent* ) override;
     void keyPressEvent( QKeyEvent* ) override;
 
   private:
-    void setSliding( bool );
-
-    void setIntermediate( bool );
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

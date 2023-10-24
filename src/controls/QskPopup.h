@@ -24,7 +24,7 @@ class QSK_EXPORT QskPopup : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Overlay )
+    QSK_SUBCONTROLS( Popup, Overlay )
     QSK_STATES( Closed )
 
     enum PopupFlag
@@ -56,11 +56,8 @@ class QSK_EXPORT QskPopup : public QskControl
     void setPriority( uint );
     uint priority() const;
 
-    // transitions between open/closed states
-    QskAspect transitionAspect() const;
-    void setTransitionAspect( QskAspect );
-
     bool isTransitioning() const;
+    qreal transitioningFactor() const;
 
     bool isOpen() const;
     bool isClosed() const;

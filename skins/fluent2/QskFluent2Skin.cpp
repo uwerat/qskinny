@@ -620,12 +620,6 @@ void Editor::setupDialogButtonBoxColors(
 
 void Editor::setupDrawerMetrics()
 {
-    using Q = QskDrawer;
-    using A = QskAspect;
-
-#if 1
-    setAnimation( Q::Panel | A::Metric | A::Position, 200 );
-#endif
 }
 
 void Editor::setupDrawerColors( QskAspect::Section, const QskFluent2Theme& )
@@ -744,7 +738,6 @@ void Editor::setupListViewColors(
 void Editor::setupMenuMetrics()
 {
     using Q = QskMenu;
-    using A = QskAspect;
 
     setPadding( Q::Panel, { 4, 6, 4, 6 } );
     setBoxBorderMetrics( Q::Panel, 1 );
@@ -758,14 +751,6 @@ void Editor::setupMenuMetrics()
 
     setStrutSize( Q::Icon, 12, 12 );
     setPadding( Q::Icon, { 8, 8, 0, 8 } );
-
-#if 1
-    setPosition( Q::Panel, 1 );
-    setPosition( Q::Panel | QskPopup::Closed, 0 );
-
-    // copied from Mat3 - what are the correct values for Fluent2 ???
-    setAnimation( Q::Panel | A::Metric, 150 );
-#endif
 }
 
 void Editor::setupMenuColors(
@@ -876,10 +861,14 @@ void Editor::setupPageIndicatorColors(
 void Editor::setupPopup( const QskFluent2Theme& theme )
 {
     using Q = QskPopup;
+    using A = QskAspect;
 
     const auto& pal = theme.palette;
 
+    setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, pal.background.overlay.defaultColor );
+
+    setAnimation( Q::Popup, 200 );
 }
 
 void Editor::setupProgressBarMetrics()
