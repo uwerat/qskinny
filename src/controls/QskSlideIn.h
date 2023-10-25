@@ -31,7 +31,6 @@ class QSK_EXPORT QskSlideIn : public QskPopup
   protected:
     QskSlideIn( QQuickItem* = nullptr );
 
-    bool event( QEvent* ) override;
     void itemChange( ItemChange, const ItemChangeData& ) override;
 
   private:

@@ -235,9 +235,9 @@ bool QskDrawer::event( QEvent* event )
 {
     if ( event->type() == QEvent::PolishRequest )
     {
-        if ( isAdjustingToParentGeometry() && parentItem() )
+        if ( const auto item = parentItem() )
         {
-            auto r = qskItemRect( parentItem() );
+            auto r = qskItemRect( item );
             r = qskAlignedToEdge( r, sizeConstraint( Qt::PreferredSize ), edge() );
 
             setGeometry( r );

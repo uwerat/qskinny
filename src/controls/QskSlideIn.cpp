@@ -132,21 +132,6 @@ void QskSlideIn::itemChange( QQuickItem::ItemChange change,
     }
 }
 
-bool QskSlideIn::event( QEvent* event )
-{
-    if ( event->type() == QEvent::PolishRequest )
-    {
-        // isVisible ???
-        if ( m_data->adjustingToParentGeometry && parentItem() )
-        {
-            setSize( parentItem()->size() );
-            return true;
-        }
-    }
-
-    return Inherited::event( event );
-}
-
 void QskSlideIn::setIntermediate( bool on )
 {
     setClip( on );
