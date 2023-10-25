@@ -88,6 +88,7 @@ class QSK_EXPORT QskPopup : public QskControl
     bool event( QEvent* ) override;
     void focusInEvent( QFocusEvent* ) override;
     void focusOutEvent( QFocusEvent* ) override;
+    void keyPressEvent( QKeyEvent* ) override;
     void windowChangeEvent( QskWindowChangeEvent* ) override;
 
     void itemChange( QQuickItem::ItemChange,

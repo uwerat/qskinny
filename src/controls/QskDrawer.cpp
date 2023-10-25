@@ -249,64 +249,6 @@ bool QskDrawer::event( QEvent* event )
     return Inherited::event( event );
 }
 
-void QskDrawer::keyPressEvent( QKeyEvent* event )
-{
-    if ( isOpen() )
-    {
-        bool doClose = false;
-
-        const auto key = event->key();
-
-        switch( key )
-        {
-            case Qt::Key_Escape:
-            case Qt::Key_Cancel:
-            {
-                doClose = true;
-                break;
-            }
-
-#if 0
-            /*
-                Do we want to have this - and what about opening with
-                the same keys ???
-             */
-            case Qt::Key_Up:
-            case Qt::Key_Down:
-            case Qt::Key_Left:
-            case Qt::Key_Right:
-            {
-                switch( m_data->edge )
-                {
-                    case Qt::TopEdge:
-                        doClose = ( key == Qt::Key_Up );
-                        break;
-                    case Qt::BottomEdge:
-                        doClose = ( key == Qt::Key_Down );
-                        break;
-                    case Qt::LeftEdge:
-                        doClose = ( key == Qt::Key_Left );
-                        break;
-                    case Qt::RightEdge:
-                        doClose = ( key == Qt::Key_Right );
-                        break;
-                }
-
-                break;
-            }
-#endif
-        }
-
-        if ( doClose )
-        {
-            close();
-            return;
-        }
-    }
-
-    Inherited::keyPressEvent( event );
-}
-
 void QskDrawer::gestureEvent( QskGestureEvent* event )
 {
     if ( event->gesture()->type() == QskGesture::Pan )

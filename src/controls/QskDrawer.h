@@ -46,7 +46,6 @@ class QSK_EXPORT QskDrawer : public QskSlideIn
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void gestureEvent( QskGestureEvent* ) override;
-    void keyPressEvent( QKeyEvent* ) override;
 
   private:
     class PrivateData;

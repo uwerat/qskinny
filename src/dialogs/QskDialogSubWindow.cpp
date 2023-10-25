@@ -278,15 +278,10 @@ void QskDialogSubWindow::keyPressEvent( QKeyEvent* event )
     {
         auto button = m_data->buttonBox->defaultButton();
         if ( button && button->isEnabled() )
+        {
             button->click();
-    }
-
-    if ( qskIsStandardKeyInput( event, QKeySequence::Cancel ) )
-    {
-        // using shortcuts instead ???
-
-        reject();
-        return;
+            return;
+        }
     }
 
     Inherited::keyPressEvent( event );

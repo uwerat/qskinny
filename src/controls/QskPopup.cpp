@@ -519,6 +519,17 @@ bool QskPopup::event( QEvent* event )
     return ok;
 }
 
+void QskPopup::keyPressEvent( QKeyEvent* event )
+{
+    if ( qskIsStandardKeyInput( event, QKeySequence::Cancel ) )
+    {
+        close();
+        return;
+    }
+
+    return Inherited::keyPressEvent( event );
+}
+
 void QskPopup::focusInEvent( QFocusEvent* event )
 {
     Inherited::focusInEvent( event );
