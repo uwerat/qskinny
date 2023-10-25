@@ -472,10 +472,10 @@ bool QskPopup::event( QEvent* event )
         }
         case QskEvent::Animator:
         {
-            const auto animtorEvent = static_cast< QskAnimatorEvent* >( event );
+            const auto animatorEvent = static_cast< QskAnimatorEvent* >( event );
 
-            if ( ( animtorEvent->state() == QskAnimatorEvent::Terminated )
-                && ( animtorEvent->aspect() == m_data->transitionAspect ) )
+            if ( ( animatorEvent->state() == QskAnimatorEvent::Terminated )
+                && ( animatorEvent->aspect() == m_data->transitionAspect ) )
             {
                 if ( !isOpen() )
                 {
@@ -505,6 +505,17 @@ bool QskPopup::event( QEvent* event )
     }
 
     return ok;
+}
+
+void QskPopup::keyPressEvent( QKeyEvent* event )
+{
+    if ( qskIsStandardKeyInput( event, QKeySequence::Cancel ) )
+    {
+        close();
+        return;
+    }
+
+    return Inherited::keyPressEvent( event );
 }
 
 void QskPopup::focusInEvent( QFocusEvent* event )

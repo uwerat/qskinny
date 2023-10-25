@@ -52,7 +52,6 @@ class QSK_EXPORT QskDrawer : public QskPopup
   protected:
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void gestureEvent( QskGestureEvent* ) override;
-    void keyPressEvent( QKeyEvent* ) override;
 
   private:
     void setSliding( bool );

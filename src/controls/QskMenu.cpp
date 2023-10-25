@@ -268,20 +268,18 @@ void QskMenu::keyPressEvent( QKeyEvent* event )
     if( m_data->currentIndex < 0 )
         return;
 
-    int key = event->key();
-
-    switch( key )
+    switch( event->key() )
     {
         case Qt::Key_Up:
         {
             traverse( -1 );
-            break;
+            return;
         }
 
         case Qt::Key_Down:
         {
             traverse( 1 );
-            break;
+            return;
         }
 
         case Qt::Key_Select:
@@ -293,19 +291,17 @@ void QskMenu::keyPressEvent( QKeyEvent* event )
             return;
         }
 
-        case Qt::Key_Escape:
-        case Qt::Key_Cancel:
-        {
-            close();
-            return;
-        }
-
         default:
         {
             if ( const int steps = qskFocusChainIncrement( event ) )
+            {
                 traverse( steps );
+                return;
+            }
         }
     }
+
+    return Inherited::keyPressEvent( event );
 }
 
 void QskMenu::keyReleaseEvent( QKeyEvent* )
