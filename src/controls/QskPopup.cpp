@@ -539,7 +539,7 @@ void QskPopup::focusInEvent( QFocusEvent* event )
 
             if ( auto focusItem = nextItemInFocusChain( true ) )
             {
-                if ( qskIsItemComplete( focusItem )
+                if ( !qskIsItemInDestructor( focusItem )
                     && qskIsAncestorOf( this, focusItem ) )
                 {
                     focusItem->setFocus( true );
