@@ -27,6 +27,8 @@ namespace
 
             auto content = new QskControl( this );
             content->setObjectName( "Content" );
+            content->setAutoLayoutChildren( true );
+            content->setMargins( 20 );
 
             switch( edge )
             {
@@ -50,6 +52,9 @@ namespace
                     content->setBackgroundColor( QskRgb::Wheat );
                     break;
             }
+
+            auto button = new QskPushButton( "Push Me", content );
+            button->setPreferredHeight( 100 );
         }
     };
 

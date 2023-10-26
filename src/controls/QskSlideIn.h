@@ -20,7 +20,6 @@ class QSK_EXPORT QskSlideIn : public QskPopup
 
     virtual Qt::Edge edge() const = 0;
 
-    QRectF focusIndicatorRect() const override;
     QRectF clipRect() const override;
 
     void setAdjustingToParentGeometry( bool on );
@@ -34,8 +33,6 @@ class QSK_EXPORT QskSlideIn : public QskPopup
     void itemChange( ItemChange, const ItemChangeData& ) override;
 
   private:
-    void setIntermediate( bool );
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

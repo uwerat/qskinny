@@ -11,6 +11,71 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitemchangelistener_p.h>
 QSK_QT_PRIVATE_END
 
+static QPointF qskSlideInTranslation( const QskSlideIn* slideIn )
+{
+    const auto ratio = 1.0 - slideIn->transitioningFactor();
+
+    auto dx = 0.0;
+    auto dy = 0.0;
+
+    switch( slideIn->edge() )
+    {
+        case Qt::LeftEdge:
+            dx = -ratio * slideIn->width();
+            break;
+
+        case Qt::RightEdge:
+            dx = ratio * slideIn->width();
+            break;
+
+        case Qt::TopEdge:
+            dy = -ratio * slideIn->height();
+            break;
+
+        case Qt::BottomEdge:
+            dy = ratio * slideIn->height();
+            break;
+    }
+
+    return QPointF( dx, dy );
+}
+
+static inline QRectF qskUnboundedClipRect( const QRectF& rect, Qt::Edge edge )
+{
+    /*
+        When sliding we want to clip against the edge, where the drawer
+        slides in/out. However the size of the slidein is often smaller than the
+        one of the parent and we would clip the overlay node
+        and all content, that is located outside the drawer geometry.
+
+        So we expand the clip rectangle to "unbounded" at the other edges.
+     */
+    constexpr qreal d = 1e6;
+
+    QRectF r( -d, -d, 2.0 * d, 2.0 * d );
+
+    switch( edge )
+    {
+        case Qt::LeftEdge:
+            r.setLeft( rect.left() );
+            break;
+
+        case Qt::RightEdge:
+            r.setRight( rect.right() );
+            break;
+
+        case Qt::TopEdge:
+            r.setTop( rect.top() );
+            break;
+
+        case Qt::BottomEdge:
+            r.setBottom( rect.bottom() );
+            break;
+    }
+
+    return r;
+}
+
 namespace
 {
     // Using an eventFilter for QskEvent::GeometryChange instead ???
@@ -94,7 +159,7 @@ QskSlideIn::QskSlideIn( QQuickItem* parentItem )
     setPlacementPolicy( QskPlacementPolicy::Ignore );
 
     connect( this, &QskPopup::transitioningChanged,
-        this, &QskSlideIn::setIntermediate );
+        this, &QskSlideIn::setClip );
 }
 
 QskSlideIn::~QskSlideIn()
@@ -132,90 +197,17 @@ void QskSlideIn::itemChange( QQuickItem::ItemChange change,
     }
 }
 
-void QskSlideIn::setIntermediate( bool on )
-{
-    setClip( on );
-    Q_EMIT focusIndicatorRectChanged();
-}
-
-QRectF QskSlideIn::focusIndicatorRect() const
-{
-    if ( isTransitioning() )
-        return QRectF();
-    
-    return Inherited::focusIndicatorRect();
-}   
-
 QRectF QskSlideIn::clipRect() const 
 {
     if ( !isTransitioning() )
         return Inherited::clipRect();
-    
-    /*
-        When sliding we want to clip against the edge, where the drawer
-        slides in/out. However the size of the slidein is often smaller than the
-        one of the parent and we would clip the overlay node
-        and all content, that is located outside the drawer geometry.
-    
-        So we expand the clip rectangle to "unbounded" at the other edges.
-    
-        Note, that clipping against "rounded" rectangles can't be done
-        properly by overloading clipRect. We would have to manipulate the clip node
-        manually - like it is done in QskScrollArea. TODO ..
-     */
-    constexpr qreal d = std::numeric_limits< short >::max();
-    
-    QRectF r( -d, -d, 2.0 * d, 2.0 * d );
-    
-    switch( edge() )
-    {
-        case Qt::LeftEdge:
-            r.setLeft( 0.0 ); 
-            break;
-  
-        case Qt::RightEdge:
-            r.setRight( width() );
-            break;
-            
-        case Qt::TopEdge:
-            r.setTop( 0.0 );
-            break;
-    
-        case Qt::BottomEdge:
-            r.setBottom( height() );
-            break;
-    }
 
-    return r;
+    return qskUnboundedClipRect( rect(), edge() );
 }
 
 QRectF QskSlideIn::layoutRectForSize( const QSizeF& size ) const
 {   
-    const auto ratio = 1.0 - transitioningFactor();
-
-    auto x = 0.0;
-    auto y = 0.0;
-
-    switch( edge() )
-    {
-        case Qt::LeftEdge:
-            x = -ratio * size.width();
-            break;
-
-        case Qt::RightEdge:
-            x = ratio * size.width();
-            break;
-
-        case Qt::TopEdge:
-            y = -ratio * size.height();
-            break;
-
-        case Qt::BottomEdge:
-            y = ratio * size.height();
-            break;
-    }
-
-    return QRectF( x, y, size.width(), size.height() );
+    return QRectF( qskSlideInTranslation( this ), size );
 }
 
 #include "moc_QskSlideIn.cpp"

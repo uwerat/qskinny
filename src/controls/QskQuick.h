@@ -16,6 +16,7 @@ class QskSizePolicy;
 
 class QQuickItem;
 class QSGNode;
+class QSGTransformNode;
 class QRectF;
 template< typename T > class QList;
 
@@ -67,7 +68,7 @@ QSK_EXPORT QList< QQuickItem* > qskPaintOrderChildItems( const QQuickItem* );
 QSK_EXPORT void qskUpdateInputMethod( const QQuickItem*, Qt::InputMethodQueries );
 QSK_EXPORT void qskInputMethodSetVisible( const QQuickItem*, bool );
 
-QSK_EXPORT const QSGNode* qskItemNode( const QQuickItem* );
+QSK_EXPORT const QSGTransformNode* qskItemNode( const QQuickItem* );
 QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );
 
 QSK_EXPORT void qskItemUpdateRecursive( QQuickItem* );

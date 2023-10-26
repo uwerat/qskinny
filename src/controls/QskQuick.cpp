@@ -371,7 +371,7 @@ QList< QQuickItem* > qskPaintOrderChildItems( const QQuickItem* item )
     return QList< QQuickItem* >();
 }
 
-const QSGNode* qskItemNode( const QQuickItem* item )
+const QSGTransformNode* qskItemNode( const QQuickItem* item )
 {
     if ( item == nullptr )
         return nullptr;
