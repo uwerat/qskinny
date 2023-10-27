@@ -51,44 +51,6 @@ static bool qskCheckDirection( Qt::Edge edge, const QskPanGesture* gesture )
     return false;
 }
 
-static inline QRectF qskAlignedToEdge(
-    const QRectF& rect, const QSizeF& size, Qt::Edge edge )
-{
-    QRectF r( 0.0, 0.0, size.width(), size.height() );
-
-    switch( edge )
-    {
-        case Qt::LeftEdge:
-        {
-            r.setHeight( rect.height() );
-            r.moveRight( rect.left() + size.width() );
-            break;
-        }
-        case Qt::RightEdge:
-        {
-            r.setHeight( rect.height() );
-            r.moveLeft( rect.right() - size.width() );
-            break;
-        }
-
-        case Qt::TopEdge:
-        {
-            r.setWidth( rect.width() );
-            r.moveBottom( rect.top() + size.height() );
-            break;
-        }
-
-        case Qt::BottomEdge:
-        {
-            r.setWidth( rect.width() );
-            r.moveTop( rect.bottom() - size.height() );
-            break;
-        }
-    }
-
-    return r;
-}
-
 namespace
 {
     class GestureRecognizer : public QskPanGestureRecognizer
@@ -229,24 +191,6 @@ void QskDrawer::resetDragMargin()
 qreal QskDrawer::dragMargin() const
 {
     return m_data->dragMargin;
-}
-
-bool QskDrawer::event( QEvent* event )
-{
-    if ( event->type() == QEvent::PolishRequest )
-    {
-        if ( const auto item = parentItem() )
-        {
-            auto r = qskItemRect( item );
-            r = qskAlignedToEdge( r, sizeConstraint( Qt::PreferredSize ), edge() );
-
-            setGeometry( r );
-
-            return true;
-        }
-    }
-
-    return Inherited::event( event );
 }
 
 void QskDrawer::gestureEvent( QskGestureEvent* event )

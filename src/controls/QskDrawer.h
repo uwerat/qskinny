@@ -42,8 +42,6 @@ class QSK_EXPORT QskDrawer : public QskSlideIn
     void interactiveChanged( bool );
 
   protected:
-    bool event( QEvent* ) override;
-
     void itemChange( ItemChange, const ItemChangeData& ) override;
     void gestureEvent( QskGestureEvent* ) override;
 

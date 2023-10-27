@@ -25,12 +25,12 @@ class QSK_EXPORT QskSlideIn : public QskPopup
     void setAdjustingToParentGeometry( bool on );
     bool isAdjustingToParentGeometry() const;
 
-    QRectF layoutRectForSize( const QSizeF& ) const override;
-
   protected:
     QskSlideIn( QQuickItem* = nullptr );
 
     void itemChange( ItemChange, const ItemChangeData& ) override;
+    void updateResources() override;
+    void updateNode( QSGNode* ) override;
 
   private:
     class PrivateData;

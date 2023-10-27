@@ -4,14 +4,14 @@
  *****************************************************************************/
 
 #include "QskSlideIn.h"
-#include "QskAnimationHint.h"
+#include "QskQuick.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
 #include <private/qquickitemchangelistener_p.h>
 QSK_QT_PRIVATE_END
 
-static QPointF qskSlideInTranslation( const QskSlideIn* slideIn )
+static QPointF qskSlideInTranslation( const QskSlideIn* slideIn, const QSizeF& size )
 {
     const auto ratio = 1.0 - slideIn->transitioningFactor();
 
@@ -21,59 +21,44 @@ static QPointF qskSlideInTranslation( const QskSlideIn* slideIn )
     switch( slideIn->edge() )
     {
         case Qt::LeftEdge:
-            dx = -ratio * slideIn->width();
+            dx = -ratio * size.width();
             break;
 
         case Qt::RightEdge:
-            dx = ratio * slideIn->width();
+            dx = ratio * size.width();
             break;
 
         case Qt::TopEdge:
-            dy = -ratio * slideIn->height();
+            dy = -ratio * size.height();
             break;
 
         case Qt::BottomEdge:
-            dy = ratio * slideIn->height();
+            dy = ratio * size.height();
             break;
     }
 
     return QPointF( dx, dy );
 }
 
-static inline QRectF qskUnboundedClipRect( const QRectF& rect, Qt::Edge edge )
+static inline QRectF qskAlignedToEdge(
+    const QRectF& r, const QSizeF& sz, Qt::Edge edge )
 {
-    /*
-        When sliding we want to clip against the edge, where the drawer
-        slides in/out. However the size of the slidein is often smaller than the
-        one of the parent and we would clip the overlay node
-        and all content, that is located outside the drawer geometry.
-
-        So we expand the clip rectangle to "unbounded" at the other edges.
-     */
-    constexpr qreal d = 1e6;
-
-    QRectF r( -d, -d, 2.0 * d, 2.0 * d );
-
     switch( edge )
     {
         case Qt::LeftEdge:
-            r.setLeft( rect.left() );
-            break;
+            return QRectF( r.left(), r.top(), sz.width(), r.height() );
 
         case Qt::RightEdge:
-            r.setRight( rect.right() );
-            break;
+            return QRectF( r.right() - sz.width(), r.top(), sz.width(), r.height() );
 
         case Qt::TopEdge:
-            r.setTop( rect.top() );
-            break;
+            return QRectF( r.left(), r.top(), r.width(), sz.height() );
 
         case Qt::BottomEdge:
-            r.setBottom( rect.bottom() );
-            break;
+            return QRectF( r.left(), r.bottom() - sz.height(), r.width(), sz.height() );
     }
 
-    return r;
+    return QRectF();
 }
 
 namespace
@@ -106,8 +91,7 @@ namespace
       private:
         void adjust()
         {
-            QEvent event( QEvent::PolishRequest );
-            QCoreApplication::sendEvent( m_adjustedItem, &event );
+            m_adjustedItem->polish();
         }
 
         void setEnabled( bool on )
@@ -159,7 +143,7 @@ QskSlideIn::QskSlideIn( QQuickItem* parentItem )
     setPlacementPolicy( QskPlacementPolicy::Ignore );
 
     connect( this, &QskPopup::transitioningChanged,
-        this, &QskSlideIn::setClip );
+        this, &QQuickItem::setClip );
 }
 
 QskSlideIn::~QskSlideIn()
@@ -197,17 +181,89 @@ void QskSlideIn::itemChange( QQuickItem::ItemChange change,
     }
 }
 
-QRectF QskSlideIn::clipRect() const 
+void QskSlideIn::updateResources()
 {
-    if ( !isTransitioning() )
-        return Inherited::clipRect();
+    Inherited::updateResources();
+    
+    /*
+         Adjusting the geometry to the parent needs to be done before
+         the layouting of the children ( -> autoLayoutChildren ) is done.
+         So we are using this hook even if it is not about resources: TODO ...
+     */
+    if ( const auto item = parentItem() )
+    {
+        auto r = qskItemRect( item );
+        r = qskAlignedToEdge( r, sizeConstraint( Qt::PreferredSize ), edge() );
 
-    return qskUnboundedClipRect( rect(), edge() );
+        r.translate( qskSlideInTranslation( this, r.size() ) );
+        setGeometry( r );
+    }
 }
 
-QRectF QskSlideIn::layoutRectForSize( const QSizeF& size ) const
-{   
-    return QRectF( qskSlideInTranslation( this ), size );
+QRectF QskSlideIn::clipRect() const 
+{
+    if ( isTransitioning() && parentItem() )
+    {
+        // parent rectangle translated into the coordinate system of the slideIn
+        const QRectF rect( -position(), parentItem()->size() );
+
+        /*
+            We might not fit into our parent and our children not
+            into our rect. So we want to have a clip against the
+            edge, where the drawer slides in/out only.
+            Otherwise we would have unwanted effects, when clipping gets
+            disabled once the transition is over.
+         */
+        constexpr qreal d = 1e6;
+
+        QRectF r( -d, -d, 2.0 * d, 2.0 * d );
+
+        switch( edge() )
+        {
+            case Qt::LeftEdge:
+                r.setLeft( rect.left() );
+                break;
+
+            case Qt::RightEdge:
+                r.setRight( rect.right() );
+                break;
+
+            case Qt::TopEdge:
+                r.setTop( rect.top() );
+                break;
+
+            case Qt::BottomEdge:
+                r.setBottom( rect.bottom() );
+                break;
+        }
+
+        return r;
+    }
+
+    return Inherited::clipRect();
+}
+
+void QskSlideIn::updateNode( QSGNode* node )
+{
+    if ( isTransitioning() && clip() )
+    {
+        if ( auto clipNode = QQuickItemPrivate::get( this )->clipNode() )
+        {
+            /*
+                The clipRect is changing while transitioning. Couldn't
+                find a way how to trigger updates - maybe be enabling/disabling
+                the clip. So we do the updates manually. TODO ...
+             */
+            const auto r = clipRect();
+            if ( r != clipNode->rect() )
+            {
+                clipNode->setRect( r );
+                clipNode->update();
+            }
+        }
+    }
+
+    Inherited::updateNode( node );
 }
 
 #include "moc_QskSlideIn.cpp"

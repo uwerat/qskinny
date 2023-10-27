@@ -9,6 +9,7 @@
 #include <QskControl.h>
 #include <QskDrawer.h>
 #include <QskPushButton.h>
+#include <QskFocusIndicator.h>
 #include <QskWindow.h>
 #include <QskEvent.h>
 #include <QskAnimationHint.h>
@@ -30,31 +31,32 @@ namespace
             content->setAutoLayoutChildren( true );
             content->setMargins( 20 );
 
+            auto button = new QskPushButton( "Push Me", content );
+            button->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+            button->setLayoutAlignmentHint( Qt::AlignCenter );
+
+            const auto size = content->sizeHint();
+
             switch( edge )
             {
                 case Qt::LeftEdge:
                     content->setBackgroundColor( QskRgb::Tomato );
-                    content->setFixedWidth( 100 );
                     break;
 
                 case Qt::RightEdge:
-                    content->setFixedWidth( 200 );
+                    content->setFixedWidth( 1.5 * size.width() );
                     content->setBackgroundColor( QskRgb::Orchid );
                     break;
 
                 case Qt::TopEdge:
-                    content->setFixedHeight( 100 );
                     content->setBackgroundColor( QskRgb::Chartreuse );
                     break;
 
                 case Qt::BottomEdge:
-                    content->setFixedHeight( 200 );
+                    content->setFixedHeight( 2 * size.height() );
                     content->setBackgroundColor( QskRgb::Wheat );
                     break;
             }
-
-            auto button = new QskPushButton( "Push Me", content );
-            button->setPreferredHeight( 100 );
         }
     };
 
@@ -127,6 +129,7 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     QskWindow window;
+    window.addItem( new QskFocusIndicator() );
     window.addItem( new MainBox() );
     window.resize( 600, 600 );
     window.show();
