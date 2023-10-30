@@ -6,13 +6,13 @@
 #ifndef QSK_DRAWER_H
 #define QSK_DRAWER_H
 
-#include "QskSlideIn.h"
+#include "QskPopup.h"
 
-class QSK_EXPORT QskDrawer : public QskSlideIn
+class QSK_EXPORT QskDrawer : public QskPopup
 {
     Q_OBJECT
 
-    using Inherited = QskSlideIn;
+    using Inherited = QskPopup;
 
     Q_PROPERTY( Qt::Edge edge READ edge WRITE setEdge NOTIFY edgeChanged )
 
@@ -24,10 +24,12 @@ class QSK_EXPORT QskDrawer : public QskSlideIn
 
   public:
     QskDrawer( QQuickItem* = nullptr );
+    QskDrawer( Qt::Edge, QQuickItem* = nullptr );
+
     ~QskDrawer() override;
 
     void setEdge( Qt::Edge );
-    Qt::Edge edge() const override final;
+    Qt::Edge edge() const;
 
     void setInteractive( bool );
     bool isInteractive() const;
@@ -36,14 +38,19 @@ class QSK_EXPORT QskDrawer : public QskSlideIn
     void resetDragMargin();
     qreal dragMargin() const;
 
+    QRectF clipRect() const override;
+
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
     void dragMarginChanged( qreal );
     void interactiveChanged( bool );
 
   protected:
-    void itemChange( ItemChange, const ItemChangeData& ) override;
     void gestureEvent( QskGestureEvent* ) override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
+
+    void updateResources() override;
+    void updateNode( QSGNode* ) override;
 
   private:
     class PrivateData;

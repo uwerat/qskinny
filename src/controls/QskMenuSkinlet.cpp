@@ -15,7 +15,6 @@
 #include "QskLabelData.h"
 
 #include "QskSGNode.h"
-#include "QskSlideInNode.h"
 
 #include <qfontmetrics.h>
 #include <qmath.h>
@@ -223,26 +222,13 @@ QSGNode* QskMenuSkinlet::updateSubNode(
     {
         case ContentsRole:
         {
-            /*
-                QskSlideInNode works for controls made of nodes - not for
-                containers of other quick items. TODO ...
-             */
-
             const auto popup = static_cast< const QskPopup* >( skinnable );
 
             auto rect = popup->contentsRect();
             if ( rect.isEmpty() )
                 return nullptr;
 
-            auto slideInNode = QskSGNode::ensureNode< QskSlideInNode >( node );
-
-            slideInNode->updateTranslation(
-                rect, Qt::TopEdge, popup->transitioningFactor() );
-
-            auto contentsNode = updateContentsNode( popup, slideInNode->contentsNode() );
-            slideInNode->setContentsNode( contentsNode );
-
-            return slideInNode;
+            return updateContentsNode( popup, node );
         }
     }
 

@@ -18,6 +18,10 @@
 #include <qvariant.h>
 #include <qeventloop.h>
 
+QSK_QT_PRIVATE_BEGIN
+#include <private/qquickitem_p.h>
+QSK_QT_PRIVATE_END
+
 QSK_SUBCONTROL( QskMenu, Overlay )
 QSK_SUBCONTROL( QskMenu, Panel )
 QSK_SUBCONTROL( QskMenu, Segment )
@@ -62,13 +66,17 @@ QskMenu::QskMenu( QQuickItem* parent )
     setPopupFlag( QskPopup::CloseOnPressOutside, true );
     setPopupFlag( QskPopup::DeleteOnClose, true );
 
+    setPlacementPolicy( QskPlacementPolicy::Ignore );
     setSubcontrolProxy( Inherited::Overlay, Overlay );
 
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
     // we hide the focus indicator while sliding
-    connect( this, &QskMenu::transitioningChanged, this,
-        &QskControl::focusIndicatorRectChanged );
+    connect( this, &QskMenu::transitioningChanged,
+        this, &QskControl::focusIndicatorRectChanged );
+
+    connect( this, &QskPopup::transitioningChanged,
+        this, &QQuickItem::setClip );
 
     connect( this, &QskMenu::opened, this,
         [this]() { m_data->triggeredIndex = -1; } );
@@ -78,6 +86,17 @@ QskMenu::QskMenu( QQuickItem* parent )
 
 QskMenu::~QskMenu()
 {
+}
+
+QRectF QskMenu::clipRect() const
+{
+    if ( isTransitioning() )
+    {
+        constexpr qreal d = 1e6;
+        return QRectF( -d, m_data->origin.y() - y(), 2.0 * d, d );
+    }
+
+    return Inherited::clipRect();
 }
 
 #if 1
@@ -262,6 +281,38 @@ QString QskMenu::triggeredText() const
     return optionAt( m_data->triggeredIndex ).text();
 }
 
+void QskMenu::updateResources()
+{
+    const auto size = sizeConstraint();
+    const auto dy = ( 1.0 - transitioningFactor() ) * size.height();
+
+    setGeometry( m_data->origin.x(), m_data->origin.y() - dy,
+        size.width(), size.height() );
+}
+
+void QskMenu::updateNode( QSGNode* node )
+{
+    if ( isTransitioning() && clip() )
+    {
+        if ( auto clipNode = QQuickItemPrivate::get( this )->clipNode() )
+        {
+            /*
+                The clipRect is changing while transitioning. Couldn't
+                find a way how to trigger updates - maybe be enabling/disabling
+                the clip. So we do the updates manually. TODO ...
+             */
+            const auto r = clipRect();
+            if ( r != clipNode->rect() )
+            {
+                clipNode->setRect( r );
+                clipNode->update();
+            }
+        }
+    }
+
+    Inherited::updateNode( node );
+}
+
 void QskMenu::keyPressEvent( QKeyEvent* event )
 {
     if( m_data->currentIndex < 0 )
@@ -434,8 +485,6 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
 
 void QskMenu::aboutToShow()
 {
-    setGeometry( QRectF( m_data->origin, sizeConstraint() ) );
-
     if ( m_data->currentIndex < 0 )
     {
         if ( !m_data->actions.isEmpty() )

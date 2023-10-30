@@ -81,6 +81,8 @@ class QSK_EXPORT QskMenu : public QskPopup
 
     bool isPressed() const;
 
+    QRectF clipRect() const override;
+
     Q_INVOKABLE int exec();
 
   Q_SIGNALS:
@@ -114,6 +116,9 @@ class QSK_EXPORT QskMenu : public QskPopup
 
     void aboutToShow() override;
     void trigger( int );
+
+    void updateResources() override;
+    void updateNode( QSGNode* ) override;
 
   private:
     void traverse( int steps );

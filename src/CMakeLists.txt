@@ -115,7 +115,6 @@ list(APPEND HEADERS
     nodes/QskRichTextRenderer.h
     nodes/QskScaleRenderer.h
     nodes/QskSGNode.h
-    nodes/QskSlideInNode.h
     nodes/QskStrokeNode.h
     nodes/QskStippledLineRenderer.h
     nodes/QskShapeNode.h
@@ -147,7 +146,6 @@ list(APPEND SOURCES
     nodes/QskRichTextRenderer.cpp
     nodes/QskScaleRenderer.cpp
     nodes/QskSGNode.cpp
-    nodes/QskSlideInNode.cpp
     nodes/QskStrokeNode.cpp
     nodes/QskStippledLineRenderer.cpp
     nodes/QskShapeNode.cpp
@@ -210,7 +208,6 @@ list(APPEND HEADERS
     controls/QskQuickItem.h
     controls/QskRadioBox.h
     controls/QskRadioBoxSkinlet.h
-    controls/QskSlideIn.h
     controls/QskScrollArea.h
     controls/QskScrollBox.h
     controls/QskScrollView.h
@@ -317,7 +314,6 @@ list(APPEND SOURCES
     controls/QskScrollBox.cpp
     controls/QskScrollView.cpp
     controls/QskScrollViewSkinlet.cpp
-    controls/QskSlideIn.cpp
     controls/QskRadioBox.cpp
     controls/QskRadioBoxSkinlet.cpp
     controls/QskSegmentedBar.cpp
