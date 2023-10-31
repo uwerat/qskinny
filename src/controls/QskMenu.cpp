@@ -72,13 +72,13 @@ QskMenu::QskMenu( QQuickItem* parent )
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
     // we hide the focus indicator while sliding
-    connect( this, &QskMenu::transitioningChanged,
+    connect( this, &QskPopup::transitioningChanged,
         this, &QskControl::focusIndicatorRectChanged );
 
     connect( this, &QskPopup::transitioningChanged,
         this, &QQuickItem::setClip );
 
-    connect( this, &QskMenu::opened, this,
+    connect( this, &QskPopup::opened, this,
         [this]() { m_data->triggeredIndex = -1; } );
 
     setAcceptHoverEvents( true );
@@ -283,11 +283,13 @@ QString QskMenu::triggeredText() const
 
 void QskMenu::updateResources()
 {
-    const auto size = sizeConstraint();
-    const auto dy = ( 1.0 - transitioningFactor() ) * size.height();
+    if ( isTransitioning() )
+    {
+        const auto dy = ( 1.0 - transitioningFactor() ) * height();
+        setPosition( m_data->origin.x(), m_data->origin.y() - dy );
+    }
 
-    setGeometry( m_data->origin.x(), m_data->origin.y() - dy,
-        size.width(), size.height() );
+    Inherited::updateResources();
 }
 
 void QskMenu::updateNode( QSGNode* node )
@@ -485,6 +487,8 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
 
 void QskMenu::aboutToShow()
 {
+    setSize( sizeConstraint() );
+
     if ( m_data->currentIndex < 0 )
     {
         if ( !m_data->actions.isEmpty() )

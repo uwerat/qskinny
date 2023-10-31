@@ -95,6 +95,8 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     bool event( QEvent* ) override;
 
     void updateLayout() override;
+    void updateResources() override;
+
     QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
     void itemChange( QQuickItem::ItemChange,

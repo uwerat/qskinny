@@ -253,4 +253,10 @@ void QskSubWindow::itemChange( QQuickItem::ItemChange change,
     }
 }
 
+void QskSubWindow::updateResources()
+{
+    setOpacity( transitioningFactor() );
+    Inherited::updateResources();
+}
+
 #include "moc_QskSubWindow.cpp"
