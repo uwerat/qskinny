@@ -255,8 +255,13 @@ void QskSubWindow::itemChange( QQuickItem::ItemChange change,
 
 void QskSubWindow::updateResources()
 {
-    setOpacity( transitioningFactor() );
+    setOpacity( fadingFactor() );
     Inherited::updateResources();
+}
+
+QskAspect QskSubWindow::fadingAspect() const
+{
+    return QskSubWindow::Panel | QskAspect::Position;
 }
 
 #include "moc_QskSubWindow.cpp"

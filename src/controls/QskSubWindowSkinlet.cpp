@@ -98,10 +98,10 @@ QSGNode* QskSubWindowSkinlet::updateSubNode(
         {
             /*
                 Overloading QskPopupSkinlet: as the opacity of the subwindow already
-                depends on the transitioningFactor we do not want the additional opacity
+                depends on the fadingFactor we do not want the additional opacity
                 adjustments for the overlay node.
                 Maybe we should have a flag that indicates if the popup does
-                opacity or geometry transitions, when opening/closing TODO ...
+                opacity or geometry transitions, when fading TODO ...
              */
             updateBoxNode( subWindow, node, Q::Overlay );
             break;

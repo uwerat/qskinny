@@ -22,7 +22,6 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
-QSK_SUBCONTROL( QskMenu, Overlay )
 QSK_SUBCONTROL( QskMenu, Panel )
 QSK_SUBCONTROL( QskMenu, Segment )
 QSK_SUBCONTROL( QskMenu, Cursor )
@@ -72,10 +71,10 @@ QskMenu::QskMenu( QQuickItem* parent )
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
     // we hide the focus indicator while sliding
-    connect( this, &QskPopup::transitioningChanged,
+    connect( this, &QskPopup::fadingChanged,
         this, &QskControl::focusIndicatorRectChanged );
 
-    connect( this, &QskPopup::transitioningChanged,
+    connect( this, &QskPopup::fadingChanged,
         this, &QQuickItem::setClip );
 
     connect( this, &QskPopup::opened, this,
@@ -90,7 +89,7 @@ QskMenu::~QskMenu()
 
 QRectF QskMenu::clipRect() const
 {
-    if ( isTransitioning() )
+    if ( isFading() )
     {
         constexpr qreal d = 1e6;
         return QRectF( -d, m_data->origin.y() - y(), 2.0 * d, d );
@@ -283,23 +282,23 @@ QString QskMenu::triggeredText() const
 
 void QskMenu::updateResources()
 {
-    if ( isTransitioning() )
-    {
-        const auto dy = ( 1.0 - transitioningFactor() ) * height();
-        setPosition( m_data->origin.x(), m_data->origin.y() - dy );
-    }
+    qreal dy = 0.0;
+    if ( isFading() )
+        dy = ( 1.0 - fadingFactor() ) * height();
+
+    setPosition( m_data->origin.x(), m_data->origin.y() - dy );
 
     Inherited::updateResources();
 }
 
 void QskMenu::updateNode( QSGNode* node )
 {
-    if ( isTransitioning() && clip() )
+    if ( isFading() && clip() )
     {
         if ( auto clipNode = QQuickItemPrivate::get( this )->clipNode() )
         {
             /*
-                The clipRect is changing while transitioning. Couldn't
+                The clipRect is changing while fading. Couldn't
                 find a way how to trigger updates - maybe be enabling/disabling
                 the clip. So we do the updates manually. TODO ...
              */
@@ -500,7 +499,7 @@ void QskMenu::aboutToShow()
 
 QRectF QskMenu::focusIndicatorRect() const
 {
-    if ( isTransitioning() )
+    if ( isFading() )
         return QRectF();
 
     if( currentIndex() >= 0 )
@@ -542,6 +541,11 @@ void QskMenu::trigger( int index )
         m_data->triggeredIndex = index;
         Q_EMIT triggered( index );
     }
+}
+
+QskAspect QskMenu::fadingAspect() const
+{
+    return QskMenu::Panel | QskAspect::Position;
 }
 
 int QskMenu::exec()

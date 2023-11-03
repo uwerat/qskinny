@@ -331,8 +331,6 @@ void Editor::setupPopup()
 
     setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, stateLayerColor( m_pal.outline, 0.8 ) );
-
-    setAnimation( Q::Popup, qskDuration );
 }
 
 void Editor::setupMenu()
@@ -381,6 +379,8 @@ void Editor::setupMenu()
     setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
 
     setAnimation( Q::Cursor | A::Position | A::Metric, 75, QEasingCurve::OutCubic );
+
+    setAnimation( Q::Panel | A::Position, 75 );
 }
 
 void Editor::setupTextLabel()
@@ -806,6 +806,10 @@ void Editor::setupDialogButtonBox()
 
 void Editor::setupDrawer()
 {
+    using Q = QskDrawer;
+    using A = QskAspect;
+
+    setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
 }
 
 void Editor::setupSlider()
@@ -1255,6 +1259,7 @@ void Editor::setupSubWindow()
     for ( auto subControl : { Q::Panel, Q::TitleBarPanel, Q::TitleBarText } )
         setAnimation( subControl | A::Color, qskDuration );
 
+    setAnimation( Q::Panel | A::Position, qskDuration, QEasingCurve::OutCubic );
 }
 
 QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme )

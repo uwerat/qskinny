@@ -620,6 +620,10 @@ void Editor::setupDialogButtonBoxColors(
 
 void Editor::setupDrawerMetrics()
 {
+    using Q = QskDrawer;
+    using A = QskAspect;
+
+    setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
 }
 
 void Editor::setupDrawerColors( QskAspect::Section, const QskFluent2Theme& )
@@ -738,6 +742,7 @@ void Editor::setupListViewColors(
 void Editor::setupMenuMetrics()
 {
     using Q = QskMenu;
+    using A = QskAspect;
 
     setPadding( Q::Panel, { 4, 6, 4, 6 } );
     setBoxBorderMetrics( Q::Panel, 1 );
@@ -751,6 +756,8 @@ void Editor::setupMenuMetrics()
 
     setStrutSize( Q::Icon, 12, 12 );
     setPadding( Q::Icon, { 8, 8, 0, 8 } );
+
+    setAnimation( Q::Panel | A::Position, 100 );
 }
 
 void Editor::setupMenuColors(
@@ -867,8 +874,6 @@ void Editor::setupPopup( const QskFluent2Theme& theme )
 
     setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, pal.background.overlay.defaultColor );
-
-    setAnimation( Q::Popup, 150 );
 }
 
 void Editor::setupProgressBarMetrics()
@@ -1874,6 +1879,8 @@ void Editor::setupSwitchButtonColors(
 void Editor::setupSubWindow( const QskFluent2Theme& theme )
 {
     using Q = QskSubWindow;
+    using A = QskAspect;
+
     const auto& pal = theme.palette;
 
     setPadding( Q::Panel, { 0, 31, 0, 0 } );
@@ -1891,6 +1898,8 @@ void Editor::setupSubWindow( const QskFluent2Theme& theme )
     setColor( Q::TitleBarText, pal.fillColor.text.primary );
     setAlignment( Q::TitleBarText, Qt::AlignLeft );
     setTextOptions( Q::TitleBarText, Qt::ElideRight, QskTextOptions::NoWrap );
+
+    setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
 }
 
 void Editor::setupVirtualKeyboardMetrics()

@@ -83,6 +83,7 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     QRectF titleBarRect() const;
 
     QRectF layoutRectForSize( const QSizeF& ) const override;
+    QskAspect fadingAspect() const override;
 
   Q_SIGNALS:
     void decorationsChanged( Decorations );

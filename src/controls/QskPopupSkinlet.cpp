@@ -50,7 +50,7 @@ QSGNode* QskPopupSkinlet::updateOverlayNode(
 {
     using Q = QskPopup;
 
-    const auto factor = popup->transitioningFactor();
+    const auto factor = popup->fadingFactor();
     if ( factor <= 0.0 )
         return nullptr;
 

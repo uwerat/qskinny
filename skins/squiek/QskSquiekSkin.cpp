@@ -410,8 +410,6 @@ void Editor::setupPopup()
 
     setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, qRgba( 220, 220, 220, 150 ) );
-
-    setAnimation( Q::Popup, 200 );
 }
 
 void Editor::setupMenu()
@@ -449,6 +447,7 @@ void Editor::setupMenu()
     setGraphicRole( Q::Icon | Q::Selected, CursorSymbol );
 
     setAnimation( Q::Cursor | A::Position | A::Metric, 75, QEasingCurve::OutCubic );
+    setAnimation( Q::Panel | A::Position, 100 );
 }
 
 void Editor::setupTextLabel()
@@ -759,6 +758,10 @@ void Editor::setupDialogButtonBox()
 
 void Editor::setupDrawer()
 {
+    using Q = QskDrawer;
+    using A = QskAspect;
+
+    setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
 }
 
 void Editor::setupTabButton()
@@ -1120,8 +1123,12 @@ void Editor::setupSubWindow()
 
     setAlignment( Q::TitleBarText, Qt::AlignLeft | Qt::AlignVCenter );
 
+#if 1
     for ( auto subControl : { Q::Panel, Q::TitleBarPanel, Q::TitleBarText } )
         setAnimation( subControl | A::Color, qskDuration );
+#endif
+
+    setAnimation( Q::Panel | A::Position, qskDuration, QEasingCurve::OutCubic );
 }
 
 void Editor::setupSpinBox()

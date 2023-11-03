@@ -19,15 +19,9 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
-QSK_SUBCONTROL( QskPopup, Popup )
 QSK_SUBCONTROL( QskPopup, Overlay )
 
 QSK_SYSTEM_STATE( QskPopup, Closed, QskAspect::FirstSystemState << 1 )
-
-static QskAspect qskTransitioningAspect()
-{
-    return QskPopup::Popup | QskAspect::Metric;
-}
 
 static void qskSetFocus( QQuickItem* item, bool on )
 {
@@ -83,11 +77,11 @@ static bool qskReplayMousePress()
     return false;
 }
 
-static void qskStartTransition( QskPopup* popup, bool on )
+static void qskStartFading( QskPopup* popup, bool on )
 {
-    const auto aspect = qskTransitioningAspect();
+    const auto aspect = popup->fadingAspect();
 
-    auto hint = popup->animationHint( aspect.subControl() );
+    auto hint = popup->animationHint( aspect );
 
     if ( hint.isValid() )
     {
@@ -240,11 +234,11 @@ void QskPopup::setOpen( bool on )
     else
         Q_EMIT closed();
 
-    qskStartTransition( this, on );
+    qskStartFading( this, on );
 
-    if ( isTransitioning() )
+    if ( isFading() )
     {
-        Q_EMIT transitioningChanged( true );
+        Q_EMIT fadingChanged( true );
     }
     else
     {
@@ -263,14 +257,19 @@ bool QskPopup::isOpen() const
     return !hasSkinState( QskPopup::Closed );
 }
 
-bool QskPopup::isTransitioning() const
+QskAspect QskPopup::fadingAspect() const
 {
-    return runningHintAnimator( qskTransitioningAspect() ) != nullptr;
+    return QskAspect();
 }
 
-qreal QskPopup::transitioningFactor() const
+bool QskPopup::isFading() const
 {
-    if ( auto animator = runningHintAnimator( qskTransitioningAspect() ) )
+    return runningHintAnimator( fadingAspect() ) != nullptr;
+}
+
+qreal QskPopup::fadingFactor() const
+{
+    if ( auto animator = runningHintAnimator( fadingAspect() ) )
         return animator->currentValue().value< qreal >();
 
     return isOpen() ? 1.0 : 0.0;
@@ -336,7 +335,7 @@ bool QskPopup::isTransitionAccepted( QskAspect aspect ) const
         if ( ( aspect.value() == 0 ) )
             return true;
 
-        if ( aspect.subControl() == effectiveSubcontrol( QskPopup::Popup ) )
+        if ( aspect.subControl() == effectiveSubcontrol( fadingAspect().subControl() ) )
             return true;
 
         if ( aspect.subControl() == effectiveSubcontrol( QskPopup::Overlay ) )
@@ -487,7 +486,7 @@ bool QskPopup::event( QEvent* event )
             const auto animatorEvent = static_cast< QskAnimatorEvent* >( event );
 
             if ( ( animatorEvent->state() == QskAnimatorEvent::Terminated )
-                && ( animatorEvent->aspect() == qskTransitioningAspect() ) )
+                && ( animatorEvent->aspect() == fadingAspect() ) )
             {
                 if ( !isOpen() )
                 {
@@ -497,7 +496,7 @@ bool QskPopup::event( QEvent* event )
                         deleteLater();
                 }
 
-                Q_EMIT transitioningChanged( false );
+                Q_EMIT fadingChanged( false );
             }
 
             break;
@@ -645,7 +644,7 @@ int QskPopup::execPopup()
              */
 
             connect( popup, &QObject::destroyed, this, &EventLoop::reject );
-            connect( popup, &QskPopup::transitioningChanged, this, &EventLoop::maybeQuit );
+            connect( popup, &QskPopup::fadingChanged, this, &EventLoop::maybeQuit );
             connect( popup, &QskPopup::openChanged, this, &EventLoop::maybeQuit );
         }
 
@@ -660,7 +659,7 @@ int QskPopup::execPopup()
         {
             if ( auto popup = qobject_cast< const QskPopup* >( parent() ) )
             {
-                if ( popup->isOpen() || popup->isTransitioning() )
+                if ( popup->isOpen() || popup->isFading() )
                     return;
             }
 
@@ -668,7 +667,7 @@ int QskPopup::execPopup()
         }
     };
 
-    if ( isOpen() || isTransitioning() )
+    if ( isOpen() || isFading() )
     {
         qWarning() << "QskPopup::exec: popup is already opened";
         return -1;

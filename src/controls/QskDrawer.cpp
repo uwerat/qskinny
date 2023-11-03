@@ -19,6 +19,8 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitemchangelistener_p.h>
 QSK_QT_PRIVATE_END
 
+QSK_SUBCONTROL( QskDrawer, Panel )
+
 static inline qreal qskDefaultDragMargin()
 {
     // a skin hint ???
@@ -79,7 +81,7 @@ static inline QRectF qskAlignedToEdge(
 
 static QPointF qskDrawerTranslation( const QskDrawer* drawer, const QSizeF& size )
 {
-    const auto ratio = 1.0 - drawer->transitioningFactor();
+    const auto ratio = 1.0 - drawer->fadingFactor();
 
     auto dx = 0.0;
     auto dy = 0.0;
@@ -170,7 +172,7 @@ namespace
         bool isAcceptedPos( const QPointF& pos ) const override
         {
             auto drawer = qobject_cast< const QskDrawer* >( targetItem() );
-            if ( drawer->isTransitioning() )
+            if ( drawer->isFading() )
                 return false;
 
             auto rect = qskItemRect( watchedItem() );
@@ -255,8 +257,7 @@ QskDrawer::QskDrawer( Qt::Edge edge, QQuickItem* parentItem )
     setAutoLayoutChildren( true );
     setInteractive( true );
 
-    connect( this, &QskPopup::transitioningChanged,
-        this, &QQuickItem::setClip );
+    connect( this, &QskPopup::fadingChanged, this, &QQuickItem::setClip );
 }
 
 QskDrawer::~QskDrawer()
@@ -393,12 +394,12 @@ void QskDrawer::updateResources()
 
 void QskDrawer::updateNode( QSGNode* node )
 {
-    if ( isTransitioning() && clip() )
+    if ( isFading() && clip() )
     {
         if ( auto clipNode = QQuickItemPrivate::get( this )->clipNode() )
         {
             /*
-                The clipRect is changing while transitioning. Couldn't
+                The clipRect is changing while fading. Couldn't
                 find a way how to trigger updates - maybe be enabling/disabling
                 the clip. So we do the updates manually. TODO ...
              */
@@ -416,7 +417,7 @@ void QskDrawer::updateNode( QSGNode* node )
 
 QRectF QskDrawer::clipRect() const
 {
-    if ( isTransitioning() && parentItem() )
+    if ( isFading() && parentItem() )
     {
         /*
             We might not fit into our parent and our children not
@@ -452,6 +453,11 @@ QRectF QskDrawer::clipRect() const
     }
 
     return Inherited::clipRect();
+}
+
+QskAspect QskDrawer::fadingAspect() const
+{
+    return QskDrawer::Panel | QskAspect::Position;
 }
 
 #include "moc_QskDrawer.cpp"
