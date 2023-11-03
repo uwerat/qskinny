@@ -378,11 +378,9 @@ void Editor::setupMenu()
     setColor( Q::Text, m_pal.onSurface );
     setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
 
-    setPosition( Q::Panel, 1 );
-    setPosition( Q::Panel | QskPopup::Closed, 0 );
-
-    setAnimation( Q::Panel | A::Metric, 150 );
     setAnimation( Q::Cursor | A::Position | A::Metric, 75, QEasingCurve::OutCubic );
+
+    setAnimation( Q::Panel | A::Position, 75 );
 }
 
 void Editor::setupTextLabel()
@@ -811,7 +809,8 @@ void Editor::setupDrawer()
     using Q = QskDrawer;
     using A = QskAspect;
 
-    setAnimation( Q::Panel | A::Metric | A::Position, qskDuration );
+    setGradient( Q::Panel, m_pal.background );
+    setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
 }
 
 void Editor::setupSlider()
@@ -1261,6 +1260,7 @@ void Editor::setupSubWindow()
     for ( auto subControl : { Q::Panel, Q::TitleBarPanel, Q::TitleBarText } )
         setAnimation( subControl | A::Color, qskDuration );
 
+    setAnimation( Q::Panel | A::Position, qskDuration, QEasingCurve::OutCubic );
 }
 
 QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme )

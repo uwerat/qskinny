@@ -32,6 +32,9 @@
 #include "QskComboBox.h"
 #include "QskComboBoxSkinlet.h"
 
+#include "QskDrawer.h"
+#include "QskDrawerSkinlet.h"
+
 #include "QskFocusIndicator.h"
 #include "QskFocusIndicatorSkinlet.h"
 
@@ -160,6 +163,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskBox, QskBoxSkinlet >();
     declareSkinlet< QskCheckBox, QskCheckBoxSkinlet >();
     declareSkinlet< QskComboBox, QskComboBoxSkinlet >();
+    declareSkinlet< QskDrawer, QskDrawerSkinlet >();
     declareSkinlet< QskFocusIndicator, QskFocusIndicatorSkinlet >();
     declareSkinlet< QskGraphicLabel, QskGraphicLabelSkinlet >();
     declareSkinlet< QskListView, QskListViewSkinlet >();

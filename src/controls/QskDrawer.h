@@ -7,7 +7,6 @@
 #define QSK_DRAWER_H
 
 #include "QskPopup.h"
-#include <qnamespace.h>
 
 class QSK_EXPORT QskDrawer : public QskPopup
 {
@@ -27,6 +26,8 @@ class QSK_EXPORT QskDrawer : public QskPopup
     QSK_SUBCONTROLS( Panel )
 
     QskDrawer( QQuickItem* = nullptr );
+    QskDrawer( Qt::Edge, QQuickItem* = nullptr );
+
     ~QskDrawer() override;
 
     void setEdge( Qt::Edge );
@@ -39,10 +40,10 @@ class QSK_EXPORT QskDrawer : public QskPopup
     void resetDragMargin();
     qreal dragMargin() const;
 
-    QRectF layoutRectForSize( const QSizeF& ) const override;
-
     QRectF clipRect() const override;
-    QRectF focusIndicatorRect() const override;
+    QskAspect fadingAspect() const override;
+
+    QRectF layoutRectForSize( const QSizeF& ) const override;
 
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
@@ -50,14 +51,13 @@ class QSK_EXPORT QskDrawer : public QskPopup
     void interactiveChanged( bool );
 
   protected:
-    void itemChange( ItemChange, const ItemChangeData& ) override;
     void gestureEvent( QskGestureEvent* ) override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
+
+    void updateResources() override;
+    void updateNode( QSGNode* ) override;
 
   private:
-    void setSliding( bool );
-
-    void setIntermediate( bool );
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

@@ -83,6 +83,7 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     QRectF titleBarRect() const;
 
     QRectF layoutRectForSize( const QSizeF& ) const override;
+    QskAspect fadingAspect() const override;
 
   Q_SIGNALS:
     void decorationsChanged( Decorations );
@@ -95,6 +96,8 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     bool event( QEvent* ) override;
 
     void updateLayout() override;
+    void updateResources() override;
+
     QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
     void itemChange( QQuickItem::ItemChange,

@@ -18,7 +18,10 @@
 #include <qvariant.h>
 #include <qeventloop.h>
 
-QSK_SUBCONTROL( QskMenu, Overlay )
+QSK_QT_PRIVATE_BEGIN
+#include <private/qquickitem_p.h>
+QSK_QT_PRIVATE_END
+
 QSK_SUBCONTROL( QskMenu, Panel )
 QSK_SUBCONTROL( QskMenu, Segment )
 QSK_SUBCONTROL( QskMenu, Cursor )
@@ -58,20 +61,23 @@ QskMenu::QskMenu( QQuickItem* parent )
     , m_data( new PrivateData )
 {
     setModal( true );
-    setTransitionAspect( QskMenu::Panel | QskAspect::Position | QskAspect::Metric );
 
     setPopupFlag( QskPopup::CloseOnPressOutside, true );
     setPopupFlag( QskPopup::DeleteOnClose, true );
 
+    setPlacementPolicy( QskPlacementPolicy::Ignore );
     setSubcontrolProxy( Inherited::Overlay, Overlay );
 
     initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
     // we hide the focus indicator while sliding
-    connect( this, &QskMenu::transitioningChanged, this,
-        &QskControl::focusIndicatorRectChanged );
+    connect( this, &QskPopup::fadingChanged,
+        this, &QskControl::focusIndicatorRectChanged );
 
-    connect( this, &QskMenu::opened, this,
+    connect( this, &QskPopup::fadingChanged,
+        this, &QQuickItem::setClip );
+
+    connect( this, &QskPopup::opened, this,
         [this]() { m_data->triggeredIndex = -1; } );
 
     setAcceptHoverEvents( true );
@@ -79,6 +85,17 @@ QskMenu::QskMenu( QQuickItem* parent )
 
 QskMenu::~QskMenu()
 {
+}
+
+QRectF QskMenu::clipRect() const
+{
+    if ( isFading() )
+    {
+        constexpr qreal d = 1e6;
+        return QRectF( -d, m_data->origin.y() - y(), 2.0 * d, d );
+    }
+
+    return Inherited::clipRect();
 }
 
 #if 1
@@ -263,6 +280,40 @@ QString QskMenu::triggeredText() const
     return optionAt( m_data->triggeredIndex ).text();
 }
 
+void QskMenu::updateResources()
+{
+    qreal dy = 0.0;
+    if ( isFading() )
+        dy = ( 1.0 - fadingFactor() ) * height();
+
+    setPosition( m_data->origin.x(), m_data->origin.y() - dy );
+
+    Inherited::updateResources();
+}
+
+void QskMenu::updateNode( QSGNode* node )
+{
+    if ( isFading() && clip() )
+    {
+        if ( auto clipNode = QQuickItemPrivate::get( this )->clipNode() )
+        {
+            /*
+                The clipRect is changing while fading. Couldn't
+                find a way how to trigger updates - maybe be enabling/disabling
+                the clip. So we do the updates manually. TODO ...
+             */
+            const auto r = clipRect();
+            if ( r != clipNode->rect() )
+            {
+                clipNode->setRect( r );
+                clipNode->update();
+            }
+        }
+    }
+
+    Inherited::updateNode( node );
+}
+
 void QskMenu::keyPressEvent( QKeyEvent* event )
 {
     if( m_data->currentIndex < 0 )
@@ -435,7 +486,7 @@ void QskMenu::mouseReleaseEvent( QMouseEvent* event )
 
 void QskMenu::aboutToShow()
 {
-    setGeometry( QRectF( m_data->origin, sizeConstraint() ) );
+    setSize( sizeConstraint() );
 
     if ( m_data->currentIndex < 0 )
     {
@@ -448,7 +499,7 @@ void QskMenu::aboutToShow()
 
 QRectF QskMenu::focusIndicatorRect() const
 {
-    if ( isTransitioning() )
+    if ( isFading() )
         return QRectF();
 
     if( currentIndex() >= 0 )
@@ -490,6 +541,11 @@ void QskMenu::trigger( int index )
         m_data->triggeredIndex = index;
         Q_EMIT triggered( index );
     }
+}
+
+QskAspect QskMenu::fadingAspect() const
+{
+    return QskMenu::Panel | QskAspect::Position;
 }
 
 int QskMenu::exec()

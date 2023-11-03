@@ -14,7 +14,7 @@ class QSK_EXPORT QskPopup : public QskControl
 
     Q_PROPERTY( bool open READ isOpen WRITE setOpen NOTIFY openChanged )
     Q_PROPERTY( bool modal READ isModal WRITE setModal NOTIFY modalChanged )
-    Q_PROPERTY( bool transitioning READ isTransitioning NOTIFY transitioningChanged )
+    Q_PROPERTY( bool fading READ isFading NOTIFY fadingChanged )
 
     Q_PROPERTY( bool overlay READ hasOverlay
         WRITE setOverlay RESET resetOverlay NOTIFY overlayChanged )
@@ -56,14 +56,12 @@ class QSK_EXPORT QskPopup : public QskControl
     void setPriority( uint );
     uint priority() const;
 
-    // transitions between open/closed states
-    QskAspect transitionAspect() const;
-    void setTransitionAspect( QskAspect );
-
-    bool isTransitioning() const;
-
     bool isOpen() const;
     bool isClosed() const;
+
+    bool isFading() const;
+    qreal fadingFactor() const;
+    virtual QskAspect fadingAspect() const;
 
     virtual QRectF overlayRect() const;
 
@@ -78,7 +76,7 @@ class QSK_EXPORT QskPopup : public QskControl
     void opened();
     void closed();
     void openChanged( bool );
-    void transitioningChanged( bool );
+    void fadingChanged( bool );
 
     void modalChanged( bool );
     void overlayChanged( bool );

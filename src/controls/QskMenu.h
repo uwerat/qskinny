@@ -37,7 +37,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     using Inherited = QskPopup;
 
   public:
-    QSK_SUBCONTROLS( Overlay, Panel, Segment, Cursor, Text, Icon, Separator )
+    QSK_SUBCONTROLS( Panel, Segment, Cursor, Text, Icon, Separator )
     QSK_STATES( Selected, Pressed )
 
     QskMenu( QQuickItem* parentItem = nullptr );
@@ -81,6 +81,9 @@ class QSK_EXPORT QskMenu : public QskPopup
 
     bool isPressed() const;
 
+    QRectF clipRect() const override;
+    QskAspect fadingAspect() const override;
+
     Q_INVOKABLE int exec();
 
   Q_SIGNALS:
@@ -114,6 +117,9 @@ class QSK_EXPORT QskMenu : public QskPopup
 
     void aboutToShow() override;
     void trigger( int );
+
+    void updateResources() override;
+    void updateNode( QSGNode* ) override;
 
   private:
     void traverse( int steps );

@@ -623,13 +623,14 @@ void Editor::setupDrawerMetrics()
     using Q = QskDrawer;
     using A = QskAspect;
 
-#if 1
-    setAnimation( Q::Panel | A::Metric | A::Position, 200 );
-#endif
+    setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
 }
 
-void Editor::setupDrawerColors( QskAspect::Section, const QskFluent2Theme& )
+void Editor::setupDrawerColors(
+    QskAspect::Section section, const QskFluent2Theme& theme )
 {
+    setGradient( QskDrawer::Panel | section,
+        theme.palette.background.solid.base );
 }
 
 void Editor::setupFocusIndicatorMetrics()
@@ -759,13 +760,7 @@ void Editor::setupMenuMetrics()
     setStrutSize( Q::Icon, 12, 12 );
     setPadding( Q::Icon, { 8, 8, 0, 8 } );
 
-#if 1
-    setPosition( Q::Panel, 1 );
-    setPosition( Q::Panel | QskPopup::Closed, 0 );
-
-    // copied from Mat3 - what are the correct values for Fluent2 ???
-    setAnimation( Q::Panel | A::Metric, 150 );
-#endif
+    setAnimation( Q::Panel | A::Position, 100 );
 }
 
 void Editor::setupMenuColors(
@@ -876,9 +871,11 @@ void Editor::setupPageIndicatorColors(
 void Editor::setupPopup( const QskFluent2Theme& theme )
 {
     using Q = QskPopup;
+    using A = QskAspect;
 
     const auto& pal = theme.palette;
 
+    setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, pal.background.overlay.defaultColor );
 }
 
@@ -1885,6 +1882,8 @@ void Editor::setupSwitchButtonColors(
 void Editor::setupSubWindow( const QskFluent2Theme& theme )
 {
     using Q = QskSubWindow;
+    using A = QskAspect;
+
     const auto& pal = theme.palette;
 
     setPadding( Q::Panel, { 0, 31, 0, 0 } );
@@ -1902,6 +1901,8 @@ void Editor::setupSubWindow( const QskFluent2Theme& theme )
     setColor( Q::TitleBarText, pal.fillColor.text.primary );
     setAlignment( Q::TitleBarText, Qt::AlignLeft );
     setTextOptions( Q::TitleBarText, Qt::ElideRight, QskTextOptions::NoWrap );
+
+    setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
 }
 
 void Editor::setupVirtualKeyboardMetrics()
