@@ -10,6 +10,7 @@
 #include "QskWindow.h"
 #include "QskEvent.h"
 #include "QskPlatform.h"
+#include "QskHintAnimator.h"
 
 #include <qpa/qplatformintegration.h>
 
@@ -75,6 +76,23 @@ static bool qskReplayMousePress()
     return false;
 }
 
+static void qskStartFading( QskPopup* popup, bool on )
+{
+    const auto aspect = popup->fadingAspect();
+
+    auto hint = popup->animationHint( aspect );
+
+    if ( hint.isValid() )
+    {
+        hint.updateFlags = QskAnimationHint::UpdatePolish | QskAnimationHint::UpdateNode;
+
+        const qreal from = on ? 0.0 : 1.0;
+        const qreal to = on ? 1.0 : 0.0;
+
+        popup->startTransition( aspect, hint, from, to );
+    }
+}
+
 namespace
 {
     class InputGrabber final : public QskInputGrabber
@@ -130,7 +148,6 @@ class QskPopup::PrivateData
     PrivateData()
         : flags( 0 )
         , isModal( false )
-        , hasFaderEffect( true )
         , autoGrabFocus( true )
         , handoverFocus( true )
     {
@@ -139,11 +156,9 @@ class QskPopup::PrivateData
     InputGrabber* inputGrabber = nullptr;
 
     uint priority = 0;
-    QskAspect faderAspect;
 
     int flags           : 4;
     bool isModal        : 1;
-    bool hasFaderEffect : 1;
 
     const bool autoGrabFocus : 1;
     const bool handoverFocus : 1;
@@ -196,6 +211,11 @@ void QskPopup::close()
     setOpen( false );
 }
 
+void QskPopup::toggle()
+{
+    setOpen( !isOpen() );
+}
+
 void QskPopup::setOpen( bool on )
 {
     if ( on == isOpen() )
@@ -212,6 +232,8 @@ void QskPopup::setOpen( bool on )
         Q_EMIT opened();
     else
         Q_EMIT closed();
+
+    qskStartFading( this, on );
 
     if ( isFading() )
     {
@@ -234,15 +256,22 @@ bool QskPopup::isOpen() const
     return !hasSkinState( QskPopup::Closed );
 }
 
+QskAspect QskPopup::fadingAspect() const
+{
+    return QskAspect();
+}
+
 bool QskPopup::isFading() const
 {
-    if ( m_data->faderAspect.value() == 0 )
-        return false;
+    return runningHintAnimator( fadingAspect() ) != nullptr;
+}
 
-    QskSkinHintStatus status;
-    (void) effectiveSkinHint( m_data->faderAspect, &status );
+qreal QskPopup::fadingFactor() const
+{
+    if ( auto animator = runningHintAnimator( fadingAspect() ) )
+        return animator->currentValue().value< qreal >();
 
-    return status.source == QskSkinHintStatus::Animator;
+    return isOpen() ? 1.0 : 0.0;
 }
 
 QRectF QskPopup::overlayRect() const
@@ -293,44 +322,23 @@ void QskPopup::updateInputGrabber()
     }
 }
 
-QskAspect QskPopup::faderAspect() const
-{
-    return m_data->faderAspect;
-}
-
-void QskPopup::setFaderAspect( QskAspect aspect )
-{
-    auto faderAspect = aspect;
-    faderAspect.clearStates(); // animated values are always stateless
-
-    if ( faderAspect == m_data->faderAspect )
-        return;
-
-    if ( isFading() )
-    {
-        // stop the running animation TODO ...
-    }
-
-    m_data->faderAspect = faderAspect;
-}
-
 bool QskPopup::isTransitionAccepted( QskAspect aspect ) const
 {
-    if ( isVisible() && m_data->hasFaderEffect )
+    if ( isVisible() && !isInitiallyPainted() )
     {
+        /*
+            Usually we suppress transitions, when a control has never been
+            painted before as there is no valid starting point. Popups are
+            different as we want to have smooth fade/slide appearances.
+         */
         if ( ( aspect.value() == 0 ) )
-        {
-            return true;
-        }
-
-        if ( aspect == m_data->faderAspect )
             return true;
 
-        if ( aspect.isColor() )
-        {
-            if ( aspect.subControl() == effectiveSubcontrol( QskPopup::Overlay ) )
-                return true;
-        }
+        if ( aspect.subControl() == effectiveSubcontrol( fadingAspect().subControl() ) )
+            return true;
+
+        if ( aspect.subControl() == effectiveSubcontrol( QskPopup::Overlay ) )
+            return true;
     }
 
     return Inherited::isTransitionAccepted( aspect );
@@ -364,20 +372,6 @@ void QskPopup::setModal( bool on )
 bool QskPopup::isModal() const
 {
     return m_data->isModal;
-}
-
-void QskPopup::setFaderEffect( bool on )
-{
-    if ( on != m_data->hasFaderEffect )
-    {
-        m_data->hasFaderEffect = on;
-        Q_EMIT faderEffectChanged( on );
-    }
-}
-
-bool QskPopup::hasFaderEffect() const
-{
-    return m_data->hasFaderEffect;
 }
 
 void QskPopup::setPopupFlags( PopupFlags flags )
@@ -488,10 +482,10 @@ bool QskPopup::event( QEvent* event )
         }
         case QskEvent::Animator:
         {
-            const auto animtorEvent = static_cast< QskAnimatorEvent* >( event );
+            const auto animatorEvent = static_cast< QskAnimatorEvent* >( event );
 
-            if ( ( animtorEvent->state() == QskAnimatorEvent::Terminated )
-                && ( animtorEvent->aspect() == m_data->faderAspect ) )
+            if ( ( animatorEvent->state() == QskAnimatorEvent::Terminated )
+                && ( animatorEvent->aspect() == fadingAspect() ) )
             {
                 if ( !isOpen() )
                 {
@@ -523,6 +517,17 @@ bool QskPopup::event( QEvent* event )
     return ok;
 }
 
+void QskPopup::keyPressEvent( QKeyEvent* event )
+{
+    if ( qskIsStandardKeyInput( event, QKeySequence::Cancel ) )
+    {
+        close();
+        return;
+    }
+
+    return Inherited::keyPressEvent( event );
+}
+
 void QskPopup::focusInEvent( QFocusEvent* event )
 {
     Inherited::focusInEvent( event );
@@ -543,7 +548,7 @@ void QskPopup::focusInEvent( QFocusEvent* event )
 
             if ( auto focusItem = nextItemInFocusChain( true ) )
             {
-                if ( qskIsItemComplete( focusItem )
+                if ( !qskIsItemInDestructor( focusItem )
                     && qskIsAncestorOf( this, focusItem ) )
                 {
                     focusItem->setFocus( true );

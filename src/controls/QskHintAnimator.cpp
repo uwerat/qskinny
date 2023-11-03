@@ -76,20 +76,28 @@ static inline QVariant qskAligned05( const QVariant& value )
 
 #endif
 
-static inline bool qskCheckReceiverThread( const QObject* receiver )
+static inline void qskSendAnimatorEvent(
+    const QskAspect aspect, int index, bool on, QObject* receiver )
 {
-    /*
-        QskInputPanelSkinlet changes the skin state, what leads to
-        sending events from the wrong thread. Until we have fixed it
-        let's block sending the event to avoid running into assertions
-        in QCoreApplication::sendEvent
-     */
+    const auto state = on ? QskAnimatorEvent::Started : QskAnimatorEvent::Terminated;
 
-    const QThread* thread = receiver->thread();
-    if ( thread == nullptr )
-        return true;
-
-    return ( thread == QThread::currentThread() );
+    const auto thread = receiver->thread();
+    if ( thread && ( thread != QThread::currentThread() ) )
+    {
+        /*
+            QskInputPanelSkinlet changes the skin state, what leads to
+            sending events from the wrong thread. We can't use
+            QCoreApplication::sendEvent then, TODO ...
+         */
+        
+        auto event = new QskAnimatorEvent( aspect, index, state );
+        QCoreApplication::postEvent( receiver, event );
+    }
+    else
+    {
+        QskAnimatorEvent event( aspect, index, state );
+        QCoreApplication::sendEvent( receiver, &event );
+    }
 }
 
 QskHintAnimator::QskHintAnimator() noexcept
@@ -141,7 +149,7 @@ void QskHintAnimator::advance( qreal progress )
     {
         if ( m_updateFlags == QskAnimationHint::UpdateAuto )
         {
-            if ( m_aspect.isMetric() )
+            if ( !m_aspect.isColor() )
             {
                 m_control->resetImplicitSize();
 
@@ -338,11 +346,7 @@ void QskHintAnimatorTable::start( QskControl* control,
 
     animator->start();
 
-    if ( qskCheckReceiverThread( control ) )
-    {
-        QskAnimatorEvent event( aspect, index, QskAnimatorEvent::Started );
-        QCoreApplication::sendEvent( control, &event );
-    }
+    qskSendAnimatorEvent( aspect, index, true, control );
 }
 
 const QskHintAnimator* QskHintAnimatorTable::animator( QskAspect aspect, int index ) const
@@ -390,15 +394,7 @@ bool QskHintAnimatorTable::cleanup()
             it = animators.erase( it );
 
             if ( control )
-            {
-                if ( qskCheckReceiverThread( control ) )
-                {
-                    auto event = new QskAnimatorEvent(
-                        aspect, index, QskAnimatorEvent::Terminated );
-
-                    QCoreApplication::postEvent( control, event );
-                }
-            }
+                qskSendAnimatorEvent( aspect, index, false, control );
         }
         else
         {

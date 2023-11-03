@@ -176,6 +176,7 @@ list(APPEND HEADERS
     controls/QskComboBoxSkinlet.h
     controls/QskControl.h
     controls/QskDrawer.h
+    controls/QskDrawerSkinlet.h
     controls/QskEvent.h
     controls/QskFlickAnimator.h
     controls/QskFocusIndicator.h
@@ -280,6 +281,7 @@ list(APPEND SOURCES
     controls/QskControlPrivate.cpp
     controls/QskDirtyItemFilter.cpp
     controls/QskDrawer.cpp
+    controls/QskDrawerSkinlet.cpp
     controls/QskEvent.cpp
     controls/QskFlickAnimator.cpp
     controls/QskFocusIndicator.cpp

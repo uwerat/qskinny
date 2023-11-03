@@ -409,7 +409,7 @@ void Editor::setupPopup()
     using Q = QskPopup;
 
     setHint( Q::Overlay | A::Style, true );
-    setGradient( Q::Overlay, QColor( 220, 220, 220, 150 ) );
+    setGradient( Q::Overlay, qRgba( 220, 220, 220, 150 ) );
 }
 
 void Editor::setupMenu()
@@ -446,11 +446,8 @@ void Editor::setupMenu()
     setGraphicRole( Q::Icon | Q::Disabled, DisabledSymbol );
     setGraphicRole( Q::Icon | Q::Selected, CursorSymbol );
 
-    setPosition( Q::Panel, 0 );
-    setPosition( Q::Panel | QskPopup::Closed, 1 );
-
-    setAnimation( Q::Panel | A::Metric, 150 );
     setAnimation( Q::Cursor | A::Position | A::Metric, 75, QEasingCurve::OutCubic );
+    setAnimation( Q::Panel | A::Position, 100 );
 }
 
 void Editor::setupTextLabel()
@@ -759,13 +756,13 @@ void Editor::setupDialogButtonBox()
     setBoxShape( Q::Panel, 2 );
 }
 
-void Editor::setupDrawer() {
+void Editor::setupDrawer()
+{
     using Q = QskDrawer;
+    using A = QskAspect;
 
-    setPadding( Q::Panel, 5 );
-    setGradient( Q::Panel, m_pal.darker125 );
-    setAnimation( Q::Panel | QskAspect::Position, qskDuration );
-    setHint( Q::Overlay | QskAspect::Style, false );
+    setPanel( Q::Panel, Plain );
+    setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
 }
 
 void Editor::setupTabButton()
@@ -1127,8 +1124,12 @@ void Editor::setupSubWindow()
 
     setAlignment( Q::TitleBarText, Qt::AlignLeft | Qt::AlignVCenter );
 
+#if 1
     for ( auto subControl : { Q::Panel, Q::TitleBarPanel, Q::TitleBarText } )
         setAnimation( subControl | A::Color, qskDuration );
+#endif
+
+    setAnimation( Q::Panel | A::Position, qskDuration, QEasingCurve::OutCubic );
 }
 
 void Editor::setupSpinBox()

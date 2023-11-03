@@ -68,7 +68,8 @@ class QskGestureRecognizer::PrivateData
         return watchedItem->acceptedMouseButtons();
     }
 
-    QQuickItem* watchedItem = nullptr;
+    QPointer< QQuickItem > watchedItem = nullptr;
+    QPointer< QQuickItem > targetItem = nullptr;
 
     QVector< QMouseEvent* > pendingEvents;
 
@@ -121,6 +122,16 @@ QQuickItem* QskGestureRecognizer::watchedItem() const
     return m_data->watchedItem;
 }
 
+void QskGestureRecognizer::setTargetItem( QQuickItem* item )
+{
+    m_data->targetItem = item;
+}
+
+QQuickItem* QskGestureRecognizer::targetItem() const
+{
+    return m_data->targetItem;
+}
+
 void QskGestureRecognizer::setAcceptedMouseButtons( Qt::MouseButtons buttons )
 {
     m_data->buttons = buttons;
@@ -131,12 +142,9 @@ Qt::MouseButtons QskGestureRecognizer::acceptedMouseButtons() const
     return m_data->buttons;
 }
 
-QRectF QskGestureRecognizer::gestureRect() const
+bool QskGestureRecognizer::isAcceptedPos( const QPointF& pos ) const
 {
-    if ( m_data->watchedItem )
-        return qskItemRect( m_data->watchedItem );
-
-    return QRectF( 0.0, 0.0, -1.0, -1.0 );
+    return m_data->watchedItem && m_data->watchedItem->contains( pos );
 }
 
 void QskGestureRecognizer::setRejectOnTimeout( bool on )
@@ -302,7 +310,7 @@ bool QskGestureRecognizer::processMouseEvent(
 
     if ( event->type() == QEvent::MouseButtonPress )
     {
-        if ( !gestureRect().contains( pos ) )
+        if ( !isAcceptedPos( pos ) )
             return false;
 
         if ( m_data->state != Idle )

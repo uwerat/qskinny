@@ -3,38 +3,38 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_POPUP_SKINLET_H
-#define QSK_POPUP_SKINLET_H
+#ifndef QSK_DRAWER_SKINLET_H
+#define QSK_DRAWER_SKINLET_H
 
-#include "QskSkinlet.h"
+#include "QskPopupSkinlet.h"
 
-class QskPopup;
-
-class QSK_EXPORT QskPopupSkinlet : public QskSkinlet
+class QSK_EXPORT QskDrawerSkinlet : public QskPopupSkinlet
 {
     Q_GADGET
 
-    using Inherited = QskSkinlet;
+    using Inherited = QskPopupSkinlet;
 
   public:
     enum NodeRole
     {
-        OverlayRole,
+        ContentsRole = Inherited::RoleCount,
+        PanelRole,
+
         RoleCount
     };
 
-    Q_INVOKABLE QskPopupSkinlet( QskSkin* = nullptr );
-    ~QskPopupSkinlet() override;
+    Q_INVOKABLE QskDrawerSkinlet( QskSkin* = nullptr );
+    ~QskDrawerSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const override;
 
+    QSizeF sizeHint( const QskSkinnable*,
+        Qt::SizeHint, const QSizeF& ) const override;
+
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
-
-  private:
-    QSGNode* updateOverlayNode( const QskPopup*, QSGNode* ) const;
 };
 
 #endif

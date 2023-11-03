@@ -121,7 +121,7 @@ namespace
                         scheme = Qt::ColorScheme::Unknown;
                     }
 
-                    const auto systemScheme = qGuiApp->styleHints()->colorScheme();
+                    const auto systemScheme = QGuiApplication::styleHints()->colorScheme();
 
                     if( scheme == systemScheme )
                     {

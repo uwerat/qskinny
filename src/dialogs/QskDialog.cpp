@@ -77,6 +77,7 @@ static void qskSetupSubWindow(
     const QString& title, QskDialog::Actions actions,
     QskDialog::Action defaultAction, QskDialogSubWindow* subWindow )
 {
+    subWindow->setPopupFlag( QskPopup::DeleteOnClose );
     subWindow->setModal( true );
     subWindow->setWindowTitle( title );
     subWindow->setDialogActions( actions );
@@ -128,14 +129,14 @@ static QskDialog::Action qskMessageSubWindow(
     const QString& text, int symbolType, QskDialog::Actions actions,
     QskDialog::Action defaultAction )
 {
-    QskMessageSubWindow subWindow( window->contentItem() );
-    subWindow.setSymbolType( symbolType );
-    subWindow.setText( text );
+    auto subWindow = new QskMessageSubWindow( window->contentItem() );
+    subWindow->setSymbolType( symbolType );
+    subWindow->setText( text );
 
-    qskSetupSubWindow( title, actions, defaultAction, &subWindow );
-    ( void ) subWindow.exec();
+    qskSetupSubWindow( title, actions, defaultAction, subWindow );
+    ( void ) subWindow->exec();
 
-    auto clickedAction = subWindow.clickedAction();
+    auto clickedAction = subWindow->clickedAction();
     if ( clickedAction == QskDialog::NoAction )
     {
         // dialog might have been closed by the window menu
@@ -172,16 +173,16 @@ static QString qskSelectSubWindow(
     QskDialog::Actions actions, QskDialog::Action defaultAction,
     const QStringList& entries, int selectedRow )
 {
-    QskSelectionSubWindow subWindow( window->contentItem() );
-    subWindow.setInfoText( text );
-    subWindow.setEntries( entries );
-    subWindow.setSelectedRow( selectedRow );
+    auto subWindow = new QskSelectionSubWindow( window->contentItem() );
+    subWindow->setInfoText( text );
+    subWindow->setEntries( entries );
+    subWindow->setSelectedRow( selectedRow );
 
     QString selectedEntry;
 
-    qskSetupSubWindow( title, actions, defaultAction, &subWindow );
-    if ( subWindow.exec() == QskDialog::Accepted )
-        selectedEntry = subWindow.selectedEntry();
+    qskSetupSubWindow( title, actions, defaultAction, subWindow );
+    if ( subWindow->exec() == QskDialog::Accepted )
+        selectedEntry = subWindow->selectedEntry();
 
     return selectedEntry;
 }

@@ -988,6 +988,23 @@ bool QskSkinnable::moveSkinHint( QskAspect aspect, const QVariant& value )
     return moveSkinHint( aspect, effectiveSkinHint( aspect ), value );
 }
 
+const QskHintAnimator* QskSkinnable::runningHintAnimator(
+    QskAspect aspect, int index ) const
+{
+    const auto& animators = m_data->animators;
+
+    if ( animators.isEmpty() )
+        return nullptr;
+
+    aspect = qskAnimatorAspect( aspect );
+
+    auto animator = animators.animator( aspect, index );
+    if ( animator == nullptr && index >= 0 )
+        animator = animators.animator( aspect, -1 );
+
+    return animator;
+}
+
 QVariant QskSkinnable::animatedHint(
     QskAspect aspect, QskSkinHintStatus* status ) const
 {
@@ -1259,13 +1276,19 @@ bool QskSkinnable::isTransitionAccepted( QskAspect aspect ) const
 {
     Q_UNUSED( aspect )
 
-    /*
-        Usually we only need smooth transitions, when state changes
-        happen while the skinnable is visible. There are few exceptions
-        like QskPopup::Closed, that is used to slide/fade in.
-     */
     if ( auto control = qskControlCast( owningItem() ) )
-        return control->isInitiallyPainted();
+    {
+        /*
+            Usually we only need smooth transitions, when state changes
+            happen while the skinnable is visible. There are few exceptions
+            like QskPopup::Closed, that is used to slide/fade in.
+         */
+
+        if ( control->flags() & QQuickItem::ItemHasContents )
+            return control->isInitiallyPainted();
+
+        return true;
+    }
 
     return false;
 }

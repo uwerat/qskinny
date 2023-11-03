@@ -22,6 +22,7 @@ class QSK_EXPORT QskGestureRecognizer : public QObject
 
     Q_PROPERTY( State state READ state NOTIFY stateChanged )
     Q_PROPERTY( QQuickItem* watchedItem READ watchedItem WRITE setWatchedItem )
+    Q_PROPERTY( QQuickItem* targetItem READ targetItem WRITE setTargetItem )
 
     Q_PROPERTY( Qt::MouseButtons acceptedMouseButtons
         READ acceptedMouseButtons WRITE setAcceptedMouseButtons )
@@ -43,10 +44,15 @@ class QSK_EXPORT QskGestureRecognizer : public QObject
     QskGestureRecognizer( QObject* parent = nullptr );
     ~QskGestureRecognizer() override;
 
-    bool eventFilter( QObject* object, QEvent* event) override;
+    bool eventFilter( QObject*, QEvent* ) override;
 
+    // the item where the gesture happens
     void setWatchedItem( QQuickItem* );
     QQuickItem* watchedItem() const;
+
+    // the item processing the gesture events
+    void setTargetItem( QQuickItem* );
+    QQuickItem* targetItem() const;
 
     // Qt::NoButton means: all buttons accepted
     void setAcceptedMouseButtons( Qt::MouseButtons );
@@ -67,7 +73,7 @@ class QSK_EXPORT QskGestureRecognizer : public QObject
 
     State state() const;
 
-    virtual QRectF gestureRect() const;
+    virtual bool isAcceptedPos( const QPointF& ) const;
 
   Q_SIGNALS:
     void stateChanged( State from, State to );

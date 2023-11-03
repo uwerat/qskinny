@@ -424,7 +424,17 @@ void QskWindow::exposeEvent( QExposeEvent* event )
 
 void QskWindow::resizeEvent( QResizeEvent* event )
 {
+    auto rootItem = contentItem();
+
+    const auto oldRect = qskItemGeometry( rootItem );
     Inherited::resizeEvent( event );
+
+    const auto newRect = qskItemGeometry( rootItem );
+    if ( newRect != oldRect )
+    {
+        QskGeometryChangeEvent event( newRect, oldRect );
+        QCoreApplication::sendEvent( rootItem, &event );
+    }
 
     if ( isExposed() )
         layoutItems();
