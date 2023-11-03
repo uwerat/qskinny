@@ -43,6 +43,8 @@ class QSK_EXPORT QskDrawer : public QskPopup
     QRectF clipRect() const override;
     QskAspect fadingAspect() const override;
 
+    QRectF layoutRectForSize( const QSizeF& ) const override;
+
   Q_SIGNALS:
     void edgeChanged( Qt::Edge );
     void dragMarginChanged( qreal );

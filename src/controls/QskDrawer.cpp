@@ -460,4 +460,9 @@ QskAspect QskDrawer::fadingAspect() const
     return QskDrawer::Panel | QskAspect::Position;
 }
 
+QRectF QskDrawer::layoutRectForSize( const QSizeF& size ) const
+{
+    return subControlContentsRect( size, Panel );
+}
+
 #include "moc_QskDrawer.cpp"

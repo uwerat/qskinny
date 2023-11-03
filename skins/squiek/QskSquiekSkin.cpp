@@ -761,6 +761,7 @@ void Editor::setupDrawer()
     using Q = QskDrawer;
     using A = QskAspect;
 
+    setPanel( Q::Panel, Plain );
     setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
 }
 

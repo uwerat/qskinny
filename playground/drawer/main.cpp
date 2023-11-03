@@ -40,23 +40,29 @@ namespace
             switch( edge )
             {
                 case Qt::LeftEdge:
-                    content->setBackgroundColor( QskRgb::Tomato );
+                    setPanel( QskRgb::Tomato );
                     break;
 
                 case Qt::RightEdge:
+                    setPanel( QskRgb::Orchid );
                     content->setFixedWidth( 1.5 * size.width() );
-                    content->setBackgroundColor( QskRgb::Orchid );
                     break;
 
                 case Qt::TopEdge:
-                    content->setBackgroundColor( QskRgb::Chartreuse );
+                    setPanel( QskRgb::Chartreuse );
                     break;
 
                 case Qt::BottomEdge:
+                    setPanel( QskRgb::Wheat );
                     content->setFixedHeight( 2 * size.height() );
-                    content->setBackgroundColor( QskRgb::Wheat );
                     break;
             }
+        }
+
+      private:
+        void setPanel( const QColor& color )
+        {
+            setGradientHint( Panel, color );
         }
     };
 

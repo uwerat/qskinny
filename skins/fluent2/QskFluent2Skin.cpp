@@ -626,8 +626,11 @@ void Editor::setupDrawerMetrics()
     setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
 }
 
-void Editor::setupDrawerColors( QskAspect::Section, const QskFluent2Theme& )
+void Editor::setupDrawerColors(
+    QskAspect::Section section, const QskFluent2Theme& theme )
 {
+    setGradient( QskDrawer::Panel | section,
+        theme.palette.background.solid.base );
 }
 
 void Editor::setupFocusIndicatorMetrics()

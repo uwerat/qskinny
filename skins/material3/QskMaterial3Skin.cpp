@@ -809,6 +809,7 @@ void Editor::setupDrawer()
     using Q = QskDrawer;
     using A = QskAspect;
 
+    setGradient( Q::Panel, m_pal.background );
     setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
 }
 
