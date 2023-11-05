@@ -97,11 +97,14 @@ inline constexpr qreal QskTickmarksMetrics::operator[](int index) const noexcept
 {
     index = index % 3;
 
-    switch(index)
+    switch ( index )
     {
-        case 0: return m_minorRatio;
-        case 1: return m_mediumRatio;
-        case 2: return m_majorRatio;
+        case 0:
+            return m_minorRatio;
+        case 1:
+            return m_mediumRatio;
+        default:
+            return m_majorRatio;
     }
 }
 
@@ -109,11 +112,14 @@ inline constexpr qreal& QskTickmarksMetrics::operator[](int index) noexcept
 {
     index = index % 3;
 
-    switch(index)
+    switch ( index )
     {
-        case 0: return m_minorRatio;
-        case 1: return m_mediumRatio;
-        case 2: return m_majorRatio;
+        case 0:
+            return m_minorRatio;
+        case 1:
+            return m_mediumRatio;
+        default:
+            return m_majorRatio;
     }
 }
 
