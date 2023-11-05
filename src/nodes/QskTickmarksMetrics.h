@@ -37,8 +37,8 @@ class QSK_EXPORT QskTickmarksMetrics
     constexpr void setMediumRatio( qreal ratio ) noexcept;
     constexpr void setMinorRatio( qreal ratio ) noexcept;
 
-    Q_REQUIRED_RESULT constexpr qreal operator[]( int index ) const noexcept;
-    Q_REQUIRED_RESULT constexpr qreal& operator[]( int index ) noexcept;
+    Q_REQUIRED_RESULT constexpr qreal ratio( int index ) const noexcept;
+    constexpr void setRatio(int index, qreal ratio) noexcept;
 
   private:
     qreal m_minorRatio = 0.0;
@@ -98,7 +98,7 @@ inline constexpr bool QskTickmarksMetrics::operator!=(
     return !( *this == rhs );
 }
 
-inline constexpr qreal QskTickmarksMetrics::operator[]( int index ) const noexcept
+inline constexpr qreal QskTickmarksMetrics::ratio( int index ) const noexcept
 {
     index = index % 3;
 
@@ -113,18 +113,21 @@ inline constexpr qreal QskTickmarksMetrics::operator[]( int index ) const noexce
     }
 }
 
-inline constexpr qreal& QskTickmarksMetrics::operator[]( int index ) noexcept
+inline constexpr void QskTickmarksMetrics::setRatio( int index, qreal ratio ) noexcept
 {
     index = index % 3;
 
     switch ( index )
     {
         case 0:
-            return m_minorRatio;
+            setMinorRatio( ratio );
+            break;
         case 1:
-            return m_mediumRatio;
+            setMediumRatio( ratio );
+            break;
         default:
-            return m_majorRatio;
+            setMajorRatio( ratio );
+            break;
     }
 }
 

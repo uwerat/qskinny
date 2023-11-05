@@ -34,6 +34,7 @@ class QskTickmarksNodePrivate final : public QSGGeometryNodePrivate
 
     QRectF rect;
     int lineWidth = 0;
+    QskTickmarksMetrics metrics;
 
     QskHashValue hash = 0;
 };
@@ -60,9 +61,9 @@ void QskTickmarksNode::update(
 
     if ( metrics == QskTickmarksMetrics{} )
     {
-        metrics[QskScaleTickmarks::MinorTick] = qskTickFactor( QskScaleTickmarks::MinorTick );
-        metrics[QskScaleTickmarks::MediumTick] = qskTickFactor( QskScaleTickmarks::MediumTick );
-        metrics[QskScaleTickmarks::MajorTick] = qskTickFactor( QskScaleTickmarks::MajorTick );
+        metrics.setMinorRatio( qskTickFactor( QskScaleTickmarks::MinorTick ) );
+        metrics.setMediumRatio( qskTickFactor( QskScaleTickmarks::MediumTick ) );
+        metrics.setMajorRatio( qskTickFactor( QskScaleTickmarks::MajorTick ) );
     }
 
     if( lineWidth != d->lineWidth )
@@ -75,10 +76,11 @@ void QskTickmarksNode::update(
 
     const auto hash = tickmarks.hash( 17435 );
 
-    if( ( hash != d->hash ) || ( rect != d->rect ) )
+    if ( ( hash != d->hash ) || ( rect != d->rect ) || ( d->metrics != metrics ) )
     {
         d->hash = hash;
         d->rect = rect;
+        d->metrics = metrics;
 
         d->geometry.allocate( tickmarks.tickCount() * 2 );
         auto vertexData = d->geometry.vertexDataAsPoint2D();
@@ -96,7 +98,7 @@ void QskTickmarksNode::update(
             if ( orientation == Qt::Horizontal )
             {
                 const qreal ratio = rect.width() / range;
-                const float len = rect.height() * metrics[tickType];
+                const float len = rect.height() * d->metrics.ratio( tickType );
 
                 for( const auto tick : ticks )
                 {
@@ -129,7 +131,7 @@ void QskTickmarksNode::update(
             else
             {
                 const qreal ratio = rect.height() / range;
-                const float len = rect.width() * metrics[tickType];
+                const float len = rect.width() * d->metrics.ratio( tickType );
 
                 for( const auto tick : ticks )
                 {

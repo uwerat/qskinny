@@ -25,6 +25,7 @@
 #include <QskTickmarksNode.h>
 #include <QskScaleTickmarks.h>
 #include <QskTextLabel.h>
+#include <QskAnimator.h>
 
 #include <QGuiApplication>
 
@@ -147,12 +148,63 @@ class Window : public QskWindow
         {
             (void) new QskTextLabel("Custom", layout);
             auto* const tickmarks = new Tickmarks(layout);
-            tickmarks->metrics[QskScaleTickmarks::MajorTick] = 1.0;
-            tickmarks->metrics[QskScaleTickmarks::MediumTick] = 0.5;
-            tickmarks->metrics[QskScaleTickmarks::MinorTick] = 0.2;
+            tickmarks->metrics.setMajorRatio( 1.0 );
+            tickmarks->metrics.setMediumRatio( 0.5 );
+            tickmarks->metrics.setMinorRatio( 0.2 );
             auto* const skinlet = new TickmarksSkinlet;
             tickmarks->setSkinlet(skinlet);
             skinlet->setOwnedBySkinnable(true);
+        }
+        {
+            (void) new QskTextLabel("Custom (Major only)", layout);
+            auto* const tickmarks = new Tickmarks(layout);
+            tickmarks->metrics.setMajorRatio( 1.0 );
+            tickmarks->metrics.setMediumRatio( 0.0 );
+            tickmarks->metrics.setMinorRatio( 0.0 );
+            auto* const skinlet = new TickmarksSkinlet;
+            tickmarks->setSkinlet(skinlet);
+            skinlet->setOwnedBySkinnable(true);
+        }
+        {
+            (void) new QskTextLabel("Custom (Major + Minor only)", layout);
+            auto* const tickmarks = new Tickmarks(layout);
+            tickmarks->metrics.setMajorRatio( 1.0 );
+            tickmarks->metrics.setMediumRatio( 0.0 );
+            tickmarks->metrics.setMinorRatio( 0.2 );
+            auto* const skinlet = new TickmarksSkinlet;
+            tickmarks->setSkinlet(skinlet);
+            skinlet->setOwnedBySkinnable(true);
+        }
+        {
+            (void) new QskTextLabel("Custom (Animated)", layout);
+            auto* const tickmarks = new Tickmarks(layout);
+            auto* const skinlet = new TickmarksSkinlet;
+            tickmarks->setSkinlet(skinlet);
+            skinlet->setOwnedBySkinnable(true);
+
+            class Animator final : public QskAnimator
+            { 
+            public:
+                explicit Animator(Tickmarks& tickmarks) : tickmarks(tickmarks)
+                {
+                    setAutoRepeat(true);
+                    setDuration(2000);
+                }
+
+                void advance( qreal value ) override
+                {
+                    tickmarks.metrics.setMinorRatio( 0.1 + 0.1 * qFastSin(value * 2 * M_PI));
+                    tickmarks.metrics.setMediumRatio( 0.25 + 0.25 * qFastSin(value * 2 * M_PI));
+                    tickmarks.metrics.setMajorRatio( 0.5 + 0.5 * qFastSin(value * 2 * M_PI));
+                    tickmarks.update();
+                }
+
+                Tickmarks& tickmarks;
+            };
+
+            auto* const animator = new Animator(*tickmarks);
+            animator->setWindow(this);
+            animator->start();
         }
     }
 

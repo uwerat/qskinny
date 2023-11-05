@@ -69,7 +69,7 @@ inline constexpr bool qskFuzzyCompare( qreal value1, qreal value2 )
     return qFuzzyCompare( value1, value2 );
 }
 
-inline constexpr bool qskConstrainedRatio( qreal ratio )
+inline constexpr qreal qskConstrainedRatio( qreal ratio )
 {
     return qBound( 0.0, ratio, 1.0 );
 }
