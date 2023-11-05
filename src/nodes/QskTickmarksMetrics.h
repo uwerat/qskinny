@@ -41,16 +41,9 @@ class QSK_EXPORT QskTickmarksMetrics
     constexpr Q_REQUIRED_RESULT qreal& operator[](int index) noexcept;
 
   private:
-    union
-    {
-        struct 
-        {
-            qreal m_minorRatio;
-            qreal m_mediumRatio;
-            qreal m_majorRatio;
-        };
-        qreal size[3] = { 0.7, 0.85, 1.0 };
-    };
+    qreal m_minorRatio = 0.7;
+    qreal m_mediumRatio = 0.85;
+    qreal m_majorRatio = 1.0;
 };
 
 inline constexpr QskTickmarksMetrics::QskTickmarksMetrics(qreal minorRatio, qreal mediumRatio, qreal majorRatio) noexcept
@@ -102,12 +95,26 @@ inline constexpr bool QskTickmarksMetrics::operator!=(const QskTickmarksMetrics&
 
 inline constexpr qreal QskTickmarksMetrics::operator[](int index) const noexcept
 {
-    return size[index % 3];
+    index = index % 3;
+
+    switch(index)
+    {
+        case 0: return m_minorRatio;
+        case 1: return m_mediumRatio;
+        case 2: return m_majorRatio;
+    }
 }
 
 inline constexpr qreal& QskTickmarksMetrics::operator[](int index) noexcept
 {
-    return size[index % 3];
+    index = index % 3;
+
+    switch(index)
+    {
+        case 0: return m_minorRatio;
+        case 1: return m_mediumRatio;
+        case 2: return m_majorRatio;
+    }
 }
 
 #endif
