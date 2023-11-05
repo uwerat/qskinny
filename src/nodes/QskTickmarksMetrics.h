@@ -41,16 +41,16 @@ class QSK_EXPORT QskTickmarksMetrics
     Q_REQUIRED_RESULT constexpr qreal& operator[]( int index ) noexcept;
 
   private:
-    qreal m_minorRatio = 0.7;
-    qreal m_mediumRatio = 0.85;
-    qreal m_majorRatio = 1.0;
+    qreal m_minorRatio = 0.0;
+    qreal m_mediumRatio = 0.0;
+    qreal m_majorRatio = 0.0;
 };
 
 inline constexpr QskTickmarksMetrics::QskTickmarksMetrics(
     qreal minorRatio, qreal mediumRatio, qreal majorRatio ) noexcept
-    : m_minorRatio( minorRatio )
-    , m_mediumRatio( mediumRatio )
-    , m_majorRatio( majorRatio )
+    : m_minorRatio( qskConstrainedRatio(minorRatio) )
+    , m_mediumRatio( qskConstrainedRatio(mediumRatio) )
+    , m_majorRatio( qskConstrainedRatio(majorRatio) )
 {
 }
 
@@ -71,17 +71,17 @@ inline constexpr qreal QskTickmarksMetrics::minorRatio() const noexcept
 
 inline constexpr void QskTickmarksMetrics::setMajorRatio( qreal ratio ) noexcept
 {
-    m_majorRatio = qBound( 0.0, ratio, 1.0 );
+    m_majorRatio = qskConstrainedRatio( ratio );
 }
 
 inline constexpr void QskTickmarksMetrics::setMediumRatio( qreal ratio ) noexcept
 {
-    m_mediumRatio = qBound( 0.0, ratio, 1.0 );
+    m_mediumRatio = qskConstrainedRatio( ratio );
 }
 
 inline constexpr void QskTickmarksMetrics::setMinorRatio( qreal ratio ) noexcept
 {
-    m_minorRatio = qBound( 0.0, ratio, 1.0 );
+    m_minorRatio = qskConstrainedRatio( ratio );
 }
 
 inline constexpr bool QskTickmarksMetrics::operator==(

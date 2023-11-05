@@ -27,7 +27,7 @@ class QSK_EXPORT QskTickmarksNode : public QSGGeometryNode
 
     void update(const QColor&, const QRectF&, const QskIntervalF&,
         const QskScaleTickmarks&, int tickLineWidth, Qt::Orientation,
-        Qt::Alignment, const QskTickmarksMetrics& metrics );
+        Qt::Alignment, QskTickmarksMetrics metrics );
 
   private:
     Q_DECLARE_PRIVATE( QskTickmarksNode )

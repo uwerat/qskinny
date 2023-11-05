@@ -54,9 +54,16 @@ QskTickmarksNode::~QskTickmarksNode()
 void QskTickmarksNode::update(
     const QColor& color, const QRectF& rect,
     const QskIntervalF& boundaries, const QskScaleTickmarks& tickmarks,
-    int lineWidth, Qt::Orientation orientation, Qt::Alignment alignment, const QskTickmarksMetrics& metrics )
+    int lineWidth, Qt::Orientation orientation, Qt::Alignment alignment, QskTickmarksMetrics metrics )
 {
     Q_D( QskTickmarksNode );
+
+    if ( metrics == QskTickmarksMetrics{} )
+    {
+        metrics[QskScaleTickmarks::MinorTick] = qskTickFactor( QskScaleTickmarks::MinorTick );
+        metrics[QskScaleTickmarks::MediumTick] = qskTickFactor( QskScaleTickmarks::MediumTick );
+        metrics[QskScaleTickmarks::MajorTick] = qskTickFactor( QskScaleTickmarks::MajorTick );
+    }
 
     if( lineWidth != d->lineWidth )
     {
