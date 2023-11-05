@@ -26,19 +26,19 @@ class QSK_EXPORT QskTickmarksMetrics
     constexpr QskTickmarksMetrics& operator=( const QskTickmarksMetrics& ) noexcept = default;
     constexpr QskTickmarksMetrics& operator=( QskTickmarksMetrics&& ) noexcept = default;
 
-    constexpr Q_REQUIRED_RESULT bool operator==( const QskTickmarksMetrics& rhs ) const noexcept;
-    constexpr Q_REQUIRED_RESULT bool operator!=( const QskTickmarksMetrics& rhs ) const noexcept;
+    Q_REQUIRED_RESULT constexpr bool operator==( const QskTickmarksMetrics& rhs ) const noexcept;
+    Q_REQUIRED_RESULT constexpr bool operator!=( const QskTickmarksMetrics& rhs ) const noexcept;
 
-    constexpr Q_REQUIRED_RESULT qreal majorRatio() const noexcept;
-    constexpr Q_REQUIRED_RESULT qreal mediumRatio() const noexcept;
-    constexpr Q_REQUIRED_RESULT qreal minorRatio() const noexcept;
+    Q_REQUIRED_RESULT constexpr qreal majorRatio() const noexcept;
+    Q_REQUIRED_RESULT constexpr qreal mediumRatio() const noexcept;
+    Q_REQUIRED_RESULT constexpr qreal minorRatio() const noexcept;
 
     constexpr void setMajorRatio( qreal ratio ) noexcept;
     constexpr void setMediumRatio( qreal ratio ) noexcept;
     constexpr void setMinorRatio( qreal ratio ) noexcept;
 
-    constexpr Q_REQUIRED_RESULT qreal operator[]( int index ) const noexcept;
-    constexpr Q_REQUIRED_RESULT qreal& operator[]( int index ) noexcept;
+    Q_REQUIRED_RESULT constexpr qreal operator[]( int index ) const noexcept;
+    Q_REQUIRED_RESULT constexpr qreal& operator[]( int index ) noexcept;
 
   private:
     qreal m_minorRatio = 0.7;
