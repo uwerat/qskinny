@@ -19,6 +19,7 @@
 #include <QskDialogButtonBox.h>
 #include <QskDialogSubWindow.h>
 #include <QskDialogWindow.h>
+#include <QskDrawer.h>
 #include <QskFocusIndicator.h>
 #include <QskGradient.h>
 #include <QskGradientDirection.h>
@@ -218,6 +219,7 @@ void QskQml::registerTypes()
     registerObject< QskTabButton >();
     registerObject< QskTabBar >();
     registerObject< QskTabView >();
+    registerObject< QskDrawer >();
     registerObject< QskFocusIndicator >();
     registerObject< QskSeparator >();
     registerObject< QskProgressBar >();
