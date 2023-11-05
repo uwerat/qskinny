@@ -234,6 +234,9 @@ void QskPopup::setOpen( bool on )
     else
         Q_EMIT closed();
 
+    if ( !on )
+        grabFocus( false );
+
     qskStartFading( this, on );
 
     if ( isFading() )
