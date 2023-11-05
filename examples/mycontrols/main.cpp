@@ -19,6 +19,12 @@
 #include <QskSkinTransition.h>
 #include <QskSetup.h>
 #include <QskSkin.h>
+#include <QskSkinlet.h>
+#include <QskSGNode.h>
+#include <QskTickmarksMetrics.h>
+#include <QskTickmarksNode.h>
+#include <QskScaleTickmarks.h>
+#include <QskTextLabel.h>
 
 #include <QGuiApplication>
 
@@ -72,31 +78,82 @@ class ContentBox : public QskBox
     }
 };
 
+struct Tickmarks final : public QskControl
+{
+  public:
+      using QskControl::QskControl;
+      QskTickmarksMetrics metrics;
+};
+
+class TickmarksSkinlet final : public QskSkinlet
+{
+    Q_GADGET
+  public:
+    enum NodeRoles
+    {
+        TickmarksRole
+    };
+
+    Q_INVOKABLE TickmarksSkinlet(QskSkin* skin = nullptr) : QskSkinlet(skin)
+    {
+        setNodeRoles( { TickmarksRole } );
+    }
+
+    QSGNode* updateSubNode( const QskSkinnable* const skinnable, const quint8 nodeRole, QSGNode* const node ) const override
+    {
+        const auto* const q = static_cast< const Tickmarks* >( skinnable );
+
+        if(nodeRole == TickmarksRole) 
+        {
+            auto* const tickmarksNode = QskSGNode::ensureNode<QskTickmarksNode>(node);
+            
+            const auto rect = q->contentsRect();
+
+            QskScaleTickmarks tickmarks;
+            QVector<qreal> major, medium, minor;
+            for ( int i = -100; i <= +100; ++i ) 
+            {
+                if(i % 50 == 0) major << i;
+                else if(i % 10 == 0) medium << i;
+                else minor << i;
+            }
+            tickmarks.setMajorTicks(major);
+            tickmarks.setMediumTicks(medium);
+            tickmarks.setMinorTicks(minor);
+
+            tickmarksNode->update(
+                Qt::darkGray, rect, { -100, +100 }, tickmarks, 1, Qt::Horizontal, Qt::AlignBottom, q->metrics );
+
+            return tickmarksNode;
+        }
+
+        return nullptr;
+    }
+};
+
 class Window : public QskWindow
 {
   public:
     Window()
     {
-        auto button = new MyToggleButton();
-
-        button->setText( false, alternativeSkin( false ) );
-        button->setText( true, alternativeSkin( true ) );
-        button->setLayoutAlignmentHint( Qt::AlignRight );
-
-        auto box = new QskLinearBox( Qt::Vertical );
-
-        box->setMargins( 20 );
-        box->addItem( button );
-        box->addSpacer( 10 );
-        box->addItem( new ContentBox() );
-
-        connect( button, &MyToggleButton::toggled,
-            this, &Window::setAlternativeSkin );
-
-        setAlternativeSkin( button->isChecked() );
-
-        addItem( box );
-        addItem( new QskFocusIndicator() );
+        auto* const layout = new QskLinearBox(Qt::Vertical, contentItem());
+        {
+            (void) new QskTextLabel("Default", layout);
+            auto* const tickmarks = new Tickmarks(layout);
+            auto* const skinlet = new TickmarksSkinlet;
+            tickmarks->setSkinlet(skinlet);
+            skinlet->setOwnedBySkinnable(true);
+        }
+        {
+            (void) new QskTextLabel("Custom", layout);
+            auto* const tickmarks = new Tickmarks(layout);
+            tickmarks->metrics[QskScaleTickmarks::MajorTick] = 1.0;
+            tickmarks->metrics[QskScaleTickmarks::MediumTick] = 0.5;
+            tickmarks->metrics[QskScaleTickmarks::MinorTick] = 0.2;
+            auto* const skinlet = new TickmarksSkinlet;
+            tickmarks->setSkinlet(skinlet);
+            skinlet->setOwnedBySkinnable(true);
+        }
     }
 
   private:
@@ -154,3 +211,5 @@ int main( int argc, char* argv[] )
 
     return app.exec();
 }
+
+#include "main.moc"

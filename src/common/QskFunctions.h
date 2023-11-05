@@ -58,7 +58,7 @@ inline QMarginsF qskMargins( const QRectF& rect, const QRectF& innerRect )
         rect.bottom() - innerRect.bottom() );
 }
 
-inline bool qskFuzzyCompare( qreal value1, qreal value2 )
+inline constexpr bool qskFuzzyCompare( qreal value1, qreal value2 )
 {
     if ( qFuzzyIsNull( value1 ) )
         return qFuzzyIsNull( value2 );

@@ -7,6 +7,7 @@
 #include "QskScaleTickmarks.h"
 #include "QskSkinlet.h"
 #include "QskSGNode.h"
+#include "QskTickmarksMetrics.h"
 #include "QskTickmarksNode.h"
 #include "QskTextOptions.h"
 #include "QskTextColors.h"
@@ -230,7 +231,7 @@ QSGNode* QskScaleRenderer::updateTicksNode(
 
     ticksNode->update( m_data->tickColor, rect, m_data->boundaries,
         m_data->tickmarks, tickWidth, m_data->orientation,
-        m_data->alignment );
+        m_data->alignment, {});
 
     return ticksNode;
 }

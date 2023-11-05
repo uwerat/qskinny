@@ -1,5 +1,6 @@
 #include "QskTickmarksNode.h"
 #include "QskScaleTickmarks.h"
+#include "QskTickmarksMetrics.h"
 
 #include <QSGFlatColorMaterial>
 #include <QSGGeometryNode>
@@ -53,7 +54,7 @@ QskTickmarksNode::~QskTickmarksNode()
 void QskTickmarksNode::update(
     const QColor& color, const QRectF& rect,
     const QskIntervalF& boundaries, const QskScaleTickmarks& tickmarks,
-    int lineWidth, Qt::Orientation orientation, Qt::Alignment alignment )
+    int lineWidth, Qt::Orientation orientation, Qt::Alignment alignment, const QskTickmarksMetrics& metrics )
 {
     Q_D( QskTickmarksNode );
 
@@ -88,7 +89,7 @@ void QskTickmarksNode::update(
             if ( orientation == Qt::Horizontal )
             {
                 const qreal ratio = rect.width() / range;
-                const float len = rect.height() * qskTickFactor( tickType );
+                const float len = rect.height() * metrics[tickType];
 
                 for( const auto tick : ticks )
                 {
@@ -121,7 +122,7 @@ void QskTickmarksNode::update(
             else
             {
                 const qreal ratio = rect.height() / range;
-                const float len = rect.width() * qskTickFactor( tickType );
+                const float len = rect.width() * metrics[tickType];
 
                 for( const auto tick : ticks )
                 {

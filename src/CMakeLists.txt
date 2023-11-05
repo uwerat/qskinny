@@ -123,6 +123,7 @@ list(APPEND HEADERS
     nodes/QskTextRenderer.h
     nodes/QskTextureRenderer.h
     nodes/QskTickmarksNode.h
+    nodes/QskTickmarksMetrics.h
     nodes/QskVertex.h
 )
 
@@ -154,6 +155,7 @@ list(APPEND SOURCES
     nodes/QskTextRenderer.cpp
     nodes/QskTextureRenderer.cpp
     nodes/QskTickmarksNode.cpp
+    nodes/QskTickmarksMetrics.cpp
     nodes/QskVertex.cpp
 )
 
