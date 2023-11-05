@@ -29,6 +29,8 @@
 
 #include <QGuiApplication>
 
+#include <qmath.h>
+
 /*
     This example is intended to show how to:
 
