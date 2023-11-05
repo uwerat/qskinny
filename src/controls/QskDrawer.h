@@ -23,7 +23,7 @@ class QSK_EXPORT QskDrawer : public QskPopup
         WRITE setInteractive NOTIFY interactiveChanged )
 
   public:
-    QSK_SUBCONTROLS( Panel );
+    QSK_SUBCONTROLS( Panel )
 
     QskDrawer( QQuickItem* = nullptr );
     QskDrawer( Qt::Edge, QQuickItem* = nullptr );

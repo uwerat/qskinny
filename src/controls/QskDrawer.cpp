@@ -364,7 +364,6 @@ void QskDrawer::itemChange( QQuickItem::ItemChange change,
             m_data->resetListener( this );
             break;
         }
-
         case QQuickItem::ItemVisibleHasChanged:
         {
             m_data->resetListener( this );
