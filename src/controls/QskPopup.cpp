@@ -76,9 +76,17 @@ static bool qskReplayMousePress()
     return false;
 }
 
+static inline QskAspect qskEffectiveFadingAspect( const QskPopup* popup )
+{
+    auto aspect = popup->fadingAspect();
+    aspect.setSubcontrol( popup->effectiveSubcontrol( aspect.subControl() ) );
+
+    return aspect;
+}
+
 static void qskStartFading( QskPopup* popup, bool on )
 {
-    const auto aspect = popup->fadingAspect();
+    const auto aspect = qskEffectiveFadingAspect( popup );
 
     auto hint = popup->animationHint( aspect );
 
@@ -266,12 +274,14 @@ QskAspect QskPopup::fadingAspect() const
 
 bool QskPopup::isFading() const
 {
-    return runningHintAnimator( fadingAspect() ) != nullptr;
+    const auto aspect = qskEffectiveFadingAspect( this );
+    return runningHintAnimator( aspect ) != nullptr;
 }
 
 qreal QskPopup::fadingFactor() const
 {
-    if ( auto animator = runningHintAnimator( fadingAspect() ) )
+    const auto aspect = qskEffectiveFadingAspect( this );
+    if ( auto animator = runningHintAnimator( aspect ) )
         return animator->currentValue().value< qreal >();
 
     return isOpen() ? 1.0 : 0.0;
@@ -337,7 +347,7 @@ bool QskPopup::isTransitionAccepted( QskAspect aspect ) const
         if ( ( aspect.value() == 0 ) )
             return true;
 
-        if ( aspect.subControl() == effectiveSubcontrol( fadingAspect().subControl() ) )
+        if ( aspect.subControl() == qskEffectiveFadingAspect( this ).subControl() )
             return true;
 
         if ( aspect.subControl() == effectiveSubcontrol( QskPopup::Overlay ) )
@@ -488,7 +498,7 @@ bool QskPopup::event( QEvent* event )
             const auto animatorEvent = static_cast< QskAnimatorEvent* >( event );
 
             if ( ( animatorEvent->state() == QskAnimatorEvent::Terminated )
-                && ( animatorEvent->aspect() == fadingAspect() ) )
+                && ( animatorEvent->aspect() == qskEffectiveFadingAspect( this ) ) )
             {
                 if ( !isOpen() )
                 {
