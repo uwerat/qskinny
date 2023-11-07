@@ -10,6 +10,7 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskShadowMetrics.h"
 #include "QskStippleMetrics.h"
+#include "QskTickmarksMetrics.h"
 #include "QskColorFilter.h"
 #include "QskGradient.h"
 #include "QskMargins.h"
@@ -49,6 +50,7 @@ static void qskRegisterInterpolator()
     qRegisterAnimationInterpolator< QskShadowMetrics >( QskShadowMetrics::interpolate );
     qRegisterAnimationInterpolator< QskStippleMetrics >( QskStippleMetrics::interpolate );
     qRegisterAnimationInterpolator< QskArcMetrics >( QskArcMetrics::interpolate );
+    qRegisterAnimationInterpolator< QskTickmarksMetrics >( QskTickmarksMetrics::interpolate );
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterInterpolator )

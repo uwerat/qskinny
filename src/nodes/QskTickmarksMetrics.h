@@ -40,6 +40,11 @@ class QSK_EXPORT QskTickmarksMetrics
     Q_REQUIRED_RESULT constexpr qreal ratio( int index ) const noexcept;
     constexpr void setRatio(int index, qreal ratio) noexcept;
 
+    Q_REQUIRED_RESULT QskTickmarksMetrics interpolated( const QskTickmarksMetrics&,
+        qreal progress ) const noexcept;
+    Q_REQUIRED_RESULT static QVariant interpolate(
+        const QskTickmarksMetrics& , const QskTickmarksMetrics& , qreal progress );
+
     Q_REQUIRED_RESULT QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 
   private:
