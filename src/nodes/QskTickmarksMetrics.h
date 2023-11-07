@@ -40,6 +40,8 @@ class QSK_EXPORT QskTickmarksMetrics
     Q_REQUIRED_RESULT constexpr qreal ratio( int index ) const noexcept;
     constexpr void setRatio(int index, qreal ratio) noexcept;
 
+    Q_REQUIRED_RESULT QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
+
   private:
     qreal m_minorRatio = 0.0;
     qreal m_mediumRatio = 0.0;
@@ -129,6 +131,14 @@ inline constexpr void QskTickmarksMetrics::setRatio( int index, qreal ratio ) no
             setMajorRatio( ratio );
             break;
     }
+}
+
+inline QskHashValue QskTickmarksMetrics::hash( const QskHashValue seed ) const noexcept
+{
+    auto hash = qHash( m_minorRatio, seed );
+    hash = qHash( m_mediumRatio, hash );
+    hash = qHash( m_majorRatio, hash );
+    return hash;
 }
 
 #endif
