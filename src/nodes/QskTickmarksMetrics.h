@@ -105,11 +105,9 @@ inline constexpr bool QskTickmarksMetrics::operator!=(
     return !( *this == rhs );
 }
 
-inline constexpr qreal QskTickmarksMetrics::ratio( int index ) const noexcept
+inline constexpr qreal QskTickmarksMetrics::ratio( const int index ) const noexcept
 {
-    index = index % 3;
-
-    switch ( index )
+    switch ( index % 3 )
     {
         case 0:
             return m_minorRatio;
@@ -120,11 +118,9 @@ inline constexpr qreal QskTickmarksMetrics::ratio( int index ) const noexcept
     }
 }
 
-inline constexpr void QskTickmarksMetrics::setRatio( int index, qreal ratio ) noexcept
+inline constexpr void QskTickmarksMetrics::setRatio( const int index, const qreal ratio ) noexcept
 {
-    index = index % 3;
-
-    switch ( index )
+    switch ( index % 3 )
     {
         case 0:
             setMinorRatio( ratio );
