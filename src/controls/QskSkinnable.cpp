@@ -24,6 +24,7 @@
 #include "QskBoxBorderColors.h"
 #include "QskShadowMetrics.h"
 #include "QskStippleMetrics.h"
+#include "QskTickmarksMetrics.h"
 #include "QskBoxHints.h"
 #include "QskGradient.h"
 #include "QskTextOptions.h"
@@ -764,6 +765,23 @@ QskGraphic QskSkinnable::symbolHint(
 {
     return effectiveSkinHint(
         aspect | QskAspect::Symbol, status ).value< QskGraphic >();
+}
+
+bool QskSkinnable::setTickmarksMetricsHint( const QskAspect aspect, const QskTickmarksMetrics& metrics )
+{
+    return setSkinHint( aspect | QskAspect::Tickmarks,
+        QVariant::fromValue( metrics ) );
+}
+
+bool QskSkinnable::resetTickmarksMetricsHint( const QskAspect aspect )
+{
+    return resetSkinHint( aspect | QskAspect::Tickmarks );
+}
+
+QskTickmarksMetrics QskSkinnable::tickmarksMetricsHint( const QskAspect aspect, QskSkinHintStatus* status) const
+{
+    return effectiveSkinHint(
+        aspect | QskAspect::Tickmarks, status ).value< QskTickmarksMetrics >();
 }
 
 
