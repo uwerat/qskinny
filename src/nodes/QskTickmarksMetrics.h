@@ -38,12 +38,12 @@ class QSK_EXPORT QskTickmarksMetrics
     constexpr void setMinorRatio( qreal ratio ) noexcept;
 
     Q_REQUIRED_RESULT constexpr qreal ratio( int index ) const noexcept;
-    constexpr void setRatio(int index, qreal ratio) noexcept;
+    constexpr void setRatio( int index, qreal ratio ) noexcept;
 
-    Q_REQUIRED_RESULT QskTickmarksMetrics interpolated( const QskTickmarksMetrics&,
-        qreal progress ) const noexcept;
+    Q_REQUIRED_RESULT QskTickmarksMetrics interpolated(
+        const QskTickmarksMetrics&, qreal progress ) const noexcept;
     Q_REQUIRED_RESULT static QVariant interpolate(
-        const QskTickmarksMetrics& , const QskTickmarksMetrics& , qreal progress );
+        const QskTickmarksMetrics&, const QskTickmarksMetrics&, qreal progress );
 
     Q_REQUIRED_RESULT QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 
@@ -55,9 +55,9 @@ class QSK_EXPORT QskTickmarksMetrics
 
 inline constexpr QskTickmarksMetrics::QskTickmarksMetrics(
     qreal minorRatio, qreal mediumRatio, qreal majorRatio ) noexcept
-    : m_minorRatio( qskConstrainedRatio(minorRatio) )
-    , m_mediumRatio( qskConstrainedRatio(mediumRatio) )
-    , m_majorRatio( qskConstrainedRatio(majorRatio) )
+    : m_minorRatio( qskConstrainedRatio( minorRatio ) )
+    , m_mediumRatio( qskConstrainedRatio( mediumRatio ) )
+    , m_majorRatio( qskConstrainedRatio( majorRatio ) )
 {
 }
 

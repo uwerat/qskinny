@@ -26,12 +26,9 @@ QskTickmarksMetrics QskTickmarksMetrics::interpolated(
         return to;
     }
 
-    return 
-    {
-        qskInterpolated(m_minorRatio, to.m_minorRatio, ratio),
-        qskInterpolated(m_mediumRatio, to.m_mediumRatio, ratio),
-        qskInterpolated(m_majorRatio, to.m_majorRatio, ratio)
-    };
+    return { qskInterpolated( m_minorRatio, to.m_minorRatio, ratio ),
+        qskInterpolated( m_mediumRatio, to.m_mediumRatio, ratio ),
+        qskInterpolated( m_majorRatio, to.m_majorRatio, ratio ) };
 }
 
 QVariant QskTickmarksMetrics::interpolate(
