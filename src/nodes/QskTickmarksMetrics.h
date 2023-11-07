@@ -141,4 +141,14 @@ inline QskHashValue QskTickmarksMetrics::hash( const QskHashValue seed ) const n
     return hash;
 }
 
+#ifndef QT_NO_DEBUG_STREAM
+
+class QDebug;
+QSK_EXPORT QDebug operator<<( QDebug, const QskTickmarksMetrics& );
+
+#endif
+
+Q_DECLARE_TYPEINFO( QskTickmarksMetrics, Q_MOVABLE_TYPE );
+Q_DECLARE_METATYPE( QskTickmarksMetrics )
+
 #endif

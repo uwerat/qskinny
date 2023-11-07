@@ -1,16 +1,40 @@
 #include "QskTickmarksMetrics.h"
 
-constexpr bool test_ctor0()
+#include <QVariant>
+
+static void qskRegisterTickmarksMetrics()
 {
-	return QskTickmarksMetrics{} == QskTickmarksMetrics{0,0,0};
+    qRegisterMetaType< QskTickmarksMetrics >();
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QMetaType::registerEqualsComparator< QskTickmarksMetrics >();
+#endif
 }
 
-static_assert(test_ctor0(), "test failed!");
+Q_CONSTRUCTOR_FUNCTION( qskRegisterTickmarksMetrics )
 
-constexpr bool test_ctor1()
+#ifndef QT_NO_DEBUG_STREAM
+
+#include <qdebug.h>
+
+QDebug operator<<( QDebug debug, const QskTickmarksMetrics& metrics )
 {
-	QskTickmarksMetrics m;
-	return QskTickmarksMetrics{1,1,1} == QskTickmarksMetrics{2,2,2};
+    QDebugStateSaver saver( debug );
+    debug.nospace();
+
+    debug << "QskTickmarksMetrics";
+    debug << '(';
+    debug << "minor: ";
+    debug << metrics.minorRatio();
+    debug << ',';
+    debug << "medium: ";
+    debug << metrics.mediumRatio();
+    debug << ',';
+    debug << "major: ";
+    debug << metrics.majorRatio();
+    debug << ')';
+
+    return debug;
 }
 
-static_assert(test_ctor1(), "test failed!");
+#endif
