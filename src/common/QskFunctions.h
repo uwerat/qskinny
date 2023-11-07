@@ -49,7 +49,7 @@ inline QRectF qskAlignedRectF( const QRectF& outerRect,
     return qskAlignedRectF( outerRect, size.width(), size.height(), alignment );
 }
 
-inline QMarginsF qskMargins( const QRectF& rect, const QRectF& innerRect )
+inline constexpr QMarginsF qskMargins( const QRectF& rect, const QRectF& innerRect )
 {
     return QMarginsF(
         innerRect.left() - rect.left(),
@@ -58,7 +58,7 @@ inline QMarginsF qskMargins( const QRectF& rect, const QRectF& innerRect )
         rect.bottom() - innerRect.bottom() );
 }
 
-inline bool qskFuzzyCompare( qreal value1, qreal value2 )
+inline constexpr bool qskFuzzyCompare( qreal value1, qreal value2 )
 {
     if ( qFuzzyIsNull( value1 ) )
         return qFuzzyIsNull( value2 );
