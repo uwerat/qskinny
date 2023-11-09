@@ -32,7 +32,7 @@ class QskBoxBorderMetrics;
 class QskBoxBorderColors;
 class QskShadowMetrics;
 class QskStippleMetrics;
-class QskTickmarksMetrics;
+class QskGraduationMetrics;
 class QskTextOptions;
 class QskBoxHints;
 class QskGradient;
@@ -258,9 +258,9 @@ class QSK_EXPORT QskSkinnable
     bool resetSymbolHint( const QskAspect );
     QskGraphic symbolHint( const QskAspect, QskSkinHintStatus* = nullptr ) const;
 
-    bool setTickmarksMetricsHint( const QskAspect, const QskTickmarksMetrics& );
-    bool resetTickmarksMetricsHint( const QskAspect );
-    QskTickmarksMetrics tickmarksMetricsHint( const QskAspect, QskSkinHintStatus* = nullptr ) const;
+    bool setGraduationMetricsHint( const QskAspect, const QskGraduationMetrics& );
+    bool resetGraduationMetricsHint( const QskAspect );
+    QskGraduationMetrics graduationMetricsHint( const QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     const QskSkinHintTable& hintTable() const;
 

@@ -24,7 +24,7 @@
 #include "QskBoxBorderColors.h"
 #include "QskShadowMetrics.h"
 #include "QskStippleMetrics.h"
-#include "QskTickmarksMetrics.h"
+#include "QskGraduationMetrics.h"
 #include "QskBoxHints.h"
 #include "QskGradient.h"
 #include "QskTextOptions.h"
@@ -767,21 +767,21 @@ QskGraphic QskSkinnable::symbolHint(
         aspect | QskAspect::Symbol, status ).value< QskGraphic >();
 }
 
-bool QskSkinnable::setTickmarksMetricsHint( const QskAspect aspect, const QskTickmarksMetrics& metrics )
+bool QskSkinnable::setGraduationMetricsHint( const QskAspect aspect, const QskGraduationMetrics& metrics )
 {
     return setSkinHint( aspect | QskAspect::Tickmarks,
         QVariant::fromValue( metrics ) );
 }
 
-bool QskSkinnable::resetTickmarksMetricsHint( const QskAspect aspect )
+bool QskSkinnable::resetGraduationMetricsHint( const QskAspect aspect )
 {
     return resetSkinHint( aspect | QskAspect::Tickmarks );
 }
 
-QskTickmarksMetrics QskSkinnable::tickmarksMetricsHint( const QskAspect aspect, QskSkinHintStatus* status) const
+QskGraduationMetrics QskSkinnable::graduationMetricsHint( const QskAspect aspect, QskSkinHintStatus* status) const
 {
     return effectiveSkinHint(
-        aspect | QskAspect::Tickmarks, status ).value< QskTickmarksMetrics >();
+        aspect | QskAspect::Tickmarks, status ).value< QskGraduationMetrics >();
 }
 
 

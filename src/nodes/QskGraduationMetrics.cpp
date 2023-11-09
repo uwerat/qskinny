@@ -1,27 +1,27 @@
-#include "QskTickmarksMetrics.h"
+#include "QskGraduationMetrics.h"
 
 #include <qvariant.h>
 
-static void qskRegisterTickmarksMetrics()
+static void qskRegisterGraduationMetrics()
 {
-    qRegisterMetaType< QskTickmarksMetrics >();
+    qRegisterMetaType< QskGraduationMetrics >();
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    QMetaType::registerEqualsComparator< QskTickmarksMetrics >();
+    QMetaType::registerEqualsComparator< QskGraduationMetrics >();
 #endif
 }
 
-Q_CONSTRUCTOR_FUNCTION( qskRegisterTickmarksMetrics )
+Q_CONSTRUCTOR_FUNCTION( qskRegisterGraduationMetrics )
 
 static inline qreal qskInterpolated( qreal from, qreal to, qreal ratio )
 {
     return from + ( to - from ) * ratio;
 }
 
-QskTickmarksMetrics QskTickmarksMetrics::interpolated(
-    const QskTickmarksMetrics& to, const qreal ratio ) const noexcept
+QskGraduationMetrics QskGraduationMetrics::interpolated(
+    const QskGraduationMetrics& to, const qreal ratio ) const noexcept
 {
-    if ( ( *this == to ) ) // TODO QskTickmarksMetrics::sizeMode
+    if ( ( *this == to ) ) // TODO QskGraduationMetrics::sizeMode
     {
         return to;
     }
@@ -31,8 +31,8 @@ QskTickmarksMetrics QskTickmarksMetrics::interpolated(
         qskInterpolated( m_majorRatio, to.m_majorRatio, ratio ) };
 }
 
-QVariant QskTickmarksMetrics::interpolate(
-    const QskTickmarksMetrics& from, const QskTickmarksMetrics& to, const qreal progress )
+QVariant QskGraduationMetrics::interpolate(
+    const QskGraduationMetrics& from, const QskGraduationMetrics& to, const qreal progress )
 {
     return QVariant::fromValue( from.interpolated( to, progress ) );
 }
@@ -41,12 +41,12 @@ QVariant QskTickmarksMetrics::interpolate(
 
 #include <qdebug.h>
 
-QDebug operator<<( QDebug debug, const QskTickmarksMetrics& metrics )
+QDebug operator<<( QDebug debug, const QskGraduationMetrics& metrics )
 {
     QDebugStateSaver saver( debug );
     debug.nospace();
 
-    debug << "QskTickmarksMetrics";
+    debug << "QskGraduationMetrics";
     debug << '(';
     debug << "minor: ";
     debug << metrics.minorRatio();

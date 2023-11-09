@@ -21,12 +21,12 @@
 #include <QskSkin.h>
 #include <QskSkinlet.h>
 #include <QskSGNode.h>
-#include <QskTickmarksMetrics.h>
+#include <QskGraduationMetrics.h>
 #include <QskTickmarksNode.h>
 #include <QskScaleTickmarks.h>
 #include <QskTextLabel.h>
 #include <QskAnimator.h>
-#include <QskTickmarksMetrics.h>
+#include <QskGraduationMetrics.h>
 
 #include <QGuiApplication>
 
@@ -127,7 +127,7 @@ class TickmarksSkinlet final : public QskSkinlet
             tickmarks.setMediumTicks(medium);
             tickmarks.setMinorTicks(minor);
 
-            const auto metric = q->tickmarksMetricsHint(Tickmarks::Ticks);
+            const auto metric = q->graduationMetricsHint(Tickmarks::Ticks);
             tickmarksNode->update(
                 Qt::darkGray, rect, { -100, +100 }, tickmarks, 1, Qt::Horizontal, Qt::AlignBottom, metric );
 
@@ -154,7 +154,7 @@ class Window : public QskWindow
         {
             (void) new QskTextLabel("Custom", layout);
             auto* const tickmarks = new Tickmarks(layout);
-            tickmarks->setTickmarksMetricsHint(Tickmarks::Ticks, { 0.2, 0.5, 1.0 } );
+            tickmarks->setGraduationMetricsHint(Tickmarks::Ticks, { 0.2, 0.5, 1.0 } );
             auto* const skinlet = new TickmarksSkinlet;
             tickmarks->setSkinlet(skinlet);
             skinlet->setOwnedBySkinnable(true);
@@ -162,7 +162,7 @@ class Window : public QskWindow
         {
             (void) new QskTextLabel("Custom (Major only)", layout);
             auto* const tickmarks = new Tickmarks(layout);
-            tickmarks->setTickmarksMetricsHint(Tickmarks::Ticks, { 0.0, 0.0, 1.0 } );
+            tickmarks->setGraduationMetricsHint(Tickmarks::Ticks, { 0.0, 0.0, 1.0 } );
             auto* const skinlet = new TickmarksSkinlet;
             tickmarks->setSkinlet(skinlet);
             skinlet->setOwnedBySkinnable(true);
@@ -170,7 +170,7 @@ class Window : public QskWindow
         {
             (void) new QskTextLabel("Custom (Major + Minor only)", layout);
             auto* const tickmarks = new Tickmarks(layout);
-            tickmarks->setTickmarksMetricsHint(Tickmarks::Ticks, { 0.2, 0.0, 1.0 } );
+            tickmarks->setGraduationMetricsHint(Tickmarks::Ticks, { 0.2, 0.0, 1.0 } );
             auto* const skinlet = new TickmarksSkinlet;
             tickmarks->setSkinlet(skinlet);
             skinlet->setOwnedBySkinnable(true);
@@ -193,12 +193,12 @@ class Window : public QskWindow
 
                 void advance( qreal value ) override
                 {
-                    const QskTickmarksMetrics metrics {
+                    const QskGraduationMetrics metrics {
                         ( 0.1 + 0.1 * qFastSin( value * 2 * M_PI ) ),
                         ( 0.25 + 0.25 * qFastSin( value * 2 * M_PI ) ),
                         ( 0.5 + 0.5 * qFastSin( value * 2 * M_PI ) )
                     };
-                    tickmarks.setTickmarksMetricsHint(Tickmarks::Ticks, metrics);
+                    tickmarks.setGraduationMetricsHint(Tickmarks::Ticks, metrics);
                 }
 
                 Tickmarks& tickmarks;

@@ -1,6 +1,6 @@
 #include "QskTickmarksNode.h"
 #include "QskScaleTickmarks.h"
-#include "QskTickmarksMetrics.h"
+#include "QskGraduationMetrics.h"
 
 #include <QSGFlatColorMaterial>
 #include <QSGGeometryNode>
@@ -34,7 +34,7 @@ class QskTickmarksNodePrivate final : public QSGGeometryNodePrivate
 
     QRectF rect;
     int lineWidth = 0;
-    QskTickmarksMetrics metrics;
+    QskGraduationMetrics metrics;
 
     QskHashValue hash = 0;
 };
@@ -55,11 +55,11 @@ QskTickmarksNode::~QskTickmarksNode()
 void QskTickmarksNode::update(
     const QColor& color, const QRectF& rect,
     const QskIntervalF& boundaries, const QskScaleTickmarks& tickmarks,
-    int lineWidth, Qt::Orientation orientation, Qt::Alignment alignment, QskTickmarksMetrics metrics )
+    int lineWidth, Qt::Orientation orientation, Qt::Alignment alignment, QskGraduationMetrics metrics )
 {
     Q_D( QskTickmarksNode );
 
-    if ( metrics == QskTickmarksMetrics{} )
+    if ( metrics == QskGraduationMetrics{} )
     {
         metrics.setMinorRatio( qskTickFactor( QskScaleTickmarks::MinorTick ) );
         metrics.setMediumRatio( qskTickFactor( QskScaleTickmarks::MediumTick ) );

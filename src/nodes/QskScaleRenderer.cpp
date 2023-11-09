@@ -7,7 +7,7 @@
 #include "QskScaleTickmarks.h"
 #include "QskSkinlet.h"
 #include "QskSGNode.h"
-#include "QskTickmarksMetrics.h"
+#include "QskGraduationMetrics.h"
 #include "QskTickmarksNode.h"
 #include "QskTextOptions.h"
 #include "QskTextColors.h"
