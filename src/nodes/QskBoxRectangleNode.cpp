@@ -10,16 +10,7 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskGradient.h"
 #include "QskGradientDirection.h"
-
-#include <qglobalstatic.h>
-#include <qsgflatcolormaterial.h>
-#include <qsgvertexcolormaterial.h>
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qsgnode_p.h>
-QSK_QT_PRIVATE_END
-
-Q_GLOBAL_STATIC( QSGVertexColorMaterial, qskMaterialColorVertex )
+#include "QskFillNodePrivate.h"
 
 static inline QskHashValue qskMetricsHash(
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics )
@@ -55,34 +46,21 @@ static inline QskGradient qskEffectiveGradient( const QskGradient& gradient )
 
 #endif
 
-class QskBoxRectangleNodePrivate final : public QSGGeometryNodePrivate
+class QskBoxRectangleNodePrivate final : public QskFillNodePrivate
 {
   public:
-    QskBoxRectangleNodePrivate()
-        : geometry( QSGGeometry::defaultAttributes_ColoredPoint2D(), 0 )
-    {
-    }
-
     QskHashValue metricsHash = 0;
     QskHashValue colorsHash = 0;
     QRectF rect;
-
-    QSGGeometry geometry;
 };
 
 QskBoxRectangleNode::QskBoxRectangleNode()
-    : QSGGeometryNode( *new QskBoxRectangleNodePrivate )
+    : QskFillNode( *new QskBoxRectangleNodePrivate )
 {
-    Q_D( QskBoxRectangleNode );
-
-    setMaterial( qskMaterialColorVertex );
-    setGeometry( &d->geometry );
 }
 
 QskBoxRectangleNode::~QskBoxRectangleNode()
 {
-    if ( material() != qskMaterialColorVertex )
-        delete material();
 }
 
 void QskBoxRectangleNode::updateNode(
@@ -129,7 +107,7 @@ void QskBoxRectangleNode::updateNode( const QRectF& rect,
 
     if ( rect.isEmpty() )
     {
-        d->geometry.allocate( 0 );
+        resetGeometry();
         return;
     }
 
@@ -148,7 +126,7 @@ void QskBoxRectangleNode::updateNode( const QRectF& rect,
 
     if ( !hasBorder && !hasFill )
     {
-        d->geometry.allocate( 0 );
+        resetGeometry();
         return;
     }
 
@@ -167,6 +145,8 @@ void QskBoxRectangleNode::updateNode( const QRectF& rect,
         }
     }
 
+    auto coloring = QskFillNode::Polychrome;
+
 #if 0
     /*
         Always using the same material result in a better batching
@@ -175,74 +155,40 @@ void QskBoxRectangleNode::updateNode( const QRectF& rect,
         but for the moment we go with performance.
      */
 
-    bool maybeFlat = true;
-
-    if ( maybeFlat )
+    if ( !( hasFill && hasBorder ) )
     {
-        if ( ( hasFill && hasBorder ) ||
-            ( hasFill && !isFillMonochrome ) ||
-            ( hasBorder && !isBorderMonochrome ) )
+        if ( ( hasFill && isFillMonochrome )
+            || ( hasBorder && !isBorderMonochrome )
         {
-            maybeFlat = false;
+            coloring = QskFillNode::Monochrome;
         }
     }
-#else
-    bool maybeFlat = false;
 #endif
 
-    if ( !maybeFlat )
+    auto& geometry = *this->geometry();
+
+    if ( coloring == QskFillNode::Polychrome )
     {
-        setMonochrome( false );
+        setColoring( coloring );
 
         QskBox::renderBox( d->rect, shape, borderMetrics,
-            borderColors, fillGradient, *geometry() );
+            borderColors, fillGradient, geometry );
     }
     else
     {
-        // all is done with one color
-        setMonochrome( true );
-
-        auto* flatMaterial = static_cast< QSGFlatColorMaterial* >( material() );
-
         if ( hasFill )
         {
-            flatMaterial->setColor( fillGradient.rgbStart() );
+            setColoring( fillGradient.rgbStart() );
             QskBox::renderFillGeometry(
-                d->rect, shape, QskBoxBorderMetrics(), *geometry() );
+                d->rect, shape, QskBoxBorderMetrics(), geometry );
         }
         else
         {
-            flatMaterial->setColor( borderColors.left().rgbStart() );
+            setColoring( borderColors.left().rgbStart() );
             QskBox::renderBorderGeometry(
-                d->rect, shape, borderMetrics, *geometry() );
+                d->rect, shape, borderMetrics, geometry );
         }
     }
-}
 
-void QskBoxRectangleNode::setMonochrome( bool on )
-{
-    const auto material = this->material();
-
-    if ( on == ( material != qskMaterialColorVertex ) )
-        return;
-
-    Q_D( QskBoxRectangleNode );
-
-    d->geometry.allocate( 0 );
-
-    if ( on )
-    {
-        setMaterial( new QSGFlatColorMaterial() );
-
-        const QSGGeometry g( QSGGeometry::defaultAttributes_Point2D(), 0 );
-        memcpy( ( void* ) &d->geometry, ( void* ) &g, sizeof( QSGGeometry ) );
-    }
-    else
-    {
-        setMaterial( qskMaterialColorVertex );
-        delete material;
-
-        const QSGGeometry g( QSGGeometry::defaultAttributes_ColoredPoint2D(), 0 );
-        memcpy( ( void* ) &d->geometry, ( void* ) &g, sizeof( QSGGeometry ) );
-    }
+    geometry.markVertexDataDirty();
 }

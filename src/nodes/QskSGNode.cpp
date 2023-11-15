@@ -173,9 +173,19 @@ void QskSGNode::resetGeometry( QSGGeometryNode* node )
     {
         if ( auto g = node->geometry() )
         {
-            if ( g->vertexCount() > 0 || g->indexCount() > 0 )
+            const bool hasVertices = g->vertexCount() > 0;
+            const bool hasIndexes = g->indexCount() > 0;
+
+            if ( hasVertices || hasIndexes )
             {
                 g->allocate( 0, 0 );
+
+                if ( hasVertices )
+                    g->markVertexDataDirty();
+
+                if ( hasIndexes )
+                    g->markIndexDataDirty();
+
                 node->markDirty( QSGNode::DirtyGeometry );
             }
         }

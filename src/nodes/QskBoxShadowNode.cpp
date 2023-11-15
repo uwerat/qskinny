@@ -281,6 +281,7 @@ void QskBoxShadowNode::setShadowData(
         QSGGeometry::updateTexturedRectGeometry(
             &d->geometry, d->rect, QRectF( -0.5, -0.5, 1.0, 1.0 ) );
 
+        d->geometry.markVertexDataDirty();
         markDirty( QSGNode::DirtyGeometry );
 
         QVector2D aspect( 1.0, 1.0 );

@@ -7,7 +7,7 @@
 #define QSK_BOX_FILL_NODE_H
 
 #include "QskGlobal.h"
-#include <qsgnode.h>
+#include "QskFillNode.h"
 
 class QskGradient;
 class QskBoxShapeMetrics;
@@ -15,8 +15,10 @@ class QskBoxBorderMetrics;
 
 class QskBoxFillNodePrivate;
 
-class QSK_EXPORT QskBoxFillNode : public QSGGeometryNode
+class QSK_EXPORT QskBoxFillNode : public QskFillNode
 {
+    using Inherited = QskFillNode;
+
   public:
     QskBoxFillNode();
 

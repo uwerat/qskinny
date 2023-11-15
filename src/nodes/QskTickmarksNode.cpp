@@ -22,7 +22,6 @@ class QskTickmarksNodePrivate final : public QSGGeometryNodePrivate
         : geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
     {
         geometry.setDrawingMode( QSGGeometry::DrawLines );
-        geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
     }
 
     QSGGeometry geometry;
