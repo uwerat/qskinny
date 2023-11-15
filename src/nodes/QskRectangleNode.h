@@ -7,7 +7,7 @@
 #define QSK_RECTANGLE_NODE_H
 
 #include "QskGlobal.h"
-#include <qsgnode.h>
+#include "QskFillNode.h"
 
 class QskGradient;
 class QskBoxShapeMetrics;
@@ -15,11 +15,11 @@ class QskRectangleNodePrivate;
 
 /*
     QskRectangleNode is for rounded rectangles without a border.
-    Depending on the type of gradient it uses a different
-    material/geometry combination.
  */
-class QSK_EXPORT QskRectangleNode : public QSGGeometryNode
+class QSK_EXPORT QskRectangleNode : public QskFillNode
 {
+    using Inherited = QskFillNode;
+
   public:
     QskRectangleNode();
     ~QskRectangleNode() override;

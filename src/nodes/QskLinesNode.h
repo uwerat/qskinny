@@ -16,6 +16,7 @@ class QskStippleMetrics;
 class QTransform;
 class QPointF;
 class QLineF;
+class QPolygonF;
 class QQuickItem;
 
 class QskLinesNodePrivate;
@@ -26,6 +27,8 @@ class QskLinesNodePrivate;
  */
 class QSK_EXPORT QskLinesNode : public QSGGeometryNode
 {
+    using Inherited = QSGGeometryNode;
+
   public:
     QskLinesNode();
     ~QskLinesNode() override;
@@ -52,6 +55,9 @@ class QSK_EXPORT QskLinesNode : public QSGGeometryNode
 
     void updateLines( const QColor&, qreal lineWidth,
         const QskStippleMetrics&, const QTransform&, const QVector< QLineF >& );
+
+    void updatePolygon( const QColor&, qreal lineWidth,
+        const QTransform&, const QPolygonF& );
 
   private:
     void updateLines( const QColor&, qreal lineWidth, const QskStippleMetrics&,

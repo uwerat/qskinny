@@ -121,7 +121,6 @@ class QskLinesNodePrivate final : public QSGGeometryNodePrivate
         : geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
     {
         geometry.setDrawingMode( QSGGeometry::DrawLines );
-        geometry.setVertexDataPattern( QSGGeometry::StaticPattern );
     }
 
     inline qreal round( bool isHorizontal, qreal v ) const
@@ -298,6 +297,7 @@ void QskLinesNode::updateLines( const QColor& color,
     {
         updateGeometry( stippleMetrics, transform, count, lines );
 
+        d->geometry.markVertexDataDirty();
         markDirty( QSGNode::DirtyGeometry );
         d->dirty = false;
     }
@@ -336,6 +336,7 @@ void QskLinesNode::updateGrid( const QColor& color,
     {
         updateGeometry( stippleMetrics, transform, rect, xValues, yValues );
 
+        d->geometry.markVertexDataDirty();
         markDirty( QSGNode::DirtyGeometry );
         d->dirty = false;
     }
@@ -388,7 +389,6 @@ void QskLinesNode::updateGeometry( const QskStippleMetrics& stippleMetrics,
             count, lines, stippleMetrics, points );
 
     }
-
     Q_ASSERT( geom.vertexCount() == ( points - geom.vertexDataAsPoint2D() ) );
 }
 
@@ -541,4 +541,47 @@ QSGGeometry::Point2D* QskLinesNode::setSolidLines(
     }
 
     return reinterpret_cast< QSGGeometry::Point2D* >( lines );
+}
+
+void QskLinesNode::updatePolygon( const QColor& color, qreal lineWidth,
+    const QTransform& transform, const QPolygonF& polygon )
+{
+    if ( polygon.isEmpty() || !color.isValid() || ( color.alpha() == 0 ) )
+    {
+        QskSGNode::resetGeometry( this );
+        return;
+    }
+
+    Q_D( QskLinesNode );
+
+    if ( true ) // for the moment we always update the geometry. TODO ...
+    {
+        d->geometry.allocate( polygon.count() + 1 );
+
+        auto points = d->geometry.vertexDataAsPoint2D();
+
+        if ( transform.isIdentity() )
+        {
+            for ( int i = 0; i < polygon.count(); i++ )
+            {
+                const auto& pos = polygon[i];
+                points[i].set( pos.x(), pos.y() );
+            }
+        }
+        else
+        {
+            for ( int i = 0; i < polygon.count(); i++ )
+            {
+                const auto pos = transform.map( polygon[i] );
+                points[i].set( pos.x(), pos.y() );
+            }
+        }
+
+        points[ polygon.count() ] = points[0];
+
+        d->geometry.markVertexDataDirty();
+        markDirty( QSGNode::DirtyGeometry );
+    }
+
+    d->setLineAttributes( this, color, lineWidth );
 }
