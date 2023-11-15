@@ -7,7 +7,7 @@
 #define QSK_BOX_RECTANGLE_NODE_H
 
 #include "QskGlobal.h"
-#include <qsgnode.h>
+#include "QskFillNode.h"
 
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
@@ -16,8 +16,10 @@ class QskGradient;
 
 class QskBoxRectangleNodePrivate;
 
-class QSK_EXPORT QskBoxRectangleNode : public QSGGeometryNode
+class QSK_EXPORT QskBoxRectangleNode : public QskFillNode
 {
+    using Inherited = QskFillNode;
+
   public:
     QskBoxRectangleNode();
     ~QskBoxRectangleNode() override;
@@ -32,8 +34,6 @@ class QSK_EXPORT QskBoxRectangleNode : public QSGGeometryNode
         const QskBoxShapeMetrics&, const QskGradient& );
 
   private:
-    void setMonochrome( bool on );
-
     Q_DECLARE_PRIVATE( QskBoxRectangleNode )
 };
 

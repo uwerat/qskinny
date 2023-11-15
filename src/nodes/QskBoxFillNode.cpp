@@ -10,13 +10,7 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxRenderer.h"
-#include "QskSGNode.h"
-
-#include <qsgflatcolormaterial.h>
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qsgnode_p.h>
-QSK_QT_PRIVATE_END
+#include "QskFillNodePrivate.h"
 
 static inline QskHashValue qskMetricsHash(
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics )
@@ -27,14 +21,9 @@ static inline QskHashValue qskMetricsHash(
     return borderMetrics.hash( hash );
 }
 
-class QskBoxFillNodePrivate final : public QSGGeometryNodePrivate
+class QskBoxFillNodePrivate final : public QskFillNodePrivate
 {
   public:
-    QskBoxFillNodePrivate()
-        : geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
-    {
-    }
-
     inline void resetValues()
     {
         rect = QRectF();
@@ -46,19 +35,11 @@ class QskBoxFillNodePrivate final : public QSGGeometryNodePrivate
 
     QskHashValue gradientHash = 0;
     QskHashValue metricsHash = 0;
-
-    QSGGeometry geometry;
-    int gradientType = -1;
 };
 
 QskBoxFillNode::QskBoxFillNode()
-    : QSGGeometryNode( *new QskBoxFillNodePrivate )
+    : QskFillNode( *new QskBoxFillNodePrivate )
 {
-    Q_D( QskBoxFillNode );
-
-    setGeometry( &d->geometry );
-    setMaterial( new QSGFlatColorMaterial() );
-    setFlag( QSGNode::OwnsMaterial, true );
 }
 
 void QskBoxFillNode::updateNode( const QRectF& rect, const QskGradient& gradient )
@@ -75,7 +56,7 @@ void QskBoxFillNode::updateNode(
     if ( rect.isEmpty() || !gradient.isVisible() )
     {
         d->resetValues();
-        QskSGNode::resetGeometry( this );
+        resetGeometry();
 
         return;
     }
@@ -92,48 +73,22 @@ void QskBoxFillNode::updateNode(
 
     if ( dirtyMetrics )
     {
-        QskBox::renderFillGeometry( rect, shapeMetrics, borderMetrics, d->geometry );
+        QskBox::renderFillGeometry( rect, shapeMetrics, borderMetrics, *geometry() );
+
         markDirty( QSGNode::DirtyGeometry );
+        geometry()->markVertexDataDirty();
     }
 
     if ( gradient.isMonochrome() )
     {
         if ( dirtyColors )
-        {
-            if ( material() == nullptr || d->gradientType >= 0 )
-            {
-                setMaterial( new QSGFlatColorMaterial() );
-                d->gradientType = -1;
-            }
-
-            const auto color = gradient.startColor().toRgb();
-
-            auto mat = static_cast< QSGFlatColorMaterial* >( material() );
-            if ( mat->color() != color )
-            {
-                mat->setColor( color );
-                markDirty( QSGNode::DirtyMaterial );
-            }
-        }
+            setColoring( gradient.startColor().toRgb() );
     }
     else
     {
         // dirtyMetrics: the shader also depends on the target rectangle !
 
         if ( dirtyColors || dirtyMetrics )
-        {
-            const auto effectiveGradient = gradient.effectiveGradient();
-            const auto gradientType = effectiveGradient.type();
-
-            if ( ( material() == nullptr ) || ( gradientType != d->gradientType ) )
-            {
-                setMaterial( QskGradientMaterial::createMaterial( gradientType ) );
-                d->gradientType = gradientType;
-            }
-
-            auto mat = static_cast< QskGradientMaterial* >( material() );
-            if ( mat->updateGradient( rect, effectiveGradient ) )
-                markDirty( QSGNode::DirtyMaterial );
-        }
+            setColoring( rect, gradient.effectiveGradient() );
     }
 }

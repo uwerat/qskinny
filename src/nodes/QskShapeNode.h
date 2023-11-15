@@ -7,7 +7,7 @@
 #define QSK_SHAPE_NODE_H
 
 #include "QskGlobal.h"
-#include <qsgnode.h>
+#include "QskFillNode.h"
 
 class QskGradient;
 class QColor;
@@ -15,8 +15,10 @@ class QPainterPath;
 
 class QskShapeNodePrivate;
 
-class QSK_EXPORT QskShapeNode : public QSGGeometryNode
+class QSK_EXPORT QskShapeNode : public QskFillNode
 {
+    using Inherited = QskFillNode;
+
   public:
     QskShapeNode();
     ~QskShapeNode() override;

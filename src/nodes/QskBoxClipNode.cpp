@@ -76,5 +76,6 @@ void QskBoxClipNode::setBox( const QRectF& rect,
      */
     setClipRect( qskValidOrEmptyInnerRect( rect, border.widths() ) );
 
+    m_geometry.markVertexDataDirty();
     markDirty( QSGNode::DirtyGeometry );
 }
