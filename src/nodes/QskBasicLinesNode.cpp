@@ -13,6 +13,13 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qsgnode_p.h>
 QSK_QT_PRIVATE_END
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    #include <QSGMaterialRhiShader>
+    using RhiShader = QSGMaterialRhiShader;
+#else
+    using RhiShader = QSGMaterialShader;
+#endif
+
 namespace
 {
     class Material final : public QSGMaterial
@@ -20,7 +27,11 @@ namespace
       public:
         Material();
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        QSGMaterialShader* createShader() const override;
+#else
         QSGMaterialShader* createShader( QSGRendererInterface::RenderMode ) const override;
+#endif
 
         QSGMaterialType* type() const override;
 
@@ -30,7 +41,7 @@ namespace
         Qt::Orientations m_pixelAlignment;
     };
 
-    class ShaderRhi final : public QSGMaterialShader
+    class ShaderRhi final : public RhiShader
     {
       public:
 
@@ -63,6 +74,7 @@ namespace
 
             if ( ( matOld == nullptr ) || ( matNew->m_color != matOld->m_color ) )
             {
+                // state.opacity() TODO ...
                 memcpy( data + 64, &matNew->m_color, 16 );
                 changed = true;
             }
@@ -92,14 +104,110 @@ namespace
     };
 }
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+
+namespace
+{
+    // the old type of shader - spcific for OpenGL
+
+    class ShaderGL final : public QSGMaterialShader
+    {
+      public:
+        ShaderGL()
+        {
+            const QString root( ":/qskinny/shaders/" );
+
+            setShaderSourceFile( QOpenGLShader::Vertex,
+                ":/qskinny/shaders/crisplines.vert" );
+
+            setShaderSourceFile( QOpenGLShader::Fragment,
+                ":/qt-project.org/scenegraph/shaders/flatcolor.frag" );
+        }
+
+        char const* const* attributeNames() const override
+        {
+            static char const* const names[] = { "in_vertex", nullptr };
+            return names;
+        }
+
+        void initialize() override
+        {
+            QSGMaterialShader::initialize();
+
+            auto p = program();
+
+            m_matrixId = p->uniformLocation( "matrix" );
+            m_colorId = p->uniformLocation( "color" );
+            m_sizeId = p->uniformLocation( "size" );
+        }
+
+        void updateState( const QSGMaterialShader::RenderState& state,
+            QSGMaterial* newMaterial, QSGMaterial* oldMaterial) override
+        {
+            auto p = program();
+
+            const auto matrix = state.combinedMatrix();
+
+            if ( state.isMatrixDirty() )
+                p->setUniformValue( m_matrixId, matrix );
+
+            bool updateMaterial = ( oldMaterial == nullptr )
+                || newMaterial->compare( oldMaterial ) != 0;
+
+            updateMaterial |= state.isCachedMaterialDataDirty();
+
+            if ( updateMaterial )
+            {
+                auto material = static_cast< const Material* >( newMaterial );
+
+                p->setUniformValue( m_colorId, material->m_color );
+
+                QVector2D size;
+
+                if ( material->m_pixelAlignment & Qt::Horizontal )
+                    size.setX( 2.0 / matrix( 0, 0 ) );
+
+                if ( material->m_pixelAlignment & Qt::Vertical )
+                    size.setY( -2.0 / matrix( 1, 1 ) );
+
+                p->setUniformValue( m_sizeId, size );
+            }
+        }
+
+      private:
+        int m_matrixId = -1;
+        int m_colorId = -1;
+        int m_sizeId = -1;
+    };
+}
+
+#endif
+
 Material::Material()
 {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    setFlag( QSGMaterial::SupportsRhiShader, true );
+#endif
 }
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+
+QSGMaterialShader* Material::createShader() const
+{
+    if ( !( flags() & QSGMaterial::RhiShaderWanted ) )
+        return new ShaderGL();
+
+    return new ShaderRhi();
+}
+
+#else
 
 QSGMaterialShader* Material::createShader( QSGRendererInterface::RenderMode ) const
 {
     return new ShaderRhi();
 }
+
+#endif
 
 QSGMaterialType* Material::type() const
 {
@@ -111,8 +219,11 @@ int Material::compare( const QSGMaterial* other ) const
 {
     auto material = static_cast< const Material* >( other );
 
-    if ( material->m_color == m_color )
+    if ( ( material->m_color == m_color )
+        && ( material->m_pixelAlignment == m_pixelAlignment ) )
+    {
         return 0;
+    }
 
     return QSGMaterial::compare( other );
 }

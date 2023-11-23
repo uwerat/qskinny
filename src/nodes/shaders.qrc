@@ -24,6 +24,7 @@
 
         <file>shaders/crisplines.vert.qsb</file>
         <file>shaders/crisplines.frag.qsb</file>
+        <file>shaders/crisplines.vert</file>
 
     </qresource>
 </RCC>
