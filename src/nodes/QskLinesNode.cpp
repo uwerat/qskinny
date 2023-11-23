@@ -9,16 +9,8 @@
 #include "QskStippledLineRenderer.h"
 #include "QskSGNode.h"
 
-#include <qsgflatcolormaterial.h>
-#include <qsgvertexcolormaterial.h>
 #include <qtransform.h>
-#include <qquickitem.h>
-#include <qquickwindow.h>
 #include <qline.h>
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qsgnode_p.h>
-QSK_QT_PRIVATE_END
 
 namespace
 {
@@ -114,113 +106,12 @@ static QSGGeometry::Point2D* qskAddLines( const QTransform& transform,
     return reinterpret_cast< QSGGeometry::Point2D* >( vlines );
 }
 
-class QskLinesNodePrivate final : public QSGGeometryNodePrivate
-{
-  public:
-    QskLinesNodePrivate()
-        : geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
-    {
-        geometry.setDrawingMode( QSGGeometry::DrawLines );
-    }
-
-    inline qreal round( bool isHorizontal, qreal v ) const
-    {
-        if ( !doRound )
-            return v;
-
-        const auto r2 = 2.0 * devicePixelRatio;
-        const qreal v0 = isHorizontal ? p0.x() : p0.y();
-
-        const int d = qRound( r2 * ( v + v0 ) );
-        const auto f = ( d % 2 ? d : d - 1 ) / r2;
-
-        return f / devicePixelRatio - v0;
-    }
-
-    inline void setLineAttributes( QskLinesNode* node,
-        const QColor& color, float lineWidth )
-    {
-        if ( color != material.color() )
-        {
-            material.setColor( color );
-            node->markDirty( QSGNode::DirtyMaterial );
-        }
-
-        if( lineWidth != geometry.lineWidth() )
-            geometry.setLineWidth( lineWidth );
-    }
-
-    QSGGeometry geometry;
-    QSGFlatColorMaterial material;
-
-    // position of [0,0] in device coordinates
-    QPointF p0;
-    qreal devicePixelRatio = 1.0;
-
-    QskHashValue hash = 0.0;
-
-    bool dirty = true;
-    bool doRound = false;
-};
-
 QskLinesNode::QskLinesNode()
-    : QSGGeometryNode( *new QskLinesNodePrivate )
 {
-    Q_D( QskLinesNode );
-
-    setGeometry( &d->geometry );
-    setMaterial( &d->material );
 }
 
 QskLinesNode::~QskLinesNode()
 {
-}
-
-void QskLinesNode::setGlobalPosition( const QQuickItem* item )
-{
-    QPointF p0;
-    qreal devicePixelRatio = 1.0;
-
-    if ( item )
-    {
-        p0 = item->mapToGlobal( QPointF() );
-
-        if ( auto w = item->window() )
-            devicePixelRatio = w->devicePixelRatio();
-    }
-
-    setGlobalPosition( p0, devicePixelRatio );
-}
-
-void QskLinesNode::setGlobalPosition(
-    const QPointF& pos, qreal devicePixelRatio )
-{
-    Q_D( QskLinesNode );
-
-    if ( d->doRound == false )
-    {
-        d->doRound = true;
-        d->dirty = true;
-    }
-
-    if ( pos != d->p0 || devicePixelRatio != d->devicePixelRatio )
-    {
-        d->p0 = pos;
-        d->devicePixelRatio = devicePixelRatio;
-
-        d->dirty = true;
-    }
-}
-
-void QskLinesNode::resetGlobalPosition()
-{
-    Q_D( QskLinesNode );
-
-    if ( d->doRound == true )
-    {
-        d->doRound = false;
-        d->dirty = true;
-    }
 }
 
 void QskLinesNode::updateRect( const QColor& color,
@@ -272,8 +163,6 @@ void QskLinesNode::updateLines( const QColor& color,
     qreal lineWidth, const QskStippleMetrics& stippleMetrics,
     const QTransform& transform, int count, const QLineF* lines )
 {
-    Q_D( QskLinesNode );
-
     if ( !stippleMetrics.isValid() || !color.isValid()
         || color.alpha() == 0 || count == 0 )
     {
@@ -287,22 +176,18 @@ void QskLinesNode::updateLines( const QColor& color,
     hash = qHash( transform, hash );
     hash = qHashBits( lines, count * sizeof( QLineF ) );
 
-    if ( hash != d->hash )
+    if ( hash != m_hash )
     {
-        d->dirty = true;
-        d->hash = hash;
-    }
+        m_hash = hash;
 
-    if( d->dirty )
-    {
         updateGeometry( stippleMetrics, transform, count, lines );
 
-        d->geometry.markVertexDataDirty();
+        geometry()->markVertexDataDirty();
         markDirty( QSGNode::DirtyGeometry );
-        d->dirty = false;
     }
 
-    d->setLineAttributes( this, color, lineWidth );
+    setLineWidth( lineWidth );
+    setColor( color );
 }
 
 void QskLinesNode::updateGrid( const QColor& color,
@@ -310,8 +195,6 @@ void QskLinesNode::updateGrid( const QColor& color,
     const QTransform& transform, const QRectF& rect,
     const QVector< qreal >& xValues, const QVector< qreal >& yValues )
 {
-    Q_D( QskLinesNode );
-
     if ( !stippleMetrics.isValid() || !color.isValid() || color.alpha() == 0 )
     {
         QskSGNode::resetGeometry( this );
@@ -326,30 +209,24 @@ void QskLinesNode::updateGrid( const QColor& color,
     hash = qHash( xValues, hash );
     hash = qHash( yValues, hash );
 
-    if ( hash != d->hash )
+    if ( hash != m_hash )
     {
-        d->dirty = true;
-        d->hash = hash;
-    }
+        m_hash = hash;
 
-    if( d->dirty )
-    {
         updateGeometry( stippleMetrics, transform, rect, xValues, yValues );
 
-        d->geometry.markVertexDataDirty();
+        geometry()->markVertexDataDirty();
         markDirty( QSGNode::DirtyGeometry );
-        d->dirty = false;
     }
 
-    d->setLineAttributes( this, color, lineWidth );
+    setLineWidth( lineWidth );
+    setColor( color );
 }
 
 void QskLinesNode::updateGeometry( const QskStippleMetrics& stippleMetrics,
     const QTransform& transform, int count, const QLineF* lines )
 {
-    Q_D( QskLinesNode );
-
-    auto& geom = d->geometry;
+    auto& geom = *geometry();
 
     QSGGeometry::Point2D* points = nullptr;
 
@@ -382,8 +259,8 @@ void QskLinesNode::updateGeometry( const QskStippleMetrics& stippleMetrics,
             lineCount += renderer.dashCount( p1, p2 );
         }
 
-        d->geometry.allocate( 2 * lineCount );
-        points = d->geometry.vertexDataAsPoint2D();
+        geometry()->allocate( 2 * lineCount );
+        points = geometry()->vertexDataAsPoint2D();
 
         points = qskAddDashes( transform,
             count, lines, stippleMetrics, points );
@@ -397,9 +274,7 @@ void QskLinesNode::updateGeometry(
     const QTransform& transform, const QRectF& rect,
     const QVector< qreal >& xValues, const QVector< qreal >& yValues )
 {
-    Q_D( QskLinesNode );
-
-    auto& geom = d->geometry;
+    auto& geom = *geometry();
 
     const auto y1 = mapY( transform, rect.top() );
     const auto y2 = mapY( transform, rect.bottom() );
@@ -430,8 +305,8 @@ void QskLinesNode::updateGeometry(
         const auto countY = renderer.dashCount( x1, 0.0, x2, 0.0 );
         const auto count = xValues.count() * countX + yValues.count() * countY;
 
-        d->geometry.allocate( 2 * count );
-        points = d->geometry.vertexDataAsPoint2D();
+        geometry()->allocate( 2 * count );
+        points = geometry()->vertexDataAsPoint2D();
 
         points = setStippledLines( Qt::Vertical, y1, y2,
             transform, xValues.count(), xValues.constData(),
@@ -450,8 +325,6 @@ QSGGeometry::Point2D* QskLinesNode::setStippledLines(
     const QTransform& transform, int count, const qreal* values,
     const QskStippleMetrics& stippleMetrics, QSGGeometry::Point2D* points ) const
 {
-    Q_D( const QskLinesNode );
-
     if ( count <= 0 )
         return points;
 
@@ -464,16 +337,14 @@ QSGGeometry::Point2D* QskLinesNode::setStippledLines(
 
     if ( orientation == Qt::Vertical )
     {
-        auto x = mapX( transform, values[0] );
-        x = d->round( true, x );
+        const auto x = mapX( transform, values[0] );
 
         points = renderer.addDashes( points, x, v1, x, v2 );
         dashCount = points - line0;
     }
     else
     {
-        auto y = mapY( transform, values[0] );
-        y = d->round( false, y );
+        const auto y = mapY( transform, values[0] );
 
         points = renderer.addDashes( points, v1, y, v2, y );
         dashCount = points - line0;
@@ -485,8 +356,7 @@ QSGGeometry::Point2D* QskLinesNode::setStippledLines(
     {
         for ( int i = 1; i < count; i++ )
         {
-            auto x = mapX( transform, values[i] );
-            x = d->round( true, x );
+            const auto x = mapX( transform, values[i] );
 
             for ( int j = 0; j < dashCount; j++ )
                 points++->set( x, line0[j].y );
@@ -496,8 +366,7 @@ QSGGeometry::Point2D* QskLinesNode::setStippledLines(
     {
         for ( int i = 1; i < count; i++ )
         {
-            auto y = mapY( transform, values[i] );
-            y = d->round( false, y );
+            const auto y = mapY( transform, values[i] );
 
             for ( int j = 0; j < dashCount; j++ )
                 points++->set( line0[j].x, y );
@@ -512,8 +381,6 @@ QSGGeometry::Point2D* QskLinesNode::setSolidLines(
     const QTransform& transform, int count, const qreal* values,
     QSGGeometry::Point2D* points ) const
 {
-    Q_D( const QskLinesNode );
-
     if ( count <= 0 )
         return points;
 
@@ -523,9 +390,7 @@ QSGGeometry::Point2D* QskLinesNode::setSolidLines(
     {
         for ( int i = 0; i < count; i++ )
         {
-            auto x = mapX( transform, values[i] );
-            x = d->round( true, x );
-
+            const auto x = mapX( transform, values[i] );
             lines++->setVLine( x, v1, v2 );
         }
     }
@@ -533,9 +398,7 @@ QSGGeometry::Point2D* QskLinesNode::setSolidLines(
     {
         for ( int i = 0; i < count; i++ )
         {
-            auto y = mapY( transform, values[i] );
-            y = d->round( false, y );
-
+            const auto y = mapY( transform, values[i] );
             lines++->setHLine( v1, v2, y );
         }
     }
@@ -552,13 +415,11 @@ void QskLinesNode::updatePolygon( const QColor& color, qreal lineWidth,
         return;
     }
 
-    Q_D( QskLinesNode );
-
     if ( true ) // for the moment we always update the geometry. TODO ...
     {
-        d->geometry.allocate( polygon.count() + 1 );
+        geometry()->allocate( polygon.count() + 1 );
 
-        auto points = d->geometry.vertexDataAsPoint2D();
+        auto points = geometry()->vertexDataAsPoint2D();
 
         if ( transform.isIdentity() )
         {
@@ -579,9 +440,10 @@ void QskLinesNode::updatePolygon( const QColor& color, qreal lineWidth,
 
         points[ polygon.count() ] = points[0];
 
-        d->geometry.markVertexDataDirty();
+        geometry()->markVertexDataDirty();
         markDirty( QSGNode::DirtyGeometry );
     }
 
-    d->setLineAttributes( this, color, lineWidth );
+    setLineWidth( lineWidth );
+    setColor( color );
 }
