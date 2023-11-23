@@ -16,3 +16,6 @@ qsbcompile gradientradial-vulkan.frag
 
 qsbcompile gradientlinear-vulkan.vert
 qsbcompile gradientlinear-vulkan.frag
+
+qsbcompile crisplines-vulkan.vert
+qsbcompile crisplines-vulkan.frag
