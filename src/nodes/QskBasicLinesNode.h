@@ -31,6 +31,7 @@ class QSK_EXPORT QskBasicLinesNode : public QSGGeometryNode
     Qt::Orientations pixelAlignment() const;
 
     void setColor( const QColor& );
+    QColor color() const;
 
     void setLineWidth( float );
     float lineWidth() const;
