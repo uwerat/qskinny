@@ -82,18 +82,15 @@ namespace
             if ( state.isMatrixDirty() || ( matOld == nullptr )
                 || ( matNew->m_pixelAlignment != matOld->m_pixelAlignment ) )
             {
-                /*
-                    We do not need to upload the size as it is available
-                    from the matrix. But the shader needs to know wether to
-                    round or not TODO ...
-                 */
+                const auto r = state.viewportRect();
+
                 QVector2D size;
 
                 if ( matNew->m_pixelAlignment & Qt::Horizontal )
-                    size.setX( 2.0 / matrix( 0, 0 ) );
+                    size.setX( r.width() );
 
                 if ( matNew->m_pixelAlignment & Qt::Vertical )
-                    size.setY( -2.0 / matrix( 1, 1 ) );
+                    size.setY( r.height() );
 
                 memcpy( data + 80, &size, 8 );
                 changed = true;
@@ -162,13 +159,15 @@ namespace
 
                 p->setUniformValue( m_colorId, material->m_color );
 
+                const auto r = state.viewportRect();
+
                 QVector2D size;
 
                 if ( material->m_pixelAlignment & Qt::Horizontal )
-                    size.setX( 2.0 / matrix( 0, 0 ) );
+                    size.setX( r.width() );
 
                 if ( material->m_pixelAlignment & Qt::Vertical )
-                    size.setY( -2.0 / matrix( 1, 1 ) );
+                    size.setY( r.height() );
 
                 p->setUniformValue( m_sizeId, size );
             }
