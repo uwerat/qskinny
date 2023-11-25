@@ -1,48 +1,17 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
 #include "QskTickmarksNode.h"
 #include "QskScaleTickmarks.h"
+#include "QskGraduationMetrics.h"
 
-#include <QSGFlatColorMaterial>
-#include <QSGGeometryNode>
-#include <QRectF>
-
-QSK_QT_PRIVATE_BEGIN
-#include <private/qsgnode_p.h>
-QSK_QT_PRIVATE_END
-
-static constexpr inline qreal qskTickFactor( QskScaleTickmarks::TickType type )
-{
-    using TM = QskScaleTickmarks;
-    return type == TM::MinorTick ? 0.7 : ( type == TM::MediumTick ? 0.85 : 1.0 );
-}
-
-class QskTickmarksNodePrivate final : public QSGGeometryNodePrivate
-{
-  public:
-    QskTickmarksNodePrivate()
-        : geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
-    {
-        geometry.setDrawingMode( QSGGeometry::DrawLines );
-    }
-
-    QSGGeometry geometry;
-    QSGFlatColorMaterial material;
-
-    QskIntervalF boundaries;
-    QskScaleTickmarks tickmarks;
-
-    QRectF rect;
-    int lineWidth = 0;
-
-    QskHashValue hash = 0;
-};
+#include <qrect.h>
+#include <qhashfunctions.h>
 
 QskTickmarksNode::QskTickmarksNode()
-    : QSGGeometryNode( *new QskTickmarksNodePrivate )
 {
-    Q_D( QskTickmarksNode );
-
-    setGeometry( &d->geometry );
-    setMaterial( &d->material );
 }
 
 QskTickmarksNode::~QskTickmarksNode()
@@ -52,27 +21,24 @@ QskTickmarksNode::~QskTickmarksNode()
 void QskTickmarksNode::update(
     const QColor& color, const QRectF& rect,
     const QskIntervalF& boundaries, const QskScaleTickmarks& tickmarks,
-    int lineWidth, Qt::Orientation orientation, Qt::Alignment alignment )
+    int lineWidth, Qt::Orientation orientation, Qt::Alignment alignment,
+    const QskGraduationMetrics& graduationMetrics )
 {
-    Q_D( QskTickmarksNode );
+    setLineWidth( lineWidth );
 
-    if( lineWidth != d->lineWidth )
+    auto hash = tickmarks.hash( 17435 );
+    hash = graduationMetrics.hash( hash );
+    hash = qHashBits( &boundaries, sizeof( boundaries ), hash );
+    hash = qHashBits( &rect, sizeof( rect ), hash );
+    hash = qHash( orientation, hash );
+    hash = qHash( alignment, hash );
+
+    if ( hash != m_hash )
     {
-        d->lineWidth = lineWidth;
-        d->geometry.setLineWidth( lineWidth );
+        m_hash = hash;
 
-        markDirty( QSGNode::DirtyGeometry );
-    }
-
-    const auto hash = tickmarks.hash( 17435 );
-
-    if( ( hash != d->hash ) || ( rect != d->rect ) )
-    {
-        d->hash = hash;
-        d->rect = rect;
-
-        d->geometry.allocate( tickmarks.tickCount() * 2 );
-        auto vertexData = d->geometry.vertexDataAsPoint2D();
+        geometry()->allocate( tickmarks.tickCount() * 2 );
+        auto vertexData = geometry()->vertexDataAsPoint2D();
 
         const qreal min = boundaries.lowerBound();
         const qreal range = boundaries.width();
@@ -82,12 +48,13 @@ void QskTickmarksNode::update(
         for( int i = TM::MinorTick; i <= TM::MajorTick; i++ )
         {
             const auto tickType = static_cast< TM::TickType >( i );
+
             const auto ticks = tickmarks.ticks( tickType );
+            const float len = graduationMetrics.tickLength( tickType );
 
             if ( orientation == Qt::Horizontal )
             {
                 const qreal ratio = rect.width() / range;
-                const float len = rect.height() * qskTickFactor( tickType );
 
                 for( const auto tick : ticks )
                 {
@@ -120,7 +87,6 @@ void QskTickmarksNode::update(
             else
             {
                 const qreal ratio = rect.height() / range;
-                const float len = rect.width() * qskTickFactor( tickType );
 
                 for( const auto tick : ticks )
                 {
@@ -152,13 +118,9 @@ void QskTickmarksNode::update(
             }
         }
 
-        d->geometry.markVertexDataDirty();
+        geometry()->markVertexDataDirty();
         markDirty( QSGNode::DirtyGeometry );
     }
 
-    if ( color != d->material.color() )
-    {
-        d->material.setColor( color );
-        markDirty( QSGNode::DirtyMaterial );
-    }
+    setColor( color );
 }

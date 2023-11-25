@@ -72,7 +72,9 @@ class QSK_EXPORT QskAspect
 
         Shadow,
         Shape,
-        Border
+        Border,
+
+        Graduation
     };
     Q_ENUM( Primitive )
 

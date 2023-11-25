@@ -15,6 +15,7 @@ list(APPEND HEADERS
     common/QskGradient.h
     common/QskGradientDirection.h
     common/QskGradientStop.h
+    common/QskGraduationMetrics.h
     common/QskHctColor.h
     common/QskIntervalF.h
     common/QskLabelData.h
@@ -48,6 +49,7 @@ list(APPEND SOURCES
     common/QskGradient.cpp
     common/QskGradientDirection.cpp
     common/QskGradientStop.cpp
+    common/QskGraduationMetrics.cpp
     common/QskHctColor.cpp
     common/QskIntervalF.cpp
     common/QskLabelData.cpp
