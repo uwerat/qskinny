@@ -254,7 +254,7 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
 
     const qreal length = ( m_data->orientation == Qt::Horizontal )
         ? tickmarksRect.width() : tickmarksRect.height();
-    const qreal ratio = length / m_data->boundaries.width();
+    const qreal ratio = length / m_data->boundaries.length();
 
     auto nextNode = node->firstChild();
 

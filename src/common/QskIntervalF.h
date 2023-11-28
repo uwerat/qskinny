@@ -19,7 +19,7 @@ class QSK_EXPORT QskIntervalF
 
     Q_PROPERTY( qreal lowerBound READ lowerBound WRITE setLowerBound )
     Q_PROPERTY( qreal upperBound READ upperBound WRITE setUpperBound )
-    Q_PROPERTY( qreal width READ width )
+    Q_PROPERTY( qreal length READ length )
 
   public:
     constexpr QskIntervalF() noexcept = default;
@@ -39,8 +39,8 @@ class QSK_EXPORT QskIntervalF
     void spanFromLowerBound( qreal ) noexcept;
     void spanFromUpperBound( qreal ) noexcept;
 
-    constexpr qreal width() const noexcept;
-    void setWidth( qreal ) noexcept;
+    constexpr qreal length() const noexcept;
+    void setLength( qreal ) noexcept;
 
     constexpr bool contains( qreal value ) const noexcept;
     constexpr bool contains( const QskIntervalF& ) const noexcept;
@@ -135,14 +135,14 @@ inline constexpr qreal QskIntervalF::upperBound() const noexcept
     return m_upperBound;
 }
 
-inline constexpr qreal QskIntervalF::width() const noexcept
+inline constexpr qreal QskIntervalF::length() const noexcept
 {
     return ( m_upperBound > m_lowerBound ) ? ( m_upperBound - m_lowerBound ) : 0.0;
 }
 
-inline void QskIntervalF::setWidth( qreal width ) noexcept
+inline void QskIntervalF::setLength( qreal length ) noexcept
 {
-    m_upperBound = m_lowerBound + width;
+    m_upperBound = m_lowerBound + length;
 }
 
 inline constexpr bool QskIntervalF::isValid() const noexcept

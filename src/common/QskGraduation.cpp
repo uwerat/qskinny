@@ -37,10 +37,10 @@ namespace Engine
         if ( !interval.isValid() )
             return false;
 
-        if ( fuzzyCompare( value, interval.lowerBound(), interval.width() ) < 0 )
+        if ( fuzzyCompare( value, interval.lowerBound(), interval.length() ) < 0 )
             return false;
 
-        if ( fuzzyCompare( value, interval.upperBound(), interval.width() ) > 0 )
+        if ( fuzzyCompare( value, interval.upperBound(), interval.length() ) > 0 )
             return false;
 
         return true;
@@ -94,7 +94,7 @@ namespace Engine
     QVector< qreal > buildMajorTicks(
         const QskIntervalF& interval, qreal stepSize )
     {
-        int numTicks = qRound( interval.width() / stepSize ) + 1;
+        int numTicks = qRound( interval.length() / stepSize ) + 1;
         if ( numTicks > 10000 )
             numTicks = 10000;
 
@@ -187,13 +187,13 @@ QskTickmarks QskGraduation::divideInterval(
 
     const auto interval = QskIntervalF::normalized( x1, x2 );
 
-    if ( interval.width() > std::numeric_limits< qreal >::max() )
+    if ( interval.length() > std::numeric_limits< qreal >::max() )
     {
         qWarning() << "QskGraduation::divideInterval: overflow";
         return tickmarks;
     }
 
-    if ( interval.width() <= 0.0 || stepSize < 0.0 )
+    if ( interval.length() <= 0.0 || stepSize < 0.0 )
         return tickmarks;
 
     if ( stepSize == 0.0 )
@@ -201,7 +201,7 @@ QskTickmarks QskGraduation::divideInterval(
         if ( maxMajorSteps < 1 )
             maxMajorSteps = 1;
 
-        stepSize = QskGraduation::stepSize( interval.width(), maxMajorSteps );
+        stepSize = QskGraduation::stepSize( interval.length(), maxMajorSteps );
     }
 
     if ( stepSize != 0.0 )

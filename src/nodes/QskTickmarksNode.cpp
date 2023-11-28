@@ -41,7 +41,7 @@ void QskTickmarksNode::update(
         auto vertexData = geometry()->vertexDataAsPoint2D();
 
         const qreal min = boundaries.lowerBound();
-        const qreal range = boundaries.width();
+        const qreal range = boundaries.length();
 
         using TM = QskTickmarks;
 

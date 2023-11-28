@@ -255,7 +255,7 @@ QRectF QskIntervalF::toRect( const QskIntervalF& intervalX,
     const QskIntervalF& intervalY ) noexcept
 {
     return QRectF( intervalX.lowerBound(), intervalY.lowerBound(),
-        intervalX.width(), intervalY.width() ).normalized();
+        intervalX.length(), intervalY.length() ).normalized();
 }
 
 #ifndef QT_NO_DEBUG_STREAM
