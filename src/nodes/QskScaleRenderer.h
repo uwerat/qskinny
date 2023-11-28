@@ -23,29 +23,60 @@ class QskColorFilter;
 class QSGNode;
 class QVariant;
 class QRectF;
+class QPointF;
 class QSizeF;
+class QTransform;
 
 class QSK_EXPORT QskScaleRenderer
 {
+    Q_GADGET
+
   public:
+    enum Flag
+    {
+        Backbone          = 1 << 0,
+        CenteredTickmarks = 1 << 1,
+        ClampedLabels     = 1 << 2
+    };
+
+    Q_ENUM( Flag )
+    Q_DECLARE_FLAGS( Flags, Flag )
+
     QskScaleRenderer();
     virtual ~QskScaleRenderer();
 
-    void setOrientation( Qt::Orientation );
-    Qt::Orientation orientation() const;
+    void setEdge( Qt::Edge );
+    Qt::Edge edge() const;
 
-    void setAlignment( Qt::Alignment );
-    Qt::Alignment aligment() const;
+    void setFlags( Flags );
+    Flags flags() const;
 
+    void setFlag( Flag, bool );
+
+    // scale coordinates
     void setBoundaries( qreal lowerBound, qreal upperBound );
     void setBoundaries( const QskIntervalF& );
     QskIntervalF boundaries() const;
 
+    // item coordiates
+    qreal position() const;
+    void setPosition( qreal );
+
+    void setRange( qreal from, qreal to );
+    void setRange( const QskIntervalF& );
+    QskIntervalF range() const;
+
     void setTickmarks( const QskTickmarks& );
     const QskTickmarks& tickmarks() const;
 
+    void setSpacing( qreal );
+    qreal spacing() const;
+
     void setTickColor( const QColor& );
     QColor tickColor() const;
+
+    void setTickLength( qreal );
+    qreal tickLength() const;
 
     void setTickWidth( qreal );
     qreal tickWidth() const;
@@ -59,24 +90,29 @@ class QSK_EXPORT QskScaleRenderer
     void setColorFilter( const QskColorFilter& );
     const QskColorFilter& colorFilter() const;
 
-    QSGNode* updateScaleNode( const QskSkinnable*,
-        const QRectF& tickmarksRect, const QRectF& labelsRect, QSGNode* );
+    QSGNode* updateNode( const QskSkinnable*, QSGNode* );
 
     virtual QVariant labelAt( qreal pos ) const;
     QSizeF boundingLabelSize() const;
 
-    virtual QSGNode* updateTicksNode(
-        const QskSkinnable*, const QRectF&, QSGNode* ) const;
+  protected:
+    virtual QSGNode* updateTicksNode( const QTransform&, QSGNode* ) const;
 
     virtual QSGNode* updateLabelsNode(
-        const QskSkinnable*, const QRectF& ticksRect,
-        const QRectF& labelsRect, QSGNode* node ) const;
+        const QskSkinnable*, const QTransform&, QSGNode* ) const;
 
   private:
     Q_DISABLE_COPY( QskScaleRenderer )
 
+    QRectF labelRect( const QTransform&, qreal, const QSizeF& ) const;
+
+    QSGNode* updateTickLabelNode( const QskSkinnable*,
+        QSGNode*, const QVariant&, const QRectF& ) const;
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskScaleRenderer::Flags )
 
 #endif

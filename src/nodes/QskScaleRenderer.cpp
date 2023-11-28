@@ -7,8 +7,7 @@
 #include "QskTickmarks.h"
 #include "QskSkinlet.h"
 #include "QskSGNode.h"
-#include "QskGraduationMetrics.h"
-#include "QskTickmarksNode.h"
+#include "QskAxisScaleNode.h"
 #include "QskTextOptions.h"
 #include "QskTextColors.h"
 #include "QskGraphic.h"
@@ -19,6 +18,31 @@
 
 #include <qstring.h>
 #include <qfontmetrics.h>
+#include <qquickwindow.h>
+
+namespace
+{
+    class ScaleMap
+    {
+      public:
+        inline ScaleMap( bool isHorizontal, const QTransform& transform )
+            : t( isHorizontal ? transform.dx() : transform.dy() )
+            , f( isHorizontal ? transform.m11() : transform.m22() )
+        {
+        }
+
+        inline qreal map( qreal v ) const { return t + f * v; };
+
+      private:
+        const qreal t;
+        const qreal f;
+    };
+}
+
+static inline bool qskIsHorizontal( Qt::Edge edge )
+{
+    return edge & ( Qt::TopEdge | Qt::BottomEdge );
+}
 
 static QSGNode* qskRemoveTraillingNodes( QSGNode* node, QSGNode* childNode )
 {
@@ -26,44 +50,74 @@ static QSGNode* qskRemoveTraillingNodes( QSGNode* node, QSGNode* childNode )
     return nullptr;
 }
 
-static inline void qskInsertRemoveChild( QSGNode* parentNode,
-    QSGNode* oldNode, QSGNode* newNode, bool append )
+static inline QTransform qskScaleTransform( Qt::Edge edge,
+    const QskIntervalF& boundaries, const QskIntervalF& range )
 {
-    if ( newNode == oldNode )
-        return;
+    using T = QTransform;
 
-    if ( oldNode )
+    if ( qskIsHorizontal( edge ) )
     {
-        parentNode->removeChildNode( oldNode );
-        if ( oldNode->flags() & QSGNode::OwnedByParent )
-            delete oldNode;
+        auto transform = T::fromTranslate( -boundaries.lowerBound(), 0.0 );
+        transform *= T::fromScale( range.length() / boundaries.length(), 1.0 );
+        transform *= T::fromTranslate( range.lowerBound(), 0.0 );
+
+        return transform;
+    }
+    else
+    {
+        auto transform = T::fromTranslate( 0.0, -boundaries.lowerBound() );
+        transform *= T::fromScale( 1.0, -range.length() / boundaries.length() );
+        transform *= T::fromTranslate( 0.0, range.upperBound() );
+
+        return transform;
+    }
+}
+
+static inline quint8 qskLabelNodeRole( const QVariant& label )
+{
+    if ( !label.isNull() )
+    {
+        if ( label.canConvert< QString >() )
+            return 1;
+
+        if ( label.canConvert< QskGraphic >() )
+            return 2;
     }
 
-    if ( newNode )
-    {
-        if ( append )
-            parentNode->appendChildNode( newNode );
-        else
-            parentNode->prependChildNode( newNode );
-    }
+    return QskSGNode::NoRole;
 }
 
 class QskScaleRenderer::PrivateData
 {
   public:
+
+    // Coordinates related to the scales
     QskIntervalF boundaries;
     QskTickmarks tickmarks;
 
-    QColor tickColor = Qt::black;
+    /*
+        Item cooordinates. In case of an horizontal scale
+        position is an y coordinate, while range corresponds to x coordinates
+        ( vertical: v.v )
+     */
+    qreal position = 0.0;
+    QskIntervalF range;
+
+#if 1
+    QColor tickColor = Qt::black; // rgb value ???
+#endif
+
     qreal tickWidth = 1.0;
+    qreal tickLength = 10.0;
+    qreal spacing = 5.0;
 
     QFont font;
     QskTextColors textColors;
 
     QskColorFilter colorFilter;
 
-    Qt::Orientation orientation = Qt::Horizontal;
-    Qt::Alignment alignment = Qt::AlignBottom | Qt::AlignRight;
+    Qt::Edge edge = Qt::BottomEdge;
+    QskScaleRenderer::Flags flags = ClampedLabels;
 };
 
 QskScaleRenderer::QskScaleRenderer()
@@ -75,24 +129,32 @@ QskScaleRenderer::~QskScaleRenderer()
 {
 }
 
-void QskScaleRenderer::setOrientation( Qt::Orientation orientation )
+void QskScaleRenderer::setEdge( Qt::Edge edge )
 {
-    m_data->orientation = orientation;
+    m_data->edge = edge;
 }
 
-Qt::Orientation QskScaleRenderer::orientation() const
+Qt::Edge QskScaleRenderer::edge() const
 {
-    return m_data->orientation;
+    return m_data->edge;
 }
 
-void QskScaleRenderer::setAlignment( Qt::Alignment alignment )
+void QskScaleRenderer::setFlag( Flag flag, bool on )
 {
-    m_data->alignment = alignment;
+    if ( on )
+        m_data->flags |= flag;
+    else
+        m_data->flags &= ~flag;
 }
 
-Qt::Alignment QskScaleRenderer::aligment() const
+void QskScaleRenderer::setFlags( Flags flags )
 {
-    return m_data->alignment;
+    m_data->flags = flags;
+}
+
+QskScaleRenderer::Flags QskScaleRenderer::flags() const
+{
+    return m_data->flags;
 }
 
 void QskScaleRenderer::setBoundaries( qreal lowerBound, qreal upperBound )
@@ -110,6 +172,31 @@ QskIntervalF QskScaleRenderer::boundaries() const
     return m_data->boundaries;
 }
 
+qreal QskScaleRenderer::position() const
+{
+    return m_data->position;
+}
+
+void QskScaleRenderer::setPosition( qreal pos )
+{
+    m_data->position = pos;
+}
+
+void QskScaleRenderer::setRange( qreal from, qreal to )
+{
+    setRange( QskIntervalF( from, to ) );
+}
+
+void QskScaleRenderer::setRange( const QskIntervalF& range )
+{
+    m_data->range = range;
+}
+
+QskIntervalF QskScaleRenderer::range() const
+{
+    return m_data->range;
+}
+
 void QskScaleRenderer::setTickmarks( const QskTickmarks& tickmarks )
 {
     m_data->tickmarks = tickmarks;
@@ -118,6 +205,16 @@ void QskScaleRenderer::setTickmarks( const QskTickmarks& tickmarks )
 const QskTickmarks& QskScaleRenderer::tickmarks() const
 {
     return m_data->tickmarks;
+}
+
+void QskScaleRenderer::setSpacing( qreal spacing )
+{
+    m_data->spacing = qMax( spacing, 0.0 );
+}
+
+qreal QskScaleRenderer::spacing() const
+{
+    return m_data->spacing;
 }
 
 void QskScaleRenderer::setTickColor( const QColor& color )
@@ -130,9 +227,19 @@ QColor QskScaleRenderer::tickColor() const
     return m_data->tickColor;
 }
 
+void QskScaleRenderer::setTickLength( qreal length )
+{
+    m_data->tickLength = qMax( length, 0.0 );
+}
+
+qreal QskScaleRenderer::tickLength() const
+{
+    return m_data->tickLength;
+}
+
 void QskScaleRenderer::setTickWidth( qreal width )
 {
-    m_data->tickWidth = width;
+    m_data->tickWidth = qMax( width, 0.0 );
 }
 
 qreal QskScaleRenderer::tickWidth() const
@@ -170,79 +277,74 @@ const QskColorFilter& QskScaleRenderer::colorFilter() const
     return m_data->colorFilter;
 }
 
-QSGNode* QskScaleRenderer::updateScaleNode(
-    const QskSkinnable* skinnable, const QRectF& tickmarksRect,
-    const QRectF& labelsRect, QSGNode* node )
+QSGNode* QskScaleRenderer::updateNode(
+    const QskSkinnable* skinnable, QSGNode* node )
 {
-    enum Role
-    {
-        Ticks = 1,
-        Labels = 2
-    };
+    enum Role : quint8 { Ticks = 1, Labels = 2 };
+    static const QVector< quint8 > roles = { Ticks, Labels };
+
+    const auto transform = qskScaleTransform(
+        m_data->edge, m_data->boundaries, m_data->range );
 
     if ( node == nullptr )
         node = new QSGNode();
 
+    for ( auto role : roles )
     {
-        QSGNode* oldNode = QskSGNode::findChildNode( node, Ticks );
-        QSGNode* newNode = nullptr;
+        auto oldNode = QskSGNode::findChildNode( node, role );
 
-        if ( !tickmarksRect.isEmpty() )
-        {
-            newNode = updateTicksNode( skinnable, tickmarksRect, oldNode );
-            if ( newNode )
-                QskSGNode::setNodeRole( newNode, Ticks );
-        }
+        auto newNode = ( role == Ticks )
+            ? updateTicksNode( transform, oldNode )
+            : updateLabelsNode( skinnable, transform, oldNode );
 
-        qskInsertRemoveChild( node, oldNode, newNode, false );
-    }
-
-    {
-        QSGNode* oldNode = QskSGNode::findChildNode( node, Labels );
-        QSGNode* newNode = nullptr;
-
-        if ( !labelsRect.isEmpty() )
-        {
-            newNode = updateLabelsNode( skinnable, tickmarksRect, labelsRect, oldNode );
-            if ( newNode )
-                QskSGNode::setNodeRole( newNode, Labels );
-        }
-
-        qskInsertRemoveChild( node, oldNode, newNode, true );
+        QskSGNode::replaceChildNode( roles, role, node, oldNode, newNode );
     }
 
     return node;
 }
 
 QSGNode* QskScaleRenderer::updateTicksNode(
-    const QskSkinnable*, const QRectF& rect, QSGNode* node ) const
+    const QTransform& transform, QSGNode* node ) const
 {
-    if ( rect.isEmpty() )
-        return nullptr;
+    QskIntervalF backbone;
+    if ( m_data->flags & Backbone )
+        backbone = m_data->boundaries;
 
-    auto ticksNode = static_cast< QskTickmarksNode* >( node );
+    const auto orientation = qskIsHorizontal( m_data->edge )
+        ? Qt::Horizontal : Qt::Vertical;
 
-    if( ticksNode == nullptr )
-        ticksNode = new QskTickmarksNode;
+    auto alignment = QskAxisScaleNode::Centered;
 
-#if 1
-    const int tickWidth = qRound( m_data->tickWidth );
-#endif
+    if ( !( m_data->flags & CenteredTickmarks ) )
+    {
+        switch( m_data->edge )
+        {
+            case Qt::LeftEdge:
+            case Qt::TopEdge:
+                alignment = QskAxisScaleNode::Leading;
+                break;
+            case Qt::BottomEdge:
+            case Qt::RightEdge:
+                alignment = QskAxisScaleNode::Trailing;
+                break;
+        }
+    }
 
-    ticksNode->update( m_data->tickColor, rect, m_data->boundaries,
-        m_data->tickmarks, tickWidth, m_data->orientation,
-        m_data->alignment, {});
+    auto axisNode = QskSGNode::ensureNode< QskAxisScaleNode >( node );
 
-    return ticksNode;
+    axisNode->setColor( m_data->tickColor );
+    axisNode->setAxis( orientation, m_data->position, transform );
+    axisNode->setTickGeometry( alignment, m_data->tickLength, m_data->tickWidth );
+    axisNode->setPixelAlignment( Qt::Horizontal | Qt::Vertical );
+
+    axisNode->update( m_data->tickmarks, backbone );
+
+    return axisNode;
 }
 
-QSGNode* QskScaleRenderer::updateLabelsNode(
-    const QskSkinnable* skinnable, const QRectF& tickmarksRect,
-    const QRectF& labelsRect, QSGNode* node ) const
+QSGNode* QskScaleRenderer::updateLabelsNode( const QskSkinnable* skinnable,
+    const QTransform& transform, QSGNode* node ) const
 {
-    if ( labelsRect.isEmpty() || tickmarksRect.isEmpty() )
-        return nullptr;
-
     const auto ticks = m_data->tickmarks.majorTicks();
     if ( ticks.isEmpty() )
         return nullptr;
@@ -252,158 +354,72 @@ QSGNode* QskScaleRenderer::updateLabelsNode(
 
     const QFontMetricsF fm( m_data->font );
 
-    const qreal length = ( m_data->orientation == Qt::Horizontal )
-        ? tickmarksRect.width() : tickmarksRect.height();
-    const qreal ratio = length / m_data->boundaries.length();
-
     auto nextNode = node->firstChild();
 
-    QRectF labelRect;
+    QRectF lastRect; // to skip overlapping label
 
     for ( auto tick : ticks )
     {
-        enum LabelNodeRole
-        {
-            TextNode = 1,
-            GraphicNode = 2
-        };
-
         const auto label = labelAt( tick );
-        if ( label.isNull() )
-            continue;
 
-        const qreal tickPos = ratio * ( tick - m_data->boundaries.lowerBound() );
+        const auto role = qskLabelNodeRole( label );
+
+        if ( nextNode && QskSGNode::nodeRole( nextNode ) != role )
+            nextNode = qskRemoveTraillingNodes( node, nextNode );
+
+        QSizeF size;
 
         if ( label.canConvert< QString >() )
         {
-            auto text = label.toString();
-            if ( text.isEmpty() )
-                continue;
-
-            QRectF r;
-            Qt::Alignment alignment;
-
-            if( m_data->orientation == Qt::Horizontal )
-            {
-                const auto w = qskHorizontalAdvance( fm, text );
-
-                auto pos = tickmarksRect.x() + tickPos - 0.5 * w;
-                pos = qBound( labelsRect.left(), pos, labelsRect.right() - w );
-
-                r = QRectF( pos, labelsRect.y(), w, labelsRect.height() );
-
-                alignment = Qt::AlignLeft;
-            }
-            else
-            {
-                const auto h = fm.height();
-
-                auto pos = tickmarksRect.bottom() - ( tickPos + 0.5 * h );
-
-                /*
-                    when clipping the label we can expand the clip rectangle
-                    by the ascent/descent margins, as nothing gets painted there
-                    anyway.
-                 */
-                const qreal min = labelsRect.top() - ( h - fm.ascent() );
-                const qreal max = labelsRect.bottom() + fm.descent();
-                pos = qBound( min, pos, max );
-
-                r = QRectF( labelsRect.x(), pos, labelsRect.width(), h );
-
-                alignment = Qt::AlignRight;
-            }
-
-            if ( nextNode && QskSGNode::nodeRole( nextNode ) != TextNode )
-            {
-                nextNode = qskRemoveTraillingNodes( node, nextNode );
-            }
-
-            if ( !labelRect.isEmpty() && labelRect.intersects( r ) )
-            {
-                if ( tick != ticks.last() )
-                {
-                    text = QString();
-                }
-                else
-                {
-                    if ( auto obsoleteNode = nextNode
-                        ? nextNode->previousSibling() : node->lastChild() )
-                    {
-                        node->removeChildNode( obsoleteNode );
-                        if ( obsoleteNode->flags() & QSGNode::OwnedByParent )
-                            delete obsoleteNode;
-                    }
-
-                    labelRect = r;
-                }
-            }
-            else
-            {
-                labelRect = r;
-            }
-
-            nextNode = QskSkinlet::updateTextNode( skinnable, nextNode,
-                r, alignment, text, m_data->font, QskTextOptions(),
-                m_data->textColors, Qsk::Normal );
-
-            if ( nextNode )
-            {
-                if ( nextNode->parent() != node )
-                {
-                    QskSGNode::setNodeRole( nextNode, TextNode );
-                    node->appendChildNode( nextNode );
-                }
-
-                nextNode = nextNode->nextSibling();
-            }
+            size = qskTextRenderSize( fm, label.toString() );
         }
         else if ( label.canConvert< QskGraphic >() )
         {
             const auto graphic = label.value< QskGraphic >();
-            if ( graphic.isNull() )
-                continue;
-
-            const auto h = fm.height();
-            const auto w = graphic.widthForHeight( h );
-
-            Qt::Alignment alignment;
-
-            if( m_data->orientation == Qt::Horizontal )
+            if ( !graphic.isNull() )
             {
-                auto pos = tickmarksRect.x() + tickPos - 0.5 * w;
-                pos = qBound( labelsRect.left(), pos, labelsRect.right() - w );
-
-                labelRect = QRectF( pos, labelsRect.y(), w, h );
-                alignment = Qt::AlignHCenter | Qt::AlignBottom;
+                size.rheight() = fm.height();
+                size.rwidth() = graphic.widthForHeight( size.height() );
             }
-            else
+        }
+
+        if ( size.isEmpty() )
+            continue;
+
+        const auto rect = labelRect( transform, tick, size );
+
+        if ( !lastRect.isEmpty() && lastRect.intersects( rect ) )
+        {
+            /*
+                Label do overlap: in case it is the last tick we remove
+                the precessor - otherwise we simply skip this one
+             */
+
+            if ( tick != ticks.last() )
+                continue; // skip this label
+
+            if ( auto obsoleteNode = nextNode
+                ? nextNode->previousSibling() : node->lastChild() )
             {
-                auto pos = tickmarksRect.bottom() - ( tickPos + 0.5 * h );
-                pos = qBound( labelsRect.top(), pos, labelsRect.bottom() - h );
-
-                labelRect = QRectF( labelsRect.right() - w, pos, w, h );
-                alignment = Qt::AlignRight | Qt::AlignVCenter;
+                node->removeChildNode( obsoleteNode );
+                if ( obsoleteNode->flags() & QSGNode::OwnedByParent )
+                    delete obsoleteNode;
             }
+        }
 
-            if ( nextNode && QskSGNode::nodeRole( nextNode ) != GraphicNode )
+        nextNode = updateTickLabelNode( skinnable, nextNode, label, rect );
+
+        if ( nextNode)
+        {
+            lastRect = rect;
+
+            if ( nextNode->parent() != node )
             {
-                nextNode = qskRemoveTraillingNodes( node, nextNode );
+                QskSGNode::setNodeRole( nextNode, role );
+                node->appendChildNode( nextNode );
             }
 
-            nextNode = QskSkinlet::updateGraphicNode(
-                skinnable, nextNode, graphic, m_data->colorFilter, labelRect, alignment );
-
-            if ( nextNode )
-            {
-                if ( nextNode->parent() != node )
-                {
-                    QskSGNode::setNodeRole( nextNode, GraphicNode );
-                    node->appendChildNode( nextNode );
-                }
-
-                nextNode = nextNode->nextSibling();
-            }
+            nextNode = nextNode->nextSibling();
         }
     }
 
@@ -417,40 +433,116 @@ QVariant QskScaleRenderer::labelAt( qreal pos ) const
     return QString::number( pos, 'g' );
 }
 
+// should be cached
 QSizeF QskScaleRenderer::boundingLabelSize() const
 {
+    QSizeF boundingSize( 0.0, 0.0 );
+
     const auto ticks = m_data->tickmarks.majorTicks();
     if ( ticks.isEmpty() )
-        return QSizeF( 0.0, 0.0 );
+        return boundingSize;
 
     const QFontMetricsF fm( m_data->font );
 
-    qreal maxWidth = 0.0;
     const qreal h = fm.height();
 
     for ( auto tick : ticks )
     {
-        qreal w = 0.0;
-
         const auto label = labelAt( tick );
         if ( label.isNull() )
             continue;
 
         if ( label.canConvert< QString >() )
         {
-            w = qskHorizontalAdvance( fm, label.toString() );
+            boundingSize = boundingSize.expandedTo(
+                qskTextRenderSize( fm, label.toString() ) );
         }
         else if ( label.canConvert< QskGraphic >() )
         {
             const auto graphic = label.value< QskGraphic >();
             if ( !graphic.isNull() )
             {
-                w = graphic.widthForHeight( h );
+                const auto w = graphic.widthForHeight( h );
+                boundingSize.setWidth( qMax( boundingSize.width(), w ) );
             }
         }
-
-        maxWidth = qMax( w, maxWidth );
     }
 
-    return QSizeF( maxWidth, h );
+    return boundingSize;
 }
+
+QRectF QskScaleRenderer::labelRect(
+    const QTransform& transform, qreal tick, const QSizeF& labelSize ) const
+{
+    const auto isHorizontal = qskIsHorizontal( m_data->edge );
+
+    auto offset = m_data->tickLength + m_data->spacing;
+    if ( m_data->flags & CenteredTickmarks )
+        offset -= 0.5 * m_data->tickLength;
+
+    const bool clampLabels = m_data->flags & ClampedLabels;
+
+    const qreal w = labelSize.width();
+    const qreal h = labelSize.height();
+
+    qreal x, y;
+
+    const ScaleMap map( isHorizontal, transform );
+
+    const auto tickPos = map.map( tick );
+
+    qreal min, max;
+    if ( clampLabels )
+    {
+        min = map.map( m_data->boundaries.lowerBound() );
+        max = map.map( m_data->boundaries.upperBound() );
+    }
+
+    if( isHorizontal )
+    {
+        x = tickPos - 0.5 * w;
+
+        if ( clampLabels )
+            x = qBound( min, x, max - w );
+
+        y = m_data->position + offset;
+    }
+    else
+    {
+        const auto tickPos = map.map( tick );
+        y = tickPos - 0.5 * h;
+
+        if ( clampLabels )
+            y = qBound( max, y, min - h );
+
+        x = m_data->position - offset - w;
+    }
+
+    return QRectF( x, y, w, h );
+}
+
+QSGNode* QskScaleRenderer::updateTickLabelNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QVariant& label, const QRectF& rect ) const
+{
+    if ( label.canConvert< QString >() )
+    {
+        return QskSkinlet::updateTextNode( skinnable, node,
+            rect, Qt::AlignCenter, label.toString(), m_data->font,
+            QskTextOptions(), m_data->textColors, Qsk::Normal );
+    }
+
+    if ( label.canConvert< QskGraphic >() )
+    {
+        const auto alignment = qskIsHorizontal( m_data->edge )
+            ? ( Qt::AlignHCenter | Qt::AlignBottom )
+            : ( Qt::AlignRight | Qt::AlignVCenter );
+
+        return QskSkinlet::updateGraphicNode(
+            skinnable, node, label.value< QskGraphic >(),
+            m_data->colorFilter, rect, alignment );
+    }
+
+    return nullptr;
+}
+
+#include "moc_QskScaleRenderer.cpp"

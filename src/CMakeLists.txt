@@ -99,6 +99,7 @@ list(APPEND SOURCES
 
 list(APPEND HEADERS
     nodes/QskArcNode.h
+    nodes/QskAxisScaleNode.h
     nodes/QskBasicLinesNode.h
     nodes/QskBoxNode.h
     nodes/QskBoxClipNode.h
@@ -126,7 +127,6 @@ list(APPEND HEADERS
     nodes/QskTextNode.h
     nodes/QskTextRenderer.h
     nodes/QskTextureRenderer.h
-    nodes/QskTickmarksNode.h
     nodes/QskVertex.h
 )
 
@@ -136,6 +136,7 @@ list(APPEND PRIVATE_HEADERS
 
 list(APPEND SOURCES
     nodes/QskArcNode.cpp
+    nodes/QskAxisScaleNode.cpp
     nodes/QskBasicLinesNode.cpp
     nodes/QskBoxNode.cpp
     nodes/QskBoxClipNode.cpp
@@ -163,7 +164,6 @@ list(APPEND SOURCES
     nodes/QskTextNode.cpp
     nodes/QskTextRenderer.cpp
     nodes/QskTextureRenderer.cpp
-    nodes/QskTickmarksNode.cpp
     nodes/QskVertex.cpp
 )
 
