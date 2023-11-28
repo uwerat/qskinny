@@ -3,8 +3,8 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_AXIS_SCALE_NODE_H
-#define QSK_AXIS_SCALE_NODE_H
+#ifndef QSK_GRADUATION_NODE_H
+#define QSK_GRADUATION_NODE_H
 
 #include "QskGlobal.h"
 #include "QskBasicLinesNode.h"
@@ -14,10 +14,9 @@
 class QRectF;
 class QskIntervalF;
 class QskTickmarks;
+class QskGraduationMetrics;
 
-class QskAxisScaleNodePrivate;
-
-class QSK_EXPORT QskAxisScaleNode : public QskBasicLinesNode
+class QSK_EXPORT QskGraduationNode : public QskBasicLinesNode
 {
     using Inherited = QskBasicLinesNode;
 
@@ -29,11 +28,14 @@ class QSK_EXPORT QskAxisScaleNode : public QskBasicLinesNode
         Trailing
     };
 
-    QskAxisScaleNode();
-    ~QskAxisScaleNode() override;
+    QskGraduationNode();
+    ~QskGraduationNode() override;
 
+#if 1
+    // finding better names
     void setAxis( Qt::Orientation, qreal pos, const QTransform& );
-    void setTickGeometry( Alignment, qreal tickLength, qreal tickWidth );
+    void setTickGeometry( Alignment, const QskGraduationMetrics&, qreal tickWidth );
+#endif
 
     void update( const QskTickmarks&, const QskIntervalF& );
 

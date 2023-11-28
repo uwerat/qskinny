@@ -3,9 +3,10 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskAxisScaleNode.h"
+#include "QskGraduationNode.h"
 #include "QskTickmarks.h"
 #include "QskIntervalF.h"
+#include "QskGraduationMetrics.h"
 
 #include <QTransform>
 
@@ -56,7 +57,7 @@ namespace
     };
 }
 
-class QskAxisScaleNode::PrivateData
+class QskGraduationNode::PrivateData
 {
   public:
     inline qreal map( qreal v ) const
@@ -67,29 +68,14 @@ class QskAxisScaleNode::PrivateData
             return transform.dy() + transform.m22() * v;
     }
 
-    inline qreal length( QskTickmarks::TickType type ) const
-    {
-        switch( type )
-        {
-            case QskTickmarks::MinorTick:
-                return 0.7 * tickLength;
-
-            case QskTickmarks::MediumTick:
-                return 0.85 * tickLength;
-
-            default:
-                return tickLength;
-        }
-    }
-
     inline qreal origin( qreal length ) const
     {
         switch( alignment )
         {
-            case QskAxisScaleNode::Leading:
+            case QskGraduationNode::Leading:
                 return pos - length;
 
-            case QskAxisScaleNode::Centered:
+            case QskGraduationNode::Centered:
                 return pos - 0.5 * length;
 
             default:
@@ -103,24 +89,24 @@ class QskAxisScaleNode::PrivateData
     QskIntervalF backbone;
     QTransform transform;
 
-    QskAxisScaleNode::Alignment alignment = QskAxisScaleNode::Centered;
-    qreal tickLength = 0.0;
+    QskGraduationNode::Alignment alignment = QskGraduationNode::Centered;
+    QskGraduationMetrics graduationMetrics;
 
     QskHashValue hash = 0;
 
     bool dirty = true;
 };
 
-QskAxisScaleNode::QskAxisScaleNode()
+QskGraduationNode::QskGraduationNode()
     : m_data( new PrivateData() )
 {
 }
 
-QskAxisScaleNode::~QskAxisScaleNode()
+QskGraduationNode::~QskGraduationNode()
 {
 }
 
-void QskAxisScaleNode::setAxis( Qt::Orientation orientation,
+void QskGraduationNode::setAxis( Qt::Orientation orientation,
     qreal pos, const QTransform& transform )
 {
     const bool isHorizontal = ( orientation == Qt::Horizontal );
@@ -136,21 +122,21 @@ void QskAxisScaleNode::setAxis( Qt::Orientation orientation,
     }
 }
 
-void QskAxisScaleNode::setTickGeometry(
-    Alignment alignment, qreal tickLength, qreal tickWidth )
+void QskGraduationNode::setTickGeometry(
+    Alignment alignment, const QskGraduationMetrics& metrics, qreal tickWidth )
 {
     setLineWidth( tickWidth );
 
-    if( tickLength != m_data->tickLength || alignment != m_data->alignment )
+    if( metrics != m_data->graduationMetrics || alignment != m_data->alignment )
     {
-        m_data->tickLength = tickLength;
+        m_data->graduationMetrics = metrics;
         m_data->alignment = alignment;
 
         m_data->dirty = true;
     }
 }
 
-void QskAxisScaleNode::update( const QskTickmarks& tickmarks,
+void QskGraduationNode::update( const QskTickmarks& tickmarks,
     const QskIntervalF& backbone )
 {
     const auto hash = tickmarks.hash( 17435 );
@@ -190,7 +176,7 @@ void QskAxisScaleNode::update( const QskTickmarks& tickmarks,
     {
         const auto tickType = static_cast< QskTickmarks::TickType >( i );
 
-        const auto len = m_data->length( tickType );
+        const auto len = m_data->graduationMetrics.tickLength( tickType );
         const auto origin = m_data->origin( len );
 
         const auto ticks = tickmarks.ticks( tickType );

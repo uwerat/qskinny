@@ -53,6 +53,8 @@ class QSK_EXPORT QskGraduationMetrics
 
     [[nodiscard]] QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 
+    [[nodiscard]] constexpr qreal maxLength() const noexcept;
+
   private:
     static inline constexpr qreal constrainedLength( qreal length )
     {
@@ -123,6 +125,12 @@ inline constexpr void QskGraduationMetrics::setTickLength(
     TickType type, qreal length ) noexcept
 {
     m_tickLengths[ type ] = constrainedLength( length );
+}
+
+inline constexpr qreal QskGraduationMetrics::maxLength() const noexcept
+{
+    using namespace std;
+    return max( max( m_tickLengths[0], m_tickLengths[1] ), m_tickLengths[2] );
 }
 
 inline QskHashValue QskGraduationMetrics::hash( const QskHashValue seed ) const noexcept

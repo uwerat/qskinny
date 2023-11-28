@@ -99,7 +99,6 @@ list(APPEND SOURCES
 
 list(APPEND HEADERS
     nodes/QskArcNode.h
-    nodes/QskAxisScaleNode.h
     nodes/QskBasicLinesNode.h
     nodes/QskBoxNode.h
     nodes/QskBoxClipNode.h
@@ -113,6 +112,7 @@ list(APPEND HEADERS
     nodes/QskBoxShadowNode.h
     nodes/QskColorRamp.h
     nodes/QskFillNode.h
+    nodes/QskGraduationNode.h
     nodes/QskGraduationRenderer.h
     nodes/QskGraphicNode.h
     nodes/QskLinesNode.h
@@ -136,7 +136,6 @@ list(APPEND PRIVATE_HEADERS
 
 list(APPEND SOURCES
     nodes/QskArcNode.cpp
-    nodes/QskAxisScaleNode.cpp
     nodes/QskBasicLinesNode.cpp
     nodes/QskBoxNode.cpp
     nodes/QskBoxClipNode.cpp
@@ -149,6 +148,7 @@ list(APPEND SOURCES
     nodes/QskBoxShadowNode.cpp
     nodes/QskColorRamp.cpp
     nodes/QskFillNode.cpp
+    nodes/QskGraduationNode.cpp
     nodes/QskGraduationRenderer.cpp
     nodes/QskGraphicNode.cpp
     nodes/QskLinesNode.cpp

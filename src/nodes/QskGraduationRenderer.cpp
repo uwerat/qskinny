@@ -4,10 +4,11 @@
  *****************************************************************************/
 
 #include "QskGraduationRenderer.h"
+#include "QskGraduationMetrics.h"
 #include "QskTickmarks.h"
 #include "QskSkinlet.h"
 #include "QskSGNode.h"
-#include "QskAxisScaleNode.h"
+#include "QskGraduationNode.h"
 #include "QskTextOptions.h"
 #include "QskTextColors.h"
 #include "QskGraphic.h"
@@ -108,7 +109,7 @@ class QskGraduationRenderer::PrivateData
 #endif
 
     qreal tickWidth = 1.0;
-    qreal tickLength = 10.0;
+    QskGraduationMetrics metrics = { 4, 6, 8 };
     qreal spacing = 5.0;
 
     QFont font;
@@ -227,14 +228,14 @@ QColor QskGraduationRenderer::tickColor() const
     return m_data->tickColor;
 }
 
-void QskGraduationRenderer::setTickLength( qreal length )
+void QskGraduationRenderer::setTickMetrics( const QskGraduationMetrics& metrics )
 {
-    m_data->tickLength = qMax( length, 0.0 );
+    m_data->metrics = metrics;
 }
 
-qreal QskGraduationRenderer::tickLength() const
+const QskGraduationMetrics& QskGraduationRenderer::tickMetrics() const
 {
-    return m_data->tickLength;
+    return m_data->metrics;
 }
 
 void QskGraduationRenderer::setTickWidth( qreal width )
@@ -313,7 +314,7 @@ QSGNode* QskGraduationRenderer::updateTicksNode(
     const auto orientation = qskIsHorizontal( m_data->edge )
         ? Qt::Horizontal : Qt::Vertical;
 
-    auto alignment = QskAxisScaleNode::Centered;
+    auto alignment = QskGraduationNode::Centered;
 
     if ( !( m_data->flags & CenteredTickmarks ) )
     {
@@ -321,25 +322,25 @@ QSGNode* QskGraduationRenderer::updateTicksNode(
         {
             case Qt::LeftEdge:
             case Qt::TopEdge:
-                alignment = QskAxisScaleNode::Leading;
+                alignment = QskGraduationNode::Leading;
                 break;
             case Qt::BottomEdge:
             case Qt::RightEdge:
-                alignment = QskAxisScaleNode::Trailing;
+                alignment = QskGraduationNode::Trailing;
                 break;
         }
     }
 
-    auto axisNode = QskSGNode::ensureNode< QskAxisScaleNode >( node );
+    auto graduationNode = QskSGNode::ensureNode< QskGraduationNode >( node );
 
-    axisNode->setColor( m_data->tickColor );
-    axisNode->setAxis( orientation, m_data->position, transform );
-    axisNode->setTickGeometry( alignment, m_data->tickLength, m_data->tickWidth );
-    axisNode->setPixelAlignment( Qt::Horizontal | Qt::Vertical );
+    graduationNode->setColor( m_data->tickColor );
+    graduationNode->setAxis( orientation, m_data->position, transform );
+    graduationNode->setTickGeometry( alignment, m_data->metrics, m_data->tickWidth );
+    graduationNode->setPixelAlignment( Qt::Horizontal | Qt::Vertical );
 
-    axisNode->update( m_data->tickmarks, backbone );
+    graduationNode->update( m_data->tickmarks, backbone );
 
-    return axisNode;
+    return graduationNode;
 }
 
 QSGNode* QskGraduationRenderer::updateLabelsNode( const QskSkinnable* skinnable,
@@ -476,9 +477,11 @@ QRectF QskGraduationRenderer::labelRect(
 {
     const auto isHorizontal = qskIsHorizontal( m_data->edge );
 
-    auto offset = m_data->tickLength + m_data->spacing;
+    const auto tickLength = m_data->metrics.maxLength();
+
+    auto offset = tickLength + m_data->spacing;
     if ( m_data->flags & CenteredTickmarks )
-        offset -= 0.5 * m_data->tickLength;
+        offset -= 0.5 * tickLength;
 
     const bool clampLabels = m_data->flags & ClampedLabels;
 

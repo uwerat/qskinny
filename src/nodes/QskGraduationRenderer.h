@@ -16,6 +16,7 @@
 
 class QskSkinnable;
 class QskIntervalF;
+class QskGraduationMetrics;
 class QskTickmarks;
 class QskTextColors;
 class QskColorFilter;
@@ -75,8 +76,8 @@ class QSK_EXPORT QskGraduationRenderer
     void setTickColor( const QColor& );
     QColor tickColor() const;
 
-    void setTickLength( qreal );
-    qreal tickLength() const;
+    void setTickMetrics( const QskGraduationMetrics& );
+    const QskGraduationMetrics& tickMetrics() const;
 
     void setTickWidth( qreal );
     qreal tickWidth() const;

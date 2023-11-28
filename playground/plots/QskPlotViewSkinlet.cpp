@@ -7,6 +7,7 @@
 #include "QskPlotView.h"
 
 #include <QskGraduationRenderer.h>
+#include <QskGraduationMetrics.h>
 #include <QskTickmarks.h>
 #include <QskTextColors.h>
 #include <QskFunctions.h>
@@ -79,7 +80,12 @@ namespace
 
             const auto tickSize = view->strutSizeHint( aspect );
             setTickWidth( tickSize.width() );
-            setTickLength( tickSize.height() );
+
+#if 1
+            const QskGraduationMetrics tickMetrics( qRound( 0.7 * tickSize.height() ),
+                qRound( 0.85 * tickSize.height() ), tickSize.height() );
+            setTickMetrics( tickMetrics );
+#endif
 
             setSpacing( view->spacingHint( aspect ) );
 
@@ -91,9 +97,11 @@ namespace
 
         qreal labelOffset() const
         {
-            qreal off = tickLength() + spacing();
+            const auto length = tickMetrics().maxLength();
+
+            qreal off = length + spacing();
             if ( flags() & CenteredTickmarks )
-                off -= 0.5 * tickLength();
+                off -= 0.5 * length;
 
             return off;
         }
