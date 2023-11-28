@@ -1,5 +1,4 @@
 #include "QskGraduationMetrics.h"
-
 #include <qvariant.h>
 
 static void qskRegisterGraduationMetrics()
@@ -26,7 +25,8 @@ QskGraduationMetrics QskGraduationMetrics::interpolated(
 
     return { qskInterpolated( m_tickLengths[0], to.m_tickLengths[0], ratio ),
         qskInterpolated( m_tickLengths[1], to.m_tickLengths[1], ratio ),
-        qskInterpolated( m_tickLengths[2], to.m_tickLengths[2], ratio ) };
+        qskInterpolated( m_tickLengths[2], to.m_tickLengths[2], ratio ),
+        qskInterpolated( m_tickWidth, to.m_tickWidth, ratio ) };
 }
 
 QVariant QskGraduationMetrics::interpolate(
@@ -49,7 +49,7 @@ QDebug operator<<( QDebug debug, const QskGraduationMetrics& metrics )
     debug << "Graduation";
     debug << '(';
     debug << metrics.minorTickLength() << s << metrics.mediumTickLength()
-        << s << metrics.majorTickLength();
+        << s << metrics.majorTickLength() << "W:" << metrics.tickWidth();
     debug << ')';
 
     return debug;

@@ -17,21 +17,22 @@ class QSK_EXPORT QskGraduationMetrics
     Q_PROPERTY( qreal majorTickLength READ majorTickLength WRITE setMajorTickLength )
     Q_PROPERTY( qreal mediumTickLength READ mediumTickLength WRITE setMediumTickLength )
     Q_PROPERTY( qreal minorTickLength READ minorTickLength WRITE setMinorTickLength )
+    Q_PROPERTY( qreal tickWidth READ tickWidth WRITE setTickWidth )
 
   public:
     using TickType = QskTickmarks::TickType;
 
     constexpr QskGraduationMetrics() noexcept = default;
+
     constexpr QskGraduationMetrics( qreal minorTickLength,
-        qreal mediumTickLength, qreal majorTickLength ) noexcept;
-    constexpr QskGraduationMetrics( const QskGraduationMetrics& ) noexcept = default;
-    constexpr QskGraduationMetrics( QskGraduationMetrics&& ) noexcept = default;
+        qreal mediumTickLength, qreal majorTickLength,
+        qreal tickWidth = 1.0 ) noexcept;
 
-    constexpr QskGraduationMetrics& operator=( const QskGraduationMetrics& ) noexcept = default;
-    constexpr QskGraduationMetrics& operator=( QskGraduationMetrics&& ) noexcept = default;
+    [[nodiscard]] constexpr bool operator==( const QskGraduationMetrics& ) const noexcept;
+    [[nodiscard]] constexpr bool operator!=( const QskGraduationMetrics& ) const noexcept;
 
-    [[nodiscard]] constexpr bool operator==( const QskGraduationMetrics& rhs ) const noexcept;
-    [[nodiscard]] constexpr bool operator!=( const QskGraduationMetrics& rhs ) const noexcept;
+    constexpr void setTickWidth( qreal ) noexcept;
+    [[nodiscard]] constexpr qreal tickWidth() const noexcept;
 
     constexpr void setTickLength( TickType, qreal ) noexcept;
     [[nodiscard]] constexpr qreal tickLength( TickType ) const noexcept;
@@ -56,34 +57,22 @@ class QSK_EXPORT QskGraduationMetrics
     [[nodiscard]] constexpr qreal maxLength() const noexcept;
 
   private:
-    static inline constexpr qreal constrainedLength( qreal length )
+    static inline constexpr qreal validated( qreal value )
     {
-        return std::max( 0.0, length );
+        return std::max( 0.0, value );
     }
 
     qreal m_tickLengths[3] = {};
+    qreal m_tickWidth = 1.0;
 };
 
 inline constexpr QskGraduationMetrics::QskGraduationMetrics(
-        qreal minorTickLength, qreal mediumTickLength, qreal majorTickLength ) noexcept
-    : m_tickLengths{ constrainedLength( minorTickLength ),
-        constrainedLength( mediumTickLength ), constrainedLength( majorTickLength ) }
+        qreal minorTickLength, qreal mediumTickLength, qreal majorTickLength,
+        qreal tickWidth ) noexcept
+    : m_tickLengths{ validated( minorTickLength ),
+        validated( mediumTickLength ), validated( majorTickLength ) }
+    , m_tickWidth( tickWidth )
 {
-}
-
-inline constexpr qreal QskGraduationMetrics::majorTickLength() const noexcept
-{
-    return tickLength( QskTickmarks::MajorTick );
-}
-
-inline constexpr qreal QskGraduationMetrics::mediumTickLength() const noexcept
-{
-    return tickLength( QskTickmarks::MediumTick );
-}
-
-inline constexpr qreal QskGraduationMetrics::minorTickLength() const noexcept
-{
-    return tickLength( QskTickmarks::MinorTick );
 }
 
 inline constexpr void QskGraduationMetrics::setMajorTickLength( qreal length ) noexcept
@@ -91,9 +80,19 @@ inline constexpr void QskGraduationMetrics::setMajorTickLength( qreal length ) n
     setTickLength( QskTickmarks::MajorTick, length );
 }
 
+inline constexpr qreal QskGraduationMetrics::majorTickLength() const noexcept
+{
+    return tickLength( QskTickmarks::MajorTick );
+}
+
 inline constexpr void QskGraduationMetrics::setMediumTickLength( qreal length ) noexcept
 {
     setTickLength( QskTickmarks::MediumTick, length );
+}
+
+inline constexpr qreal QskGraduationMetrics::mediumTickLength() const noexcept
+{
+    return tickLength( QskTickmarks::MediumTick );
 }
 
 inline constexpr void QskGraduationMetrics::setMinorTickLength( qreal length ) noexcept
@@ -101,12 +100,18 @@ inline constexpr void QskGraduationMetrics::setMinorTickLength( qreal length ) n
     setTickLength( QskTickmarks::MinorTick, length );
 }
 
+inline constexpr qreal QskGraduationMetrics::minorTickLength() const noexcept
+{
+    return tickLength( QskTickmarks::MinorTick );
+}
+
 inline constexpr bool QskGraduationMetrics::operator==(
     const QskGraduationMetrics& other ) const noexcept
 {
     return qskFuzzyCompare( m_tickLengths[0], other.m_tickLengths[0] ) &&
            qskFuzzyCompare( m_tickLengths[1], other.m_tickLengths[1] ) &&
-           qskFuzzyCompare( m_tickLengths[2], other.m_tickLengths[2] );
+           qskFuzzyCompare( m_tickLengths[2], other.m_tickLengths[2] &&
+           qskFuzzyCompare( m_tickWidth, other.m_tickWidth ) );
 }
 
 inline constexpr bool QskGraduationMetrics::operator!=(
@@ -115,16 +120,26 @@ inline constexpr bool QskGraduationMetrics::operator!=(
     return !( *this == rhs );
 }
 
-inline constexpr qreal QskGraduationMetrics::tickLength(
-    const QskTickmarks::TickType type ) const noexcept
+inline constexpr void QskGraduationMetrics::setTickWidth( qreal width ) noexcept
 {
-    return m_tickLengths[ type ];
+    m_tickWidth = validated( width );
+}
+
+inline constexpr qreal QskGraduationMetrics::tickWidth() const noexcept
+{
+    return m_tickWidth;
 }
 
 inline constexpr void QskGraduationMetrics::setTickLength(
     TickType type, qreal length ) noexcept
 {
-    m_tickLengths[ type ] = constrainedLength( length );
+    m_tickLengths[ type ] = validated( length );
+}
+
+inline constexpr qreal QskGraduationMetrics::tickLength(
+    const QskTickmarks::TickType type ) const noexcept
+{
+    return m_tickLengths[ type ];
 }
 
 inline constexpr qreal QskGraduationMetrics::maxLength() const noexcept
@@ -138,6 +153,7 @@ inline QskHashValue QskGraduationMetrics::hash( const QskHashValue seed ) const 
     auto hash = qHash( m_tickLengths[0], seed );
     hash = qHash( m_tickLengths[1], hash );
     hash = qHash( m_tickLengths[2], hash );
+    hash = qHash( m_tickWidth, hash );
     return hash;
 }
 

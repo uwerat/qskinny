@@ -122,13 +122,14 @@ void QskGraduationNode::setAxis( Qt::Orientation orientation,
     }
 }
 
-void QskGraduationNode::setTickGeometry(
-    Alignment alignment, const QskGraduationMetrics& metrics, qreal tickWidth )
+void QskGraduationNode::setTickMetrics(
+    Alignment alignment, const QskGraduationMetrics& metrics )
 {
-    setLineWidth( tickWidth );
 
     if( metrics != m_data->graduationMetrics || alignment != m_data->alignment )
     {
+        setLineWidth( metrics.tickWidth() );
+
         m_data->graduationMetrics = metrics;
         m_data->alignment = alignment;
 

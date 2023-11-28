@@ -26,6 +26,7 @@
 #include <QskRgbValue.h>
 #include <QskBoxBorderColors.h>
 #include <QskBoxShapeMetrics.h>
+#include <QskGraduationMetrics.h>
 #include <QskStippleMetrics.h>
 
 #include <QskGraduationRenderer.h>
@@ -101,7 +102,7 @@ void SkinEditor::setupPlotHints()
         setFlag( Q::AxisScale | A::Style, QskGraduationRenderer::Backbone );
 
         // thickness/length of the major ticks
-        setStrutSize( Q::AxisScale, 1.0, 8.0 );
+        setGraduationMetrics( Q::AxisScale, { 4.0, 6.0, 8.0, 1.0 } );
 
         // spacing between ticks and labels
         setSpacing( Q::AxisScale, 5 );

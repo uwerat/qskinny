@@ -34,7 +34,7 @@ class QSK_EXPORT QskGraduationNode : public QskBasicLinesNode
 #if 1
     // finding better names
     void setAxis( Qt::Orientation, qreal pos, const QTransform& );
-    void setTickGeometry( Alignment, const QskGraduationMetrics&, qreal tickWidth );
+    void setTickMetrics( Alignment, const QskGraduationMetrics& );
 #endif
 
     void update( const QskTickmarks&, const QskIntervalF& );

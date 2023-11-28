@@ -78,14 +78,10 @@ namespace
 
             setTickColor( view->color( aspect ) );
 
-            const auto tickSize = view->strutSizeHint( aspect );
-            setTickWidth( tickSize.width() );
+            const auto graduation = view->effectiveSkinHint(
+                aspect | QskAspect::Metric | QskAspect::Graduation );
 
-#if 1
-            const QskGraduationMetrics tickMetrics( qRound( 0.7 * tickSize.height() ),
-                qRound( 0.85 * tickSize.height() ), tickSize.height() );
-            setTickMetrics( tickMetrics );
-#endif
+            setTickMetrics( graduation.value< QskGraduationMetrics >() );
 
             setSpacing( view->spacingHint( aspect ) );
 

@@ -108,7 +108,6 @@ class QskGraduationRenderer::PrivateData
     QColor tickColor = Qt::black; // rgb value ???
 #endif
 
-    qreal tickWidth = 1.0;
     QskGraduationMetrics metrics = { 4, 6, 8 };
     qreal spacing = 5.0;
 
@@ -238,16 +237,6 @@ const QskGraduationMetrics& QskGraduationRenderer::tickMetrics() const
     return m_data->metrics;
 }
 
-void QskGraduationRenderer::setTickWidth( qreal width )
-{
-    m_data->tickWidth = qMax( width, 0.0 );
-}
-
-qreal QskGraduationRenderer::tickWidth() const
-{
-    return m_data->tickWidth;
-}
-
 void QskGraduationRenderer::setFont( const QFont& font )
 {
     m_data->font = font;
@@ -335,7 +324,7 @@ QSGNode* QskGraduationRenderer::updateTicksNode(
 
     graduationNode->setColor( m_data->tickColor );
     graduationNode->setAxis( orientation, m_data->position, transform );
-    graduationNode->setTickGeometry( alignment, m_data->metrics, m_data->tickWidth );
+    graduationNode->setTickMetrics( alignment, m_data->metrics );
     graduationNode->setPixelAlignment( Qt::Horizontal | Qt::Vertical );
 
     graduationNode->update( m_data->tickmarks, backbone );

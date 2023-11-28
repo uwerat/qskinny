@@ -79,9 +79,6 @@ class QSK_EXPORT QskGraduationRenderer
     void setTickMetrics( const QskGraduationMetrics& );
     const QskGraduationMetrics& tickMetrics() const;
 
-    void setTickWidth( qreal );
-    qreal tickWidth() const;
-
     void setFont( const QFont& );
     QFont font() const;
 
