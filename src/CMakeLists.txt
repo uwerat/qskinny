@@ -15,6 +15,7 @@ list(APPEND HEADERS
     common/QskGradient.h
     common/QskGradientDirection.h
     common/QskGradientStop.h
+    common/QskGraduation.h
     common/QskGraduationMetrics.h
     common/QskHctColor.h
     common/QskIntervalF.h
@@ -28,7 +29,6 @@ list(APPEND HEADERS
     common/QskPlacementPolicy.h
     common/QskPlatform.h
     common/QskRgbValue.h
-    common/QskScaleEngine.h
     common/QskScaleTickmarks.h
     common/QskShadowMetrics.h
     common/QskSizePolicy.h
@@ -49,6 +49,7 @@ list(APPEND SOURCES
     common/QskGradient.cpp
     common/QskGradientDirection.cpp
     common/QskGradientStop.cpp
+    common/QskGraduation.cpp
     common/QskGraduationMetrics.cpp
     common/QskHctColor.cpp
     common/QskIntervalF.cpp
@@ -60,7 +61,6 @@ list(APPEND SOURCES
     common/QskPlatform.cpp
     common/QskPlacementPolicy.cpp
     common/QskRgbValue.cpp
-    common/QskScaleEngine.cpp
     common/QskScaleTickmarks.cpp
     common/QskShadowMetrics.cpp
     common/QskSizePolicy.cpp
