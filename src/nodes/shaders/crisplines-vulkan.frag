@@ -6,7 +6,7 @@ layout( std140, binding = 0 ) uniform buf
 {
     mat4 matrix;
     vec4 color;
-    vec2 size;
+    vec2 origin;
 } ubuf;
 
 void main()

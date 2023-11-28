@@ -6,36 +6,28 @@ layout( std140, binding = 0 ) uniform buf
 {
     mat4 matrix;
     vec4 color;
-    vec2 size;
+    vec2 origin;
 } ubuf;
 
 out gl_PerVertex { vec4 gl_Position; };
 
-float normalized( in float pos, in float scale, in float size )
-{
-    return ( ( pos / size - 0.5 ) / 0.5 ) * scale;
-}
-
-float denormalized( in float pos, in float scale, in float size )
-{
-    return ( ( pos / scale ) * 0.5 + 0.5 ) * size;
-}
-
 void main()
 {
-    gl_Position = ubuf.matrix * vertexCoord;
+    vec4 pos = ubuf.matrix * vertexCoord;
 
-    if ( ubuf.size.x > 0.0 )
+    if ( ubuf.origin.x > 0.0 )
     {
-        gl_Position.x = denormalized( gl_Position.x, gl_Position.w, ubuf.size.x );
-        gl_Position.x = round( gl_Position.x ) + 0.5;
-        gl_Position.x = normalized( gl_Position.x, gl_Position.w, ubuf.size.x );
+        pos.x = ( pos.x + 1.0 ) * ubuf.origin.x;
+        pos.x = round( pos.x ) + 0.5;
+        pos.x = pos.x / ubuf.origin.x - 1.0;
     }
 
-    if ( ubuf.size.y > 0.0 )
+    if ( ubuf.origin.y > 0.0 )
     {
-        gl_Position.y = denormalized( gl_Position.y, gl_Position.w, ubuf.size.y );
-        gl_Position.y = round( gl_Position.y ) + 0.5;
-        gl_Position.y = normalized( gl_Position.y, gl_Position.w, ubuf.size.y );
+        pos.y = ( pos.y + 1.0 ) * ubuf.origin.y;
+        pos.y = round( pos.y ) + 0.5;
+        pos.y = pos.y / ubuf.origin.y - 1.0;
     }
+
+    gl_Position = pos;
 }

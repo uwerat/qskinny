@@ -13,6 +13,21 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qsgnode_p.h>
 QSK_QT_PRIVATE_END
 
+static inline QVector4D qskColorVector( const QColor& c, qreal opacity)
+{
+    const auto a = c.alphaF() * opacity;
+    return QVector4D( c.redF() * a, c.greenF() * a, c.blueF() * a, a );
+}
+
+static inline QVector2D qskOrigin(
+    const QRect& rect, Qt::Orientations orientations )
+{
+    return QVector2D(
+        ( orientations & Qt::Horizontal ) ? 0.5 * rect.width() : 0.0,
+        ( orientations & Qt::Vertical ) ? 0.5 * rect.height() : 0.0
+    );
+}
+
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     #include <QSGMaterialRhiShader>
     using RhiShader = QSGMaterialRhiShader;
@@ -37,7 +52,7 @@ namespace
 
         int compare( const QSGMaterial* other ) const override;
 
-        QVector4D m_color = QVector4D{ 0, 0, 0, 1 };
+        QColor m_color = QColor( 255, 255, 255 );
         Qt::Orientations m_pixelAlignment;
     };
 
@@ -72,10 +87,11 @@ namespace
                 changed = true;
             }
 
-            if ( ( matOld == nullptr ) || ( matNew->m_color != matOld->m_color ) )
+            if ( ( matOld == nullptr ) || ( matNew->m_color != matOld->m_color )
+                || state.isOpacityDirty() )
             {
-                // state.opacity() TODO ...
-                memcpy( data + 64, &matNew->m_color, 16 );
+                const auto v4 = qskColorVector( matNew->m_color, state.opacity() );
+                memcpy( data + 64, &v4, 16 );
                 changed = true;
             }
 
@@ -83,19 +99,16 @@ namespace
                 || ( matNew->m_pixelAlignment != matOld->m_pixelAlignment ) )
             {
                 /*
-                    We do not need to upload the size as it is available
-                    from the matrix. But the shader needs to know wether to
-                    round or not TODO ...
+                    The shaders work with coordinates in the range[-1,1]. When knowing
+                    the device coordinates corresponding to [0.0] we can scale a vertex
+                    into device coordinates.
+
+                    coordinates <= 0.0 indicate, that no rounding should be done.
                  */
-                QVector2D size;
+                const auto origin = qskOrigin(
+                    state.viewportRect(), matNew->m_pixelAlignment );
 
-                if ( matNew->m_pixelAlignment & Qt::Horizontal )
-                    size.setX( 2.0 / matrix( 0, 0 ) );
-
-                if ( matNew->m_pixelAlignment & Qt::Vertical )
-                    size.setY( -2.0 / matrix( 1, 1 ) );
-
-                memcpy( data + 80, &size, 8 );
+                memcpy( data + 80, &origin, 8 );
                 changed = true;
             }
 
@@ -138,7 +151,7 @@ namespace
 
             m_matrixId = p->uniformLocation( "matrix" );
             m_colorId = p->uniformLocation( "color" );
-            m_sizeId = p->uniformLocation( "size" );
+            m_originId = p->uniformLocation( "origin" );
         }
 
         void updateState( const QSGMaterialShader::RenderState& state,
@@ -160,24 +173,19 @@ namespace
             {
                 auto material = static_cast< const Material* >( newMaterial );
 
-                p->setUniformValue( m_colorId, material->m_color );
+                p->setUniformValue( m_colorId,
+                    qskColorVector( material->m_color, state.opacity() ) );
 
-                QVector2D size;
-
-                if ( material->m_pixelAlignment & Qt::Horizontal )
-                    size.setX( 2.0 / matrix( 0, 0 ) );
-
-                if ( material->m_pixelAlignment & Qt::Vertical )
-                    size.setY( -2.0 / matrix( 1, 1 ) );
-
-                p->setUniformValue( m_sizeId, size );
+                const auto origin = qskOrigin(
+                    state.viewportRect(), material->m_pixelAlignment );;
+                p->setUniformValue( m_originId, origin );
             }
         }
 
       private:
         int m_matrixId = -1;
         int m_colorId = -1;
-        int m_sizeId = -1;
+        int m_originId = -1;
     };
 }
 
@@ -274,15 +282,17 @@ void QskBasicLinesNode::setColor( const QColor& color )
 {
     Q_D( QskBasicLinesNode );
 
-    const auto a = color.alphaF();
-
-    const QVector4D c( color.redF() * a, color.greenF() * a, color.blueF() * a, a );
-
+    const auto c = color.toRgb();
     if ( c != d->material.m_color )
     {
         d->material.m_color = c;
         markDirty( QSGNode::DirtyMaterial );
     }
+}
+
+QColor QskBasicLinesNode::color() const
+{
+    return d_func()->material.m_color;
 }
 
 void QskBasicLinesNode::setLineWidth( float lineWidth )
