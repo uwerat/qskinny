@@ -22,6 +22,7 @@ class QskGradient;
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
+class QskGraduationMetrics;
 class QskShadowMetrics;
 class QskStippleMetrics;
 class QskGraphic;
@@ -281,6 +282,15 @@ class QSK_EXPORT QskSkinHintTableEditor
     bool removeStippleMetrics( QskAspect, QskStateCombination = QskStateCombination() );
 
     QskStippleMetrics stippleMetrics( QskAspect ) const;
+
+    // graduation metrics
+
+    void setGraduationMetrics( QskAspect, const QskGraduationMetrics&,
+        QskStateCombination = QskStateCombination() );
+
+    bool removeGraduationMetrics( QskAspect, QskStateCombination = QskStateCombination() );
+
+    QskGraduationMetrics graduationMetrics( QskAspect ) const;
 
     // text options flag
 

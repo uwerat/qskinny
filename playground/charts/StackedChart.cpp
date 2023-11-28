@@ -66,7 +66,7 @@ QskIntervalF StackedChart::stackedInterval( int index ) const
     if ( index >= 0 && index < m_data->samples.size() )
     {
         interval.setLowerBound( m_data->cumulatedValues[index] );
-        interval.setWidth( m_data->samples[index].value() );
+        interval.setLength( m_data->samples[index].value() );
     }
 
     return interval;

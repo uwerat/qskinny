@@ -3,13 +3,13 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_SCALE_TICKMARKS_H
-#define QSK_SCALE_TICKMARKS_H
+#ifndef QSK_TICKMARKS_H
+#define QSK_TICKMARKS_H
 
 #include <QskIntervalF.h>
 #include <QVector>
 
-class QSK_EXPORT QskScaleTickmarks
+class QSK_EXPORT QskTickmarks
 {
     Q_GADGET
 
@@ -27,11 +27,14 @@ class QSK_EXPORT QskScaleTickmarks
 
     Q_ENUM( TickType )
 
-    QskScaleTickmarks();
-    ~QskScaleTickmarks();
+    QskTickmarks();
+    QskTickmarks( const QVector< qreal >& minorTicks,
+        const QVector< qreal >& mediumTicks, const QVector< qreal >& majorTicks );
 
-    bool operator==( const QskScaleTickmarks& ) const noexcept;
-    bool operator!=( const QskScaleTickmarks& ) const noexcept;
+    ~QskTickmarks();
+
+    bool operator==( const QskTickmarks& ) const noexcept;
+    bool operator!=( const QskTickmarks& ) const noexcept;
 
     int tickCount() const noexcept;
     Q_INVOKABLE int tickCount( TickType ) const noexcept;
@@ -59,47 +62,47 @@ class QSK_EXPORT QskScaleTickmarks
     QVector< qreal > m_ticks[ 3 ];
 };
 
-inline void QskScaleTickmarks::setMinorTicks( const QVector< qreal >& ticks )
+inline void QskTickmarks::setMinorTicks( const QVector< qreal >& ticks )
 {
     setTicks( MinorTick, ticks );
 }
 
-inline QVector< qreal > QskScaleTickmarks::minorTicks() const noexcept
+inline QVector< qreal > QskTickmarks::minorTicks() const noexcept
 {
     return ticks( MinorTick );
 }
 
-inline void QskScaleTickmarks::setMediumTicks( const QVector< qreal >& ticks )
+inline void QskTickmarks::setMediumTicks( const QVector< qreal >& ticks )
 {
     setTicks( MediumTick, ticks );
 }
 
-inline QVector< qreal > QskScaleTickmarks::mediumTicks() const noexcept
+inline QVector< qreal > QskTickmarks::mediumTicks() const noexcept
 {
     return ticks( MediumTick );
 }
 
-inline void QskScaleTickmarks::setMajorTicks( const QVector< qreal >& ticks )
+inline void QskTickmarks::setMajorTicks( const QVector< qreal >& ticks )
 {
     setTicks( MajorTick, ticks );
 }
 
-inline QVector< qreal > QskScaleTickmarks::majorTicks() const noexcept
+inline QVector< qreal > QskTickmarks::majorTicks() const noexcept
 {
     return ticks( MajorTick );
 }
 
-inline bool QskScaleTickmarks::operator!=(
-    const QskScaleTickmarks& other ) const noexcept
+inline bool QskTickmarks::operator!=(
+    const QskTickmarks& other ) const noexcept
 {
     return !( *this == other );
 }
 
-Q_DECLARE_METATYPE( QskScaleTickmarks )
+Q_DECLARE_METATYPE( QskTickmarks )
 
 #ifndef QT_NO_DEBUG_STREAM
 
-QSK_EXPORT QDebug operator<<( QDebug, const QskScaleTickmarks& );
+QSK_EXPORT QDebug operator<<( QDebug, const QskTickmarks& );
 
 #endif
 

@@ -6,9 +6,7 @@
 #ifndef QSK_LINES_NODE_H
 #define QSK_LINES_NODE_H
 
-#include "QskGlobal.h"
-
-#include <qsgnode.h>
+#include "QskBasicLinesNode.h"
 #include <qvector.h>
 
 class QskIntervalF;
@@ -17,25 +15,18 @@ class QTransform;
 class QPointF;
 class QLineF;
 class QPolygonF;
-class QQuickItem;
-
-class QskLinesNodePrivate;
 
 /*
     A node for stippled or solid lines.
     For the moment limited to horizontal/vertical lines: TODO
  */
-class QSK_EXPORT QskLinesNode : public QSGGeometryNode
+class QSK_EXPORT QskLinesNode : public QskBasicLinesNode
 {
-    using Inherited = QSGGeometryNode;
+    using Inherited = QskBasicLinesNode;
 
   public:
     QskLinesNode();
     ~QskLinesNode() override;
-
-    void setGlobalPosition( const QPointF&, qreal devicePixelRatio );
-    void setGlobalPosition( const QQuickItem* );
-    void resetGlobalPosition();
 
     void updateGrid( const QColor&, qreal lineWidth,
         const QskStippleMetrics&, const QTransform&, const QRectF&,
@@ -80,7 +71,7 @@ class QSK_EXPORT QskLinesNode : public QSGGeometryNode
         const QTransform&, int count, const qreal* values,
         const QskStippleMetrics&, QSGGeometry::Point2D* ) const;
 
-    Q_DECLARE_PRIVATE( QskLinesNode )
+    QskHashValue m_hash = 0.0;
 };
 
 #endif

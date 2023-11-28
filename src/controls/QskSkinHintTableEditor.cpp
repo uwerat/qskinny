@@ -11,6 +11,7 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
+#include "QskGraduationMetrics.h"
 #include "QskShadowMetrics.h"
 #include "QskStippleMetrics.h"
 #include "QskGraphic.h"
@@ -135,6 +136,11 @@ namespace
     inline QskAspect aspectStipple( QskAspect aspect )
     {
         return aspect | QskAspect::Style;
+    }
+
+    inline QskAspect aspectGraduation( QskAspect aspect )
+    {
+        return aspect | QskAspect::Graduation;
     }
 }
 
@@ -627,6 +633,23 @@ bool QskSkinHintTableEditor::removeStippleMetrics(
 QskStippleMetrics QskSkinHintTableEditor::stippleMetrics( QskAspect aspect ) const
 {
     return metricHint< QskStippleMetrics >( aspectStipple( aspect ) );
+}
+
+void QskSkinHintTableEditor::setGraduationMetrics( QskAspect aspect,
+    const QskGraduationMetrics& metrics, QskStateCombination combination )
+{
+    setMetricHint( aspectGraduation( aspect ), metrics, combination );
+}
+
+bool QskSkinHintTableEditor::removeGraduationMetrics(
+    QskAspect aspect, QskStateCombination combination )
+{
+    return removeMetricHint( aspectGraduation( aspect ), combination );
+}
+
+QskGraduationMetrics QskSkinHintTableEditor::graduationMetrics( QskAspect aspect ) const
+{
+    return metricHint< QskGraduationMetrics >( aspectGraduation( aspect ) );
 }
 
 void QskSkinHintTableEditor::setTextOptions( QskAspect aspect,

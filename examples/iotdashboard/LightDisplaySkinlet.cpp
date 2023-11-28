@@ -10,7 +10,7 @@
 
 #include <QskArcMetrics.h>
 #include <QskTextOptions.h>
-#include <QskScaleTickmarks.h>
+#include <QskTickmarks.h>
 #include <QskBoxShadowNode.h>
 #include <QskSGNode.h>
 
@@ -156,7 +156,7 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
             const auto ticksRect = display->subControlRect( LightDisplay::Tickmarks );
             const auto arcMetrics = display->arcMetricsHint( LightDisplay::Tickmarks );
 
-            QskScaleTickmarks tickmarks;
+            QskTickmarks tickmarks;
             tickmarks.setMajorTicks( { 0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180 } );
 
             const auto tickLineWidth = display->metric( LightDisplay::Tickmarks );
