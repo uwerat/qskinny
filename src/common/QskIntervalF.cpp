@@ -187,6 +187,30 @@ void QskIntervalF::spanFromUpperBound( qreal value ) noexcept
     }
 }
 
+QskIntervalF QskIntervalF::fuzzyAligned( qreal stepSize ) const
+{
+    auto v1 = m_lowerBound;
+    auto v2 = m_upperBound;
+
+    const auto max = std::numeric_limits< qreal >::max();
+
+    if ( -max + stepSize <= v1 )
+    {
+        const auto v = qskFuzzyFloor( v1, stepSize );
+        if ( !qskFuzzyCompare( v1, v ) )
+            v1 = v;
+    }
+
+    if ( max - stepSize >= v2 )
+    {
+        const auto v = qskFuzzyCeil( v2, stepSize );
+        if ( !qskFuzzyCompare( v2, v ) )
+            v2 = v;
+    }
+
+    return QskIntervalF( v1, v2 );
+}
+
 bool QskIntervalF::fuzzyContains( qreal value ) const
 {
     if ( !isValid() )

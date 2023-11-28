@@ -75,6 +75,8 @@ class QSK_EXPORT QskIntervalF
     QskIntervalF operator|( qreal ) const noexcept;
     QskIntervalF& operator|=( qreal ) noexcept;
 
+    QskIntervalF fuzzyAligned( qreal stepSize ) const;
+
     constexpr bool isValid() const noexcept;
     constexpr bool isNull() const noexcept;
     constexpr bool isEmpty() const noexcept;

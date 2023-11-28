@@ -21,6 +21,12 @@ QskTickmarks::QskTickmarks()
 {
 }
 
+QskTickmarks::QskTickmarks( const QVector< qreal >& minorTicks,
+        const QVector< qreal >& mediumTicks, const QVector< qreal >& majorTicks )
+    : m_ticks{ minorTicks, mediumTicks, majorTicks }
+{
+}
+
 QskTickmarks::~QskTickmarks()
 {
 }

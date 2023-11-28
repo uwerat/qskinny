@@ -28,6 +28,9 @@ class QSK_EXPORT QskTickmarks
     Q_ENUM( TickType )
 
     QskTickmarks();
+    QskTickmarks( const QVector< qreal >& minorTicks,
+        const QVector< qreal >& mediumTicks, const QVector< qreal >& majorTicks );
+
     ~QskTickmarks();
 
     bool operator==( const QskTickmarks& ) const noexcept;

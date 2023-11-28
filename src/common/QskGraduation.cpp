@@ -13,7 +13,7 @@
 
 #include <cmath>
 
-namespace
+namespace Engine
 {
     // What about using qskFuzzyCompare and friends ???
 
@@ -46,61 +46,9 @@ namespace
         return true;
     }
 
-    double ceilEps( double value, double intervalSize )
-    {
-        const double eps = _eps * intervalSize;
-
-        value = ( value - eps ) / intervalSize;
-        return std::ceil( value ) * intervalSize;
-    }
-
-    double floorEps( double value, double intervalSize )
-    {
-        const double eps = _eps * intervalSize;
-
-        value = ( value + eps ) / intervalSize;
-        return std::floor( value ) * intervalSize;
-    }
-
-    double suggestedStepSize( double intervalSize, int numSteps )
-    {
-        if ( numSteps <= 0 )
-            return 0.0;
-
-        const auto v = intervalSize / numSteps;
-        if ( qFuzzyIsNull( v ) )
-            return 0.0;
-
-        constexpr double base = 10.0;
-
-        // the same as std::log10( std::fabs( v ) );
-        const double lx = std::log( std::fabs( v ) ) / std::log( base );
-        const double p = std::floor( lx );
-
-        const double fraction = std::pow( base, lx - p );
-
-        double stepSize = std::pow( base, p );
-        if ( v < 0 )
-            stepSize = -stepSize;
-
-        for ( const double f : { 2.0, 2.5, 5.0, 10.0 } )
-        {
-            if ( fraction <= f || qFuzzyCompare( fraction, f ) )
-            {
-                stepSize *= f;
-                break;
-            }
-        }
-
-        return stepSize;
-    }
-}
-
-namespace Engine
-{
     double minorStepSize( double intervalSize, int maxSteps )
     {
-        const double minStep = suggestedStepSize( intervalSize, maxSteps );
+        const double minStep = QskGraduation::stepSize( intervalSize, maxSteps );
 
         if ( minStep != 0.0 )
         {
@@ -132,40 +80,15 @@ namespace Engine
         }
 
         QVector< qreal > strippedTicks;
-        for ( int i = 0; i < ticks.count(); i++ )
+        strippedTicks.reserve( ticks.count() );
+
+        for ( const auto tick : ticks )
         {
-            if ( fuzzyContains( interval, ticks[i] ) )
-                strippedTicks += ticks[i];
+            if ( fuzzyContains( interval, tick ) )
+                strippedTicks += tick;
         }
 
         return strippedTicks;
-    }
-
-    QskIntervalF align( const QskIntervalF& interval, qreal stepSize )
-    {
-        auto x1 = interval.lowerBound();
-        auto x2 = interval.upperBound();
-
-        // when there is no rounding beside some effect, when
-        // calculating with doubles, we keep the original value
-
-        const auto max = std::numeric_limits< qreal >::max();
-
-        if ( -max + stepSize <= x1 )
-        {
-            const auto x = floorEps( x1, stepSize );
-            if ( qFuzzyIsNull( x ) || !qFuzzyCompare( x1, x ) )
-                x1 = x;
-        }
-
-        if ( max - stepSize >= x2 )
-        {
-            const auto x = ceilEps( x2, stepSize );
-            if ( qFuzzyIsNull( x ) || !qFuzzyCompare( x2, x ) )
-                x2 = x;
-        }
-
-        return QskIntervalF( x1, x2 );
     }
 
     QVector< qreal > buildMajorTicks(
@@ -227,7 +150,7 @@ namespace Engine
     {
         using T = QskTickmarks;
 
-        const auto boundingInterval = align( interval, stepSize );
+        const auto boundingInterval = interval.fuzzyAligned( stepSize );
 
         QVector< qreal > ticks[3];
         ticks[T::MajorTick] = buildMajorTicks( boundingInterval, stepSize );
@@ -252,18 +175,13 @@ namespace Engine
             }
         }
 
-        QskTickmarks tickmarks;
-        tickmarks.setMinorTicks( ticks[T::MinorTick] );
-        tickmarks.setMediumTicks( ticks[T::MediumTick] );
-        tickmarks.setMajorTicks( ticks[T::MajorTick] );
-
-        return tickmarks;
+        return { ticks[T::MinorTick], ticks[T::MediumTick], ticks[T::MajorTick] };
     }
 
 }
 
 QskTickmarks QskGraduation::divideInterval(
-    qreal x1, qreal x2, int maxMajorSteps, int maxMinorSteps, qreal stepSize)
+    qreal x1, qreal x2, int maxMajorSteps, int maxMinorSteps, qreal stepSize )
 {
     QskTickmarks tickmarks;
 
@@ -275,58 +193,52 @@ QskTickmarks QskGraduation::divideInterval(
         return tickmarks;
     }
 
-    if ( interval.width() <= 0 )
+    if ( interval.width() <= 0.0 || stepSize < 0.0 )
         return tickmarks;
 
-    stepSize = qAbs( stepSize );
     if ( stepSize == 0.0 )
     {
         if ( maxMajorSteps < 1 )
             maxMajorSteps = 1;
 
-        stepSize = suggestedStepSize( interval.width(), maxMajorSteps );
+        stepSize = QskGraduation::stepSize( interval.width(), maxMajorSteps );
     }
 
     if ( stepSize != 0.0 )
-    {
         tickmarks = Engine::buildTicks( interval, stepSize, maxMinorSteps );
-    }
-
-    if ( x1 > x2 )
-        tickmarks.invert();
 
     return tickmarks;
 }
 
-void QskGraduation::calculate( Attributes attributes, int maxNumSteps,
-    qreal& x1, qreal& x2, qreal& stepSize)
+qreal QskGraduation::stepSize( double length, int numSteps )
 {
-    auto interval = QskIntervalF::normalized( x1, x2 );
-
-    interval.setLowerBound( interval.lowerBound() );
-    interval.setUpperBound( interval.upperBound() );
-
-    stepSize = suggestedStepSize( interval.width(), qMax( maxNumSteps, 1 ) );
-
-    if ( !( attributes & Floating ) )
-        interval = Engine::align( interval, stepSize );
-
-    x1 = interval.lowerBound();
-    x2 = interval.upperBound();
-
-    if ( attributes & Inverted )
-    {
-        qSwap( x1, x2 );
-        stepSize = -stepSize;
-    }
-}
-
-qreal QskGraduation::alignedStepSize( double intervalSize, int numSteps )
-{
-    if ( intervalSize <= 0.0 )
+    if ( numSteps <= 0 )
         return 0.0;
 
-    return suggestedStepSize( intervalSize, numSteps );
-}
+    const auto v = length / numSteps;
+    if ( qFuzzyIsNull( v ) )
+        return 0.0;
 
-#include "moc_QskGraduation.cpp"
+    constexpr double base = 10.0;
+
+    // the same as std::log10( std::fabs( v ) );
+    const double lx = std::log( std::fabs( v ) ) / std::log( base );
+    const double p = std::floor( lx );
+
+    const double fraction = std::pow( base, lx - p );
+
+    double stepSize = std::pow( base, p );
+    if ( v < 0 )
+        stepSize = -stepSize;
+
+    for ( const double f : { 2.0, 2.5, 5.0, 10.0 } )
+    {
+        if ( fraction <= f || qFuzzyCompare( fraction, f ) )
+        {
+            stepSize *= f;
+            break;
+        }
+    }
+
+    return stepSize;
+}
