@@ -3,7 +3,7 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskScaleRenderer.h"
+#include "QskGraduationRenderer.h"
 #include "QskTickmarks.h"
 #include "QskSkinlet.h"
 #include "QskSGNode.h"
@@ -87,7 +87,7 @@ static inline quint8 qskLabelNodeRole( const QVariant& label )
     return QskSGNode::NoRole;
 }
 
-class QskScaleRenderer::PrivateData
+class QskGraduationRenderer::PrivateData
 {
   public:
 
@@ -117,29 +117,29 @@ class QskScaleRenderer::PrivateData
     QskColorFilter colorFilter;
 
     Qt::Edge edge = Qt::BottomEdge;
-    QskScaleRenderer::Flags flags = ClampedLabels;
+    QskGraduationRenderer::Flags flags = ClampedLabels;
 };
 
-QskScaleRenderer::QskScaleRenderer()
+QskGraduationRenderer::QskGraduationRenderer()
     : m_data( new PrivateData() )
 {
 }
 
-QskScaleRenderer::~QskScaleRenderer()
+QskGraduationRenderer::~QskGraduationRenderer()
 {
 }
 
-void QskScaleRenderer::setEdge( Qt::Edge edge )
+void QskGraduationRenderer::setEdge( Qt::Edge edge )
 {
     m_data->edge = edge;
 }
 
-Qt::Edge QskScaleRenderer::edge() const
+Qt::Edge QskGraduationRenderer::edge() const
 {
     return m_data->edge;
 }
 
-void QskScaleRenderer::setFlag( Flag flag, bool on )
+void QskGraduationRenderer::setFlag( Flag flag, bool on )
 {
     if ( on )
         m_data->flags |= flag;
@@ -147,137 +147,137 @@ void QskScaleRenderer::setFlag( Flag flag, bool on )
         m_data->flags &= ~flag;
 }
 
-void QskScaleRenderer::setFlags( Flags flags )
+void QskGraduationRenderer::setFlags( Flags flags )
 {
     m_data->flags = flags;
 }
 
-QskScaleRenderer::Flags QskScaleRenderer::flags() const
+QskGraduationRenderer::Flags QskGraduationRenderer::flags() const
 {
     return m_data->flags;
 }
 
-void QskScaleRenderer::setBoundaries( qreal lowerBound, qreal upperBound )
+void QskGraduationRenderer::setBoundaries( qreal lowerBound, qreal upperBound )
 {
     setBoundaries( QskIntervalF( lowerBound, upperBound ) );
 }
 
-void QskScaleRenderer::setBoundaries( const QskIntervalF& boundaries )
+void QskGraduationRenderer::setBoundaries( const QskIntervalF& boundaries )
 {
     m_data->boundaries = boundaries;
 }
 
-QskIntervalF QskScaleRenderer::boundaries() const
+QskIntervalF QskGraduationRenderer::boundaries() const
 {
     return m_data->boundaries;
 }
 
-qreal QskScaleRenderer::position() const
+qreal QskGraduationRenderer::position() const
 {
     return m_data->position;
 }
 
-void QskScaleRenderer::setPosition( qreal pos )
+void QskGraduationRenderer::setPosition( qreal pos )
 {
     m_data->position = pos;
 }
 
-void QskScaleRenderer::setRange( qreal from, qreal to )
+void QskGraduationRenderer::setRange( qreal from, qreal to )
 {
     setRange( QskIntervalF( from, to ) );
 }
 
-void QskScaleRenderer::setRange( const QskIntervalF& range )
+void QskGraduationRenderer::setRange( const QskIntervalF& range )
 {
     m_data->range = range;
 }
 
-QskIntervalF QskScaleRenderer::range() const
+QskIntervalF QskGraduationRenderer::range() const
 {
     return m_data->range;
 }
 
-void QskScaleRenderer::setTickmarks( const QskTickmarks& tickmarks )
+void QskGraduationRenderer::setTickmarks( const QskTickmarks& tickmarks )
 {
     m_data->tickmarks = tickmarks;
 }
 
-const QskTickmarks& QskScaleRenderer::tickmarks() const
+const QskTickmarks& QskGraduationRenderer::tickmarks() const
 {
     return m_data->tickmarks;
 }
 
-void QskScaleRenderer::setSpacing( qreal spacing )
+void QskGraduationRenderer::setSpacing( qreal spacing )
 {
     m_data->spacing = qMax( spacing, 0.0 );
 }
 
-qreal QskScaleRenderer::spacing() const
+qreal QskGraduationRenderer::spacing() const
 {
     return m_data->spacing;
 }
 
-void QskScaleRenderer::setTickColor( const QColor& color )
+void QskGraduationRenderer::setTickColor( const QColor& color )
 {
     m_data->tickColor = color;
 }
 
-QColor QskScaleRenderer::tickColor() const
+QColor QskGraduationRenderer::tickColor() const
 {
     return m_data->tickColor;
 }
 
-void QskScaleRenderer::setTickLength( qreal length )
+void QskGraduationRenderer::setTickLength( qreal length )
 {
     m_data->tickLength = qMax( length, 0.0 );
 }
 
-qreal QskScaleRenderer::tickLength() const
+qreal QskGraduationRenderer::tickLength() const
 {
     return m_data->tickLength;
 }
 
-void QskScaleRenderer::setTickWidth( qreal width )
+void QskGraduationRenderer::setTickWidth( qreal width )
 {
     m_data->tickWidth = qMax( width, 0.0 );
 }
 
-qreal QskScaleRenderer::tickWidth() const
+qreal QskGraduationRenderer::tickWidth() const
 {
     return m_data->tickWidth;
 }
 
-void QskScaleRenderer::setFont( const QFont& font )
+void QskGraduationRenderer::setFont( const QFont& font )
 {
     m_data->font = font;
 }
 
-QFont QskScaleRenderer::font() const
+QFont QskGraduationRenderer::font() const
 {
     return m_data->font;
 }
 
-void QskScaleRenderer::setTextColors( const QskTextColors& textColors )
+void QskGraduationRenderer::setTextColors( const QskTextColors& textColors )
 {
     m_data->textColors = textColors;
 }
 
-QskTextColors QskScaleRenderer::textColors() const
+QskTextColors QskGraduationRenderer::textColors() const
 {
     return m_data->textColors;
 }
 
-void QskScaleRenderer::setColorFilter( const QskColorFilter& colorFilter )
+void QskGraduationRenderer::setColorFilter( const QskColorFilter& colorFilter )
 {
     m_data->colorFilter = colorFilter;
 }
 
-const QskColorFilter& QskScaleRenderer::colorFilter() const
+const QskColorFilter& QskGraduationRenderer::colorFilter() const
 {
     return m_data->colorFilter;
 }
 
-QSGNode* QskScaleRenderer::updateNode(
+QSGNode* QskGraduationRenderer::updateNode(
     const QskSkinnable* skinnable, QSGNode* node )
 {
     enum Role : quint8 { Ticks = 1, Labels = 2 };
@@ -303,7 +303,7 @@ QSGNode* QskScaleRenderer::updateNode(
     return node;
 }
 
-QSGNode* QskScaleRenderer::updateTicksNode(
+QSGNode* QskGraduationRenderer::updateTicksNode(
     const QTransform& transform, QSGNode* node ) const
 {
     QskIntervalF backbone;
@@ -342,7 +342,7 @@ QSGNode* QskScaleRenderer::updateTicksNode(
     return axisNode;
 }
 
-QSGNode* QskScaleRenderer::updateLabelsNode( const QskSkinnable* skinnable,
+QSGNode* QskGraduationRenderer::updateLabelsNode( const QskSkinnable* skinnable,
     const QTransform& transform, QSGNode* node ) const
 {
     const auto ticks = m_data->tickmarks.majorTicks();
@@ -428,13 +428,13 @@ QSGNode* QskScaleRenderer::updateLabelsNode( const QskSkinnable* skinnable,
     return node;
 }
 
-QVariant QskScaleRenderer::labelAt( qreal pos ) const
+QVariant QskGraduationRenderer::labelAt( qreal pos ) const
 {
     return QString::number( pos, 'g' );
 }
 
 // should be cached
-QSizeF QskScaleRenderer::boundingLabelSize() const
+QSizeF QskGraduationRenderer::boundingLabelSize() const
 {
     QSizeF boundingSize( 0.0, 0.0 );
 
@@ -471,7 +471,7 @@ QSizeF QskScaleRenderer::boundingLabelSize() const
     return boundingSize;
 }
 
-QRectF QskScaleRenderer::labelRect(
+QRectF QskGraduationRenderer::labelRect(
     const QTransform& transform, qreal tick, const QSizeF& labelSize ) const
 {
     const auto isHorizontal = qskIsHorizontal( m_data->edge );
@@ -521,7 +521,7 @@ QRectF QskScaleRenderer::labelRect(
     return QRectF( x, y, w, h );
 }
 
-QSGNode* QskScaleRenderer::updateTickLabelNode( const QskSkinnable* skinnable,
+QSGNode* QskGraduationRenderer::updateTickLabelNode( const QskSkinnable* skinnable,
     QSGNode* node, const QVariant& label, const QRectF& rect ) const
 {
     if ( label.canConvert< QString >() )
@@ -545,4 +545,4 @@ QSGNode* QskScaleRenderer::updateTickLabelNode( const QskSkinnable* skinnable,
     return nullptr;
 }
 
-#include "moc_QskScaleRenderer.cpp"
+#include "moc_QskGraduationRenderer.cpp"

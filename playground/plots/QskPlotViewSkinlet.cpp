@@ -6,7 +6,7 @@
 #include "QskPlotViewSkinlet.h"
 #include "QskPlotView.h"
 
-#include <QskScaleRenderer.h>
+#include <QskGraduationRenderer.h>
 #include <QskTickmarks.h>
 #include <QskTextColors.h>
 #include <QskFunctions.h>
@@ -50,12 +50,12 @@ static inline QskAspect qskAxisAspect( QskPlot::Axis axis )
 
 namespace
 {
-    class ScaleRenderer : public QskScaleRenderer
+    class Renderer : public QskGraduationRenderer
     {
-        using Inherited = QskScaleRenderer;
+        using Inherited = QskGraduationRenderer;
 
       public:
-        ScaleRenderer( const QskPlotView* view, QskPlot::Axis axis )
+        Renderer( const QskPlotView* view, QskPlot::Axis axis )
             : m_view( view )
             , m_axis( axis )
         {
@@ -70,8 +70,8 @@ namespace
             const auto aspect = Q::AxisScale
                 | ( ( axis == QskPlot::XBottom ) ? A::Bottom : A::Left );
 
-            const auto flags = view->flagHint< QskScaleRenderer::Flags >(
-                aspect | QskAspect::Style, QskScaleRenderer::Backbone );
+            const auto flags = view->flagHint< QskGraduationRenderer::Flags >(
+                aspect | QskAspect::Style, QskGraduationRenderer::Backbone );
 
             setFlags( flags );
 
@@ -223,14 +223,14 @@ QRectF QskPlotViewSkinlet::axisRect(
 
     qreal x0, y0;
     {
-        const ScaleRenderer renderer( view, QskPlot::XBottom );
+        const Renderer renderer( view, QskPlot::XBottom );
         const auto sz = renderer.boundingLabelSize();
 
         y0 = rect.bottom() - sz.height()
             - renderer.labelOffset() - paddingBottom.height();
     }
     {
-        const ScaleRenderer renderer( view, QskPlot::YLeft );
+        const Renderer renderer( view, QskPlot::YLeft );
         const auto sz = renderer.boundingLabelSize();
 
         x0 = rect.left() + sz.width()
@@ -265,7 +265,7 @@ QSGNode* QskPlotViewSkinlet::updateAxisNode(
     const auto axisRect = sampleRect( view, view->contentsRect(), Q::AxisScale, axis );
     const auto padding = view->paddingHint( qskAxisAspect( axis ) );
 
-    ScaleRenderer renderer( view, axis );
+    Renderer renderer( view, axis );
     if ( axis == QskPlot::XBottom )
     {
         renderer.setPosition( axisRect.top() + padding.top() );

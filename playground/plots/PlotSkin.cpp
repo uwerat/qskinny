@@ -28,7 +28,7 @@
 #include <QskBoxShapeMetrics.h>
 #include <QskStippleMetrics.h>
 
-#include <QskScaleRenderer.h>
+#include <QskGraduationRenderer.h>
 
 #include <qbrush.h>
 
@@ -98,7 +98,7 @@ void SkinEditor::setupPlotHints()
 
         setColor( Q::AxisScale, qRgb( 20, 20, 20 ) );
         setFontRole( Q::AxisScale, QskSkin::MediumFont );
-        setFlag( Q::AxisScale | A::Style, QskScaleRenderer::Backbone );
+        setFlag( Q::AxisScale | A::Style, QskGraduationRenderer::Backbone );
 
         // thickness/length of the major ticks
         setStrutSize( Q::AxisScale, 1.0, 8.0 );

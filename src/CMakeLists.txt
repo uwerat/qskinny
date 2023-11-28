@@ -113,12 +113,12 @@ list(APPEND HEADERS
     nodes/QskBoxShadowNode.h
     nodes/QskColorRamp.h
     nodes/QskFillNode.h
+    nodes/QskGraduationRenderer.h
     nodes/QskGraphicNode.h
     nodes/QskLinesNode.h
     nodes/QskPaintedNode.h
     nodes/QskPlainTextRenderer.h
     nodes/QskRichTextRenderer.h
-    nodes/QskScaleRenderer.h
     nodes/QskSGNode.h
     nodes/QskStrokeNode.h
     nodes/QskStippledLineRenderer.h
@@ -149,13 +149,13 @@ list(APPEND SOURCES
     nodes/QskBoxShadowNode.cpp
     nodes/QskColorRamp.cpp
     nodes/QskFillNode.cpp
+    nodes/QskGraduationRenderer.cpp
     nodes/QskGraphicNode.cpp
     nodes/QskLinesNode.cpp
     nodes/QskPaintedNode.cpp
     nodes/QskPlainTextRenderer.cpp
     nodes/QskRectangleNode.cpp
     nodes/QskRichTextRenderer.cpp
-    nodes/QskScaleRenderer.cpp
     nodes/QskSGNode.cpp
     nodes/QskStrokeNode.cpp
     nodes/QskStippledLineRenderer.cpp

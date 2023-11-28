@@ -3,8 +3,8 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_SCALE_RENDERER_H
-#define QSK_SCALE_RENDERER_H
+#ifndef QSK_GRADUATION_RENDERER_H
+#define QSK_GRADUATION_RENDERER_H
 
 #include "QskGlobal.h"
 
@@ -27,7 +27,7 @@ class QPointF;
 class QSizeF;
 class QTransform;
 
-class QSK_EXPORT QskScaleRenderer
+class QSK_EXPORT QskGraduationRenderer
 {
     Q_GADGET
 
@@ -42,8 +42,8 @@ class QSK_EXPORT QskScaleRenderer
     Q_ENUM( Flag )
     Q_DECLARE_FLAGS( Flags, Flag )
 
-    QskScaleRenderer();
-    virtual ~QskScaleRenderer();
+    QskGraduationRenderer();
+    virtual ~QskGraduationRenderer();
 
     void setEdge( Qt::Edge );
     Qt::Edge edge() const;
@@ -102,7 +102,7 @@ class QSK_EXPORT QskScaleRenderer
         const QskSkinnable*, const QTransform&, QSGNode* ) const;
 
   private:
-    Q_DISABLE_COPY( QskScaleRenderer )
+    Q_DISABLE_COPY( QskGraduationRenderer )
 
     QRectF labelRect( const QTransform&, qreal, const QSizeF& ) const;
 
@@ -113,6 +113,6 @@ class QSK_EXPORT QskScaleRenderer
     std::unique_ptr< PrivateData > m_data;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( QskScaleRenderer::Flags )
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskGraduationRenderer::Flags )
 
 #endif
