@@ -60,6 +60,13 @@ QskMenu::QskMenu( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData )
 {
+#if 1
+    /*
+        The overlay is clipped from the drop down fading effect.
+        Until it is fixed we simply disable it. TODO ...
+     */
+    setOverlay( false );
+#endif
     setModal( true );
 
     setPopupFlag( QskPopup::CloseOnPressOutside, true );
