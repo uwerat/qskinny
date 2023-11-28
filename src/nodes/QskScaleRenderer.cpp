@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #include "QskScaleRenderer.h"
-#include "QskScaleTickmarks.h"
+#include "QskTickmarks.h"
 #include "QskSkinlet.h"
 #include "QskSGNode.h"
 #include "QskGraduationMetrics.h"
@@ -52,7 +52,7 @@ class QskScaleRenderer::PrivateData
 {
   public:
     QskIntervalF boundaries;
-    QskScaleTickmarks tickmarks;
+    QskTickmarks tickmarks;
 
     QColor tickColor = Qt::black;
     qreal tickWidth = 1.0;
@@ -110,12 +110,12 @@ QskIntervalF QskScaleRenderer::boundaries() const
     return m_data->boundaries;
 }
 
-void QskScaleRenderer::setTickmarks( const QskScaleTickmarks& tickmarks )
+void QskScaleRenderer::setTickmarks( const QskTickmarks& tickmarks )
 {
     m_data->tickmarks = tickmarks;
 }
 
-const QskScaleTickmarks& QskScaleRenderer::tickmarks() const
+const QskTickmarks& QskScaleRenderer::tickmarks() const
 {
     return m_data->tickmarks;
 }

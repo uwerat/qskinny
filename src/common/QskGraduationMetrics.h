@@ -6,7 +6,7 @@
 #ifndef QSK_GRADUATION_METRICS_H
 #define QSK_GRADUATION_METRICS_H
 
-#include "QskScaleTickmarks.h"
+#include "QskTickmarks.h"
 #include "QskFunctions.h"
 #include <algorithm>
 #include <qmetatype.h>
@@ -19,7 +19,7 @@ class QSK_EXPORT QskGraduationMetrics
     Q_PROPERTY( qreal minorTickLength READ minorTickLength WRITE setMinorTickLength )
 
   public:
-    using TickType = QskScaleTickmarks::TickType;
+    using TickType = QskTickmarks::TickType;
 
     constexpr QskGraduationMetrics() noexcept = default;
     constexpr QskGraduationMetrics( qreal minorTickLength,
@@ -71,32 +71,32 @@ inline constexpr QskGraduationMetrics::QskGraduationMetrics(
 
 inline constexpr qreal QskGraduationMetrics::majorTickLength() const noexcept
 {
-    return tickLength( QskScaleTickmarks::MajorTick );
+    return tickLength( QskTickmarks::MajorTick );
 }
 
 inline constexpr qreal QskGraduationMetrics::mediumTickLength() const noexcept
 {
-    return tickLength( QskScaleTickmarks::MediumTick );
+    return tickLength( QskTickmarks::MediumTick );
 }
 
 inline constexpr qreal QskGraduationMetrics::minorTickLength() const noexcept
 {
-    return tickLength( QskScaleTickmarks::MinorTick );
+    return tickLength( QskTickmarks::MinorTick );
 }
 
 inline constexpr void QskGraduationMetrics::setMajorTickLength( qreal length ) noexcept
 {
-    setTickLength( QskScaleTickmarks::MajorTick, length );
+    setTickLength( QskTickmarks::MajorTick, length );
 }
 
 inline constexpr void QskGraduationMetrics::setMediumTickLength( qreal length ) noexcept
 {
-    setTickLength( QskScaleTickmarks::MediumTick, length );
+    setTickLength( QskTickmarks::MediumTick, length );
 }
 
 inline constexpr void QskGraduationMetrics::setMinorTickLength( qreal length ) noexcept
 {
-    setTickLength( QskScaleTickmarks::MinorTick, length );
+    setTickLength( QskTickmarks::MinorTick, length );
 }
 
 inline constexpr bool QskGraduationMetrics::operator==(
@@ -114,7 +114,7 @@ inline constexpr bool QskGraduationMetrics::operator!=(
 }
 
 inline constexpr qreal QskGraduationMetrics::tickLength(
-    const QskScaleTickmarks::TickType type ) const noexcept
+    const QskTickmarks::TickType type ) const noexcept
 {
     return m_tickLengths[ type ];
 }

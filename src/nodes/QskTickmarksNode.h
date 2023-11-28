@@ -9,7 +9,7 @@
 #include "QskBasicLinesNode.h"
 
 class QskIntervalF;
-class QskScaleTickmarks;
+class QskTickmarks;
 class QskGraduationMetrics;
 class QRectF;
 
@@ -20,7 +20,7 @@ class QSK_EXPORT QskTickmarksNode : public QskBasicLinesNode
     ~QskTickmarksNode() override;
 
     void update(const QColor&, const QRectF&, const QskIntervalF&,
-        const QskScaleTickmarks&, int tickLineWidth, Qt::Orientation,
+        const QskTickmarks&, int tickLineWidth, Qt::Orientation,
         Qt::Alignment, const QskGraduationMetrics& );
 
   private:

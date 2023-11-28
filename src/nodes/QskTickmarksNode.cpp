@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #include "QskTickmarksNode.h"
-#include "QskScaleTickmarks.h"
+#include "QskTickmarks.h"
 #include "QskGraduationMetrics.h"
 
 #include <qrect.h>
@@ -20,7 +20,7 @@ QskTickmarksNode::~QskTickmarksNode()
 
 void QskTickmarksNode::update(
     const QColor& color, const QRectF& rect,
-    const QskIntervalF& boundaries, const QskScaleTickmarks& tickmarks,
+    const QskIntervalF& boundaries, const QskTickmarks& tickmarks,
     int lineWidth, Qt::Orientation orientation, Qt::Alignment alignment,
     const QskGraduationMetrics& graduationMetrics )
 {
@@ -43,7 +43,7 @@ void QskTickmarksNode::update(
         const qreal min = boundaries.lowerBound();
         const qreal range = boundaries.width();
 
-        using TM = QskScaleTickmarks;
+        using TM = QskTickmarks;
 
         for( int i = TM::MinorTick; i <= TM::MajorTick; i++ )
         {

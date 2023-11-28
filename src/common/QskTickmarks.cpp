@@ -3,29 +3,29 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskScaleTickmarks.h"
+#include "QskTickmarks.h"
 #include <algorithm>
 
 static void qskRegisterTickmarks()
 {
-    qRegisterMetaType< QskScaleTickmarks >();
+    qRegisterMetaType< QskTickmarks >();
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    QMetaType::registerEqualsComparator< QskScaleTickmarks >();
+    QMetaType::registerEqualsComparator< QskTickmarks >();
 #endif
 }
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterTickmarks )
 
-QskScaleTickmarks::QskScaleTickmarks()
+QskTickmarks::QskTickmarks()
 {
 }
 
-QskScaleTickmarks::~QskScaleTickmarks()
+QskTickmarks::~QskTickmarks()
 {
 }
 
-int QskScaleTickmarks::tickCount() const noexcept
+int QskTickmarks::tickCount() const noexcept
 {
     const auto count = m_ticks[ MajorTick ].count()
         + m_ticks[ MediumTick ].count()
@@ -35,41 +35,41 @@ int QskScaleTickmarks::tickCount() const noexcept
 }
 
 
-int QskScaleTickmarks::tickCount( TickType type ) const noexcept
+int QskTickmarks::tickCount( TickType type ) const noexcept
 {
     return static_cast< int >( m_ticks[ type ].count() );
 }
 
-QVector< qreal > QskScaleTickmarks::ticks( TickType type ) const noexcept
+QVector< qreal > QskTickmarks::ticks( TickType type ) const noexcept
 {
     return m_ticks[ type ];
 }
 
-void QskScaleTickmarks::setTicks(TickType type, const QVector< qreal >& ticks )
+void QskTickmarks::setTicks(TickType type, const QVector< qreal >& ticks )
 {
     m_ticks[ type ] = ticks;
 }
 
-qreal QskScaleTickmarks::tickAt( TickType type, int index ) const
+qreal QskTickmarks::tickAt( TickType type, int index ) const
 {
     return m_ticks[ type ].at( index );
 }
 
-void QskScaleTickmarks::reset()
+void QskTickmarks::reset()
 {
     m_ticks[ 0 ].clear();
     m_ticks[ 1 ].clear();
     m_ticks[ 2 ].clear();
 }
 
-void QskScaleTickmarks::invert()
+void QskTickmarks::invert()
 {
     std::reverse( m_ticks[ 0 ].begin(), m_ticks[ 0 ].end() );
     std::reverse( m_ticks[ 1 ].begin(), m_ticks[ 1 ].end() );
     std::reverse( m_ticks[ 2 ].begin(), m_ticks[ 2 ].end() );
 }
 
-QskHashValue QskScaleTickmarks::hash( QskHashValue seed ) const noexcept
+QskHashValue QskTickmarks::hash( QskHashValue seed ) const noexcept
 {
     seed = qHash( m_ticks[0], seed );
     seed = qHash( m_ticks[1], seed );
@@ -78,7 +78,7 @@ QskHashValue QskScaleTickmarks::hash( QskHashValue seed ) const noexcept
     return seed;
 }
 
-bool QskScaleTickmarks::operator==( const QskScaleTickmarks& other ) const noexcept
+bool QskTickmarks::operator==( const QskTickmarks& other ) const noexcept
 {
     return ( m_ticks[ 0 ] == other.m_ticks[ 0 ] )
         && ( m_ticks[ 1 ] == other.m_ticks[ 1 ] )
@@ -89,7 +89,7 @@ bool QskScaleTickmarks::operator==( const QskScaleTickmarks& other ) const noexc
 
 #include <qdebug.h>
 
-QDebug operator<<( QDebug debug, const QskScaleTickmarks& tickmarks )
+QDebug operator<<( QDebug debug, const QskTickmarks& tickmarks )
 {
     debug << tickmarks.majorTicks()
         << tickmarks.mediumTicks() << tickmarks.minorTicks();
@@ -99,4 +99,4 @@ QDebug operator<<( QDebug debug, const QskScaleTickmarks& tickmarks )
 
 #endif
 
-#include "moc_QskScaleTickmarks.cpp"
+#include "moc_QskTickmarks.cpp"

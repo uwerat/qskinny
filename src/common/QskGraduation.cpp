@@ -6,7 +6,7 @@
 #include "QskGraduation.h"
 #include "QskFunctions.h"
 #include "QskIntervalF.h"
-#include "QskScaleTickmarks.h"
+#include "QskTickmarks.h"
 
 #include <QDebug>
 #include <QtMath>
@@ -222,10 +222,10 @@ namespace Engine
         }
     }
 
-    QskScaleTickmarks buildTicks(
+    QskTickmarks buildTicks(
         const QskIntervalF& interval, qreal stepSize, int maxMinorSteps )
     {
-        using T = QskScaleTickmarks;
+        using T = QskTickmarks;
 
         const auto boundingInterval = align( interval, stepSize );
 
@@ -252,7 +252,7 @@ namespace Engine
             }
         }
 
-        QskScaleTickmarks tickmarks;
+        QskTickmarks tickmarks;
         tickmarks.setMinorTicks( ticks[T::MinorTick] );
         tickmarks.setMediumTicks( ticks[T::MediumTick] );
         tickmarks.setMajorTicks( ticks[T::MajorTick] );
@@ -262,10 +262,10 @@ namespace Engine
 
 }
 
-QskScaleTickmarks QskGraduation::divideInterval(
+QskTickmarks QskGraduation::divideInterval(
     qreal x1, qreal x2, int maxMajorSteps, int maxMinorSteps, qreal stepSize)
 {
-    QskScaleTickmarks tickmarks;
+    QskTickmarks tickmarks;
 
     const auto interval = QskIntervalF::normalized( x1, x2 );
 

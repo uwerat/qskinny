@@ -29,13 +29,13 @@ list(APPEND HEADERS
     common/QskPlacementPolicy.h
     common/QskPlatform.h
     common/QskRgbValue.h
-    common/QskScaleTickmarks.h
     common/QskShadowMetrics.h
     common/QskSizePolicy.h
     common/QskStateCombination.h
     common/QskStippleMetrics.h
     common/QskTextColors.h
     common/QskTextOptions.h
+    common/QskTickmarks.h
 )
 
 list(APPEND SOURCES
@@ -61,12 +61,12 @@ list(APPEND SOURCES
     common/QskPlatform.cpp
     common/QskPlacementPolicy.cpp
     common/QskRgbValue.cpp
-    common/QskScaleTickmarks.cpp
     common/QskShadowMetrics.cpp
     common/QskSizePolicy.cpp
     common/QskStippleMetrics.cpp
     common/QskTextColors.cpp
     common/QskTextOptions.cpp
+    common/QskTickmarks.cpp
 )
 
 list(APPEND HEADERS

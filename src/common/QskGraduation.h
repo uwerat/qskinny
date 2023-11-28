@@ -9,7 +9,7 @@
 #include <QskGlobal.h>
 #include <qmetatype.h>
 
-class QskScaleTickmarks;
+class QskTickmarks;
 
 namespace QskGraduation
 {
@@ -26,7 +26,7 @@ namespace QskGraduation
     Q_DECLARE_FLAGS( Attributes, Attribute )
     Q_DECLARE_OPERATORS_FOR_FLAGS( Attributes )
 
-    QskScaleTickmarks divideInterval( qreal x1, qreal x2,
+    QskTickmarks divideInterval( qreal x1, qreal x2,
         int maxMajorSteps, int maxMinorSteps, qreal stepSize = 0.0 );
 
     void calculate( Attributes, int maxNumSteps,

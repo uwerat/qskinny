@@ -16,7 +16,7 @@
 
 class QskSkinnable;
 class QskIntervalF;
-class QskScaleTickmarks;
+class QskTickmarks;
 class QskTextColors;
 class QskColorFilter;
 
@@ -41,8 +41,8 @@ class QSK_EXPORT QskScaleRenderer
     void setBoundaries( const QskIntervalF& );
     QskIntervalF boundaries() const;
 
-    void setTickmarks( const QskScaleTickmarks& );
-    const QskScaleTickmarks& tickmarks() const;
+    void setTickmarks( const QskTickmarks& );
+    const QskTickmarks& tickmarks() const;
 
     void setTickColor( const QColor& );
     QColor tickColor() const;

@@ -11,7 +11,7 @@
 #include <QSGFlatColorMaterial>
 
 class QskArcMetrics;
-class QskScaleTickmarks;
+class QskTickmarks;
 
 class RadialTickmarksNode : public QSGGeometryNode
 {
@@ -20,7 +20,7 @@ class RadialTickmarksNode : public QSGGeometryNode
     ~RadialTickmarksNode() override;
 
     void update( const QColor&, const QRectF&,
-        const QskArcMetrics&, const QskScaleTickmarks&, int lineWidth );
+        const QskArcMetrics&, const QskTickmarks&, int lineWidth );
 
   private:
     QSGGeometry m_geometry;

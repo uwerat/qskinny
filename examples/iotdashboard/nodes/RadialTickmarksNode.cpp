@@ -5,7 +5,7 @@
 
 #include "RadialTickmarksNode.h"
 
-#include <QskScaleTickmarks.h>
+#include <QskTickmarks.h>
 #include <QskArcMetrics.h>
 #include <QtMath>
 
@@ -24,7 +24,7 @@ RadialTickmarksNode::~RadialTickmarksNode()
 }
 
 void RadialTickmarksNode::update( const QColor& color, const QRectF& rect,
-    const QskArcMetrics& arcMetrics, const QskScaleTickmarks& tickmarks, int lineWidth )
+    const QskArcMetrics& arcMetrics, const QskTickmarks& tickmarks, int lineWidth )
 {
     if( lineWidth != m_lineWidth )
     {
@@ -48,7 +48,7 @@ void RadialTickmarksNode::update( const QColor& color, const QRectF& rect,
         const auto radius = 0.5 * rect.width();
         const auto needleRadius = radius - arcMetrics.thickness();
 
-        using TM = QskScaleTickmarks;
+        using TM = QskTickmarks;
 
         for( int i = TM::MinorTick; i <= TM::MajorTick; i++ )
         {
