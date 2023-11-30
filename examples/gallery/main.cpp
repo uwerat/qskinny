@@ -3,7 +3,7 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskLinearBox.h"
+#include "FocusIndicator.h"
 #include "label/LabelPage.h"
 #include "progressbar/ProgressBarPage.h"
 #include "inputs/InputPage.h"
@@ -16,6 +16,7 @@
 #include <SkinnyShapeProvider.h>
 #include <SkinnyNamespace.h>
 
+#include "QskLinearBox.h"
 #include <QskMainView.h>
 #include <QskFocusIndicator.h>
 #include <QskObjectCounter.h>
@@ -296,7 +297,7 @@ int main( int argc, char* argv[] )
 
     QskWindow window;
     window.addItem( mainView );
-    window.addItem( new QskFocusIndicator() );
+    window.addItem( new FocusIndicator() );
 
     window.resize( 800, 600 );
     window.show();
