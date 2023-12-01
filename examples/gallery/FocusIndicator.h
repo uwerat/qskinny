@@ -10,8 +10,11 @@ class FocusIndicator : public QskFocusIndicator
 {
     Q_OBJECT
 
-    Q_PROPERTY( bool concealed READ isConcealed
-        WRITE setConcealed NOTIFY concealedChanged )
+    Q_PROPERTY( bool exposed READ isExposed
+        WRITE setExposed NOTIFY exposedChanged )
+
+    Q_PROPERTY( int exposedTimeout READ exposedTimeout
+        WRITE setExposedTimeout NOTIFY exposedTimeoutChanged )
 
     using Inherited = QskFocusIndicator;
 
@@ -21,15 +24,21 @@ class FocusIndicator : public QskFocusIndicator
     FocusIndicator( QQuickItem* parent = nullptr );
     ~FocusIndicator() override;
 
+    bool isExposed() const;
     bool isConcealed() const;
 
     bool eventFilter( QObject*, QEvent* ) override;
 
+    void setExposedTimeout( int ms );
+    int exposedTimeout() const;
+
   public Q_SLOTS:
-    void setConcealed( bool );
+    void setExposed( bool = true );
+    void setConcealed( bool = true );
 
   Q_SIGNALS:
-    void concealedChanged( bool );
+    void exposedChanged( bool );
+    void exposedTimeoutChanged( int );
 
   protected:
     void windowChangeEvent( QskWindowChangeEvent* ) override;
@@ -39,3 +48,13 @@ class FocusIndicator : public QskFocusIndicator
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
+
+inline void FocusIndicator::setConcealed( bool on )
+{
+    setExposed( !on );
+}
+
+inline bool FocusIndicator::isConcealed() const
+{
+    return !isExposed();
+}
