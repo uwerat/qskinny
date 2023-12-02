@@ -2,51 +2,24 @@
 
 #include <QskEvent.h>
 #include <QskAnimationHint.h>
-#include <QskBoxBorderMetrics.h>
-#include <QskBoxShapeMetrics.h>
-#include <QskBoxBorderColors.h>
-#include <QskRgbValue.h>
 
 #include <qquickwindow.h>
 #include <qbasictimer.h>
 
-
-QSK_STATE( FocusIndicator, Concealed, QskAspect::FirstUserState )
-
-static inline bool qskIsExposingKeyPress( const QKeyEvent* event )
+static inline bool qskIsEnablingKey( const QKeyEvent* event )
 {
     // what keys do we want have here ???
     return qskIsButtonPressKey( event ) || qskFocusChainIncrement( event );
 }
 
-static void qskMaybeExpose( FocusIndicator* indicator, bool on  )
-{
-    Q_UNUSED( indicator );
-    Q_UNUSED( on );
-
-#if 0
-    if ( on )
-    {
-        if ( auto w = indicator->window() )
-        {
-            if ( w->isExposed() && w->isActive() )
-                indicator->setExposed( true );
-        }
-    }
-    else
-    {
-        indicator->setExposed( false );
-    }
-#endif
-}
-
 class FocusIndicator::PrivateData
 {
   public:
-    inline bool isAutoConcealing() const { return timeout > 0; }
+    inline bool isAutoDisabling() const { return duration > 0; }
+    inline bool isAutoEnabling() const { return false; }
 
-    int timeout = 0;
-    QBasicTimer concealTimer;
+    int duration = 0;
+    QBasicTimer timer;
 
     bool blockAutoRepeatKeyEvents = false;
 };
@@ -55,85 +28,94 @@ FocusIndicator::FocusIndicator( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-#if 1
-    auto colors = boxBorderColorsHint( Panel );
-
-    setBoxBorderColorsHint( Panel | Concealed, QskRgb::Transparent );
-
-    setAnimationHint( Panel | QskAspect::Color, 200 );
-    setAnimationHint( Panel | QskAspect::Color | Concealed, 500 );
-#endif
-
-    setExposedTimeout( 4500 );
+    setDuration( 4500 );
 }
 
 FocusIndicator::~FocusIndicator()
 {
 }
 
-void FocusIndicator::setExposedTimeout( int ms )
+void FocusIndicator::setDuration( int ms )
 {
     ms = std::max( ms, 0 );
-    if ( ms == m_data->timeout )
+    if ( ms == m_data->duration )
         return;
 
-    m_data->timeout = ms;
+    m_data->duration = ms;
 
-    if ( m_data->isAutoConcealing() )
+    if ( m_data->isAutoDisabling() )
     {
         if ( auto w = window() )
             w->installEventFilter( this );
 
-        if ( isExposed() )
+        if ( isEnabled() )
         {
             if ( isInitiallyPainted() )
-                m_data->concealTimer.start( m_data->timeout, this );
+                m_data->timer.start( m_data->duration, this );
             else
-                setExposed( false );
+                setEnabled( false );
         }
+
+        connect( this, &QQuickItem::enabledChanged,
+            this, &FocusIndicator::resetTimer );
     }
     else
     {
         if ( auto w = window() )
             w->removeEventFilter( this );
 
-        setExposed( true );
+        setEnabled( true );
+
+        disconnect( this, &QQuickItem::enabledChanged,
+            this, &FocusIndicator::resetTimer );
     }
 
-    Q_EMIT exposedTimeoutChanged( ms );
+    Q_EMIT durationChanged( ms );
 }
 
-int FocusIndicator::exposedTimeout() const
+int FocusIndicator::duration() const
 {
-    return m_data->timeout;
+    return m_data->duration;
 }
 
-void FocusIndicator::setExposed( bool on )
+void FocusIndicator::maybeEnable( bool on  )
 {
-    if ( on == isExposed() )
+    if ( !m_data->isAutoEnabling() )
         return;
 
-    setSkinStateFlag( Concealed, !on );
-
-    if ( m_data->isAutoConcealing() )
+    if ( on )
     {
-        if ( on )
+        if ( auto w = window() )
+        {
+            if ( w->isExposed() && w->isActive() )
+                setEnabled( true );
+        }
+    }
+    else
+    {
+        setEnabled( false );
+    }
+}
+
+void FocusIndicator::resetTimer()
+{
+    if ( m_data->isAutoDisabling() )
+    {
+        if ( isEnabled() )
         {
             const auto hint = animationHint( Panel | QskAspect::Color );
-            m_data->concealTimer.start( m_data->timeout + hint.duration, this );
+            m_data->timer.start( m_data->duration + hint.duration, this );
         }
         else
         {
-            m_data->concealTimer.stop();
+            m_data->timer.stop();
         }
     }
-
-    Q_EMIT exposedChanged( on );
 }
 
 bool FocusIndicator::eventFilter( QObject* object, QEvent* event )
 {
-    if( ( object != window() ) || !m_data->isAutoConcealing() )
+    if( ( object != window() ) || !m_data->isAutoDisabling() )
         return Inherited::eventFilter( object, event );
 
     switch( static_cast< int >( event->type() ) )
@@ -141,12 +123,14 @@ bool FocusIndicator::eventFilter( QObject* object, QEvent* event )
         case QEvent::KeyPress:
         case QEvent::KeyRelease:
         case QEvent::ShortcutOverride:
-            if ( m_data->concealTimer.isActive() )
+        {
+            if ( m_data->timer.isActive() )
             {
                 // renew the exposed period
-                m_data->concealTimer.start( m_data->timeout, this );
+                m_data->timer.start( m_data->duration, this );
             }
             break;
+        }
     }
 
     switch( static_cast< int >( event->type() ) )
@@ -164,9 +148,9 @@ bool FocusIndicator::eventFilter( QObject* object, QEvent* event )
                 return true;
             }
 
-            if ( !isExposed() && qskIsExposingKeyPress( keyEvent ) )
+            if ( !isEnabled() && qskIsEnablingKey( keyEvent ) )
             {
-                setExposed( true );
+                setEnabled( true );
                 m_data->blockAutoRepeatKeyEvents = true;
                 return true;
             }
@@ -192,7 +176,7 @@ bool FocusIndicator::eventFilter( QObject* object, QEvent* event )
         case QEvent::FocusIn:
         case QEvent::FocusOut:
         {
-            qskMaybeExpose( this, event->type() != QEvent::FocusOut );
+            maybeEnable( event->type() != QEvent::FocusOut );
             break;
         }
     }
@@ -204,7 +188,7 @@ void FocusIndicator::windowChangeEvent( QskWindowChangeEvent* event )
 {
     Inherited::windowChangeEvent( event );
 
-    if ( m_data->isAutoConcealing() )
+    if ( m_data->isAutoDisabling() )
     {
         if ( auto w = event->oldWindow() )
             w->removeEventFilter( this );
@@ -212,28 +196,23 @@ void FocusIndicator::windowChangeEvent( QskWindowChangeEvent* event )
         if( auto w = event->window() )
         {
             w->installEventFilter( this );
-            qskMaybeExpose( this, true );
+            maybeEnable( true );
         }
     }
 }
 
 void FocusIndicator::timerEvent( QTimerEvent* event )
 {
-    if ( m_data->isAutoConcealing() )
+    if ( m_data->isAutoDisabling() )
     {
-        if( event->timerId() == m_data->concealTimer.timerId() )
+        if( event->timerId() == m_data->timer.timerId() )
         {
-            setExposed( false );
+            setEnabled( false );
             return;
         }
     }
 
     Inherited::timerEvent( event );
-}
-
-bool FocusIndicator::isExposed() const
-{
-    return !hasSkinState( Concealed );
 }
 
 #include "moc_FocusIndicator.cpp"

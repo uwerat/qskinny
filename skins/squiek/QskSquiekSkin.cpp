@@ -555,12 +555,19 @@ void Editor::setupProgressRing()
 void Editor::setupFocusIndicator()
 {
     using Q = QskFocusIndicator;
+    using A = QskAspect;
 
     setPadding( Q::Panel, 5 );
     setBoxBorderMetrics( Q::Panel, 2 );
     setBoxShape( Q::Panel, 4 );
     setGradient( Q::Panel, Qt::transparent );
+
     setBoxBorderColors( Q::Panel, m_pal.highlighted );
+    setBoxBorderColors( Q::Panel | Q::Disabled,
+        QskRgb::toTransparent( m_pal.highlighted, 0 ) );
+
+    setAnimation( Q::Panel | A::Color, 200 );
+    setAnimation( Q::Panel | A::Color | Q::Disabled, 500 );
 }
 
 void Editor::setupSeparator()
