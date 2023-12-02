@@ -3,7 +3,6 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "FocusIndicator.h"
 #include "label/LabelPage.h"
 #include "progressbar/ProgressBarPage.h"
 #include "inputs/InputPage.h"
@@ -297,7 +296,7 @@ int main( int argc, char* argv[] )
 
     QskWindow window;
     window.addItem( mainView );
-    window.addItem( new FocusIndicator() );
+    window.addItem( new QskFocusIndicator() );
 
     window.resize( 800, 600 );
     window.show();

@@ -14,17 +14,34 @@ class QSK_EXPORT QskFocusIndicator : public QskControl
 
     using Inherited = QskControl;
 
+    Q_PROPERTY( int duration READ duration
+        WRITE setDuration NOTIFY durationChanged )
+
   public:
     QSK_SUBCONTROLS( Panel )
 
     QskFocusIndicator( QQuickItem* parent = nullptr );
     ~QskFocusIndicator() override;
 
+    /*
+        duration until the indicator goes into disabled state after being enabled.
+        A duration of 0 disables automatic state changes.
+     */
+    void setDuration( int ms );
+    int duration() const;
+
     bool contains( const QPointF& ) const override;
     QRectF clipRect() const override;
 
+    bool eventFilter( QObject*, QEvent* ) override;
+
+  Q_SIGNALS:
+    void durationChanged( int );
+
   protected:
     void windowChangeEvent( QskWindowChangeEvent* ) override;
+    void timerEvent( QTimerEvent* ) override;
+
     virtual QRectF focusRect() const;
     void updateFocusFrame();
 
@@ -34,6 +51,9 @@ class QSK_EXPORT QskFocusIndicator : public QskControl
 
     void onFocusItemChanged();
     void onFocusItemDestroyed();
+
+    void resetTimer();
+    void maybeEnable( bool );
 
     void connectWindow( const QQuickWindow*, bool on );
     QVector< QMetaObject::Connection > connectItem( const QQuickItem* );

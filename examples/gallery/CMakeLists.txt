@@ -12,7 +12,6 @@ set(SOURCES
     dialog/DialogPage.h dialog/DialogPage.cpp
     listbox/ListBoxPage.h listbox/ListBoxPage.cpp
     Page.h Page.cpp
-    FocusIndicator.h FocusIndicator.cpp
     main.cpp
 )
 qt_add_resources(SOURCES icons.qrc)
