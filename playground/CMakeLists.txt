@@ -6,7 +6,10 @@ add_subdirectory(invoker)
 add_subdirectory(shadows)
 add_subdirectory(shapes)
 add_subdirectory(charts)
-add_subdirectory(plots)
+
+if (QT_VERSION_MAJOR VERSION_LESS 6)
+    add_subdirectory(parrots)
+endif()
 
 if (BUILD_INPUTCONTEXT)
     add_subdirectory(inputpanel)

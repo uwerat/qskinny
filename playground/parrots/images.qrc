@@ -1,0 +1,9 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+
+    <qresource>
+        <file>images/parrots.jpg</file>
+    </qresource>
+
+</RCC>
+
