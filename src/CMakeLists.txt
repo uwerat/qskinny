@@ -499,7 +499,7 @@ if(ENABLE_PINYIN)
     target_link_libraries(${target} PRIVATE pinyin Fcitx5::Utils)
 
     target_include_directories(${target}
-        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/inputcontext>)
+        PUBLIC $<BUILD_INTERFACE:${QSK_SOURCE_DIR}/inputcontext>)
 endif()
 
 set_target_properties(${target} PROPERTIES FOLDER libs)

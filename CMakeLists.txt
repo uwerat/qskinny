@@ -75,6 +75,8 @@ project(QSkinny
     HOMEPAGE_URL "https://github.com/uwerat/qskinny"
     VERSION 0.8.0)
 
+set(QSK_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
+
 qsk_setup_options()
 
 include(GNUInstallDirs)
