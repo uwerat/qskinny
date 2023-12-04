@@ -23,31 +23,13 @@
 #include <private/qquickshadereffect_p.h>
 #include <private/qquickshadereffectsource_p.h>
 
-static const char* vertexShader = R"(
-    uniform highp mat4 qt_Matrix;
-    attribute highp vec4 qt_Vertex;
-    attribute highp vec2 qt_MultiTexCoord0;
-    varying highp vec2 coord;
-    void main() {
-        coord = qt_MultiTexCoord0;
-        gl_Position = qt_Matrix * qt_Vertex;
-    })";
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    #include <QFile>
+#else
+    #include <QUrl>
+#endif
 
-static const char* fragmentShader = R"(
-    varying highp vec2 coord;
-    uniform sampler2D source;
-    uniform lowp float qt_Opacity;
-    
-    void main() {
-        vec2 delta = vec2(0.01, 0.01);
-        gl_FragColor =(0.0538 * texture2D(source, coord - 3.182 * delta)
-                     + 0.3229 * texture2D(source, coord - 1.364 * delta)
-                     + 0.2466 * texture2D(source, coord)
-                     + 0.3229 * texture2D(source, coord + 1.364 * delta)
-                     + 0.0538 * texture2D(source, coord + 3.182 * delta)) * qt_Opacity;
-    })";
-
-class ButtonBox: public QskLinearBox
+class ButtonBox : public QskLinearBox
 {
   public:
     ButtonBox( QQuickItem* parent = nullptr )
@@ -67,8 +49,13 @@ class ShaderEffect : public QQuickShaderEffect
     ShaderEffect( QQuickItem* parent = nullptr )
         : QQuickShaderEffect( parent )
     {
-        setVertexShader( ::vertexShader );
-        setFragmentShader( ::fragmentShader );
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        setVertexShader( loadShader( ":/shaders/blur.vert" ) );
+        setFragmentShader( loadShader( ":/shaders/blur.frag" ) );
+#else
+        setVertexShader( QUrl( "qrc:/shaders/blur.vert.qsb" ) );
+        setFragmentShader( QUrl( "qrc:/shaders/blur.frag.qsb" ) );
+#endif
 
         m_source = new QQuickShaderEffectSource( this );
         m_source->setLive( true );
@@ -80,17 +67,37 @@ class ShaderEffect : public QQuickShaderEffect
     QQuickItem* sourceItem() const { return m_source->sourceItem(); }
 
   protected:
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     void geometryChanged( const QRectF& newRect, const QRectF& oldRect ) override
     {
         Inherited::geometryChanged( newRect, oldRect );
+        updateSourceRect( newRect );
+    }
+#else
+    void geometryChange( const QRectF& newRect, const QRectF& oldRect ) override
+    {
+        Inherited::geometryChange( newRect, oldRect );
+        updateSourceRect( newRect );
+    }
+#endif
 
-        auto sourceRect = newRect;
-        sourceRect = m_source->sourceItem()->mapRectFromItem( this, sourceRect );
-
+  private:
+    void updateSourceRect( const QRectF& rect )
+    {
+        const auto sourceRect = m_source->sourceItem()->mapRectFromItem( this, rect );
         m_source->setSourceRect( sourceRect );
     }
 
-  private:
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QByteArray loadShader( const char* path ) const
+    {
+        QFile f( path );
+        f.open( QFile::ReadOnly );
+
+        return f.readAll();
+    }
+#endif
+
     void setSource( QQuickShaderEffectSource* source )
     {
         setProperty( "source", QVariant::fromValue( source ) );
@@ -138,10 +145,10 @@ class BackgroundItem : public QskControl
     }
 
     void timerEvent( QTimerEvent* ) override
-    {   
+    {
         static int counter = 0;
 
-        const auto angle = counter++ / 50.0 * M_PI * 2.0 ;
+        const auto angle = counter++ / 50.0 * M_PI * 2.0;
 
         const auto x = std::cos( angle );
         const auto y = std::sin( angle );

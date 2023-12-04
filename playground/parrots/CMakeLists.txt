@@ -4,6 +4,6 @@
 ############################################################################
 
 set(SOURCES main.cpp)
-qt_add_resources(SOURCES images.qrc)
+qt_add_resources(SOURCES images.qrc shaders.qrc)
 
 qsk_add_example(parrots ${SOURCES})
