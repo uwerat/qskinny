@@ -2,6 +2,9 @@
 <RCC version="1.0">
     <qresource prefix="/qskinny/">
 
+        <file>shaders/arcshadow.frag</file>
+        <file>shaders/arcshadow.vert</file>
+
         <file>shaders/boxshadow.vert.qsb</file>
         <file>shaders/boxshadow.frag.qsb</file>
         <file>shaders/boxshadow.vert</file>
