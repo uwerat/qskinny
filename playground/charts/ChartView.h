@@ -12,5 +12,5 @@ class CircularChart;
 class ChartView : public QskMainView
 {
   public:
-    ChartView( CircularChart*, QQuickItem* parent = nullptr );
+    ChartView( QskControl*, QQuickItem* parent = nullptr );
 };

@@ -126,6 +126,8 @@ namespace
             auto sliderStart = new SliderBox( "Angle", 0.0, 360.0, metrics.startAngle() );
             auto sliderSpan = new SliderBox( "Span", -360.0, 360.0, metrics.spanAngle() );
             auto sliderExtent = new SliderBox( "Extent", 10.0, 100.0, metrics.thickness() );
+            auto sliderOffsetX = new SliderBox( "Offset X", 0.0, 100.0, 0 );
+            auto sliderOffsetY = new SliderBox( "Offset Y", 0.0, 100.0, 0 );
 
             connect( sliderStart, &SliderBox::valueChanged,
                 this, &ControlPanel::startAngleChanged );
@@ -198,28 +200,38 @@ namespace
 
 }
 
-ChartView::ChartView( CircularChart* chart, QQuickItem* parent )
+ChartView::ChartView( QskControl* chart, QQuickItem* parent )
     : QskMainView( parent )
 {
     auto hBox = new QskLinearBox( Qt::Horizontal );
 
-    auto chartBox = new ChartBox( chart, hBox );
+    // auto chartBox = new ChartBox( chart, hBox );
 
-    auto legend = new Legend( hBox );
-    legend->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-    legend->setSamples( chart->series() );
+    // auto legend = new Legend( hBox );
+    // legend->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+    // legend->setSamples( chart->series() );
+    hBox->addItem(chart);
 
-    auto controlPanel = new ControlPanel( chartBox->arcMetrics() );
+    auto controlPanel = new ControlPanel( chart->arcMetricsHint(QskControl::Background) );
     controlPanel->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
+   
+    connect( controlPanel, &ControlPanel::thicknessChanged, chart, [ chart ](qreal v) {
+        auto m = chart->arcMetricsHint( QskControl::Background );
+        m.setThickness(v);
+        chart->setArcMetricsHint( QskControl::Background, m );
+    } );
 
-    connect( controlPanel, &ControlPanel::thicknessChanged,
-        chartBox, &ChartBox::setThickness );
+    connect( controlPanel, &ControlPanel::startAngleChanged, chart, [ chart ](qreal v) {
+        auto m = chart->arcMetricsHint( QskControl::Background );
+        m.setStartAngle(v);
+        chart->setArcMetricsHint( QskControl::Background, m );
+    } );
 
-    connect( controlPanel, &ControlPanel::startAngleChanged,
-        chartBox, &ChartBox::setStartAngle );
-
-    connect( controlPanel, &ControlPanel::spanAngleChanged,
-        chartBox, &ChartBox::setSpanAngle );
+    connect( controlPanel, &ControlPanel::spanAngleChanged, chart, [ chart ](qreal v) {
+        auto m = chart->arcMetricsHint( QskControl::Background );
+        m.setSpanAngle(v);
+        chart->setArcMetricsHint( QskControl::Background, m );
+    } );
 
     setHeader( controlPanel );
     setBody( hBox );

@@ -87,12 +87,20 @@ namespace
 
         void update(const QRectF& rect, const QskArcMetrics& metrics, const QColor& color, const qreal extend)
         {        
-            const auto size = qMin(rect.width(), rect.height());
+            auto* const vertices = geometry()->vertexDataAsPoint2D();
+            const auto r = rect.adjusted( 0, -4, +4, 0 );
+            vertices[0].set(r.left(), r.top());
+            vertices[1].set(r.left(), r.bottom());
+            vertices[2].set(r.right(), r.top());
+            vertices[3].set(r.right(), r.bottom());
+            markDirty( QSGNode::DirtyGeometry );
+
+            const auto size = qMin(r.width(), r.height());
             auto* const material = static_cast<QSGSimpleMaterial< QskArcShadowMaterialProperties >*>(this->material());
             auto& state = *material->state();
             state.color = color;
-            state.rect = rect;
-            state.radius = 1.0 - metrics.thickness() / size;
+            state.rect = r;
+            state.radius = 1.0 - (metrics.thickness() + extend / 4) / size;
             state.thickness = 2 * metrics.thickness() / size;
             state.startAngle = metrics.startAngle();
             state.spanAngle = metrics.spanAngle();
@@ -201,16 +209,8 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
             QskSGNode::setNodeRole( shadowNode, ShadowRole );            
         }
 
-        const auto extend = 16.0;
-        const auto e = extend / 4;
-        auto* const vertices = shadowNode->geometry()->vertexDataAsPoint2D();
-        const auto shadowRect = arcRect.adjusted( -e, +e, e, -e );
-        vertices[0].set(shadowRect.left(), shadowRect.top());
-        vertices[1].set(shadowRect.left(), shadowRect.bottom());
-        vertices[2].set(shadowRect.right(), shadowRect.top());
-        vertices[3].set(shadowRect.right(), shadowRect.bottom());
-        shadowNode->update(shadowRect, metrics, Qt::black, extend);
-        qDebug() << shadowRect << arcRect;
+        const auto extend = 16.0;        
+        shadowNode->update( arcRect, metrics, Qt::black, extend );
     }
     else 
     {

@@ -1,4 +1,5 @@
 uniform lowp float qt_Opacity;
+
 uniform lowp vec4 color;
 uniform lowp vec4 rect;
 uniform lowp float radius;

@@ -269,7 +269,8 @@ QSGNode* CircularChartSkinlet::updateSubNode(
         }
 
         case SegmentRole:
-            return updateSeriesNode( skinnable, Q::Segment, node );
+            //return updateSeriesNode( skinnable, Q::Segment, node );
+            return Inherited::updateSubNode( skinnable, nodeRole, node );
 
         case SegmentLabelRole:
             return updateSeriesNode( skinnable, Q::SegmentLabel, node );
@@ -314,16 +315,16 @@ QSGNode* CircularChartSkinlet::updateSampleNode( const QskSkinnable* skinnable,
 
     const auto chart = static_cast< const CircularChart* >( skinnable );
 
-    if ( subControl == Q::Segment )
-    {
-        const auto aspect = Q::Segment | QskAspect::Border;
-
-        const auto borderColor = skinnable->color( aspect );
-        const auto borderWidth = skinnable->metric( aspect );
-
-        return updateArcSegmentNode( skinnable, node, borderWidth, borderColor,
-            chart->gradientAt( index ), ::segmentMetrics( skinnable, index ) );
-    }
+     if ( subControl == Q::Segment )
+     {
+         const auto aspect = Q::Segment | QskAspect::Border;
+     
+         const auto borderColor = skinnable->color( aspect );
+         const auto borderWidth = skinnable->metric( aspect );
+     
+         return updateArcSegmentNode( skinnable, node, borderWidth, borderColor,
+             chart->gradientAt( index ), ::segmentMetrics( skinnable, index ) );
+     }
 
     if ( subControl == Q::SegmentLabel )
     {
