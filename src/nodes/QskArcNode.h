@@ -10,6 +10,7 @@
 
 class QskArcMetrics;
 class QskGradient;
+class QskShadowMetrics;
 
 /*
     For the moment a QPainterPath/QskShapeNode.
@@ -24,7 +25,8 @@ class QSK_EXPORT QskArcNode : public QskShapeNode
 
     void setArcData( const QRectF&, const QskArcMetrics&, const QskGradient& );
     void setArcData( const QRectF&, const QskArcMetrics&,
-        qreal borderWidth, const QColor& borderColor, const QskGradient& );
+        qreal borderWidth, const QColor& borderColor, const QskGradient&, 
+        const QColor& shadowColor, const QskShadowMetrics& shadowMetrics);
 };
 
 #endif

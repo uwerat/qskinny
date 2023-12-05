@@ -2,6 +2,7 @@ uniform lowp float qt_Opacity;
 
 uniform lowp vec4 color;
 uniform lowp vec4 rect;
+uniform lowp vec2 offset;
 uniform lowp float radius;
 uniform lowp float thickness;
 uniform lowp float startAngle;
@@ -35,10 +36,18 @@ void main()
   
     // rotation
     float ra = radians(startAngle + spanAngle / 2.0);
-    {
+    {        
+        p = p + offset;
+
         float sin_ra = sin(ra);
         float cos_ra = cos(ra);
-        p = mat2(cos_ra, -sin_ra, sin_ra, cos_ra) * p;
+        mat2 transform = mat2
+        ( 
+            cos_ra, -sin_ra,
+            sin_ra,  cos_ra
+        );
+
+        p = transform * p;
     }
   
     // distance
@@ -48,5 +57,5 @@ void main()
     // coloring
     float v = 1.0 - abs(d) * e;
     float a = d >= 0.0 && abs(d) < e ? v : 0.0; // alpha
-    gl_FragColor = vec4(color.rgb, a) * qt_Opacity;
+    gl_FragColor = vec4(color.rgb, 1.0) * a * qt_Opacity;
 }

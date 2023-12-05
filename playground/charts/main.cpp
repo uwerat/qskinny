@@ -14,6 +14,7 @@
 #include <QskSkinlet.h>
 #include <QskArcNode.h>
 #include <QskArcMetrics.h>
+#include <QskShadowMetrics.h>
 
 #include <SkinnyShortcut.h>
 #include <QGuiApplication>
@@ -64,6 +65,8 @@ namespace
     };
 }
 
+using Q = ArcControl;
+
 class ArcSkinlet : public QskSkinlet
 {
   public:
@@ -71,6 +74,7 @@ class ArcSkinlet : public QskSkinlet
     {
         Arc
     };
+
     ArcSkinlet( QskSkin* skin = nullptr )
         : QskSkinlet( skin )
     {
@@ -85,14 +89,20 @@ class ArcSkinlet : public QskSkinlet
             auto* const arcNode =
                 ( node == nullptr ) ? new QskArcNode : static_cast< QskArcNode* >( node );
 
-            const auto* const q = static_cast< const QskControl* >( skinnable );
+            const auto* const q = static_cast< const Q* >( skinnable );
 
             const auto rect = q->contentsRect();
-            const auto metrics = skinnable->arcMetricsHint(QskControl::Background);
-            const auto path = metrics.painterPath(rect);
-            const auto borderColor = q->color(QskControl::Background | QskAspect::Border);
-            const auto borderWidth = q->metric(QskControl::Background | QskAspect::Border);
-            arcNode->setArcData( rect, metrics, borderWidth, borderColor, { Qt::red } );
+            const auto metrics = skinnable->arcMetricsHint(Q::Arc);
+
+            const auto fillGradient = q->gradientHint(Q::Arc);
+
+            const auto borderColor = q->color(Q::Arc | QskAspect::Border);
+            const auto borderWidth = q->metric(Q::Arc | QskAspect::Border);
+
+            const auto shadowColor = q->shadowColorHint(Q::Arc);
+            const auto shadowMetrics = q->shadowMetricsHint(Q::Arc);
+
+            arcNode->setArcData( rect, metrics, borderWidth, borderColor, fillGradient, shadowColor, shadowMetrics);
             return arcNode;
         }
         return nullptr;
@@ -109,7 +119,7 @@ int main( int argc, char* argv[] )
 
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-    auto* const control = new QskControl;
+    auto* const control = new ArcControl;
     auto* const skinlet = new ArcSkinlet;
     control->setSkinlet(skinlet);
     skinlet->setOwnedBySkinnable(true);
@@ -117,9 +127,18 @@ int main( int argc, char* argv[] )
     QskArcMetrics metrics;
     metrics.setSpanAngle(270);
     metrics.setThickness(10);
-    control->setArcMetricsHint(QskControl::Background, metrics);    
-    control->setMetric(QskControl::Background | QskAspect::Border, 4);
-    control->setColor(QskControl::Background | QskAspect::Border, Qt::blue);
+
+    QskShadowMetrics shadowMetrics;    
+    shadowMetrics.setSpreadRadius(10);
+    shadowMetrics.setSizeMode(Qt::SizeMode::RelativeSize);
+    
+    control->setBackgroundColor(Qt::white);
+    control->setGradientHint(Q::Arc, {Qt::red});
+    control->setArcMetricsHint(Q::Arc, metrics);
+    control->setMetric(Q::Arc | QskAspect::Border, 4);
+    control->setColor(Q::Arc | QskAspect::Border, Qt::blue);
+    control->setShadowColorHint(Q::Arc, Qt::blue);
+    control->setShadowMetricsHint(Q::Arc, shadowMetrics);
 
     QskWindow window;
     window.addItem( new ChartView( control ) );

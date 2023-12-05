@@ -10,6 +10,7 @@
 #include "QskShapeNode.h"
 #include "QskStrokeNode.h"
 #include "QskSGNode.h"
+#include "QskShadowMetrics.h"
 
 #include <qpen.h>
 #include <qpainterpath.h>
@@ -25,6 +26,7 @@ namespace
     {
         QColor color = Qt::red;
         QRectF rect;
+        QPointF offset;
         qreal radius = 1.0; // [0.0,1.0]
         qreal thickness = 0.2;
         qreal startAngle = 0.0; //< degree [0.0,360.0]
@@ -61,17 +63,18 @@ namespace
             const auto& startAngle = newState->startAngle;
             const auto& spanAngle = newState->spanAngle;
             const auto& extend = newState->extend;
+            const auto& offset = newState->offset;
 
             auto& p = *program();
-            p.setUniformValue("color", color.redF(), color.greenF(), color.blueF(), 1.0f);
-            p.setUniformValue("rect", rect.x(), rect.y(), rect.width(), rect.height());
-            p.setUniformValue("radius", (float) radius);
-            p.setUniformValue("thickness", (float) thickness);
-            p.setUniformValue("startAngle", (float) startAngle - 90.0f);
-            p.setUniformValue("spanAngle", (float) spanAngle);
-            p.setUniformValue("extend", (float) extend);
+            p.setUniformValue( "color", color.redF(), color.greenF(), color.blueF(), 1.0f );
+            p.setUniformValue( "rect", rect.x(), rect.y(), rect.width(), rect.height() );
+            p.setUniformValue( "radius", ( float ) radius );
+            p.setUniformValue( "thickness", ( float ) thickness );
+            p.setUniformValue( "startAngle", ( float ) startAngle - 90.0f );
+            p.setUniformValue( "spanAngle", ( float ) spanAngle );
+            p.setUniformValue( "extend", ( float ) extend );
+            p.setUniformValue( "offset", ( float ) offset.x(), ( float ) offset.y() );
         }
-
     };
 
     class QskArcShadowNode : public QSGGeometryNode
@@ -85,10 +88,11 @@ namespace
             material()->setFlag(QSGMaterial::Blending);
         }
 
-        void update(const QRectF& rect, const QskArcMetrics& metrics, const QColor& color, const qreal extend)
+        void update(const QRectF& rect, const QskArcMetrics& metrics, const QColor& color, const QskShadowMetrics& shadowMetrics = {}, const qreal borderWidth = 0.0)
         {        
             auto* const vertices = geometry()->vertexDataAsPoint2D();
-            const auto r = rect.adjusted( 0, -4, +4, 0 );
+            const auto b = borderWidth / 2;
+            const auto r = rect.adjusted( -b, -b, +b, +b );
             vertices[0].set(r.left(), r.top());
             vertices[1].set(r.left(), r.bottom());
             vertices[2].set(r.right(), r.top());
@@ -100,11 +104,12 @@ namespace
             auto& state = *material->state();
             state.color = color;
             state.rect = r;
-            state.radius = 1.0 - (metrics.thickness() + extend / 4) / size;
+            state.radius = 1.0 - (metrics.thickness() + borderWidth) / size;
             state.thickness = 2 * metrics.thickness() / size;
             state.startAngle = metrics.startAngle();
             state.spanAngle = metrics.spanAngle();
-            state.extend = extend;
+            state.extend = shadowMetrics.spreadRadius();
+            state.offset = shadowMetrics.offset();
             markDirty( QSGNode::DirtyMaterial );
         }
 
@@ -165,11 +170,11 @@ QskArcNode::~QskArcNode()
 void QskArcNode::setArcData( const QRectF& rect,
     const QskArcMetrics& arcMetrics, const QskGradient& fillGradient )
 {
-    setArcData( rect, arcMetrics, 0.0, QColor(), fillGradient );
+    setArcData( rect, arcMetrics, 0.0, QColor(), fillGradient, {}, {} );
 }
 
 void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics,
-    qreal borderWidth, const QColor& borderColor, const QskGradient& fillGradient )
+    const qreal borderWidth, const QColor& borderColor, const QskGradient& fillGradient, const QColor& shadowColor, const QskShadowMetrics& shadowMetrics )
 {
     enum NodeRole
     {
@@ -201,18 +206,17 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
 
     const auto path = metrics.painterPath( arcRect );
 
-    if ( true /* TODO */ )
+    if ( shadowColor.alpha() > 0.0 )
     {
         if ( shadowNode == nullptr ) 
         {
             shadowNode = new QskArcShadowNode;
             QskSGNode::setNodeRole( shadowNode, ShadowRole );            
         }
-
-        const auto extend = 16.0;        
-        shadowNode->update( arcRect, metrics, Qt::black, extend );
+        
+        shadowNode->update( arcRect, metrics, shadowColor, shadowMetrics, borderWidth );
     }
-    else 
+    else
     {
         delete shadowNode;
         shadowNode = nullptr;
@@ -261,7 +265,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     {
         removeAllChildNodes();
      
-        for ( QSGNode* node : { ( QSGNode* ) shadowNode, ( QSGNode* ) fillNode, ( QSGNode* ) borderNode })
+        for ( QSGNode* node : { ( QSGNode* ) borderNode, ( QSGNode* ) shadowNode, ( QSGNode* ) fillNode })
         {
             if ( node != nullptr ) 
             {

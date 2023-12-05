@@ -7,10 +7,17 @@
 
 #include <QskMainView.h>
 
+class ArcControl : public QskControl
+{
+public:
+    QSK_SUBCONTROLS(Arc)
+};
+
+
 class CircularChart;
 
 class ChartView : public QskMainView
 {
   public:
-    ChartView( QskControl*, QQuickItem* parent = nullptr );
+    ChartView( ArcControl*, QQuickItem* parent = nullptr );
 };

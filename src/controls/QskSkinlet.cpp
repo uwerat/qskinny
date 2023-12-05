@@ -231,7 +231,7 @@ static inline QSGNode* qskUpdateArcNode(
         return nullptr;
 
     auto arcNode = QskSGNode::ensureNode< QskArcNode >( node );
-    arcNode->setArcData( rect, metrics, borderWidth, borderColor,  gradient );
+    arcNode->setArcData( rect, metrics, borderWidth, borderColor, gradient, {}, {} );
 
     return arcNode;
 }

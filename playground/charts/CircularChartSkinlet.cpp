@@ -10,6 +10,7 @@
 #include <QskIntervalF.h>
 #include <QskArcMetrics.h>
 #include <QskArcNode.h>
+#include <QskShadowMetrics.h>
 
 #include <qpainterpath.h>
 #include <qmath.h>
@@ -366,7 +367,7 @@ QSGNode* CircularChartSkinlet::updateArcSegmentNode(
         arcNode = new QskArcNode();
 
     arcNode->setArcData( m_data->closedArcRect, metrics,
-        borderWidth, borderColor, fillGradient );
+        borderWidth, borderColor, fillGradient, {}, {} );
 #endif
 
     return arcNode;
