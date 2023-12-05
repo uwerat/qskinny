@@ -30,17 +30,83 @@ namespace
     class LinearGradientSlider : public QskSlider
     {
         Q_OBJECT
-        Q_PROPERTY(
-            QColor selectedColor READ selectedColor NOTIFY selectedColorChanged )
+        Q_PROPERTY( QColor selectedColor READ selectedColor NOTIFY selectedColorChanged )
         using Inherited = QskSlider;
+
+        enum ColorMode
+        {
+            RGB,
+            Grayscale,
+            Alpha,
+            Count
+        };
 
       public:
         explicit LinearGradientSlider( QQuickItem* parent = nullptr );
         explicit LinearGradientSlider( Qt::Orientation orientation, QQuickItem* parent = nullptr );
         QColor selectedColor() const;
 
+      protected:
+        void mousePressEvent( QMouseEvent* event ) override
+        {            
+            if ( event->button() == Qt::RightButton )
+            {
+                m_mode = ( m_mode + 1 ) % Count;
+                setGradientHint( Groove, gradientForColorMode( m_mode ) );
+                Q_EMIT valueChanged( value() );
+            }
+            else 
+            {
+                QskSlider::mousePressEvent( event );
+            }
+        }
+
+        void mouseReleaseEvent( QMouseEvent* event ) override
+        {
+            if ( event->button() == Qt::RightButton ) {}
+            else
+            {
+                QskSlider::mouseReleaseEvent( event );
+            }
+        }
+
       Q_SIGNALS:
         void selectedColorChanged();
+
+      private:
+        QskGradient gradientForColorMode( int mode )
+        {
+            QskGradient gradient;
+            gradient.setLinearDirection(orientation());
+
+            if ( mode == RGB )
+            {
+                static const QVector< QskGradientStop > stops = {
+                    { 0.0000, QColor::fromRgb( 255, 0, 0 ) },
+                    { 0.1667, QColor::fromRgb( 255, 255, 0 ) },
+                    { 0.3333, QColor::fromRgb( 0, 255, 0 ) },
+                    { 0.5000, QColor::fromRgb( 0, 255, 255 ) },
+                    { 0.6667, QColor::fromRgb( 0, 0, 255 ) },
+                    { 0.8333, QColor::fromRgb( 255, 0, 255 ) },
+                    { 1.0000, QColor::fromRgb( 255, 0, 0 ) },
+                };
+
+                gradient.setStops(stops);                
+            }
+            else 
+            {
+                static const QVector< QskGradientStop > stops = {
+                    { 0.0000, Qt::black },
+                    { 1.0000, Qt::white },
+                };
+
+                gradient.setStops(stops);    
+            }
+
+            return gradient;
+        }
+
+        int m_mode = ColorMode::RGB;
     };
 
     LinearGradientSlider::LinearGradientSlider( QQuickItem* parent )
@@ -50,34 +116,33 @@ namespace
 
     LinearGradientSlider::LinearGradientSlider( Qt::Orientation orientation, QQuickItem* parent )
     : Inherited( orientation, parent )
-    {
-        static const QVector< QskGradientStop > gradientStops = {
-            { 0.0000, QColor::fromRgb( 255, 0, 0 ) },
-            { 0.1667, QColor::fromRgb( 255, 255, 0 ) },
-            { 0.3333, QColor::fromRgb( 0, 255, 0 ) },
-            { 0.5000, QColor::fromRgb( 0, 255, 255 ) },
-            { 0.6667, QColor::fromRgb( 0, 0, 255 ) },
-            { 0.8333, QColor::fromRgb( 255, 0, 255 ) },
-            { 1.0000, QColor::fromRgb( 255, 0, 0 ) },
-        };
-        
-        QskGradient gradient( gradientStops );
-        gradient.setLinearDirection( orientation );
-        setGradientHint(Groove, {gradientStops});
+    {               
 
-        setColor( Inherited::Fill, Qt::transparent );
-        setGradientHint( Inherited::Groove, gradient );
+        setColor( Inherited::Fill, Qt::transparent );        
+        setGradientHint( Inherited::Groove, gradientForColorMode(m_mode) );        
         setBoxBorderColorsHint( Inherited::Handle, Qt::white );
         setBoxBorderMetricsHint( Inherited::Handle, 2 );        
 
-        connect( this, &QskSlider::valueChanged, this, [ this, gradient ]( qreal value ) {
+        connect( this, &QskSlider::valueChanged, this, [ this ]( qreal value ) {
             value = this->orientation() == Qt::Horizontal ? value : 1.0 - value;
+            const auto gradient = gradientHint(Groove);
             const auto selectedColor = gradient.extracted( value, value ).startColor();
             setColor( Inherited::Handle, selectedColor );
             setColor( Inherited::Ripple, selectedColor );
+            if(m_mode == RGB) 
+            {
+                setBoxBorderColorsHint( Inherited::Handle, Qt::white );
+            }
+            else 
+            {
+                const auto i = 255 - selectedColor.red();
+                setBoxBorderColorsHint( Inherited::Handle, QColor( i, i, i ) );
+            }
         } );
 
         valueChanged(0.0);
+
+        setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
     }
 
     QColor LinearGradientSlider::selectedColor() const

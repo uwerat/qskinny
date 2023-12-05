@@ -56,6 +56,6 @@ void main()
         
     // coloring
     float v = 1.0 - abs(d) * e;
-    float a = d >= 0.0 && abs(d) < e ? v : 0.0; // alpha
+    float a = d >= 0.0 && abs(d) < e ? v : 1.0; // alpha
     gl_FragColor = vec4(color.rgb, 1.0) * a * qt_Opacity;
 }
