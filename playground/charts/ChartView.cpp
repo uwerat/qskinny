@@ -33,15 +33,9 @@ namespace
         Q_PROPERTY( QColor selectedColor READ selectedColor NOTIFY selectedColorChanged )
         using Inherited = QskSlider;
 
-        enum ColorMode
-        {
-            RGB,
-            Grayscale,
-            Alpha,
-            Count
-        };
-
       public:
+        QSK_STATES( Grayscale, Alpha )
+
         explicit LinearGradientSlider( QQuickItem* parent = nullptr );
         explicit LinearGradientSlider( Qt::Orientation orientation, QQuickItem* parent = nullptr );
         QColor selectedColor() const;
@@ -51,9 +45,25 @@ namespace
         {            
             if ( event->button() == Qt::RightButton )
             {
-                m_mode = ( m_mode + 1 ) % Count;
-                setGradientHint( Groove, gradientForColorMode( m_mode ) );
-                Q_EMIT valueChanged( value() );
+                // RGB->GRAYSCALE->ALPHA
+                const auto a = skinStates().testFlag(Alpha);
+                const auto g = skinStates().testFlag(Grayscale);
+
+                if ( g ) 
+                {
+                    setSkinStateFlag( Grayscale, false );
+                    setSkinStateFlag( Alpha, true );
+                }
+                else if ( a ) 
+                {
+                    setSkinStateFlag( Grayscale, false );
+                    setSkinStateFlag( Alpha, false );
+                }
+                else 
+                {
+                    setSkinStateFlag( Grayscale, true );
+                    setSkinStateFlag( Alpha, false );
+                }
             }
             else 
             {
@@ -74,40 +84,17 @@ namespace
         void selectedColorChanged();
 
       private:
-        QskGradient gradientForColorMode( int mode )
+
+        QColor colorForPosition(const QskGradient& gradient, qreal ratio)
         {
-            QskGradient gradient;
-            gradient.setLinearDirection(orientation());
-
-            if ( mode == RGB )
-            {
-                static const QVector< QskGradientStop > stops = {
-                    { 0.0000, QColor::fromRgb( 255, 0, 0 ) },
-                    { 0.1667, QColor::fromRgb( 255, 255, 0 ) },
-                    { 0.3333, QColor::fromRgb( 0, 255, 0 ) },
-                    { 0.5000, QColor::fromRgb( 0, 255, 255 ) },
-                    { 0.6667, QColor::fromRgb( 0, 0, 255 ) },
-                    { 0.8333, QColor::fromRgb( 255, 0, 255 ) },
-                    { 1.0000, QColor::fromRgb( 255, 0, 0 ) },
-                };
-
-                gradient.setStops(stops);                
-            }
-            else 
-            {
-                static const QVector< QskGradientStop > stops = {
-                    { 0.0000, Qt::black },
-                    { 1.0000, Qt::white },
-                };
-
-                gradient.setStops(stops);    
-            }
-
-            return gradient;
+            return gradient.extracted( ratio, ratio ).startColor();
         }
 
-        int m_mode = ColorMode::RGB;
+        QColor m_color;
     };
+
+    QSK_STATE( LinearGradientSlider, Grayscale, QskAspect::FirstUserState << 0 )
+    QSK_STATE( LinearGradientSlider, Alpha, QskAspect::FirstUserState << 1 )
 
     LinearGradientSlider::LinearGradientSlider( QQuickItem* parent )
         : LinearGradientSlider( Qt::Horizontal, parent )
@@ -117,27 +104,70 @@ namespace
     LinearGradientSlider::LinearGradientSlider( Qt::Orientation orientation, QQuickItem* parent )
     : Inherited( orientation, parent )
     {               
+        static const QskGradientStops stopsRGB = {
+            { 0.0000, QColor::fromRgb( 255, 0, 0 ) },
+            { 0.1667, QColor::fromRgb( 255, 255, 0 ) },
+            { 0.3333, QColor::fromRgb( 0, 255, 0 ) },
+            { 0.5000, QColor::fromRgb( 0, 255, 255 ) },
+            { 0.6667, QColor::fromRgb( 0, 0, 255 ) },
+            { 0.8333, QColor::fromRgb( 255, 0, 255 ) },
+            { 1.0000, QColor::fromRgb( 255, 0, 0 ) },
+        };
 
-        setColor( Inherited::Fill, Qt::transparent );        
-        setGradientHint( Inherited::Groove, gradientForColorMode(m_mode) );        
-        setBoxBorderColorsHint( Inherited::Handle, Qt::white );
-        setBoxBorderMetricsHint( Inherited::Handle, 2 );        
+        static const QskGradientStops stopsGrayscale = {
+            { 0.0000, QColor::fromRgb( 0, 0, 0 ) },
+            { 1.0000, QColor::fromRgb( 255, 255, 255 ) },
+        };
+
+        static const QskGradientStops stopsAlpha = {
+            { 0.0000, QColor::fromRgb( 0, 0, 0, 0) },
+            { 1.0000, QColor::fromRgb( 0, 0, 0, 255 ) },
+        };
+
+        auto make_gradient = []( const QskGradientStops& stops, Qt::Orientation orientation ) {
+            QskGradient gradient(stops);
+            gradient.setLinearDirection(orientation);
+            return gradient;
+        };
+
+        static constexpr auto Horizontal = static_cast<QskAspect::Variation>(Qt::Horizontal);
+        static constexpr auto Vertical = static_cast<QskAspect::Variation>(Qt::Vertical);
+
+        setColor( Fill, Qt::transparent );
+        
+        setGradientHint( Groove, make_gradient(stopsRGB, Qt::Horizontal) );
+        setGradientHint( Groove | Horizontal, make_gradient(stopsRGB, Qt::Horizontal) );
+        setGradientHint( Groove | Vertical, make_gradient(stopsRGB, Qt::Vertical) );
+
+        setGradientHint( Groove | Grayscale, make_gradient( stopsGrayscale, Qt::Horizontal ) );
+        setGradientHint( Groove | Grayscale | Horizontal, make_gradient( stopsGrayscale, Qt::Horizontal ) );
+        setGradientHint( Groove | Grayscale | Vertical, make_gradient( stopsGrayscale, Qt::Vertical ) );
+
+        setGradientHint( Groove | Alpha, make_gradient( stopsGrayscale, Qt::Horizontal ) );
+        setGradientHint( Groove | Alpha | Horizontal, make_gradient( stopsGrayscale, Qt::Horizontal ) );
+        setGradientHint( Groove | Alpha | Vertical, make_gradient( stopsGrayscale, Qt::Vertical ) );
+     
+        setBoxBorderColorsHint( Handle, Qt::white );
+        setBoxBorderMetricsHint( Handle, 2 );        
 
         connect( this, &QskSlider::valueChanged, this, [ this ]( qreal value ) {
             value = this->orientation() == Qt::Horizontal ? value : 1.0 - value;
             const auto gradient = gradientHint(Groove);
-            const auto selectedColor = gradient.extracted( value, value ).startColor();
+            const auto selectedColor = colorForPosition(gradient, value);
             setColor( Inherited::Handle, selectedColor );
             setColor( Inherited::Ripple, selectedColor );
-            if(m_mode == RGB) 
+            setBoxBorderColorsHint( Inherited::Handle, Qt::white );
+            if(skinStates().testFlag(Alpha)) 
             {
-                setBoxBorderColorsHint( Inherited::Handle, Qt::white );
+                m_color.setAlpha(value);
             }
             else 
             {
-                const auto i = 255 - selectedColor.red();
-                setBoxBorderColorsHint( Inherited::Handle, QColor( i, i, i ) );
+                m_color.setRed(selectedColor.red());
+                m_color.setGreen(selectedColor.green());
+                m_color.setBlue(selectedColor.blue());
             }
+            Q_EMIT selectedColorChanged();
         } );
 
         valueChanged(0.0);
@@ -147,8 +177,7 @@ namespace
 
     QColor LinearGradientSlider::selectedColor() const
     {
-        const auto gradient = gradientHint(Groove);
-        return gradient.extracted( value(), value() ).startColor();
+        return m_color;
     }
 
     class ChartBox : public QskControl
@@ -261,8 +290,10 @@ namespace
             auto shadowExtent = new SliderBox( "Shadow Extent", 0.0, 100.0, 50 );
             auto sliderOffsetX = new SliderBox( "Offset X", -1.0, +1.0, 0 );
             auto sliderOffsetY = new SliderBox( "Offset Y", -1.0, +1.0, 0 );
+            auto sliderStrokeWidth = new SliderBox( "Stroke Width", 0, 10, 1 );
             auto sliderFillColor = new SliderBox( "Fill Color", 0.0, 1.0, 0 , []( QQuickItem* parent = nullptr ) { return new LinearGradientSlider( parent ); });
             auto sliderShadowColor = new SliderBox( "Shadow Color", 0.0, 1.0, 0, []( QQuickItem* parent = nullptr ) { return new LinearGradientSlider( parent ); } );
+            auto sliderStrokeColor = new SliderBox( "Stroke Color", 0.0, 1.0, 0, []( QQuickItem* parent = nullptr ) { return new LinearGradientSlider( parent ); } );
 
             connect( sliderStart, &SliderBox::valueChanged,
                 this, &ControlPanel::startAngleChanged );
@@ -283,7 +314,10 @@ namespace
                 this, &ControlPanel::offsetYChanged );
 
             connect( shadowExtent, &SliderBox::valueChanged,
-                this, &ControlPanel::shadowExtendChanged );
+                this, &ControlPanel::shadowExtendChanged );  
+            
+            connect( sliderStrokeWidth, &SliderBox::valueChanged,
+                this, &ControlPanel::strokeWidthChanged );
 
             connect( sliderFillColor, &SliderBox::valueChanged, this, [=](){
                 auto* const slider = sliderFillColor->findChild<LinearGradientSlider*>();
@@ -293,16 +327,23 @@ namespace
             connect( sliderShadowColor, &SliderBox::valueChanged, this, [=](){
                 auto* const slider = sliderShadowColor->findChild<LinearGradientSlider*>();
                 Q_EMIT shadowColorChanged(slider->selectedColor());
+            } );    
+            
+            connect( sliderStrokeColor, &SliderBox::valueChanged, this, [=](){
+                auto* const slider = sliderStrokeColor->findChild<LinearGradientSlider*>();
+                Q_EMIT strokeColorChanged(slider->selectedColor());
             } );
 
             addItem( sliderStart, 0, 0 );
             addItem( sliderExtent, 0, 1 );
             addItem( shadowExtent, 0, 2 );
-            addItem( sliderSpan, 1, 0, 1, 2 );
+            addItem( sliderSpan, 1, 0, 1, 1 );
+            addItem( sliderStrokeWidth, 1, 1, 1, 1 );
             addItem( sliderOffsetX, 2, 0, 1, 1 );
             addItem( sliderOffsetY, 2, 1, 1, 1 );
             addItem( sliderFillColor, 3, 0, 1, 1 );
             addItem( sliderShadowColor, 3, 1, 1, 1 );
+            addItem( sliderStrokeColor, 3, 2, 1, 1 );
         }
 
       Q_SIGNALS:
@@ -312,8 +353,10 @@ namespace
         void offsetXChanged( qreal );
         void offsetYChanged( qreal );
         void fillColorChanged( QColor );
+        void strokeColorChanged( QColor );
         void shadowColorChanged( QColor );
         void shadowExtendChanged( qreal );
+        void strokeWidthChanged( qreal );
     };
 
     class Legend : public QskGridBox
@@ -425,6 +468,15 @@ ChartView::ChartView( ArcControl* chart, QQuickItem* parent )
 
     connect( controlPanel, &ControlPanel::shadowColorChanged, chart,
         [ = ]( QColor c ) { chart->setShadowColorHint( subcontrol, c ); } );
+
+    connect( controlPanel, &ControlPanel::strokeColorChanged, chart,
+        [ = ]( QColor c ) { 
+            chart->setColor( subcontrol | QskAspect::Border, c ); 
+        } );
+
+    connect( controlPanel, &ControlPanel::strokeWidthChanged, chart, [ = ]( qreal v ) {
+        chart->setMetric(subcontrol | QskAspect::Border, v);
+    } );
 
     setHeader( controlPanel );
     setBody( hBox );

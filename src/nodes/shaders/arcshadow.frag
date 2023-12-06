@@ -1,15 +1,14 @@
 uniform lowp float qt_Opacity;
-
-uniform lowp vec4 color;
-uniform lowp vec4 rect;
-uniform lowp vec2 offset;
-uniform lowp float radius;
-uniform lowp float thickness;
-uniform lowp float startAngle;
-uniform lowp float spanAngle;
-uniform lowp float extend;
-
-const float M_PI = 3.141592653589793;
+// arc
+uniform lowp vec4 rect;        // arc's rectangle on screen in pixel x,y,w,h
+uniform lowp float radius;     // arc's radius [0.0, 1.0]
+uniform lowp float thickness;  // arc's thickness
+uniform lowp float startAngle; // arc's start angle
+uniform lowp float spanAngle;  // arc's span angle
+// shadow
+uniform lowp vec4 color;       // shadow's color
+uniform lowp vec2 offset;      // shadow's offset (x,y) : [-1.0, +1.0]x[-1.0,+1.0]
+uniform lowp float extend;     // shadow length around
 
 float sdRing( in vec2 p, in vec2 n, in float r, in float th )
 {
