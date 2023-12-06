@@ -264,8 +264,8 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     if ( oldChildCount != newChildCount ) 
     {
         removeAllChildNodes();
-     
-        for ( QSGNode* node : { ( QSGNode* ) borderNode, ( QSGNode* ) shadowNode, ( QSGNode* ) fillNode })
+        
+        for ( QSGNode* node : { ( QSGNode* ) shadowNode, ( QSGNode* ) fillNode, ( QSGNode* ) borderNode })
         {
             if ( node != nullptr ) 
             {
