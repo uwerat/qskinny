@@ -26,11 +26,20 @@ class ButtonBox : public QskLinearBox
 {
   public:
     ButtonBox( QQuickItem* parent = nullptr )
-        : QskLinearBox( parent )
+        : QskLinearBox( Qt::Vertical, parent )
     {
-        ( void ) new QskPushButton( "Button 1", this );
-        ( void ) new QskPushButton( "Button 2", this );
-        ( void ) new QskPushButton( "Button 3", this );
+        setMargins( 20 );
+
+        auto label = new QskGraphicLabel( this );
+
+        const QImage image( ":/images/parrots.jpg" );
+        label->setGraphic( QskGraphic::fromImage( image ) );
+        label->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+        label->setLayoutAlignmentHint( Qt::AlignCenter );
+
+
+        auto button = new QskPushButton( "Button", this );
+        button->setLayoutAlignmentHint( Qt::AlignHCenter | Qt::AlignBottom );
     }
 };
 
@@ -138,7 +147,12 @@ class MainView : public QskControl
 
         m_background = new BackgroundItem( this );
 
+#if 1
         m_blurredBox = new BlurredBox( this );
+#else
+        // unsatisfying: see comment in BlurredOverlay::updatePaintNode TODO ...
+        m_blurredBox = new BlurredBox( m_background );
+#endif
         m_blurredBox->setGrabbedItem( m_background );
 
         (void )new ButtonBox( m_blurredBox );

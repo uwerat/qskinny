@@ -13,9 +13,28 @@
 
 #include <qpointer.h>
 
-class BlurredOverlayPrivate : public QQuickItemPrivate, public QQuickItemChangeListener
+namespace
+{
+    class TransformNode final : public QSGTransformNode
+    {
+      public:
+        bool isSubtreeBlocked() const override
+        {
+            return isBlocked || QSGTransformNode::isSubtreeBlocked();
+        }
+
+        bool isBlocked = false;;
+    };
+}
+
+class BlurredOverlayPrivate final : public QQuickItemPrivate, public QQuickItemChangeListener
 {
   public:
+
+    QSGTransformNode* createTransformNode() override
+    {
+        return new TransformNode();
+    }
 
     void itemGeometryChanged( QQuickItem*,
         QQuickGeometryChange change, const QRectF& )
@@ -214,7 +233,22 @@ QSGNode* BlurredOverlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData*
 
     d->updateTexture( layer );
 
-    layer->updateTexture();
+    {
+        auto itemNode = static_cast< TransformNode* >( d->itemNode() );
+
+        /*
+            When we are a child of grabbedItem we end up in a recursion
+            that fails when initializing the texture twice. No problem
+            as we explicitly do not want to become part of it.
+
+            Disabling our subtree avoids the problem with the initialization
+            - the texture contains some artifacts from our own children. TODO ...
+         */
+        itemNode->isBlocked = true;
+        layer->updateTexture();
+        itemNode->isBlocked = false;
+    }
+
     node->setRect( QRectF( 0, 0, width(), height() ) );
 
     return node;
