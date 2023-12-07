@@ -20,14 +20,7 @@
 #include <SkinnyShortcut.h>
 #include <cmath>
 
-#include <private/qquickshadereffect_p.h>
-#include <private/qquickshadereffectsource_p.h>
-
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    #include <QFile>
-#else
-    #include <QUrl>
-#endif
+#include "BlurredOverlay.h"
 
 class ButtonBox : public QskLinearBox
 {
@@ -41,69 +34,22 @@ class ButtonBox : public QskLinearBox
     }
 };
 
-class ShaderEffect : public QQuickShaderEffect
+class Overlay : public BlurredOverlay
 {
-    using Inherited = QQuickShaderEffect;
+    using Inherited = BlurredOverlay;
 
   public:
-    ShaderEffect( QQuickItem* parent = nullptr )
-        : QQuickShaderEffect( parent )
+    Overlay( QQuickItem* parent = nullptr )
+        : Inherited( parent )
     {
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-        setVertexShader( loadShader( ":/shaders/blur.vert" ) );
-        setFragmentShader( loadShader( ":/shaders/blur.frag" ) );
-#else
-        setVertexShader( QUrl( "qrc:/shaders/blur.vert.qsb" ) );
-        setFragmentShader( QUrl( "qrc:/shaders/blur.frag.qsb" ) );
-#endif
-
-        m_source = new QQuickShaderEffectSource( this );
-        m_source->setLive( true );
-
-        setSource( m_source );
     }
-
-    void setSourceItem( QQuickItem* item ) { m_source->setSourceItem( item ); }
-    QQuickItem* sourceItem() const { return m_source->sourceItem(); }
 
   protected:
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    void geometryChanged( const QRectF& newRect, const QRectF& oldRect ) override
-    {
-        Inherited::geometryChanged( newRect, oldRect );
-        updateSourceRect( newRect );
-    }
-#else
     void geometryChange( const QRectF& newRect, const QRectF& oldRect ) override
     {
         Inherited::geometryChange( newRect, oldRect );
-        updateSourceRect( newRect );
+        setGrabRect( grabbedItem()->mapRectFromItem( this, newRect ) );
     }
-#endif
-
-  private:
-    void updateSourceRect( const QRectF& rect )
-    {
-        const auto sourceRect = m_source->sourceItem()->mapRectFromItem( this, rect );
-        m_source->setSourceRect( sourceRect );
-    }
-
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    QByteArray loadShader( const char* path ) const
-    {
-        QFile f( path );
-        f.open( QFile::ReadOnly );
-
-        return f.readAll();
-    }
-#endif
-
-    void setSource( QQuickShaderEffectSource* source )
-    {
-        setProperty( "source", QVariant::fromValue( source ) );
-    }
-
-    QQuickShaderEffectSource* m_source;
 };
 
 class BlurredBox : public QskControl
@@ -117,20 +63,22 @@ class BlurredBox : public QskControl
         setFlag( QQuickItem::ItemHasContents, false );
         setAutoLayoutChildren( true );
 
-        m_effect = new ShaderEffect( this );
+        m_overlay = new Overlay( this );
     }
 
-    void setSourceItem( QQuickItem* item )
+    void setGrabbedItem( QQuickItem* item )
     {
-        m_effect->setSourceItem( item );
+        m_overlay->setGrabbedItem( item );
     }
 
   private:
-    ShaderEffect* m_effect;
+    Overlay* m_overlay;
 };
 
 class BackgroundItem : public QskControl
 {
+    using Inherited = QskControl;
+
   public:
     BackgroundItem( QQuickItem* parent = nullptr )
         : QskControl( parent )
@@ -144,7 +92,21 @@ class BackgroundItem : public QskControl
         startTimer( 20 );
     }
 
+  protected:
     void timerEvent( QTimerEvent* ) override
+    {
+        updateLabel();
+    }
+
+    void geometryChange( const QRectF& newGeometry,
+        const QRectF& oldGeometry ) override
+    {
+        Inherited::geometryChange( newGeometry, oldGeometry );
+        updateLabel();
+    }
+
+  private:
+    void updateLabel()
     {
         static int counter = 0;
 
@@ -177,7 +139,7 @@ class MainView : public QskControl
         m_background = new BackgroundItem( this );
 
         m_blurredBox = new BlurredBox( this );
-        m_blurredBox->setSourceItem( m_background );
+        m_blurredBox->setGrabbedItem( m_background );
 
         (void )new ButtonBox( m_blurredBox );
     }

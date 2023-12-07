@@ -1,12 +1,12 @@
-uniform highp mat4 qt_Matrix;
+uniform highp mat4 matrix;
 
-attribute highp vec4 qt_Vertex;
-attribute highp vec2 qt_MultiTexCoord0;
+attribute highp vec4 in_vertex;
+attribute highp vec2 in_coord;
 
-varying highp vec2 qt_TexCoord0;
+varying highp vec2 coord;
 
 void main()
 {
-    qt_TexCoord0 = qt_MultiTexCoord0;
-    gl_Position = qt_Matrix * qt_Vertex;
+    coord = in_coord;
+    gl_Position = matrix * in_vertex;
 }
