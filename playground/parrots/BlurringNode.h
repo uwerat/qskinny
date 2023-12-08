@@ -9,15 +9,15 @@
 
 class QRect;
 class QSGTexture;
-class BlurredTextureNodePrivate;
+class BlurringNodePrivate;
 
-class BlurredTextureNode : public QSGGeometryNode
+class BlurringNode : public QSGGeometryNode
 {
     using Inherited = QSGGeometryNode;
 
   public:
-    BlurredTextureNode();
-    ~BlurredTextureNode();
+    BlurringNode();
+    ~BlurringNode();
 
     void setTexture( QSGTexture* );
     QSGTexture* texture();
@@ -26,5 +26,5 @@ class BlurredTextureNode : public QSGGeometryNode
     QRectF rect() const;
 
   private:
-    Q_DECLARE_PRIVATE( BlurredTextureNode )
+    Q_DECLARE_PRIVATE( BlurringNode )
 };

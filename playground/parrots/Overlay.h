@@ -7,17 +7,17 @@
 
 #include <qquickitem.h>
 
-class BlurredOverlayPrivate;
+class OverlayPrivate;
 
-class BlurredOverlay : public QQuickItem
+class Overlay : public QQuickItem
 {
     Q_OBJECT
 
     using Inherited = QQuickItem;
 
   public:
-    BlurredOverlay( QQuickItem* = nullptr );
-    ~BlurredOverlay() override;
+    Overlay( QQuickItem* = nullptr );
+    ~Overlay() override;
 
     QQuickItem* grabbedItem() const;
     void setGrabbedItem( QQuickItem* );
@@ -27,5 +27,5 @@ class BlurredOverlay : public QQuickItem
     QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override;
 
   private:
-    Q_DECLARE_PRIVATE( BlurredOverlay )
+    Q_DECLARE_PRIVATE( Overlay )
 };

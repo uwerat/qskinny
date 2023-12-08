@@ -3,8 +3,8 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "BlurredOverlay.h"
-#include "BlurredTextureNode.h"
+#include "Overlay.h"
+#include "BlurringNode.h"
 
 #include <private/qquickitem_p.h>
 #include <private/qquickwindow_p.h>
@@ -27,7 +27,7 @@ namespace
     };
 }
 
-class BlurredOverlayPrivate final : public QQuickItemPrivate, public QQuickItemChangeListener
+class OverlayPrivate final : public QQuickItemPrivate, public QQuickItemChangeListener
 {
   public:
 
@@ -108,7 +108,7 @@ class BlurredOverlayPrivate final : public QQuickItemPrivate, public QQuickItemC
 
     void updateTexture( QSGLayer* layer )
     {
-        Q_Q( BlurredOverlay );
+        Q_Q( Overlay );
 
         const auto pixelRatio = q->window()->effectiveDevicePixelRatio();
 
@@ -138,29 +138,28 @@ class BlurredOverlayPrivate final : public QQuickItemPrivate, public QQuickItemC
     QPointer< QQuickItem > grabbedItem;
     bool covering = false;
 
-    Q_DECLARE_PUBLIC(BlurredOverlay)
+    Q_DECLARE_PUBLIC(Overlay)
 };
 
-BlurredOverlay::BlurredOverlay( QQuickItem* parent )
-    : QQuickItem( *new BlurredOverlayPrivate(), parent )
+Overlay::Overlay( QQuickItem* parent )
+    : QQuickItem( *new OverlayPrivate(), parent )
 {
     setFlag( ItemHasContents );
 }
 
-BlurredOverlay::~BlurredOverlay()
+Overlay::~Overlay()
 {
-    Q_D( BlurredOverlay );
-    d->setAttached( false );
+    d_func()->setAttached( false );
 }
 
-QQuickItem*BlurredOverlay::grabbedItem() const
+QQuickItem*Overlay::grabbedItem() const
 {
     return d_func()->grabbedItem;
 }
 
-void BlurredOverlay::setGrabbedItem( QQuickItem* item )
+void Overlay::setGrabbedItem( QQuickItem* item )
 {
-    Q_D( BlurredOverlay );
+    Q_D( Overlay );
 
     if ( item == d->grabbedItem )
         return;
@@ -172,7 +171,7 @@ void BlurredOverlay::setGrabbedItem( QQuickItem* item )
     update();
 }
 
-void BlurredOverlay::geometryChange(
+void Overlay::geometryChange(
     const QRectF& newGeometry, const QRectF& oldGeometry )
 {
     Inherited::geometryChange( newGeometry, oldGeometry );
@@ -186,7 +185,7 @@ void BlurredOverlay::geometryChange(
         update();
 }
 
-QSGNode* BlurredOverlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* )
+QSGNode* Overlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* )
 {
     if ( size().isEmpty() )
     {
@@ -194,13 +193,13 @@ QSGNode* BlurredOverlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData*
         return nullptr;
     }
 
-    Q_D( BlurredOverlay );
+    Q_D( Overlay );
 
-    auto node = static_cast< BlurredTextureNode* >( oldNode );
+    auto node = static_cast< BlurringNode* >( oldNode );
 
     if ( node == nullptr )
     {
-        node = new BlurredTextureNode();
+        node = new BlurringNode();
 
         auto layer = d->createTexture();
         node->setTexture( layer );
@@ -228,4 +227,4 @@ QSGNode* BlurredOverlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData*
     return node;
 }
 
-#include "moc_BlurredOverlay.cpp"
+#include "moc_Overlay.cpp"

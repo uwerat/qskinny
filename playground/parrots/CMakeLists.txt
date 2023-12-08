@@ -4,8 +4,8 @@
 ############################################################################
 
 set(SOURCES
-    BlurredOverlay.h BlurredOverlay.cpp
-    BlurredTextureNode.h BlurredTextureNode.cpp
+    Overlay.h Overlay.cpp
+    BlurringNode.h BlurringNode.cpp
     main.cpp)
 
 qt_add_resources(SOURCES images.qrc shaders.qrc)

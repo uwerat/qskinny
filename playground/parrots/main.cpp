@@ -20,7 +20,7 @@
 #include <SkinnyShortcut.h>
 #include <cmath>
 
-#include "BlurredOverlay.h"
+#include "Overlay.h"
 
 class ButtonBox : public QskLinearBox
 {
@@ -42,14 +42,16 @@ class ButtonBox : public QskLinearBox
     }
 };
 
-class Overlay : public BlurredOverlay
+class OverlayBox : public Overlay
 {
-    using Inherited = BlurredOverlay;
+    using Inherited = Overlay;
 
   public:
-    Overlay( QQuickItem* parent = nullptr )
+    OverlayBox( QQuickItem* parent = nullptr )
         : Inherited( parent )
     {
+        if ( parent )
+            setGrabbedItem( parent );
     }
 
   protected:
@@ -134,8 +136,7 @@ class MainView : public QskControl
 
         m_background = new BackgroundItem( this );
 
-        m_overlay = new Overlay( m_background );
-        m_overlay->setGrabbedItem( m_background );
+        m_overlay = new OverlayBox( m_background );
 
         (void )new ButtonBox( m_overlay );
     }
