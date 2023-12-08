@@ -58,6 +58,10 @@ namespace
         {
             setFlag( UpdatesGraphicsPipelineState, true );
 
+            /*
+                Using our own shaders - we do not want to add a dependency
+                to the quickeffects module.
+             */
             setShaderFileName( VertexStage, ":/shaders/blur.vert.qsb" );
             setShaderFileName( FragmentStage, ":/shaders/blur.frag.qsb" );
         }

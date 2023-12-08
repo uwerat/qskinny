@@ -37,7 +37,6 @@ class ButtonBox : public QskLinearBox
         label->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
         label->setLayoutAlignmentHint( Qt::AlignCenter );
 
-
         auto button = new QskPushButton( "Button", this );
         button->setLayoutAlignmentHint( Qt::AlignHCenter | Qt::AlignBottom );
     }
@@ -57,31 +56,19 @@ class Overlay : public BlurredOverlay
     void geometryChange( const QRectF& newRect, const QRectF& oldRect ) override
     {
         Inherited::geometryChange( newRect, oldRect );
-        setGrabRect( grabbedItem()->mapRectFromItem( this, newRect ) );
+
+        const auto rect = qskItemRect( this );
+
+        const auto children = childItems();
+        for ( auto child : children )
+        {
+            if ( qskIsAdjustableByLayout( child ) )
+            {
+                const auto r = qskConstrainedItemRect( child, rect );
+                qskSetItemGeometry( child, r );
+            }
+        }
     }
-};
-
-class BlurredBox : public QskControl
-{
-    using Inherited = QskControl;
-
-  public:
-    BlurredBox( QQuickItem* parent = nullptr )
-        : QskControl( parent )
-    {
-        setFlag( QQuickItem::ItemHasContents, false );
-        setAutoLayoutChildren( true );
-
-        m_overlay = new Overlay( this );
-    }
-
-    void setGrabbedItem( QQuickItem* item )
-    {
-        m_overlay->setGrabbedItem( item );
-    }
-
-  private:
-    Overlay* m_overlay;
 };
 
 class BackgroundItem : public QskControl
@@ -147,15 +134,10 @@ class MainView : public QskControl
 
         m_background = new BackgroundItem( this );
 
-#if 1
-        m_blurredBox = new BlurredBox( this );
-#else
-        // unsatisfying: see comment in BlurredOverlay::updatePaintNode TODO ...
-        m_blurredBox = new BlurredBox( m_background );
-#endif
-        m_blurredBox->setGrabbedItem( m_background );
+        m_overlay = new Overlay( m_background );
+        m_overlay->setGrabbedItem( m_background );
 
-        (void )new ButtonBox( m_blurredBox );
+        (void )new ButtonBox( m_overlay );
     }
 
   protected:
@@ -166,12 +148,12 @@ class MainView : public QskControl
         QRectF blurredRect( QPointF(), 0.7 * size() );
         blurredRect.moveCenter( rect().center() );
 
-        m_blurredBox->setGeometry( blurredRect );
+        qskSetItemGeometry( m_overlay, blurredRect );
     }
 
   private:
     BackgroundItem* m_background;
-    BlurredBox* m_blurredBox;
+    Overlay* m_overlay;
 };
 
 int main( int argc, char** argv )

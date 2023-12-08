@@ -91,7 +91,17 @@ class BlurredOverlayPrivate final : public QQuickItemPrivate, public QQuickItemC
         layer->setHasMipmaps( false );
         layer->setMirrorHorizontal( false );
         layer->setMirrorVertical( true );
-        layer->setSamples( 0 );
+
+        if ( q_func()->window()->format().samples() > 2 )
+        {
+            /*
+                We want to disable multisampling as it doesn't make any sense
+                in combination with blurring afterwards. Unfortunately
+                QSGLayer uses the samples from the window when setting samples
+                below 2 here.
+             */
+            layer->setSamples( 2 );
+        }
 
         return layer;
     }
@@ -100,19 +110,15 @@ class BlurredOverlayPrivate final : public QQuickItemPrivate, public QQuickItemC
     {
         Q_Q( BlurredOverlay );
 
-        layer->setLive( live );
+        const auto pixelRatio = q->window()->effectiveDevicePixelRatio();
+
+        layer->setLive( true );
         layer->setItem( QQuickItemPrivate::get( grabbedItem )->itemNode() );
 
-        auto r = grabRect;
-        if ( r.isEmpty() )
-            r = QRectF(0, 0, grabbedItem->width(), grabbedItem->height() );
+        const auto rect = QRectF( q->position(), q->size() );
+        layer->setRect( rect );
 
-        layer->setRect( r );
-
-        QSize textureSize( qCeil( qAbs( r.width() ) ),
-            qCeil( qAbs( r.height() ) ) );
-
-        const auto pixelRatio = q->window()->effectiveDevicePixelRatio();
+        QSize textureSize( qCeil( rect.width() ), qCeil( rect.height() ) );
         textureSize *= pixelRatio;
 
         const QSize minTextureSize = sceneGraphContext()->minimumFBOSize();
@@ -130,10 +136,7 @@ class BlurredOverlayPrivate final : public QQuickItemPrivate, public QQuickItemC
     }
 
     QPointer< QQuickItem > grabbedItem;
-    QRectF grabRect;
-
-    const bool live = true;
-    bool covering = true;
+    bool covering = false;
 
     Q_DECLARE_PUBLIC(BlurredOverlay)
 };
@@ -169,41 +172,18 @@ void BlurredOverlay::setGrabbedItem( QQuickItem* item )
     update();
 }
 
-QRectF BlurredOverlay::grabRect() const
-{
-    return d_func()->grabRect;
-}
-
-void BlurredOverlay::setGrabRect( const QRectF& rect )
-{
-    Q_D( BlurredOverlay );
-
-    QRectF r;
-    if ( !rect.isEmpty() )
-        r = rect;
-
-    if ( r == d->grabRect )
-        return;
-
-    if ( r.isEmpty() != d->grabRect.isEmpty() )
-        d->setCovering( r.isEmpty() );
-
-    d->grabRect = r;
-
-    if ( d->grabbedItem )
-        update();
-}
-
-void BlurredOverlay::resetGrabRect()
-{
-    setGrabRect( QRectF() );
-}
-
 void BlurredOverlay::geometryChange(
     const QRectF& newGeometry, const QRectF& oldGeometry )
 {
-    update();
     Inherited::geometryChange( newGeometry, oldGeometry );
+
+    /*
+        When newGeometry covers the grabbedItem completely we could
+        set covering to true. TODO ...
+     */
+
+    if ( d_func()->grabbedItem )
+        update();
 }
 
 QSGNode* BlurredOverlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* )
@@ -229,22 +209,16 @@ QSGNode* BlurredOverlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData*
             this, &QQuickItem::update );
     }
 
-    auto layer = static_cast< QSGLayer* >( node->texture() );
+    auto itemNode = static_cast< TransformNode* >( d->itemNode() );
 
-    d->updateTexture( layer );
-
+    if ( !itemNode->isBlocked )
     {
-        auto itemNode = static_cast< TransformNode* >( d->itemNode() );
-
-        /*
-            When we are a child of grabbedItem we end up in a recursion
-            that fails when initializing the texture twice. No problem
-            as we explicitly do not want to become part of it.
-
-            Disabling our subtree avoids the problem with the initialization
-            - the texture contains some artifacts from our own children. TODO ...
-         */
         itemNode->isBlocked = true;
+
+        auto layer = static_cast< QSGLayer* >( node->texture() );
+
+        d->updateTexture( layer );
+
         layer->updateTexture();
         itemNode->isBlocked = false;
     }

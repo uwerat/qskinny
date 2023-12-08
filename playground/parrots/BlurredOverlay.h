@@ -22,10 +22,6 @@ class BlurredOverlay : public QQuickItem
     QQuickItem* grabbedItem() const;
     void setGrabbedItem( QQuickItem* );
 
-    QRectF grabRect() const;
-    void setGrabRect( const QRectF& );
-    void resetGrabRect();
-
   protected:
     void geometryChange( const QRectF&, const QRectF& ) override;
     QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override;
