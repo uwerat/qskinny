@@ -129,16 +129,16 @@ int main( int argc, char* argv[] )
     metrics.setThickness(10);
 
     QskShadowMetrics shadowMetrics;    
-    shadowMetrics.setSpreadRadius(10);
+    shadowMetrics.setSpreadRadius(0.1);
     shadowMetrics.setSizeMode(Qt::SizeMode::RelativeSize);
     
-    control->setBackgroundColor(Qt::white);
     control->setGradientHint(Q::Arc, {Qt::red});
     control->setArcMetricsHint(Q::Arc, metrics);
     control->setMetric(Q::Arc | QskAspect::Border, 4);
     control->setColor(Q::Arc | QskAspect::Border, Qt::blue);
-    control->setShadowColorHint(Q::Arc, Qt::blue);
+    control->setShadowColorHint(Q::Arc, Qt::black);
     control->setShadowMetricsHint(Q::Arc, shadowMetrics);
+    control->setFixedSize( 300, 250 );    
 
     QskWindow window;
     window.addItem( new ChartView( control ) );

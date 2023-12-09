@@ -287,7 +287,7 @@ namespace
             auto sliderStart = new SliderBox( "Angle", 0.0, 360.0, metrics.startAngle() );
             auto sliderSpan = new SliderBox( "Span", -360.0, 360.0, metrics.spanAngle() );
             auto sliderExtent = new SliderBox( "Extent", 10.0, 100.0, metrics.thickness() );
-            auto shadowExtent = new SliderBox( "Shadow Extent", 0.0, 100.0, 50 );
+            auto shadowExtent = new SliderBox( "Shadow Extent", 0.0, 1.0, 0.5 );
             auto sliderOffsetX = new SliderBox( "Offset X", -1.0, +1.0, 0 );
             auto sliderOffsetY = new SliderBox( "Offset Y", -1.0, +1.0, 0 );
             auto sliderStrokeWidth = new SliderBox( "Stroke Width", 0, 10, 1 );
@@ -421,6 +421,7 @@ ChartView::ChartView( ArcControl* chart, QQuickItem* parent )
     // legend->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
     // legend->setSamples( chart->series() );
     hBox->addItem(chart);
+    hBox->setDefaultAlignment(Qt::AlignCenter);
 
     auto controlPanel = new ControlPanel( chart->arcMetricsHint(QskControl::Background) );
     controlPanel->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );

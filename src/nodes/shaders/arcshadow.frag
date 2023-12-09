@@ -1,14 +1,15 @@
-uniform lowp float qt_Opacity;
+uniform lowp float opacity;
 // arc
-uniform lowp vec4 rect;        // arc's rectangle on screen in pixel x,y,w,h
 uniform lowp float radius;     // arc's radius [0.0, 1.0]
-uniform lowp float thickness;  // arc's thickness
-uniform lowp float startAngle; // arc's start angle
-uniform lowp float spanAngle;  // arc's span angle
+uniform lowp float thickness;  // arc's thickness [0.0, 1.0]
+uniform lowp float startAngle; // arc's start angle [rad]
+uniform lowp float spanAngle;  // arc's span angle [rad]
 // shadow
 uniform lowp vec4 color;       // shadow's color
 uniform lowp vec2 offset;      // shadow's offset (x,y) : [-1.0, +1.0]x[-1.0,+1.0]
-uniform lowp float extend;     // shadow length around
+uniform lowp float extend;     // shadow length [0.0, 1.0]
+// position
+varying lowp vec2 coord;       // [-1.0,+1.0]x[-1.0,+1.0]
 
 float sdRing( in vec2 p, in vec2 n, in float r, in float th )
 {
@@ -21,23 +22,11 @@ float sdRing( in vec2 p, in vec2 n, in float r, in float th )
 }
 
 void main()
-{
-    // uniforms
-    float shadowSize = extend;           // px >= 0.0
-    vec2 iResolution = rect.zw;       
-
-    // normalized pixel coordinates
-    vec2 p = (2.0 * gl_FragCoord.xy - iResolution.xy) / iResolution.xy; // xy for ellipse
-    float shadowSizeUv = shadowSize / min(iResolution.x, iResolution.y);
-             
-    float t = radians(abs(spanAngle) / 2.0);
-    vec2 cs = vec2(cos(t),sin(t));
-  
+{        
     // rotation
-    float ra = radians(startAngle + spanAngle / 2.0);
+    vec2 p = coord + offset; 
+    float ra = -startAngle - spanAngle / 2.0;
     {        
-        p = p + offset;
-
         float sin_ra = sin(ra);
         float cos_ra = cos(ra);
         mat2 transform = mat2
@@ -45,16 +34,14 @@ void main()
             cos_ra, -sin_ra,
             sin_ra,  cos_ra
         );
-
+    
         p = transform * p;
     }
-  
-    // distance
-    float d = sdRing(p, cs, radius, thickness);
-    float e = 1.0 / shadowSizeUv;
-        
-    // coloring
-    float v = 1.0 - abs(d) * e;
-    float a = d >= 0.0 && abs(d) < e ? v : 1.0; // alpha
-    gl_FragColor = vec4(color.rgb, 1.0) * a * qt_Opacity;
+
+    float t = abs(spanAngle) / 2.0; // half span angle
+    vec2 cs = vec2(cos(t),sin(t));
+    float d = sdRing(p, cs, radius / 2.0, thickness);
+
+    float a = 1.0 - smoothstep(0.0, extend, d);
+    gl_FragColor = vec4(color.rgb, 1.0) * a * opacity;
 }

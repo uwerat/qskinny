@@ -5,6 +5,7 @@
 
 #include "QskArcNode.h"
 #include "QskArcMetrics.h"
+#include "QskArcShadowNode.h"
 #include "QskMargins.h"
 #include "QskGradient.h"
 #include "QskShapeNode.h"
@@ -19,105 +20,6 @@
 #include <QFile>
 #include <QDebug>
 #include <qmath.h>
-
-namespace
-{
-    struct QskArcShadowMaterialProperties
-    {
-        QColor color = Qt::red;
-        QRectF rect;
-        QPointF offset;
-        qreal radius = 1.0; // [0.0,1.0]
-        qreal thickness = 0.2;
-        qreal startAngle = 0.0; //< degree [0.0,360.0]
-        qreal spanAngle = 270.0; //< degree [0.0,360.0]
-        qreal extend = 16.0; //< pixel >= 0.0
-    };
-
-    class QskArcShadowMaterial final : public QSGSimpleMaterialShader<QskArcShadowMaterialProperties>
-    {
-        QSG_DECLARE_SIMPLE_SHADER(QskArcShadowMaterial, QskArcShadowMaterialProperties)
-
-        public:
-
-        QskArcShadowMaterial()
-        {         
-            const QString root( ":/qskinny/shaders/" );            
-            setShaderSourceFile( QOpenGLShader::Vertex, root + "arcshadow.vert" );
-            setShaderSourceFile( QOpenGLShader::Fragment, root + "arcshadow.frag" );            
-        }            
-
-        QList<QByteArray> attributes() const override {
-            return QList<QByteArray>() << "vertex";
-        }
-
-        void updateState( const QskArcShadowMaterialProperties* newState,
-            const QskArcShadowMaterialProperties* oldState ) override
-        {
-            std::ignore = oldState;
-
-            const auto& color = newState->color;
-            const auto& rect = newState->rect;
-            const auto& radius = newState->radius;
-            const auto& thickness = newState->thickness;
-            const auto& startAngle = newState->startAngle;
-            const auto& spanAngle = newState->spanAngle;
-            const auto& extend = newState->extend;
-            const auto& offset = newState->offset;
-
-            auto& p = *program();
-            p.setUniformValue( "color", color.redF(), color.greenF(), color.blueF(), 1.0f );
-            p.setUniformValue( "rect", rect.x(), rect.y(), rect.width(), rect.height() );
-            p.setUniformValue( "radius", ( float ) radius );
-            p.setUniformValue( "thickness", ( float ) thickness );
-            p.setUniformValue( "startAngle", ( float ) startAngle - 90.0f );
-            p.setUniformValue( "spanAngle", ( float ) spanAngle );
-            p.setUniformValue( "extend", ( float ) extend );
-            p.setUniformValue( "offset", ( float ) offset.x(), ( float ) offset.y() );
-        }
-    };
-
-    class QskArcShadowNode : public QSGGeometryNode
-    {
-      public:
-        QskArcShadowNode() : m_geometry(QSGGeometry::defaultAttributes_Point2D(), 4)
-        {
-            setGeometry(&m_geometry);
-            setMaterial(QskArcShadowMaterial::createMaterial());
-            m_geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );            
-            material()->setFlag(QSGMaterial::Blending);
-        }
-
-        void update(const QRectF& rect, const QskArcMetrics& metrics, const QColor& color, const QskShadowMetrics& shadowMetrics = {}, const qreal borderWidth = 0.0)
-        {        
-            auto* const vertices = geometry()->vertexDataAsPoint2D();
-            const auto b = borderWidth / 2;
-            const auto r = rect.adjusted( -b, -b, +b, +b );
-            vertices[0].set(r.left(), r.top());
-            vertices[1].set(r.left(), r.bottom());
-            vertices[2].set(r.right(), r.top());
-            vertices[3].set(r.right(), r.bottom());
-            markDirty( QSGNode::DirtyGeometry );
-
-            const auto size = qMin(r.width(), r.height());
-            auto* const material = static_cast<QSGSimpleMaterial< QskArcShadowMaterialProperties >*>(this->material());
-            auto& state = *material->state();
-            state.color = color;
-            state.rect = r;
-            state.radius = 1.0 - (metrics.thickness() + borderWidth) / size;
-            state.thickness = 2 * metrics.thickness() / size;
-            state.startAngle = metrics.startAngle();
-            state.spanAngle = metrics.spanAngle();
-            state.extend = shadowMetrics.spreadRadius();
-            state.offset = shadowMetrics.offset();
-            markDirty( QSGNode::DirtyMaterial );
-        }
-
-      private:
-        QSGGeometry m_geometry;
-    };
-}
-
 
 static inline QskGradient qskEffectiveGradient(
     const QskGradient& gradient, const QskArcMetrics& metrics )
