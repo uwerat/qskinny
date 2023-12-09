@@ -16,7 +16,6 @@
 #include <qpen.h>
 #include <qpainterpath.h>
 
-#include <QSGSimpleMaterialShader>
 #include <QFile>
 #include <QDebug>
 #include <qmath.h>

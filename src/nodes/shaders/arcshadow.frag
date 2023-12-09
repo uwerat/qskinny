@@ -1,13 +1,13 @@
-uniform lowp float opacity;
-// arc
+uniform lowp mat4 matrix;
 uniform lowp float radius;     // arc's radius [0.0, 1.0]
 uniform lowp float thickness;  // arc's thickness [0.0, 1.0]
 uniform lowp float startAngle; // arc's start angle [rad]
 uniform lowp float spanAngle;  // arc's span angle [rad]
-// shadow
 uniform lowp vec4 color;       // shadow's color
 uniform lowp vec2 offset;      // shadow's offset (x,y) : [-1.0, +1.0]x[-1.0,+1.0]
 uniform lowp float extend;     // shadow length [0.0, 1.0]
+uniform lowp float opacity;    // overall opacity [0.0, 1.0]
+
 // position
 varying lowp vec2 coord;       // [-1.0,+1.0]x[-1.0,+1.0]
 

@@ -73,17 +73,44 @@ namespace
 {
     class ShaderRhi final : public RhiShader
     {
+        struct UniformBuffer
+        {    
+            float matrix[4][4];
+            MaterialProperties properties;        
+            float opacity = 1.0f;
+
+            static_assert(sizeof(properties) == sizeof(float) * 11, "Layout mustn't have trailing paddings");
+        };
+
       public:
         ShaderRhi()
         {
-            // TODO
+            const QString root( ":/qskinny/shaders/" );
+            setShaderFileName( VertexStage, root + "arcshadow.vert.qsb" );
+            setShaderFileName( FragmentStage, root + "arcshadow.frag.qsb" );
         }
 
         bool updateUniformData( RenderState& state,
-            QSGMaterial* newMaterial, QSGMaterial* oldMaterial ) override
+            QSGMaterial* const newMaterial, QSGMaterial* const oldMaterial ) override
         {
-            // TODO
-            return false;
+            const auto matOld = static_cast< Material* >( oldMaterial );
+            const auto matNew = static_cast< Material* >( newMaterial );
+
+            const bool dirty = matOld == nullptr || state.isOpacityDirty() || state.isMatrixDirty() || 
+                matOld->compare( matNew ) != 0;
+
+            UniformBuffer buffer;
+
+            const auto dstBufferSize = state.uniformData()->size();
+            const auto srcBufferSize = sizeof(buffer);
+            Q_ASSERT( dstBufferSize >= srcBufferSize );
+
+            auto* data = state.uniformData()->data();
+            std::memcpy(buffer.matrix, state.combinedMatrix().constData(), sizeof(buffer.matrix));
+            buffer.properties = matNew->properties;
+            std::memcpy(data, &buffer, sizeof(buffer));
+
+            return dirty;
         }
     };
 }
@@ -215,7 +242,7 @@ namespace
         return &staticType;
     }
 
-    int Material::compare( const QSGMaterial* other ) const
+    int Material::compare( const QSGMaterial* const other ) const
     {
         const auto& lhs = *static_cast< const Material* >( this );
         const auto& rhs = *static_cast< const Material* >( other );
@@ -275,7 +302,7 @@ void QskArcShadowNode::update( const QRectF& rect, const QskArcMetrics& arcMetri
     const QColor& shadowColor, const QskShadowMetrics& shadowMetrics, const qreal borderWidth )
 {
     Q_D( QskArcShadowNode );
-
+    
     const auto w = qMax(0.0, borderWidth);
     const auto shadowRect = rect.adjusted(-w, -w, +w, +w);
     const auto size = qMin( shadowRect.width(), shadowRect.height() );

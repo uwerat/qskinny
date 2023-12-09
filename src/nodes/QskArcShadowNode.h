@@ -20,8 +20,8 @@ class QskArcShadowNode : public QSGGeometryNode
     QskArcShadowNode();
     ~QskArcShadowNode() override;
 
-    void update( const QRectF& rect, const QskArcMetrics& metrics, const QColor& color,
-        const QskShadowMetrics& shadowMetrics, qreal borderWidth = 0.0 );
+    void update( const QRectF& rect, const QskArcMetrics& arcMetrics, const QColor& shadowColor,
+        const QskShadowMetrics& shadowMetrics, qreal borderWidth );
 
   private:
     Q_DECLARE_PRIVATE( QskArcShadowNode )
