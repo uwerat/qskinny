@@ -422,6 +422,7 @@ ChartView::ChartView( ArcControl* chart, QQuickItem* parent )
     // legend->setSamples( chart->series() );
     hBox->addItem(chart);
     hBox->setDefaultAlignment(Qt::AlignCenter);
+    hBox->setMargins(16);
 
     auto controlPanel = new ControlPanel( chart->arcMetricsHint(QskControl::Background) );
     controlPanel->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );

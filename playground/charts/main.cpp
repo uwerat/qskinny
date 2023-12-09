@@ -137,8 +137,7 @@ int main( int argc, char* argv[] )
     control->setMetric(Q::Arc | QskAspect::Border, 4);
     control->setColor(Q::Arc | QskAspect::Border, Qt::blue);
     control->setShadowColorHint(Q::Arc, Qt::black);
-    control->setShadowMetricsHint(Q::Arc, shadowMetrics);
-    control->setFixedSize( 300, 250 );    
+    control->setShadowMetricsHint(Q::Arc, shadowMetrics);    
 
     QskWindow window;
     window.addItem( new ChartView( control ) );
