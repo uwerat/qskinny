@@ -159,7 +159,7 @@ namespace
             setBoxBorderColorsHint( Inherited::Handle, Qt::white );
             if(skinStates().testFlag(Alpha)) 
             {
-                m_color.setAlpha(value);
+                m_color.setAlpha(value * 255);
             }
             else 
             {
@@ -413,6 +413,8 @@ namespace
 ChartView::ChartView( ArcControl* chart, QQuickItem* parent )
     : QskMainView( parent )
 {
+    setColor(Panel, Qt::white);
+
     auto hBox = new QskLinearBox( Qt::Horizontal );
 
     // auto chartBox = new ChartBox( chart, hBox );
@@ -469,7 +471,9 @@ ChartView::ChartView( ArcControl* chart, QQuickItem* parent )
         [ = ]( QColor c ) { chart->setColor( subcontrol, c ); } );
 
     connect( controlPanel, &ControlPanel::shadowColorChanged, chart,
-        [ = ]( QColor c ) { chart->setShadowColorHint( subcontrol, c ); } );
+        [ = ]( QColor c ) { 
+            chart->setShadowColorHint( subcontrol, c ); 
+        } );
 
     connect( controlPanel, &ControlPanel::strokeColorChanged, chart,
         [ = ]( QColor c ) { 

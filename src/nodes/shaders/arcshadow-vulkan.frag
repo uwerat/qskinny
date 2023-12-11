@@ -48,5 +48,5 @@ void main()
     float d = sdRing(p, cs, ubuf.radius / 2.0, ubuf.thickness);
 
     float a = 1.0 - smoothstep(0.0, ubuf.extend, d);
-    fragColor = vec4(ubuf.color.rgb, 1.0) * a * ubuf.opacity;
+    fragColor = ubuf.color * a * ubuf.opacity;
 }

@@ -43,5 +43,5 @@ void main()
     float d = sdRing(p, cs, radius / 2.0, thickness);
 
     float a = 1.0 - smoothstep(0.0, extend, d);
-    gl_FragColor = vec4(color.rgb, 1.0) * a * opacity;
+    gl_FragColor = color * a * opacity;
 }
