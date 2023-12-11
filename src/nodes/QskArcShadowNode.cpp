@@ -105,13 +105,16 @@ namespace
 
             const auto dstBufferSize = state.uniformData()->size();
             const auto srcBufferSize = sizeof(buffer);
+
             Q_ASSERT( dstBufferSize >= srcBufferSize );
-
-            auto* data = state.uniformData()->data();
-            std::memcpy(buffer.matrix, state.combinedMatrix().constData(), sizeof(buffer.matrix));
-            buffer.properties = matNew->properties;
-            std::memcpy(data, &buffer, sizeof(buffer));
-
+            if ( dstBufferSize >= srcBufferSize )
+            {
+                auto* data = state.uniformData()->data();
+                std::memcpy(buffer.matrix, state.combinedMatrix().constData(), sizeof(buffer.matrix));            
+                buffer.properties = matNew->properties;
+                buffer.opacity = state.opacity();
+                std::memcpy(data, &buffer, sizeof(buffer));
+            }
             return dirty;
         }
     };
