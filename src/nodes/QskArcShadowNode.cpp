@@ -12,6 +12,8 @@
 #include <qsgmaterialshader.h>
 #include <qmath.h>
 
+#include <cstring>
+
 QSK_QT_PRIVATE_BEGIN
 #include <private/qsgnode_p.h>
 QSK_QT_PRIVATE_END
