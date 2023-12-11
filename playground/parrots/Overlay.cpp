@@ -5,10 +5,9 @@
 
 #include "Overlay.h"
 #include "BlurringNode.h"
+#include "SceneTexture.h"
 
 #include <private/qquickitem_p.h>
-#include <private/qquickwindow_p.h>
-#include <private/qsgadaptationlayer_p.h>
 #include <private/qquickitemchangelistener_p.h>
 
 #include <qpointer.h>
@@ -43,22 +42,6 @@ class OverlayPrivate final : public QQuickItemPrivate, public QQuickItemChangeLi
             q_func()->update();
     }
 
-    void setCovering( bool on )
-    {
-        if ( on == covering )
-            return;
-
-        if ( grabbedItem )
-        {
-            auto sd = QQuickItemPrivate::get( grabbedItem );
-
-            sd->refFromEffectItem( on );
-            sd->derefFromEffectItem( covering );
-        }
-
-        covering = on;
-    }
-
     void setAttached( bool on )
     {
         if ( grabbedItem )
@@ -67,76 +50,28 @@ class OverlayPrivate final : public QQuickItemPrivate, public QQuickItemChangeLi
 
             if ( on )
             {
-                d->refFromEffectItem( covering );
+                d->refFromEffectItem( false );
                 d->addItemChangeListener( this, Geometry );
             }
             else
             {
                 d->removeItemChangeListener( this, Geometry );
-                d->derefFromEffectItem( covering );
+                d->derefFromEffectItem( false );
             }
         }
     }
 
-    QSGLayer* createTexture()
+    QSGRootNode* grabbedNode()
     {
-        auto renderContext = sceneGraphRenderContext();
-
-        auto layer = renderContext->sceneGraphContext()->createLayer( renderContext );
-
-        layer->setMipmapFiltering( QSGTexture::None );
-        layer->setHorizontalWrapMode( QSGTexture::ClampToEdge );
-        layer->setVerticalWrapMode( QSGTexture::ClampToEdge );
-        layer->setFormat( QSGLayer::RGBA8 );
-        layer->setHasMipmaps( false );
-        layer->setMirrorHorizontal( false );
-        layer->setMirrorVertical( true );
-
-        if ( q_func()->window()->format().samples() > 2 )
-        {
-            /*
-                We want to disable multisampling as it doesn't make any sense
-                in combination with blurring afterwards. Unfortunately
-                QSGLayer uses the samples from the window when setting samples
-                below 2 here.
-             */
-            layer->setSamples( 2 );
-        }
-
-        return layer;
+        return grabbedItem ? get( grabbedItem )->rootNode() : nullptr;
     }
 
-    void updateTexture( QSGLayer* layer )
+    QSGTransformNode* grabbedItemNode()
     {
-        Q_Q( Overlay );
-
-        const auto pixelRatio = q->window()->effectiveDevicePixelRatio();
-
-        layer->setLive( true );
-        layer->setItem( QQuickItemPrivate::get( grabbedItem )->itemNode() );
-
-        const auto rect = QRectF( q->position(), q->size() );
-        layer->setRect( rect );
-
-        QSize textureSize( qCeil( rect.width() ), qCeil( rect.height() ) );
-        textureSize *= pixelRatio;
-
-        const QSize minTextureSize = sceneGraphContext()->minimumFBOSize();
-
-        while ( textureSize.width() < minTextureSize.width() )
-            textureSize.rwidth() *= 2;
-
-        while ( textureSize.height() < minTextureSize.height() )
-            textureSize.rheight() *= 2;
-
-        layer->setDevicePixelRatio( pixelRatio );
-        layer->setSize( textureSize );
-        layer->setRecursive( false );
-        layer->setFiltering( q->smooth() ? QSGTexture::Linear : QSGTexture::Nearest );
+        return grabbedItem ? get( grabbedItem )->itemNode() : nullptr;
     }
 
     QPointer< QQuickItem > grabbedItem;
-    bool covering = false;
 
     Q_DECLARE_PUBLIC(Overlay)
 };
@@ -176,24 +111,19 @@ void Overlay::geometryChange(
 {
     Inherited::geometryChange( newGeometry, oldGeometry );
 
-    /*
-        When newGeometry covers the grabbedItem completely we could
-        set covering to true. TODO ...
-     */
-
     if ( d_func()->grabbedItem )
         update();
 }
 
 QSGNode* Overlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* )
 {
-    if ( size().isEmpty() )
+    Q_D( Overlay );
+
+    if ( d->grabbedItemNode() == nullptr || size().isEmpty() )
     {
         delete oldNode;
         return nullptr;
     }
-
-    Q_D( Overlay );
 
     auto node = static_cast< BlurringNode* >( oldNode );
 
@@ -201,11 +131,10 @@ QSGNode* Overlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* )
     {
         node = new BlurringNode();
 
-        auto layer = d->createTexture();
-        node->setTexture( layer );
+        auto texture = new SceneTexture( d->sceneGraphRenderContext() );
+        texture->setDevicePixelRatio( window()->effectiveDevicePixelRatio() );
 
-        connect( layer, &QSGLayer::updateRequested,
-            this, &QQuickItem::update );
+        node->setTexture( texture );
     }
 
     auto itemNode = static_cast< TransformNode* >( d->itemNode() );
@@ -214,12 +143,14 @@ QSGNode* Overlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* )
     {
         itemNode->isBlocked = true;
 
-        auto layer = static_cast< QSGLayer* >( node->texture() );
+        auto texture = static_cast< SceneTexture* >( node->texture() );
+        texture->setFiltering( smooth() ? QSGTexture::Linear : QSGTexture::Nearest );
 
-        d->updateTexture( layer );
+        texture->render( d->grabbedNode(), itemNode,
+            QRectF( x(), y(), width(), height() ) );
 
-        layer->updateTexture();
         itemNode->isBlocked = false;
+        QMetaObject::invokeMethod( this, &QQuickItem::update );
     }
 
     node->setRect( QRectF( 0, 0, width(), height() ) );
