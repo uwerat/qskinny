@@ -8,6 +8,8 @@
 #include "SceneTexture.h"
 
 #include <private/qquickitem_p.h>
+#include <private/qquickwindow_p.h>
+#include <private/qsgrenderer_p.h>
 #include <private/qquickitemchangelistener_p.h>
 
 #include <qpointer.h>
@@ -63,12 +65,16 @@ class OverlayPrivate final : public QQuickItemPrivate, public QQuickItemChangeLi
 
     QSGRootNode* grabbedNode()
     {
-        return grabbedItem ? get( grabbedItem )->rootNode() : nullptr;
-    }
+        if ( grabbedItem )
+            return grabbedItem ? get( grabbedItem )->rootNode() : nullptr;
 
-    QSGTransformNode* grabbedItemNode()
-    {
-        return grabbedItem ? get( grabbedItem )->itemNode() : nullptr;
+        if ( auto window = q_func()->window() )
+        {
+            if ( auto renderer = QQuickWindowPrivate::get( window )->renderer )
+                return renderer->rootNode();
+        }
+
+        return nullptr;
     }
 
     QPointer< QQuickItem > grabbedItem;
@@ -110,16 +116,19 @@ void Overlay::geometryChange(
     const QRectF& newGeometry, const QRectF& oldGeometry )
 {
     Inherited::geometryChange( newGeometry, oldGeometry );
-
-    if ( d_func()->grabbedItem )
-        update();
+    update();
 }
 
 QSGNode* Overlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* )
 {
     Q_D( Overlay );
 
-    if ( d->grabbedItemNode() == nullptr || size().isEmpty() )
+    auto grabbedNode = d->grabbedNode();
+        
+    if ( grabbedNode == nullptr )
+        QMetaObject::invokeMethod( this, &QQuickItem::update );
+
+    if ( grabbedNode == nullptr || size().isEmpty() )
     {
         delete oldNode;
         return nullptr;
@@ -146,7 +155,7 @@ QSGNode* Overlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* )
         auto texture = static_cast< SceneTexture* >( node->texture() );
         texture->setFiltering( smooth() ? QSGTexture::Linear : QSGTexture::Nearest );
 
-        texture->render( d->grabbedNode(), itemNode,
+        texture->render( grabbedNode, itemNode,
             QRectF( x(), y(), width(), height() ) );
 
         itemNode->isBlocked = false;

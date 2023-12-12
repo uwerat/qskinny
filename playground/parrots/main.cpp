@@ -50,8 +50,6 @@ class OverlayBox : public Overlay
     OverlayBox( QQuickItem* parent = nullptr )
         : Inherited( parent )
     {
-        if ( parent )
-            setGrabbedItem( parent );
     }
 
   protected:
