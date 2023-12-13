@@ -32,8 +32,8 @@ class SceneTexture : public QSGTexture
     QRectF normalizedTextureSubRect() const override;
 
   private:
-    // nops to satisfy the QSGTexture API
-    bool hasAlphaChannel() const override { return true; }
+    // satisfy the QSGTexture API
+    bool hasAlphaChannel() const override { return false; }
     bool hasMipmaps() const override { return false; }
     void commitTextureOperations( QRhi*, QRhiResourceUpdateBatch* ) override {}
 
