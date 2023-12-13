@@ -106,7 +106,8 @@ namespace
         {
             while ( !m_gradientIterator.isDone() )
             {
-                if ( m_t0 + m_gradientIterator.position() * m_dt > pos )
+                const auto pos2 = m_t0 + m_gradientIterator.position() * m_dt;
+                if ( pos2 > pos && !qFuzzyIsNull( pos2 - pos ) )
                     return;
 
                 m_gradientIterator.advance();
