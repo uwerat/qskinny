@@ -159,38 +159,16 @@ void BlurringNode::setRect( const QRectF& rect )
 {
     Q_D( BlurringNode );
 
-    if ( rect == d->rect )
-        return;
-
-    d->rect = rect;
-
-    struct Point : QSGGeometry::Point2D
+    if ( rect != d->rect )
     {
-        inline void operator=( const QPointF& pos )
-        {
-            x = static_cast< float >( pos.x() );
-            y = static_cast< float >( pos.y() );
-        }
-    };
+        d->rect = rect;
 
-    const QRectF r0( 0, 0, 1, 1 );
+        QSGGeometry::updateTexturedRectGeometry(
+            &d->geometry, rect, QRectF( 0, 0, 1, 1 ) );
 
-    auto points = static_cast< Point* >( d->geometry.vertexData() );
-
-    points[0] = rect.topLeft();
-    points[1] = r0.topLeft();
-
-    points[2] = rect.topRight();
-    points[3] = r0.topRight();
-
-    points[4] = rect.bottomLeft();
-    points[5] = r0.bottomLeft();
-
-    points[6] = rect.bottomRight();
-    points[7] = r0.bottomRight();
-
-    d->geometry.markVertexDataDirty();
-    markDirty( QSGNode::DirtyGeometry );
+        d->geometry.markVertexDataDirty();
+        markDirty( QSGNode::DirtyGeometry );
+    }
 }
 
 QRectF BlurringNode::rect() const
