@@ -145,7 +145,7 @@ class MainView : public QskControl
         m_overlay = new OverlayBox( m_background );
         (void )new ForegroundItem( m_overlay );
 
-#if 1
+#if 0
         auto box = new QskBox( m_background );
         box->setGeometry( 50, 50, 400, 200 );
         box->setFillGradient( Qt::darkBlue );
