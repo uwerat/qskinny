@@ -26,12 +26,11 @@ namespace
 
         void setFinalNode( QSGTransformNode* node )
         {
-            /*
-                we need to find a way how to block all nodes
-                that are rendered behing m_finalNode TODO ...
-             */
-
-            m_finalNode = node;
+            if ( node != m_finalNode )
+            {
+                m_finalNode = node;
+                m_renderPassData.setDirty();
+            }
         }
 
         QRhiTexture* texture() const { return m_rhiTexture; }
@@ -70,12 +69,25 @@ namespace
             setViewportRect( r );
         }
 
-        void renderScene() override
+        void render() override
         {
-            Inherited::renderScene();
+            prepareRenderPass( &m_renderPassData );
+            m_renderPassData.postPrepare( rootNode(), m_finalNode );
+
+            beginRenderPass( &m_renderPassData );
+            recordRenderPass( &m_renderPassData );
+            endRenderPass( &m_renderPassData );
         }
 
       private:
+        void nodeChanged( QSGNode* node, QSGNode::DirtyState state ) override
+        {
+            if ( state & ( QSGNode::DirtyNodeAdded | QSGNode::DirtyNodeRemoved ) )
+                m_renderPassData.setDirty();
+
+            Inherited::nodeChanged( node, state );
+        }
+
         void createTarget( const QSize& size )
         {
             const auto rhi = context()->rhi();
@@ -112,11 +124,6 @@ namespace
             m_rhiTexture = nullptr;
         }
 
-        void nodeChanged( QSGNode* node, QSGNode::DirtyState state ) override
-        {
-            Inherited::nodeChanged( node, state );
-        }
-
       private:
         inline QSGRendererInterface::RenderMode renderMode(
             QSGDefaultRenderContext* context ) const
@@ -128,6 +135,83 @@ namespace
 
         QRhiTexture* m_rhiTexture = nullptr;
         QSGTransformNode* m_finalNode = nullptr;
+
+        class RenderPassData : public RenderPassContext
+        {
+          public:
+            void setDirty()
+            {
+                m_nodesDirty = true;
+            }
+
+            void postPrepare( const QSGNode* rootNode, const QSGNode* finalNode )
+            {
+                using namespace QSGBatchRenderer;;
+
+                if ( m_nodesDirty )
+                {
+                    m_blockedNodes.clear();
+
+                    for ( auto node = finalNode;
+                        node && node != rootNode; node = node->parent() )
+                    {
+                        for ( auto sibling = node->nextSibling();
+                            sibling != nullptr; sibling = sibling->nextSibling() )
+                        {
+                            markNodesAsBlocked( sibling );
+                        }
+                    }
+
+                    m_nodesDirty = false;
+                }
+
+                for ( const auto& renderBatch : opaqueRenderBatches )
+                {
+                    auto batch = const_cast< Batch* >( renderBatch.batch );
+                    removeBlockedNodes( batch );
+                }
+
+                for ( auto& renderBatch : alphaRenderBatches )
+                {
+                    auto batch = const_cast< Batch* >( renderBatch.batch );
+                    removeBlockedNodes( batch );
+                }
+            }
+
+          private:
+            void markNodesAsBlocked( const QSGNode* node )
+            {
+                if ( node->type() == QSGNode::GeometryNodeType )
+                {
+                    auto n = static_cast< const QSGGeometryNode* >( node );
+                    m_blockedNodes.insert( n );
+                }
+
+                for ( auto child = node->firstChild();
+                    child != nullptr; child = child->nextSibling() )
+                {
+                    markNodesAsBlocked( child );
+                }
+            }
+
+            void removeBlockedNodes( QSGBatchRenderer::Batch* batch )
+            {
+                QSGBatchRenderer::Element** elementRef = &batch->first;
+
+                while( auto element = *elementRef )
+                {
+                    if ( m_blockedNodes.contains( element->node ) )
+                        *elementRef = element->nextInBatch;
+                    else
+                        elementRef = &element->nextInBatch;
+                }
+            }
+
+            bool m_nodesDirty = true;
+            QSet< const QSGGeometryNode* > m_blockedNodes;
+        };
+
+        RenderPassData m_renderPassData;
     };
 };
 

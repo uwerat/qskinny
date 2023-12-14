@@ -22,10 +22,10 @@
 
 #include "Overlay.h"
 
-class ButtonBox : public QskLinearBox
+class ForegroundItem : public QskLinearBox
 {
   public:
-    ButtonBox( QQuickItem* parent = nullptr )
+    ForegroundItem( QQuickItem* parent = nullptr )
         : QskLinearBox( Qt::Vertical, parent )
     {
         setMargins( 20 );
@@ -39,6 +39,10 @@ class ButtonBox : public QskLinearBox
 
         auto button = new QskPushButton( "Button", this );
         button->setLayoutAlignmentHint( Qt::AlignHCenter | Qt::AlignBottom );
+
+        label->setObjectName( "miniParrots" );
+        button->setObjectName( "button" );
+        setObjectName( "foreground" );
     }
 };
 
@@ -50,6 +54,7 @@ class OverlayBox : public Overlay
     OverlayBox( QQuickItem* parent = nullptr )
         : Inherited( parent )
     {
+        setObjectName( "overlay" );
     }
 
   protected:
@@ -86,6 +91,9 @@ class BackgroundItem : public QskControl
         m_label->setGraphic( QskGraphic::fromImage( image ) );
 
         startTimer( 20 );
+
+        setObjectName( "background" );
+        m_label->setObjectName( "parrots" );
     }
 
   protected:
@@ -135,13 +143,15 @@ class MainView : public QskControl
         m_background = new BackgroundItem( this );
 
         m_overlay = new OverlayBox( m_background );
-        (void )new ButtonBox( m_overlay );
+        (void )new ForegroundItem( m_overlay );
 
-#if 0
+#if 1
         auto box = new QskBox( m_background );
         box->setGeometry( 50, 50, 400, 200 );
         box->setFillGradient( Qt::darkBlue );
+        box->setObjectName( "blueBox" );
 #endif
+        setObjectName( "mainView" );
     }
 
   protected:
