@@ -7,3 +7,4 @@ function qsbcompile {
 
 qsbcompile blur-vulkan.vert
 qsbcompile blur-vulkan.frag
+qsbcompile rgbswap-vulkan.frag

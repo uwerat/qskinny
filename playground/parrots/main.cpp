@@ -13,6 +13,7 @@
 #include <QskGraphicLabel.h>
 #include <QskGraphic.h>
 #include <QskEvent.h>
+#include <QskRgbValue.h>
 
 #include <QGuiApplication>
 #include <QDebug>
@@ -21,6 +22,17 @@
 #include <cmath>
 
 #include "Overlay.h"
+
+class Image : public QskGraphicLabel
+{
+  public:
+    Image( QQuickItem* parent = nullptr )
+        : QskGraphicLabel( parent )
+    {
+        const QImage image( ":/images/parrots.jpg" );
+        setGraphic( QskGraphic::fromImage( image ) );
+    }
+};
 
 class ForegroundItem : public QskLinearBox
 {
@@ -31,10 +43,7 @@ class ForegroundItem : public QskLinearBox
         setMargins( 20 );
 
 #if 1
-        auto label = new QskGraphicLabel( this );
-
-        const QImage image( ":/images/parrots.jpg" );
-        label->setGraphic( QskGraphic::fromImage( image ) );
+        auto label = new Image( this );
         label->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
         label->setLayoutAlignmentHint( Qt::AlignCenter );
         label->setObjectName( "miniParrots" );
@@ -86,16 +95,15 @@ class BackgroundItem : public QskControl
     BackgroundItem( QQuickItem* parent = nullptr )
         : QskControl( parent )
     {
-        m_label = new QskGraphicLabel( this );
-        m_label->setFillMode( QskGraphicLabel::Stretch );
+        setObjectName( "background" );
 
-        const QImage image( ":/images/parrots.jpg" );
-        m_label->setGraphic( QskGraphic::fromImage( image ) );
+#if 1
+        m_label = new Image( this );
+        m_label->setFillMode( QskGraphicLabel::Stretch );
+        m_label->setObjectName( "parrots" );
+#endif
 
         startTimer( 20 );
-
-        setObjectName( "background" );
-        m_label->setObjectName( "parrots" );
     }
 
   protected:
@@ -127,11 +135,12 @@ class BackgroundItem : public QskControl
         labelRect.adjust( margin, margin, -margin, -margin );
         labelRect.translate( margin * x, margin * y );
 
-        m_label->setGeometry( labelRect );
+        if ( m_label )
+            m_label->setGeometry( labelRect );
     }
 
   private:
-    QskGraphicLabel* m_label;
+    QskGraphicLabel* m_label = nullptr;
 };
 
 class MainView : public QskControl
@@ -146,8 +155,8 @@ class MainView : public QskControl
 #if 0
         {
             auto box = new QskBox( m_background );
-            box->setGeometry( 0, 0, 600, 400 );
-            box->setFillGradient( Qt::darkRed );
+            box->setGeometry( 20, 20, 600, 400 );
+            box->setFillGradient( QskRgb::SaddleBrown );
             box->setObjectName( "redBox" );
         }
 #endif
@@ -158,7 +167,7 @@ class MainView : public QskControl
         {
             auto box = new QskBox( m_background );
             box->setGeometry( 50, 50, 400, 200 );
-            box->setFillGradient( Qt::darkBlue );
+            box->setFillGradient( QskRgb::PaleGreen );
             box->setObjectName( "blueBox" );
         }
 #endif

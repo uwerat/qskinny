@@ -6,5 +6,7 @@
 
         <file>shaders/blur.vert.qsb</file>
         <file>shaders/blur.frag.qsb</file>
+
+        <file>shaders/rgbswap.frag.qsb</file>
     </qresource>
 </RCC>

@@ -63,7 +63,11 @@ namespace
                 to the quickeffects module.
              */
             setShaderFileName( VertexStage, ":/shaders/blur.vert.qsb" );
+#if 0
             setShaderFileName( FragmentStage, ":/shaders/blur.frag.qsb" );
+#else
+            setShaderFileName( FragmentStage, ":/shaders/rgbswap.frag.qsb" );
+#endif
         }
 
         bool updateUniformData( RenderState& state,
