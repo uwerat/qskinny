@@ -30,17 +30,19 @@ class ForegroundItem : public QskLinearBox
     {
         setMargins( 20 );
 
+#if 1
         auto label = new QskGraphicLabel( this );
 
         const QImage image( ":/images/parrots.jpg" );
         label->setGraphic( QskGraphic::fromImage( image ) );
         label->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
         label->setLayoutAlignmentHint( Qt::AlignCenter );
+        label->setObjectName( "miniParrots" );
+#endif
 
         auto button = new QskPushButton( "Button", this );
         button->setLayoutAlignmentHint( Qt::AlignHCenter | Qt::AlignBottom );
 
-        label->setObjectName( "miniParrots" );
         button->setObjectName( "button" );
         setObjectName( "foreground" );
     }
@@ -141,15 +143,24 @@ class MainView : public QskControl
         setPolishOnResize( true );
 
         m_background = new BackgroundItem( this );
-
+#if 0
+        {
+            auto box = new QskBox( m_background );
+            box->setGeometry( 0, 0, 600, 400 );
+            box->setFillGradient( Qt::darkRed );
+            box->setObjectName( "redBox" );
+        }
+#endif
         m_overlay = new OverlayBox( m_background );
         (void )new ForegroundItem( m_overlay );
 
 #if 0
-        auto box = new QskBox( m_background );
-        box->setGeometry( 50, 50, 400, 200 );
-        box->setFillGradient( Qt::darkBlue );
-        box->setObjectName( "blueBox" );
+        {
+            auto box = new QskBox( m_background );
+            box->setGeometry( 50, 50, 400, 200 );
+            box->setFillGradient( Qt::darkBlue );
+            box->setObjectName( "blueBox" );
+        }
 #endif
         setObjectName( "mainView" );
     }
@@ -157,17 +168,19 @@ class MainView : public QskControl
   protected:
     void updateLayout()
     {
-        m_background->setGeometry( rect() );
+        if ( m_background )
+            m_background->setGeometry( rect() );
 
         QRectF blurredRect( QPointF(), 0.7 * size() );
         blurredRect.moveCenter( rect().center() );
 
-        qskSetItemGeometry( m_overlay, blurredRect );
+        if ( m_overlay )
+            qskSetItemGeometry( m_overlay, blurredRect );
     }
 
   private:
-    BackgroundItem* m_background;
-    Overlay* m_overlay;
+    BackgroundItem* m_background = nullptr;
+    Overlay* m_overlay = nullptr;
 };
 
 int main( int argc, char** argv )

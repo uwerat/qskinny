@@ -31,6 +31,8 @@ class SceneTexture : public QSGTexture
 
     QRectF normalizedTextureSubRect() const override;
 
+    bool isRendering() const;
+
   private:
     // satisfy the QSGTexture API
     bool hasAlphaChannel() const override { return false; }

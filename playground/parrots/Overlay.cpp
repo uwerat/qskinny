@@ -7,6 +7,8 @@
 #include "BlurringNode.h"
 #include "SceneTexture.h"
 
+#include <QskTreeNode.h>
+
 #include <private/qquickitem_p.h>
 #include <private/qquickwindow_p.h>
 #include <private/qsgrenderer_p.h>
@@ -14,29 +16,9 @@
 
 #include <qpointer.h>
 
-namespace
-{
-    class TransformNode final : public QSGTransformNode
-    {
-      public:
-        bool isSubtreeBlocked() const override
-        {
-            return isBlocked || QSGTransformNode::isSubtreeBlocked();
-        }
-
-        bool isBlocked = false;;
-    };
-}
-
 class OverlayPrivate final : public QQuickItemPrivate, public QQuickItemChangeListener
 {
   public:
-
-    QSGTransformNode* createTransformNode() override
-    {
-        return new TransformNode();
-    }
-
     void itemGeometryChanged( QQuickItem*,
         QQuickGeometryChange change, const QRectF& )
     {
@@ -75,6 +57,11 @@ class OverlayPrivate final : public QQuickItemPrivate, public QQuickItemChangeLi
         }
 
         return nullptr;
+    }
+
+    QSGTransformNode* createTransformNode() override
+    {
+        return new QskItemNode();
     }
 
     QPointer< QQuickItem > grabbedItem;
@@ -146,19 +133,15 @@ QSGNode* Overlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* )
         node->setTexture( texture );
     }
 
-    auto itemNode = static_cast< TransformNode* >( d->itemNode() );
+    auto texture = static_cast< SceneTexture* >( node->texture() );
 
-    if ( !itemNode->isBlocked )
+    if ( !texture->isRendering() )
     {
-        itemNode->isBlocked = true;
-
-        auto texture = static_cast< SceneTexture* >( node->texture() );
         texture->setFiltering( smooth() ? QSGTexture::Linear : QSGTexture::Nearest );
 
-        texture->render( grabbedNode, itemNode,
+        texture->render( grabbedNode, d->itemNode(),
             QRectF( x(), y(), width(), height() ) );
 
-        itemNode->isBlocked = false;
         QMetaObject::invokeMethod( this, &QQuickItem::update );
     }
 

@@ -4,6 +4,8 @@
  *****************************************************************************/
 
 #include "SceneTexture.h"
+
+#include <QskTreeNode.h>
 #include <private/qsgbatchrenderer_p.h>
 
 namespace
@@ -29,7 +31,6 @@ namespace
             if ( node != m_finalNode )
             {
                 m_finalNode = node;
-                m_renderPassData.setDirty();
             }
         }
 
@@ -71,21 +72,47 @@ namespace
 
         void render() override
         {
-            prepareRenderPass( &m_renderPassData );
-            m_renderPassData.postPrepare( rootNode(), m_finalNode );
-
-            beginRenderPass( &m_renderPassData );
-            recordRenderPass( &m_renderPassData );
-            endRenderPass( &m_renderPassData );
+            setNodesBlocked( m_finalNode, true );
+#if 0
+            qDebug() << "===================";
+            QSGNodeDumper::dump( rootNode() );
+#endif
+            Inherited::render();
+            setNodesBlocked( m_finalNode, false );
         }
 
       private:
-        void nodeChanged( QSGNode* node, QSGNode::DirtyState state ) override
+        void setNodesBlocked( QSGNode* node, bool on )
         {
-            if ( state & ( QSGNode::DirtyNodeAdded | QSGNode::DirtyNodeRemoved ) )
-                m_renderPassData.setDirty();
+            setSubtreeBlocked( node, on );
 
-            Inherited::nodeChanged( node, state );
+            for ( auto sibling = node->nextSibling();
+                sibling != nullptr; sibling = sibling->nextSibling() )
+            {
+                setSubtreeBlocked( sibling, on );
+            }
+
+            if ( node != rootNode() )
+            {
+                if ( auto upperNode = node->parent() )
+                {
+                    upperNode = upperNode->nextSibling();
+                    if ( upperNode )
+                        setNodesBlocked( upperNode, on );
+                }
+            }
+        }
+
+        void setSubtreeBlocked( QSGNode* node, bool on )
+        {
+            if ( qskTrySubtreeBlocked( node, on, false ) )
+                return;
+
+            for ( auto child = node->firstChild();
+                child != nullptr; child = child->nextSibling() )
+            {
+                setSubtreeBlocked( child, on );
+            }
         }
 
         void createTarget( const QSize& size )
@@ -135,83 +162,6 @@ namespace
 
         QRhiTexture* m_rhiTexture = nullptr;
         QSGTransformNode* m_finalNode = nullptr;
-
-        class RenderPassData : public RenderPassContext
-        {
-          public:
-            void setDirty()
-            {
-                m_nodesDirty = true;
-            }
-
-            void postPrepare( const QSGNode* rootNode, const QSGNode* finalNode )
-            {
-                using namespace QSGBatchRenderer;;
-
-                if ( m_nodesDirty )
-                {
-                    m_blockedNodes.clear();
-
-                    for ( auto node = finalNode;
-                        node && node != rootNode; node = node->parent() )
-                    {
-                        for ( auto sibling = node->nextSibling();
-                            sibling != nullptr; sibling = sibling->nextSibling() )
-                        {
-                            markNodesAsBlocked( sibling );
-                        }
-                    }
-
-                    m_nodesDirty = false;
-                }
-
-                for ( const auto& renderBatch : opaqueRenderBatches )
-                {
-                    auto batch = const_cast< Batch* >( renderBatch.batch );
-                    removeBlockedNodes( batch );
-                }
-
-                for ( auto& renderBatch : alphaRenderBatches )
-                {
-                    auto batch = const_cast< Batch* >( renderBatch.batch );
-                    removeBlockedNodes( batch );
-                }
-            }
-
-          private:
-            void markNodesAsBlocked( const QSGNode* node )
-            {
-                if ( node->type() == QSGNode::GeometryNodeType )
-                {
-                    auto n = static_cast< const QSGGeometryNode* >( node );
-                    m_blockedNodes.insert( n );
-                }
-
-                for ( auto child = node->firstChild();
-                    child != nullptr; child = child->nextSibling() )
-                {
-                    markNodesAsBlocked( child );
-                }
-            }
-
-            void removeBlockedNodes( QSGBatchRenderer::Batch* batch )
-            {
-                QSGBatchRenderer::Element** elementRef = &batch->first;
-
-                while( auto element = *elementRef )
-                {
-                    if ( m_blockedNodes.contains( element->node ) )
-                        *elementRef = element->nextInBatch;
-                    else
-                        elementRef = &element->nextInBatch;
-                }
-            }
-
-            bool m_nodesDirty = true;
-            QSet< const QSGGeometryNode* > m_blockedNodes;
-        };
-
-        RenderPassData m_renderPassData;
     };
 };
 
@@ -228,6 +178,8 @@ class SceneTexturePrivate final : public QSGTexturePrivate
 
     Renderer* renderer = nullptr;
     QSGDefaultRenderContext* context = nullptr;
+
+    bool isRendering = false;
 };
 
 SceneTexture::SceneTexture( QSGRenderContext* context )
@@ -289,7 +241,15 @@ void SceneTexture::render( QSGRootNode* rootNode,
     d->renderer->setFinalNode( finalNode );
     d->renderer->setProjection( d->rect );
     d->renderer->setTextureSize( pixelSize );
+
+    d->isRendering = true;
     d->renderer->renderScene();
+    d->isRendering = false;
+}
+
+bool SceneTexture::isRendering() const
+{
+    return d_func()->isRendering;
 }
 
 void SceneTexture::setDevicePixelRatio( qreal ratio )
