@@ -3,23 +3,27 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#pragma once
+#ifndef QSK_SCENE_TEXTURE_H
+#define QSK_SCENE_TEXTURE_H
 
+#include "QskGlobal.h"
 #include <qsgtexture.h>
 
-class SceneTexturePrivate;
+class QskSceneTexturePrivate;
 class QSGRenderContext;
 
 class QSGRootNode;
 class QSGTransformNode;
 
-class SceneTexture : public QSGTexture
+class QSK_EXPORT QskSceneTexture : public QSGTexture // QSGDynamicTexture: TODO ...
 {
+    Q_OBJECT
+
     using Inherited = QSGTexture;
 
   public:
-    SceneTexture( QSGRenderContext* );
-    ~SceneTexture();
+    QskSceneTexture( QSGRenderContext* );
+    ~QskSceneTexture();
 
     void setDevicePixelRatio( qreal );
     void render( QSGRootNode*, QSGTransformNode*, const QRectF& );
@@ -31,13 +35,16 @@ class SceneTexture : public QSGTexture
 
     QRectF normalizedTextureSubRect() const override;
 
-    bool isRendering() const;
+    // satisfy the QSGTexture API
+    bool hasAlphaChannel() const override;
+    bool hasMipmaps() const override;
+    void commitTextureOperations( QRhi*, QRhiResourceUpdateBatch* ) override;
+
+  Q_SIGNALS:
+    void updateRequested();
 
   private:
-    // satisfy the QSGTexture API
-    bool hasAlphaChannel() const override { return false; }
-    bool hasMipmaps() const override { return false; }
-    void commitTextureOperations( QRhi*, QRhiResourceUpdateBatch* ) override {}
-
-    Q_DECLARE_PRIVATE( SceneTexture )
+    Q_DECLARE_PRIVATE( QskSceneTexture )
 };
+
+#endif

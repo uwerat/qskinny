@@ -120,6 +120,7 @@ list(APPEND HEADERS
     nodes/QskPaintedNode.h
     nodes/QskPlainTextRenderer.h
     nodes/QskRichTextRenderer.h
+    nodes/QskSceneTexture.h
     nodes/QskSGNode.h
     nodes/QskStrokeNode.h
     nodes/QskStippledLineRenderer.h
@@ -158,6 +159,7 @@ list(APPEND SOURCES
     nodes/QskPlainTextRenderer.cpp
     nodes/QskRectangleNode.cpp
     nodes/QskRichTextRenderer.cpp
+    nodes/QskSceneTexture.cpp
     nodes/QskSGNode.cpp
     nodes/QskStrokeNode.cpp
     nodes/QskStippledLineRenderer.cpp

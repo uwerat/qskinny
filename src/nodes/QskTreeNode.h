@@ -51,7 +51,13 @@ class QSK_EXPORT QskItemNode final : public QSGTransformNode
 QSK_EXPORT QskItemNode* qskItemNodeCast( QSGNode* );
 QSK_EXPORT const QskItemNode* qskItemNodeCast( const QSGNode* );
 
-QSK_EXPORT bool qskIsNodeBlockable( const QSGNode* );
-QSK_EXPORT bool qskTrySubtreeBlocked( QSGNode*, bool on, bool notify = true );
+QSK_EXPORT bool qskIsBlockableNode( const QSGNode* );
+QSK_EXPORT bool qskTryBlockNode( QSGNode*, bool on, bool notify = true );
+
+QSK_EXPORT void qskTryBlockTree( QSGNode*, bool on, bool notify = true );
+
+// un/block a node and all its successors in the rendering pipeline
+QSK_EXPORT void qskTryBlockTrailingNodes(
+    QSGNode*, const QSGNode* ancestorNode, bool on, bool notify = true );
 
 #endif

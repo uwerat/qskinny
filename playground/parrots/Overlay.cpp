@@ -5,8 +5,8 @@
 
 #include "Overlay.h"
 #include "BlurringNode.h"
-#include "SceneTexture.h"
 
+#include <QskSceneTexture.h>
 #include <QskTreeNode.h>
 
 #include <private/qquickitem_p.h>
@@ -112,9 +112,6 @@ QSGNode* Overlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* )
 
     auto grabbedNode = d->grabbedNode();
         
-    if ( grabbedNode == nullptr )
-        QMetaObject::invokeMethod( this, &QQuickItem::update );
-
     if ( grabbedNode == nullptr || size().isEmpty() )
     {
         delete oldNode;
@@ -127,25 +124,29 @@ QSGNode* Overlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* )
     {
         node = new BlurringNode();
 
-        auto texture = new SceneTexture( d->sceneGraphRenderContext() );
+        auto texture = new QskSceneTexture( d->sceneGraphRenderContext() );
         texture->setDevicePixelRatio( window()->effectiveDevicePixelRatio() );
+
+        connect( texture, &QskSceneTexture::updateRequested,
+            this, &QQuickItem::update );
 
         node->setTexture( texture );
     }
 
-    auto texture = static_cast< SceneTexture* >( node->texture() );
+    auto texture = qobject_cast< QskSceneTexture* >( node->texture() );
+    Q_ASSERT( texture );
 
-    if ( !texture->isRendering() )
-    {
-        texture->setFiltering( smooth() ? QSGTexture::Linear : QSGTexture::Nearest );
+    texture->setFiltering( smooth() ? QSGTexture::Linear : QSGTexture::Nearest );
 
-        texture->render( grabbedNode, d->itemNode(),
-            QRectF( x(), y(), width(), height() ) );
-
-        QMetaObject::invokeMethod( this, &QQuickItem::update );
-    }
+    texture->render( grabbedNode, d->itemNode(),
+        QRectF( x(), y(), width(), height() ) );
 
     node->setRect( QRectF( 0, 0, width(), height() ) );
+
+#if 0
+    // always updating ...
+    QMetaObject::invokeMethod( this, &QQuickItem::update );
+#endif
 
     return node;
 }

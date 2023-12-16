@@ -97,7 +97,7 @@ const QskItemNode* qskItemNodeCast( const QSGNode* node )
         qskCheckedNode( node, QSGNode::TransformNodeType ) );
 }
 
-bool qskIsNodeBlockable( const QSGNode* node )
+bool qskIsBlockableNode( const QSGNode* node )
 {
     switch( node->type() )
     {
@@ -110,7 +110,7 @@ bool qskIsNodeBlockable( const QSGNode* node )
     }
 }
 
-bool qskTrySubtreeBlocked( QSGNode* node, bool on, bool notify )
+bool qskTryBlockNode( QSGNode* node, bool on, bool notify )
 {
     if ( node && ( node->flags() & extraFlag ) )
     {
@@ -128,4 +128,38 @@ bool qskTrySubtreeBlocked( QSGNode* node, bool on, bool notify )
     }
 
     return false;
+}
+
+void qskTryBlockTree( QSGNode* node, bool on, bool notify )
+{
+    if ( qskTryBlockNode( node, on, notify ) )
+        return;
+
+    for ( auto child = node->firstChild();
+        child != nullptr; child = child->nextSibling() )
+    {
+        qskTryBlockTree( child, on, notify );
+    }
+}
+
+void qskTryBlockTrailingNodes(
+    QSGNode* node, const QSGNode* ancestorNode, bool on, bool notify )
+{
+    qskTryBlockTree( node, on, notify );
+
+    for ( auto sibling = node->nextSibling();
+        sibling != nullptr; sibling = sibling->nextSibling() )
+    {
+        qskTryBlockTree( sibling, on, notify );
+    }
+
+    if ( node != ancestorNode )
+    {
+        if ( auto upperNode = node->parent() )
+        {
+            upperNode = upperNode->nextSibling();
+            if ( upperNode )
+                qskTryBlockTrailingNodes( upperNode, ancestorNode, on, notify );
+        }
+    }
 }
