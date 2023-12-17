@@ -12,6 +12,8 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
+#include <private/qquickwindow_p.h>
+#include <private/qsgrenderer_p.h>
 QSK_QT_PRIVATE_END
 
 #include <qpa/qplatforminputcontext.h>
@@ -385,6 +387,48 @@ const QSGNode* qskPaintNode( const QQuickItem* item )
         return nullptr;
 
     return QQuickItemPrivate::get( item )->paintNode;
+}
+
+const QSGRootNode* qskScenegraphAnchorNode( const QQuickItem* item )
+{
+    if ( item == nullptr )
+        return nullptr;
+
+    return QQuickItemPrivate::get( item )->rootNode();
+}
+
+const QSGRootNode* qskScenegraphAnchorNode( const QQuickWindow* window )
+{
+    if ( window )
+    {
+        if ( auto renderer = QQuickWindowPrivate::get( window )->renderer )
+            return renderer->rootNode();
+    }
+
+    return nullptr;
+}
+
+void qskSetScenegraphAnchor( QQuickItem* item, bool on )
+{
+    /*
+        For setting up a subtree renderer ( f.e in QskSceneTexture ) we need
+        to insert a QSGRootNode above the paintNode.
+
+        ( In Qt this feature is exlusively used in the Qt/Quick Effects module
+        what lead to the not very intuitive name "refFromEffectItem" )
+
+        refFromEffectItem also allows to insert a opacity node of 0 to
+        hide the subtree from the main renderer by setting its parameter to
+        true. We have QskItemNode to achieve the same.
+     */
+    if ( item )
+    {
+        auto d = QQuickItemPrivate::get( item );
+        if ( on )
+            d->refFromEffectItem( false );
+        else
+            d->derefFromEffectItem( false );
+    }
 }
 
 QSizeF qskEffectiveSizeHint( const QQuickItem* item,

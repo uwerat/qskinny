@@ -14,10 +14,11 @@
 
 class QskSizePolicy;
 
-class QQuickItem;
 class QSGNode;
 class QSGTransformNode;
+class QSGRootNode;
 class QRectF;
+
 template< typename T > class QList;
 
 /*
@@ -70,6 +71,10 @@ QSK_EXPORT void qskInputMethodSetVisible( const QQuickItem*, bool );
 
 QSK_EXPORT const QSGTransformNode* qskItemNode( const QQuickItem* );
 QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );
+
+QSK_EXPORT const QSGRootNode* qskScenegraphAnchorNode( const QQuickItem* );
+QSK_EXPORT const QSGRootNode* qskScenegraphAnchorNode( const QQuickWindow* );
+QSK_EXPORT void qskSetScenegraphAnchor( QQuickItem*, bool on, bool hide = false );
 
 QSK_EXPORT void qskItemUpdateRecursive( QQuickItem* );
 

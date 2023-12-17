@@ -10,10 +10,10 @@
 #include <qsgtexture.h>
 
 class QskSceneTexturePrivate;
-class QSGRenderContext;
 
 class QSGRootNode;
 class QSGTransformNode;
+class QQuickWindow;
 
 class QSK_EXPORT QskSceneTexture : public QSGTexture // QSGDynamicTexture: TODO ...
 {
@@ -22,11 +22,10 @@ class QSK_EXPORT QskSceneTexture : public QSGTexture // QSGDynamicTexture: TODO 
     using Inherited = QSGTexture;
 
   public:
-    QskSceneTexture( QSGRenderContext* );
+    QskSceneTexture( const QQuickWindow* );
     ~QskSceneTexture();
 
-    void setDevicePixelRatio( qreal );
-    void render( QSGRootNode*, QSGTransformNode*, const QRectF& );
+    void render( const QSGRootNode*, const QSGTransformNode*, const QRectF& );
 
     QSize textureSize() const override;
 

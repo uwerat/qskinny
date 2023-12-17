@@ -7,6 +7,7 @@
 #include "QskTreeNode.h"
 
 QSK_QT_PRIVATE_BEGIN
+#include <private/qquickwindow_p.h>
 #include <private/qsgbatchrenderer_p.h>
 QSK_QT_PRIVATE_END
 
@@ -166,22 +167,25 @@ namespace
 class QskSceneTexturePrivate final : public QSGTexturePrivate
 {
   public:
-    QskSceneTexturePrivate( QskSceneTexture* texture )
+    QskSceneTexturePrivate( const QQuickWindow* window, QskSceneTexture* texture )
         : QSGTexturePrivate( texture )
+        , devicePixelRatio( window->effectiveDevicePixelRatio() )
     {
+        context = dynamic_cast< QSGDefaultRenderContext* >(
+            QQuickWindowPrivate::get( window )->context );
     }
 
     QRectF rect;
-    qreal devicePixelRatio = 1.0;
+    const qreal devicePixelRatio;
 
     Renderer* renderer = nullptr;
     QSGDefaultRenderContext* context = nullptr;
 };
 
-QskSceneTexture::QskSceneTexture( QSGRenderContext* context )
-    : Inherited(*( new QskSceneTexturePrivate(this) ) )
+QskSceneTexture::QskSceneTexture( const QQuickWindow* window )
+    : Inherited(*( new QskSceneTexturePrivate( window, this ) ) )
 {
-    d_func()->context = static_cast< QSGDefaultRenderContext* >( context );
+    Q_ASSERT( d_func()->context );
 }
 
 QskSceneTexture::~QskSceneTexture()
@@ -218,8 +222,8 @@ QRhiTexture* QskSceneTexture::rhiTexture() const
     return d->renderer ? d->renderer->texture() : nullptr;
 }
 
-void QskSceneTexture::render( QSGRootNode* rootNode,
-    QSGTransformNode* finalNode, const QRectF& rect )
+void QskSceneTexture::render( const QSGRootNode* rootNode,
+    const QSGTransformNode* finalNode, const QRectF& rect )
 {
     Q_D( QskSceneTexture );
 
@@ -233,16 +237,12 @@ void QskSceneTexture::render( QSGRootNode* rootNode,
         d->renderer->setDevicePixelRatio( d->devicePixelRatio );
     }
 
-    d->renderer->setRootNode( rootNode );
-    d->renderer->setFinalNode( finalNode );
+    d->renderer->setRootNode( const_cast< QSGRootNode* >( rootNode ) );
+    d->renderer->setFinalNode( const_cast< QSGTransformNode* >( finalNode ) );
+
     d->renderer->setProjection( d->rect );
     d->renderer->setTextureSize( pixelSize );
     d->renderer->renderScene();
-}
-
-void QskSceneTexture::setDevicePixelRatio( qreal ratio )
-{
-    d_func()->devicePixelRatio = ratio;
 }
 
 QRectF QskSceneTexture::normalizedTextureSubRect() const
