@@ -42,7 +42,7 @@ class ForegroundItem : public QskLinearBox
     {
         setMargins( 20 );
 
-#if 1
+#if 0
         auto label = new Image( this );
         label->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
         label->setLayoutAlignmentHint( Qt::AlignCenter );
@@ -103,7 +103,9 @@ class BackgroundItem : public QskControl
         m_label->setObjectName( "parrots" );
 #endif
 
+#if 1
         startTimer( 20 );
+#endif
     }
 
   protected:

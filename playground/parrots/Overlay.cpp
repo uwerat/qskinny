@@ -6,97 +6,94 @@
 #include "Overlay.h"
 #include "BlurringNode.h"
 
+#include <QskSkinlet.h>
 #include <QskSceneTexture.h>
-#include <QskTreeNode.h>
+#include <QskQuick.h>
+#include <QskBoxShapeMetrics.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskBoxBorderColors.h>
+#include <QskGradient.h>
 
-#include <private/qquickitem_p.h>
-#include <private/qquickwindow_p.h>
-#include <private/qsgrenderer_p.h>
-#include <private/qquickitemchangelistener_p.h>
-
-#include <qpointer.h>
-
-class OverlayPrivate final : public QQuickItemPrivate, public QQuickItemChangeListener
+namespace
 {
-  public:
-    void itemGeometryChanged( QQuickItem*,
-        QQuickGeometryChange change, const QRectF& )
+    class Skinlet : public QskSkinlet
     {
-        if ( change.sizeChange() )
-            q_func()->update();
-    }
+        using Inherited = QskSkinlet;
 
-    void setAttached( bool on )
-    {
-        if ( grabbedItem )
+      public:
+        enum NodeRole { EffectRole, BorderRole };
+
+        Skinlet()
         {
-            auto d = QQuickItemPrivate::get( grabbedItem );
-
-            if ( on )
-            {
-                d->refFromEffectItem( false );
-                d->addItemChangeListener( this, Geometry );
-            }
-            else
-            {
-                d->removeItemChangeListener( this, Geometry );
-                d->derefFromEffectItem( false );
-            }
-        }
-    }
-
-    QSGRootNode* grabbedNode()
-    {
-        if ( grabbedItem )
-            return grabbedItem ? get( grabbedItem )->rootNode() : nullptr;
-
-        if ( auto window = q_func()->window() )
-        {
-            if ( auto renderer = QQuickWindowPrivate::get( window )->renderer )
-                return renderer->rootNode();
+            setNodeRoles( { EffectRole, BorderRole } );
         }
 
-        return nullptr;
-    }
+        QSGNode* updateSubNode(
+            const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
+        {
+            const auto overlay = static_cast< const Overlay* >( skinnable );
 
-    QSGTransformNode* createTransformNode() override
-    {
-        return new QskItemNode();
-    }
+            switch ( nodeRole )
+            {
+                case EffectRole:
+                    return updateEffectNode( overlay, node );
 
-    QPointer< QQuickItem > grabbedItem;
+                case BorderRole:
+                    return updateBoxNode( overlay, node, overlay->contentsRect(),
+                        QskBoxShapeMetrics(), 1, Qt::darkGray, QskGradient() );
+                    break;
+            };
 
-    Q_DECLARE_PUBLIC(Overlay)
-};
+            return nullptr;
+        }
+
+      private:
+        QSGNode* updateEffectNode( const Overlay* overlay, QSGNode* node ) const
+        {
+            const auto window = overlay->window();
+
+            if ( overlay->size().isEmpty() )
+                return nullptr;
+
+            auto rootNode = qskScenegraphAnchorNode( window );
+            if ( rootNode == nullptr )
+                return nullptr;
+
+            auto effectNode = static_cast< BlurringNode* >( node );
+
+            if ( effectNode == nullptr )
+            {
+                auto texture = new QskSceneTexture( window );
+                QObject::connect( texture, &QskSceneTexture::updateRequested,
+                    overlay, &QQuickItem::update );
+
+                effectNode = new BlurringNode();
+                effectNode->setTexture( texture );
+            }
+
+            auto texture = qobject_cast< QskSceneTexture* >( effectNode->texture() );
+            Q_ASSERT( texture );
+
+            texture->setFiltering( overlay->smooth() ? QSGTexture::Linear : QSGTexture::Nearest );
+
+            auto finalNode = const_cast< QSGTransformNode* >( qskItemNode( overlay ) );
+            texture->render( rootNode, finalNode, overlay->geometry() );
+
+            effectNode->setRect( overlay->rect() );
+
+            return effectNode;
+        }
+    };
+}
 
 Overlay::Overlay( QQuickItem* parent )
-    : QQuickItem( *new OverlayPrivate(), parent )
+    : Inherited( parent )
 {
-    setFlag( ItemHasContents );
+    setSkinlet( new Skinlet() );
 }
 
 Overlay::~Overlay()
 {
-    d_func()->setAttached( false );
-}
-
-QQuickItem*Overlay::grabbedItem() const
-{
-    return d_func()->grabbedItem;
-}
-
-void Overlay::setGrabbedItem( QQuickItem* item )
-{
-    Q_D( Overlay );
-
-    if ( item == d->grabbedItem )
-        return;
-
-    d->setAttached( false );
-    d->grabbedItem = item;
-    d->setAttached( true );
-
-    update();
 }
 
 void Overlay::geometryChange(
@@ -104,51 +101,6 @@ void Overlay::geometryChange(
 {
     Inherited::geometryChange( newGeometry, oldGeometry );
     update();
-}
-
-QSGNode* Overlay::updatePaintNode( QSGNode* oldNode, UpdatePaintNodeData* )
-{
-    Q_D( Overlay );
-
-    auto grabbedNode = d->grabbedNode();
-        
-    if ( grabbedNode == nullptr || size().isEmpty() )
-    {
-        delete oldNode;
-        return nullptr;
-    }
-
-    auto node = static_cast< BlurringNode* >( oldNode );
-
-    if ( node == nullptr )
-    {
-        node = new BlurringNode();
-
-        auto texture = new QskSceneTexture( d->sceneGraphRenderContext() );
-        texture->setDevicePixelRatio( window()->effectiveDevicePixelRatio() );
-
-        connect( texture, &QskSceneTexture::updateRequested,
-            this, &QQuickItem::update );
-
-        node->setTexture( texture );
-    }
-
-    auto texture = qobject_cast< QskSceneTexture* >( node->texture() );
-    Q_ASSERT( texture );
-
-    texture->setFiltering( smooth() ? QSGTexture::Linear : QSGTexture::Nearest );
-
-    texture->render( grabbedNode, d->itemNode(),
-        QRectF( x(), y(), width(), height() ) );
-
-    node->setRect( QRectF( 0, 0, width(), height() ) );
-
-#if 0
-    // always updating ...
-    QMetaObject::invokeMethod( this, &QQuickItem::update );
-#endif
-
-    return node;
 }
 
 #include "moc_Overlay.cpp"
