@@ -24,7 +24,7 @@ static inline bool qskIsPenVisible( const QPen& pen )
     }
     else
     {
-        if ( pen.color().isValid() || ( pen.color().alpha() == 0 ) )
+        if ( !pen.color().isValid() || ( pen.color().alpha() == 0 ) )
             return false;
     }
 

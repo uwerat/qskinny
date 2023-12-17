@@ -73,7 +73,8 @@ void QskBoxFillNode::updateNode(
 
     if ( dirtyMetrics )
     {
-        QskBox::renderFillGeometry( rect, shapeMetrics, borderMetrics, *geometry() );
+        QskBoxRenderer::renderFillGeometry(
+            rect, shapeMetrics, borderMetrics, *geometry() );
 
         markDirty( QSGNode::DirtyGeometry );
         geometry()->markVertexDataDirty();

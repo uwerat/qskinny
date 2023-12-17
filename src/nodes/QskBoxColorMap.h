@@ -10,7 +10,7 @@
 #include <QskGradientDirection.h>
 #include <QskVertex.h>
 
-namespace QskBox
+namespace QskBoxRenderer
 {
     class ColorMap
     {
