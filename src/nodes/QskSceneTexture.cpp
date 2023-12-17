@@ -6,6 +6,8 @@
 #include "QskSceneTexture.h"
 #include "QskTreeNode.h"
 
+#include <qmath.h>
+
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>
 #include <private/qsgbatchrenderer_p.h>
