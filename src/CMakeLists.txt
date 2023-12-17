@@ -120,7 +120,6 @@ list(APPEND HEADERS
     nodes/QskPaintedNode.h
     nodes/QskPlainTextRenderer.h
     nodes/QskRichTextRenderer.h
-    nodes/QskSceneTexture.h
     nodes/QskSGNode.h
     nodes/QskStrokeNode.h
     nodes/QskStippledLineRenderer.h
@@ -158,7 +157,6 @@ list(APPEND SOURCES
     nodes/QskPlainTextRenderer.cpp
     nodes/QskRectangleNode.cpp
     nodes/QskRichTextRenderer.cpp
-    nodes/QskSceneTexture.cpp
     nodes/QskSGNode.cpp
     nodes/QskStrokeNode.cpp
     nodes/QskStippledLineRenderer.cpp
@@ -170,6 +168,11 @@ list(APPEND SOURCES
     nodes/QskTextureRenderer.cpp
     nodes/QskVertex.cpp
 )
+
+if (QT_VERSION_MAJOR VERSION_GREATER 5)
+    list(APPEND HEADERS nodes/QskSceneTexture.h)
+    list(APPEND SOURCES nodes/QskSceneTexture.cpp)
+endif()
 
 qt_add_resources(SOURCES nodes/shaders.qrc)
 

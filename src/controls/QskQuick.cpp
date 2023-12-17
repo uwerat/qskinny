@@ -399,9 +399,9 @@ const QSGRootNode* qskScenegraphAnchorNode( const QQuickItem* item )
 
 const QSGRootNode* qskScenegraphAnchorNode( const QQuickWindow* window )
 {
-    if ( window )
+    if ( auto w = const_cast< QQuickWindow* >( window ) )
     {
-        if ( auto renderer = QQuickWindowPrivate::get( window )->renderer )
+        if ( auto renderer = QQuickWindowPrivate::get( w )->renderer )
             return renderer->rootNode();
     }
 
