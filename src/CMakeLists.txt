@@ -125,7 +125,6 @@ list(APPEND HEADERS
     nodes/QskStrokeNode.h
     nodes/QskStippledLineRenderer.h
     nodes/QskShapeNode.h
-    nodes/QskTreeNode.h
     nodes/QskGradientMaterial.h
     nodes/QskTextNode.h
     nodes/QskTextRenderer.h
