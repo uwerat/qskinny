@@ -16,7 +16,7 @@ class QskGradient;
 class QSGGeometry;
 class QRectF;
 
-namespace QskBox
+namespace QskBoxRenderer
 {
     /*
         Filling the geometry without any color information:

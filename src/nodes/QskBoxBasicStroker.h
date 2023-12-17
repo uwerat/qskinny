@@ -25,7 +25,7 @@ class QskBoxBasicStroker
     QskBoxBasicStroker( const QskBoxMetrics& );
     QskBoxBasicStroker( const QskBoxMetrics&, const QskBoxBorderColors& );
     QskBoxBasicStroker( const QskBoxMetrics&,
-        const QskBoxBorderColors&, const QskBox::ColorMap& );
+        const QskBoxBorderColors&, const QskBoxRenderer::ColorMap& );
 
     int fillCount() const;
     int borderCount() const;
@@ -78,7 +78,7 @@ class QskBoxBasicStroker
 
     const QskBoxMetrics& m_metrics;
     const QskBoxBorderColors m_borderColors;
-    const QskBox::ColorMap m_colorMap;
+    const QskBoxRenderer::ColorMap m_colorMap;
     const GeometryLayout m_geometryLayout;
 
     const bool m_isColored;

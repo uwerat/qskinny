@@ -172,7 +172,7 @@ namespace
         qreal m_t0, m_dt;
 
         const QskBoxMetrics::Corner* m_c1, * m_c2, * m_c3;
-        QskBox::GradientIterator m_gradientIterator;
+        QskBoxRenderer::GradientIterator m_gradientIterator;
     };
 }
 
@@ -528,7 +528,7 @@ namespace
         int setLines( const QskGradient& gradient, ColoredLine* lines )
         {
             ContourIterator it( m_metrics, gradient.linearDirection() );
-            QskBox::GradientIterator gradientIt( gradient.stops() );
+            QskBoxRenderer::GradientIterator gradientIt( gradient.stops() );
 
             ColoredLine* l = lines;
 
@@ -584,7 +584,7 @@ namespace
             const qreal y1 = m_metrics.innerRect.top();
             const qreal y2 = m_metrics.innerRect.bottom();
 
-            QskBox::GradientIterator it( gradient.stops() );
+            QskBoxRenderer::GradientIterator it( gradient.stops() );
             ColoredLine* l = lines;
 
             const auto dir = gradient.linearDirection();
