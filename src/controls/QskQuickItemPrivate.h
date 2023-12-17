@@ -23,13 +23,13 @@ class QskQuickItemPrivate : public QQuickItemPrivate
 
   public:
     void applyUpdateFlags( QskQuickItem::UpdateFlags );
+    QSGTransformNode* createTransformNode() override;
 
   protected:
     virtual void layoutConstraintChanged();
     virtual void implicitSizeChanged();
 
   private:
-
     void cleanupNodes();
     void mirrorChange() override;
 

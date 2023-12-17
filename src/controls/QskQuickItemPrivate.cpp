@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskQuickItemPrivate.h"
+#include "QskTreeNode.h"
 #include "QskSetup.h"
 
 static inline void qskSendEventTo( QObject* object, QEvent::Type type )
@@ -240,11 +241,13 @@ void QskQuickItemPrivate::cleanupNodes()
     }
 }
 
+QSGTransformNode* QskQuickItemPrivate::createTransformNode()
+{
+    return new QskItemNode();
+}
+
 /*
     Can we do something useful with overloading:
 
-        - QQuickItemPrivate::createTransformNode
         - QQuickItemPrivate::transformChanged
-
-    TODO ...
  */

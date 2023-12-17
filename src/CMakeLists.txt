@@ -115,6 +115,7 @@ list(APPEND HEADERS
     nodes/QskGraduationNode.h
     nodes/QskGraduationRenderer.h
     nodes/QskGraphicNode.h
+    nodes/QskTreeNode.h
     nodes/QskLinesNode.h
     nodes/QskPaintedNode.h
     nodes/QskPlainTextRenderer.h
@@ -160,6 +161,7 @@ list(APPEND SOURCES
     nodes/QskStrokeNode.cpp
     nodes/QskStippledLineRenderer.cpp
     nodes/QskShapeNode.cpp
+    nodes/QskTreeNode.cpp
     nodes/QskGradientMaterial.cpp
     nodes/QskTextNode.cpp
     nodes/QskTextRenderer.cpp
