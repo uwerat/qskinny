@@ -15,7 +15,7 @@ class QSGRootNode;
 class QSGTransformNode;
 class QQuickWindow;
 
-class QSK_EXPORT QskSceneTexture : public QSGTexture // QSGDynamicTexture: TODO ...
+class QSK_EXPORT QskSceneTexture : public QSGTexture
 {
     Q_OBJECT
 
