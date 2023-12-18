@@ -9,6 +9,7 @@
 
 class QRect;
 class QSGTexture;
+
 class BlurringNodePrivate;
 
 class BlurringNode : public QSGGeometryNode
@@ -23,7 +24,6 @@ class BlurringNode : public QSGGeometryNode
     QSGTexture* texture();
 
     void setRect( const QRectF& );
-    QRectF rect() const;
 
   private:
     Q_DECLARE_PRIVATE( BlurringNode )

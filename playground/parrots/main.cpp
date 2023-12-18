@@ -57,36 +57,6 @@ class ForegroundItem : public QskLinearBox
     }
 };
 
-class OverlayBox : public Overlay
-{
-    using Inherited = Overlay;
-
-  public:
-    OverlayBox( QQuickItem* parent = nullptr )
-        : Inherited( parent )
-    {
-        setObjectName( "overlay" );
-    }
-
-  protected:
-    void geometryChange( const QRectF& newRect, const QRectF& oldRect ) override
-    {
-        Inherited::geometryChange( newRect, oldRect );
-
-        const auto rect = qskItemRect( this );
-
-        const auto children = childItems();
-        for ( auto child : children )
-        {
-            if ( qskIsAdjustableByLayout( child ) )
-            {
-                const auto r = qskConstrainedItemRect( child, rect );
-                qskSetItemGeometry( child, r );
-            }
-        }
-    }
-};
-
 class BackgroundItem : public QskControl
 {
     using Inherited = QskControl;
@@ -97,15 +67,11 @@ class BackgroundItem : public QskControl
     {
         setObjectName( "background" );
 
-#if 1
         m_label = new Image( this );
         m_label->setFillMode( QskGraphicLabel::Stretch );
         m_label->setObjectName( "parrots" );
-#endif
 
-#if 1
         startTimer( 20 );
-#endif
     }
 
   protected:
@@ -162,7 +128,10 @@ class MainView : public QskControl
             box->setObjectName( "redBox" );
         }
 #endif
-        m_overlay = new OverlayBox( m_background );
+        m_overlay = new Overlay( m_background );
+        m_overlay->setAutoLayoutChildren( true );
+        m_overlay->setObjectName( "overlay" );
+
         (void )new ForegroundItem( m_overlay );
 
 #if 0

@@ -174,8 +174,3 @@ void BlurringNode::setRect( const QRectF& rect )
         markDirty( QSGNode::DirtyGeometry );
     }
 }
-
-QRectF BlurringNode::rect() const
-{
-    return d_func()->rect;
-}

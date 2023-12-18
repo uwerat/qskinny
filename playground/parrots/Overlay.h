@@ -14,8 +14,12 @@ class Overlay : public QskControl
     using Inherited = QskControl;
 
   public:
+    QSK_SUBCONTROLS( Panel )
+
     Overlay( QQuickItem* = nullptr );
     ~Overlay() override;
+
+    QRectF layoutRectForSize( const QSizeF& ) const override;
 
   protected:
     void geometryChange( const QRectF&, const QRectF& ) override;
