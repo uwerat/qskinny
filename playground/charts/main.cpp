@@ -129,7 +129,8 @@ int main( int argc, char* argv[] )
     metrics.setThickness(10);
 
     QskShadowMetrics shadowMetrics;    
-    shadowMetrics.setSpreadRadius(0.1);
+    shadowMetrics.setSpreadRadius(0.01);
+    shadowMetrics.setBlurRadius(0.01);
     shadowMetrics.setSizeMode(Qt::SizeMode::RelativeSize);
     
     control->setGradientHint(Q::Arc, {Qt::red});

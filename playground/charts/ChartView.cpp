@@ -287,7 +287,8 @@ namespace
             auto sliderStart = new SliderBox( "Angle", 0.0, 360.0, metrics.startAngle() );
             auto sliderSpan = new SliderBox( "Span", -360.0, 360.0, metrics.spanAngle() );
             auto sliderExtent = new SliderBox( "Extent", 10.0, 100.0, metrics.thickness() );
-            auto shadowExtent = new SliderBox( "Shadow Extent", 0.0, 1.0, 0.5 );
+            auto spreadRadius = new SliderBox( "Spread Radius", 0.0, 1.0, 0.01 );
+            auto blurRadius = new SliderBox( "Blur Radius", 0.0, 1.0, 0.01 );            
             auto sliderOffsetX = new SliderBox( "Offset X", -1.0, +1.0, 0 );
             auto sliderOffsetY = new SliderBox( "Offset Y", -1.0, +1.0, 0 );
             auto sliderStrokeWidth = new SliderBox( "Stroke Width", 0, 10, 1 );
@@ -313,8 +314,11 @@ namespace
             connect( sliderOffsetY, &SliderBox::valueChanged,
                 this, &ControlPanel::offsetYChanged );
 
-            connect( shadowExtent, &SliderBox::valueChanged,
-                this, &ControlPanel::shadowExtendChanged );  
+            connect( spreadRadius, &SliderBox::valueChanged,
+                this, &ControlPanel::spreadRadiusChanged );  
+
+            connect( blurRadius, &SliderBox::valueChanged,
+                this, &ControlPanel::blurRadiusChanged );  
             
             connect( sliderStrokeWidth, &SliderBox::valueChanged,
                 this, &ControlPanel::strokeWidthChanged );
@@ -336,7 +340,8 @@ namespace
 
             addItem( sliderStart, 0, 0 );
             addItem( sliderExtent, 0, 1 );
-            addItem( shadowExtent, 0, 2 );
+            addItem( spreadRadius, 0, 2 );
+            addItem( blurRadius, 0, 3 );
             addItem( sliderSpan, 1, 0, 1, 1 );
             addItem( sliderStrokeWidth, 1, 1, 1, 1 );
             addItem( sliderOffsetX, 2, 0, 1, 1 );
@@ -355,7 +360,8 @@ namespace
         void fillColorChanged( QColor );
         void strokeColorChanged( QColor );
         void shadowColorChanged( QColor );
-        void shadowExtendChanged( qreal );
+        void spreadRadiusChanged( qreal );
+        void blurRadiusChanged( qreal );
         void strokeWidthChanged( qreal );
     };
 
@@ -461,9 +467,15 @@ ChartView::ChartView( ArcControl* chart, QQuickItem* parent )
         chart->setShadowMetricsHint( subcontrol, h );
     } );
 
-    connect( controlPanel, &ControlPanel::shadowExtendChanged, chart, [ = ]( qreal v ) {
+    connect( controlPanel, &ControlPanel::spreadRadiusChanged, chart, [ = ]( qreal v ) {
         auto h = chart->shadowMetricsHint( subcontrol );
         h.setSpreadRadius( v );
+        chart->setShadowMetricsHint( subcontrol, h );
+    } );
+
+    connect( controlPanel, &ControlPanel::blurRadiusChanged, chart, [ = ]( qreal v ) {
+        auto h = chart->shadowMetricsHint( subcontrol );
+        h.setBlurRadius( v );
         chart->setShadowMetricsHint( subcontrol, h );
     } );
 

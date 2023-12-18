@@ -37,14 +37,15 @@ namespace
         float thickness = 0.0f;
         float startAngle = 0.0f;
         float spanAngle = M_PI;
-        float extend = 0.0f;
+        float spreadRadius = 0.0f;
+        float blurRadius = 0.0f;
 
         Q_REQUIRED_RESULT inline bool operator==(const MaterialProperties& rhs) const noexcept
         {
             return color == rhs.color && offset == rhs.offset &&
                    radius == rhs.radius && thickness == rhs.thickness &&
                    startAngle == rhs.startAngle && spanAngle == rhs.spanAngle &&
-                   extend == rhs.extend;
+                   spreadRadius == rhs.spreadRadius && blurRadius == rhs.blurRadius;
         }
 
         Q_REQUIRED_RESULT inline bool operator!=(const MaterialProperties& rhs) const noexcept
@@ -81,7 +82,7 @@ namespace
             MaterialProperties properties;        
             float opacity = 1.0f;
 
-            static_assert(sizeof(properties) == sizeof(float) * 11, "Layout mustn't have trailing paddings");
+            static_assert(sizeof(properties) == sizeof(float) * 12, "Assuming packed layout!");
         };
 
       public:
@@ -138,7 +139,8 @@ namespace
             int thickness = -1;
             int startAngle = -1;
             int spanAngle = -1;
-            int extend = -1;
+            int spreadRadius = -1;
+            int blurRadius = -1;
         };
 
       public:
@@ -168,7 +170,8 @@ namespace
             id.thickness = p->uniformLocation( "thickness" );
             id.startAngle = p->uniformLocation( "startAngle" );
             id.spanAngle = p->uniformLocation( "spanAngle" );
-            id.extend = p->uniformLocation( "extend" );
+            id.spreadRadius = p->uniformLocation( "spreadRadius" );
+            id.blurRadius = p->uniformLocation( "blurRadius" );
         }
 
         void updateState( const QSGMaterialShader::RenderState& state,
@@ -201,7 +204,8 @@ namespace
                 p->setUniformValue( id.thickness, properties.thickness);
                 p->setUniformValue( id.startAngle, properties.startAngle);
                 p->setUniformValue( id.spanAngle, properties.spanAngle);
-                p->setUniformValue( id.extend, properties.extend);
+                p->setUniformValue( id.spreadRadius, properties.spreadRadius);
+                p->setUniformValue( id.blurRadius, properties.blurRadius);
             }
         }
 
@@ -370,6 +374,17 @@ void QskArcShadowNode::update( const QRectF& rect, const QskArcMetrics& arcMetri
     }
     (shadowMetrics, shadowRect);
 
+    const auto blurRadius = [](const QskShadowMetrics& metrics, const QRectF& rect){
+        auto blurRadius = metrics.blurRadius();
+        const auto size = qMin( rect.width(), rect.height() );
+        if ( metrics.sizeMode() == Qt::AbsoluteSize ) 
+        {
+            blurRadius = blurRadius / size;
+        }
+        blurRadius = qBound( 0.0, blurRadius, 1.0 );
+        return (float) blurRadius;
+    }(shadowMetrics, shadowRect);
+
     const auto startAngle = (float) qDegreesToRadians(arcMetrics.startAngle() + 90.0); // why +90 ?
     const auto spanAngle = (float) qDegreesToRadians(arcMetrics.spanAngle());
     const auto radius = ( float ) ( 1.0 - thickness - 2 * w / size );
@@ -381,7 +396,8 @@ void QskArcShadowNode::update( const QRectF& rect, const QskArcMetrics& arcMetri
         thickness,
         startAngle,
         spanAngle, 
-        spreadRadius
+        spreadRadius,
+        blurRadius
     };
 
     const auto dirtyGeometry = ( d->rect != shadowRect );
