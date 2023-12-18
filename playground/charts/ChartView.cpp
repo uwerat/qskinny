@@ -340,15 +340,18 @@ namespace
 
             addItem( sliderStart, 0, 0 );
             addItem( sliderExtent, 0, 1 );
-            addItem( spreadRadius, 0, 2 );
-            addItem( blurRadius, 0, 3 );
-            addItem( sliderSpan, 1, 0, 1, 1 );
-            addItem( sliderStrokeWidth, 1, 1, 1, 1 );
-            addItem( sliderOffsetX, 2, 0, 1, 1 );
-            addItem( sliderOffsetY, 2, 1, 1, 1 );
-            addItem( sliderFillColor, 3, 0, 1, 1 );
-            addItem( sliderShadowColor, 3, 1, 1, 1 );
-            addItem( sliderStrokeColor, 3, 2, 1, 1 );
+            addItem( sliderSpan, 0, 2);
+
+            addItem( spreadRadius, 1, 0 );
+            addItem( blurRadius, 1, 1 );
+            addItem( sliderStrokeWidth, 1, 2);
+
+            addItem( sliderOffsetX, 2, 0 );
+            addItem( sliderOffsetY, 2, 1 );
+
+            addItem( sliderStrokeColor, 3, 0);
+            addItem( sliderFillColor, 3, 1);
+            addItem( sliderShadowColor, 3, 2);
         }
 
       Q_SIGNALS:
