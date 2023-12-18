@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #include "Overlay.h"
-#include "BlurringNode.h"
+#include "TextureFilterNode.h"
 
 #include <QskSkinlet.h>
 #include <QskSceneTexture.h>
@@ -23,11 +23,11 @@ namespace
         using Inherited = QskSkinlet;
 
       public:
-        enum NodeRole { EffectRole, BorderRole };
+        enum NodeRole { FillRole, BorderRole };
 
         Skinlet()
         {
-            setNodeRoles( { EffectRole, BorderRole } );
+            setNodeRoles( { FillRole, BorderRole } );
         }
 
         QRectF subControlRect( const QskSkinnable*,
@@ -43,8 +43,8 @@ namespace
 
             switch ( nodeRole )
             {
-                case EffectRole:
-                    return updateClippedEffectNode( overlay, node );
+                case FillRole:
+                    return updateFillNode( overlay, node );
 
                 case BorderRole:
                     return updateBoxNode( skinnable, node, Overlay::Panel );
@@ -55,31 +55,31 @@ namespace
         }
 
       private:
-        QSGNode* updateClippedEffectNode( const Overlay* overlay, QSGNode* node ) const
+        QSGNode* updateFillNode( const Overlay* overlay, QSGNode* node ) const
         {
             /*
                 There should be a way to avoid the clip node by passing the
-                vertex list directly to the effect node. TODO ...
+                vertex list directly to the texture node. TODO ...
              */
             using Q = Overlay;
 
             QSGNode* clipNode = nullptr;
-            QSGNode* effectNode = nullptr;
+            QSGNode* textureNode = nullptr;
 
             if ( node )
             {
                 if ( node->firstChild() )
                 {
                     clipNode = node;
-                    effectNode = node->firstChild();
+                    textureNode = node->firstChild();
                 }
                 else
                 {
-                    effectNode = node;
+                    textureNode = node;
                 }
             }
 
-            effectNode = updateEffectNode( overlay, effectNode );
+            textureNode = updateTextureNode( overlay, textureNode );
 
             if ( overlay->boxShapeHint( Q::Panel ).isRectangle() )
             {
@@ -91,12 +91,12 @@ namespace
                 clipNode = updateBoxClipNode( overlay, clipNode, Q::Panel );
             }
 
-            QskSGNode::setParentNode( effectNode, clipNode );
+            QskSGNode::setParentNode( textureNode, clipNode );
 
-            return clipNode ? clipNode : effectNode;
+            return clipNode ? clipNode : textureNode;
         }
 
-        QSGNode* updateEffectNode( const Overlay* overlay, QSGNode* node ) const
+        QSGNode* updateTextureNode( const Overlay* overlay, QSGNode* node ) const
         {
             const auto window = overlay->window();
 
@@ -107,20 +107,20 @@ namespace
             if ( rootNode == nullptr )
                 return nullptr;
 
-            auto effectNode = static_cast< BlurringNode* >( node );
+            auto textureNode = static_cast< TextureFilterNode* >( node );
 
-            if ( effectNode == nullptr )
+            if ( textureNode == nullptr )
             {
                 auto texture = new QskSceneTexture( window );
                 QObject::connect( texture, &QskSceneTexture::updateRequested,
                     overlay, &QQuickItem::update );
 
-                effectNode = new BlurringNode();
-                effectNode->setTexture( texture );
+                textureNode = new TextureFilterNode();
+                textureNode->setTexture( texture );
             }
 
             {
-                auto texture = qobject_cast< QskSceneTexture* >( effectNode->texture() );
+                auto texture = qobject_cast< QskSceneTexture* >( textureNode->texture() );
                 Q_ASSERT( texture );
 
                 texture->setFiltering(
@@ -132,10 +132,10 @@ namespace
 
             {
                 const auto rect = overlay->subControlRect( Overlay::Panel );
-                effectNode->setRect( rect );
+                textureNode->setRect( rect );
             }
 
-            return effectNode;
+            return textureNode;
         }
     };
 }

@@ -3,7 +3,7 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "BlurringNode.h"
+#include "TextureFilterNode.h"
 
 #include <qsgmaterialshader.h>
 #include <qsgmaterial.h>
@@ -122,10 +122,10 @@ QSGMaterialShader* Material::createShader(
     return new MaterialShader();
 }
 
-class BlurringNodePrivate final : public QSGGeometryNodePrivate
+class TextureFilterNodePrivate final : public QSGGeometryNodePrivate
 {
   public:
-    BlurringNodePrivate()
+    TextureFilterNodePrivate()
         : geometry( QSGGeometry::defaultAttributes_TexturedPoint2D(), 4 )
     {
     }
@@ -136,32 +136,32 @@ class BlurringNodePrivate final : public QSGGeometryNodePrivate
     QRectF rect;
 };
 
-BlurringNode::BlurringNode()
-    : QSGGeometryNode( *new BlurringNodePrivate )
+TextureFilterNode::TextureFilterNode()
+    : QSGGeometryNode( *new TextureFilterNodePrivate )
 {
-    Q_D( BlurringNode );
+    Q_D( TextureFilterNode );
 
     setMaterial( &d->material );
     setGeometry( &d->geometry );
 }
 
-BlurringNode::~BlurringNode()
+TextureFilterNode::~TextureFilterNode()
 {
 }
 
-void BlurringNode::setTexture( QSGTexture* texture )
+void TextureFilterNode::setTexture( QSGTexture* texture )
 {
     d_func()->material.texture = texture;
 }
 
-QSGTexture* BlurringNode::texture()
+QSGTexture* TextureFilterNode::texture()
 {
     return d_func()->material.texture;
 }
 
-void BlurringNode::setRect( const QRectF& rect )
+void TextureFilterNode::setRect( const QRectF& rect )
 {
-    Q_D( BlurringNode );
+    Q_D( TextureFilterNode );
 
     if ( rect != d->rect )
     {

@@ -5,7 +5,7 @@
 
 set(SOURCES
     Overlay.h Overlay.cpp
-    BlurringNode.h BlurringNode.cpp
+    TextureFilterNode.h TextureFilterNode.cpp
     main.cpp)
 
 qt_add_resources(SOURCES images.qrc shaders.qrc)
