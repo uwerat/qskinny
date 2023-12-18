@@ -20,6 +20,16 @@
 #include <QDebug>
 #include <qmath.h>
 
+namespace 
+{
+    enum NodeRole
+    {
+        ShadowRole,
+        FillRole,
+        BorderRole
+    };
+}
+
 static inline QskGradient qskEffectiveGradient(
     const QskGradient& gradient, const QskArcMetrics& metrics )
 {
@@ -60,6 +70,14 @@ static inline QRectF qskEffectiveRect(
     return qskValidOrEmptyInnerRect( rect, QskMargins( 0.5 * borderWidth ) );
 }
 
+static void qskUpdateChildren( QSGNode* parentNode, quint8 role, QSGNode* node )
+{
+    static const QVector< quint8 > roles = { ShadowRole, FillRole, BorderRole };
+
+    auto oldNode = QskSGNode::findChildNode( parentNode, role );
+    QskSGNode::replaceChildNode( roles, role, parentNode, oldNode, node );
+}
+
 QskArcNode::QskArcNode()
 {
 }
@@ -77,13 +95,6 @@ void QskArcNode::setArcData( const QRectF& rect,
 void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics,
     const qreal borderWidth, const QColor& borderColor, const QskGradient& fillGradient, const QColor& shadowColor, const QskShadowMetrics& shadowMetrics )
 {
-    enum NodeRole
-    {
-        ShadowRole,
-        FillRole,
-        BorderRole
-    };
-
     const auto metrics = qskEffectiveMetrics( arcMetrics, rect );
     const auto gradient = qskEffectiveGradient( fillGradient, metrics );
 
@@ -105,9 +116,13 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
         return;
     }
 
+    const auto isFillNodeVisible = gradient.isVisible() && !metrics.isNull();
+    const auto isStrokeNodeVisible = borderWidth > 0.0 && borderColor.alpha() > 0;
+    const auto isShadowNodeVisible = shadowColor.alpha() > 0.0 && isFillNodeVisible;
+
     const auto path = metrics.painterPath( arcRect );
 
-    if ( shadowColor.alpha() > 0.0 )
+    if ( isShadowNodeVisible )
     {
         if ( shadowNode == nullptr ) 
         {
@@ -123,7 +138,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
         shadowNode = nullptr;
     }
 
-    if ( gradient.isVisible() && !metrics.isNull() )
+    if ( isFillNodeVisible )
     {
         if ( fillNode == nullptr )
         {
@@ -139,7 +154,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
         fillNode = nullptr;
     }
 
-    if ( borderWidth > 0.0 && borderColor.alpha() > 0 )
+    if ( isStrokeNodeVisible )
     {
         if ( borderNode == nullptr )
         {
@@ -158,20 +173,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
         borderNode = nullptr;
     }
     
-    const auto oldChildCount = this->childCount();    
-    const auto newChildCount =
-        ( shadowNode ? 1 : 0 ) + ( fillNode ? 1 : 0 ) + ( borderNode ? 1 : 0 );
-     
-    if ( oldChildCount != newChildCount ) 
-    {
-        removeAllChildNodes();
-        
-        for ( QSGNode* node : { ( QSGNode* ) shadowNode, ( QSGNode* ) fillNode, ( QSGNode* ) borderNode })
-        {
-            if ( node != nullptr ) 
-            {
-                appendChildNode( node );
-            }
-        }
-    }
+    qskUpdateChildren(this, ShadowRole, shadowNode);
+    qskUpdateChildren(this, FillRole, fillNode);
+    qskUpdateChildren(this, BorderRole, borderNode);
 }
