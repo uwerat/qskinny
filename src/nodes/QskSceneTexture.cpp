@@ -102,8 +102,9 @@ namespace
         const bool flipFramebuffer = true;
         const bool flipMatrix = false;
 #else
+        const auto rhi = context()->rhi();
         const bool flipFramebuffer = rhi->isYUpInFramebuffer();
-        const bool flipMatrix = rhi->isYUpInNDC();
+        const bool flipMatrix = !rhi->isYUpInNDC();
 #endif
 
         auto r = rect;
