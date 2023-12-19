@@ -23,6 +23,11 @@ class TextureFilterNode : public QSGGeometryNode
     void setTexture( QSGTexture* );
     QSGTexture* texture();
 
+#if 0
+    // deriving from QSGImageNode ???
+    void setOwnsTexture( bool );
+    bool ownsTexture() const;
+#endif
     void setRect( const QRectF& );
 
   private:

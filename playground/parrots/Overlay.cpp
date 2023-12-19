@@ -7,12 +7,12 @@
 #include "TextureFilterNode.h"
 
 #include <QskSkinlet.h>
-#include <QskSceneTexture.h>
 #include <QskQuick.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxBorderColors.h>
 #include <QskGradient.h>
+#include <QskSceneTexture.h>
 #include <QskSGNode.h>
 #include <QskRgbValue.h>
 

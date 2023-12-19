@@ -29,15 +29,19 @@ class QSK_EXPORT QskSceneTexture : public QSGTexture
 
     QSize textureSize() const override;
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    void bind() override;
+    int textureId() const override;
+#else
     qint64 comparisonKey() const override;
     QRhiTexture* rhiTexture() const override;
+#endif
 
     QRectF normalizedTextureSubRect() const override;
 
     // satisfy the QSGTexture API
     bool hasAlphaChannel() const override;
     bool hasMipmaps() const override;
-    void commitTextureOperations( QRhi*, QRhiResourceUpdateBatch* ) override;
 
   Q_SIGNALS:
     void updateRequested();

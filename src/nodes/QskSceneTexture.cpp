@@ -10,11 +10,21 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>
+#include <private/qsgtexture_p.h>
+
+#define QT_BUILD_QUICK_LIB // suppress Qt5 warnings
 #include <private/qsgbatchrenderer_p.h>
+#undef QT_BUILD_QUICK_LIB
+
 QSK_QT_PRIVATE_END
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+#include <qopenglframebufferobject.h>
+#endif
 
 namespace
 {
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
     inline QSGRendererInterface::RenderMode contextRenderMode(
         QSGDefaultRenderContext* context )
     {
@@ -22,6 +32,7 @@ namespace
             ? QSGRendererInterface::RenderMode2D
             : QSGRendererInterface::RenderMode2DNoDepthBuffer;
     }
+#endif
 
     class Renderer final : public QSGBatchRenderer::Renderer
     {
@@ -31,8 +42,14 @@ namespace
         Renderer( QskSceneTexture*, QSGDefaultRenderContext* );
         ~Renderer() override;
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        inline int textureId() const { return m_fbo ? m_fbo->texture() : 0; }
+        inline void renderScene() { Inherited::renderScene( textureId() ); }
+#else
+        inline QRhiTexture* texture() const { return m_rhiTexture; }
+#endif
+
         void setFinalNode( QSGTransformNode* );
-        QRhiTexture* texture() const { return m_rhiTexture; }
 
         void setProjection( const QRectF& );
         void setTextureSize( const QSize& );
@@ -45,15 +62,22 @@ namespace
         void createTarget( const QSize& );
         void clearTarget();
 
-      private:
-        QRhiTexture* m_rhiTexture = nullptr;
         QSGTransformNode* m_finalNode = nullptr;
-
         QskSceneTexture* m_texture = nullptr;
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        QOpenGLFramebufferObject* m_fbo;
+#else
+        QRhiTexture* m_rhiTexture = nullptr;
+#endif
     };
 
     Renderer::Renderer( QskSceneTexture* texture, QSGDefaultRenderContext* context )
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        : Inherited( context )
+#else
         : Inherited( context, contextRenderMode( context ) )
+#endif
         , m_texture( texture )
     {
         setClearColor( Qt::transparent );
@@ -74,11 +98,17 @@ namespace
 
     void Renderer::setProjection( const QRectF& rect )
     {
-        const auto rhi = context()->rhi();
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        const bool flipFramebuffer = true;
+        const bool flipMatrix = false;
+#else
+        const bool flipFramebuffer = rhi->isYUpInFramebuffer();
+        const bool flipMatrix = rhi->isYUpInNDC();
+#endif
 
         auto r = rect;
 
-        if ( rhi->isYUpInFramebuffer() )
+        if ( flipFramebuffer )
         {
             r.moveTop( r.bottom() );
             r.setHeight( -r.height() );
@@ -86,7 +116,7 @@ namespace
 
         MatrixTransformFlags matrixFlags;
 
-        if ( !rhi->isYUpInNDC() )
+        if ( flipMatrix )
             matrixFlags |= QSGAbstractRenderer::MatrixTransformFlipY;
 
         setProjectionMatrixToRect( r, matrixFlags );
@@ -94,11 +124,19 @@ namespace
 
     void Renderer::setTextureSize( const QSize& size )
     {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        if ( m_fbo && m_fbo->size() != size )
+            clearTarget();
+
+        if ( m_fbo == nullptr )
+            createTarget( size );
+#else
         if ( m_rt.rt && m_rt.rt->pixelSize() != size )
             clearTarget();
 
         if ( m_rt.rt == nullptr )
             createTarget( size );
+#endif
 
         const QRect r( 0, 0, size.width(), size.height() );
 
@@ -131,6 +169,14 @@ namespace
 
     void Renderer::createTarget( const QSize& size )
     {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        QOpenGLFramebufferObjectFormat format;
+        format.setInternalTextureFormat( GL_RGBA8 );
+        format.setSamples( 0 );
+        format.setAttachment( QOpenGLFramebufferObject::CombinedDepthStencil );
+
+        m_fbo = new QOpenGLFramebufferObject( size, format );
+#else
         const auto rhi = context()->rhi();
 
         auto flags = QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource;
@@ -151,10 +197,15 @@ namespace
 
         auto defaultContext = qobject_cast< QSGDefaultRenderContext* >( context() );
         m_rt.cb = defaultContext->currentFrameCommandBuffer();
+#endif
     }
 
     void Renderer::clearTarget()
     {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        delete m_fbo;
+        m_fbo = nullptr;
+#else
         delete m_rt.rt;
         m_rt.rt = nullptr;
 
@@ -163,6 +214,7 @@ namespace
 
         delete m_rhiTexture;
         m_rhiTexture = nullptr;
+#endif
     }
 }
 
@@ -170,11 +222,18 @@ class QskSceneTexturePrivate final : public QSGTexturePrivate
 {
   public:
     QskSceneTexturePrivate( const QQuickWindow* window, QskSceneTexture* texture )
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        : QSGTexturePrivate()
+#else
         : QSGTexturePrivate( texture )
+#endif
         , devicePixelRatio( window->effectiveDevicePixelRatio() )
     {
-        context = dynamic_cast< QSGDefaultRenderContext* >(
-            QQuickWindowPrivate::get( window )->context );
+        Q_UNUSED( texture );
+
+        // Qt5 needs the extra const_cast
+        auto dw = QQuickWindowPrivate::get( const_cast< QQuickWindow* >( window ) );
+        context = dynamic_cast< QSGDefaultRenderContext* >( dw->context );
     }
 
     QRectF rect;
@@ -185,7 +244,7 @@ class QskSceneTexturePrivate final : public QSGTexturePrivate
 };
 
 QskSceneTexture::QskSceneTexture( const QQuickWindow* window )
-    : Inherited(*( new QskSceneTexturePrivate( window, this ) ) )
+    : Inherited( *new QskSceneTexturePrivate( window, this ) )
 {
     Q_ASSERT( d_func()->context );
 }
@@ -213,25 +272,12 @@ QSize QskSceneTexture::textureSize() const
     return size;
 }
 
-qint64 QskSceneTexture::comparisonKey() const
-{
-    return qint64( rhiTexture() );
-}
-
-QRhiTexture* QskSceneTexture::rhiTexture() const
-{
-    Q_D( const QskSceneTexture );
-    return d->renderer ? d->renderer->texture() : nullptr;
-}
-
 void QskSceneTexture::render( const QSGRootNode* rootNode,
     const QSGTransformNode* finalNode, const QRectF& rect )
 {
     Q_D( QskSceneTexture );
 
     d->rect = rect;
-
-    const auto pixelSize = textureSize();
 
     if ( d->renderer == nullptr )
     {
@@ -243,7 +289,7 @@ void QskSceneTexture::render( const QSGRootNode* rootNode,
     d->renderer->setFinalNode( const_cast< QSGTransformNode* >( finalNode ) );
 
     d->renderer->setProjection( d->rect );
-    d->renderer->setTextureSize( pixelSize );
+    d->renderer->setTextureSize( textureSize() );
     d->renderer->renderScene();
 }
 
@@ -262,9 +308,35 @@ bool QskSceneTexture::hasMipmaps() const
     return false;
 }
 
-void QskSceneTexture::commitTextureOperations( QRhi*, QRhiResourceUpdateBatch* )
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+
+void QskSceneTexture::bind()
 {
-    // what to do here ?
+    auto funcs = QOpenGLContext::currentContext()->functions();
+    funcs->glBindTexture( GL_TEXTURE_2D, textureId() );
+
+    updateBindOptions();
 }
+
+int QskSceneTexture::textureId() const
+{
+    Q_D( const QskSceneTexture );
+    return d->renderer ? d->renderer->textureId() : 0;
+}
+
+#else
+
+qint64 QskSceneTexture::comparisonKey() const
+{
+    return qint64( rhiTexture() );
+}
+
+QRhiTexture* QskSceneTexture::rhiTexture() const
+{
+    Q_D( const QskSceneTexture );
+    return d->renderer ? d->renderer->texture() : nullptr;
+}
+
+#endif
 
 #include "moc_QskSceneTexture.cpp"

@@ -42,8 +42,12 @@ namespace
             return &staticType;
         }
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        QSGMaterialShader* createShader() const override;
+#else
         QSGMaterialShader* createShader(
             QSGRendererInterface::RenderMode ) const override;
+#endif
 
         QSGTexture* texture = nullptr;
     };
@@ -51,6 +55,53 @@ namespace
 
 namespace
 {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    class MaterialShaderGL : public QSGMaterialShader
+    {
+      public:
+        MaterialShaderGL()
+        {
+            setShaderSourceFile( QOpenGLShader::Vertex, ":/shaders/blur.vert" );
+            setShaderSourceFile( QOpenGLShader::Fragment, ":/shaders/blur.frag" );
+        }
+
+        char const* const* attributeNames() const override
+        {
+            static char const* const names[] = { "in_vertex", "in_coord", nullptr };
+            return names;
+        }
+
+       void initialize() override
+        {
+            QSGMaterialShader::initialize();
+
+            auto p = program();
+
+            m_matrixId = p->uniformLocation( "matrix" );
+            m_opacityId = p->uniformLocation( "opacity" );
+        }
+
+       void updateState( const QSGMaterialShader::RenderState& state,
+            QSGMaterial* newMaterial, QSGMaterial* ) override
+        {
+            auto p = program();
+
+            if ( state.isMatrixDirty() )
+                p->setUniformValue( m_matrixId, state.combinedMatrix() );
+
+            if ( state.isOpacityDirty() )
+                p->setUniformValue( m_opacityId, state.opacity() );
+
+            auto material = static_cast< Material* >( newMaterial );
+            if ( material->texture )
+                material->texture->bind();
+        }
+
+      private:
+        int m_matrixId = -1;
+        int m_opacityId = -1;
+    };
+#else
     class MaterialShader : public QSGMaterialShader
     {
       public:
@@ -114,13 +165,25 @@ namespace
             }
         }
     };
+#endif
 }
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+QSGMaterialShader* Material::createShader() const
+{
+    Q_ASSERT( !( flags() & QSGMaterial::RhiShaderWanted ) );
+    return new MaterialShaderGL();
+}
+
+#else
 
 QSGMaterialShader* Material::createShader(
     QSGRendererInterface::RenderMode ) const
 {
     return new MaterialShader();
 }
+
+#endif
 
 class TextureFilterNodePrivate final : public QSGGeometryNodePrivate
 {
@@ -152,6 +215,7 @@ TextureFilterNode::~TextureFilterNode()
 void TextureFilterNode::setTexture( QSGTexture* texture )
 {
     d_func()->material.texture = texture;
+    markDirty( QSGNode::DirtyMaterial );
 }
 
 QSGTexture* TextureFilterNode::texture()
