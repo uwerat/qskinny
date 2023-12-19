@@ -5,6 +5,7 @@
 
 set(SOURCES
     Overlay.h Overlay.cpp
+    TextureFilterMaterial.h TextureFilterMaterial.cpp
     TextureFilterNode.h TextureFilterNode.cpp
     main.cpp)
 

@@ -7,10 +7,10 @@
 
 #include <qsgnode.h>
 
-class QRect;
-class QSGTexture;
-
+class TextureFilterMaterial;
 class TextureFilterNodePrivate;
+
+class QSGTexture;
 
 class TextureFilterNode : public QSGGeometryNode
 {
@@ -21,15 +21,18 @@ class TextureFilterNode : public QSGGeometryNode
     ~TextureFilterNode();
 
     void setTexture( QSGTexture* );
-    QSGTexture* texture();
+    QSGTexture* texture() const;
 
-#if 0
-    // deriving from QSGImageNode ???
     void setOwnsTexture( bool );
     bool ownsTexture() const;
-#endif
+
     void setRect( const QRectF& );
 
+    void setTextureMaterial( TextureFilterMaterial* );
+    TextureFilterMaterial* textureMaterial() const;
+
   private:
+    void setMaterial( QSGMaterial* ) = delete;
+
     Q_DECLARE_PRIVATE( TextureFilterNode )
 };

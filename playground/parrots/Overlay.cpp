@@ -5,6 +5,7 @@
 
 #include "Overlay.h"
 #include "TextureFilterNode.h"
+#include "TextureFilterMaterial.h"
 
 #include <QskSkinlet.h>
 #include <QskQuick.h>
@@ -18,6 +19,38 @@
 
 namespace
 {
+    class Material : public TextureFilterMaterial
+    {
+      public:
+        using TextureFilterMaterial::TextureFilterMaterial;
+
+        QSGMaterialType* type() const override
+        {
+            static QSGMaterialType staticType;
+            return &staticType;
+        }
+    };
+
+    class FilterNode : public TextureFilterNode
+    {
+      public:
+        FilterNode( QSGTexture* texture )
+        {
+            QString shaders[] = { ":/shaders/blur.vert", ":/shaders/blur.frag" };
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+            shaders[0] += ".qsb";
+            shaders[1] += ".qsb";
+#endif
+
+            setFlag( QSGNode::OwnsMaterial, true );
+            setTextureMaterial( new Material( shaders[0], shaders[1] ) );
+
+            setOwnsTexture( true );
+            setTexture( texture );
+        }
+    };
+
     class Skinlet : public QskSkinlet
     {
         using Inherited = QskSkinlet;
@@ -107,7 +140,7 @@ namespace
             if ( rootNode == nullptr )
                 return nullptr;
 
-            auto textureNode = static_cast< TextureFilterNode* >( node );
+            auto textureNode = static_cast< FilterNode* >( node );
 
             if ( textureNode == nullptr )
             {
@@ -115,8 +148,7 @@ namespace
                 QObject::connect( texture, &QskSceneTexture::updateRequested,
                     overlay, &QQuickItem::update );
 
-                textureNode = new TextureFilterNode();
-                textureNode->setTexture( texture );
+                textureNode = new FilterNode( texture );
             }
 
             {
