@@ -140,6 +140,8 @@ namespace
             if ( rootNode == nullptr )
                 return nullptr;
 
+            const auto rect = overlay->subControlRect( Overlay::Panel );
+
             auto textureNode = static_cast< FilterNode* >( node );
 
             if ( textureNode == nullptr )
@@ -149,22 +151,22 @@ namespace
                     overlay, &QQuickItem::update );
 
                 textureNode = new FilterNode( texture );
+                texture->setTextureNode( textureNode );
             }
 
-            {
-                auto texture = qobject_cast< QskSceneTexture* >( textureNode->texture() );
-                Q_ASSERT( texture );
+            textureNode->setRect( rect );
 
+            auto texture = qobject_cast< QskSceneTexture* >( textureNode->texture() );
+            Q_ASSERT( texture );
+
+            if ( texture->isDirty() )
+            {
                 texture->setFiltering(
                     overlay->smooth() ? QSGTexture::Linear : QSGTexture::Nearest );
 
                 auto finalNode = const_cast< QSGTransformNode* >( qskItemNode( overlay ) );
                 texture->render( rootNode, finalNode, overlay->geometry() );
-            }
-
-            {
-                const auto rect = overlay->subControlRect( Overlay::Panel );
-                textureNode->setRect( rect );
+                textureNode->markDirty( QSGNode::DirtyMaterial );
             }
 
             return textureNode;

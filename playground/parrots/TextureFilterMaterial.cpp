@@ -39,7 +39,7 @@ namespace
         }
 
         void updateState( const QSGMaterialShader::RenderState& state,
-            QSGMaterial* newMaterial, QSGMaterial* ) override
+            QSGMaterial* newMaterial, QSGMaterial* oldMaterial ) override
         {
             auto p = program();
 
@@ -50,8 +50,22 @@ namespace
                 p->setUniformValue( m_opacityId, state.opacity() );
 
             auto material = static_cast< TextureFilterMaterial* >( newMaterial );
-            if ( material->texture() )
-                material->texture()->bind();
+
+            if ( auto texture = material->texture() )
+            {
+                auto textureId = -1;
+
+                if ( auto oldMat = static_cast< TextureFilterMaterial* >( oldMaterial ) )
+                {
+                    if ( oldMat->texture() )
+                        textureId = oldMat->texture()->textureId();
+                }
+
+                if ( texture->textureId() != textureId )
+                    texture->bind();
+                else
+                    texture->updateBindOptions();
+            }
         }
 
       private:

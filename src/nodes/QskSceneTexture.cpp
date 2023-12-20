@@ -49,6 +49,8 @@ namespace
         inline QRhiTexture* texture() const { return m_rhiTexture; }
 #endif
 
+        inline bool isDirty() const { return m_dirty; }
+
         void setFinalNode( QSGTransformNode* );
 
         void setProjection( const QRectF& );
@@ -70,6 +72,8 @@ namespace
 #else
         QRhiTexture* m_rhiTexture = nullptr;
 #endif
+
+        bool m_dirty = true;
     };
 
     Renderer::Renderer( QskSceneTexture* texture, QSGDefaultRenderContext* context )
@@ -148,22 +152,32 @@ namespace
     void Renderer::render()
     {
         qskTryBlockTrailingNodes( m_finalNode, rootNode(), true, false );
+
 #if 0
+        static int counter = 0;
+        qDebug() << ++counter;
         QSGNodeDumper::dump( rootNode() );
 #endif
         Inherited::render();
         qskTryBlockTrailingNodes( m_finalNode, rootNode(), false, false );
+
+        m_dirty = false;
     }
 
     void Renderer::nodeChanged( QSGNode* node, QSGNode::DirtyState state )
     {
-        // do not forward nodes that are blocked while rendering
+        Inherited::nodeChanged( node, state );
 
-        const bool isTrailingNode = false; // TODO ...
+        /*
+            We want to limit updates to nodes, that are actually rendered. TODO ...
 
-        if ( !isTrailingNode )
+            In any case we need to block update requests, when the textureNode reports
+            that it has been updated by us to the renderer of the window.
+         */
+        if ( ( state != QSGNode::DirtyMaterial )
+            || ( node != m_texture->textureNode() ) )
         {
-            Inherited::nodeChanged( node, state );
+            m_dirty = true;
             Q_EMIT m_texture->updateRequested();
         }
     }
@@ -242,6 +256,8 @@ class QskSceneTexturePrivate final : public QSGTexturePrivate
 
     Renderer* renderer = nullptr;
     QSGDefaultRenderContext* context = nullptr;
+
+    const QSGGeometryNode* textureNode = nullptr;
 };
 
 QskSceneTexture::QskSceneTexture( const QQuickWindow* window )
@@ -253,6 +269,16 @@ QskSceneTexture::QskSceneTexture( const QQuickWindow* window )
 QskSceneTexture::~QskSceneTexture()
 {
     delete d_func()->renderer;
+}
+
+void QskSceneTexture::setTextureNode( const QSGGeometryNode* node )
+{
+    d_func()->textureNode = node;
+}
+
+const QSGGeometryNode* QskSceneTexture::textureNode() const
+{
+    return d_func()->textureNode;
 }
 
 QSize QskSceneTexture::textureSize() const
@@ -294,6 +320,12 @@ void QskSceneTexture::render( const QSGRootNode* rootNode,
     d->renderer->renderScene();
 }
 
+bool QskSceneTexture::isDirty() const
+{
+    Q_D( const QskSceneTexture );
+    return d->renderer ? d->renderer->isDirty() : true;
+}
+ 
 QRectF QskSceneTexture::normalizedTextureSubRect() const
 {
     return QRectF( 0, 1, 1, -1 );
