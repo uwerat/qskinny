@@ -62,8 +62,9 @@ macro(qsk_setup_build)
 endmacro()
 
 macro(qsk_setup_install)
-    set(QSK_INSTALL_HEADERS include)
-    set(QSK_INSTALL_LIBS lib)
+    string(TOLOWER "${PROJECT_NAME}" PACKAGE_DIR)
+    set(QSK_INSTALL_HEADERS "${CMAKE_INSTALL_INCLUDEDIR}/${PACKAGE_DIR}")
+    set(QSK_INSTALL_LIBS "${CMAKE_INSTALL_LIBDIR}/${PACKAGE_DIR}")
 endmacro()
 
 ############################################################################
@@ -122,8 +123,8 @@ endif()
 # packaging
 set(PACKAGE_NAME      ${PROJECT_NAME})
 set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
-set(PACKAGE_NAMESPACE Qsk)
-set(PACKAGE_LOCATION  ${QSK_INSTALL_LIBS}/cmake/${PROJECT_NAME})
+set(PACKAGE_NAMESPACE ${PROJECT_NAME})
+set(PACKAGE_LOCATION  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 install(TARGETS qskinny EXPORT ${PACKAGE_NAME}Targets
     LIBRARY DESTINATION       ${QSK_INSTALL_LIBS}
@@ -140,7 +141,7 @@ write_basic_package_version_file(
 
 export(EXPORT ${PACKAGE_NAME}Targets
     FILE ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}Targets.cmake
-    NAMESPACE ${PACKAGE_NAMESPACE}::)
+    NAMESPACE "${PACKAGE_NAMESPACE}::")
 
 configure_file(cmake/${PACKAGE_NAME}Config.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}Config.cmake
@@ -150,7 +151,7 @@ install(EXPORT ${PACKAGE_NAME}Targets
     FILE
         ${PACKAGE_NAME}Targets.cmake
     NAMESPACE
-        ${PACKAGE_NAMESPACE}::
+        "${PACKAGE_NAMESPACE}::"
     DESTINATION
         ${PACKAGE_LOCATION})
 

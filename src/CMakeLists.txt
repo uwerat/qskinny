@@ -511,11 +511,9 @@ set_target_properties(${target}
 
 list(TRANSFORM HEADERS PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
 set_target_properties(${target} PROPERTIES PUBLIC_HEADER "${HEADERS}")
+set_target_properties(${target} PROPERTIES EXPORT_NAME ${PROJECT_NAME})
 set_target_properties(${target} PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR} )
 
 # Set the library destination to ensure an organized library + plugins dir
-install(TARGETS ${target}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/${target}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${target}
-)
+install(TARGETS ${target})
