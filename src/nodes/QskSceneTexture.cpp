@@ -240,8 +240,8 @@ namespace
             format.setAttachment( QOpenGLFramebufferObject::CombinedDepthStencil );
 
             m_fbo = new QOpenGLFramebufferObject( size, format );
-        }
 #endif
+        }
     }
 
     void Renderer::clearTarget()
@@ -412,7 +412,7 @@ qint64 QskSceneTexture::comparisonKey() const
 QRhiTexture* QskSceneTexture::rhiTexture() const
 {
     Q_D( const QskSceneTexture );
-    return d->renderer ? d->renderer->texture() : nullptr;
+    return d->renderer ? d->renderer->rhiTexture() : nullptr;
 }
 
 #endif
