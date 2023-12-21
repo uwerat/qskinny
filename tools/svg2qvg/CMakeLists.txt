@@ -22,14 +22,18 @@ if(BUILD_SVG2QVG_STANDALONE)
     # TODO fix multi configuration generators
     if(CMAKE_GENERATOR MATCHES "Visual Studio.*")
         add_definitions("/I${qskinny_AUTOGEN_DIR}/include_\$(Configuration)")
+    elseif(CMAKE_GENERATOR MATCHES "Ninja Multi.*")
+        target_include_directories(${target} 
+            PRIVATE 
+                ${qskinny_AUTOGEN_DIR}/include_$<CONFIG>)
     else()
         target_include_directories(${target} PRIVATE ${qskinny_AUTOGEN_DIR}/include)
     endif()
 
     target_include_directories(${target}
         PRIVATE
-            ${CMAKE_SOURCE_DIR}/src/common
-            ${CMAKE_SOURCE_DIR}/src/graphic)
+            ${QSK_SOURCE_DIR}/src/common
+            ${QSK_SOURCE_DIR}/src/graphic)
 
     target_compile_definitions(${target} PRIVATE QSK_STANDALONE)
     target_link_libraries(${target} PRIVATE Qt::Gui Qt::GuiPrivate)
