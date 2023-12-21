@@ -18,6 +18,13 @@ QSK_QT_PRIVATE_BEGIN
 
 QSK_QT_PRIVATE_END
 
+/*
+    With Qt 5.15 Rhi can optionally be enbled by setting "export QSG_RHI=1"
+    and we need to have a native QOpenGL implementation and one using
+    the Rhi abstraction layer. For Qt6 we can rely on Rhi.
+    Once Qt5 support has been dropped we can eliminate this #ifdef jungle
+ */
+
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
 #include <qopenglframebufferobject.h>
 #endif
@@ -45,9 +52,9 @@ namespace
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
         inline int textureId() const { return m_fbo ? m_fbo->texture() : 0; }
         inline void renderScene() { Inherited::renderScene( textureId() ); }
-#else
-        inline QRhiTexture* texture() const { return m_rhiTexture; }
 #endif
+
+        inline QRhiTexture* rhiTexture() const { return m_rhiTexture; }
 
         inline bool isDirty() const { return m_dirty; }
 
@@ -69,9 +76,15 @@ namespace
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
         QOpenGLFramebufferObject* m_fbo;
-#else
-        QRhiTexture* m_rhiTexture = nullptr;
+
+        struct RenderTarget
+        {
+            QRhiRenderTarget *rt = nullptr;
+            QRhiRenderPassDescriptor *rpDesc = nullptr;
+            QRhiCommandBuffer *cb = nullptr;
+        } m_rt;
 #endif
+        QRhiTexture* m_rhiTexture = nullptr;
 
         bool m_dirty = true;
     };
@@ -102,14 +115,14 @@ namespace
 
     void Renderer::setProjection( const QRectF& rect )
     {
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-        const bool flipFramebuffer = true;
-        const bool flipMatrix = false;
-#else
-        const auto rhi = context()->rhi();
-        const bool flipFramebuffer = rhi->isYUpInFramebuffer();
-        const bool flipMatrix = !rhi->isYUpInNDC();
-#endif
+        bool flipFramebuffer = true;
+        bool flipMatrix = false;
+
+        if ( const auto rhi = context()->rhi() )
+        {
+            flipFramebuffer = rhi->isYUpInFramebuffer();
+            flipMatrix = !rhi->isYUpInNDC();
+        }
 
         auto r = rect;
 
@@ -129,19 +142,24 @@ namespace
 
     void Renderer::setTextureSize( const QSize& size )
     {
+        if ( const auto rhi = context()->rhi() )
+        {
+            if ( m_rt.rt && m_rt.rt->pixelSize() != size )
+                clearTarget();
+
+            if ( m_rt.rt == nullptr )
+                createTarget( size );
+        }
+        else
+        {
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-        if ( m_fbo && m_fbo->size() != size )
-            clearTarget();
+            if ( m_fbo && m_fbo->size() != size )
+                clearTarget();
 
-        if ( m_fbo == nullptr )
-            createTarget( size );
-#else
-        if ( m_rt.rt && m_rt.rt->pixelSize() != size )
-            clearTarget();
-
-        if ( m_rt.rt == nullptr )
-            createTarget( size );
+            if ( m_fbo == nullptr )
+                createTarget( size );
 #endif
+        }
 
         const QRect r( 0, 0, size.width(), size.height() );
 
@@ -184,52 +202,68 @@ namespace
 
     void Renderer::createTarget( const QSize& size )
     {
+        if ( const auto rhi = context()->rhi() )
+        {
+            auto flags = QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource;
+
+            m_rhiTexture = rhi->newTexture( QRhiTexture::RGBA8, size, 1, flags );
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-        QOpenGLFramebufferObjectFormat format;
-        format.setInternalTextureFormat( GL_RGBA8 );
-        format.setSamples( 0 );
-        format.setAttachment( QOpenGLFramebufferObject::CombinedDepthStencil );
-
-        m_fbo = new QOpenGLFramebufferObject( size, format );
+            m_rhiTexture->build();
 #else
-        const auto rhi = context()->rhi();
+            m_rhiTexture->create();
+#endif
 
-        auto flags = QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource;
+            QRhiColorAttachment color0( m_rhiTexture );
+            auto target = rhi->newTextureRenderTarget( { color0 } );
 
-        m_rhiTexture = rhi->newTexture( QRhiTexture::RGBA8, size, 1, flags );
-        m_rhiTexture->create();
+            target->setRenderPassDescriptor(
+                target->newCompatibleRenderPassDescriptor() );
 
-        QRhiColorAttachment color0( m_rhiTexture );
-        auto target = rhi->newTextureRenderTarget( { color0 } );
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+            target->build();
+#else
+            target->create();
+#endif
 
-        target->setRenderPassDescriptor(
-            target->newCompatibleRenderPassDescriptor() );
+            m_rt.rt = target;
+            m_rt.rpDesc = target->renderPassDescriptor();
 
-        target->create();
+            auto defaultContext = qobject_cast< QSGDefaultRenderContext* >( context() );
+            m_rt.cb = defaultContext->currentFrameCommandBuffer();
+        }
+        else
+        {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+            QOpenGLFramebufferObjectFormat format;
+            format.setInternalTextureFormat( GL_RGBA8 );
+            format.setSamples( 0 );
+            format.setAttachment( QOpenGLFramebufferObject::CombinedDepthStencil );
 
-        m_rt.rt = target;
-        m_rt.rpDesc = target->renderPassDescriptor();
-
-        auto defaultContext = qobject_cast< QSGDefaultRenderContext* >( context() );
-        m_rt.cb = defaultContext->currentFrameCommandBuffer();
+            m_fbo = new QOpenGLFramebufferObject( size, format );
+        }
 #endif
     }
 
     void Renderer::clearTarget()
     {
+        if ( const auto rhi = context()->rhi() )
+        {
+            delete m_rt.rt;
+            m_rt.rt = nullptr;
+
+            delete m_rt.rpDesc;
+            m_rt.rpDesc = nullptr;
+
+            delete m_rhiTexture;
+            m_rhiTexture = nullptr;
+        }
+        else
+        {
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-        delete m_fbo;
-        m_fbo = nullptr;
-#else
-        delete m_rt.rt;
-        m_rt.rt = nullptr;
-
-        delete m_rt.rpDesc;
-        m_rt.rpDesc = nullptr;
-
-        delete m_rhiTexture;
-        m_rhiTexture = nullptr;
+            delete m_fbo;
+            m_fbo = nullptr;
 #endif
+        }
     }
 }
 
@@ -250,6 +284,14 @@ class QskSceneTexturePrivate final : public QSGTexturePrivate
         auto dw = QQuickWindowPrivate::get( const_cast< QQuickWindow* >( window ) );
         context = dynamic_cast< QSGDefaultRenderContext* >( dw->context );
     }
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    int comparisonKey() const override
+        { return int( qintptr( rhiTexture() ) ); }
+
+    QRhiTexture *rhiTexture() const override
+        { return renderer ? renderer->rhiTexture() : nullptr; }
+#endif
 
     QRectF rect;
     const qreal devicePixelRatio;
@@ -345,10 +387,13 @@ bool QskSceneTexture::hasMipmaps() const
 
 void QskSceneTexture::bind()
 {
-    auto funcs = QOpenGLContext::currentContext()->functions();
-    funcs->glBindTexture( GL_TEXTURE_2D, textureId() );
+    if ( d_func()->rhiTexture() == nullptr )
+    {
+        auto funcs = QOpenGLContext::currentContext()->functions();
+        funcs->glBindTexture( GL_TEXTURE_2D, textureId() );
 
-    updateBindOptions();
+        updateBindOptions();
+    }
 }
 
 int QskSceneTexture::textureId() const
