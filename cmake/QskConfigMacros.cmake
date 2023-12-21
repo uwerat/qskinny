@@ -118,6 +118,7 @@ macro(qsk_initialize_build_flags)
         add_compile_options( -Wall -Wextra )
     else()
         # add_compile_options(/W4 /WX)
+        add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
     endif()
 
 endmacro()
