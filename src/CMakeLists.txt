@@ -483,6 +483,10 @@ target_include_directories(${target} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/layouts>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/nodes>)
 
+target_include_directories(${target}
+    INTERFACE
+        $<INSTALL_INTERFACE:${QSK_INSTALL_HEADERS}>)
+
 target_link_libraries(${target}
     PUBLIC Qt::Core Qt::CorePrivate Qt::Quick Qt::QuickPrivate)
 

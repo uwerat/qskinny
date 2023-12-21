@@ -62,8 +62,8 @@ macro(qsk_setup_build)
 endmacro()
 
 macro(qsk_setup_install)
-    # we have to provide and install a QSkinnyConfig.cmake
-    # TODO ...
+    set(QSK_INSTALL_HEADERS include)
+    set(QSK_INSTALL_LIBS lib)
 endmacro()
 
 ############################################################################
@@ -123,7 +123,7 @@ endif()
 set(PACKAGE_NAME      ${PROJECT_NAME})
 set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
 set(PACKAGE_NAMESPACE Qsk)
-set(PACKAGE_LOCATION  lib/cmake/${PROJECT_NAME})
+set(PACKAGE_LOCATION  ${QSK_INSTALL_LIBS}/cmake/${PROJECT_NAME})
 
 install(TARGETS qskinny EXPORT ${PACKAGE_NAME}Targets
     LIBRARY DESTINATION       ${QSK_INSTALL_LIBS}
