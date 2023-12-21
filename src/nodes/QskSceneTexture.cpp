@@ -79,9 +79,9 @@ namespace
 
         struct RenderTarget
         {
-            QRhiRenderTarget *rt = nullptr;
-            QRhiRenderPassDescriptor *rpDesc = nullptr;
-            QRhiCommandBuffer *cb = nullptr;
+            QRhiRenderTarget* rt = nullptr;
+            QRhiRenderPassDescriptor* rpDesc = nullptr;
+            QRhiCommandBuffer* cb = nullptr;
         } m_rt;
 #endif
         QRhiTexture* m_rhiTexture = nullptr;
@@ -367,7 +367,7 @@ bool QskSceneTexture::isDirty() const
     Q_D( const QskSceneTexture );
     return d->renderer ? d->renderer->isDirty() : true;
 }
- 
+
 QRectF QskSceneTexture::normalizedTextureSubRect() const
 {
     return QRectF( 0, 1, 1, -1 );
