@@ -88,6 +88,11 @@ void TextureFilterNode::setRect( const QRectF& rect )
     }
 }
 
+QRectF TextureFilterNode::rect() const
+{
+    return d_func()->rect;
+}
+
 void TextureFilterNode::setOwnsTexture( bool on )
 {
     d_func()->ownsTexture = on;

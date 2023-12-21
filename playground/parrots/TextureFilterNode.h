@@ -27,6 +27,7 @@ class TextureFilterNode : public QSGGeometryNode
     bool ownsTexture() const;
 
     void setRect( const QRectF& );
+    QRectF rect() const;
 
     void setTextureMaterial( TextureFilterMaterial* );
     TextureFilterMaterial* textureMaterial() const;

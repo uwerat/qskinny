@@ -154,20 +154,23 @@ namespace
                 texture->setTextureNode( textureNode );
             }
 
-            textureNode->setRect( rect );
-
             auto texture = qobject_cast< QskSceneTexture* >( textureNode->texture() );
             Q_ASSERT( texture );
 
-            if ( texture->isDirty() )
+            if ( texture->isDirty() || rect != textureNode->rect() )
             {
                 texture->setFiltering(
                     overlay->smooth() ? QSGTexture::Linear : QSGTexture::Nearest );
 
                 auto finalNode = const_cast< QSGTransformNode* >( qskItemNode( overlay ) );
-                texture->render( rootNode, finalNode, overlay->geometry() );
+
+                texture->render( rootNode, finalNode,
+                    rect.translated( overlay->position() ) );
+
                 textureNode->markDirty( QSGNode::DirtyMaterial );
             }
+
+            textureNode->setRect( rect );
 
             return textureNode;
         }

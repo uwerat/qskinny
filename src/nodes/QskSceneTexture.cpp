@@ -151,6 +151,8 @@ namespace
 
     void Renderer::render()
     {
+        m_dirty = false;
+
         qskTryBlockTrailingNodes( m_finalNode, rootNode(), true, false );
 
 #if 0
@@ -160,8 +162,6 @@ namespace
 #endif
         Inherited::render();
         qskTryBlockTrailingNodes( m_finalNode, rootNode(), false, false );
-
-        m_dirty = false;
     }
 
     void Renderer::nodeChanged( QSGNode* node, QSGNode::DirtyState state )
