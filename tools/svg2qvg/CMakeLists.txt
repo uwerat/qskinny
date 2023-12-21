@@ -22,6 +22,10 @@ if(BUILD_SVG2QVG_STANDALONE)
     # TODO fix multi configuration generators
     if(CMAKE_GENERATOR MATCHES "Visual Studio.*")
         add_definitions("/I${qskinny_AUTOGEN_DIR}/include_\$(Configuration)")
+    elseif(CMAKE_GENERATOR MATCHES "Ninja Multi.*")
+        target_include_directories(${target} 
+            PRIVATE 
+                ${qskinny_AUTOGEN_DIR}/include_$<CONFIG>)
     else()
         target_include_directories(${target} PRIVATE ${qskinny_AUTOGEN_DIR}/include)
     endif()
