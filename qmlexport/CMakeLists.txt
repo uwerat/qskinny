@@ -22,4 +22,6 @@ endif()
 
 set_target_properties(${target} PROPERTIES FOLDER libs)
 
-install(TARGETS ${target} )
+install(TARGETS ${target}
+    PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${target}"
+)
