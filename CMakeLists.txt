@@ -141,7 +141,7 @@ write_basic_package_version_file(
 
 export(EXPORT ${PACKAGE_NAME}Targets
     FILE ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}Targets.cmake
-    NAMESPACE "${PACKAGE_NAMESPACE}::")
+    NAMESPACE ${PACKAGE_NAMESPACE}::)
 
 configure_file(cmake/${PACKAGE_NAME}Config.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}Config.cmake
@@ -151,7 +151,7 @@ install(EXPORT ${PACKAGE_NAME}Targets
     FILE
         ${PACKAGE_NAME}Targets.cmake
     NAMESPACE
-        "${PACKAGE_NAMESPACE}::"
+        ${PACKAGE_NAMESPACE}::
     DESTINATION
         ${PACKAGE_LOCATION})
 
