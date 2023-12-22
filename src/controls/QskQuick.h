@@ -18,13 +18,15 @@ class QSGNode;
 class QSGTransformNode;
 class QSGRootNode;
 class QRectF;
+class QRhi;
 
 template< typename T > class QList;
 
 /*
-    Exporting methods from QQuickItemPrivate, that should be part
-    of QQuickItem.
+    Exporting useful methods from QQuickItemPrivate/QQuickWindowPrivate
  */
+
+QSK_EXPORT QRhi* qskRenderingHardwareInterface( const QQuickWindow* );
 
 QSK_EXPORT bool qskIsItemInDestructor( const QQuickItem* );
 QSK_EXPORT bool qskIsItemComplete( const QQuickItem* );

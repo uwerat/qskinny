@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskTextureRenderer.h"
+#include "QskQuick.h"
 
 #include <qopenglcontext.h>
 #include <qopenglframebufferobject.h>
@@ -17,7 +18,6 @@
 QSK_QT_PRIVATE_BEGIN
 #include <private/qsgplaintexture_p.h>
 #include <private/qopenglframebufferobject_p.h>
-#include <private/qquickwindow_p.h>
 QSK_QT_PRIVATE_END
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
@@ -89,7 +89,7 @@ void QskTextureRenderer::setTextureId( QQuickWindow* window,
     if ( plainTexture == nullptr )
         return;
 
-    auto rhi = QQuickWindowPrivate::get( window )->rhi;
+    auto rhi = qskRenderingHardwareInterface( window );
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 4, 0 )
 

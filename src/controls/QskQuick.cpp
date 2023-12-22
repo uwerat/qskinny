@@ -19,6 +19,14 @@ QSK_QT_PRIVATE_END
 #include <qpa/qplatforminputcontext.h>
 #include <qpa/qplatformintegration.h>
 
+QRhi* qskRenderingHardwareInterface( const QQuickWindow* window )
+{
+    if ( auto w = const_cast< QQuickWindow* >( window ) )
+        return QQuickWindowPrivate::get( w )->rhi;
+
+    return nullptr;
+}
+
 QRectF qskItemRect( const QQuickItem* item )
 {
     auto d = QQuickItemPrivate::get( item );
