@@ -34,14 +34,15 @@ namespace
     class FilterNode : public TextureFilterNode
     {
       public:
-        FilterNode( QSGTexture* texture )
+        FilterNode( bool useRhi, QSGTexture* texture )
         {
             QString shaders[] = { ":/shaders/blur.vert", ":/shaders/blur.frag" };
 
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-            shaders[0] += ".qsb";
-            shaders[1] += ".qsb";
-#endif
+            if ( useRhi )
+            {
+                shaders[0] += ".qsb";
+                shaders[1] += ".qsb";
+            }
 
             setFlag( QSGNode::OwnsMaterial, true );
             setTextureMaterial( new Material( shaders[0], shaders[1] ) );
@@ -150,7 +151,9 @@ namespace
                 QObject::connect( texture, &QskSceneTexture::updateRequested,
                     overlay, &QQuickItem::update );
 
-                textureNode = new FilterNode( texture );
+                const bool useRhi = qskRenderingHardwareInterface( window );
+
+                textureNode = new FilterNode( useRhi, texture );
                 texture->setTextureNode( textureNode );
             }
 

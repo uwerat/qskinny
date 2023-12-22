@@ -32,5 +32,5 @@ class TextureFilterMaterial : public QSGMaterial
 
   private:
     QSGTexture* m_texture = nullptr;
-    const QString m_shaderSourceFiles[ 2 ];
+    const QString m_shaderFiles[ 2 ];
 };

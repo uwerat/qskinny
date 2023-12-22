@@ -9,6 +9,12 @@
 #include <qsgmaterialshader.h>
 #include <qsgtexture.h>
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    #include <qsgmaterialrhishader.h>
+    using RhiShader = QSGMaterialRhiShader;
+#else
+    using RhiShader = QSGMaterialShader;
+#endif
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
 
@@ -74,31 +80,26 @@ namespace
     };
 }
 
-QSGMaterialShader* TextureFilterMaterial::createShader() const
-{
-    Q_ASSERT( !( flags() & QSGMaterial::RhiShaderWanted ) );
-
-    auto shader = new ShaderGL();
-
-    shader->setSource( QOpenGLShader::Vertex, m_shaderSourceFiles[ 0 ] );
-    shader->setSource( QOpenGLShader::Fragment, m_shaderSourceFiles[ 1 ] );
-
-    return shader;
-}
-
-#else // Qt6
+#endif
 
 namespace
 {
-    class Shader : public QSGMaterialShader
+    class ShaderRhi : public RhiShader
     {
       public:
-        Shader()
+        ShaderRhi()
         {
             setFlag( UpdatesGraphicsPipelineState, true );
         }
 
-        void setSource( QSGMaterialShader::Stage stage, const QString& filename )
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        void setSource( QOpenGLShader::ShaderType type, const QString& fileName )
+        {
+            setShaderSourceFile( type, fileName );
+        }
+#endif
+
+        void setSource( Stage stage, const QString& filename )
         {
             setShaderFileName( stage, filename );
         }
@@ -139,20 +140,50 @@ namespace
             auto mat = dynamic_cast< TextureFilterMaterial* >( newMaterial );
             if ( auto txt = mat->texture() )
             {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+                txt->updateRhiTexture( state.rhi(), state.resourceUpdateBatch() );
+#else
                 txt->commitTextureOperations( state.rhi(), state.resourceUpdateBatch() );
+#endif
                 *texture = txt;
             }
         }
     };
 }
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+
+QSGMaterialShader* TextureFilterMaterial::createShader() const
+{
+    if ( flags() & QSGMaterial::RhiShaderWanted )
+    {
+        auto shader = new ShaderRhi();
+
+        shader->setSource( ShaderRhi::VertexStage, m_shaderFiles[ 0 ] );
+        shader->setSource( ShaderRhi::FragmentStage, m_shaderFiles[ 1 ] );
+
+        return shader;
+    }
+    else
+    {
+        auto shader = new ShaderGL();
+
+        shader->setSource( QOpenGLShader::Vertex, m_shaderFiles[ 0 ] );
+        shader->setSource( QOpenGLShader::Fragment, m_shaderFiles[ 1 ] );
+
+        return shader;
+    }
+}
+
+#else
+
 QSGMaterialShader* TextureFilterMaterial::createShader(
     QSGRendererInterface::RenderMode ) const
 {
-    auto shader = new Shader();
+    auto shader = new ShaderRhi();
 
-    shader->setSource( Shader::VertexStage, m_shaderSourceFiles[ 0 ] );
-    shader->setSource( Shader::FragmentStage, m_shaderSourceFiles[ 1 ] );
+    shader->setSource( ShaderRhi::VertexStage, m_shaderFiles[ 0 ] );
+    shader->setSource( ShaderRhi::FragmentStage, m_shaderFiles[ 1 ] );
 
     return shader;
 }
@@ -160,11 +191,14 @@ QSGMaterialShader* TextureFilterMaterial::createShader(
 #endif
 
 TextureFilterMaterial::TextureFilterMaterial(
-        const QString& vertexShaderSourceFile,
-        const QString& fragmentShaderSourceFile )
-    : m_shaderSourceFiles{ vertexShaderSourceFile, fragmentShaderSourceFile }
+        const QString& vertexShaderFile, const QString& fragmentShaderFile )
+    : m_shaderFiles{ vertexShaderFile, fragmentShaderFile }
 {
     setFlag( Blending | RequiresFullMatrix, true );
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    setFlag( SupportsRhiShader, true );
+#endif
 }
 
 TextureFilterMaterial::~TextureFilterMaterial()

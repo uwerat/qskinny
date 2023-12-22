@@ -202,32 +202,31 @@ namespace
 
     void Renderer::createTarget( const QSize& size )
     {
-==== BASE ====
-        const auto rhi = context()->rhi();
-==== BASE ====
+        if ( const auto rhi = context()->rhi() )
+        {
+            auto flags = QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource;
 
-==== BASE ====
-        auto flags = QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource;
-==== BASE ====
+            m_rhiTexture = rhi->newTexture( QRhiTexture::RGBA8, size, 1, flags );
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+            m_rhiTexture->build();
+#else
+            m_rhiTexture->create();
+#endif
 
-==== BASE ====
-        m_rhiTexture = rhi->newTexture( QRhiTexture::RGBA8, size, 1, flags );
-        m_rhiTexture->create();
-==== BASE ====
+            QRhiColorAttachment color0( m_rhiTexture );
+            auto target = rhi->newTextureRenderTarget( { color0 } );
 
-==== BASE ====
-        QRhiColorAttachment color0( m_rhiTexture );
-        auto target = rhi->newTextureRenderTarget( { color0 } );
-==== BASE ====
+            target->setRenderPassDescriptor(
+                target->newCompatibleRenderPassDescriptor() );
 
-==== BASE ====
-        target->setRenderPassDescriptor(
-            target->newCompatibleRenderPassDescriptor() );
-==== BASE ====
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+            target->build();
+#else
+            target->create();
+#endif
 
-==== BASE ====
-        target->create();
-==== BASE ====
+            m_rt.rt = target;
+            m_rt.rpDesc = target->renderPassDescriptor();
 
             auto defaultContext = qobject_cast< QSGDefaultRenderContext* >( context() );
             m_rt.cb = defaultContext->currentFrameCommandBuffer();
