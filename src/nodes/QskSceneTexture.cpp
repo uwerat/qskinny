@@ -76,7 +76,9 @@ namespace
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
         QOpenGLFramebufferObject* m_fbo;
+#endif
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 4, 0 )
         struct RenderTarget
         {
             QRhiRenderTarget* rt = nullptr;
