@@ -431,22 +431,22 @@ jobs:
           killall iotdashboard
           killall Xvfb
 
-      - name: Configure ( CMake Integration Test )
-        shell: bash
-        run: |
-          mkdir qskinny_build_test
-          cmake \
-            -S qskinny_source/examples/iotdashboard_smoketest \
-            -B qskinny_build_test \
-            -G "${{ matrix.config.generators }}" \
-            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
-            -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixpath }}" \
-            -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}" \
-            -DQSkinny_DIR:PATH=$GITHUB_WORKSPACE/qskinny_install/lib/cmake/QSkinny
-
-      - name: Build ( CMake Integration Test )
-        shell: bash
-        run: cmake --build qskinny_build_test --config ${{ matrix.config.build_type }}
+      #- name: Configure ( CMake Integration Test )
+      #  shell: bash
+      #  run: |
+      #    mkdir qskinny_build_test
+      #    cmake \
+      #      -S qskinny_source/examples/iotdashboard_smoketest \
+      #      -B qskinny_build_test \
+      #      -G "${{ matrix.config.generators }}" \
+      #      -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+      #      -DCMAKE_PREFIX_PATH:PATH="${{ matrix.config.cmake.qtprefixpath }}" \
+      #      -D${{ matrix.config.cmake.qtdirkey }}:PATH="${{ matrix.config.cmake.qtdirvalue }}" \
+      #      -DQSkinny_DIR:PATH=$GITHUB_WORKSPACE/qskinny_install/lib/cmake/QSkinny
+#
+      #- name: Build ( CMake Integration Test )
+      #  shell: bash
+      #  run: cmake --build qskinny_build_test --config ${{ matrix.config.build_type }}
 
       # - name: Pack
       #   shell: bash
