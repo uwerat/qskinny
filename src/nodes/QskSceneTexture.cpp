@@ -19,8 +19,8 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 /*
-    With Qt 5.15 Rhi can optionally be enbled by setting "export QSG_RHI=1"
-    and we need to have a native QOpenGL implementation and one using
+    With Qt 5.15 Rhi can optionally be enbled by setting "export QSG_RHI=1".
+    So we need to have a native QOpenGL implementation and one using
     the Rhi abstraction layer. For Qt6 we can rely on Rhi.
     Once Qt5 support has been dropped we can eliminate this #ifdef jungle
  */
@@ -202,34 +202,41 @@ namespace
 
     void Renderer::createTarget( const QSize& size )
     {
-        if ( const auto rhi = context()->rhi() )
-        {
-            auto flags = QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource;
+==== BASE ====
+        const auto rhi = context()->rhi();
+==== BASE ====
 
-            m_rhiTexture = rhi->newTexture( QRhiTexture::RGBA8, size, 1, flags );
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-            m_rhiTexture->build();
-#else
-            m_rhiTexture->create();
-#endif
+==== BASE ====
+        auto flags = QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource;
+==== BASE ====
 
-            QRhiColorAttachment color0( m_rhiTexture );
-            auto target = rhi->newTextureRenderTarget( { color0 } );
+==== BASE ====
+        m_rhiTexture = rhi->newTexture( QRhiTexture::RGBA8, size, 1, flags );
+        m_rhiTexture->create();
+==== BASE ====
 
-            target->setRenderPassDescriptor(
-                target->newCompatibleRenderPassDescriptor() );
+==== BASE ====
+        QRhiColorAttachment color0( m_rhiTexture );
+        auto target = rhi->newTextureRenderTarget( { color0 } );
+==== BASE ====
 
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-            target->build();
-#else
-            target->create();
-#endif
+==== BASE ====
+        target->setRenderPassDescriptor(
+            target->newCompatibleRenderPassDescriptor() );
+==== BASE ====
 
-            m_rt.rt = target;
-            m_rt.rpDesc = target->renderPassDescriptor();
+==== BASE ====
+        target->create();
+==== BASE ====
 
             auto defaultContext = qobject_cast< QSGDefaultRenderContext* >( context() );
             m_rt.cb = defaultContext->currentFrameCommandBuffer();
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+            setRenderTarget( m_rt.rt );
+            setCommandBuffer( m_rt.cb );
+            setRenderPassDescriptor( m_rt.rpDesc );
+#endif
         }
         else
         {

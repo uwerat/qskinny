@@ -27,7 +27,7 @@ class QSK_EXPORT QskSceneTexture : public QSGTexture
     ~QskSceneTexture();
 
 #if 1
-    // to avoid recursive update, need to find a better solution
+    // to avoid recursive update - need to find a better solution TODO
     void setTextureNode( const QSGGeometryNode* );
     const QSGGeometryNode* textureNode() const;
 #endif
