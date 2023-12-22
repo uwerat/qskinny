@@ -76,7 +76,9 @@ namespace
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
         QOpenGLFramebufferObject* m_fbo;
+#endif
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 4, 0 )
         struct RenderTarget
         {
             QRhiRenderTarget* rt = nullptr;
@@ -366,6 +368,12 @@ void QskSceneTexture::render( const QSGRootNode* rootNode,
     d->renderer->setProjection( d->rect );
     d->renderer->setTextureSize( textureSize() );
     d->renderer->renderScene();
+}
+
+bool QskSceneTexture::isDirty() const
+{
+    Q_D( const QskSceneTexture );
+    return d->renderer ? d->renderer->isDirty() : true;
 }
 
 QRectF QskSceneTexture::normalizedTextureSubRect() const
