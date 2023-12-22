@@ -5,12 +5,11 @@
 
 macro(qsk_setup_Qt)
 
-    # Often users have several Qt installations on their system and
-    # need to be able to explicitly the one to be used. Let's see if
-    # standard cmake features are good enough or if we need to introduce
-    # something sort of additional option. TODO ...
-
-    find_package(QT "5.15" NAMES Qt6 Qt5 REQUIRED COMPONENTS Quick)
+    # Define a package QT, attempt Qt6, if not fallback to Qt5
+    find_package(QT NAMES Qt6 REQUIRED COMPONENTS Quick)
+    if (NOT QT_FOUND)
+        find_package(QT "5.15" NAMES Qt5 REQUIRED COMPONENTS Quick)
+    endif()
 
     if ( QT_FOUND )
 
