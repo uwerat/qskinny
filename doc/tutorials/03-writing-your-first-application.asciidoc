@@ -17,15 +17,13 @@ qtdeclarative5-dev qtdeclarative5-private-dev libqt5svg5-dev`.
 
 Then we can build and install QSkinny to `/opt/qskinny` with the following commands:
 
-[source,xml]
+[source,shell]
 ....
-cd /home/user/dev/
-git clone https://github.com/uwerat/qskinny.git
-cd qskinny
-mkdir build
-cd build
-cmake ../ && make
-sudo make install
+$ git clone https://github.com/uwerat/qskinny.git
+$ cd qskinny
+$ mkdir build && cd build
+$ cmake ../ && make
+$ sudo make install
 ....
 
 === Compiling our first app
@@ -52,40 +50,49 @@ int main( int argc, char* argv[] )
 For now this will just create an empty window (the `QskWindow`) without any controls.
 Next, we need to create a `myapp.pro` file in our `myapp` directory.
 
-.myapp.pro
-[source,xml]
+.CMakeLists.txt
+[source,cmake]
 ....
-TEMPLATE = app
-TARGET = myapp
+cmake_minimum_required(VERSION 3.27)
 
-QT *= quick
+project(myapp
+    VERSION 1.0.0
+    LANGUAGES CXX)
 
-QSK_ROOT=/opt/qskinny
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-INCLUDEPATH += $${QSK_ROOT}/include 
-LIBS += -L$${QSK_ROOT}/lib -lqskinny
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
-QMAKE_RPATHDIR *= $${QSK_ROOT}/lib
+find_package(Qt5 REQUIRED COMPONENTS Widgets Quick)
+find_package(QSkinny REQUIRED)
 
-SOURCES += \
-    main.cpp
+add_executable(myapp
+    src/main.cpp)
+
+target_link_libraries(kue PRIVATE
+    Qt5::Widgets
+    Qt5::Quick
+    QSkinny::QSkinny)
 ....
 
 Now we can compile our app:
 
-[source,xml]
+[source,shell]
 ....
-cd myapp
-qmake
-make
+$ cd myapp
+$ mkdir build && cd build
+$ cmake ../ && make
 ....
 
 When running myapp it needs to find the skin plugins. Setting QT_PLUGIN_PATH is one
 option ( see https://doc.qt.io/qt-5/deployment-plugins.html ):
 
-[source,xml]
+[source,shell]
 ....
-QT_PLUGIN_PATH=/opt/qskinny/plugins ./myapp
+$ QT_PLUGIN_PATH=/opt/qskinny/plugins ./myapp
 ....
 
 This should show just an empty window.
@@ -95,7 +102,7 @@ This should show just an empty window.
 Now that we have our app running, we can add some UI controls to it by extending the `main.cpp` file we created earlier. We will add some additional include directives, and then create a horizontal layout containing two push buttons. The layout with the two buttons will be shown in the window. Below is the complete updated source file:
 
 .main.cpp
-[source]
+[source, cpp]
 ....
 #include <QskWindow.h>
 #include <QskLinearBox.h>
