@@ -14,5 +14,5 @@ layout( std140, binding = 0 ) uniform buf
 void main()
 {
     vec4 c = texture( source, coord );
-    fragColor = c.yzxw * ubuf.opacity;;
+    fragColor = c.yzxw * ubuf.opacity;
 }

@@ -82,7 +82,6 @@ namespace
 
                 case BorderRole:
                     return updateBoxNode( skinnable, node, Overlay::Panel );
-                    break;
             };
 
             return nullptr;
@@ -123,9 +122,8 @@ namespace
             else
             {
                 clipNode = updateBoxClipNode( overlay, clipNode, Q::Panel );
+                QskSGNode::setParentNode( textureNode, clipNode );
             }
-
-            QskSGNode::setParentNode( textureNode, clipNode );
 
             return clipNode ? clipNode : textureNode;
         }

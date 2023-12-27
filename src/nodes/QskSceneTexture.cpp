@@ -75,7 +75,7 @@ namespace
         QskSceneTexture* m_texture = nullptr;
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-        QOpenGLFramebufferObject* m_fbo;
+        QOpenGLFramebufferObject* m_fbo = nullptr;
 #endif
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 4, 0 )
