@@ -75,6 +75,7 @@ namespace
 
         void setProjection( const QRectF& );
         void setTextureSize( const QSize& );
+        QSize textureSize() const;
 
       protected:
         void nodeChanged( QSGNode*, QSGNode::DirtyState ) override;
@@ -180,6 +181,11 @@ namespace
 
         setDeviceRect( r );
         setViewportRect( r );
+    }
+
+    QSize Renderer::textureSize() const
+    {
+        return m_fbo ? m_fbo->size() : QSize();
     }
 
     void Renderer::render()
@@ -314,6 +320,22 @@ class QskSceneTexturePrivate final : public QSGTexturePrivate
         { return renderer ? renderer->rhiTexture() : nullptr; }
 #endif
 
+    QSize pixelSize() const
+    {
+        QSize size( qCeil( rect.width() ), qCeil( rect.height() ) );
+        size *= devicePixelRatio;
+
+        const QSize minSize = context->sceneGraphContext()->minimumFBOSize();
+
+        while ( size.width() < minSize.width() )
+            size.rwidth() *= 2;
+
+        while ( size.height() < minSize.height() )
+            size.rheight() *= 2;
+
+        return size;
+    }
+
     QRectF rect;
     const qreal devicePixelRatio;
 
@@ -347,19 +369,7 @@ const QSGGeometryNode* QskSceneTexture::textureNode() const
 QSize QskSceneTexture::textureSize() const
 {
     Q_D( const QskSceneTexture );
-
-    QSize size( qCeil( d->rect.width() ), qCeil( d->rect.height() ) );
-    size *= d->devicePixelRatio;
-
-    const QSize minSize = d->context->sceneGraphContext()->minimumFBOSize();
-
-    while ( size.width() < minSize.width() )
-        size.rwidth() *= 2;
-
-    while ( size.height() < minSize.height() )
-        size.rheight() *= 2;
-
-    return size;
+    return d->renderer ? d->renderer->textureSize() : QSize();
 }
 
 void QskSceneTexture::render( const QSGRootNode* rootNode,
@@ -379,7 +389,7 @@ void QskSceneTexture::render( const QSGRootNode* rootNode,
     d->renderer->setFinalNode( const_cast< QSGTransformNode* >( finalNode ) );
 
     d->renderer->setProjection( d->rect );
-    d->renderer->setTextureSize( textureSize() );
+    d->renderer->setTextureSize( d->pixelSize() );
     d->renderer->renderScene();
 }
 
