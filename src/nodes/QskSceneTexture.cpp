@@ -314,7 +314,18 @@ class QskSceneTexturePrivate final : public QSGTexturePrivate
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     int comparisonKey() const override
-        { return int( qintptr( rhiTexture() ) ); }
+    {
+        if ( renderer )
+        {
+            if ( renderer->textureId() )
+                return renderer->textureId();
+
+            if ( renderer->rhiTexture() )
+                return int( qintptr( renderer->rhiTexture() ) );
+        }
+
+        return int( qintptr( this ) );
+    }
 
     QRhiTexture *rhiTexture() const override
         { return renderer ? renderer->rhiTexture() : nullptr; }
