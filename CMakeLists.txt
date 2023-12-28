@@ -77,6 +77,12 @@ project(QSkinny
     VERSION 0.8.0)
 
 set(QSK_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
+set(QSK_CMAKE_DIR  ${QSK_SOURCE_DIR}/cmake)
+# packaging
+set(PACKAGE_NAME      ${PROJECT_NAME})
+set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
+set(PACKAGE_NAMESPACE ${PROJECT_NAME})
+set(PACKAGE_LOCATION  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 qsk_setup_options()
 
@@ -119,48 +125,3 @@ endif()
 if(BUILD_PLAYGROUND)
     add_subdirectory(playground)
 endif()
-
-# packaging
-set(PACKAGE_NAME      ${PROJECT_NAME})
-set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
-set(PACKAGE_NAMESPACE ${PROJECT_NAME})
-set(PACKAGE_LOCATION  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
-
-install(TARGETS qskinny EXPORT ${PACKAGE_NAME}Targets
-    LIBRARY DESTINATION       ${QSK_INSTALL_LIBS}
-    ARCHIVE DESTINATION       ${QSK_INSTALL_LIBS}
-    RUNTIME DESTINATION       ${QSK_INSTALL_LIBS}
-    INCLUDES DESTINATION      ${QSK_INSTALL_HEADERS}
-    PUBLIC_HEADER DESTINATION ${QSK_INSTALL_HEADERS})
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}ConfigVersion.cmake
-    VERSION ${PACKAGE_VERSION}
-    COMPATIBILITY AnyNewerVersion)
-
-export(EXPORT ${PACKAGE_NAME}Targets
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}Targets.cmake
-    NAMESPACE ${PACKAGE_NAMESPACE}::)
-
-configure_file(cmake/${PACKAGE_NAME}Config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}Config.cmake
-    COPYONLY)
-
-install(EXPORT ${PACKAGE_NAME}Targets
-    FILE
-        ${PACKAGE_NAME}Targets.cmake
-    NAMESPACE
-        ${PACKAGE_NAMESPACE}::
-    DESTINATION
-        ${PACKAGE_LOCATION})
-
-install(
-    FILES
-        cmake/${PACKAGE_NAME}Config.cmake
-        cmake/QskTools.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}ConfigVersion.cmake
-    DESTINATION
-        ${PACKAGE_LOCATION}
-    COMPONENT
-        Devel)
