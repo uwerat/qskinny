@@ -29,6 +29,26 @@ QSK_QT_PRIVATE_END
 #include <qopenglframebufferobject.h>
 #endif
 
+static int qskRenderOrderCompare( const QSGNode* rootNode,
+    const QSGNode* node1, const QSGNode* node2 )
+{
+    if ( rootNode == node1 )
+        return 1;
+            
+    if ( rootNode == node2 )
+        return -1;
+
+    for ( auto node = rootNode->firstChild();
+        node != nullptr; node = node->nextSibling() )
+    {   
+        const auto ret = qskRenderOrderCompare( node, node1, node2 );
+        if ( ret ) 
+            return ret;
+    }       
+    
+    return 0;
+}   
+
 namespace
 {
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
@@ -51,7 +71,20 @@ namespace
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
         inline int textureId() const { return m_fbo ? m_fbo->texture() : 0; }
-        inline void renderScene() { Inherited::renderScene( textureId() ); }
+
+        inline void renderScene()
+        {
+            class Bindable : public QSGBindable
+            {
+            public:
+                Bindable( QOpenGLFramebufferObject* fbo ) : m_fbo( fbo ) {}
+                void bind() const override { m_fbo->bind(); }
+            private:
+                QOpenGLFramebufferObject* m_fbo;
+            };
+
+            Inherited::renderScene( Bindable( m_fbo ) );
+        }
 #endif
 
         inline QRhiTexture* rhiTexture() const { return m_rhiTexture; }
@@ -62,6 +95,7 @@ namespace
 
         void setProjection( const QRectF& );
         void setTextureSize( const QSize& );
+        QSize textureSize() const;
 
       protected:
         void nodeChanged( QSGNode*, QSGNode::DirtyState ) override;
@@ -70,6 +104,7 @@ namespace
       private:
         void createTarget( const QSize& );
         void clearTarget();
+        void markDirty();
 
         QSGTransformNode* m_finalNode = nullptr;
         QskSceneTexture* m_texture = nullptr;
@@ -100,6 +135,9 @@ namespace
         , m_texture( texture )
     {
         setClearColor( Qt::transparent );
+
+        connect( this, &QSGRenderer::sceneGraphChanged,
+            this, &Renderer::markDirty );
     }
 
     Renderer::~Renderer()
@@ -112,6 +150,7 @@ namespace
         if ( node != m_finalNode )
         {
             m_finalNode = node;
+            markDirty();
         }
     }
 
@@ -169,6 +208,11 @@ namespace
         setViewportRect( r );
     }
 
+    QSize Renderer::textureSize() const
+    {
+        return m_fbo ? m_fbo->size() : QSize();
+    }
+
     void Renderer::render()
     {
         m_dirty = false;
@@ -186,16 +230,25 @@ namespace
 
     void Renderer::nodeChanged( QSGNode* node, QSGNode::DirtyState state )
     {
-        Inherited::nodeChanged( node, state );
-
         /*
-            We want to limit updates to nodes, that are actually rendered. TODO ...
+            No need to update the texture for changes of nodes behind
+            the final node.
 
-            In any case we need to block update requests, when the textureNode reports
-            that it has been updated by us to the renderer of the window.
+            Unfortunately QQuickWindow does not update the scene graph in
+            rendering order and we might be called for relevant nodes after
+            the texture has already  been updated. In these situations we
+            update the texture twice. Not so good ...
          */
-        if ( ( state != QSGNode::DirtyMaterial )
-            || ( node != m_texture->textureNode() ) )
+        if ( qskRenderOrderCompare( rootNode(), node, m_finalNode ) > 0 ) 
+        {
+            // triggering QSGRenderer::sceneGraphChanged signals
+            Inherited::nodeChanged( node, state );
+        }
+    }
+
+    void Renderer::markDirty()
+    {
+        if ( !m_dirty )
         {
             m_dirty = true;
             Q_EMIT m_texture->updateRequested();
@@ -295,19 +348,44 @@ class QskSceneTexturePrivate final : public QSGTexturePrivate
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     int comparisonKey() const override
-        { return int( qintptr( rhiTexture() ) ); }
+    {
+        if ( renderer )
+        {
+            if ( renderer->textureId() )
+                return renderer->textureId();
+
+            if ( renderer->rhiTexture() )
+                return int( qintptr( renderer->rhiTexture() ) );
+        }
+
+        return int( qintptr( this ) );
+    }
 
     QRhiTexture *rhiTexture() const override
         { return renderer ? renderer->rhiTexture() : nullptr; }
 #endif
+
+    QSize pixelSize() const
+    {
+        QSize size( qCeil( rect.width() ), qCeil( rect.height() ) );
+        size *= devicePixelRatio;
+
+        const QSize minSize = context->sceneGraphContext()->minimumFBOSize();
+
+        while ( size.width() < minSize.width() )
+            size.rwidth() *= 2;
+
+        while ( size.height() < minSize.height() )
+            size.rheight() *= 2;
+
+        return size;
+    }
 
     QRectF rect;
     const qreal devicePixelRatio;
 
     Renderer* renderer = nullptr;
     QSGDefaultRenderContext* context = nullptr;
-
-    const QSGGeometryNode* textureNode = nullptr;
 };
 
 QskSceneTexture::QskSceneTexture( const QQuickWindow* window )
@@ -321,32 +399,10 @@ QskSceneTexture::~QskSceneTexture()
     delete d_func()->renderer;
 }
 
-void QskSceneTexture::setTextureNode( const QSGGeometryNode* node )
-{
-    d_func()->textureNode = node;
-}
-
-const QSGGeometryNode* QskSceneTexture::textureNode() const
-{
-    return d_func()->textureNode;
-}
-
 QSize QskSceneTexture::textureSize() const
 {
     Q_D( const QskSceneTexture );
-
-    QSize size( qCeil( d->rect.width() ), qCeil( d->rect.height() ) );
-    size *= d->devicePixelRatio;
-
-    const QSize minSize = d->context->sceneGraphContext()->minimumFBOSize();
-
-    while ( size.width() < minSize.width() )
-        size.rwidth() *= 2;
-
-    while ( size.height() < minSize.height() )
-        size.rheight() *= 2;
-
-    return size;
+    return d->renderer ? d->renderer->textureSize() : QSize();
 }
 
 void QskSceneTexture::render( const QSGRootNode* rootNode,
@@ -366,7 +422,7 @@ void QskSceneTexture::render( const QSGRootNode* rootNode,
     d->renderer->setFinalNode( const_cast< QSGTransformNode* >( finalNode ) );
 
     d->renderer->setProjection( d->rect );
-    d->renderer->setTextureSize( textureSize() );
+    d->renderer->setTextureSize( d->pixelSize() );
     d->renderer->renderScene();
 }
 
