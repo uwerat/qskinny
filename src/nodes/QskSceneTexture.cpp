@@ -210,7 +210,12 @@ namespace
 
     QSize Renderer::textureSize() const
     {
-        return m_fbo ? m_fbo->size() : QSize();
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        if ( m_fbo ) return m_fbo->size();
+#else
+        if( m_rt.rt ) return m_rt.rt->pixelSize();
+#endif
+        return QSize();
     }
 
     void Renderer::render()
