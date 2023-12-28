@@ -13,7 +13,6 @@ class QskSceneTexturePrivate;
 
 class QSGRootNode;
 class QSGTransformNode;
-class QSGGeometryNode;
 class QQuickWindow;
 
 class QSK_EXPORT QskSceneTexture : public QSGTexture
@@ -25,12 +24,6 @@ class QSK_EXPORT QskSceneTexture : public QSGTexture
   public:
     QskSceneTexture( const QQuickWindow* );
     ~QskSceneTexture();
-
-#if 1
-    // to avoid recursive update - need to find a better solution TODO
-    void setTextureNode( const QSGGeometryNode* );
-    const QSGGeometryNode* textureNode() const;
-#endif
 
     void render( const QSGRootNode*, const QSGTransformNode*, const QRectF& );
 

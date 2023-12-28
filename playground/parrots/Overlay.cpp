@@ -152,7 +152,6 @@ namespace
                 const bool useRhi = qskRenderingHardwareInterface( window );
 
                 textureNode = new FilterNode( useRhi, texture );
-                texture->setTextureNode( textureNode );
             }
 
             auto texture = qobject_cast< QskSceneTexture* >( textureNode->texture() );
