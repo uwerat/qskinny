@@ -515,6 +515,12 @@ set_target_properties(${target} PROPERTIES EXPORT_NAME ${PROJECT_NAME})
 set_target_properties(${target} PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR} )
 
+# packaging
+set(PACKAGE_NAME      ${PROJECT_NAME})
+set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
+set(PACKAGE_NAMESPACE ${PROJECT_NAME})
+set(PACKAGE_LOCATION  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
     ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PACKAGE_NAME}ConfigVersion.cmake
