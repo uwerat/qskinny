@@ -51,7 +51,20 @@ namespace
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
         inline int textureId() const { return m_fbo ? m_fbo->texture() : 0; }
-        inline void renderScene() { Inherited::renderScene( textureId() ); }
+
+        inline void renderScene()
+        {
+            class Bindable : public QSGBindable
+            {
+            public:
+                Bindable( QOpenGLFramebufferObject* fbo ) : m_fbo( fbo ) {}
+                void bind() const override { m_fbo->bind(); }
+            private:
+                QOpenGLFramebufferObject* m_fbo;
+            };
+
+            Inherited::renderScene( Bindable( m_fbo ) );
+        }
 #endif
 
         inline QRhiTexture* rhiTexture() const { return m_rhiTexture; }
