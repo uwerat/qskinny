@@ -5,11 +5,15 @@
 
 macro(qsk_setup_Qt)
 
-    # Define a package QT, attempt Qt6, if not fallback to Qt5
-    find_package(QT NAMES Qt6 REQUIRED COMPONENTS Quick)
-    if (NOT QT_FOUND)
-        find_package(QT "5.15" NAMES Qt5 REQUIRED COMPONENTS Quick)
+    # Use QSK_QT_VERSION specified with baseline 5.15
+    # otherwise fallback to latest known supported Qt version gte 5.15
+    # set vars for correct alpha descending sort order and direction (ex. Qt6, Qt5)
+    if ( NOT QSK_QT_VERSION ) # QSK_QT_VERSION=Qt5
+        set(QSK_QT_VERSION Qt6 Qt5)
+        set(CMAKE_FIND_PACKAGE_SORT_ORDER NAME)
+        set(CMAKE_FIND_PACKAGE_SORT_DIRECTION DEC)
     endif()
+    find_package(QT "5.15" NAMES ${QSK_QT_VERSION} REQUIRED COMPONENTS Quick)
 
     if ( QT_FOUND )
 
