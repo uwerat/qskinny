@@ -518,7 +518,7 @@ set_target_properties(${target} PROPERTIES
 # packaging
 set(PACKAGE_NAME      ${PROJECT_NAME})
 set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
-set(PACKAGE_NAMESPACE ${PROJECT_NAME})
+set(PACKAGE_NAMESPACE ${PROJECT_NAME}::)
 set(PACKAGE_LOCATION  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 include(CMakePackageConfigHelpers)
@@ -535,8 +535,7 @@ install(TARGETS ${target} EXPORT ${PACKAGE_NAME}Targets
     PUBLIC_HEADER DESTINATION ${QSK_INSTALL_HEADERS})
 
 export(EXPORT ${PACKAGE_NAME}Targets
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PACKAGE_NAME}Targets.cmake
-    NAMESPACE ${PACKAGE_NAMESPACE}::)
+    NAMESPACE ${PACKAGE_NAMESPACE})
 
 configure_file(${QSK_CMAKE_DIR}/${PACKAGE_NAME}Config.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PACKAGE_NAME}Config.cmake
@@ -546,15 +545,15 @@ install(EXPORT ${PACKAGE_NAME}Targets
     FILE
         ${PACKAGE_NAME}Targets.cmake
     NAMESPACE
-        ${PACKAGE_NAMESPACE}::
+        ${PACKAGE_NAMESPACE}
     DESTINATION
         ${PACKAGE_LOCATION})
 
 install(
     FILES
-        ${QSK_CMAKE_DIR}/${PACKAGE_NAME}Config.cmake
-        ${QSK_CMAKE_DIR}/QskTools.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PACKAGE_NAME}Config.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PACKAGE_NAME}ConfigVersion.cmake
+        ${QSK_CMAKE_DIR}/QskTools.cmake
     DESTINATION
         ${PACKAGE_LOCATION}
     COMPONENT
