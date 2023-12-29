@@ -18,7 +18,16 @@ When using a QSkinny control, all the methods exposed as either properties,
 slots or invokables can be used in QML. For example, the QSkinny control
 `QskLinearBox` defines the following properties:
 
-[source]
+.CMakeLists.txt
+[source,cmake]
+....
+target_link_libraries(myapp PRIVATE 
+    ...
+    QSkinny::QmlExport)
+...
+....
+
+[source,cpp]
 ....
 class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
 {

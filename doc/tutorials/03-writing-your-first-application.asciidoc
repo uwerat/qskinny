@@ -79,7 +79,7 @@ find_package(QSkinny REQUIRED)
 add_executable(myapp
     src/main.cpp)
 
-target_link_libraries(kue PRIVATE
+target_link_libraries(myapp PRIVATE
     Qt5::Widgets
     Qt5::Quick
     QSkinny::QSkinny)

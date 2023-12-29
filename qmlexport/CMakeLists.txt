@@ -22,7 +22,7 @@ if(BUILD_QSKDLL)
 endif()
 
 # packaging
-set(PACKAGE_NAME            QskQmlExport)
+set(PACKAGE_NAME            QmlExport)
 set(QSKQE_INSTALL_HEADERS   "${CMAKE_INSTALL_INCLUDEDIR}/${target}")
 
 set_target_properties(${target} PROPERTIES FOLDER libs)
