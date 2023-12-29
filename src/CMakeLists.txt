@@ -516,17 +516,9 @@ set_target_properties(${target} PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR} )
 
 # packaging
-set(PACKAGE_NAME      ${PROJECT_NAME})
-set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
-set(PACKAGE_NAMESPACE ${PROJECT_NAME}::)
-set(PACKAGE_LOCATION  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+set(PACKAGE_NAME ${PROJECT_NAME})
 
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PACKAGE_NAME}ConfigVersion.cmake
-    VERSION ${PACKAGE_VERSION}
-    COMPATIBILITY AnyNewerVersion)
-
+# setup destination file paths for qskinny target
 install(TARGETS ${target} EXPORT ${PACKAGE_NAME}Targets
     LIBRARY DESTINATION       ${QSK_INSTALL_LIBS}
     ARCHIVE DESTINATION       ${QSK_INSTALL_LIBS}
@@ -534,13 +526,11 @@ install(TARGETS ${target} EXPORT ${PACKAGE_NAME}Targets
     INCLUDES DESTINATION      ${QSK_INSTALL_HEADERS}
     PUBLIC_HEADER DESTINATION ${QSK_INSTALL_HEADERS})
 
+# export QSkinnyTargets namespace
 export(EXPORT ${PACKAGE_NAME}Targets
     NAMESPACE ${PACKAGE_NAMESPACE})
 
-configure_file(${QSK_CMAKE_DIR}/${PACKAGE_NAME}Config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PACKAGE_NAME}Config.cmake
-    COPYONLY)
-
+# install QSkinnyTargets under QSkinny namespace
 install(EXPORT ${PACKAGE_NAME}Targets
     FILE
         ${PACKAGE_NAME}Targets.cmake
@@ -548,13 +538,3 @@ install(EXPORT ${PACKAGE_NAME}Targets
         ${PACKAGE_NAMESPACE}
     DESTINATION
         ${PACKAGE_LOCATION})
-
-install(
-    FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PACKAGE_NAME}Config.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PACKAGE_NAME}ConfigVersion.cmake
-        ${QSK_CMAKE_DIR}/QskTools.cmake
-    DESTINATION
-        ${PACKAGE_LOCATION}
-    COMPONENT
-        Devel)

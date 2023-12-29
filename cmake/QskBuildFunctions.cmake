@@ -99,3 +99,11 @@ function(qsk_add_example target)
     target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 
 endfunction()
+
+function(qsk_update_package_config_file target)
+
+    file(APPEND
+        ${CMAKE_BINARY_DIR}/_QSkinny/QSkinnyConfig.cmake
+        "include(\"\${CMAKE_CURRENT_LIST_DIR}/${target}.cmake\")\n")
+
+endfunction()
