@@ -132,17 +132,15 @@ namespace
         {
             const auto window = overlay->window();
 
-            if ( overlay->size().isEmpty() )
+            const auto rect = overlay->subControlRect( Overlay::Panel );
+            if ( rect.isEmpty() )
                 return nullptr;
 
             auto rootNode = qskScenegraphAnchorNode( window );
             if ( rootNode == nullptr )
                 return nullptr;
 
-            const auto rect = overlay->subControlRect( Overlay::Panel );
-
             auto textureNode = static_cast< FilterNode* >( node );
-
             if ( textureNode == nullptr )
             {
                 auto texture = new QskSceneTexture( window );
