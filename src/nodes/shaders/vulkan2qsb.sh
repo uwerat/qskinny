@@ -6,6 +6,9 @@ function qsbcompile {
     # qsb --qt6 -b -o ${qsbfile}.qsb $1
 } 
 
+qsbcompile arcshadow-vulkan.vert
+qsbcompile arcshadow-vulkan.frag
+
 qsbcompile boxshadow-vulkan.vert
 qsbcompile boxshadow-vulkan.frag
 
