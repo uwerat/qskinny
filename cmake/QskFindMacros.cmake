@@ -5,12 +5,15 @@
 
 macro(qsk_setup_Qt)
 
-    # Often users have several Qt installations on their system and
-    # need to be able to explicitly the one to be used. Let's see if
-    # standard cmake features are good enough or if we need to introduce
-    # something sort of additional option. TODO ...
-
-    find_package(QT "5.15" NAMES Qt6 Qt5 REQUIRED COMPONENTS Quick)
+    # Use QSK_QT_VERSION specified with baseline 5.15
+    # otherwise fallback to latest known supported Qt version gte 5.15
+    # set vars for correct alpha descending sort order and direction (ex. Qt6, Qt5)
+    if ( NOT QSK_QT_VERSION ) # QSK_QT_VERSION=Qt5
+        set(QSK_QT_VERSION Qt6 Qt5)
+        set(CMAKE_FIND_PACKAGE_SORT_ORDER NAME)
+        set(CMAKE_FIND_PACKAGE_SORT_DIRECTION DEC)
+    endif()
+    find_package(QT "5.15" NAMES ${QSK_QT_VERSION} REQUIRED COMPONENTS Quick)
 
     if ( QT_FOUND )
 
