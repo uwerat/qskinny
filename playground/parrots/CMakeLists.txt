@@ -9,6 +9,36 @@ set(SOURCES
     TextureFilterNode.h TextureFilterNode.cpp
     main.cpp)
 
-qt_add_resources(SOURCES images.qrc shaders.qrc)
+qt_add_resources(SOURCES images.qrc)
+
+if (QT_VERSION_MAJOR VERSION_LESS 6)
+    qt_add_resources(SOURCES shaders.qrc)
+endif()
 
 qsk_add_example(parrots ${SOURCES})
+
+if (QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
+
+    qt6_add_shaders(parrots "shaders"
+
+        BATCHABLE
+        PRECOMPILE
+
+        QUIET
+
+        PREFIX
+            "/shaders"
+
+        FILES
+            shaders/blur-vulkan.vert
+            shaders/blur-vulkan.frag
+            shaders/rgbswap-vulkan.frag
+
+        OUTPUTS
+            blur.vert.qsb
+            blur.frag.qsb
+            rgbswap.vert.qsb
+    )
+
+endif()
+
