@@ -65,7 +65,7 @@ function(qsk_add_plugin target TYPE CLASS_NAME)
     set_target_properties( ${target} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/${TYPE})
 
-    install(TARGETS ${target} DESTINATION "plugins/${TYPE}" )
+    install(TARGETS ${target} DESTINATION "${QSK_INSTALL_LIBS}/plugins/${TYPE}" )
     set_target_properties(${target} PROPERTIES
         INSTALL_RPATH "\${ORIGIN}/../../lib" )
 
@@ -97,5 +97,13 @@ function(qsk_add_example target)
 
     # for examples with subdirectories 
     target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
+
+endfunction()
+
+function(qsk_update_package_config_file target)
+
+    file(APPEND
+        ${CMAKE_BINARY_DIR}/_QSkinny/QSkinnyConfig.cmake
+        "include(\"\${CMAKE_CURRENT_LIST_DIR}/${target}.cmake\")\n")
 
 endfunction()

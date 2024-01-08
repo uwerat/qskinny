@@ -62,8 +62,18 @@ macro(qsk_setup_build)
 endmacro()
 
 macro(qsk_setup_install)
-    set(QSK_INSTALL_HEADERS include)
-    set(QSK_INSTALL_LIBS lib)
+
+    # package vars
+    set(PACKAGE_NAME      ${PROJECT_NAME})
+    set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
+    set(PACKAGE_NAMESPACE ${PROJECT_NAME}::)
+    set(PACKAGE_LOCATION  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+    # install paths for headers and libraries
+    string(TOLOWER "${PROJECT_NAME}" PACKAGE_DIR)
+    set(QSK_INSTALL_HEADERS ${CMAKE_INSTALL_INCLUDEDIR}/${PACKAGE_DIR})
+    set(QSK_INSTALL_LIBS    ${CMAKE_INSTALL_LIBDIR}/${PACKAGE_DIR})
+
 endmacro()
 
 ############################################################################
@@ -76,6 +86,7 @@ project(QSkinny
     VERSION 0.8.0)
 
 set(QSK_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
+set(QSK_CMAKE_DIR  ${QSK_SOURCE_DIR}/cmake)
 
 qsk_setup_options()
 
@@ -95,6 +106,32 @@ qsk_setup_install()
 add_subdirectory(src)
 add_subdirectory(skins)
 
+include(CMakePackageConfigHelpers)
+
+# write QSkinnyConfigVersion.cmake file for cmake import
+write_basic_package_version_file(
+    ${CMAKE_BINARY_DIR}/_QSkinny/${PACKAGE_NAME}ConfigVersion.cmake
+    VERSION ${PACKAGE_VERSION}
+    COMPATIBILITY AnyNewerVersion)
+
+# Copy QSkinnyConfig.cmake to build dir
+configure_file(${QSK_CMAKE_DIR}/${PACKAGE_NAME}Config.cmake
+    ${CMAKE_BINARY_DIR}/_QSkinny/${PACKAGE_NAME}Config.cmake
+    COPYONLY)
+
+# install QSkinnyConfig.cmake and QSkinnyConfigVersion.cmake
+# and QskTools.cmake file to lib/cmake/QSkinny directory
+install(
+    FILES
+        ${CMAKE_BINARY_DIR}/_QSkinny/${PACKAGE_NAME}Config.cmake
+        ${CMAKE_BINARY_DIR}/_QSkinny/${PACKAGE_NAME}ConfigVersion.cmake
+        ${QSK_CMAKE_DIR}/QskTools.cmake
+    DESTINATION
+        ${PACKAGE_LOCATION}
+    COMPONENT
+        Devel)
+
+# Build other libraries
 if(BUILD_QML_EXPORT)
     add_subdirectory(qmlexport)
 endif()
@@ -118,48 +155,3 @@ endif()
 if(BUILD_PLAYGROUND)
     add_subdirectory(playground)
 endif()
-
-# packaging
-set(PACKAGE_NAME      ${PROJECT_NAME})
-set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
-set(PACKAGE_NAMESPACE Qsk)
-set(PACKAGE_LOCATION  ${QSK_INSTALL_LIBS}/cmake/${PROJECT_NAME})
-
-install(TARGETS qskinny EXPORT ${PACKAGE_NAME}Targets
-    LIBRARY DESTINATION       ${QSK_INSTALL_LIBS}
-    ARCHIVE DESTINATION       ${QSK_INSTALL_LIBS}
-    RUNTIME DESTINATION       ${QSK_INSTALL_LIBS}
-    INCLUDES DESTINATION      ${QSK_INSTALL_HEADERS}
-    PUBLIC_HEADER DESTINATION ${QSK_INSTALL_HEADERS})
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}ConfigVersion.cmake
-    VERSION ${PACKAGE_VERSION}
-    COMPATIBILITY AnyNewerVersion)
-
-export(EXPORT ${PACKAGE_NAME}Targets
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}Targets.cmake
-    NAMESPACE ${PACKAGE_NAMESPACE}::)
-
-configure_file(cmake/${PACKAGE_NAME}Config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}Config.cmake
-    COPYONLY)
-
-install(EXPORT ${PACKAGE_NAME}Targets
-    FILE
-        ${PACKAGE_NAME}Targets.cmake
-    NAMESPACE
-        ${PACKAGE_NAMESPACE}::
-    DESTINATION
-        ${PACKAGE_LOCATION})
-
-install(
-    FILES
-        cmake/${PACKAGE_NAME}Config.cmake
-        cmake/QskTools.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}/${PACKAGE_NAME}ConfigVersion.cmake
-    DESTINATION
-        ${PACKAGE_LOCATION}
-    COMPONENT
-        Devel)

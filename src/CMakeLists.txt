@@ -513,7 +513,30 @@ set_target_properties(${target}
 
 list(TRANSFORM HEADERS PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
 set_target_properties(${target} PROPERTIES PUBLIC_HEADER "${HEADERS}")
+set_target_properties(${target} PROPERTIES EXPORT_NAME ${PROJECT_NAME})
 set_target_properties(${target} PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR} )
 
-install(TARGETS ${target} )
+# packaging
+set(PACKAGE_NAME ${PROJECT_NAME})
+
+# setup destination file paths for qskinny target
+install(TARGETS ${target} EXPORT ${PACKAGE_NAME}Targets
+    LIBRARY DESTINATION       ${QSK_INSTALL_LIBS}
+    ARCHIVE DESTINATION       ${QSK_INSTALL_LIBS}
+    RUNTIME DESTINATION       ${QSK_INSTALL_LIBS}
+    INCLUDES DESTINATION      ${QSK_INSTALL_HEADERS}
+    PUBLIC_HEADER DESTINATION ${QSK_INSTALL_HEADERS})
+
+# export QSkinnyTargets namespace
+export(EXPORT ${PACKAGE_NAME}Targets
+    NAMESPACE ${PACKAGE_NAMESPACE})
+
+# install QSkinnyTargets under QSkinny namespace
+install(EXPORT ${PACKAGE_NAME}Targets
+    FILE
+        ${PACKAGE_NAME}Targets.cmake
+    NAMESPACE
+        ${PACKAGE_NAMESPACE}
+    DESTINATION
+        ${PACKAGE_LOCATION})
