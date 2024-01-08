@@ -14,21 +14,10 @@
 ShadowedBox::ShadowedBox( QQuickItem* parentItem )
     : QskBox( true, parentItem )
 {
-    QColor c( Qt::darkRed );
-#if 0
-    c.setAlpha( 100 );
-#endif
-
-    setGradientHint( Panel, c );
+    setGradientHint( Panel, Qt::darkRed );
     setBoxShapeHint( Panel, QskBoxShapeMetrics( 40, 0, 15, 0 ) );
 
     setBoxBorderMetricsHint( Panel, 0 );
-
-#if 0
-    setBoxBorderMetricsHint( Panel, 10 );
-    setBoxBorderColorsHint( Panel, Qt::blue );
-#endif
-
     setShadowColorHint( Panel, Qt::black );
 }
 

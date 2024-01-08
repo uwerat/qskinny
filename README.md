@@ -35,9 +35,11 @@ It might support all versions Qt >= 5.15, but you can rely on:
 - current long term supported ( LTS ) version of Qt ( at the moment Qt 6.5.x )
 - current version of Qt
 
-On debian bullseye these packages need to be installed for Qt5: `build-essential
-qtbase5-dev qtbase5-private-dev qtdeclarative5-dev qtdeclarative5-private-dev libqt5svg5-dev`.
-For Qt6 you need the corresponding ones.
+On Debian these packages need to be installed for Qt6: `build-essential cmake
+qtbase6-dev qtbase6-private-dev qtdeclarative6-dev qtdeclarative6-private-dev libqt6svg-dev qt6-shadertools`
+For Qt5 you need: `build-essential cmake
+qtbase5-dev qtbase5-private-dev qtdeclarative5-dev qtdeclarative5-private-dev libqt5svg-dev`.
+
 
 > Optional: When enabling the `hunspell` feature the following package needs to be installed: `libhunspell-dev`
 

@@ -99,6 +99,7 @@ list(APPEND SOURCES
 
 list(APPEND HEADERS
     nodes/QskArcNode.h
+    nodes/QskArcShadowNode.h
     nodes/QskBasicLinesNode.h
     nodes/QskBoxNode.h
     nodes/QskBoxClipNode.h
@@ -138,6 +139,7 @@ list(APPEND PRIVATE_HEADERS
 
 list(APPEND SOURCES
     nodes/QskArcNode.cpp
+    nodes/QskArcShadowNode.cpp
     nodes/QskBasicLinesNode.cpp
     nodes/QskBoxNode.cpp
     nodes/QskBoxClipNode.cpp
@@ -171,7 +173,9 @@ list(APPEND SOURCES
     nodes/QskVertex.cpp
 )
 
-qt_add_resources(SOURCES nodes/shaders.qrc)
+if (QT_VERSION_MAJOR VERSION_LESS 6)
+    qt_add_resources(SOURCES nodes/shaders.qrc)
+endif()
 
 list(APPEND HEADERS
     controls/QskAbstractButton.h
@@ -469,6 +473,49 @@ endif()
 if(BUILD_QSKDLL)
     target_compile_definitions(${target} PUBLIC QSK_DLL )
     set_target_properties(${target} PROPERTIES DEFINE_SYMBOL QSK_MAKEDLL)
+endif()
+
+if (QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
+
+    qt6_add_shaders(${target} "qskshaders"
+
+        BATCHABLE
+        PRECOMPILE
+
+        #OPTIMIZED
+        QUIET
+
+        PREFIX
+            "/qskinny/shaders"
+
+        FILES
+            nodes/shaders/arcshadow-vulkan.vert
+            nodes/shaders/arcshadow-vulkan.frag
+            nodes/shaders/boxshadow-vulkan.vert
+            nodes/shaders/boxshadow-vulkan.frag
+            nodes/shaders/crisplines-vulkan.vert
+            nodes/shaders/crisplines-vulkan.frag
+            nodes/shaders/gradientconic-vulkan.vert
+            nodes/shaders/gradientconic-vulkan.frag
+            nodes/shaders/gradientlinear-vulkan.vert
+            nodes/shaders/gradientlinear-vulkan.frag
+            nodes/shaders/gradientradial-vulkan.vert
+            nodes/shaders/gradientradial-vulkan.frag
+
+        OUTPUTS
+            arcshadow.vert.qsb
+            arcshadow.frag.qsb
+            boxshadow.vert.qsb
+            boxshadow.frag.qsb
+            crisplines.vert.qsb
+            crisplines.frag.qsb
+            gradientconic.vert.qsb
+            gradientconic.frag.qsb
+            gradientlinear.vert.qsb
+            gradientlinear.frag.qsb
+            gradientradial.vert.qsb
+            gradientradial.frag.qsb
+    )
 endif()
 
 target_include_directories(${target} PUBLIC
