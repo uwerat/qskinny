@@ -127,16 +127,26 @@ static void qskRenderText(
             if ( glyphNode == nullptr )
             {
                 const bool preferNativeGlyphNode = false; // QskTextOptions?
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
                 constexpr int renderQuality = -1; // QQuickText::DefaultRenderTypeQuality
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 7, 0 )
+                const auto renderType = preferNativeGlyphNode
+                    ? QSGTextNode::QtRendering : QSGTextNode::NativeRendering;
+                glyphNode = sgContext->createGlyphNode(
+                    renderContext, renderType, renderQuality );
+#elif QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
                 glyphNode = sgContext->createGlyphNode(
                     renderContext, preferNativeGlyphNode, renderQuality );
 #else
+                Q_UNUSED( renderQuality );
                 glyphNode = sgContext->createGlyphNode(
                     renderContext, preferNativeGlyphNode );
 #endif
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 7, 0 )
                 glyphNode->setOwnerElement( item );
+#endif
+
                 glyphNode->setFlags( QSGNode::OwnedByParent | GlyphFlag );
             }
 

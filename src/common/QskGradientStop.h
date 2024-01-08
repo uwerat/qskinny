@@ -120,6 +120,8 @@ QSK_EXPORT QDebug operator<<( QDebug, const QskGradientStop& );
 
 typedef QVector< QskGradientStop > QskGradientStops;
 
+QSK_EXPORT QColor qskInterpolatedColorAt( const QskGradientStops&, qreal pos ) noexcept;
+
 QSK_EXPORT bool qskIsMonochrome( const QskGradientStops& ) noexcept;
 QSK_EXPORT bool qskIsVisible( const QskGradientStops& ) noexcept;
 

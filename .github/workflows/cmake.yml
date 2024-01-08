@@ -104,7 +104,8 @@ jobs:
               cc: "gcc",
               cxx: "g++",
               archiver: "7z a",
-              generators: "Ninja Multi-Config",
+              # generators: "Ninja Multi-Config",
+              generators: "Ninja",
               env: { DISPLAY: ":1" },
               cmake:
                 {

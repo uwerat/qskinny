@@ -416,6 +416,20 @@ void QskWindow::keyReleaseEvent( QKeyEvent* event )
 
 void QskWindow::exposeEvent( QExposeEvent* event )
 {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    if ( qskRenderingHardwareInterface( this ) )
+    {
+        /*
+            Actually our code supports Qt5 RHI ( f9c08c34fb2cc64546bbe6ce9d359f416e934961 ),
+            but Qt5 does not come with the qsb tool out of the box. Then we run into
+            problems with compiling the shader code from the makefiles.
+            But why should anyone use the experimental Qt5 RHI implementations
+            instead of using Qt6 ...
+         */
+        qFatal( "the experimental Qt5 RHI implementation is not supported:\n"
+            "\tuse Qt6 or run the default OpenGL backend." );
+    }
+#endif
     ensureFocus( Qt::OtherFocusReason );
     layoutItems();
 
