@@ -3,8 +3,18 @@
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
-set(HEADERS QskQmlGlobal.h QskShortcutQml.h QskLayoutQml.h QskMainQml.h QskQml.h)
-set(SOURCES QskShortcutQml.cpp QskLayoutQml.cpp QskMainQml.cpp QskQml.cpp)
+set(HEADERS
+    QskQmlGlobal.h
+    QskShortcutQml.h
+    QskLayoutQml.h
+    QskMainQml.h
+    QskQml.h)
+
+set(SOURCES
+    QskShortcutQml.cpp
+    QskLayoutQml.cpp
+    QskMainQml.cpp
+    QskQml.cpp)
 
 set(target qskqmlexport)
 qsk_add_library(${target} SHARED ${SOURCES} ${HEADERS})
@@ -22,7 +32,8 @@ if(BUILD_QSKDLL)
 endif()
 
 # packaging
-set(PACKAGE_NAME            QmlExport)
+set(PACKAGE_NAME            QSkinnyQmlExport)
+set(QSKQE_INSTALL_HEADERS   "${CMAKE_INSTALL_INCLUDEDIR}/${target}")
 
 set_target_properties(${target} PROPERTIES FOLDER libs)
 set_target_properties(${target} PROPERTIES EXPORT_NAME ${PACKAGE_NAME})

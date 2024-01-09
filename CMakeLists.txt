@@ -93,7 +93,7 @@ qsk_setup_options()
 include(GNUInstallDirs)
 
 # loading helper macros
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH ${QSK_CMAKE_DIR})
 
 include("QskConfigMacros")
 include("QskFindMacros")
@@ -110,21 +110,21 @@ include(CMakePackageConfigHelpers)
 
 # write QSkinnyConfigVersion.cmake file for cmake import
 write_basic_package_version_file(
-    ${CMAKE_BINARY_DIR}/_QSkinny/${PACKAGE_NAME}ConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}ConfigVersion.cmake
     VERSION ${PACKAGE_VERSION}
     COMPATIBILITY AnyNewerVersion)
 
 # Copy QSkinnyConfig.cmake to build dir
 configure_file(${QSK_CMAKE_DIR}/${PACKAGE_NAME}Config.cmake
-    ${CMAKE_BINARY_DIR}/_QSkinny/${PACKAGE_NAME}Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}Config.cmake
     COPYONLY)
 
 # install QSkinnyConfig.cmake and QSkinnyConfigVersion.cmake
-# and QskTools.cmake file to lib/cmake/QSkinny directory
+# file to lib/cmake/QSkinny directory
 install(
     FILES
-        ${CMAKE_BINARY_DIR}/_QSkinny/${PACKAGE_NAME}Config.cmake
-        ${CMAKE_BINARY_DIR}/_QSkinny/${PACKAGE_NAME}ConfigVersion.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}Config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}ConfigVersion.cmake
     DESTINATION
         ${PACKAGE_LOCATION}
     COMPONENT

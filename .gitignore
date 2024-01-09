@@ -16,3 +16,5 @@ qskinny.pro.user
 html
 tags
 .vscode
+.cache
+compile_commands.json
