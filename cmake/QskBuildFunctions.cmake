@@ -99,3 +99,19 @@ function(qsk_add_example target)
     target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 
 endfunction()
+
+function(qsk_add_shaders target)
+
+    cmake_parse_arguments( arg "" "" "FILES" ${ARGN} )
+
+    # assuming that OUTPUTS is not set in ARGV
+    foreach( file IN LISTS arg_FILES )
+        get_filename_component(qsbname "${file}" NAME)
+        string(REPLACE "-vulkan" "" qsbname "${qsbname}" )
+        list(APPEND outfiles "${qsbname}.qsb")
+    endforeach()
+
+    qt6_add_shaders( ${target} "qskshaders" BATCHABLE PRECOMPILE QUIET
+        PREFIX "/qskinny/shaders" ${ARGV} OUTPUTS ${outfiles} )
+
+endfunction()
