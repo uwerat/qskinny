@@ -15,6 +15,11 @@ macro(qsk_setup_Qt)
     endif()
     find_package(QT "5.15" NAMES ${QSK_QT_VERSION} REQUIRED COMPONENTS Quick)
 
+    if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
+        # we need the qsb tool for Qt6
+        find_package(Qt6 REQUIRED COMPONENTS ShaderTools)
+    endif()
+
     if ( QT_FOUND )
 
         # Would like to have a status message about where the Qt installation
