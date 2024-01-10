@@ -125,7 +125,6 @@ install(
     FILES
         ${CMAKE_BINARY_DIR}/_QSkinny/${PACKAGE_NAME}Config.cmake
         ${CMAKE_BINARY_DIR}/_QSkinny/${PACKAGE_NAME}ConfigVersion.cmake
-        ${QSK_CMAKE_DIR}/QskTools.cmake
     DESTINATION
         ${PACKAGE_LOCATION}
     COMPONENT

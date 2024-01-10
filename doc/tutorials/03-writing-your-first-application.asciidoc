@@ -13,7 +13,8 @@ layout: docs
 In this chapter we will write a simple QSkinny application on Linux from scratch.
 As a prerequisite, a recent Qt version (>= 5.15) should be available. On debian bullseye we need to install
 these packages `build-essential cmake qtbase5-dev qtbase5-private-dev qtdeclarative5-dev qtdeclarative5-private-dev libqt5svg5-dev`.
-For Qt6 you need the corresponding packages.
+On Debian these packages need to be installed for Qt6: `build-essential cmake
+qtbase6-dev qtbase6-private-dev qtdeclarative6-dev qtdeclarative6-private-dev libqt6svg-dev qt6-shadertools`.
 
 Then we can build and install QSkinny to `/opt/qskinny` with the following commands:
 
