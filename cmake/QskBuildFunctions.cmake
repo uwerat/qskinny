@@ -7,6 +7,10 @@ function(qsk_add_executable target)
 
     if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
         qt6_add_executable(${ARGV})
+
+        # we manually export our APIs to QML - might change in the future
+        set_target_properties(${target} PROPERTIES 
+            QT_QML_MODULE_NO_IMPORT_SCAN 1)
     else()
         add_executable(${ARGV})
     endif()
