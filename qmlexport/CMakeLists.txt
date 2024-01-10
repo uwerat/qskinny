@@ -42,5 +42,3 @@ install(EXPORT ${PACKAGE_NAME}Targets
         ${PACKAGE_NAMESPACE}
     DESTINATION
         ${PACKAGE_LOCATION})
-
-qsk_update_package_config_file(${PACKAGE_NAME}Targets)

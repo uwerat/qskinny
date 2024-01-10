@@ -115,11 +115,3 @@ function(qsk_add_shaders target)
         PREFIX "/qskinny/shaders" ${ARGV} OUTPUTS ${outfiles} )
 
 endfunction()
-
-function(qsk_update_package_config_file target)
-
-    file(APPEND
-        ${CMAKE_BINARY_DIR}/_QSkinny/QSkinnyConfig.cmake
-        "include(\"\${CMAKE_CURRENT_LIST_DIR}/${target}.cmake\")\n")
-
-endfunction()

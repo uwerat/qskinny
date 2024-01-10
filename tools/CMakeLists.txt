@@ -1,4 +1,10 @@
 if(TARGET Qt::Svg)
     add_subdirectory(svg2qvg)
-    qsk_update_package_config_file(QskTools)
+    install(
+        FILES
+            ${QSK_CMAKE_DIR}/QskTools.cmake
+        DESTINATION
+            ${PACKAGE_LOCATION}
+        COMPONENT
+            Devel)
 endif()
