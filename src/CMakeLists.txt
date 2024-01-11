@@ -561,3 +561,7 @@ install(EXPORT ${PACKAGE_NAME}Targets
         ${PACKAGE_NAMESPACE}
     DESTINATION
         ${PACKAGE_LOCATION})
+
+install(FILES $<TARGET_PDB_FILE:${target}> 
+    DESTINATION 
+        ${QSK_INSTALL_LIBS} OPTIONAL)

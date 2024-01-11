@@ -32,11 +32,11 @@ if(BUILD_QSKDLL)
 endif()
 
 # packaging
-set(PACKAGE_NAME            QSkinnyQmlExport)
+set(PACKAGE_NAME            QmlExport)
 set(QSKQE_INSTALL_HEADERS   "${CMAKE_INSTALL_INCLUDEDIR}/${target}")
 
 set_target_properties(${target} PROPERTIES FOLDER libs)
-set_target_properties(${target} PROPERTIES EXPORT_NAME ${PACKAGE_NAME})
+set_target_properties(${target} PROPERTIES EXPORT_NAME QmlExport)
 
 install(TARGETS ${target} EXPORT ${PACKAGE_NAME}Targets
     LIBRARY DESTINATION       ${QSK_INSTALL_LIBS}
@@ -53,3 +53,7 @@ install(EXPORT ${PACKAGE_NAME}Targets
         ${PACKAGE_NAMESPACE}
     DESTINATION
         ${PACKAGE_LOCATION})
+
+install(FILES $<TARGET_PDB_FILE:${target}> 
+    DESTINATION
+        ${QSK_INSTALL_LIBS} OPTIONAL)
