@@ -54,6 +54,8 @@ install(EXPORT ${PACKAGE_NAME}Targets
     DESTINATION
         ${PACKAGE_LOCATION})
 
-install(FILES $<TARGET_PDB_FILE:${target}> 
-    DESTINATION
-        ${QSK_INSTALL_LIBS} OPTIONAL)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    install(FILES $<TARGET_PDB_FILE:${target}> 
+        DESTINATION
+            ${QSK_INSTALL_LIBS} OPTIONAL)
+endif()
