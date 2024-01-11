@@ -7,14 +7,14 @@ cmake_minimum_required(VERSION 3.16.3)
 
 macro(qsk_setup_options)
 
-    option(BUILD_PEDANTIC "Enable pedantic compile flags ( only GNU/CLANG )" OFF)
-    option(BUILD_QSKDLL "Build libs ( not plugins ) as shared library" ON)
-    option(BUILD_QML_EXPORT "Exporting QSkinny to QML" ON)
+    option(BUILD_PEDANTIC     "Enable pedantic compile flags ( only GNU/CLANG )" OFF)
+    option(BUILD_QSKDLL       "Build libs ( not plugins ) as shared library" ON)
+    option(BUILD_QML_EXPORT   "Exporting QSkinny to QML" ON)
 
-    option(BUILD_TOOLS      "Build qskinny tools" ON)
+    option(BUILD_TOOLS        "Build qskinny tools" ON)
     option(BUILD_INPUTCONTEXT "Build virtual keyboard support" ON)
-    option(BUILD_EXAMPLES   "Build qskinny examples" ON)
-    option(BUILD_PLAYGROUND "Build qskinny playground" ON)
+    option(BUILD_EXAMPLES     "Build qskinny examples" ON)
+    option(BUILD_PLAYGROUND   "Build qskinny playground" ON)
 
     # we actually want to use cmake_dependent_option - minimum cmake version ??
 
@@ -66,7 +66,7 @@ macro(qsk_setup_install)
     # package vars
     set(PACKAGE_NAME      ${PROJECT_NAME})
     set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
-    set(PACKAGE_NAMESPACE ${PROJECT_NAME}::)
+    set(PACKAGE_NAMESPACE Qsk::)
     set(PACKAGE_LOCATION  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
     # install paths for headers and libraries
