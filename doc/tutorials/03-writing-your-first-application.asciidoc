@@ -74,14 +74,13 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5 REQUIRED COMPONENTS Widgets Quick)
+find_package(Qt5 REQUIRED COMPONENTS Quick)
 find_package(QSkinny REQUIRED)
 
 add_executable(myapp
     src/main.cpp)
 
 target_link_libraries(myapp PRIVATE
-    Qt5::Widgets
     Qt5::Quick
     QSkinny::QSkinny)
 ....
@@ -123,6 +122,7 @@ int main( int argc, char* argv[] )
     QGuiApplication app( argc, argv );
 
     auto* horizontalBox = new QskLinearBox( Qt::Horizontal );
+    horizontalBox->setPanel( true );
     auto* button1 = new QskPushButton( "button 1", horizontalBox );
     auto* button2 = new QskPushButton( "button 2", horizontalBox );
 
