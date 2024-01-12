@@ -83,7 +83,7 @@ add_executable(myapp
 target_link_libraries(myapp PRIVATE
     Qt5::Widgets
     Qt5::Quick
-    QSkinny::QSkinny)
+    Qsk::QSkinny)
 ....
 
 Now we can compile our app:
