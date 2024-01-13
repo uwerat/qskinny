@@ -33,7 +33,7 @@ It might support other versions of Qt, but you can rely on:
 - current version of Qt
 
 How to build/install and use QSkinny is described in this
-[tutorial](doc/doc/tutorials/03-writing-your-first-application.asciidoc)
+[tutorial](doc/tutorials/03-writing-your-first-application.asciidoc)
 
 If you want to know more about QSkinny - or even like to give it a specific
 direction - please contact support@qskinny.org.
