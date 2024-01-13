@@ -27,8 +27,8 @@ Then we can build and install QSkinny to `/opt/qskinny` with the following comma
 $ git clone https://github.com/uwerat/qskinny.git # clone
 $ cd qskinny
 $ mkdir build && cd build
-$ cmake ../ && make # build
-$ sudo make install # install
+$ cmake .. && cmake --build .
+$ sudo cmake --install . --prefix "/opt/qskinny"
 ....
 
 To target a specific Qt version simply pass the cmake build variable `QSK_QT_VERSION` during the build step:
