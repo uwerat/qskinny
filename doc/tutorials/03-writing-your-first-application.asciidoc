@@ -11,10 +11,14 @@ layout: docs
 === Building the QSkinny repository
 
 In this chapter we will write a simple QSkinny application on Linux from scratch in C++.
-As a prerequisite, a recent Qt version (>= 5.15) should be available. On debian bullseye we need to install
-these packages `build-essential cmake qtbase5-dev qtbase5-private-dev qtdeclarative5-dev qtdeclarative5-private-dev libqt5svg5-dev`.
-On Debian these packages need to be installed for Qt6: `build-essential cmake
-qtbase6-dev qtbase6-private-dev qtdeclarative6-dev qtdeclarative6-private-dev libqt6svg-dev qt6-shadertools`.
+As a prerequisite, a supported Qt version should be available.
+
+On debian bullseye we need to install these packages
+`build-essential cmake qtbase6-dev qtbase6-private-dev qtdeclarative6-dev qtdeclarative6-private-dev libqt6svg-dev qt6-shadertools`.
+
+( For Qt 5.15 you need the corresponding packages beside of the shadertools )
+
+Optional packages for the virtual keyboard are `libhunspell-dev libimepinyin-dev`
 
 Then we can build and install QSkinny to `/opt/qskinny` with the following commands:
 
@@ -74,14 +78,14 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(QSkinny REQUIRED)
 
 add_executable(myapp
     src/main.cpp)
 
 target_link_libraries(myapp PRIVATE
-    Qt5::Quick
+    Qt6::Quick
     Qsk::QSkinny)
 ....
 
@@ -95,7 +99,7 @@ $ cmake ../ && make
 ....
 
 When running myapp it needs to find the skin plugins. Setting QT_PLUGIN_PATH is one
-option ( see https://doc.qt.io/qt-5/deployment-plugins.html ):
+option ( see https://doc.qt.io/qt/deployment-plugins.html ):
 
 [source,shell]
 ....
