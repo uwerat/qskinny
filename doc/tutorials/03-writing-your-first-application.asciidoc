@@ -35,12 +35,14 @@ Considering that you want to use a specific Qt version that is installed below "
 you have 2 options:
 
 [source,shell]
+....
 $ cmake .. -DCMAKE_PREFIX_PATH=/path/to/qt
 ....
 
 or
 
 [source,shell]
+....
 $ /path/to/qt/bin/qt-cmake ..
 ....
 
