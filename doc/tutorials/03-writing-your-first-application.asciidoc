@@ -10,13 +10,11 @@ layout: docs
 
 === Building the QSkinny repository
 
-In this chapter we will write a simple QSkinny application on Linux from scratch in C++.
-As a prerequisite, a supported Qt version should be available.
+In this chapter we will write a simple QSkinny application on Linux from scratch in C++ with Qt6.
+As a prerequisite, a supported Qt6 version should be available.
 
 On debian bullseye we need to install these packages
 `build-essential cmake qtbase6-dev qtbase6-private-dev qtdeclarative6-dev qtdeclarative6-private-dev libqt6svg-dev qt6-shadertools`.
-
-( For Qt 5.15 you need the corresponding packages beside of the shadertools )
 
 Optional packages for the virtual keyboard are `libhunspell-dev libimepinyin-dev`
 
@@ -27,15 +25,23 @@ Then we can build and install QSkinny to `/opt/qskinny` with the following comma
 $ git clone https://github.com/uwerat/qskinny.git # clone
 $ cd qskinny
 $ mkdir build && cd build
-$ cmake .. && cmake --build .
+$ cmake ..
+$ cmake --build .
 $ sudo cmake --install . --prefix "/opt/qskinny"
 ....
 
-To target a specific Qt version simply pass the cmake build variable `QSK_QT_VERSION` during the build step:
+
+Considering that you want to use a specific Qt version that is installed below "/path/to/qt"
+you have 2 options:
 
 [source,shell]
+$ cmake .. -DCMAKE_PREFIX_PATH=/path/to/qt
 ....
-$ cmake -DQSK_QT_VERSION=Qt5 ../ && make
+
+or
+
+[source,shell]
+$ /path/to/qt/bin/qt-cmake ..
 ....
 
 === Compiling our first app
@@ -60,7 +66,7 @@ int main( int argc, char* argv[] )
 ....
 
 For now this will just create an empty window (the `QskWindow`) without any controls.
-Next, we need to create a `myapp.pro` file in our `myapp` directory.
+Next, we need to create a `CMakeLists.txt` file in our `myapp` directory.
 
 .CMakeLists.txt
 [source,cmake]
@@ -110,7 +116,9 @@ This should show just an empty window.
 
 === Adding UI controls
 
-Now that we have our app running, we can add some UI controls to it by extending the `main.cpp` file we created earlier. We will add some additional include directives, and then create a horizontal layout containing two push buttons. The layout with the two buttons will be shown in the window. Below is the complete updated source file:
+Now that we have our app running, we can add some UI controls to it by extending the `main.cpp` file we created earlier.
+We will add some additional include directives, and then create a horizontal layout containing two push buttons.
+The layout with the two buttons will be shown in the window. Below is the complete updated source file:
 
 .main.cpp
 [source, cpp]
@@ -125,9 +133,17 @@ int main( int argc, char* argv[] )
 {
     QGuiApplication app( argc, argv );
 
-    auto horizontalBox = new QskLinearBox( Qt::Horizontal );
-    (void) new QskPushButton( "Button 1", horizontalBox );
-    (void) new QskPushButton( "Button 2", horizontalBox );
+    auto box = new QskLinearBox( Qt::Horizontal );
+
+    /*
+        some design systems work with transparencies ( f.e Fluent2 )
+        and we need to have a control providing a solid base color
+        as bottom layer.
+     */
+    box->setPanel( true );
+
+    (void) new QskPushButton( "Button 1", box );
+    (void) new QskPushButton( "Button 2", box );
 
     QskWindow window;
     window.addItem( horizontalBox );
