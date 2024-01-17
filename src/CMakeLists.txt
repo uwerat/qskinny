@@ -1,5 +1,5 @@
 ############################################################################
-# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# QSkinny - Copyright (C) The authors
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
@@ -175,6 +175,21 @@ list(APPEND SOURCES
 
 if (QT_VERSION_MAJOR VERSION_LESS 6)
     qt_add_resources(SOURCES nodes/shaders.qrc)
+else()
+    list(APPEND SHADERS
+        nodes/shaders/arcshadow-vulkan.vert
+        nodes/shaders/arcshadow-vulkan.frag
+        nodes/shaders/boxshadow-vulkan.vert
+        nodes/shaders/boxshadow-vulkan.frag
+        nodes/shaders/crisplines-vulkan.vert
+        nodes/shaders/crisplines-vulkan.frag
+        nodes/shaders/gradientconic-vulkan.vert
+        nodes/shaders/gradientconic-vulkan.frag
+        nodes/shaders/gradientlinear-vulkan.vert
+        nodes/shaders/gradientlinear-vulkan.frag
+        nodes/shaders/gradientradial-vulkan.vert
+        nodes/shaders/gradientradial-vulkan.frag
+    )
 endif()
 
 list(APPEND HEADERS
@@ -476,46 +491,7 @@ if(BUILD_QSKDLL)
 endif()
 
 if (QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
-
-    qt6_add_shaders(${target} "qskshaders"
-
-        BATCHABLE
-        PRECOMPILE
-
-        #OPTIMIZED
-        QUIET
-
-        PREFIX
-            "/qskinny/shaders"
-
-        FILES
-            nodes/shaders/arcshadow-vulkan.vert
-            nodes/shaders/arcshadow-vulkan.frag
-            nodes/shaders/boxshadow-vulkan.vert
-            nodes/shaders/boxshadow-vulkan.frag
-            nodes/shaders/crisplines-vulkan.vert
-            nodes/shaders/crisplines-vulkan.frag
-            nodes/shaders/gradientconic-vulkan.vert
-            nodes/shaders/gradientconic-vulkan.frag
-            nodes/shaders/gradientlinear-vulkan.vert
-            nodes/shaders/gradientlinear-vulkan.frag
-            nodes/shaders/gradientradial-vulkan.vert
-            nodes/shaders/gradientradial-vulkan.frag
-
-        OUTPUTS
-            arcshadow.vert.qsb
-            arcshadow.frag.qsb
-            boxshadow.vert.qsb
-            boxshadow.frag.qsb
-            crisplines.vert.qsb
-            crisplines.frag.qsb
-            gradientconic.vert.qsb
-            gradientconic.frag.qsb
-            gradientlinear.vert.qsb
-            gradientlinear.frag.qsb
-            gradientradial.vert.qsb
-            gradientradial.frag.qsb
-    )
+    qsk_add_shaders( ${target} FILES ${SHADERS} )
 endif()
 
 target_include_directories(${target} PUBLIC
@@ -558,7 +534,36 @@ set_target_properties(${target}
 
 list(TRANSFORM HEADERS PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
 set_target_properties(${target} PROPERTIES PUBLIC_HEADER "${HEADERS}")
+set_target_properties(${target} PROPERTIES EXPORT_NAME ${PROJECT_NAME})
 set_target_properties(${target} PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR} )
 
-install(TARGETS ${target} )
+# packaging
+set(PACKAGE_NAME ${PROJECT_NAME})
+
+# setup destination file paths for qskinny target
+install(TARGETS ${target} EXPORT ${PACKAGE_NAME}Targets
+    LIBRARY DESTINATION       ${QSK_INSTALL_LIBS}
+    ARCHIVE DESTINATION       ${QSK_INSTALL_LIBS}
+    RUNTIME DESTINATION       ${QSK_INSTALL_LIBS}
+    INCLUDES DESTINATION      ${QSK_INSTALL_HEADERS}
+    PUBLIC_HEADER DESTINATION ${QSK_INSTALL_HEADERS})
+
+# export QSkinnyTargets namespace
+export(EXPORT ${PACKAGE_NAME}Targets
+    NAMESPACE ${PACKAGE_NAMESPACE})
+
+# install QSkinnyTargets under QSkinny namespace
+install(EXPORT ${PACKAGE_NAME}Targets
+    FILE
+        ${PACKAGE_NAME}Targets.cmake
+    NAMESPACE
+        ${PACKAGE_NAMESPACE}
+    DESTINATION
+        ${PACKAGE_LOCATION})
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    install(FILES $<TARGET_PDB_FILE:${target}> 
+        DESTINATION 
+            ${QSK_INSTALL_LIBS} OPTIONAL)
+endif()

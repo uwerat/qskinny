@@ -22,7 +22,7 @@ endfunction()
 function(qsk_add_example target)
     cmake_parse_arguments(PARSE_ARGV 1 arg "MANUAL_FINALIZATION" "" "")
     add_executable(${target} WIN32 MACOSX_BUNDLE ${arg_UNPARSED_ARGUMENTS} )
-    target_link_libraries(${target} PRIVATE Qsk::qskinny )
+    target_link_libraries(${target} PRIVATE Qsk::QSkinny )
     target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 endfunction()
 
