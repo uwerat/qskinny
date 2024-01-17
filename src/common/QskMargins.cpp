@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) The authors
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
 #include "QskMargins.h"
 #include <qvariant.h>
 
