@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -12,10 +12,20 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
+#include <private/qquickwindow_p.h>
+#include <private/qsgrenderer_p.h>
 QSK_QT_PRIVATE_END
 
 #include <qpa/qplatforminputcontext.h>
 #include <qpa/qplatformintegration.h>
+
+QRhi* qskRenderingHardwareInterface( const QQuickWindow* window )
+{
+    if ( auto w = const_cast< QQuickWindow* >( window ) )
+        return QQuickWindowPrivate::get( w )->rhi;
+
+    return nullptr;
+}
 
 QRectF qskItemRect( const QQuickItem* item )
 {
@@ -385,6 +395,48 @@ const QSGNode* qskPaintNode( const QQuickItem* item )
         return nullptr;
 
     return QQuickItemPrivate::get( item )->paintNode;
+}
+
+const QSGRootNode* qskScenegraphAnchorNode( const QQuickItem* item )
+{
+    if ( item == nullptr )
+        return nullptr;
+
+    return QQuickItemPrivate::get( item )->rootNode();
+}
+
+const QSGRootNode* qskScenegraphAnchorNode( const QQuickWindow* window )
+{
+    if ( auto w = const_cast< QQuickWindow* >( window ) )
+    {
+        if ( auto renderer = QQuickWindowPrivate::get( w )->renderer )
+            return renderer->rootNode();
+    }
+
+    return nullptr;
+}
+
+void qskSetScenegraphAnchor( QQuickItem* item, bool on )
+{
+    /*
+        For setting up a subtree renderer ( f.e in QskSceneTexture ) we need
+        to insert a QSGRootNode above the paintNode.
+
+        ( In Qt this feature is exlusively used in the Qt/Quick Effects module
+        what lead to the not very intuitive name "refFromEffectItem" )
+
+        refFromEffectItem also allows to insert a opacity node of 0 to
+        hide the subtree from the main renderer by setting its parameter to
+        true. We have QskItemNode to achieve the same.
+     */
+    if ( item )
+    {
+        auto d = QQuickItemPrivate::get( item );
+        if ( on )
+            d->refFromEffectItem( false );
+        else
+            d->derefFromEffectItem( false );
+    }
 }
 
 QSizeF qskEffectiveSizeHint( const QQuickItem* item,

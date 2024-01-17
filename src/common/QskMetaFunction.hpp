@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -47,11 +47,8 @@ class QskMetaFunction::FunctionCall : public QtPrivate::QSlotObjectBase
 
 namespace QskMetaFunctionCall
 {
-    using FunctionCall = QskMetaFunction::FunctionCall;
-    using namespace QtPrivate;
-
     template< typename Function, typename Args, typename R >
-    class StaticFunctionCall : public FunctionCall
+    class StaticFunctionCall : public QskMetaFunction::FunctionCall
     {
         using MetaCall = StaticFunctionCall< Function, Args, R >;
 
@@ -74,7 +71,7 @@ namespace QskMetaFunctionCall
                 }
                 case Call:
                 {
-                    typedef FunctionPointer< Function > FuncType;
+                    using FuncType = QtPrivate::FunctionPointer< Function >;
 
                     FuncType::template call< Args, R >(
                         static_cast< MetaCall* >( functionCall )->m_function, object, args );
@@ -100,7 +97,7 @@ namespace QskMetaFunctionCall
     };
 
     template< typename Function, typename Args, typename R >
-    class MemberFunctionCall : public FunctionCall
+    class MemberFunctionCall : public QskMetaFunction::FunctionCall
     {
         using MetaCall = MemberFunctionCall< Function, Args, R >;
 
@@ -123,7 +120,7 @@ namespace QskMetaFunctionCall
                 }
                 case Call:
                 {
-                    typedef FunctionPointer< Function > FuncType;
+                    using FuncType = QtPrivate::FunctionPointer< Function >;
 
                     FuncType::template call< Args, R >(
                         static_cast< MetaCall* >( functionCall )->m_function,
@@ -144,7 +141,7 @@ namespace QskMetaFunctionCall
     };
 
     template< typename Function, int N, typename Args, typename R >
-    class FunctorFunctionCall : public FunctionCall
+    class FunctorFunctionCall : public QskMetaFunction::FunctionCall
     {
         using MetaCall = FunctorFunctionCall< Function, N, Args, R >;
 
@@ -167,7 +164,11 @@ namespace QskMetaFunctionCall
                 }
                 case Call:
                 {
-                    typedef Functor< Function, N > FuncType;
+#if QT_VERSION < QT_VERSION_CHECK( 6, 7, 0 )
+                    using FuncType = QtPrivate::Functor< Function, N >;
+#else
+                    using FuncType = QtPrivate::Callable< Function, Args >;
+#endif
 
                     FuncType::template call< Args, R >(
                         static_cast< MetaCall* >( functionCall )->m_function, object, args );

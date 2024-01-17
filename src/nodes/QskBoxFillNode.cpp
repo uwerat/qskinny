@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -73,7 +73,8 @@ void QskBoxFillNode::updateNode(
 
     if ( dirtyMetrics )
     {
-        QskBox::renderFillGeometry( rect, shapeMetrics, borderMetrics, *geometry() );
+        QskBoxRenderer::renderFillGeometry(
+            rect, shapeMetrics, borderMetrics, *geometry() );
 
         markDirty( QSGNode::DirtyGeometry );
         geometry()->markVertexDataDirty();

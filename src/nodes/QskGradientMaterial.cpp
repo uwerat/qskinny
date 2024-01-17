@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -22,7 +22,7 @@
 #endif
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-    #include <QSGMaterialRhiShader>
+    #include <qsgmaterialrhishader.h>
     using RhiShader = QSGMaterialRhiShader;
 #else
     using RhiShader = QSGMaterialShader;

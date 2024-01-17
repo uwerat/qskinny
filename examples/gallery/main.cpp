@@ -1,9 +1,8 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskLinearBox.h"
 #include "label/LabelPage.h"
 #include "progressbar/ProgressBarPage.h"
 #include "inputs/InputPage.h"
@@ -16,6 +15,7 @@
 #include <SkinnyShapeProvider.h>
 #include <SkinnyNamespace.h>
 
+#include "QskLinearBox.h"
 #include <QskMainView.h>
 #include <QskFocusIndicator.h>
 #include <QskObjectCounter.h>

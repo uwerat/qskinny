@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) The authors
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
 #include "QskGraduationMetrics.h"
 #include <qvariant.h>
 

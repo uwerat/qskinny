@@ -1,5 +1,5 @@
 ############################################################################
-# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# QSkinny - Copyright (C) The authors
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
@@ -118,6 +118,7 @@ macro(qsk_initialize_build_flags)
         add_compile_options( -Wall -Wextra )
     else()
         # add_compile_options(/W4 /WX)
+        add_compile_options(/MP)
     endif()
 
 endmacro()

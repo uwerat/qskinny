@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -170,7 +170,7 @@ QSGNode* GradientView::updatePaintNode(
             QskBoxShapeMetrics shape;
             shape.setRadius( 80 );
 
-            if ( !QskBox::isGradientSupported( shape, m_gradient ) )
+            if ( !QskBoxRenderer::isGradientSupported( shape, m_gradient ) )
             {
                 delete oldNode;
                 return nullptr;

@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -67,7 +67,7 @@ static inline bool qskMaybeSpreading( const QskGradient& gradient )
     return true;
 }
 
-bool QskBox::isGradientSupported(
+bool QskBoxRenderer::isGradientSupported(
     const QskBoxShapeMetrics&, const QskGradient& gradient )
 {
     if ( !gradient.isVisible() || gradient.isMonochrome() )
@@ -107,7 +107,7 @@ bool QskBox::isGradientSupported(
     return false;
 }
 
-void QskBox::renderBorderGeometry(
+void QskBoxRenderer::renderBorderGeometry(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
@@ -121,13 +121,13 @@ void QskBox::renderBorderGeometry(
         stroker.setBorderLines( lines );
 }
 
-void QskBox::renderFillGeometry(
+void QskBoxRenderer::renderFillGeometry(
     const QRectF& rect, const QskBoxShapeMetrics& shape, QSGGeometry& geometry )
 {
     renderFillGeometry( rect, shape, QskBoxBorderMetrics(), geometry );
 }
 
-void QskBox::renderFillGeometry(
+void QskBoxRenderer::renderFillGeometry(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
@@ -140,7 +140,7 @@ void QskBox::renderFillGeometry(
         stroker.setFillLines( lines );
 }
 
-void QskBox::renderBox( const QRectF& rect,
+void QskBoxRenderer::renderBox( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskGradient& gradient,
     QSGGeometry& geometry )
 {
@@ -148,7 +148,7 @@ void QskBox::renderBox( const QRectF& rect,
         QskBoxBorderColors(), gradient, geometry );
 }
 
-void QskBox::renderBox( const QRectF& rect,
+void QskBoxRenderer::renderBox( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient,
     QSGGeometry& geometry )
@@ -159,10 +159,10 @@ void QskBox::renderBox( const QRectF& rect,
     const auto effectiveGradient = qskEffectiveGradient( metrics.innerRect, gradient );
 
     if ( metrics.innerRect.isEmpty() ||
-        QskBox::ColorMap::isGradientSupported( effectiveGradient, metrics.innerRect ) )
+        QskBoxRenderer::ColorMap::isGradientSupported( effectiveGradient, metrics.innerRect ) )
     {
         /*
-            The gradient can be translated to a QskBox::ColorMap and we can do all
+            The gradient can be translated to a QskBoxRenderer::ColorMap and we can do all
             coloring by adding a color info to points of the contour lines.
             The orientation of contour lines does not depend on the direction
             of the gradient vector.

@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -24,7 +24,7 @@ static inline bool qskIsPenVisible( const QPen& pen )
     }
     else
     {
-        if ( pen.color().isValid() || ( pen.color().alpha() == 0 ) )
+        if ( !pen.color().isValid() || ( pen.color().alpha() == 0 ) )
             return false;
     }
 

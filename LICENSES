@@ -1,0 +1,21 @@
+Project: QSkinny
+
+Homepage: https://github.com/uwerat/qskinny
+Maintainer: Uwe Rathmann ( uwe@qskinny.org )
+
+SPDX-License-Identifier: BSD-3-Clause
+Copyright (C) The authors
+
+3rdparty code:
+
+a) HCT color system
+
+    Code: https://github.com/material-foundation/material-color-utilities
+	SPDX-License-Identifier: Apache License 2.0
+	Copyright (C) 2021 Google LLC
+
+b) Cassowary constraint solving algorithm
+
+	Code: https://github.com/nucleic/kiwi
+	SPDX-License-Identifier: BSD 3-Clause "New" or "Revised" License
+	Copyright (c) 2013, Nucleic Development Team

@@ -1,16 +1,18 @@
 ############################################################################
-# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# QSkinny - Copyright (C) The authors
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
 macro(qsk_setup_Qt)
 
-    # Often users have several Qt installations on their system and
-    # need to be able to explicitly the one to be used. Let's see if
-    # standard cmake features are good enough or if we need to introduce
-    # something sort of additional option. TODO ...
-
+    # relying on cmake heuristics to select a specific Qt version is no good idea.
+    # using -DCMAKE_PREFIX_PATH="..." is highly recommended
     find_package(QT "5.15" NAMES Qt6 Qt5 REQUIRED COMPONENTS Quick)
+
+    if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
+        # we need the qsb tool for Qt6
+        find_package(Qt6 REQUIRED COMPONENTS ShaderTools)
+    endif()
 
     if ( QT_FOUND )
 

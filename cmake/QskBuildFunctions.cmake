@@ -1,5 +1,5 @@
 ############################################################################
-# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# QSkinny - Copyright (C) The authors
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
@@ -7,6 +7,10 @@ function(qsk_add_executable target)
 
     if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
         qt6_add_executable(${ARGV})
+
+        # we manually export our APIs to QML - might change in the future
+        set_target_properties(${target} PROPERTIES 
+            QT_QML_MODULE_NO_IMPORT_SCAN 1)
     else()
         add_executable(${ARGV})
     endif()
@@ -65,7 +69,7 @@ function(qsk_add_plugin target TYPE CLASS_NAME)
     set_target_properties( ${target} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/${TYPE})
 
-    install(TARGETS ${target} DESTINATION "plugins/${TYPE}" )
+    install(TARGETS ${target} DESTINATION "${QSK_INSTALL_LIBS}/plugins/${TYPE}" )
     set_target_properties(${target} PROPERTIES
         INSTALL_RPATH "\${ORIGIN}/../../lib" )
 
@@ -97,5 +101,21 @@ function(qsk_add_example target)
 
     # for examples with subdirectories 
     target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
+
+endfunction()
+
+function(qsk_add_shaders target)
+
+    cmake_parse_arguments( arg "" "" "FILES" ${ARGN} )
+
+    # assuming that OUTPUTS is not set in ARGV
+    foreach( file IN LISTS arg_FILES )
+        get_filename_component(qsbname "${file}" NAME)
+        string(REPLACE "-vulkan" "" qsbname "${qsbname}" )
+        list(APPEND outfiles "${qsbname}.qsb")
+    endforeach()
+
+    qt6_add_shaders( ${target} "qskshaders" BATCHABLE PRECOMPILE QUIET
+        PREFIX "/qskinny/shaders" ${ARGV} OUTPUTS ${outfiles} )
 
 endfunction()

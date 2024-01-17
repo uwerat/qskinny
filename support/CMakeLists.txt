@@ -1,5 +1,5 @@
 ############################################################################
-# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# QSkinny - Copyright (C) The authors
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
@@ -31,7 +31,7 @@ target_compile_definitions(${target}
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 
 if(ENABLE_ENSURE_SKINS)
-    target_include_directories(${target} PRIVATE ${CMAKE_SOURCE_DIR}/skins)
+    target_include_directories(${target} PRIVATE ${QSK_SOURCE_DIR}/skins)
     target_compile_definitions(${target} PRIVATE ENSURE_SKINS)
     target_link_libraries(${target} PRIVATE squiekskin material3skin fluent2skin)
 endif()

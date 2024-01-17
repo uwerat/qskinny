@@ -1,5 +1,5 @@
 ############################################################################
-# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# QSkinny - Copyright (C) The authors
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
@@ -7,14 +7,14 @@ cmake_minimum_required(VERSION 3.16.3)
 
 macro(qsk_setup_options)
 
-    option(BUILD_PEDANTIC "Enable pedantic compile flags ( only GNU/CLANG )" OFF)
-    option(BUILD_QSKDLL "Build libs ( not plugins ) as shared library" ON)
-    option(BUILD_QML_EXPORT "Exporting QSkinny to QML" ON)
+    option(BUILD_PEDANTIC     "Enable pedantic compile flags ( only GNU/CLANG )" OFF)
+    option(BUILD_QSKDLL       "Build libs ( not plugins ) as shared library" ON)
+    option(BUILD_QML_EXPORT   "Exporting QSkinny to QML" ON)
 
-    option(BUILD_TOOLS      "Build qskinny tools" ON)
+    option(BUILD_TOOLS        "Build qskinny tools" ON)
     option(BUILD_INPUTCONTEXT "Build virtual keyboard support" ON)
-    option(BUILD_EXAMPLES   "Build qskinny examples" ON)
-    option(BUILD_PLAYGROUND "Build qskinny playground" ON)
+    option(BUILD_EXAMPLES     "Build qskinny examples" ON)
+    option(BUILD_PLAYGROUND   "Build qskinny playground" ON)
 
     # we actually want to use cmake_dependent_option - minimum cmake version ??
 
@@ -62,8 +62,18 @@ macro(qsk_setup_build)
 endmacro()
 
 macro(qsk_setup_install)
-    # we have to provide and install a QSkinnyConfig.cmake
-    # TODO ...
+
+    # package vars
+    set(PACKAGE_NAME      ${PROJECT_NAME})
+    set(PACKAGE_VERSION   ${CMAKE_PROJECT_VERSION})
+    set(PACKAGE_NAMESPACE Qsk::)
+    set(PACKAGE_LOCATION  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+    # install paths for headers and libraries
+    string(TOLOWER "${PROJECT_NAME}" PACKAGE_DIR)
+    set(QSK_INSTALL_HEADERS ${CMAKE_INSTALL_INCLUDEDIR}/${PACKAGE_DIR})
+    set(QSK_INSTALL_LIBS    ${CMAKE_INSTALL_LIBDIR}/${PACKAGE_DIR})
+
 endmacro()
 
 ############################################################################
@@ -75,12 +85,15 @@ project(QSkinny
     HOMEPAGE_URL "https://github.com/uwerat/qskinny"
     VERSION 0.8.0)
 
+set(QSK_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
+set(QSK_CMAKE_DIR  ${QSK_SOURCE_DIR}/cmake)
+
 qsk_setup_options()
 
 include(GNUInstallDirs)
 
 # loading helper macros
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH ${QSK_CMAKE_DIR})
 
 include("QskConfigMacros")
 include("QskFindMacros")
@@ -93,6 +106,31 @@ qsk_setup_install()
 add_subdirectory(src)
 add_subdirectory(skins)
 
+include(CMakePackageConfigHelpers)
+
+# write QSkinnyConfigVersion.cmake file for cmake import
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}ConfigVersion.cmake
+    VERSION ${PACKAGE_VERSION}
+    COMPATIBILITY AnyNewerVersion)
+
+# Copy QSkinnyConfig.cmake to build dir
+configure_file(${QSK_CMAKE_DIR}/${PACKAGE_NAME}Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}Config.cmake
+    COPYONLY)
+
+# install QSkinnyConfig.cmake and QSkinnyConfigVersion.cmake
+# file to lib/cmake/QSkinny directory
+install(
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}Config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}ConfigVersion.cmake
+    DESTINATION
+        ${PACKAGE_LOCATION}
+    COMPONENT
+        Devel)
+
+# Build other libraries
 if(BUILD_QML_EXPORT)
     add_subdirectory(qmlexport)
 endif()

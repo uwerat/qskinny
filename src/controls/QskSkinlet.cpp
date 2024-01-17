@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -231,7 +231,7 @@ static inline QSGNode* qskUpdateArcNode(
         return nullptr;
 
     auto arcNode = QskSGNode::ensureNode< QskArcNode >( node );
-    arcNode->setArcData( rect, metrics, borderWidth, borderColor,  gradient );
+    arcNode->setArcData( rect, metrics, borderWidth, borderColor, gradient, {}, {} );
 
     return arcNode;
 }
@@ -547,11 +547,11 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
 }
 
 QSGNode* QskSkinlet::updateArcNode(
-    const QskSkinnable* skinnable, QSGNode* node, const QRectF& rect, 
+    const QskSkinnable* skinnable, QSGNode* node, const QRectF& rect,
     qreal borderWidth, const QColor& borderColor,
     const QskGradient& fillGradient, const QskArcMetrics& metrics )
 {
-    return qskUpdateArcNode( skinnable, node, rect, 
+    return qskUpdateArcNode( skinnable, node, rect,
         borderWidth, borderColor, fillGradient, metrics );
 }
 
@@ -594,7 +594,7 @@ QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
 }
 
 QSGNode* QskSkinlet::updateLineNode( const QskSkinnable* skinnable,
-     QSGNode* node, const QLineF& line, QskAspect::Subcontrol subControl )
+    QSGNode* node, const QLineF& line, QskAspect::Subcontrol subControl )
 {
     auto lineStipple = skinnable->stippleMetricsHint( subControl );
     if ( !lineStipple.isValid() )

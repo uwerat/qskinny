@@ -1,5 +1,5 @@
 ############################################################################
-# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# QSkinny - Copyright (C) The authors
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
@@ -99,6 +99,7 @@ list(APPEND SOURCES
 
 list(APPEND HEADERS
     nodes/QskArcNode.h
+    nodes/QskArcShadowNode.h
     nodes/QskBasicLinesNode.h
     nodes/QskBoxNode.h
     nodes/QskBoxClipNode.h
@@ -115,10 +116,12 @@ list(APPEND HEADERS
     nodes/QskGraduationNode.h
     nodes/QskGraduationRenderer.h
     nodes/QskGraphicNode.h
+    nodes/QskTreeNode.h
     nodes/QskLinesNode.h
     nodes/QskPaintedNode.h
     nodes/QskPlainTextRenderer.h
     nodes/QskRichTextRenderer.h
+    nodes/QskSceneTexture.h
     nodes/QskSGNode.h
     nodes/QskStrokeNode.h
     nodes/QskStippledLineRenderer.h
@@ -136,6 +139,7 @@ list(APPEND PRIVATE_HEADERS
 
 list(APPEND SOURCES
     nodes/QskArcNode.cpp
+    nodes/QskArcShadowNode.cpp
     nodes/QskBasicLinesNode.cpp
     nodes/QskBoxNode.cpp
     nodes/QskBoxClipNode.cpp
@@ -156,10 +160,12 @@ list(APPEND SOURCES
     nodes/QskPlainTextRenderer.cpp
     nodes/QskRectangleNode.cpp
     nodes/QskRichTextRenderer.cpp
+    nodes/QskSceneTexture.cpp
     nodes/QskSGNode.cpp
     nodes/QskStrokeNode.cpp
     nodes/QskStippledLineRenderer.cpp
     nodes/QskShapeNode.cpp
+    nodes/QskTreeNode.cpp
     nodes/QskGradientMaterial.cpp
     nodes/QskTextNode.cpp
     nodes/QskTextRenderer.cpp
@@ -167,7 +173,24 @@ list(APPEND SOURCES
     nodes/QskVertex.cpp
 )
 
-qt_add_resources(SOURCES nodes/shaders.qrc)
+if (QT_VERSION_MAJOR VERSION_LESS 6)
+    qt_add_resources(SOURCES nodes/shaders.qrc)
+else()
+    list(APPEND SHADERS
+        nodes/shaders/arcshadow-vulkan.vert
+        nodes/shaders/arcshadow-vulkan.frag
+        nodes/shaders/boxshadow-vulkan.vert
+        nodes/shaders/boxshadow-vulkan.frag
+        nodes/shaders/crisplines-vulkan.vert
+        nodes/shaders/crisplines-vulkan.frag
+        nodes/shaders/gradientconic-vulkan.vert
+        nodes/shaders/gradientconic-vulkan.frag
+        nodes/shaders/gradientlinear-vulkan.vert
+        nodes/shaders/gradientlinear-vulkan.frag
+        nodes/shaders/gradientradial-vulkan.vert
+        nodes/shaders/gradientradial-vulkan.frag
+    )
+endif()
 
 list(APPEND HEADERS
     controls/QskAbstractButton.h
@@ -469,6 +492,10 @@ if(BUILD_QSKDLL)
     set_target_properties(${target} PROPERTIES DEFINE_SYMBOL QSK_MAKEDLL)
 endif()
 
+if (QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
+    qsk_add_shaders( ${target} FILES ${SHADERS} )
+endif()
+
 target_include_directories(${target} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/common>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/controls>
@@ -477,6 +504,10 @@ target_include_directories(${target} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/inputpanel>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/layouts>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/nodes>)
+
+target_include_directories(${target}
+    INTERFACE
+        $<INSTALL_INTERFACE:${QSK_INSTALL_HEADERS}>)
 
 target_link_libraries(${target}
     PUBLIC Qt::Core Qt::CorePrivate Qt::Quick Qt::QuickPrivate)
@@ -494,7 +525,7 @@ if(ENABLE_PINYIN)
     target_link_libraries(${target} PRIVATE pinyin Fcitx5::Utils)
 
     target_include_directories(${target}
-        PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/inputcontext>)
+        PUBLIC $<BUILD_INTERFACE:${QSK_SOURCE_DIR}/inputcontext>)
 endif()
 
 set_target_properties(${target} PROPERTIES FOLDER libs)
@@ -505,7 +536,36 @@ set_target_properties(${target}
 
 list(TRANSFORM HEADERS PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
 set_target_properties(${target} PROPERTIES PUBLIC_HEADER "${HEADERS}")
+set_target_properties(${target} PROPERTIES EXPORT_NAME ${PROJECT_NAME})
 set_target_properties(${target} PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR} )
 
-install(TARGETS ${target} )
+# packaging
+set(PACKAGE_NAME ${PROJECT_NAME})
+
+# setup destination file paths for qskinny target
+install(TARGETS ${target} EXPORT ${PACKAGE_NAME}Targets
+    LIBRARY DESTINATION       ${QSK_INSTALL_LIBS}
+    ARCHIVE DESTINATION       ${QSK_INSTALL_LIBS}
+    RUNTIME DESTINATION       ${QSK_INSTALL_LIBS}
+    INCLUDES DESTINATION      ${QSK_INSTALL_HEADERS}
+    PUBLIC_HEADER DESTINATION ${QSK_INSTALL_HEADERS})
+
+# export QSkinnyTargets namespace
+export(EXPORT ${PACKAGE_NAME}Targets
+    NAMESPACE ${PACKAGE_NAMESPACE})
+
+# install QSkinnyTargets under QSkinny namespace
+install(EXPORT ${PACKAGE_NAME}Targets
+    FILE
+        ${PACKAGE_NAME}Targets.cmake
+    NAMESPACE
+        ${PACKAGE_NAMESPACE}
+    DESTINATION
+        ${PACKAGE_LOCATION})
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    install(FILES $<TARGET_PDB_FILE:${target}> 
+        DESTINATION 
+            ${QSK_INSTALL_LIBS} OPTIONAL)
+endif()

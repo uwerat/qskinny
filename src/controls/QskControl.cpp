@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -15,6 +15,7 @@
 #include "QskSkinlet.h"
 #include "QskSkinHintTable.h"
 #include "QskMargins.h"
+#include "QskTreeNode.h"
 
 #include <qlocale.h>
 #include <qvector.h>
@@ -977,7 +978,7 @@ void QskControl::updateItemPolish()
 QSGNode* QskControl::updateItemPaintNode( QSGNode* node )
 {
     if ( node == nullptr )
-        node = new QSGNode;
+        node = new QskTreeNode();
 
     updateNode( node );
     return node;
