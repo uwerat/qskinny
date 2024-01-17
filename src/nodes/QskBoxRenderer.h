@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -16,7 +16,7 @@ class QskGradient;
 class QSGGeometry;
 class QRectF;
 
-namespace QskBox
+namespace QskBoxRenderer
 {
     /*
         Filling the geometry without any color information:

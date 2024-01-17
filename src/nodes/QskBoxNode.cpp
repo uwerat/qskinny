@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -78,14 +78,12 @@ void QskBoxNode::updateNode( const QRectF& rect,
     }
 
     /*
-        QskBoxRectangleNode supports vertical/horizontal and many tilted
-        linear gradients.  If our gradient doesn't fall into this category
-        we use a QskBoxFillNode.
-
-        However the border is always done with a QskBoxRectangleNode
+        QskBoxRectangleNode is more efficient and creates batchable geometries.
+        So we prefer using it where possible.
+        Note, that the border is always done with a QskBoxRectangleNode
      */
 
-    if ( QskBox::isGradientSupported( shape, gradient ) )
+    if ( QskBoxRenderer::isGradientSupported( shape, gradient ) )
     {
         rectNode = qskNode< QskBoxRectangleNode >( this, BoxRole );
         rectNode->updateNode( rect, shape, borderMetrics, borderColors, gradient );

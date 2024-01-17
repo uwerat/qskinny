@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -23,6 +23,7 @@
 #include <QskFocusIndicator.h>
 #include <QskGradient.h>
 #include <QskGradientDirection.h>
+#include <QskGraduationMetrics.h>
 #include <QskGraphicLabel.h>
 #include <QskIcon.h>
 #include <QskIntervalF.h>
@@ -252,6 +253,7 @@ void QskQml::registerTypes()
 
     registerGadget< QskBoxBorderMetrics >();
     registerGadget< QskBoxShapeMetrics >();
+    registerGadget< QskGraduationMetrics >();
     registerGadget< QskShadowMetrics >();
     registerGadget< QskIntervalF >();
     registerGadget< QskLayoutMetrics >();

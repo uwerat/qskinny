@@ -1,3 +1,8 @@
+/******************************************************************************
+ * QSkinny - Copyright (C) The authors
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
 #ifndef QSK_SWITCH_BUTTON_H
 #define QSK_SWITCH_BUTTON_H
 

@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -40,7 +40,7 @@ namespace
 
         int compare( const QSGMaterial* other ) const override;
 
-        QVector2D m_aspect = QVector2D{ 1, 1 };
+        QVector2D m_aspectRatio = QVector2D{ 1, 1 };
         QVector4D m_radius = QVector4D{ 0, 0, 0, 0 };
         QVector4D m_color = QVector4D{ 0, 0, 0, 1 };
         float m_blurExtent = 0.0;
@@ -91,9 +91,9 @@ namespace
                 changed = true;
             }
 
-            if ( matOld == nullptr || matNew->m_aspect != matOld->m_aspect )
+            if ( matOld == nullptr || matNew->m_aspectRatio != matOld->m_aspectRatio )
             {
-                memcpy( data + 96, &matNew->m_aspect, 8 );
+                memcpy( data + 96, &matNew->m_aspectRatio, 8 );
                 changed = true;
             }
 
@@ -146,7 +146,7 @@ namespace
             auto p = program();
 
             m_matrixId = p->uniformLocation( "matrix" );
-            m_aspectId = p->uniformLocation( "aspect" );
+            m_aspectRatioId = p->uniformLocation( "aspectRatio" );
             m_opacityId = p->uniformLocation( "opacity" );
             m_blurExtentId = p->uniformLocation( "blurExtent" );
             m_radiusId = p->uniformLocation( "radius" );
@@ -173,7 +173,7 @@ namespace
             {
                 auto material = static_cast< const Material* >( newMaterial );
 
-                p->setUniformValue( m_aspectId, material->m_aspect );
+                p->setUniformValue( m_aspectRatioId, material->m_aspectRatio );
                 p->setUniformValue( m_blurExtentId, material->m_blurExtent);
                 p->setUniformValue( m_radiusId, material->m_radius );
                 p->setUniformValue( m_colorId, material->m_color );
@@ -183,7 +183,7 @@ namespace
       private:
         int m_matrixId = -1;
         int m_opacityId = -1;
-        int m_aspectId = -1;
+        int m_aspectRatioId = -1;
         int m_blurExtentId = -1;
         int m_radiusId = -1;
         int m_colorId = -1;
@@ -231,7 +231,7 @@ int Material::compare( const QSGMaterial* other ) const
     auto material = static_cast< const Material* >( other );
 
     if ( ( material->m_color == m_color )
-        && ( material->m_aspect == m_aspect )
+        && ( material->m_aspectRatio == m_aspectRatio )
         && qFuzzyCompare(material->m_blurExtent, m_blurExtent)
         && qFuzzyCompare(material->m_radius, m_radius) )
     {
@@ -284,16 +284,16 @@ void QskBoxShadowNode::setShadowData(
         d->geometry.markVertexDataDirty();
         markDirty( QSGNode::DirtyGeometry );
 
-        QVector2D aspect( 1.0, 1.0 );
+        QVector2D aspectRatio( 1.0, 1.0 );
 
         if ( rect.width() >= rect.height() )
-            aspect.setX( rect.width() / rect.height() );
+            aspectRatio.setX( rect.width() / rect.height() );
         else
-            aspect.setY( rect.height() / rect.width() );
+            aspectRatio.setY( rect.height() / rect.width() );
 
-        if ( d->material.m_aspect != aspect )
+        if ( d->material.m_aspectRatio != aspectRatio )
         {
-            d->material.m_aspect = aspect;
+            d->material.m_aspectRatio = aspectRatio;
             markDirty( QSGNode::DirtyMaterial );
         }
     }

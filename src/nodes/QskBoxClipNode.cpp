@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -67,7 +67,7 @@ void QskBoxClipNode::setBox( const QRectF& rect,
     else
     {
         setIsRectangular( false );
-        QskBox::renderFillGeometry( rect, shape, border, m_geometry );
+        QskBoxRenderer::renderFillGeometry( rect, shape, border, m_geometry );
     }
 
     /*

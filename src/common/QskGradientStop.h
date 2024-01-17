@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -119,6 +119,8 @@ QSK_EXPORT QDebug operator<<( QDebug, const QskGradientStop& );
 #endif
 
 typedef QVector< QskGradientStop > QskGradientStops;
+
+QSK_EXPORT QColor qskInterpolatedColorAt( const QskGradientStops&, qreal pos ) noexcept;
 
 QSK_EXPORT bool qskIsMonochrome( const QskGradientStops& ) noexcept;
 QSK_EXPORT bool qskIsVisible( const QskGradientStops& ) noexcept;

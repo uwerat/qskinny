@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -23,13 +23,13 @@ class QskQuickItemPrivate : public QQuickItemPrivate
 
   public:
     void applyUpdateFlags( QskQuickItem::UpdateFlags );
+    QSGTransformNode* createTransformNode() override;
 
   protected:
     virtual void layoutConstraintChanged();
     virtual void implicitSizeChanged();
 
   private:
-
     void cleanupNodes();
     void mirrorChange() override;
 

@@ -8,7 +8,7 @@ layout( std140, binding = 0 ) uniform buf
     mat4 matrix;
     vec4 color;
     vec4 radius;
-    vec2 aspect;
+    vec2 aspectRatio;
     float blurExtent;
     float opacity;
 } ubuf;
@@ -25,25 +25,21 @@ void main()
 {
     vec4 col = vec4(0.0);
 
-    if ( ubuf.opacity > 0.0 )
-    {
-        const float minRadius = 0.05;
+    float e2 = 0.5 * ubuf.blurExtent;
+    float r = 2.0 * effectiveRadius( ubuf.radius, coord );
 
-        float e2 = 0.5 * ubuf.blurExtent;
-        float r = 2.0 * effectiveRadius( ubuf.radius, coord );
+    const float minRadius = 0.05;
+    float f = minRadius / max( r, minRadius );
 
-        float f = minRadius / max( r, minRadius );
+    r += e2 * f;
 
-        r += e2 * f;
+    vec2 d = r + ubuf.blurExtent - ubuf.aspectRatio * ( 1.0 - abs( 2.0 * coord ) );
+    float l = min( max(d.x, d.y), 0.0) + length( max(d, 0.0) );
 
-        vec2 d = r + ubuf.blurExtent - ubuf.aspect * ( 1.0 - abs( 2.0 * coord ) );
-        float l = min( max(d.x, d.y), 0.0) + length( max(d, 0.0) );
+    float shadow = l - r;
 
-        float shadow = l - r;
-
-        float v = smoothstep( -e2, e2, shadow );
-        col = mix( ubuf.color, vec4(0.0), v ) * ubuf.opacity;
-    }
+    float v = smoothstep( -e2, e2, shadow );
+    col = mix( ubuf.color, vec4(0.0), v ) * ubuf.opacity;
 
     fragColor = col; 
 }

@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -14,16 +14,19 @@
 
 class QskSizePolicy;
 
-class QQuickItem;
 class QSGNode;
 class QSGTransformNode;
+class QSGRootNode;
 class QRectF;
+class QRhi;
+
 template< typename T > class QList;
 
 /*
-    Exporting methods from QQuickItemPrivate, that should be part
-    of QQuickItem.
+    Exporting useful methods from QQuickItemPrivate/QQuickWindowPrivate
  */
+
+QSK_EXPORT QRhi* qskRenderingHardwareInterface( const QQuickWindow* );
 
 QSK_EXPORT bool qskIsItemInDestructor( const QQuickItem* );
 QSK_EXPORT bool qskIsItemComplete( const QQuickItem* );
@@ -70,6 +73,10 @@ QSK_EXPORT void qskInputMethodSetVisible( const QQuickItem*, bool );
 
 QSK_EXPORT const QSGTransformNode* qskItemNode( const QQuickItem* );
 QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );
+
+QSK_EXPORT const QSGRootNode* qskScenegraphAnchorNode( const QQuickItem* );
+QSK_EXPORT const QSGRootNode* qskScenegraphAnchorNode( const QQuickWindow* );
+QSK_EXPORT void qskSetScenegraphAnchor( QQuickItem*, bool on, bool hide = false );
 
 QSK_EXPORT void qskItemUpdateRecursive( QQuickItem* );
 

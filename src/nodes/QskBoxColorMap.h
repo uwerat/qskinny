@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
 #include <QskGradientDirection.h>
 #include <QskVertex.h>
 
-namespace QskBox
+namespace QskBoxRenderer
 {
     class ColorMap
     {

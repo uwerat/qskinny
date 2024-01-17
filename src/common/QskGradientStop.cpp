@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -273,6 +273,25 @@ QskGradientStops qskInterpolatedGradientStops(
     return qskInterpolatedStops( from, to, ratio );
 }
 
+QColor qskInterpolatedColorAt( const QskGradientStops& stops, qreal pos ) noexcept
+{
+    if ( stops.isEmpty() )
+        return QColor();
+
+    pos = qBound( 0.0, pos, 1.0 );
+
+    if ( pos <= stops.first().position() )
+        return stops.first().color();
+
+    for ( int i = 1; i < stops.count(); i++ )
+    {
+        if ( pos <= stops[i].position() )
+            return qskInterpolatedColor( stops, i - 1, i, pos );
+    }
+
+    return stops.last().color();
+}
+
 QskGradientStops qskExtractedGradientStops(
     const QskGradientStops& stops, qreal from, qreal to )
 {
@@ -421,4 +440,3 @@ QGradientStops qskToQGradientStops( const QskGradientStops& stops )
 
     return qStops;
 }
-

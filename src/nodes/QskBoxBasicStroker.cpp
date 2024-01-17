@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -143,7 +143,8 @@ namespace
     class FillMap
     {
       public:
-        inline FillMap( const QskBoxMetrics& metrics, const QskBox::ColorMap& colorMap )
+        inline FillMap( const QskBoxMetrics& metrics,
+                const QskBoxRenderer::ColorMap& colorMap )
             : m_colorMap( colorMap )
             , m_corners( metrics.corners )
         {
@@ -183,7 +184,7 @@ namespace
             m_colorMap.setLine( x1, y1, x2, y2, line );
         }
 
-        const QskBox::ColorMap& m_colorMap;
+        const QskBoxRenderer::ColorMap& m_colorMap;
         const QskBoxMetrics::Corner* m_corners;
     };
 }
@@ -378,12 +379,12 @@ QskBoxBasicStroker::QskBoxBasicStroker( const QskBoxMetrics& metrics )
 
 QskBoxBasicStroker::QskBoxBasicStroker( const QskBoxMetrics& metrics,
         const QskBoxBorderColors& borderColors )
-    : QskBoxBasicStroker( metrics, borderColors, QskBox::ColorMap() )
+    : QskBoxBasicStroker( metrics, borderColors, QskBoxRenderer::ColorMap() )
 {
 }
 
 QskBoxBasicStroker::QskBoxBasicStroker( const QskBoxMetrics& metrics,
-        const QskBoxBorderColors& borderColors, const QskBox::ColorMap& colorMap )
+        const QskBoxBorderColors& borderColors, const QskBoxRenderer::ColorMap& colorMap )
     : m_metrics( metrics )
     , m_borderColors( borderColors )
     , m_colorMap( colorMap )

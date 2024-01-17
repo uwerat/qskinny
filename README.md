@@ -22,26 +22,18 @@ The code already provides a solid fundament for an automotive GUI with
 currently ~300K lines of pure C++ code. As expected it results
 in a good startup performance and a low memory footprint.
 
-Nontheless QSkinny is lacking in areas like documentation or appealing
-default skins. The QML API has not been completed after reaching a
-proof of concept state. Furthermore the current selection of the implemented
-controls is limited to the needs of the driving projects.
+Nontheless QSkinny is lacking in areas like documentation.
+The QML API has not been completed after reaching a proof of concept state.
 
 QSkinny is supposed to run on all platforms being supported by Qt/Quick.
-But so far only Linux is actively tested. 
-It might support all versions Qt >= 5.15, but you can rely on:
+It might support other versions of Qt, but you can rely on:
 
 - Qt 5.15
-- current long term supported ( LTS ) version of Qt
+- current long term supported ( LTS ) version of Qt ( at the moment Qt 6.5.x )
 - current version of Qt
 
-On debian bullseye these packages need to be installed: `build-essential
-qt-qmake qtbase5-dev qtbase5-private-dev qtdeclarative5-dev
-qtdeclarative5-private-dev libqt5svg5-dev`.
-
-> Optional: When enabling the `hunspell` feature the following package needs to be installed: `libhunspell-dev`
-
-> Optional: When enabling the `pinyin` feature the following package needs to be installed: `libimepinyin-dev`
+How to build, install and use QSkinny is described in this
+[tutorial](doc/tutorials/03-writing-your-first-application.asciidoc).
 
 If you want to know more about QSkinny - or even like to give it a specific
 direction - please contact support@qskinny.org.

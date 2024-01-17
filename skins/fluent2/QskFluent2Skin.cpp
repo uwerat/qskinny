@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2023 Edelhirsch Software GmbH
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -646,9 +646,18 @@ void Editor::setupFocusIndicatorColors(
     QskAspect::Section section, const QskFluent2Theme& theme )
 {
     using Q = QskFocusIndicator;
+    using A = QskAspect;
+
     const auto& pal = theme.palette;
 
-    setBoxBorderColors( Q::Panel | section, pal.strokeColor.focus.outer );
+    const auto aspect = Q::Panel | section;
+    const auto color = pal.strokeColor.focus.outer;
+
+    setBoxBorderColors( aspect, color );
+    setBoxBorderColors( aspect | Q::Disabled, QskRgb::toTransparent( color, 0 ) );
+
+    setAnimation( Q::Panel | A::Color, 200 );
+    setAnimation( Q::Panel | A::Color | Q::Disabled, 500 );
 }
 
 void Editor::setupListViewMetrics()

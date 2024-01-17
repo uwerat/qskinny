@@ -1,5 +1,5 @@
 ############################################################################
-# QSkinny - Copyright (C) 2016 Uwe Rathmann
+# QSkinny - Copyright (C) The authors
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
@@ -19,8 +19,8 @@ if(ENABLE_PINYIN)
     qsk_setup_Pinyin()
 
     list(APPEND SOURCES
-        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.h
-        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.cpp
+        ${QSK_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.h
+        ${QSK_SOURCE_DIR}/src/inputpanel/QskPinyinTextPredictor.cpp
     )
 endif()
 
@@ -28,8 +28,8 @@ if(ENABLE_HUNSPELL)
     qsk_setup_Hunspell()
 
     list(APPEND SOURCES
-        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.h
-        ${CMAKE_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.cpp
+        ${QSK_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.h
+        ${QSK_SOURCE_DIR}/src/inputpanel/QskHunspellTextPredictor.cpp
     )
 endif()
 

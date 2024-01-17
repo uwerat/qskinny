@@ -10,7 +10,7 @@ layout( std140, binding = 0 ) uniform buf
     mat4 matrix;
     vec4 color;
     vec4 radius;
-    vec2 aspect;
+    vec2 aspectRatio;
     float blurExtent;
     float opacity;
 } ubuf;

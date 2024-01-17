@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -72,7 +72,7 @@ void QskRectangleNode::updateNode(
     d->rect = rect;
     d->shape = effectiveShape;
 
-    if ( QskBox::isGradientSupported( effectiveShape, effectiveGradient ) )
+    if ( QskBoxRenderer::isGradientSupported( effectiveShape, effectiveGradient ) )
     {
         setColoring( Polychrome );
 
@@ -82,7 +82,7 @@ void QskRectangleNode::updateNode(
          */
         if ( dirtyMetrics || dirtyColors )
         {
-            QskBox::renderBox( rect,
+            QskBoxRenderer::renderBox( rect,
                 effectiveShape, effectiveGradient, *geometry() );
 
             geometry()->markVertexDataDirty();
@@ -96,7 +96,7 @@ void QskRectangleNode::updateNode(
 
         if ( dirtyMetrics )
         {
-            QskBox::renderFillGeometry( rect, effectiveShape, *geometry() );
+            QskBoxRenderer::renderFillGeometry( rect, effectiveShape, *geometry() );
 
             geometry()->markVertexDataDirty();
             markDirty( QSGNode::DirtyGeometry );

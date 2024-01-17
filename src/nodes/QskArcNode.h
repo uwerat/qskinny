@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -10,6 +10,7 @@
 
 class QskArcMetrics;
 class QskGradient;
+class QskShadowMetrics;
 
 /*
     For the moment a QPainterPath/QskShapeNode.
@@ -23,8 +24,13 @@ class QSK_EXPORT QskArcNode : public QskShapeNode
     ~QskArcNode() override;
 
     void setArcData( const QRectF&, const QskArcMetrics&, const QskGradient& );
+
     void setArcData( const QRectF&, const QskArcMetrics&,
         qreal borderWidth, const QColor& borderColor, const QskGradient& );
+
+    void setArcData( const QRectF&, const QskArcMetrics&,
+        qreal borderWidth, const QColor& borderColor, const QskGradient&,
+        const QColor& shadowColor, const QskShadowMetrics&);
 };
 
 #endif

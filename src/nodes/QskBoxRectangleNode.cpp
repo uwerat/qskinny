@@ -1,5 +1,5 @@
 /******************************************************************************
- * QSkinny - Copyright (C) 2016 Uwe Rathmann
+ * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
@@ -171,7 +171,7 @@ void QskBoxRectangleNode::updateNode( const QRectF& rect,
     {
         setColoring( coloring );
 
-        QskBox::renderBox( d->rect, shape, borderMetrics,
+        QskBoxRenderer::renderBox( d->rect, shape, borderMetrics,
             borderColors, fillGradient, geometry );
     }
     else
@@ -179,13 +179,13 @@ void QskBoxRectangleNode::updateNode( const QRectF& rect,
         if ( hasFill )
         {
             setColoring( fillGradient.rgbStart() );
-            QskBox::renderFillGeometry(
+            QskBoxRenderer::renderFillGeometry(
                 d->rect, shape, QskBoxBorderMetrics(), geometry );
         }
         else
         {
             setColoring( borderColors.left().rgbStart() );
-            QskBox::renderBorderGeometry(
+            QskBoxRenderer::renderBorderGeometry(
                 d->rect, shape, borderMetrics, geometry );
         }
     }
