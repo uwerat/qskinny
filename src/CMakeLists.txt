@@ -456,6 +456,7 @@ list(APPEND HEADERS
     inputpanel/QskInputPanelBox.h
     inputpanel/QskInputPredictionBar.h
     inputpanel/QskVirtualKeyboard.h
+    inputpanel/QskVirtualKeyboardLayouts.hpp
 )
 
 list(APPEND SOURCES

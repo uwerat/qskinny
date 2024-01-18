@@ -78,7 +78,7 @@ QskVirtualKeyboard::QskVirtualKeyboard( QQuickItem* parent )
 #define LOWER( x ) int( x + 32 ) // Convert an uppercase key to lowercase
     m_data->layouts =
     {
-#include "QskVirtualKeyboardLayouts.cpp"
+#include "QskVirtualKeyboardLayouts.hpp"
     };
 #undef LOWER
 
