@@ -48,6 +48,7 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskMargins.h>
+#include <QskHctColor.h>
 #include <QskRgbValue.h>
 
 #include <QskNamespace.h>
@@ -1264,93 +1265,129 @@ void Editor::setupSubWindow()
 }
 
 QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme )
-    : QskMaterial3Theme( colorScheme,
-                        { // default Material colors:
-                        0xff6750A4,
-                        0xff625B71,
-                        0xff7D5260,
-                        0xffB3261E,
-                        0xff605D62,
-                        0xff605D66,
-                        } )
+    : QskMaterial3Theme( colorScheme, BaseColors() )
 {
 }
 
 QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
-        std::array< QskHctColor, NumPaletteTypes > palettes )
-    : m_palettes( palettes )
+    const BaseColors& baseColors )
 {
     if ( colorScheme == QskSkin::LightScheme )
     {
-        primary = m_palettes[ Primary ].toned( 40 ).rgb();
-        onPrimary = m_palettes[ Primary ].toned( 100 ).rgb();
-        primaryContainer = m_palettes[ Primary ].toned( 90 ).rgb();
-        onPrimaryContainer = m_palettes[ Primary ].toned( 10 ).rgb();
+        {
+            const QskHctColor color( baseColors.primary );
 
-        secondary = m_palettes[ Secondary ].toned( 40 ).rgb();
-        onSecondary = m_palettes[ Secondary ].toned( 100 ).rgb();
-        secondaryContainer = m_palettes[ Secondary ].toned( 90 ).rgb();
-        onSecondaryContainer = m_palettes[ Secondary ].toned( 10 ).rgb();
+            primary = color.toned( 40 ).rgb();
+            onPrimary = color.toned( 100 ).rgb();
+            primaryContainer = color.toned( 90 ).rgb();
+            onPrimaryContainer = color.toned( 10 ).rgb();
+        }
 
-        tertiary = m_palettes[ Tertiary ].toned( 40 ).rgb();
-        onTertiary = m_palettes[ Tertiary ].toned( 100 ).rgb();
-        tertiaryContainer = m_palettes[ Tertiary ].toned( 90 ).rgb();
-        onTertiaryContainer = m_palettes[ Tertiary ].toned( 10 ).rgb();
+        {
+            const QskHctColor color( baseColors.secondary );
 
-        error = m_palettes[ Error ].toned( 40 ).rgb();
-        onError = m_palettes[ Error ].toned( 100 ).rgb();
-        errorContainer = m_palettes[ Error ].toned( 90 ).rgb();
-        onErrorContainer = m_palettes[ Error ].toned( 10 ).rgb();
+            secondary = color.toned( 40 ).rgb();
+            onSecondary = color.toned( 100 ).rgb();
+            secondaryContainer = color.toned( 90 ).rgb();
+            onSecondaryContainer = color.toned( 10 ).rgb();
+        }
 
-        background = m_palettes[ Neutral ].toned( 99 ).rgb();
-        onBackground = m_palettes[ Neutral ].toned( 10 ).rgb();
-        surface = m_palettes[ Neutral ].toned( 99 ).rgb();
-        onSurface = m_palettes[ Neutral ].toned( 10 ).rgb();
+        {
+            const QskHctColor color( baseColors.tertiary );
 
-        surfaceVariant = m_palettes[ NeutralVariant ].toned( 90 ).rgb();
-        onSurfaceVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
-        outline = m_palettes[ NeutralVariant ].toned( 50 ).rgb();
-        outlineVariant = m_palettes[ NeutralVariant ].toned( 80 ).rgb();
+            tertiary = color.toned( 40 ).rgb();
+            onTertiary = color.toned( 100 ).rgb();
+            tertiaryContainer = color.toned( 90 ).rgb();
+            onTertiaryContainer = color.toned( 10 ).rgb();
+        }
 
-        surfaceContainerHighest = m_palettes[ NeutralVariant ].toned( 90 ).rgb();
+        {
+            const QskHctColor color( baseColors.error );
 
-        shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
+            error = color.toned( 40 ).rgb();
+            onError = color.toned( 100 ).rgb();
+            errorContainer = color.toned( 90 ).rgb();
+            onErrorContainer = color.toned( 10 ).rgb();
+        }
+
+        {
+            const QskHctColor color( baseColors.neutral );
+
+            background = color.toned( 99 ).rgb();
+            onBackground = color.toned( 10 ).rgb();
+            surface = color.toned( 99 ).rgb();
+            onSurface = color.toned( 10 ).rgb();
+            shadow = color.toned( 0 ).rgb();
+        }
+
+        {
+            const QskHctColor color( baseColors.neutralVariant );
+
+            surfaceVariant = color.toned( 90 ).rgb();
+            onSurfaceVariant = color.toned( 30 ).rgb();
+            outline = color.toned( 50 ).rgb();
+            outlineVariant = color.toned( 80 ).rgb();
+            surfaceContainerHighest = color.toned( 90 ).rgb();
+        }
+
     }
     else if ( colorScheme == QskSkin::DarkScheme )
     {
-        primary = m_palettes[ Primary ].toned( 80 ).rgb();
-        onPrimary = m_palettes[ Primary ].toned( 20 ).rgb();
-        primaryContainer = m_palettes[ Primary ].toned( 30 ).rgb();
-        onPrimaryContainer = m_palettes[ Primary ].toned( 90 ).rgb();
+        {
+            const QskHctColor color( baseColors.primary );
 
-        secondary = m_palettes[ Secondary ].toned( 80 ).rgb();
-        onSecondary = m_palettes[ Secondary ].toned( 20 ).rgb();
-        secondaryContainer = m_palettes[ Secondary ].toned( 30 ).rgb();
-        onSecondaryContainer = m_palettes[ Secondary ].toned( 90 ).rgb();
+            primary = color.toned( 80 ).rgb();
+            onPrimary = color.toned( 20 ).rgb();
+            primaryContainer = color.toned( 30 ).rgb();
+            onPrimaryContainer = color.toned( 90 ).rgb();
+        }
 
-        tertiary = m_palettes[ Tertiary ].toned( 80 ).rgb();
-        onTertiary = m_palettes[ Tertiary ].toned( 20 ).rgb();
-        tertiaryContainer = m_palettes[ Tertiary ].toned( 30 ).rgb();
-        onTertiaryContainer = m_palettes[ Tertiary ].toned( 90 ).rgb();
+        {
+            const QskHctColor color( baseColors.secondary );
 
-        error = m_palettes[ Error ].toned( 80 ).rgb();
-        onError = m_palettes[ Error ].toned( 20 ).rgb();
-        errorContainer = m_palettes[ Error ].toned( 30 ).rgb();
-        onErrorContainer = m_palettes[ Error ].toned( 90 ).rgb();
+            secondary = color.toned( 80 ).rgb();
+            onSecondary = color.toned( 20 ).rgb();
+            secondaryContainer = color.toned( 30 ).rgb();
+            onSecondaryContainer = color.toned( 90 ).rgb();
+        }
 
-        background = m_palettes[ Neutral ].toned( 10 ).rgb();
-        onBackground = m_palettes[ Neutral ].toned( 90 ).rgb();
-        surface = m_palettes[ Neutral ].toned( 10 ).rgb();
-        onSurface = m_palettes[ Neutral ].toned( 80 ).rgb();
+        {
+            const QskHctColor color( baseColors.tertiary );
 
-        surfaceVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
-        onSurfaceVariant = m_palettes[ NeutralVariant ].toned( 80 ).rgb();
-        outline = m_palettes[ NeutralVariant ].toned( 60 ).rgb();
-        outlineVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
+            tertiary = color.toned( 80 ).rgb();
+            onTertiary = color.toned( 20 ).rgb();
+            tertiaryContainer = color.toned( 30 ).rgb();
+            onTertiaryContainer = color.toned( 90 ).rgb();
+        }
 
-        surfaceContainerHighest = m_palettes[ NeutralVariant ].toned( 22 ).rgb();
+        {
+            const QskHctColor color( baseColors.error );
 
-        shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
+            error = color.toned( 80 ).rgb();
+            onError = color.toned( 20 ).rgb();
+            errorContainer = color.toned( 30 ).rgb();
+            onErrorContainer = color.toned( 90 ).rgb();
+        }
+
+        {
+            const QskHctColor color( baseColors.neutral );
+
+            background = color.toned( 10 ).rgb();
+            onBackground = color.toned( 90 ).rgb();
+            surface = color.toned( 10 ).rgb();
+            onSurface = color.toned( 80 ).rgb();
+            shadow = color.toned( 0 ).rgb();
+        }
+
+        {
+            const QskHctColor color( baseColors.neutralVariant );
+
+            surfaceVariant = color.toned( 30 ).rgb();
+            onSurfaceVariant = color.toned( 80 ).rgb();
+            outline = color.toned( 60 ).rgb();
+            outlineVariant = color.toned( 30 ).rgb();
+            surfaceContainerHighest = color.toned( 22 ).rgb();
+        }
     }
 
     primary8 = QskRgb::toTransparentF( primary, 0.08 );

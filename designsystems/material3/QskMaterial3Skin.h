@@ -8,30 +8,30 @@
 
 #include "QskMaterial3Global.h"
 
-#include <QskBoxShapeMetrics.h>
-#include <QskHctColor.h>
 #include <QskSkin.h>
+#include <QskBoxShapeMetrics.h>
 #include <QskShadowMetrics.h>
 
-#include <array>
+#include <qcolor.h>
 
 class QSK_MATERIAL3_EXPORT QskMaterial3Theme
 {
   public:
-    enum PaletteType
+    class BaseColors
     {
-        Primary,
-        Secondary,
-        Tertiary,
-        Error,
-        Neutral,
-        NeutralVariant,
+      public:
+        BaseColors() = default;
 
-        NumPaletteTypes
+        QRgb primary        = 0xff6750A4;
+        QRgb secondary      = 0xff625B71;
+        QRgb tertiary       = 0xff7D5260;
+        QRgb error          = 0xffB3261E;
+        QRgb neutral        = 0xff605D62;
+        QRgb neutralVariant = 0xff605D66;
     };
 
     QskMaterial3Theme( QskSkin::ColorScheme );
-    QskMaterial3Theme( QskSkin::ColorScheme, std::array< QskHctColor, NumPaletteTypes > );
+    QskMaterial3Theme( QskSkin::ColorScheme, const BaseColors& );
 
     QRgb primary;
     QRgb primary8; // ### rename to primaryHovered or so?
@@ -94,9 +94,6 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     const qreal draggedOpacity = 0.16;
 
     QskBoxShapeMetrics shapeExtraSmallTop;
-
-  private:
-    std::array< QskHctColor, NumPaletteTypes > m_palettes;
 };
 
 class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
@@ -137,7 +134,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
 
   private:
     void setupFonts();
-    void setupGraphicFilters( const QskMaterial3Theme& palette );
+    void setupGraphicFilters( const QskMaterial3Theme& );
     void setGraphicColor( GraphicRole, QRgb );
 };
 
