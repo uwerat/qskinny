@@ -27,11 +27,11 @@ $ cmake ../ && make # build
 $ sudo make install # install
 ....
 
-To target a specific Qt version simply pass the cmake build variable `QSK_QT_VERSION` during the build step:
+To target a specific Qt version simply pass the cmake build variable `CMAKE_PREFIX_PATH` during the build step:
 
 [source,shell]
 ....
-$ cmake -DQSK_QT_VERSION=Qt5 ../ && make
+$ cmake -DCMAKE_PREFIX_PATH=/usr/local/Qt-6.7.0 ../ && make
 ....
 
 === Compiling our first app
