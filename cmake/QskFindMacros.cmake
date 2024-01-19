@@ -5,7 +5,12 @@
 
 macro(qsk_setup_Qt)
 
-    # relying on cmake heuristics to select a specific Qt version is no good idea.
+    # set vars for correct natural sort order and direction (ex. Qt6, Qt5)
+    # cmake bug: https://gitlab.kitware.com/cmake/cmake/-/issues/23575
+    if (NOT CMAKE_FIND_PACKAGE_SORT_ORDER AND NOT CMAKE_FIND_PACKAGE_SORT_DIRECTION)
+        set(CMAKE_FIND_PACKAGE_SORT_ORDER NATURAL)
+        set(CMAKE_FIND_PACKAGE_SORT_DIRECTION DEC)
+    endif()
     # using -DCMAKE_PREFIX_PATH="..." is highly recommended
     find_package(QT "5.15" NAMES Qt6 Qt5 REQUIRED COMPONENTS Quick)
 
