@@ -12,7 +12,7 @@ function(qsk_svg2qvg SVG_FILENAME QVG_FILENAME)
         COMMAND svg2qvg ${SVG_FILENAME} ${QVG_FILENAME}
         OUTPUT ${QVG_FILENAME}
         DEPENDS ${SVG_FILENAME}
-        WORKING_DIRECTORY $<TARGET_FILE_DIR:${Qt}::Svg>
+        WORKING_DIRECTORY $<TARGET_FILE_DIR:Qt${QT_VERSION_MAJOR}::Svg>
         COMMENT "Compiling ${SVG_FILENAME} to ${QVG_FILENAME}")
 endfunction()
 
