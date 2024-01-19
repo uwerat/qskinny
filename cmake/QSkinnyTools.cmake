@@ -8,11 +8,18 @@
 function(qsk_svg2qvg SVG_FILENAME QVG_FILENAME)
     get_filename_component(QVG_FILENAME ${QVG_FILENAME} ABSOLUTE)
     get_filename_component(SVG_FILENAME ${SVG_FILENAME} ABSOLUTE)
+
+    if(TARGET Qt6::Svg)
+        set(QtSvgTarget Qt6::Svg)
+    elseif(TARGET Qt5::Svg)
+        set(QtSvgTarget Qt5::Svg)
+    endif()
+
     add_custom_command(
-        COMMAND svg2qvg ${SVG_FILENAME} ${QVG_FILENAME}
+        COMMAND Qsk::Svg2Qvg ${SVG_FILENAME} ${QVG_FILENAME}
         OUTPUT ${QVG_FILENAME}
         DEPENDS ${SVG_FILENAME}
-        WORKING_DIRECTORY $<TARGET_FILE_DIR:Qt${QT_VERSION_MAJOR}::Svg>
+        WORKING_DIRECTORY $<TARGET_FILE_DIR:${QtSvgTarget}>
         COMMENT "Compiling ${SVG_FILENAME} to ${QVG_FILENAME}")
 endfunction()
 

@@ -45,3 +45,13 @@ add_subdirectory(../iotdashboard ${CMAKE_CURRENT_BINARY_DIR}/../iotdashboard)
 get_target_property(iotdashboard_COMPILE_DEFINITIONS iotdashboard COMPILE_DEFINITIONS)
 list(FILTER iotdashboard_COMPILE_DEFINITIONS EXCLUDE REGEX [[^USE_SHORTCUTS=1$]])
 set_property(TARGET iotdashboard PROPERTY COMPILE_DEFINITIONS ${iotdashboard_COMPILE_DEFINITIONS})
+
+# generate qvg consuming dummy target
+qsk_svg2qvg(
+    ../iotdashboard/images/ac.svg
+    ${CMAKE_CURRENT_BINARY_DIR}/ac.qvg)
+
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/main.cpp "int main(){}")
+add_executable(test_svg_qgv 
+    ${CMAKE_CURRENT_BINARY_DIR}/main.cpp 
+    ${CMAKE_CURRENT_BINARY_DIR}/ac.qvg)
