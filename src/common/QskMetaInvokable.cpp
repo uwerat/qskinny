@@ -192,14 +192,18 @@ static void qskInvokeMetaCall(
                 return;
             }
 
+#if QT_CONFIG(thread)
             QSemaphore semaphore;
+#endif
 
             auto event = new MetaCallEvent( call, metaObject,
                 offset, index, args, &semaphore );
 
             QCoreApplication::postEvent( receiver, event );
 
+#if QT_CONFIG(thread)
             semaphore.acquire();
+#endif
 
             break;
         }
