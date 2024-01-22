@@ -139,6 +139,8 @@ install(
         ${QSK_CMAKE_DIR}/scripts/QSkinnySvg2Qvg.win.bat
     DESTINATION
         ${PACKAGE_LOCATION}/scripts
+    PERMISSIONS
+        OWNER_EXECUTE
     COMPONENT
         Devel)
 
