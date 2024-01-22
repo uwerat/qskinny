@@ -51,6 +51,7 @@ install(TARGETS ${target})
 set(PACKAGE_TARGET_FILENAME QSkinnyToolsTargets.cmake)
 
 set_target_properties(${target} PROPERTIES EXPORT_NAME Svg2Qvg)
+set_target_properties(${target} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 install(TARGETS ${target} EXPORT ${PACKAGE_TARGET_FILENAME})
 

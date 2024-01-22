@@ -18,10 +18,14 @@ function(qsk_svg2qvg SVG_FILENAME QVG_FILENAME)
     # find svg2qvg target location
     get_target_property(Svg2QvgLocation Qsk::Svg2Qvg LOCATION)
     get_filename_component(Svg2QvgDirectory ${Svg2QvgLocation} DIRECTORY)
+    message(STATUS "Svg2QvgLocation: ${Svg2QvgLocation}")
+    message(STATUS "Svg2QvgDirectory: ${Svg2QvgDirectory}")
 
     # find qt svg target location
     get_target_property(QtSvgTargetLocation ${QtSvgTarget} LOCATION)
     get_filename_component(QtSvgTargetDirectory ${QtSvgTargetLocation} DIRECTORY)
+    message(STATUS "QtSvgTargetLocation: ${QtSvgTargetLocation}")
+    message(STATUS "QtSvgTargetDirectory: ${QtSvgTargetDirectory}")
 
     # select platform specific wrapper script
     if (CMAKE_SYSTEM_NAME MATCHES "Windows")
