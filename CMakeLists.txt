@@ -130,6 +130,18 @@ install(
     COMPONENT
         Devel)
 
+
+# install cmake helper scripts
+install(
+    FILES
+        ${QSK_CMAKE_DIR}/scripts/QSkinnySvg2Qvg.lin.sh
+        ${QSK_CMAKE_DIR}/scripts/QSkinnySvg2Qvg.mac.sh
+        ${QSK_CMAKE_DIR}/scripts/QSkinnySvg2Qvg.win.bat
+    DESTINATION
+        ${PACKAGE_LOCATION}/scripts
+    COMPONENT
+        Devel)
+
 # Build other libraries
 if(BUILD_QML_EXPORT)
     add_subdirectory(qmlexport)
