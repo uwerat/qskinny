@@ -14,12 +14,31 @@ function(qsk_svg2qvg SVG_FILENAME QVG_FILENAME)
     elseif(TARGET Qt5::Svg)
         set(QtSvgTarget Qt5::Svg)
     endif()
+    
+    # find svg2qvg target location
+    get_target_property(Svg2QvgLocation Qsk::Svg2Qvg LOCATION)
+    get_filename_component(Svg2QvgDirectory ${Svg2QvgLocation} DIRECTORY)
 
+    # find svg2qvg target location
+    get_target_property(QtSvgTargetLocation ${QtSvgTarget} LOCATION)
+    get_filename_component(QtSvgTargetDirectory ${QtSvgTargetLocation} DIRECTORY)
+
+    # construct a platform specific command
+    set(cmd "${Svg2QvgBinary} ${SVG_FILENAME} ${QVG_FILENAME}")
+    if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+        set(cmd "set PATH=\%PATH\%;${QtSvgTargetDirectory} && ${cmd}")
+    elseif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+        set(cmd "DYLD_LIBRARY_PATH=\$DYLD_LIBRARY_PATH:${QtSvgTargetDirectory} ${cmd}")
+    elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
+        set(cmd "LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${QtSvgTargetDirectory} ${cmd}")        
+    else()
+        message(FATAL "Unsupported operating system")
+    endif()
+    
     add_custom_command(
-        COMMAND Qsk::Svg2Qvg ${SVG_FILENAME} ${QVG_FILENAME}
+        COMMAND ${cmd}        
         OUTPUT ${QVG_FILENAME}
         DEPENDS ${SVG_FILENAME}
-        WORKING_DIRECTORY $<TARGET_FILE_DIR:${QtSvgTarget}>
         COMMENT "Compiling ${SVG_FILENAME} to ${QVG_FILENAME}")
 endfunction()
 
