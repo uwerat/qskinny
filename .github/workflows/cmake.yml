@@ -430,7 +430,7 @@ jobs:
         if: startsWith(matrix.config.name, 'Ubuntu')
         run: |
           killall iotdashboard
-          killall Xvfb
+      # killall Xvfb
 
       - name: Configure ( CMake Integration Test )
         shell: bash
