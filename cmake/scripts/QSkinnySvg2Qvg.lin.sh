@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 SVG2QVG=$1
 SVG=$2
