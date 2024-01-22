@@ -446,6 +446,8 @@ jobs:
             -DQSkinny_DIR:PATH=$GITHUB_WORKSPACE/qskinny_install/lib/cmake/QSkinny
 
       - name: Build ( CMake Integration Test )
+        env:
+          DISPLAY: ":1"
         shell: bash
         run: cmake --build qskinny_build_test --config ${{ matrix.config.build_type }}
 
