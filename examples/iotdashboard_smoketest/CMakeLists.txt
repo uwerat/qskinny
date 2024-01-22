@@ -51,7 +51,7 @@ qsk_svg2qvg(
     ../iotdashboard/images/ac.svg
     ${CMAKE_CURRENT_BINARY_DIR}/ac.qvg)
 
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/main.cpp "int main(){}")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/test_svg_qgv.cpp "int main(){}")
 add_executable(test_svg_qgv 
-    ${CMAKE_CURRENT_BINARY_DIR}/main.cpp 
+    ${CMAKE_CURRENT_BINARY_DIR}/test_svg_qgv.cpp 
     ${CMAKE_CURRENT_BINARY_DIR}/ac.qvg)
