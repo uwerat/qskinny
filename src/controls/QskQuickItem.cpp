@@ -951,6 +951,19 @@ QSGNode* QskQuickItem::updatePaintNode( QSGNode* node, UpdatePaintNodeData* data
     {
         delete node;
         node = nullptr;
+#if 1
+        /*
+            controls might find subnodes using qskPaintNode - not good
+            as d->paintNode is not updated before leaving here. TODO ...
+
+            In the initial call we will always have a nullptr - even if
+            it has already been allocated. When deleting it we have a dangling pointer.
+            instead of the new one.
+
+            To avoid creashes for the second situation we manually clear d->paintNode. 
+         */
+        d->paintNode = nullptr;
+#endif
 
         d->clearPreviousNodes = false;
     }
