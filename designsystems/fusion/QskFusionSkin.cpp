@@ -137,7 +137,7 @@ namespace
                 setRgb( P::ToolTipText, rgbGray( 0 ) );
 
                 setRgb( P::PlaceholderText, placeholder );
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 6, 0 )
                 setRgb( P::Accent, highlight );
 #endif
 
@@ -150,7 +150,7 @@ namespace
                 setRgb( P::Disabled, P::Dark, darkDisabled );
                 setRgb( P::Disabled, P::Shadow, disabledShadow );
                 setRgb( P::Disabled, P::Highlight, disabledHighlight );
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 6, 0 )
                 setRgb( P::Disabled, P::Accent, disabledHighlight );
 #endif
             }
@@ -201,7 +201,7 @@ namespace
                 setRgb( P::ToolTipText, rgbGray( 0 ) );
 
                 setRgb( P::PlaceholderText, toTransparent( text, 128 ) );
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 6, 0 )
                 setRgb( P::Accent, highlight );
 #endif
 
@@ -216,7 +216,7 @@ namespace
                 setRgb( P::Disabled, P::Shadow, disabledShadow );
 
                 setRgb( P::Disabled, P::Highlight, disabledHighlight );
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 6, 0 )
                 setRgb( P::Disabled, P::Accent, disabledHighlight );
 #endif
             }
