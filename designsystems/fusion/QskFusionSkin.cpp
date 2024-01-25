@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskFusionSkin.h"
+#include "QskFusionPalette.h"
 
 #include <QskSkinHintTableEditor.h>
 
@@ -51,21 +52,13 @@
 #include <QskMargins.h>
 #include <QskRgbValue.h>
 
-#include <QskNamespace.h>
 #include <QskPlatform.h>
 
-#include <qguiapplication.h>
-#include <qscreen.h>
 #include <qpalette.h>
 #include <qpainter.h>
 #include <qpainterpath.h>
-#include <qpa/qplatformtheme.h>
 
 static const int qskDuration = 50;
-
-#if 1
-extern QPalette qt_fusionPalette();
-#endif
 
 namespace
 {
@@ -79,216 +72,10 @@ namespace
         return qskDpToPixels( value );
     }
 
-    inline constexpr QRgb rgbGray( int value )
-    {
-        return qRgb( value, value, value );
-    }
-
-    class Palette
-    {
-      public:
-        Palette( QskSkin::ColorScheme colorScheme )
-        {
-            using namespace QskRgb;
-            using P = QPalette;
-
-            if ( colorScheme == QskSkin::DarkScheme )
-            {
-                const auto text = rgbGray( 240 );
-                const auto background = rgbGray( 50 );
-
-                const auto light = rgbGray( 75 );
-                const auto mid = rgbGray( 38 );
-                const auto midLight = rgbGray( 42 );
-                const auto base = rgbGray( 36 );
-                const auto dark = rgbGray( 33 );
-                const auto darkDisabled = rgbGray( 190 );
-                const auto highlight = qRgb(48, 140, 198);
-                const auto disabledText = rgbGray( 130 );
-                const auto shadow = rgbGray( 25 );
-                const auto disabledShadow = rgbGray( 36 );
-                const auto disabledHighlight = rgbGray( 145 );
-                const auto placeholder = toTransparent( text, 128 );
-
-                setRgb( P::WindowText, text );
-                setRgb( P::Button, background );
-
-                setRgb( P::Light, light );
-                setRgb( P::Midlight, midLight );
-                setRgb( P::Dark, dark );
-                setRgb( P::Mid, mid );
-
-                setRgb( P::Text, text );
-                setRgb( P::BrightText, light );
-                setRgb( P::ButtonText, text );
-
-                setRgb( P::Base, base );
-                setRgb( P::Window, background );
-                setRgb( P::Shadow, shadow );
-                setRgb( P::AlternateBase, interpolated( base, background, 0.5 ) );
-
-                setRgb( P::Highlight, highlight );
-                setRgb( P::HighlightedText, text );
-
-                setRgb( P::Link, highlight);
-                setRgb( P::LinkVisited, Magenta );
-
-                setRgb( P::ToolTipBase, qRgb( 255, 255, 220 ) );
-                setRgb( P::ToolTipText, rgbGray( 0 ) );
-
-                setRgb( P::PlaceholderText, placeholder );
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 6, 0 )
-                setRgb( P::Accent, highlight );
-#endif
-
-                // disabled colors
-
-                setRgb( P::Disabled, P::Text, disabledText );
-                setRgb( P::Disabled, P::WindowText, disabledText );
-                setRgb( P::Disabled, P::ButtonText, disabledText );
-                setRgb( P::Disabled, P::Base, background );
-                setRgb( P::Disabled, P::Dark, darkDisabled );
-                setRgb( P::Disabled, P::Shadow, disabledShadow );
-                setRgb( P::Disabled, P::Highlight, disabledHighlight );
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 6, 0 )
-                setRgb( P::Disabled, P::Accent, disabledHighlight );
-#endif
-            }
-            else
-            {
-                const auto text = rgbGray( 0 );
-                const auto background = rgbGray( 239 );
-
-                const auto dark = rgbGray( 159 );
-                const auto mid = rgbGray( 184 );
-                const auto midLight = rgbGray( 202 );
-                const auto light = rgbGray( 255 );
-                const auto shadow = rgbGray( 118 );
-
-                const auto base = rgbGray( 255 );
-                const auto darkDisabled = rgbGray( 190 );
-                const auto highlight = qRgb(48, 140, 198);
-                const auto hightlightedText = rgbGray( 255 );
-                const auto disabledText = rgbGray( 190 );
-
-                const auto disabledShadow = rgbGray( 177 );
-                const auto disabledHighlight = rgbGray( 145 );
-
-                setRgb( P::WindowText, text );
-                setRgb( P::Button, background );
-
-                setRgb( P::Light, light );
-                setRgb( P::Midlight, midLight );
-                setRgb( P::Dark, dark );
-                setRgb( P::Mid, mid );
-
-                setRgb( P::Text, text );
-                setRgb( P::BrightText, light );
-                setRgb( P::ButtonText, text );
-
-                setRgb( P::Base, base );
-                setRgb( P::Window, background );
-                setRgb( P::Shadow, shadow );
-                setRgb( P::AlternateBase, interpolated( base, background, 0.5 ) );
-
-                setRgb( P::Highlight, highlight );
-                setRgb( P::HighlightedText, hightlightedText );
-
-                setRgb( P::Link, Blue );
-                setRgb( P::LinkVisited, Magenta );
-
-                setRgb( P::ToolTipBase, qRgb( 255, 255, 220 ) );
-                setRgb( P::ToolTipText, rgbGray( 0 ) );
-
-                setRgb( P::PlaceholderText, toTransparent( text, 128 ) );
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 6, 0 )
-                setRgb( P::Accent, highlight );
-#endif
-
-                // disabled colors
-
-                setRgb( P::Disabled, P::Text, disabledText );
-                setRgb( P::Disabled, P::WindowText, disabledText );
-                setRgb( P::Disabled, P::ButtonText, disabledText );
-
-                setRgb( P::Disabled, P::Base, background );
-                setRgb( P::Disabled, P::Dark, darkDisabled );
-                setRgb( P::Disabled, P::Shadow, disabledShadow );
-
-                setRgb( P::Disabled, P::Highlight, disabledHighlight );
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 6, 0 )
-                setRgb( P::Disabled, P::Accent, disabledHighlight );
-#endif
-            }
-
-            outline = QskRgb::darker( rgb( P::Window ), 140 );
-
-            button = rgb( P::Button );
-
-            {
-                auto c = QColor::fromRgba( button );
-                const int val = qGray( button );
-                c = c.lighter( 100 + qMax( 1, ( 180 - val ) / 6 ) );
-                c.setHsv(c.hue(), c.saturation() * 0.75, c.value() );
-
-                button = c.rgba();
-            }
-
-            tabFrame = QskRgb::lighter( button, 104 );
-
-            highlightedOutline = rgb( QPalette::Highlight );
-
-            {
-                highlightedOutline = QskRgb::darker( highlightedOutline, 125 );
-
-                auto c = QColor::fromRgba( highlightedOutline );
-                if ( c.value() > 160 )
-                {
-                    c.setHsl(c.hue(), c.saturation(), 160 );
-                    highlightedOutline = c.rgba();
-                }
-            }
-
-            error = QskRgb::DarkRed; // ????
-        }
-
-        QRgb rgb( QPalette::ColorRole role ) const
-        {
-            return rgb( QPalette::Normal, role );
-        }
-
-        QRgb rgb( QPalette::ColorGroup group, QPalette::ColorRole role ) const
-        {
-            Q_ASSERT( group >= 0 && group < 2 );
-            return m_colors[group][role];
-        }
-
-        QRgb outline;
-        QRgb button;
-        QRgb tabFrame;
-        QRgb highlightedOutline;
-        QRgb error;
-
-      private:
-        void setRgb( QPalette::ColorRole role, QRgb rgb )
-        {
-            setRgb( QPalette::Active, role, rgb );
-            setRgb( QPalette::Disabled, role, rgb );
-        }
-
-        void setRgb( QPalette::ColorGroup group, QPalette::ColorRole role, QRgb rgb )
-        {
-            Q_ASSERT( group >= 0 && group < 2 );
-            m_colors[group][role] = rgb;
-        }
-
-        QRgb m_colors[ 2 ][ QPalette::NColorRoles ] = { };
-    };
-
     class Editor : private QskSkinHintTableEditor
     {
       public:
-        Editor( const Palette& palette, QskSkinHintTable* table )
+        Editor( const QskFusionPalette& palette, QskSkinHintTable* table )
             : QskSkinHintTableEditor( table )
             , m_pal( palette )
         {
@@ -338,13 +125,6 @@ namespace
 
         QskGraphic symbol( const char* name ) const
         {
-#if 0
-            const QString path = QStringLiteral( ":fusion/icons/qvg/" )
-                + name + QStringLiteral( ".qvg" );
-
-            return QskGraphicIO::read( path );
-#endif
-
             QskGraphic graphic;
 
             if ( strcmp( name, "checkMark" ) == 0 )
@@ -363,7 +143,7 @@ namespace
             return graphic;
         }
 
-        const Palette& m_pal;
+        const QskFusionPalette& m_pal;
     };
 }
 
@@ -403,8 +183,10 @@ void Editor::setup()
 void Editor::setupBox()
 {
     using Q = QskBox;
+    using P = QPalette;
 
-    setGradient( Q::Panel, m_pal.rgb( QPalette::Window ) );
+    setGradient( Q::Panel, m_pal.active( P::Window ) );
+    setGradient( Q::Panel | Q::Disabled, m_pal.disabled( P::Window ) );
 }
 
 void Editor::setupCheckBox()
@@ -424,9 +206,9 @@ void Editor::setupCheckBox()
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-        const auto rgb1 = m_pal.rgb( colorGroup, P::Base );
+        const auto rgb1 = m_pal.color( colorGroup, P::Base );
         const auto rgb2 = QskRgb::darker( m_pal.button, 110 );
 
         const auto aspect = Q::Box | state;
@@ -462,8 +244,8 @@ void Editor::setupCheckBox()
     }
 
     // elide mode ElideRight or mirrored ElideLeft
-    setColor( Q::Text, m_pal.rgb( P::Normal, P::WindowText ) );
-    setColor( Q::Text | Q::Disabled, m_pal.rgb( P::Disabled, P::WindowText ) );
+    setColor( Q::Text, m_pal.active( P::WindowText ) );
+    setColor( Q::Text | Q::Disabled, m_pal.disabled( P::WindowText ) );
 }
 
 void Editor::setupComboBox()
@@ -477,8 +259,8 @@ void Editor::setupComboBox()
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
 
-    setColor( Q::Text, m_pal.rgb( P::Normal, P::ButtonText ) );
-    setColor( Q::Text | Q::Disabled, m_pal.rgb( P::Disabled, P::ButtonText ) );
+    setColor( Q::Text, m_pal.active( P::ButtonText ) );
+    setColor( Q::Text | Q::Disabled, m_pal.disabled( P::ButtonText ) );
 
     setStrutSize( Q::Panel,  -1.0, 32_dp );
 
@@ -492,8 +274,10 @@ void Editor::setupComboBox()
     // should be similar for QskPushButton
     auto rgbFill = m_pal.button;
 
-    setVGradient( Q::Panel, QskRgb::lighter( rgbFill, 124 ),
+    setVGradient( Q::Panel,
+        QskRgb::lighter( rgbFill, 124 ),
         QskRgb::lighter( rgbFill, 102 ) );
+
     setGradient( Q::Panel | Q::Pressed, QskRgb::darker( rgbFill, 110 ) );
 
     setStrutSize( Q::Icon, 20_dp, 20_dp );
@@ -524,6 +308,7 @@ void Editor::setupMenu()
 {
     using Q = QskMenu;
     using A = QskAspect;
+    using P = QPalette;
 
     setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, QColor( 220, 220, 220, 100 ) );
@@ -531,15 +316,13 @@ void Editor::setupMenu()
     setBoxShape( Q::Panel, 4_dp );
     setBoxBorderMetrics( Q::Panel, 1_dp );
 
-    auto rgbFill = m_pal.rgb( QPalette::Base );
-    rgbFill = QskRgb::lighter( rgbFill, 108 );
+    for ( auto state : { A::NoState, Q::Disabled } )
+    {
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-    setGradient( Q::Panel, rgbFill );
-
-    auto rgbBorder = m_pal.rgb( QPalette::Window );
-    rgbBorder = QskRgb::darker( rgbBorder, 160 );
-
-    setBoxBorderColors( Q::Panel, rgbBorder );
+        setGradient( Q::Panel | state, m_pal.lighter( colorGroup, P::Base, 108 ) );
+        setBoxBorderColors( Q::Panel | state, m_pal.darker( colorGroup, P::Window, 160 ) );
+    }
 
     const bool isCascading = qskMaybeDesktopPlatform();
     setHint( Q::Panel | A::Style, isCascading );
@@ -555,10 +338,16 @@ void Editor::setupMenu()
     setSpacing( Q::Segment, 5 );
     setGradient( Q::Segment, Qt::transparent );
 
-    setGradient( Q::Cursor, m_pal.rgb( QPalette::Highlight ) );
+    for ( auto state : { A::NoState, Q::Disabled } )
+    {
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-    setColor( Q::Text, m_pal.rgb( QPalette::Text ) );
-    setColor( Q::Text | Q::Selected, m_pal.rgb( QPalette::HighlightedText ) );
+        setGradient( Q::Cursor | state, m_pal.color( colorGroup, P::Highlight ) );
+
+        setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
+        setColor( Q::Text | state | Q::Selected,
+            m_pal.color( colorGroup, P::HighlightedText ) );
+    }
 
     setPadding( Q::Icon, 8_dp );
 
@@ -585,8 +374,8 @@ void Editor::setupTextLabel()
     using Q = QskTextLabel;
 
     setAlignment( Q::Text, Qt::AlignCenter );
-    setColor( Q::Text, m_pal.rgb( QPalette::Active, QPalette::Text ) );
-    setColor( Q::Text | Q::Disabled, m_pal.rgb( QPalette::Disabled, QPalette::Text ) );
+    setColor( Q::Text, m_pal.color( QPalette::Active, QPalette::Text ) );
+    setColor( Q::Text | Q::Disabled, m_pal.color( QPalette::Disabled, QPalette::Text ) );
 
     setPadding( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
@@ -604,15 +393,14 @@ void Editor::setupTextInput()
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
-        setColor( Q::Text | state, m_pal.rgb( colorGroup, P::Text ) );
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-        setColor( Q::PanelSelected | state, m_pal.rgb( colorGroup, P::Highlight ) );
-        setColor( Q::TextSelected | state, m_pal.rgb( colorGroup, P::HighlightedText ) );
+        setGradient( Q::Panel | state, m_pal.color( colorGroup, P::Base ) );
+        setColor( Q::PanelSelected | state, m_pal.color( colorGroup, P::Highlight ) );
 
-        QRgb rgb = m_pal.rgb( colorGroup, P::Base );
+        setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
+        setColor( Q::TextSelected | state, m_pal.color( colorGroup, P::HighlightedText ) );
 
-        setGradient( Q::Panel | state, rgb );
     }
 
     setBoxBorderMetrics( Q::Panel, 1_dp );
@@ -639,21 +427,19 @@ void Editor::setupProgressBar()
 
     {
         setBoxBorderColors( Q::Groove, m_pal.outline );
-        setGradient( Q::Groove, m_pal.rgb( P::Normal, P::Base ) );
-        setGradient( Q::Groove | Q::Disabled, m_pal.rgb( P::Disabled, P::Base ) );
+        setGradient( Q::Groove, m_pal.active( P::Base ) );
+        setGradient( Q::Groove | Q::Disabled, m_pal.disabled( P::Base ) );
     }
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
-        using namespace QskRgb;
-
         const auto aspect = Q::Fill | state;
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-        const auto rgb = m_pal.rgb( colorGroup, P::Highlight );
+        const auto rgb = m_pal.color( colorGroup, P::Highlight );
 
-        setBoxBorderColors( aspect, darker( rgb, 140 ) );
-        setVGradient( aspect, lighter( rgb, 120 ), rgb );
+        setBoxBorderColors( aspect, QskRgb::darker( rgb, 140 ) );
+        setVGradient( aspect, QskRgb::lighter( rgb, 120 ), rgb );
     }
 }
 
@@ -673,8 +459,8 @@ void Editor::setupProgressRing()
 
     {
         setColor( Q::Groove | A::Border, m_pal.outline );
-        setGradient( Q::Groove, m_pal.rgb( P::Normal, P::Base ) );
-        setGradient( Q::Groove | Q::Disabled, m_pal.rgb( P::Disabled, P::Base ) );
+        setGradient( Q::Groove, m_pal.active( P::Base ) );
+        setGradient( Q::Groove | Q::Disabled, m_pal.disabled( P::Base ) );
     }
 
     {
@@ -684,9 +470,9 @@ void Editor::setupProgressRing()
     for ( auto state : { A::NoState, Q::Disabled } )
     {
         const auto aspect = Q::Fill | state;
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-        const auto rgb = m_pal.rgb( colorGroup, P::Highlight );
+        const auto rgb = m_pal.color( colorGroup, P::Highlight );
 
         setColor( aspect | A::Border, QskRgb::darker( rgb, 140 ) );
         setGradient( aspect, rgb );
@@ -713,22 +499,21 @@ void Editor::setupRadioBox()
 
     setGradient( Q::Button, QskGradient() );
 
-    setColor( Q::Text, m_pal.rgb( P::Normal, P::Text ) );
-    setColor( Q::Text | Q::Disabled, m_pal.rgb( P::Disabled, P::Text ) );
+    setColor( Q::Text, m_pal.active( P::Text ) );
+    setColor( Q::Text | Q::Disabled, m_pal.disabled( P::Text ) );
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
         const auto aspect = Q::CheckIndicatorPanel | state;
 
-        const auto rgb1 = m_pal.rgb( colorGroup, P::Base );
-        const auto rgb2 = m_pal.rgb( colorGroup, P::WindowText );
-        const auto rgb3 = m_pal.rgb( colorGroup, P::Window );
+        const auto rgb1 = m_pal.color( colorGroup, P::Base );
+        const auto rgb2 = m_pal.color( colorGroup, P::WindowText );
 
         setColor( aspect, rgb1 );
         setColor( aspect | Q::Pressed, QskRgb::interpolated( rgb2, rgb1, 0.85 ) );
 
-        setBoxBorderColors( aspect, QskRgb::darker( rgb3, 150 ) );
+        setBoxBorderColors( aspect, m_pal.darker( colorGroup, P::Window, 150 ) );
     }
 
     setBoxBorderMetrics( Q::CheckIndicator, 1 );
@@ -737,10 +522,9 @@ void Editor::setupRadioBox()
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-        auto rgb = m_pal.rgb( colorGroup,  P::Text );
-        rgb = QskRgb::darker( rgb, 120 );
+        auto rgb = m_pal.darker( colorGroup, P::Text, 120 );
 
         const auto aspect = Q::CheckIndicator | Q::Selected | state;
 
@@ -758,25 +542,14 @@ void Editor::setupFocusIndicator()
      */
     using Q = QskFocusIndicator;
     using A = QskAspect;
-    using P = QPalette;
 
     setBoxBorderMetrics( Q::Panel, 2 );
     setPadding( Q::Panel, 3 );
     setBoxShape( Q::Panel, 4 );
 
-    auto rgb = m_pal.rgb( P::Highlight );
-    rgb = QskRgb::darker( rgb, 125 );
-
-    {
-        auto c = QColor::fromRgba( rgb ).toHsv();
-        if ( c.value() > 160 )
-            c.setHsl( c.hue(), c.saturation(), 160 );
-
-        rgb = c.rgba();
-    }
-
-    setBoxBorderColors( Q::Panel, rgb );
-    setBoxBorderColors( Q::Panel | Q::Disabled, QskRgb::toTransparent( rgb, 0 ) );
+    setBoxBorderColors( Q::Panel, m_pal.highlightedOutline );
+    setBoxBorderColors( Q::Panel | Q::Disabled,
+        QskRgb::toTransparent( m_pal.highlightedOutline, 0 ) );
 
     setAnimation( Q::Panel | A::Color, 200 );
     setAnimation( Q::Panel | A::Color | Q::Disabled, 500 );
@@ -802,8 +575,8 @@ void Editor::setupSegmentedBar()
         setPadding( Q::Panel, 0 );
         setSpacing( Q::Panel, 5_dp );
 
-        setGradient( Q::Panel, m_pal.rgb( P::Normal, P::Base ) );
-        setGradient( Q::Panel | Q::Disabled, m_pal.rgb( P::Disabled, P::Base ) );
+        setGradient( Q::Panel, m_pal.active( P::Base ) );
+        setGradient( Q::Panel | Q::Disabled, m_pal.disabled( P::Base ) );
 
         setBoxBorderMetrics( Q::Panel, 1_dp );
         setBoxBorderColors( Q::Panel, m_pal.outline );
@@ -825,8 +598,9 @@ void Editor::setupSegmentedBar()
         // Cursor
         setBoxBorderColors( Q::Cursor, m_pal.outline );
 
-        setGradient( Q::Cursor, m_pal.rgb( P::Normal, P::Highlight ) );
-        setGradient( Q::Cursor | Q::Disabled, m_pal.rgb( P::Disabled, P::Highlight ) );
+        setGradient( Q::Cursor, m_pal.active( P::Highlight ) );
+        setGradient( Q::Cursor | Q::Disabled, m_pal.disabled( P::Highlight ) );
+
         setAnimation( Q::Cursor | A::Metric | A::Position, duration );
     }
 
@@ -837,12 +611,12 @@ void Editor::setupSegmentedBar()
 
         for ( auto state : { A::NoState, Q::Disabled } )
         {
-            const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
+            const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
             const auto aspect = Q::Text | state;
 
-            setColor( aspect, m_pal.rgb( colorGroup, P::Text ) );
-            setColor( aspect | Q::Selected, m_pal.rgb( colorGroup, P::HighlightedText ) );
+            setColor( aspect, m_pal.color( colorGroup, P::Text ) );
+            setColor( aspect | Q::Selected, m_pal.color( colorGroup, P::HighlightedText ) );
         }
 
         setAnimation( Q::Text | A::Color, duration );
@@ -887,8 +661,8 @@ void Editor::setupPageIndicator()
     {
         using namespace QskRgb;
 
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
-        auto rgb = m_pal.rgb( colorGroup, P::Shadow );
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
+        auto rgb = m_pal.color( colorGroup, P::Shadow );
 
         const auto aspect = Q::Bullet | state;
         setGradient( aspect, toTransparentF( rgb, 0.45 ) );
@@ -920,17 +694,16 @@ void Editor::setupPushButton()
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-        auto rgb = m_pal.rgb( colorGroup, P::Button );
-        rgb = QskRgb::lighter( rgb, 104 );
+        const auto rgb = m_pal.lighter( colorGroup, P::Button, 104 );
 
         setGradient( Q::Panel | state, rgb );
 
         for ( auto state2 : { Q::Pressed, Q::Checked } )
             setGradient( Q::Panel | state | state2, QskRgb::darker( rgb, 110 ) );
 
-        setColor( Q::Text | state, m_pal.rgb( colorGroup, P::Text ) );
+        setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
     }
 
     setGraphicRole( Q::Icon, QskFusionSkin::GraphicNormal );
@@ -942,18 +715,14 @@ void Editor::setupPushButton()
 void Editor::setupDialogButtonBox()
 {
     using Q = QskDialogButtonBox;
-    using A = QskAspect;
     using P = QPalette;
 
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
     setPadding( Q::Panel, 2_dp, 4_dp, 2_dp, 0_dp );
 
-    for ( auto state : { A::NoState, Q::Disabled } )
-    {
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
-        setGradient( Q::Panel, m_pal.rgb( colorGroup, P::Base ) );
-    }
+    setGradient( Q::Panel, m_pal.active( P::Base ) );
+    setGradient( Q::Panel | Q::Disabled, m_pal.disabled( P::Base ) );
 }
 
 void Editor::setupDrawer()
@@ -962,11 +731,8 @@ void Editor::setupDrawer()
     using A = QskAspect;
     using P = QPalette;
 
-    for ( auto state : { A::NoState, Q::Disabled } )
-    {
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
-        setGradient( Q::Panel | state, m_pal.rgb( colorGroup, P::Window ) );
-    }
+    setGradient( Q::Panel, m_pal.active( P::Window ) );
+    setGradient( Q::Panel | Q::Disabled, m_pal.disabled( P::Window ) );
 
     setBoxBorderMetrics( Q::Panel, 1 );
     setBoxShape( Q::Panel, 2 );
@@ -1007,25 +773,17 @@ void Editor::setupSlider()
 
     {
         setBoxBorderColors( Q::Groove, m_pal.outline );
-
-        auto rgb = m_pal.button;
-
-        auto c = QColor::fromRgba( rgb ).toHsv();
-        c.setHsv( c.hue(), qMin( 255, (int)( c.saturation() ) ),
-            qMin( 255, (int)( c.value() * 0.9 ) ) );
-
-        rgb = c.rgba();
-
-        setGradient( Q::Groove, QskRgb::darker( rgb, 110 ),
-            QskRgb::lighter( rgb, 110 ) );
+        setGradient( Q::Groove,
+            QskRgb::darker( m_pal.groove, 110 ),
+            QskRgb::lighter( m_pal.groove, 110 ) );
     }
 
     {
         for ( auto state : { A::NoState, Q::Disabled } )
         {
-            const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
+            const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-            const auto rgb = m_pal.rgb( colorGroup, P::Highlight );
+            const auto rgb = m_pal.color( colorGroup, P::Highlight );
 
             setGradient( Q::Fill | state, rgb );
 
@@ -1045,13 +803,13 @@ void Editor::setupSlider()
 
     for ( auto state : { A::NoState, Q::Pressed } )
     {
-        using namespace QskRgb;
-
         auto rgb = m_pal.button;
         if ( state == Q::Pressed )
-            rgb = darker( rgb, 110 );
+            rgb = QskRgb::darker( rgb, 110 );
 
-        setGradient( Q::Handle | state, lighter( rgb, 124 ), lighter( rgb, 102 ) );
+        setGradient( Q::Handle | state,
+            QskRgb::lighter( rgb, 124 ),
+            QskRgb::lighter( rgb, 102 ) );
     }
 
     // move the handle smoothly, when using keys
@@ -1074,13 +832,8 @@ void Editor::setupSpinBox()
     setPadding( Q::TextPanel, 5_dp );
     setBoxShape( Q::TextPanel, 2, 0, 2, 0 );
 
-    for ( auto state : { A::NoState, Q::Disabled } )
-    {
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
-
-        setColor( Q::Text | state, m_pal.rgb( colorGroup, P::Text ) );
-        setGradient( Q::TextPanel | state, m_pal.rgb( colorGroup, P::Base ) );
-    }
+    setColor( Q::Text, m_pal.active( P::Text ) );
+    setGradient( Q::TextPanel | Q::Disabled, m_pal.disabled( P::Base ) );
 
     setBoxBorderMetrics( Q::TextPanel, 1_dp );
     setBoxBorderColors( Q::TextPanel, m_pal.outline );
@@ -1151,22 +904,18 @@ void Editor::setupSwitchButton()
 
     // on/off is indicated by the position of the handle and the groove color
 
+    setGradient( Q::Groove,
+        QskRgb::darker( m_pal.groove, 110 ),
+        QskRgb::lighter( m_pal.groove, 110 ) );
+
+    for( auto state : { A::NoState, Q::Disabled } )
     {
-        auto rgb = m_pal.button;
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-        {
-            auto c = QColor::fromRgba( rgb ).toHsv();
-            c.setHsv( c.hue(), qMin( 255, c.saturation() ), qMin< int >( 255, c.value() * 0.9 ) );
-            rgb = c.rgba();
-        }
-
-        setGradient( Q::Groove,
-            QskRgb::darker( rgb, 110 ), QskRgb::lighter( rgb, 110 ) );
+        const auto rgb = m_pal.color( colorGroup, P::Highlight );
+        setGradient( Q::Groove | state | Q::Checked,
+            rgb, QskRgb::lighter( rgb, 120 ) );
     }
-
-    const auto highlightRgb = m_pal.rgb( P::Highlight );
-    setGradient( Q::Groove | Q::Checked,
-        highlightRgb, QskRgb::lighter( highlightRgb, 120 ) );
 
     setBoxBorderColors( Q::Groove, m_pal.outline );
 
@@ -1193,7 +942,8 @@ void Editor::setupTabButton()
 
     setStrutSize( Q::Panel, 30_dp, 16_dp );
 
-    setColor( Q::Text, m_pal.rgb( P::Text ) );
+    setColor( Q::Text, m_pal.active( P::Text ) );
+    setColor( Q::Text | Q::Disabled, m_pal.disabled( P::Text ) );
 
     {
         QskGradient g;
@@ -1288,8 +1038,8 @@ void Editor::setupTabButton()
 
     // text
     setAlignment( Q::Text, Qt::AlignCenter );
-    setColor( Q::Text, m_pal.rgb( P::Active, P::Text ) );
-    setColor( Q::Text | Q::Disabled, m_pal.rgb( P::Disabled, P::Text ) );
+    setColor( Q::Text, m_pal.active( P::Text ) );
+    setColor( Q::Text | Q::Disabled, m_pal.disabled( P::Text ) );
 }
 
 void Editor::setupTabBar()
@@ -1325,7 +1075,6 @@ void Editor::setupTabView()
 void Editor::setupInputPanel()
 {
     using Q = QskInputPanelBox;
-    using A = QskAspect;
     using P = QPalette;
 
     setPadding( Q::Panel, 5 );
@@ -1334,11 +1083,8 @@ void Editor::setupInputPanel()
     setBoxShape( Q::Panel, 2 );
     setBoxBorderColors( Q::Panel, m_pal.outline );
 
-    for ( auto state : { A::NoState, Q::Disabled } )
-    {
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
-        setGradient( Q::Panel | state, m_pal.rgb( colorGroup, P::Window ) );
-    }
+    setGradient( Q::Panel, m_pal.active( P::Window ) );
+    setGradient( Q::Panel | Q::Disabled, m_pal.disabled( P::Window ) );
 }
 
 void Editor::setupVirtualKeyboard()
@@ -1362,16 +1108,16 @@ void Editor::setupVirtualKeyboard()
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-        auto rgb = m_pal.rgb( colorGroup, P::Button );
+        auto rgb = m_pal.color( colorGroup, P::Button );
         rgb = QskRgb::lighter( rgb, 104 );
 
         setGradient( Q::ButtonPanel | state, rgb );
         setGradient( Q::ButtonPanel | state | QskPushButton::Pressed,
             QskRgb::darker( rgb, 110 ) );
 
-        setColor( Q::ButtonText | state, m_pal.rgb( colorGroup, QPalette::Text ) );
+        setColor( Q::ButtonText | state, m_pal.color( colorGroup, QPalette::Text ) );
     }
 
     setAnimation( Q::ButtonPanel | A::Color, 100 );
@@ -1392,8 +1138,8 @@ void Editor::setupScrollView()
     setBoxBorderColors( Q::Viewport, m_pal.outline );
     setBoxShape( Q::Viewport, 2 );
 
-    setGradient( Q::Viewport, m_pal.rgb( P::Normal, P::Base ) );
-    setGradient( Q::Viewport | Q::Disabled, m_pal.rgb( P::Disabled, P::Base ) );
+    setGradient( Q::Viewport, m_pal.active( P::Base ) );
+    setGradient( Q::Viewport | Q::Disabled, m_pal.disabled( P::Base ) );
 
     // scrollbars
 
@@ -1432,9 +1178,9 @@ void Editor::setupScrollView()
         else
             setStrutSize( subControl, 0.0, handleExtent );
 
-        setGradient( subControl, m_pal.rgb( P::Mid ) );
-        setGradient( subControl | Q::Hovered, m_pal.rgb( P::Mid ) );
-        setGradient( subControl | Q::Pressed, m_pal.rgb( P::Dark ) );
+        setGradient( subControl, m_pal.active( P::Mid ) );
+        setGradient( subControl | Q::Hovered, m_pal.active( P::Mid ) );
+        setGradient( subControl | Q::Pressed, m_pal.active( P::Dark ) );
 
         setAnimation( subControl | A::Color, 100 );
     }
@@ -1454,20 +1200,20 @@ void Editor::setupListView()
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-        setColor( Q::Text | state, m_pal.rgb( colorGroup, P::Text ) );
-        setColor( Q::Cell | state, m_pal.rgb( colorGroup, P::Base ) );
-
-        const auto rgb1 = m_pal.rgb( colorGroup, P::Highlight );
-        const auto rgb2 = m_pal.rgb( colorGroup, P::HighlightedText );
+        setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
+        setColor( Q::Cell | state, m_pal.color( colorGroup, P::Base ) );
 
         const auto state1 = state | Q::Selected;
 
         for ( auto state2 : { A::NoState, Q::Hovered, Q::Pressed } )
         {
-            setColor( Q::Cell | state1 | state2, rgb1 );
-            setColor( Q::Text | state1 | state2, rgb2 );
+            setColor( Q::Cell | state1 | state2,
+                m_pal.color( colorGroup, P::Highlight ) );
+
+            setColor( Q::Text | state1 | state2,
+                m_pal.color( colorGroup, P::HighlightedText ) );
         }
     }
 }
@@ -1486,19 +1232,16 @@ void Editor::setupSubWindow()
 
     setBoxBorderColors( Q::Panel, m_pal.outline );
 
-    for ( auto state : { A::NoState, Q::Disabled } )
-    {
-        const auto colorGroup = ( state == A::NoState ) ? P::Normal : P::Disabled;
-        setGradient( Q::Panel | state, m_pal.rgb( colorGroup, P::Window ) );
-    }
+    setGradient( Q::Panel, m_pal.active( P::Window ) );
+    setGradient( Q::Panel | Q::Disabled, m_pal.disabled( P::Window ) );
 
     // TitleBarPanel
 
     setHint( Q::TitleBarPanel | QskAspect::Style, Q::TitleBar | Q::Title );
     setMargin( Q::TitleBarPanel, -1 );
 
-    setGradient( Q::TitleBarPanel, m_pal.rgb( P::Mid ) );
-    setGradient( Q::TitleBarPanel | Q::Focused, m_pal.rgb( P::Highlight ) );
+    setGradient( Q::TitleBarPanel, m_pal.active( P::Mid ) );
+    setGradient( Q::TitleBarPanel | Q::Focused, m_pal.active( P::Highlight ) );
     setSpacing( Q::TitleBarPanel, 5 );
     setStrutSize( Q::TitleBarPanel, 0, 20 );
     setBoxShape( Q::TitleBarPanel, 2, 2, 0, 0 );
@@ -1508,8 +1251,8 @@ void Editor::setupSubWindow()
     setAlignment( Q::TitleBarText, Qt::AlignLeft | Qt::AlignVCenter );
     setTextOptions( Q::TitleBarText, Qt::ElideRight, QskTextOptions::NoWrap );
 
-    setColor( Q::TitleBarText | Q::Focused, m_pal.rgb( P::Normal, P::HighlightedText ) );
-    setColor( Q::TitleBarText, m_pal.rgb( P::Normal, P::Text ) );
+    setColor( Q::TitleBarText, m_pal.active( P::Text ) );
+    setColor( Q::TitleBarText | Q::Focused, m_pal.active( P::HighlightedText ) );
 
 #if 1
     for ( auto subControl : { Q::Panel, Q::TitleBarPanel, Q::TitleBarText } )
@@ -1522,18 +1265,17 @@ void Editor::setupSubWindow()
 QskFusionSkin::QskFusionSkin( QskSkin::ColorScheme colorScheme, QObject* parent )
     : Inherited( parent )
 {
+    using P = QPalette;
+
     setupFonts( QStringLiteral( "Roboto" ) );
 
-    const Palette palette( colorScheme );
+    const QskFusionPalette palette( colorScheme );
 
-    setGraphicColor( GraphicNormal,
-        palette.rgb( QPalette::Active, QPalette::Text ) );
-
-    setGraphicColor( GraphicDisabled,
-        palette.rgb( QPalette::Disabled, QPalette::Text ) );
+    setGraphicColor( GraphicNormal, palette.active( P::Text ) );
+    setGraphicColor( GraphicDisabled, palette.disabled( P::Text ) );
 
     setGraphicColor( GraphicError, palette.error );
-    setGraphicColor( GraphicHighlighted, palette.rgb( QPalette::HighlightedText ) );
+    setGraphicColor( GraphicHighlighted, palette.active( P::HighlightedText ) );
 
     Editor editor( palette, &hintTable() );
     editor.setup();
