@@ -69,9 +69,12 @@ int main( int argc, char* argv[] )
 
     // disable default skins
     qskSkinManager->setPluginPaths( QStringList() ); // no plugins
+#if 1
+    // we should find a better way: TODO ...
     qskSkinManager->unregisterFactory( "material3factory" );
-    qskSkinManager->unregisterFactory( "squiekfactory" );
+    qskSkinManager->unregisterFactory( "fusionfactory" );
     qskSkinManager->unregisterFactory( "fluent2factory" );
+#endif
 
     qskSkinManager->registerFactory(
         QStringLiteral( "SampleSkinFactory" ), new SkinFactory() );
