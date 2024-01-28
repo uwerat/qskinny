@@ -19,7 +19,7 @@
 #include <QDebug>
 
 #include <SkinnyShortcut.h>
-#include <cmath>
+#include <qmath.h>
 
 #include "Overlay.h"
 
