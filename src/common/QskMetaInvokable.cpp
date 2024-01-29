@@ -9,7 +9,9 @@
 #include <qmetaobject.h>
 #include <qobject.h>
 #include <qcoreapplication.h>
+#if QT_CONFIG(thread)
 #include <qsemaphore.h>
+#endif
 #include <qthread.h>
 
 QSK_QT_PRIVATE_BEGIN
@@ -163,6 +165,12 @@ static void qskInvokeMetaCall(
             ? Qt::QueuedConnection : Qt::DirectConnection;
     }
 
+#if 1
+    // should be doable without QMetaMethod. TODO ...
+    const auto method = metaObject->method( offset + index );
+#endif
+    const int argc = method.parameterCount() + 1;
+
     switch ( invokeType )
     {
         case Qt::DirectConnection:
@@ -194,10 +202,14 @@ static void qskInvokeMetaCall(
 
 #if QT_CONFIG(thread)
             QSemaphore semaphore;
-#endif
 
             auto event = new MetaCallEvent( call, metaObject,
                 offset, index, args, &semaphore );
+
+#else
+            auto event = new MetaCallEvent( call, metaObject,
+                offset, index, argc );
+#endif
 
             QCoreApplication::postEvent( receiver, event );
 
@@ -216,12 +228,6 @@ static void qskInvokeMetaCall(
 
             if ( call == QMetaObject::InvokeMetaMethod )
             {
-#if 1
-                // should be doable without QMetaMethod. TODO ...
-                const auto method = metaObject->method( offset + index );
-#endif
-                const int argc = method.parameterCount() + 1;
-
                 event = new MetaCallEvent( call, metaObject, offset, index, argc );
 
                 /*

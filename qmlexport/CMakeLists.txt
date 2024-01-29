@@ -17,7 +17,12 @@ set(SOURCES
     QskQml.cpp)
 
 set(target qskqmlexport)
-qsk_add_library(${target} SHARED ${SOURCES} ${HEADERS})
+
+if(BUILD_QSKDLL)
+    qsk_add_library(${target} SHARED ${SOURCES} ${HEADERS})
+else()
+    qsk_add_library(${target} STATIC ${SOURCES} ${HEADERS})
+endif()
 
 target_link_libraries(${target} PRIVATE qskinny)
 target_include_directories(${target} PUBLIC 
