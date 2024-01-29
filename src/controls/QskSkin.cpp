@@ -407,8 +407,4 @@ QskSkinlet* QskSkin::skinlet( const QMetaObject* metaObject )
     return &defaultSkinlet;
 }
 
-void QskSkin::resetColors( const QColor& )
-{
-}
-
 #include "moc_QskSkin.cpp"

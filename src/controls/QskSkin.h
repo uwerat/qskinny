@@ -64,8 +64,6 @@ class QSK_EXPORT QskSkin : public QObject
     template< typename Control, typename Skinlet >
     void declareSkinlet();
 
-    virtual void resetColors( const QColor& accent );
-
     void setSkinHint( QskAspect, const QVariant& hint );
     const QVariant& skinHint( QskAspect ) const;
 
