@@ -3,21 +3,21 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include <QskObjectCounter.h>
-#include <QskTabBar.h>
-#include <QskTabView.h>
-#include <QskWindow.h>
-#include <QskSkinlet.h>
-#include <QskBoxNode.h>
-#include <QskTextNode.h>
-#include <QskSGNode.h>
-#include <QskBoxShadowNode.h>
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
-#include <QskGradientDirection.h>
+#include <QskBoxNode.h>
+#include <QskBoxShadowNode.h>
 #include <QskBoxShapeMetrics.h>
+#include <QskGradientDirection.h>
 #include <QskLinearBox.h>
+#include <QskObjectCounter.h>
 #include <QskPushButton.h>
+#include <QskSGNode.h>
+#include <QskSkinlet.h>
+#include <QskTabBar.h>
+#include <QskTabView.h>
+#include <QskTextNode.h>
+#include <QskWindow.h>
 
 #include <QGuiApplication>
 #include <SkinnyShortcut.h>
@@ -31,17 +31,17 @@ double qskMapValueRange( double value, double srcMin, double srcMax, double dstM
     return mappedValue;
 }
 
-QColor extracted( const QskGradient& gradient, qreal ratio )
+QColor extracted( const QColor& from, const QColor& to, qreal ratio )
 {
     // Ensure the factor is within the [0, 1] range
     ratio = qBound< qreal >( 0.0, ratio, 1.0 );
 
     // Extract RGB components of the start and end colors
     int startRed, startGreen, startBlue, startAlpha;
-    gradient.startColor().getRgb( &startRed, &startGreen, &startBlue, &startAlpha );
+    from.getRgb( &startRed, &startGreen, &startBlue, &startAlpha );
 
     int endRed, endGreen, endBlue, endAlpha;
-    gradient.endColor().getRgb( &endRed, &endGreen, &endBlue, &endAlpha );
+    to.getRgb( &endRed, &endGreen, &endBlue, &endAlpha );
 
     // Linearly interpolate each color component
     int interpolatedRed = static_cast< int >( startRed + ratio * ( endRed - startRed ) );
@@ -58,9 +58,14 @@ QskGradient extracted( const QskGradient& gradient, qreal from, qreal to )
     const auto stops = gradient.stops();
 
     if ( stops.count() == 0 )
+    {
         return {};
+    }
+
     if ( stops.count() == 1 )
+    {
         return stops[ 0 ].color();
+    }
 
     from = qBound( 0.0, from, 1.0 );
     to = qBound( 0.0, to, 1.0 );
@@ -94,14 +99,13 @@ QskGradient extracted( const QskGradient& gradient, qreal from, qreal to )
     const auto fromColor = [ & ]() {
         const auto p = qskMapValueRange( from, stops[ fromIndex.first ].position(),
             stops[ fromIndex.second ].position(), 0.0, 1.0 );
-        return extracted(
-            { stops[ fromIndex.first ].color(), stops[ fromIndex.second ].color() }, p );
+        return extracted( stops[ fromIndex.first ].color(), stops[ fromIndex.second ].color(), p );
     }();
 
     const auto toColor = [ & ]() {
         const auto p = qskMapValueRange(
             to, stops[ toIndex.first ].position(), stops[ toIndex.second ].position(), 0.0, 1.0 );
-        return extracted( { stops[ toIndex.first ].color(), stops[ toIndex.second ].color() }, p );
+        return extracted( stops[ toIndex.first ].color(), stops[ toIndex.second ].color(), p );
     }();
 
     QskGradient newGradient;
@@ -241,63 +245,74 @@ int main( int argc, char* argv[] )
 
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-    auto* const layout = new QskLinearBox(Qt::Vertical);
-    auto* const row = new QskLinearBox(Qt::Vertical, layout);
-    auto* const control = new Control(layout);
+    auto* const layout = new QskLinearBox( Qt::Vertical );
+    auto* const row = new QskLinearBox( Qt::Vertical, layout );
+    auto* const control = new Control( layout );
     auto* const skinlet = new Skinlet;
     control->setSkinlet( skinlet );
     skinlet->setOwnedBySkinnable( true );
 
-    auto qskGradient = [](Qt::Orientation orientation , QskGradient gradient ){
-        gradient.setLinearDirection(orientation);
+    auto qskGradient = []( Qt::Orientation orientation, QskGradient gradient ) {
+        gradient.setLinearDirection( orientation );
         return gradient;
     };
 
     {
-        auto* const button = new QskPushButton( "Click",row );
-        button->setGradientHint(QskPushButton::Panel, {});
-        QObject::connect(button, &QskPushButton::clicked, control, [control, button](){
-            control->setGradientHint(Control::Gradient, button->gradientHint(QskPushButton::Panel));
-        });
+        auto* const button = new QskPushButton( "Click", row );
+        button->setGradientHint( QskPushButton::Panel, {} );
+        QObject::connect( button, &QskPushButton::clicked, control, [ control, button ]() {
+            control->setGradientHint(
+                Control::Gradient, button->gradientHint( QskPushButton::Panel ) );
+        } );
     }
     {
-        auto* const button = new QskPushButton( "Click",row );
-        button->setGradientHint(QskPushButton::Panel, Qt::red);
-        QObject::connect(button, &QskPushButton::clicked, control, [control, button](){
-            control->setGradientHint(Control::Gradient, button->gradientHint(QskPushButton::Panel));
-        });
+        auto* const button = new QskPushButton( "Click", row );
+        button->setGradientHint( QskPushButton::Panel, Qt::red );
+        QObject::connect( button, &QskPushButton::clicked, control, [ control, button ]() {
+            control->setGradientHint(
+                Control::Gradient, button->gradientHint( QskPushButton::Panel ) );
+        } );
     }
     {
-        auto* const button = new QskPushButton("Click", row );
-        button->setGradientHint(QskPushButton::Panel, qskGradient(Qt::Horizontal, {Qt::red, Qt::green}));
-        QObject::connect(button, &QskPushButton::clicked, control, [control, button](){
-            control->setGradientHint(Control::Gradient, button->gradientHint(QskPushButton::Panel));
-        });
+        auto* const button = new QskPushButton( "Click", row );
+        button->setGradientHint(
+            QskPushButton::Panel, qskGradient( Qt::Horizontal, { Qt::red, Qt::green } ) );
+        QObject::connect( button, &QskPushButton::clicked, control, [ control, button ]() {
+            control->setGradientHint(
+                Control::Gradient, button->gradientHint( QskPushButton::Panel ) );
+        } );
     }
     {
-        auto* const button = new QskPushButton("Click", row );
-        button->setGradientHint(QskPushButton::Panel, qskGradient(Qt::Horizontal,{{{0.0, Qt::red}, {0.5, Qt::green}, {1.0, Qt::blue}}}));
-        QObject::connect(button, &QskPushButton::clicked, control, [control, button](){
-            control->setGradientHint(Control::Gradient, button->gradientHint(QskPushButton::Panel));
-        });
+        auto* const button = new QskPushButton( "Click", row );
+        button->setGradientHint( QskPushButton::Panel,
+            qskGradient(
+                Qt::Horizontal, { { { 0.0, Qt::red }, { 0.5, Qt::green }, { 1.0, Qt::blue } } } ) );
+        QObject::connect( button, &QskPushButton::clicked, control, [ control, button ]() {
+            control->setGradientHint(
+                Control::Gradient, button->gradientHint( QskPushButton::Panel ) );
+        } );
     }
     {
-        auto* const button = new QskPushButton( "Click",row );
-        button->setGradientHint(QskPushButton::Panel, qskGradient(Qt::Horizontal,{{{0.0, Qt::red}, {0.5, Qt::red},{0.5, Qt::blue}, {1.0, Qt::blue}}}));
-        QObject::connect(button, &QskPushButton::clicked, control, [control, button](){
-            control->setGradientHint(Control::Gradient, button->gradientHint(QskPushButton::Panel));
-        });
+        auto* const button = new QskPushButton( "Click", row );
+        button->setGradientHint( QskPushButton::Panel,
+            qskGradient( Qt::Horizontal, { { { 0.0, Qt::red }, { 0.5, Qt::red }, { 0.5, Qt::blue },
+                                             { 1.0, Qt::blue } } } ) );
+        QObject::connect( button, &QskPushButton::clicked, control, [ control, button ]() {
+            control->setGradientHint(
+                Control::Gradient, button->gradientHint( QskPushButton::Panel ) );
+        } );
     }
     {
-        auto* const button = new QskPushButton( "Click",row );
-        button->setGradientHint(QskPushButton::Panel, qskGradient(Qt::Horizontal,{{
-            {0.0, Qt::red}, {0.25, Qt::red},
-            {0.25, Qt::green}, {0.5, Qt::green},
-            {0.5, Qt::blue}, {0.75, Qt::blue},
-            {0.75, Qt::yellow}, {1.0, Qt::yellow}}}));
-        QObject::connect(button, &QskPushButton::clicked, control, [control, button](){
-            control->setGradientHint(Control::Gradient, button->gradientHint(QskPushButton::Panel));
-        });
+        auto* const button = new QskPushButton( "Click", row );
+        button->setGradientHint(
+            QskPushButton::Panel, qskGradient( Qt::Horizontal,
+                                      { { { 0.0, Qt::red }, { 0.25, Qt::red }, { 0.25, Qt::green },
+                                          { 0.5, Qt::green }, { 0.5, Qt::blue }, { 0.75, Qt::blue },
+                                          { 0.75, Qt::yellow }, { 1.0, Qt::yellow } } } ) );
+        QObject::connect( button, &QskPushButton::clicked, control, [ control, button ]() {
+            control->setGradientHint(
+                Control::Gradient, button->gradientHint( QskPushButton::Panel ) );
+        } );
     }
 
     QskWindow window;
