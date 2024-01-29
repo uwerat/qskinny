@@ -7,8 +7,11 @@
 
 #include <qcoreapplication.h>
 #include <qobject.h>
-#include <qsemaphore.h>
 #include <qthread.h>
+
+#if QT_CONFIG(thread)
+#include <qsemaphore.h>
+#endif
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>
