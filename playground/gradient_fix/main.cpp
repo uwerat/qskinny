@@ -55,7 +55,7 @@ QColor extracted( const QColor& from, const QColor& to, qreal ratio )
 
 QskGradient extracted( const QskGradient& gradient, qreal from, qreal to )
 {
-    const auto stops = gradient.stops();
+    const auto& stops = gradient.stops();
 
     if ( stops.count() == 0 )
     {
@@ -108,8 +108,7 @@ QskGradient extracted( const QskGradient& gradient, qreal from, qreal to )
         return extracted( stops[ toIndex.first ].color(), stops[ toIndex.second ].color(), p );
     }();
 
-    QskGradient newGradient;
-    newGradient.setLinearDirection( Qt::Horizontal );
+    QskGradient newGradient = gradient;
     QskGradientStops newStops;
     newStops << QskGradientStop{ 0.0, fromColor };
 
