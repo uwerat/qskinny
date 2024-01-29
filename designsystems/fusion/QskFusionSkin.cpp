@@ -60,8 +60,24 @@
 
 static const int qskDuration = 50;
 
+/*
+    QskFocusIndicator has this nice autohide concept, that supersedes
+    the Qt/Quick visualFocus. How to do the same with the built-in focus
+    indication of the skins. TODO ...
+ */
+// #define SHOW_FOCUS
+
 namespace
 {
+    class Combination : public QskStateCombination
+    {
+      public:
+        constexpr Combination( const QskAspect::States states )
+            : QskStateCombination( CombinationNoState, states )
+        {
+        }
+    };
+
     Q_DECL_UNUSED inline double operator ""_dp( long double value )
     {
         return qskDpToPixels( static_cast< qreal >( value ) );
@@ -74,54 +90,51 @@ namespace
 
     class Editor : private QskSkinHintTableEditor
     {
+        Q_GADGET
+
       public:
         Editor( const QskFusionPalette& palette, QskSkinHintTable* table )
             : QskSkinHintTableEditor( table )
             , m_pal( palette )
         {
-#if 0
-            for ( int i = 0; i < QPalette::NColorRoles; i++ )
-            {
-                const auto role = static_cast< QPalette::ColorRole >( i );
-                const auto rgb = m_pal.rgb( QPalette::Active, role );
-
-                qDebug() << role << qRed( rgb ) << qGreen( rgb ) << qBlue( rgb );
-            }
-#endif
         }
 
-        void setup();
+        void setup()
+        {
+            for ( int i = 0; i < staticMetaObject.methodCount(); i++ )
+                staticMetaObject.method( i ).invokeOnGadget( this );
+        }
 
       private:
-        void setupBox();
-        void setupCheckBox();
-        void setupComboBox();
-        void setupDialogButtonBox();
-        void setupDrawer();
-        void setupFocusIndicator();
-        void setupGraphicLabel();
-        void setupInputPanel();
-        void setupVirtualKeyboard();
-        void setupListView();
-        void setupMenu();
-        void setupPageIndicator();
-        void setupPopup();
-        void setupProgressBar();
-        void setupProgressRing();
-        void setupRadioBox();
-        void setupPushButton();
-        void setupScrollView();
-        void setupSegmentedBar();
-        void setupSeparator();
-        void setupSubWindow();
-        void setupSlider();
-        void setupSpinBox();
-        void setupSwitchButton();
-        void setupTabButton();
-        void setupTabBar();
-        void setupTabView();
-        void setupTextInput();
-        void setupTextLabel();
+        Q_INVOKABLE void setupBox();
+        Q_INVOKABLE void setupCheckBox();
+        Q_INVOKABLE void setupComboBox();
+        Q_INVOKABLE void setupDialogButtonBox();
+        Q_INVOKABLE void setupDrawer();
+        Q_INVOKABLE void setupFocusIndicator();
+        Q_INVOKABLE void setupGraphicLabel();
+        Q_INVOKABLE void setupInputPanel();
+        Q_INVOKABLE void setupVirtualKeyboard();
+        Q_INVOKABLE void setupListView();
+        Q_INVOKABLE void setupMenu();
+        Q_INVOKABLE void setupPageIndicator();
+        Q_INVOKABLE void setupPopup();
+        Q_INVOKABLE void setupProgressBar();
+        Q_INVOKABLE void setupProgressRing();
+        Q_INVOKABLE void setupRadioBox();
+        Q_INVOKABLE void setupPushButton();
+        Q_INVOKABLE void setupScrollView();
+        Q_INVOKABLE void setupSegmentedBar();
+        Q_INVOKABLE void setupSeparator();
+        Q_INVOKABLE void setupSubWindow();
+        Q_INVOKABLE void setupSlider();
+        Q_INVOKABLE void setupSpinBox();
+        Q_INVOKABLE void setupSwitchButton();
+        Q_INVOKABLE void setupTabButton();
+        Q_INVOKABLE void setupTabBar();
+        Q_INVOKABLE void setupTabView();
+        Q_INVOKABLE void setupTextInput();
+        Q_INVOKABLE void setupTextLabel();
 
         QskGraphic symbol( const char* name ) const
         {
@@ -147,39 +160,6 @@ namespace
     };
 }
 
-void Editor::setup()
-{
-    setupBox();
-    setupCheckBox();
-    setupComboBox();
-    setupDialogButtonBox();
-    setupDrawer();
-    setupFocusIndicator();
-    setupGraphicLabel();
-    setupInputPanel();
-    setupVirtualKeyboard();
-    setupListView();
-    setupMenu();
-    setupPageIndicator();
-    setupPopup();
-    setupProgressBar();
-    setupProgressRing();
-    setupPushButton();
-    setupRadioBox();
-    setupScrollView();
-    setupSegmentedBar();
-    setupSeparator();
-    setupSlider();
-    setupSpinBox();
-    setupSubWindow();
-    setupSwitchButton();
-    setupTabButton();
-    setupTabBar();
-    setupTabView();
-    setupTextLabel();
-    setupTextInput();
-}
-
 void Editor::setupBox()
 {
     using Q = QskBox;
@@ -203,6 +183,11 @@ void Editor::setupCheckBox()
     setBoxBorderColors( Q::Box, m_pal.outline );
     setBoxBorderColors( Q::Box | Q::Error, m_pal.error );
     setBoxBorderMetrics( Q::Box, 1_dp );
+
+#ifdef SHOW_FOCUS
+    setBoxBorderColors( Q::Box | Q::Focused, m_pal.highlightedOutline,
+        Combination( { Q::Error, Q::Hovered, Q::Pressed, Q::Checked } ) );
+#endif
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
@@ -267,6 +252,11 @@ void Editor::setupComboBox()
     setBoxShape( Q::Panel, 2 );
     setBoxBorderMetrics( Q::Panel, 1_dp );
     setBoxBorderColors( Q::Panel, m_pal.outline );
+
+#ifdef SHOW_FOCUS
+    setBoxBorderColors( Q::Panel | Q::Focused, m_pal.highlightedOutline,
+        Combination( { Q::Hovered, Q::Pressed } ) );
+#endif
 
     setPadding( Q::Panel, 8_dp, 4_dp, 8_dp, 4_dp );
     setSpacing( Q::Panel, 8_dp );
@@ -404,7 +394,12 @@ void Editor::setupTextInput()
     }
 
     setBoxBorderMetrics( Q::Panel, 1_dp );
+
     setBoxBorderColors( Q::Panel, m_pal.outline );
+#ifdef SHOW_FOCUS
+    setBoxBorderColors( Q::Panel | Q::Focused, m_pal.highlightedOutline );
+#endif
+
     setBoxShape( Q::Panel, 2 );
     setPadding( Q::Panel, 4_dp );
 }
@@ -515,6 +510,11 @@ void Editor::setupRadioBox()
 
         setBoxBorderColors( aspect, m_pal.darker( colorGroup, P::Window, 150 ) );
     }
+
+#ifdef SHOW_FOCUS
+    setBoxBorderColors( Q::CheckIndicatorPanel | Q::Focused, m_pal.highlightedOutline,
+        Combination( { Q::Hovered, Q::Pressed, Q::Selected } ) );
+#endif
 
     setBoxBorderMetrics( Q::CheckIndicator, 1 );
     setBoxBorderColors( Q::CheckIndicator, QskRgb::Transparent );
@@ -679,6 +679,10 @@ void Editor::setupPageIndicator()
 
 void Editor::setupPushButton()
 {
+    /*
+        QC2/Fusion offers flat/highlighted.  We could the emphasis variations to 
+        have the same: TODO ...
+     */
     using Q = QskPushButton;
     using A = QskAspect;
     using P = QPalette;
@@ -689,6 +693,12 @@ void Editor::setupPushButton()
     setMetric( Q::Panel | A::Spacing, 4 );
 
     setBoxBorderColors( Q::Panel, m_pal.outline );
+
+#ifdef SHOW_FOCUS
+    setBoxBorderColors( Q::Panel | Q::Focused, m_pal.highlightedOutline,
+        Combination( { Q::Hovered, Q::Pressed, Q::Checked } ) );
+#endif
+
     setBoxBorderMetrics( Q::Panel, 1 );
     setBoxShape( Q::Panel, 2 );
 
@@ -799,6 +809,11 @@ void Editor::setupSlider()
     setBoxBorderMetrics( Q::Handle, 1 );
     setBoxBorderColors( Q::Handle, m_pal.outline );
 
+#ifdef SHOW_FOCUS
+    setBoxBorderColors( Q::Handle | Q::Focused, m_pal.highlightedOutline,
+        Combination( { Q::Hovered, Q::Pressed } ) );
+#endif
+
     setStrutSize( Q::Handle, 16_dp, 16_dp );
 
     for ( auto state : { A::NoState, Q::Pressed } )
@@ -837,6 +852,12 @@ void Editor::setupSpinBox()
 
     setBoxBorderMetrics( Q::TextPanel, 1_dp );
     setBoxBorderColors( Q::TextPanel, m_pal.outline );
+
+#ifdef SHOW_FOCUS
+    // not correct, we need the border around text and buttons. TODO ...
+    setBoxBorderColors( Q::TextPanel | Q::Focused, m_pal.highlightedOutline,
+        Combination( { Q::Increasing, Q::Decreasing, Q::Hovered } ) );
+#endif
 
     setBoxShape( Q::UpPanel, 0, 2_dp, 0, 0 );
     setBoxBorderMetrics( Q::UpPanel, 0_dp, 1_dp, 1_dp, 0_dp );
@@ -922,6 +943,11 @@ void Editor::setupSwitchButton()
     setGradient( Q::Handle, QskRgb::lighter( m_pal.button, 104 ) );
     setGradient( Q::Handle | Q::Pressed, QskRgb::darker( m_pal.button, 110 ) );
 
+#ifdef SHOW_FOCUS
+    setBoxBorderColors( Q::Handle | Q::Focused, m_pal.highlightedOutline,
+        Combination( { Q::Hovered, Q::Pressed, Q::Checked } ) );
+#endif
+
     for( auto state : { A::NoState, Q::Disabled } )
     {
         auto aspect = Q::Handle | state;
@@ -967,6 +993,10 @@ void Editor::setupTabButton()
             QskRgb::lighter( m_pal.tabFrame, 104 ), m_pal.tabFrame );
     }
 
+#ifdef SHOW_FOCUS
+    setBoxBorderColors( Q::Panel | Q::Focused, m_pal.highlightedOutline,
+        Combination( { Q::Hovered, Q::Pressed, Q::Checked } ) );
+#endif
 
     for ( auto variation : { A::Left, A::Right, A::Top, A::Bottom } )
     {
@@ -1105,6 +1135,11 @@ void Editor::setupVirtualKeyboard()
     setBoxBorderColors( Q::ButtonPanel, m_pal.outline );
     setBoxBorderMetrics( Q::ButtonPanel, 1 );
     setBoxShape( Q::ButtonPanel, 2 );
+
+#ifdef SHOW_FOCUS
+    setBoxBorderColors( Q::ButtonPanel | Q::Focused, m_pal.highlightedOutline,
+        Combination( { Q::Hovered, QskPushButton::Pressed } ) );
+#endif
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
@@ -1294,5 +1329,5 @@ void QskFusionSkin::setGraphicColor( GraphicRole role, QRgb rgb )
     setGraphicFilter( role, colorFilter );
 }
 
-
 #include "moc_QskFusionSkin.cpp"
+#include "QskFusionSkin.moc"

@@ -73,6 +73,8 @@ namespace
 
     class Editor : private QskSkinHintTableEditor
     {
+        Q_GADGET
+
       public:
         Editor( QskSkinHintTable* table, const QskMaterial3Theme& palette )
             : QskSkinHintTableEditor( table )
@@ -80,37 +82,41 @@ namespace
         {
         }
 
-        void setup();
+        void setup()
+        {
+            for ( int i = 0; i < staticMetaObject.methodCount(); i++ )
+                staticMetaObject.method( i ).invokeOnGadget( this );
+        }
 
       private:
-        void setupBox();
-        void setupCheckBox();
-        void setupComboBox();
-        void setupDialogButtonBox();
-        void setupDrawer();
-        void setupFocusIndicator();
-        void setupInputPanel();
-        void setupVirtualKeyboard();
-        void setupListView();
-        void setupMenu();
-        void setupPageIndicator();
-        void setupPopup();
-        void setupProgressBar();
-        void setupProgressRing();
-        void setupRadioBox();
-        void setupPushButton();
-        void setupScrollView();
-        void setupSegmentedBar();
-        void setupSeparator();
-        void setupSubWindow();
-        void setupSlider();
-        void setupSpinBox();
-        void setupSwitchButton();
-        void setupTabButton();
-        void setupTabBar();
-        void setupTabView();
-        void setupTextInput();
-        void setupTextLabel();
+        Q_INVOKABLE void setupBox();
+        Q_INVOKABLE void setupCheckBox();
+        Q_INVOKABLE void setupComboBox();
+        Q_INVOKABLE void setupDialogButtonBox();
+        Q_INVOKABLE void setupDrawer();
+        Q_INVOKABLE void setupFocusIndicator();
+        Q_INVOKABLE void setupInputPanel();
+        Q_INVOKABLE void setupVirtualKeyboard();
+        Q_INVOKABLE void setupListView();
+        Q_INVOKABLE void setupMenu();
+        Q_INVOKABLE void setupPageIndicator();
+        Q_INVOKABLE void setupPopup();
+        Q_INVOKABLE void setupProgressBar();
+        Q_INVOKABLE void setupProgressRing();
+        Q_INVOKABLE void setupRadioBox();
+        Q_INVOKABLE void setupPushButton();
+        Q_INVOKABLE void setupScrollView();
+        Q_INVOKABLE void setupSegmentedBar();
+        Q_INVOKABLE void setupSeparator();
+        Q_INVOKABLE void setupSubWindow();
+        Q_INVOKABLE void setupSlider();
+        Q_INVOKABLE void setupSpinBox();
+        Q_INVOKABLE void setupSwitchButton();
+        Q_INVOKABLE void setupTabButton();
+        Q_INVOKABLE void setupTabBar();
+        Q_INVOKABLE void setupTabView();
+        Q_INVOKABLE void setupTextInput();
+        Q_INVOKABLE void setupTextLabel();
 
         QskGraphic symbol( const char* name ) const
         {
@@ -147,38 +153,6 @@ namespace
     {
         return QskRgb::toTransparentF( rgb, opacity );
     }
-}
-
-void Editor::setup()
-{
-    setupBox();
-    setupCheckBox();
-    setupComboBox();
-    setupDialogButtonBox();
-    setupDrawer();
-    setupFocusIndicator();
-    setupInputPanel();
-    setupVirtualKeyboard();
-    setupListView();
-    setupMenu();
-    setupPageIndicator();
-    setupPopup();
-    setupProgressBar();
-    setupProgressRing();
-    setupPushButton();
-    setupRadioBox();
-    setupScrollView();
-    setupSegmentedBar();
-    setupSeparator();
-    setupSlider();
-    setupSpinBox();
-    setupSubWindow();
-    setupSwitchButton();
-    setupTabButton();
-    setupTabBar();
-    setupTabView();
-    setupTextLabel();
-    setupTextInput();
 }
 
 void Editor::setupCheckBox()
@@ -1468,3 +1442,4 @@ void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& palette )
 }
 
 #include "moc_QskMaterial3Skin.cpp"
+#include "QskMaterial3Skin.moc"
