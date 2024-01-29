@@ -21,6 +21,7 @@
 
 #include <QGuiApplication>
 #include <SkinnyShortcut.h>
+#include <qnamespace.h>
 
 double qskMapValueRange( double value, double srcMin, double srcMax, double dstMin, double dstMax )
 {
@@ -241,34 +242,59 @@ int main( int argc, char* argv[] )
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
     auto* const layout = new QskLinearBox(Qt::Vertical);
-    auto* const row = new QskLinearBox(layout);
+    auto* const row = new QskLinearBox(Qt::Vertical, layout);
     auto* const control = new Control(layout);
     auto* const skinlet = new Skinlet;
     control->setSkinlet( skinlet );
     skinlet->setOwnedBySkinnable( true );
 
-    auto qskHGradient = [](Qt::Orientation orientation , QskGradient gradient ){
+    auto qskGradient = [](Qt::Orientation orientation , QskGradient gradient ){
         gradient.setLinearDirection(orientation);
         return gradient;
     };
 
     {
-        auto* const button = new QskPushButton( row );
+        auto* const button = new QskPushButton( "Click",row );
+        button->setGradientHint(QskPushButton::Panel, {});
+        QObject::connect(button, &QskPushButton::clicked, control, [control, button](){
+            control->setGradientHint(Control::Gradient, button->gradientHint(QskPushButton::Panel));
+        });
+    }
+    {
+        auto* const button = new QskPushButton( "Click",row );
         button->setGradientHint(QskPushButton::Panel, Qt::red);
         QObject::connect(button, &QskPushButton::clicked, control, [control, button](){
             control->setGradientHint(Control::Gradient, button->gradientHint(QskPushButton::Panel));
         });
     }
     {
-        auto* const button = new QskPushButton( row );
-        button->setGradientHint(QskPushButton::Panel, qskHGradient(Qt::Horizontal, {Qt::red, Qt::green}));
+        auto* const button = new QskPushButton("Click", row );
+        button->setGradientHint(QskPushButton::Panel, qskGradient(Qt::Horizontal, {Qt::red, Qt::green}));
         QObject::connect(button, &QskPushButton::clicked, control, [control, button](){
             control->setGradientHint(Control::Gradient, button->gradientHint(QskPushButton::Panel));
         });
     }
     {
-        auto* const button = new QskPushButton( row );
-        button->setGradientHint(QskPushButton::Panel, qskHGradient(Qt::Horizontal,{{{0.0, Qt::red}, {0.5, Qt::green}, {1.0, Qt::blue}}}));
+        auto* const button = new QskPushButton("Click", row );
+        button->setGradientHint(QskPushButton::Panel, qskGradient(Qt::Horizontal,{{{0.0, Qt::red}, {0.5, Qt::green}, {1.0, Qt::blue}}}));
+        QObject::connect(button, &QskPushButton::clicked, control, [control, button](){
+            control->setGradientHint(Control::Gradient, button->gradientHint(QskPushButton::Panel));
+        });
+    }
+    {
+        auto* const button = new QskPushButton( "Click",row );
+        button->setGradientHint(QskPushButton::Panel, qskGradient(Qt::Horizontal,{{{0.0, Qt::red}, {0.5, Qt::red},{0.5, Qt::blue}, {1.0, Qt::blue}}}));
+        QObject::connect(button, &QskPushButton::clicked, control, [control, button](){
+            control->setGradientHint(Control::Gradient, button->gradientHint(QskPushButton::Panel));
+        });
+    }
+    {
+        auto* const button = new QskPushButton( "Click",row );
+        button->setGradientHint(QskPushButton::Panel, qskGradient(Qt::Horizontal,{{
+            {0.0, Qt::red}, {0.25, Qt::red},
+            {0.25, Qt::green}, {0.5, Qt::green},
+            {0.5, Qt::blue}, {0.75, Qt::blue},
+            {0.75, Qt::yellow}, {1.0, Qt::yellow}}}));
         QObject::connect(button, &QskPushButton::clicked, control, [control, button](){
             control->setGradientHint(Control::Gradient, button->gradientHint(QskPushButton::Panel));
         });
