@@ -7,9 +7,7 @@
 
 #include <qcoreapplication.h>
 #include <qobject.h>
-#if QT_CONFIG(thread)
 #include <qsemaphore.h>
-#endif
 #include <qthread.h>
 
 QSK_QT_PRIVATE_BEGIN
@@ -190,8 +188,6 @@ void QskMetaFunction::invoke( QObject* object,
             ? Qt::QueuedConnection : Qt::DirectConnection;
     }
 
-    const auto argc = parameterCount() + 1; // return value + arguments
-
     switch ( invokeType )
     {
         case Qt::DirectConnection:
@@ -215,7 +211,7 @@ void QskMetaFunction::invoke( QObject* object,
                 m_functionCall, nullptr, 0, argv, &semaphore );
 #else
             auto event = new QMetaCallEvent(
-                m_functionCall, nullptr, 0, argc );
+                m_functionCall, nullptr, 0, argv, nullptr );
 #endif
 
             QCoreApplication::postEvent( receiver, event );
@@ -230,6 +226,8 @@ void QskMetaFunction::invoke( QObject* object,
         {
             if ( receiver.isNull() )
                 return;
+
+            const auto argc = parameterCount() + 1; // return value + arguments
 
             auto event = new QMetaCallEvent( m_functionCall, nullptr, 0, argc );
 
