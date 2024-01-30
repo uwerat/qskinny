@@ -284,7 +284,7 @@ void WindowAnimator::addGraphicFilterAnimators(
             animator.setStartValue( QVariant::fromValue( f1 ) );
             animator.setEndValue( QVariant::fromValue( f2 ) );
 
-            m_graphicFilterAnimatorMap.emplace( it2.key(), animator );
+            m_graphicFilterAnimatorMap.insert( it2.key(), animator );
         }
     }
 }
@@ -435,7 +435,7 @@ inline void WindowAnimator::storeAnimator( const QskControl* control, const QskA
 {
     if ( m_animatorMap.find( aspect ) == m_animatorMap.cend() )
     {
-        m_animatorMap.emplace( aspect,
+        m_animatorMap.insert( aspect,
             HintAnimator( control, aspect, value1, value2, hint ) );
     }
 }

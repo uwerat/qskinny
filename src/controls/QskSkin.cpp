@@ -243,7 +243,7 @@ void QskSkin::declareSkinlet( const QMetaObject* metaObject,
     }
     else
     {
-        m_data->skinletMap.emplace( metaObject, skinletMetaObject );
+        m_data->skinletMap.insert( metaObject, skinletMetaObject );
     }
 }
 
