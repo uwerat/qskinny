@@ -162,6 +162,23 @@ void Skinny::setSkin( int index, QskAnimationHint hint )
     }
 }
 
+void Skinny::changeColorScheme( QskAnimationHint hint )
+{
+    auto skin = qskSkinManager->skin();
+
+    QskSkinTransition transition;
+    transition.setMask( QskSkinTransition::Color );
+    transition.setSourceSkin( skin );
+
+    const auto colorScheme = ( skin->colorScheme() == QskSkin::LightScheme )
+        ? QskSkin::DarkScheme : QskSkin::LightScheme;
+
+    skin->setColorScheme( colorScheme );
+
+    transition.setTargetSkin( skin );
+    transition.run( hint );
+}
+
 void Skinny::changeFonts( int increment )
 {
     auto skin = qskSkinManager->skin();

@@ -27,7 +27,7 @@ class Skin : public QskSkin
         QRgb deviceGraphic;
     };
 
-    Skin( const Palette& palette, QObject* parent = nullptr );
+    Skin( QObject* parent = nullptr );
     ~Skin() override;
 
     enum SkinFontRole
@@ -36,29 +36,8 @@ class Skin : public QskSkin
     };
 
   private:
-    void initHints( const Palette& palette );
-};
+    void initHints() override;
 
-class DaytimeSkin : public Skin
-{
-  public:
-    DaytimeSkin( QObject* parent = nullptr )
-        : Skin( palette(), parent )
-    {
-    }
-
-  private:
-    Palette palette() const;
-};
-
-class NighttimeSkin : public Skin
-{
-  public:
-    NighttimeSkin( QObject* parent = nullptr )
-        : Skin( palette(), parent )
-    {
-    }
-
-  private:
-    Palette palette() const;
+    Palette palette( ColorScheme ) const;
+    void initHints( const Palette& );
 };

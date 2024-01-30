@@ -5,13 +5,12 @@
 
 #pragma once
 
-#include <QskSkinFactory.h>
+#include <QskSkin.h>
 
-class SkinFactory : public QskSkinFactory
+class Skin : public QskSkin
 {
-    Q_OBJECT
-
   public:
-    QStringList skinNames() const override;
-    QskSkin* createSkin( const QString& ) override;
+    Skin();
+
+    void initHints() override;
 };

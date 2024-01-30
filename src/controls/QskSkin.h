@@ -94,6 +94,18 @@ class QSK_EXPORT QskSkin : public QObject
     const QHash< int, QFont >& fonts() const;
     const QHash< int, QskColorFilter >& graphicFilters() const;
 
+    ColorScheme colorScheme() const;
+
+  public Q_SLOTS:
+    void setColorScheme( ColorScheme );
+
+  Q_SIGNALS:
+    void colorSchemeChanged( ColorScheme );
+
+  protected:
+    void clearHints();
+    virtual void initHints() = 0;
+
   private:
     void declareSkinlet( const QMetaObject* metaObject,
         const QMetaObject* skinletMetaObject );

@@ -76,9 +76,9 @@ namespace
         Q_GADGET
 
       public:
-        Editor( QskSkinHintTable* table, const QskMaterial3Theme& palette )
+        Editor( QskSkinHintTable* table, const QskMaterial3Theme& theme )
             : QskSkinHintTableEditor( table )
-            , m_pal( palette )
+            , m_pal( theme )
         {
         }
 
@@ -1393,14 +1393,9 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
     shapeExtraSmallTop = QskBoxShapeMetrics( 4_dp, 4_dp, 0, 0 );
 }
 
-QskMaterial3Skin::QskMaterial3Skin( const QskMaterial3Theme& palette, QObject* parent )
+QskMaterial3Skin::QskMaterial3Skin( QObject* parent )
     : Inherited( parent )
 {
-    setupFonts();
-    setupGraphicFilters( palette );
-
-    Editor editor( &hintTable(), palette );
-    editor.setup();
 }
 
 QskMaterial3Skin::~QskMaterial3Skin()
@@ -1429,16 +1424,27 @@ void QskMaterial3Skin::setGraphicColor( GraphicRole role, QRgb rgb )
     setGraphicFilter( role, colorFilter );
 }
 
-void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& palette )
+void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& theme )
 {
-    setGraphicColor( GraphicRoleOnPrimary, palette.onPrimary );
-    setGraphicColor( GraphicRoleOnSecondaryContainer, palette.onSecondaryContainer );
-    setGraphicColor( GraphicRoleOnError, palette.onError );
-    setGraphicColor( GraphicRoleOnSurface, palette.onSurface );
-    setGraphicColor( GraphicRoleOnSurface38, palette.onSurface38 );
-    setGraphicColor( GraphicRoleOnSurfaceVariant, palette.onSurfaceVariant );
-    setGraphicColor( GraphicRolePrimary, palette.primary );
-    setGraphicColor( GraphicRoleSurface, palette.surface );
+    setGraphicColor( GraphicRoleOnPrimary, theme.onPrimary );
+    setGraphicColor( GraphicRoleOnSecondaryContainer, theme.onSecondaryContainer );
+    setGraphicColor( GraphicRoleOnError, theme.onError );
+    setGraphicColor( GraphicRoleOnSurface, theme.onSurface );
+    setGraphicColor( GraphicRoleOnSurface38, theme.onSurface38 );
+    setGraphicColor( GraphicRoleOnSurfaceVariant, theme.onSurfaceVariant );
+    setGraphicColor( GraphicRolePrimary, theme.primary );
+    setGraphicColor( GraphicRoleSurface, theme.surface );
+}
+
+void QskMaterial3Skin::initHints()
+{
+    const QskMaterial3Theme theme( colorScheme() );
+
+    setupFonts();
+    setupGraphicFilters( theme );
+
+    Editor editor( &hintTable(), theme );
+    editor.setup();
 }
 
 #include "moc_QskMaterial3Skin.cpp"

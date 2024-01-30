@@ -103,7 +103,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
     using Inherited = QskSkin;
 
   public:
-    QskMaterial3Skin( const QskMaterial3Theme&, QObject* parent = nullptr );
+    QskMaterial3Skin( QObject* parent = nullptr );
     ~QskMaterial3Skin() override;
 
     enum GraphicRole
@@ -131,6 +131,9 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
     static constexpr QskAspect::Variation Elevated = QskAspect::Large;
     static constexpr QskAspect::Variation Outlined = QskAspect::Small;
     static constexpr QskAspect::Variation Text = QskAspect::Tiny;
+
+  protected:
+    void initHints() override;
 
   private:
     void setupFonts();

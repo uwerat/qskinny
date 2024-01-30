@@ -153,6 +153,8 @@ class QskSkin::PrivateData
     QHash< int, QskColorFilter > graphicFilters;
 
     QskGraphicProviderMap graphicProviders;
+
+    int colorScheme = -1; // uninitialized
 };
 
 QskSkin::QskSkin( QObject* parent )
@@ -211,6 +213,27 @@ QskSkin::QskSkin( QObject* parent )
 
 QskSkin::~QskSkin()
 {
+}
+
+QskSkin::ColorScheme QskSkin::colorScheme() const
+{
+    if ( m_data->colorScheme < 0 )
+        return QskSkin::UnknownScheme;
+
+    return static_cast< QskSkin::ColorScheme >( m_data->colorScheme );
+}
+
+void QskSkin::setColorScheme( ColorScheme colorScheme )
+{
+    if ( colorScheme == m_data->colorScheme )
+        return;
+
+    m_data->colorScheme = colorScheme;
+
+    clearHints();
+    initHints();
+
+    Q_EMIT colorSchemeChanged( colorScheme );
 }
 
 void QskSkin::setSkinHint( QskAspect aspect, const QVariant& skinHint )
@@ -342,6 +365,14 @@ QskGraphicProvider* QskSkin::graphicProvider( const QString& providerId ) const
 bool QskSkin::hasGraphicProvider() const
 {
     return m_data->graphicProviders.size() > 0;
+}
+
+void QskSkin::clearHints()
+{
+    m_data->hintTable.clear();
+    m_data->fonts.clear();
+    m_data->graphicFilters.clear();
+    m_data->graphicProviders.clear();
 }
 
 QString QskSkin::dialogButtonText( int action ) const

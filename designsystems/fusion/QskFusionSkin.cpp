@@ -1297,14 +1297,24 @@ void Editor::setupSubWindow()
     setAnimation( Q::Panel | A::Position, 100, QEasingCurve::OutCubic );
 }
 
-QskFusionSkin::QskFusionSkin( QskSkin::ColorScheme colorScheme, QObject* parent )
+QskFusionSkin::QskFusionSkin( QObject* parent )
     : Inherited( parent )
 {
+}
+
+QskFusionSkin::~QskFusionSkin()
+{
+}
+
+void QskFusionSkin::initHints()
+{
+    clearHints();
+
     using P = QPalette;
 
     setupFonts( QStringLiteral( "Roboto" ) );
 
-    const QskFusionPalette palette( colorScheme );
+    const QskFusionPalette palette( colorScheme() );
 
     setGraphicColor( GraphicNormal, palette.active( P::Text ) );
     setGraphicColor( GraphicDisabled, palette.disabled( P::Text ) );
@@ -1314,10 +1324,6 @@ QskFusionSkin::QskFusionSkin( QskSkin::ColorScheme colorScheme, QObject* parent 
 
     Editor editor( palette, &hintTable() );
     editor.setup();
-}
-
-QskFusionSkin::~QskFusionSkin()
-{
 }
 
 void QskFusionSkin::setGraphicColor( GraphicRole role, QRgb rgb )

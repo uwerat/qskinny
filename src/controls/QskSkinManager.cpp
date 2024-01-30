@@ -74,8 +74,6 @@ namespace
             const QLatin1String TokenData( "MetaData" );
             const QLatin1String TokenFactoryId( "FactoryId" );
             const QLatin1String TokenSkins( "Skins" );
-            const QLatin1String TokenName( "Name" );
-            const QLatin1String TokenScheme( "Scheme" );
 
             const QLatin1String InterfaceId( QskSkinFactoryIID );
 
@@ -95,42 +93,7 @@ namespace
                 const auto skins = factoryData.value( TokenSkins ).toArray();
 
                 for ( const auto& skin : skins )
-                {
-                    const auto& skinObject = skin.toObject();
-                    const auto& name = skinObject.value( TokenName ).toString();
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
-                    const auto& schemeString = skinObject.value( TokenScheme ).toString();
-                    Qt::ColorScheme scheme;
-
-                    if( schemeString == QStringLiteral( "Light" ) )
-                    {
-                        scheme = Qt::ColorScheme::Light;
-                    }
-                    else if( schemeString == QStringLiteral( "Dark" ) )
-                    {
-                        scheme = Qt::ColorScheme::Dark;
-                    }
-                    else
-                    {
-                        scheme = Qt::ColorScheme::Unknown;
-                    }
-
-                    const auto systemScheme = QGuiApplication::styleHints()->colorScheme();
-
-                    if( scheme == systemScheme )
-                    {
-                        m_skinNames.prepend( name );
-                    }
-                    else
-                    {
-                        m_skinNames.append( name );
-                    }
-#else
-                    Q_UNUSED( TokenScheme )
-                    m_skinNames += name;
-#endif
-                }
+                    m_skinNames += skin.toString();
             }
 
             return !m_skinNames.isEmpty();
@@ -518,7 +481,8 @@ QStringList QskSkinManager::skinNames() const
     return m_data->factoryMap.skinNames();
 }
 
-QskSkin* QskSkinManager::createSkin( const QString& skinName ) const
+QskSkin* QskSkinManager::createSkin(
+    const QString& skinName, QskSkin::ColorScheme colorScheme ) const
 {
     m_data->ensurePlugins();
 
@@ -543,10 +507,44 @@ QskSkin* QskSkinManager::createSkin( const QString& skinName ) const
     {
         skin = factory->createSkin( name );
         if ( skin )
+        {
             skin->setObjectName( name );
+
+            if ( colorScheme == QskSkin::UnknownScheme )
+            {
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
+                colorScheme = static_cast< QskSkin::ColorScheme >(
+                    QGuiApplication::styleHints()->colorScheme() );
+#else
+                colorScheme = QskSkin::LightScheme;
+#endif
+            }
+
+            skin->setColorScheme( colorScheme );
+        }
     }
 
     return skin;
+}
+
+void QskSkinManager::setSkin( QskSkin* skin )
+{
+    if ( m_data->skin == skin )
+        return;
+
+    if ( skin && skin->parent() == nullptr )
+        skin->setParent( this );
+
+    const auto oldSkin = m_data->skin;
+    m_data->skin = skin;
+
+    if ( oldSkin )
+    {
+        if ( oldSkin->parent() == this )
+            delete oldSkin;
+    }
+
+    Q_EMIT skinChanged( skin );
 }
 
 QskSkin* QskSkinManager::setSkin( const QString& name )
@@ -554,7 +552,11 @@ QskSkin* QskSkinManager::setSkin( const QString& name )
     if ( m_data->skin && ( m_data->skin->objectName() == name ) )
         return m_data->skin;
 
-    auto skin = createSkin( name );
+    auto colorScheme = QskSkin::UnknownScheme;
+    if ( m_data->skin )
+        colorScheme = m_data->skin->colorScheme();
+
+    auto skin = createSkin( name, colorScheme );
     if ( skin == nullptr )
         return nullptr;
 

@@ -17,8 +17,9 @@
 #include <QskSkinManager.h>
 #include <QskAnimationHint.h>
 #include <QskSkinTransition.h>
-#include <QskSetup.h>
+#include <QskSkinManager.h>
 #include <QskSkin.h>
+#include <QskSetup.h>
 
 #include <QGuiApplication>
 

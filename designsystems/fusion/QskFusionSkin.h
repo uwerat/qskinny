@@ -16,7 +16,7 @@ class QSK_FUSION_EXPORT QskFusionSkin : public QskSkin
     using Inherited = QskSkin;
 
   public:
-    QskFusionSkin( QskSkin::ColorScheme, QObject* parent = nullptr );
+    QskFusionSkin( QObject* parent = nullptr );
     ~QskFusionSkin() override;
 
     enum GraphicRole
@@ -26,6 +26,9 @@ class QSK_FUSION_EXPORT QskFusionSkin : public QskSkin
         GraphicHighlighted,
         GraphicError
     };
+
+  protected:
+    void initHints() override;
 
   private:
     void setGraphicColor( GraphicRole, QRgb );

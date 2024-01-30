@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #include "Dashboard.h"
-#include "SkinFactory.h"
+#include "Skin.h"
 
 #include <SkinnyShortcut.h>
 
@@ -44,12 +44,11 @@ int main( int argc, char** argv )
     QskObjectCounter counter( true );
 #endif
 
-    qskSkinManager->setPluginPaths( QStringList() ); // no skin plugins
-    qskSkinManager->registerFactory( QStringLiteral( "sample" ), new SkinFactory() );
-
     QGuiApplication app( argc, argv );
+    qskSkinManager->setSkin( new Skin() );
 
-    SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
+    SkinnyShortcut::enable( SkinnyShortcut::DebugBackground |
+        SkinnyShortcut::DebugStatistics | SkinnyShortcut::Quit );
 
     Window window;
     window.show();

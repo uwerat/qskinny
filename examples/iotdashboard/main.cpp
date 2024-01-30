@@ -11,49 +11,14 @@
 #include <SkinnyShortcut.h>
 #endif
 
+#include <QskSkinManager.h>
 #include <QskSetup.h>
 #include <QskShortcutMap.h>
-#include <QskSkinFactory.h>
-#include <QskSkinManager.h>
 #include <QskWindow.h>
 #include <QskObjectCounter.h>
 
 #include <QGuiApplication>
 #include <QTimer>
-
-namespace
-{
-    class SkinFactory : public QskSkinFactory
-    {
-        Q_OBJECT
-
-      public:
-        SkinFactory( QObject* parent = nullptr )
-            : QskSkinFactory( parent )
-        {
-        }
-
-        QStringList skinNames() const override
-        {
-            return { "DaytimeSkin", "NighttimeSkin" };
-        }
-
-        QskSkin* createSkin( const QString& skinName ) override
-        {
-            if( skinName == "DaytimeSkin" )
-            {
-                return new DaytimeSkin;
-            }
-
-            if( skinName == "NighttimeSkin" )
-            {
-                return new NighttimeSkin;
-            }
-
-            return nullptr;
-        }
-    };
-}
 
 int main( int argc, char* argv[] )
 {
@@ -64,27 +29,14 @@ int main( int argc, char* argv[] )
     QGuiApplication app( argc, argv );
 
     qskSetup->setItemUpdateFlag( QskQuickItem::PreferRasterForTextures, true );
+    qskSkinManager->setSkin( new Skin() );
 
     Qsk::addGraphicProvider( QString(), new GraphicProvider() );
 
-    // disable default skins
-    qskSkinManager->setPluginPaths( QStringList() ); // no plugins
-#if 1
-    // we should find a better way: TODO ...
-    qskSkinManager->unregisterFactory( "material3factory" );
-    qskSkinManager->unregisterFactory( "fusionfactory" );
-    qskSkinManager->unregisterFactory( "fluent2factory" );
-#endif
-
-    qskSkinManager->registerFactory(
-        QStringLiteral( "SampleSkinFactory" ), new SkinFactory() );
-
-    qskSkinManager->setSkin( "DaytimeSkin" );
-
 #ifdef USE_SHORTCUTS
-    // With CTRL-B you can rotate a couple of visual debug modes
-    SkinnyShortcut::enable( SkinnyShortcut::RotateSkin | SkinnyShortcut::DebugBackground |
-        SkinnyShortcut::DebugStatistics | SkinnyShortcut::Quit );
+    SkinnyShortcut::enable( SkinnyShortcut::ChangeColorScheme
+        | SkinnyShortcut::DebugBackground | SkinnyShortcut::DebugStatistics
+        | SkinnyShortcut::Quit );
 #endif
 
     MainWindow window;
@@ -103,5 +55,3 @@ int main( int argc, char* argv[] )
 
     return app.exec();
 }
-
-#include "main.moc"
