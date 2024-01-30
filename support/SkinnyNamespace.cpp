@@ -13,6 +13,7 @@
 #include <QGuiApplication>
 #include <QByteArray>
 #include <QFont>
+#include <QDebug>
 
 #define STRINGIFY(x) #x
 #define STRING(x) STRINGIFY(x)
