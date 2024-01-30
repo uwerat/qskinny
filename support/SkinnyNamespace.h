@@ -10,9 +10,8 @@
 
 namespace Skinny
 {
-    SKINNY_EXPORT void changeSkin( QskAnimationHint hint = 500 );
-    SKINNY_EXPORT void changeColorScheme( QskAnimationHint hint = 500 );
-    SKINNY_EXPORT void setSkin( int index, QskAnimationHint hint = 500 );
+    SKINNY_EXPORT void changeSkin();
+    SKINNY_EXPORT void changeColorScheme();
     SKINNY_EXPORT void changeFonts( int increment );
     SKINNY_EXPORT void init();
 }

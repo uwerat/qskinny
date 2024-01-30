@@ -13,6 +13,7 @@
 #include <memory>
 
 class QskSkinFactory;
+class QskAnimationHint;
 
 #if defined( qskSkinManager )
 #undef qskSkinManager
@@ -48,8 +49,12 @@ class QSK_EXPORT QskSkinManager : public QObject
     QskSkin* setSkin( const QString& );
     QString skinName() const;
 
+    void setTransitionHint( const QskAnimationHint& );
+    QskAnimationHint transitionHint() const;
+
   Q_SIGNALS:
     void skinChanged( QskSkin* );
+    void colorSchemeChanged( QskSkin::ColorScheme );
 
   protected:
     QskSkinManager();

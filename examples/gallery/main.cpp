@@ -171,7 +171,7 @@ namespace
             if ( ( index >= 0 ) && ( index < names.size() )
                  && ( index != names.indexOf( qskSkinManager->skinName() ) ) )
             {
-                Skinny::setSkin( index, 500 );
+                qskSkinManager->setSkin( names[index] );
             }
         }
     };

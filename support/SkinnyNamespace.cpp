@@ -7,8 +7,6 @@
 
 #include <QskSkinManager.h>
 #include <QskSkin.h>
-#include <QskSkinTransition.h>
-#include <QskAnimationHint.h>
 
 #include <QGuiApplication>
 #include <QByteArray>
@@ -131,7 +129,7 @@ static bool pluginPath = initPluginPath();
 
 Q_COREAPP_STARTUP_FUNCTION( initFonts )
 
-void Skinny::changeSkin( QskAnimationHint hint )
+void Skinny::changeSkin()
 {
     const auto names = qskSkinManager->skinNames();
     if ( names.size() > 1 )
@@ -139,44 +137,19 @@ void Skinny::changeSkin( QskAnimationHint hint )
         auto index = names.indexOf( qskSkinManager->skinName() );
         index = ( index + 1 ) % names.size();
 
-        setSkin( index, hint );
+        qskSkinManager->setSkin( names[ index ] );
     }
 }
 
-void Skinny::setSkin( int index, QskAnimationHint hint )
+void Skinny::changeColorScheme()
 {
-    const auto names = qskSkinManager->skinNames();
-    if ( names.size() <= 1 )
-        return;
-
-    if ( index == names.indexOf( qskSkinManager->skinName() ) )
-        return;
-
-    QskSkinTransition transition;
-    transition.setSourceSkin( qskSkinManager->skin() );
-
-    if ( auto skin = qskSkinManager->setSkin( names[ index ] ) )
+    if ( auto skin = qskSkinManager->skin() )
     {
-        transition.setTargetSkin( skin );
-        transition.run( hint );
+        const auto colorScheme = ( skin->colorScheme() == QskSkin::LightScheme )
+            ? QskSkin::DarkScheme : QskSkin::LightScheme;
+
+        skin->setColorScheme( colorScheme );
     }
-}
-
-void Skinny::changeColorScheme( QskAnimationHint hint )
-{
-    auto skin = qskSkinManager->skin();
-
-    QskSkinTransition transition;
-    transition.setMask( QskSkinTransition::Color );
-    transition.setSourceSkin( skin );
-
-    const auto colorScheme = ( skin->colorScheme() == QskSkin::LightScheme )
-        ? QskSkin::DarkScheme : QskSkin::LightScheme;
-
-    skin->setColorScheme( colorScheme );
-
-    transition.setTargetSkin( skin );
-    transition.run( hint );
 }
 
 void Skinny::changeFonts( int increment )

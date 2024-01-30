@@ -13,6 +13,8 @@
 #include "QskSkinHintTable.h"
 #include "QskStandardSymbol.h"
 #include "QskPlatform.h"
+#include "QskSkinManager.h"
+#include "QskSkinTransition.h"
 
 #include "QskMargins.h"
 
@@ -230,8 +232,23 @@ void QskSkin::setColorScheme( ColorScheme colorScheme )
 
     m_data->colorScheme = colorScheme;
 
-    clearHints();
-    initHints();
+    const auto transitionHint = qskSkinManager->transitionHint();
+    if ( transitionHint.isValid() )
+    {
+        QskSkinTransition transition;
+        transition.setSourceSkin( this );
+
+        clearHints();
+        initHints();
+
+        transition.setTargetSkin( this );
+        transition.run( transitionHint );
+    }
+    else
+    {
+        clearHints();
+        initHints();
+    }
 
     Q_EMIT colorSchemeChanged( colorScheme );
 }

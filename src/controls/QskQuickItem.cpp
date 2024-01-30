@@ -79,6 +79,9 @@ namespace
              */
             QObject::connect( qskSkinManager, &QskSkinManager::skinChanged,
                 qskSkinManager, [ this ] { updateSkin(); } );
+
+            QObject::connect( qskSkinManager, &QskSkinManager::colorSchemeChanged,
+                qskSkinManager, [ this ] { updateSkin(); } );
         }
 
         inline void insert( QskQuickItem* item )

@@ -6,6 +6,8 @@
 #include "QskSkinManager.h"
 #include "QskSkinFactory.h"
 #include "QskSkin.h"
+#include "QskSkinTransition.h"
+#include "QskAnimationHint.h"
 
 #include <qdir.h>
 #include <qglobalstatic.h>
@@ -21,16 +23,31 @@
 #include <qstylehints.h>
 #endif
 
-/*
-    We could use QFactoryLoader, but as it is again a "private" class
-    and does a couple of hardcoded things we don't need ( like always resolving
-    from the application library path ) we prefer having our own code.
- */
 
 namespace
 {
     class SkinManager final : public QskSkinManager
     {
+      public:
+        SkinManager()
+        {
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
+            connect( QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged,
+                this, &SkinManager::updateColorScheme );
+#endif
+        }
+
+      private:
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
+        void updateColorScheme( Qt::ColorScheme scheme )
+        {
+            if ( QGuiApplication::desktopSettingsAware() )
+            {
+                skin()->setColorScheme(
+                    static_cast< QskSkin::ColorScheme >( scheme ) );
+            }
+        }
+#endif
     };
 }
 
@@ -53,6 +70,11 @@ static inline QString qskResolvedPath( const QString& path )
 
 namespace
 {
+    /*
+        We could use QFactoryLoader, but as it is again a "private" class
+        and does a couple of hardcoded things we don't need ( like always resolving
+        from the application library path ) we prefer having our own code.
+     */
     class FactoryLoader final : public QPluginLoader
     {
       public:
@@ -365,6 +387,7 @@ class QskSkinManager::PrivateData
     FactoryMap factoryMap;
 
     QPointer< QskSkin > skin;
+    QskAnimationHint transitionHint = 500;
 
     bool pluginsRegistered : 1;
 };
@@ -532,47 +555,49 @@ void QskSkinManager::setSkin( QskSkin* skin )
     if ( m_data->skin == skin )
         return;
 
-    if ( skin && skin->parent() == nullptr )
-        skin->setParent( this );
-
     const auto oldSkin = m_data->skin;
     m_data->skin = skin;
 
+    if ( skin )
+    {
+        if ( skin->parent() == nullptr )
+            skin->setParent( this );
+
+        connect( skin, &QskSkin::colorSchemeChanged,
+            this, &QskSkinManager::colorSchemeChanged );
+    }
+
     if ( oldSkin )
     {
-        if ( oldSkin->parent() == this )
-            delete oldSkin;
+        disconnect( oldSkin, &QskSkin::colorSchemeChanged,
+            this, &QskSkinManager::colorSchemeChanged );
     }
 
     Q_EMIT skinChanged( skin );
+
+    if ( skin && oldSkin && m_data->transitionHint.isValid() )
+    {
+        QskSkinTransition transition;
+        transition.setSourceSkin( oldSkin );
+        transition.setTargetSkin( skin );
+        transition.run( m_data->transitionHint );
+    }
+
+    if ( oldSkin && oldSkin->parent() == this )
+        delete oldSkin;
 }
 
 QskSkin* QskSkinManager::setSkin( const QString& name )
 {
-    if ( m_data->skin && ( m_data->skin->objectName() == name ) )
-        return m_data->skin;
-
-    auto colorScheme = QskSkin::UnknownScheme;
-    if ( m_data->skin )
-        colorScheme = m_data->skin->colorScheme();
-
-    auto skin = createSkin( name, colorScheme );
-    if ( skin == nullptr )
-        return nullptr;
-
-    if ( skin->parent() == nullptr )
-        skin->setParent( this );
-
-    const auto oldSkin = m_data->skin;
-
-    m_data->skin = skin;
-
-    if ( oldSkin )
+    if ( !( m_data->skin && ( m_data->skin->objectName() == name ) ) )
     {
-        Q_EMIT skinChanged( skin );
+        auto colorScheme = QskSkin::UnknownScheme;
+        if ( m_data->skin )
+            colorScheme = m_data->skin->colorScheme();
 
-        if ( oldSkin->parent() == this )
-            delete oldSkin;
+        auto skin = createSkin( name, colorScheme );
+        if ( skin )
+            setSkin( skin );
     }
 
     return m_data->skin;
@@ -597,6 +622,16 @@ QskSkin* QskSkinManager::skin()
     }
 
     return m_data->skin;
+}
+
+void QskSkinManager::setTransitionHint( const QskAnimationHint& hint )
+{
+    m_data->transitionHint = hint;
+}
+
+QskAnimationHint QskSkinManager::transitionHint() const
+{
+    return m_data->transitionHint;
 }
 
 #include "moc_QskSkinManager.cpp"
