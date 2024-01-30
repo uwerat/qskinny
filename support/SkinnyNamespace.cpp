@@ -152,23 +152,13 @@ void Skinny::setSkin( int index, QskAnimationHint hint )
     if ( index == names.indexOf( qskSkinManager->skinName() ) )
         return;
 
-    auto oldSkin = qskSkinManager->skin();
-    if ( oldSkin->parent() == qskSkinManager )
-        oldSkin->setParent( nullptr ); // otherwise setSkin deletes it
+    QskSkinTransition transition;
+    transition.setSourceSkin( qskSkinManager->skin() );
 
-    if ( auto newSkin = qskSkinManager->setSkin( names[ index ] ) )
+    if ( auto skin = qskSkinManager->setSkin( names[ index ] ) )
     {
-        QskSkinTransition transition;
-
-        //transition.setMask( QskAspect::Color ); // Metrics are flickering -> TODO
-        transition.setSourceSkin( oldSkin );
-        transition.setTargetSkin( newSkin );
-        transition.setAnimation( hint );
-
-        transition.process();
-
-        if ( oldSkin->parent() == nullptr )
-            delete oldSkin;
+        transition.setTargetSkin( skin );
+        transition.run( hint );
     }
 }
 
@@ -178,10 +168,10 @@ void Skinny::changeFonts( int increment )
 
     const auto fonts = skin->fonts();
 
-    for ( auto it = fonts.begin(); it != fonts.end(); ++it )
+    for ( auto it = fonts.constBegin(); it != fonts.constEnd(); ++it )
     {
-        auto role = it->first;
-        auto font = it->second;
+        auto role = it.key();
+        auto font = it.value();
 
         if ( font.pixelSize() > 0 )
         {

@@ -102,22 +102,14 @@ class Window : public QskWindow
   private:
     void setAlternativeSkin( bool on )
     {
-        auto oldSkin = qskSkinManager->skin();
-        if ( oldSkin->parent() == qskSkinManager )
-            oldSkin->setParent( nullptr ); // otherwise setSkin deletes it
-
-        auto newSkin = qskSkinManager->setSkin( alternativeSkin( on ) );
-
         QskSkinTransition transition;
+        transition.setSourceSkin( qskSkinManager->skin() );
 
-        transition.setSourceSkin( oldSkin );
-        transition.setTargetSkin( newSkin );
-        transition.setAnimation( QskAnimationHint( 600, QEasingCurve::Linear ) );
-
-        transition.process();
-
-        if ( oldSkin->parent() == nullptr )
-            delete oldSkin;
+        if ( auto skin = qskSkinManager->setSkin( alternativeSkin( on ) ) )
+        {
+            transition.setTargetSkin( skin );
+            transition.run( 600 );
+        }
     }
 
     QString alternativeSkin( bool on ) const

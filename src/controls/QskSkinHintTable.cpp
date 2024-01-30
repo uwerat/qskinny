@@ -11,20 +11,19 @@
 const QVariant QskSkinHintTable::invalidHint;
 
 inline const QVariant* qskResolvedHint( QskAspect aspect,
-    const std::unordered_map< QskAspect, QVariant >& hints,
-    QskAspect* resolvedAspect )
+    const QHash< QskAspect, QVariant >& hints, QskAspect* resolvedAspect )
 {
     auto a = aspect;
 
     Q_FOREVER
     {
-        auto it = hints.find( aspect );
-        if ( it != hints.cend() )
+        auto it = hints.constFind( aspect );
+        if ( it != hints.constEnd() )
         {
             if ( resolvedAspect )
                 *resolvedAspect = aspect;
 
-            return &it->second;
+            return &it.value();
         }
 
 #if 1
@@ -74,17 +73,53 @@ QskSkinHintTable::QskSkinHintTable()
 {
 }
 
+QskSkinHintTable::QskSkinHintTable( const QskSkinHintTable& other )
+    : m_animatorCount( other.m_animatorCount )
+    , m_states( other.m_states )
+{
+    if ( other.m_hints )
+    {
+        /*
+            A previous implementation was using STL containers - however:
+
+            according to https://tessil.github.io/2016/08/29/benchmark-hopscotch-map.html
+            QHash does slightly faster lookups than std::unordered_map in the category
+            "Random full reads: execution time (integers)", that is the most relevant one
+            in our use case.  
+
+            Considering, that the "copy on write" strategy of QHash makes the implementation
+            of copy/assignment operators much easier ( needed in QskSkinTransition ) we prefer
+            using the Qt container over the STL counterparts.
+         */
+        m_hints = new QHash< QskAspect, QVariant >( *other.m_hints );
+    }
+}
+
 QskSkinHintTable::~QskSkinHintTable()
 {
     delete m_hints;
 }
 
-const std::unordered_map< QskAspect, QVariant >& QskSkinHintTable::hints() const
+QskSkinHintTable& QskSkinHintTable::operator=( const QskSkinHintTable& other )
+{
+    m_animatorCount = ( other.m_animatorCount );
+    m_states = other.m_states;
+
+    delete m_hints;
+    m_hints = nullptr;
+
+    if ( other.m_hints )
+        m_hints = new QHash< QskAspect, QVariant >( *other.m_hints );
+
+    return *this;
+}
+
+const QHash< QskAspect, QVariant >& QskSkinHintTable::hints() const
 {
     if ( m_hints )
         return *m_hints;
 
-    static std::unordered_map< QskAspect, QVariant > dummyHints;
+    static QHash< QskAspect, QVariant > dummyHints;
     return dummyHints;
 }
 
@@ -93,7 +128,7 @@ const std::unordered_map< QskAspect, QVariant >& QskSkinHintTable::hints() const
 bool QskSkinHintTable::setHint( QskAspect aspect, const QVariant& skinHint )
 {
     if ( m_hints == nullptr )
-        m_hints = new HintMap();
+        m_hints = new QHash< QskAspect, QVariant >();
 
     auto it = m_hints->find( aspect );
     if ( it == m_hints->end() )
@@ -111,9 +146,9 @@ bool QskSkinHintTable::setHint( QskAspect aspect, const QVariant& skinHint )
         return true;
     }
 
-    if ( it->second != skinHint )
+    if ( it.value() != skinHint )
     {
-        it->second = skinHint;
+        it.value() = skinHint;
         return true;
     }
 
@@ -127,7 +162,7 @@ bool QskSkinHintTable::removeHint( QskAspect aspect )
     if ( m_hints == nullptr )
         return false;
 
-    const bool erased = m_hints->erase( aspect );
+    const bool erased = m_hints->remove( aspect );
 
     if ( erased )
     {
@@ -153,7 +188,7 @@ QVariant QskSkinHintTable::takeHint( QskAspect aspect )
         auto it = m_hints->find( aspect );
         if ( it != m_hints->end() )
         {
-            const auto value = it->second;
+            const auto value = it.value();
             m_hints->erase( it );
 
             if ( aspect.isAnimator() )
@@ -214,7 +249,7 @@ QskAspect QskSkinHintTable::resolvedAnimator(
             auto it = m_hints->find( aspect );
             if ( it != m_hints->cend() )
             {
-                hint = it->second.value< QskAnimationHint >();
+                hint = it.value().value< QskAnimationHint >();
                 return aspect;
             }
 
