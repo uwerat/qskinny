@@ -49,8 +49,6 @@ class QSK_EXPORT QskSetup : public QObject
     static void setup();
     static void cleanup();
 
-    static QskSetup* qmlAttachedProperties( QObject* );
-
   Q_SIGNALS:
     void skinChanged( QskSkin* );
     void itemUpdateFlagsChanged();

@@ -7,13 +7,11 @@ set(HEADERS
     QskQmlGlobal.h
     QskShortcutQml.h
     QskLayoutQml.h
-    QskMainQml.h
     QskQml.h)
 
 set(SOURCES
     QskShortcutQml.cpp
     QskLayoutQml.cpp
-    QskMainQml.cpp
     QskQml.cpp)
 
 set(target qskqmlexport)

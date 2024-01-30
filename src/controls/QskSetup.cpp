@@ -285,10 +285,4 @@ bool QskSetup::eventFilter( QObject* object, QEvent* event )
     return false;
 }
 
-QskSetup* QskSetup::qmlAttachedProperties( QObject* )
-{
-    return QskSetup::instance();
-}
-
-Q_DECLARE_METATYPE( QskSkin* )
 #include "moc_QskSetup.cpp"
