@@ -93,9 +93,11 @@ class QskScrollView::PrivateData
         }
         else
         {
-            subControls[0] = HorizontalScrollHandle;;
+            subControls[0] = HorizontalScrollHandle;
             subControls[1] = HorizontalScrollBar;
         }
+
+        const bool wasHovered = hasState( subControls[1], QskScrollView::Hovered );
 
         hoveredSubControl = subControl;
 
@@ -106,7 +108,9 @@ class QskScrollView::PrivateData
             qSwap( oldStates, newStates );
 
         scrollView->startHintTransitions( { subControls[0] }, oldStates, newStates );
-        scrollView->startHintTransitions( { subControls[1] }, oldStates, newStates );
+
+        if ( wasHovered != hasState( subControls[1], QskScrollView::Hovered ) )
+            scrollView->startHintTransitions( { subControls[1] }, oldStates, newStates );
     }
 
     bool hasState( QskAspect::Subcontrol subControl, QskAspect::State state ) const
@@ -120,6 +124,7 @@ class QskScrollView::PrivateData
         if ( subControl == stateSubcontrol )
             return true;
 
+        // the scroll bar inherits pressed/hovered from the handle
         if ( subControl == VerticalScrollBar )
             return stateSubcontrol == VerticalScrollHandle;
 

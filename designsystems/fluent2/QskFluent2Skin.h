@@ -21,9 +21,6 @@ class QSK_FLUENT2_EXPORT QskFluent2Skin : public QskSkin
     QskFluent2Skin( QObject* parent = nullptr );
     ~QskFluent2Skin() override;
 
-    void addTheme( QskAspect::Section, const QskFluent2Theme& );
-    void setup();
-
     enum GraphicRole
     {
         GraphicRoleFillColorTextDisabled,
@@ -49,7 +46,12 @@ class QSK_FLUENT2_EXPORT QskFluent2Skin : public QskSkin
     static constexpr QskAspect::Variation Standard = QskAspect::NoVariation;
     static constexpr QskAspect::Variation Accent = QskAspect::Large;
 
+  protected:
+    void initHints() override;
+
   private:
+    void addTheme( QskAspect::Section, const QskFluent2Theme& );
+
     void setupFonts();
     void setupGraphicFilters( const QskFluent2Theme& );
     void setGraphicColor( GraphicRole, QRgb );

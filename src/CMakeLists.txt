@@ -456,6 +456,7 @@ list(APPEND HEADERS
     inputpanel/QskInputPanelBox.h
     inputpanel/QskInputPredictionBar.h
     inputpanel/QskVirtualKeyboard.h
+    inputpanel/QskVirtualKeyboardLayouts.hpp
 )
 
 list(APPEND SOURCES
@@ -481,17 +482,14 @@ set(target qskinny)
 
 if(BUILD_QSKDLL)
     qsk_add_library(${target} SHARED ${SOURCES} ${HEADERS} ${PRIVATE_HEADERS})
+    target_compile_definitions(${target} PUBLIC QSK_DLL )
+    set_target_properties(${target} PROPERTIES DEFINE_SYMBOL QSK_MAKEDLL)
 else()
     qsk_add_library(${target} STATIC ${SOURCES} ${HEADERS} ${PRIVATE_HEADERS})
 endif()
 
-if(BUILD_QSKDLL)
-    target_compile_definitions(${target} PUBLIC QSK_DLL )
-    set_target_properties(${target} PROPERTIES DEFINE_SYMBOL QSK_MAKEDLL)
-endif()
-
 if (QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
-    qsk_add_shaders( ${target} FILES ${SHADERS} )
+    qsk_add_shaders( ${target} FILES ${SHADERS} OUTPUT_TARGETS shader_target)
 endif()
 
 target_include_directories(${target} PUBLIC
@@ -541,8 +539,14 @@ set_target_properties(${target} PROPERTIES
 # packaging
 set(PACKAGE_NAME ${PROJECT_NAME})
 
+set(exported_targets ${target})
+if(NOT BUILD_QSKDLL)
+    list(APPEND exported_targets ${shader_target})
+endif()
+
+
 # setup destination file paths for qskinny target
-install(TARGETS ${target} EXPORT ${PACKAGE_NAME}Targets
+install(TARGETS ${exported_targets} EXPORT ${PACKAGE_NAME}Targets
     LIBRARY DESTINATION       ${QSK_INSTALL_LIBS}
     ARCHIVE DESTINATION       ${QSK_INSTALL_LIBS}
     RUNTIME DESTINATION       ${QSK_INSTALL_LIBS}

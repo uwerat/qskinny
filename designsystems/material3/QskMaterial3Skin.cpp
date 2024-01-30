@@ -48,6 +48,7 @@
 #include <QskBoxBorderMetrics.h>
 #include <QskBoxShapeMetrics.h>
 #include <QskMargins.h>
+#include <QskHctColor.h>
 #include <QskRgbValue.h>
 
 #include <QskNamespace.h>
@@ -72,44 +73,50 @@ namespace
 
     class Editor : private QskSkinHintTableEditor
     {
+        Q_GADGET
+
       public:
-        Editor( QskSkinHintTable* table, const QskMaterial3Theme& palette )
+        Editor( QskSkinHintTable* table, const QskMaterial3Theme& theme )
             : QskSkinHintTableEditor( table )
-            , m_pal( palette )
+            , m_pal( theme )
         {
         }
 
-        void setup();
+        void setup()
+        {
+            for ( int i = 0; i < staticMetaObject.methodCount(); i++ )
+                staticMetaObject.method( i ).invokeOnGadget( this );
+        }
 
       private:
-        void setupBox();
-        void setupCheckBox();
-        void setupComboBox();
-        void setupDialogButtonBox();
-        void setupDrawer();
-        void setupFocusIndicator();
-        void setupInputPanel();
-        void setupVirtualKeyboard();
-        void setupListView();
-        void setupMenu();
-        void setupPageIndicator();
-        void setupPopup();
-        void setupProgressBar();
-        void setupProgressRing();
-        void setupRadioBox();
-        void setupPushButton();
-        void setupScrollView();
-        void setupSegmentedBar();
-        void setupSeparator();
-        void setupSubWindow();
-        void setupSlider();
-        void setupSpinBox();
-        void setupSwitchButton();
-        void setupTabButton();
-        void setupTabBar();
-        void setupTabView();
-        void setupTextInput();
-        void setupTextLabel();
+        Q_INVOKABLE void setupBox();
+        Q_INVOKABLE void setupCheckBox();
+        Q_INVOKABLE void setupComboBox();
+        Q_INVOKABLE void setupDialogButtonBox();
+        Q_INVOKABLE void setupDrawer();
+        Q_INVOKABLE void setupFocusIndicator();
+        Q_INVOKABLE void setupInputPanel();
+        Q_INVOKABLE void setupVirtualKeyboard();
+        Q_INVOKABLE void setupListView();
+        Q_INVOKABLE void setupMenu();
+        Q_INVOKABLE void setupPageIndicator();
+        Q_INVOKABLE void setupPopup();
+        Q_INVOKABLE void setupProgressBar();
+        Q_INVOKABLE void setupProgressRing();
+        Q_INVOKABLE void setupRadioBox();
+        Q_INVOKABLE void setupPushButton();
+        Q_INVOKABLE void setupScrollView();
+        Q_INVOKABLE void setupSegmentedBar();
+        Q_INVOKABLE void setupSeparator();
+        Q_INVOKABLE void setupSubWindow();
+        Q_INVOKABLE void setupSlider();
+        Q_INVOKABLE void setupSpinBox();
+        Q_INVOKABLE void setupSwitchButton();
+        Q_INVOKABLE void setupTabButton();
+        Q_INVOKABLE void setupTabBar();
+        Q_INVOKABLE void setupTabView();
+        Q_INVOKABLE void setupTextInput();
+        Q_INVOKABLE void setupTextLabel();
 
         QskGraphic symbol( const char* name ) const
         {
@@ -146,38 +153,6 @@ namespace
     {
         return QskRgb::toTransparentF( rgb, opacity );
     }
-}
-
-void Editor::setup()
-{
-    setupBox();
-    setupCheckBox();
-    setupComboBox();
-    setupDialogButtonBox();
-    setupDrawer();
-    setupFocusIndicator();
-    setupInputPanel();
-    setupVirtualKeyboard();
-    setupListView();
-    setupMenu();
-    setupPageIndicator();
-    setupPopup();
-    setupProgressBar();
-    setupProgressRing();
-    setupPushButton();
-    setupRadioBox();
-    setupScrollView();
-    setupSegmentedBar();
-    setupSeparator();
-    setupSlider();
-    setupSpinBox();
-    setupSubWindow();
-    setupSwitchButton();
-    setupTabButton();
-    setupTabBar();
-    setupTabView();
-    setupTextLabel();
-    setupTextInput();
 }
 
 void Editor::setupCheckBox()
@@ -1264,93 +1239,129 @@ void Editor::setupSubWindow()
 }
 
 QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme )
-    : QskMaterial3Theme( colorScheme,
-                        { // default Material colors:
-                        0xff6750A4,
-                        0xff625B71,
-                        0xff7D5260,
-                        0xffB3261E,
-                        0xff605D62,
-                        0xff605D66,
-                        } )
+    : QskMaterial3Theme( colorScheme, BaseColors() )
 {
 }
 
 QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
-        std::array< QskHctColor, NumPaletteTypes > palettes )
-    : m_palettes( palettes )
+    const BaseColors& baseColors )
 {
     if ( colorScheme == QskSkin::LightScheme )
     {
-        primary = m_palettes[ Primary ].toned( 40 ).rgb();
-        onPrimary = m_palettes[ Primary ].toned( 100 ).rgb();
-        primaryContainer = m_palettes[ Primary ].toned( 90 ).rgb();
-        onPrimaryContainer = m_palettes[ Primary ].toned( 10 ).rgb();
+        {
+            const QskHctColor color( baseColors.primary );
 
-        secondary = m_palettes[ Secondary ].toned( 40 ).rgb();
-        onSecondary = m_palettes[ Secondary ].toned( 100 ).rgb();
-        secondaryContainer = m_palettes[ Secondary ].toned( 90 ).rgb();
-        onSecondaryContainer = m_palettes[ Secondary ].toned( 10 ).rgb();
+            primary = color.toned( 40 ).rgb();
+            onPrimary = color.toned( 100 ).rgb();
+            primaryContainer = color.toned( 90 ).rgb();
+            onPrimaryContainer = color.toned( 10 ).rgb();
+        }
 
-        tertiary = m_palettes[ Tertiary ].toned( 40 ).rgb();
-        onTertiary = m_palettes[ Tertiary ].toned( 100 ).rgb();
-        tertiaryContainer = m_palettes[ Tertiary ].toned( 90 ).rgb();
-        onTertiaryContainer = m_palettes[ Tertiary ].toned( 10 ).rgb();
+        {
+            const QskHctColor color( baseColors.secondary );
 
-        error = m_palettes[ Error ].toned( 40 ).rgb();
-        onError = m_palettes[ Error ].toned( 100 ).rgb();
-        errorContainer = m_palettes[ Error ].toned( 90 ).rgb();
-        onErrorContainer = m_palettes[ Error ].toned( 10 ).rgb();
+            secondary = color.toned( 40 ).rgb();
+            onSecondary = color.toned( 100 ).rgb();
+            secondaryContainer = color.toned( 90 ).rgb();
+            onSecondaryContainer = color.toned( 10 ).rgb();
+        }
 
-        background = m_palettes[ Neutral ].toned( 99 ).rgb();
-        onBackground = m_palettes[ Neutral ].toned( 10 ).rgb();
-        surface = m_palettes[ Neutral ].toned( 99 ).rgb();
-        onSurface = m_palettes[ Neutral ].toned( 10 ).rgb();
+        {
+            const QskHctColor color( baseColors.tertiary );
 
-        surfaceVariant = m_palettes[ NeutralVariant ].toned( 90 ).rgb();
-        onSurfaceVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
-        outline = m_palettes[ NeutralVariant ].toned( 50 ).rgb();
-        outlineVariant = m_palettes[ NeutralVariant ].toned( 80 ).rgb();
+            tertiary = color.toned( 40 ).rgb();
+            onTertiary = color.toned( 100 ).rgb();
+            tertiaryContainer = color.toned( 90 ).rgb();
+            onTertiaryContainer = color.toned( 10 ).rgb();
+        }
 
-        surfaceContainerHighest = m_palettes[ NeutralVariant ].toned( 90 ).rgb();
+        {
+            const QskHctColor color( baseColors.error );
 
-        shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
+            error = color.toned( 40 ).rgb();
+            onError = color.toned( 100 ).rgb();
+            errorContainer = color.toned( 90 ).rgb();
+            onErrorContainer = color.toned( 10 ).rgb();
+        }
+
+        {
+            const QskHctColor color( baseColors.neutral );
+
+            background = color.toned( 99 ).rgb();
+            onBackground = color.toned( 10 ).rgb();
+            surface = color.toned( 99 ).rgb();
+            onSurface = color.toned( 10 ).rgb();
+            shadow = color.toned( 0 ).rgb();
+        }
+
+        {
+            const QskHctColor color( baseColors.neutralVariant );
+
+            surfaceVariant = color.toned( 90 ).rgb();
+            onSurfaceVariant = color.toned( 30 ).rgb();
+            outline = color.toned( 50 ).rgb();
+            outlineVariant = color.toned( 80 ).rgb();
+            surfaceContainerHighest = color.toned( 90 ).rgb();
+        }
+
     }
     else if ( colorScheme == QskSkin::DarkScheme )
     {
-        primary = m_palettes[ Primary ].toned( 80 ).rgb();
-        onPrimary = m_palettes[ Primary ].toned( 20 ).rgb();
-        primaryContainer = m_palettes[ Primary ].toned( 30 ).rgb();
-        onPrimaryContainer = m_palettes[ Primary ].toned( 90 ).rgb();
+        {
+            const QskHctColor color( baseColors.primary );
 
-        secondary = m_palettes[ Secondary ].toned( 80 ).rgb();
-        onSecondary = m_palettes[ Secondary ].toned( 20 ).rgb();
-        secondaryContainer = m_palettes[ Secondary ].toned( 30 ).rgb();
-        onSecondaryContainer = m_palettes[ Secondary ].toned( 90 ).rgb();
+            primary = color.toned( 80 ).rgb();
+            onPrimary = color.toned( 20 ).rgb();
+            primaryContainer = color.toned( 30 ).rgb();
+            onPrimaryContainer = color.toned( 90 ).rgb();
+        }
 
-        tertiary = m_palettes[ Tertiary ].toned( 80 ).rgb();
-        onTertiary = m_palettes[ Tertiary ].toned( 20 ).rgb();
-        tertiaryContainer = m_palettes[ Tertiary ].toned( 30 ).rgb();
-        onTertiaryContainer = m_palettes[ Tertiary ].toned( 90 ).rgb();
+        {
+            const QskHctColor color( baseColors.secondary );
 
-        error = m_palettes[ Error ].toned( 80 ).rgb();
-        onError = m_palettes[ Error ].toned( 20 ).rgb();
-        errorContainer = m_palettes[ Error ].toned( 30 ).rgb();
-        onErrorContainer = m_palettes[ Error ].toned( 90 ).rgb();
+            secondary = color.toned( 80 ).rgb();
+            onSecondary = color.toned( 20 ).rgb();
+            secondaryContainer = color.toned( 30 ).rgb();
+            onSecondaryContainer = color.toned( 90 ).rgb();
+        }
 
-        background = m_palettes[ Neutral ].toned( 10 ).rgb();
-        onBackground = m_palettes[ Neutral ].toned( 90 ).rgb();
-        surface = m_palettes[ Neutral ].toned( 10 ).rgb();
-        onSurface = m_palettes[ Neutral ].toned( 80 ).rgb();
+        {
+            const QskHctColor color( baseColors.tertiary );
 
-        surfaceVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
-        onSurfaceVariant = m_palettes[ NeutralVariant ].toned( 80 ).rgb();
-        outline = m_palettes[ NeutralVariant ].toned( 60 ).rgb();
-        outlineVariant = m_palettes[ NeutralVariant ].toned( 30 ).rgb();
+            tertiary = color.toned( 80 ).rgb();
+            onTertiary = color.toned( 20 ).rgb();
+            tertiaryContainer = color.toned( 30 ).rgb();
+            onTertiaryContainer = color.toned( 90 ).rgb();
+        }
 
-        surfaceContainerHighest = m_palettes[ NeutralVariant ].toned( 22 ).rgb();
+        {
+            const QskHctColor color( baseColors.error );
 
-        shadow = m_palettes[ Neutral ].toned( 0 ).rgb();
+            error = color.toned( 80 ).rgb();
+            onError = color.toned( 20 ).rgb();
+            errorContainer = color.toned( 30 ).rgb();
+            onErrorContainer = color.toned( 90 ).rgb();
+        }
+
+        {
+            const QskHctColor color( baseColors.neutral );
+
+            background = color.toned( 10 ).rgb();
+            onBackground = color.toned( 90 ).rgb();
+            surface = color.toned( 10 ).rgb();
+            onSurface = color.toned( 80 ).rgb();
+            shadow = color.toned( 0 ).rgb();
+        }
+
+        {
+            const QskHctColor color( baseColors.neutralVariant );
+
+            surfaceVariant = color.toned( 30 ).rgb();
+            onSurfaceVariant = color.toned( 80 ).rgb();
+            outline = color.toned( 60 ).rgb();
+            outlineVariant = color.toned( 30 ).rgb();
+            surfaceContainerHighest = color.toned( 22 ).rgb();
+        }
     }
 
     primary8 = QskRgb::toTransparentF( primary, 0.08 );
@@ -1382,14 +1393,9 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
     shapeExtraSmallTop = QskBoxShapeMetrics( 4_dp, 4_dp, 0, 0 );
 }
 
-QskMaterial3Skin::QskMaterial3Skin( const QskMaterial3Theme& palette, QObject* parent )
+QskMaterial3Skin::QskMaterial3Skin( QObject* parent )
     : Inherited( parent )
 {
-    setupFonts();
-    setupGraphicFilters( palette );
-
-    Editor editor( &hintTable(), palette );
-    editor.setup();
 }
 
 QskMaterial3Skin::~QskMaterial3Skin()
@@ -1418,16 +1424,28 @@ void QskMaterial3Skin::setGraphicColor( GraphicRole role, QRgb rgb )
     setGraphicFilter( role, colorFilter );
 }
 
-void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& palette )
+void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& theme )
 {
-    setGraphicColor( GraphicRoleOnPrimary, palette.onPrimary );
-    setGraphicColor( GraphicRoleOnSecondaryContainer, palette.onSecondaryContainer );
-    setGraphicColor( GraphicRoleOnError, palette.onError );
-    setGraphicColor( GraphicRoleOnSurface, palette.onSurface );
-    setGraphicColor( GraphicRoleOnSurface38, palette.onSurface38 );
-    setGraphicColor( GraphicRoleOnSurfaceVariant, palette.onSurfaceVariant );
-    setGraphicColor( GraphicRolePrimary, palette.primary );
-    setGraphicColor( GraphicRoleSurface, palette.surface );
+    setGraphicColor( GraphicRoleOnPrimary, theme.onPrimary );
+    setGraphicColor( GraphicRoleOnSecondaryContainer, theme.onSecondaryContainer );
+    setGraphicColor( GraphicRoleOnError, theme.onError );
+    setGraphicColor( GraphicRoleOnSurface, theme.onSurface );
+    setGraphicColor( GraphicRoleOnSurface38, theme.onSurface38 );
+    setGraphicColor( GraphicRoleOnSurfaceVariant, theme.onSurfaceVariant );
+    setGraphicColor( GraphicRolePrimary, theme.primary );
+    setGraphicColor( GraphicRoleSurface, theme.surface );
+}
+
+void QskMaterial3Skin::initHints()
+{
+    const QskMaterial3Theme theme( colorScheme() );
+
+    setupFonts();
+    setupGraphicFilters( theme );
+
+    Editor editor( &hintTable(), theme );
+    editor.setup();
 }
 
 #include "moc_QskMaterial3Skin.cpp"
+#include "QskMaterial3Skin.moc"

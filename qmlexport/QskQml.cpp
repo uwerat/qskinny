@@ -8,7 +8,6 @@
 
 #include "QskLayoutQml.h"
 #include "QskShortcutQml.h"
-#include "QskMainQml.h"
 
 #include <QskAspect.h>
 #include <QskBoxBorderMetrics.h>
@@ -196,7 +195,6 @@ void QskQml::registerTypes()
     qmlRegisterUncreatableType< QskSkin >( QSK_MODULE_NAME, 1, 0, "Skin", QString() );
     qRegisterMetaType< QskSkin* >();
 
-    registerObject< QskMain >();
     registerObject< QskShortcutQml >( "Shortcut" );
 
     registerObject< QskWindow >();

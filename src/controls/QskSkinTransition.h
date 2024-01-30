@@ -9,10 +9,12 @@
 #include "QskAspect.h"
 #include <memory>
 
-class QskSkin;
 class QskAnimationHint;
+class QskSkin;
+
 class QQuickWindow;
 class QVariant;
+template< typename Key, typename T > class QHash;
 
 class QSK_EXPORT QskSkinTransition
 {
@@ -28,26 +30,17 @@ class QSK_EXPORT QskSkinTransition
     QskSkinTransition();
     virtual ~QskSkinTransition();
 
-    void setSourceSkin( QskSkin* );
-    QskSkin* sourceSkin() const;
-
-    void setTargetSkin( QskSkin* );
-    QskSkin* targetSkin() const;
-
-    void setAnimation( QskAnimationHint );
-    QskAnimationHint animation() const;
+    void setSourceSkin( const QskSkin* );
+    void setTargetSkin( const QskSkin* );
 
     void setMask( Type );
     Type mask() const;
 
-    void process();
+    void run( const QskAnimationHint& );
 
     static bool isRunning();
     static QVariant animatedHint( const QQuickWindow*, QskAspect );
     static QVariant animatedGraphicFilter( const QQuickWindow*, int graphicRole );
-
-  protected:
-    virtual void updateSkin( QskSkin*, QskSkin* );
 
   private:
     Q_DISABLE_COPY( QskSkinTransition )

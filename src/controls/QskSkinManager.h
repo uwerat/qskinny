@@ -7,12 +7,13 @@
 #define QSK_SKIN_MANAGER_H
 
 #include "QskGlobal.h"
+#include "QskSkin.h"
 
 #include <qobject.h>
 #include <memory>
 
-class QskSkin;
 class QskSkinFactory;
+class QskAnimationHint;
 
 #if defined( qskSkinManager )
 #undef qskSkinManager
@@ -39,7 +40,21 @@ class QSK_EXPORT QskSkinManager : public QObject
 
     QStringList skinNames() const;
 
-    QskSkin* createSkin( const QString& skinName ) const;
+    QskSkin* createSkin( const QString& skinName,
+        QskSkin::ColorScheme = QskSkin::UnknownScheme ) const;
+
+    void setSkin( QskSkin* );
+    QskSkin* skin();
+
+    QskSkin* setSkin( const QString& );
+    QString skinName() const;
+
+    void setTransitionHint( const QskAnimationHint& );
+    QskAnimationHint transitionHint() const;
+
+  Q_SIGNALS:
+    void skinChanged( QskSkin* );
+    void colorSchemeChanged( QskSkin::ColorScheme );
 
   protected:
     QskSkinManager();

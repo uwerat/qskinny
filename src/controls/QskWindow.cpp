@@ -662,7 +662,7 @@ void QskWindow::enforceSkin()
         // let's create a default skin on the GUI thread - whatever it is
         // good for.
 
-        ( void ) qskSetup->skin();
+        ( void ) qskSkinManager->skin();
         qskEnforcedSkin = true;
     }
 
@@ -718,7 +718,7 @@ QskSkin* qskEffectiveSkin( const QQuickWindow* window )
             return skin;
     }
 
-    return qskSetup->skin();
+    return qskSkinManager->skin();
 }
 
 #include "moc_QskWindow.cpp"

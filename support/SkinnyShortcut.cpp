@@ -38,6 +38,13 @@ void SkinnyShortcut::enable( Types types )
         cout << "CTRL-S to change the skin." << endl;
     }
 
+    if ( types & ChangeColorScheme )
+    {
+        QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_L ),
+            false, &s_shortcut, [] { Skinny::changeColorScheme(); } );
+        cout << "CTRL-L to change the color scheme." << endl;
+    }
+
     if ( types & ChangeFonts )
     {
         QskShortcutMap::addShortcut( QKeySequence( Qt::CTRL | Qt::Key_F ),

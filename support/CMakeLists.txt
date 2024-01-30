@@ -31,9 +31,9 @@ target_compile_definitions(${target}
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 
 if(ENABLE_ENSURE_SKINS)
-    target_include_directories(${target} PRIVATE ${QSK_SOURCE_DIR}/skins)
+    target_include_directories(${target} PRIVATE ${QSK_SOURCE_DIR}/designsystems)
     target_compile_definitions(${target} PRIVATE ENSURE_SKINS)
-    target_link_libraries(${target} PRIVATE squiekskin material3skin fluent2skin)
+    target_link_libraries(${target} PRIVATE material3skin fluent2skin fusionskin)
 endif()
 
 set(HIDE_SYSTEM_FONTS ON)

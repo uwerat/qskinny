@@ -7,17 +7,20 @@ set(HEADERS
     QskQmlGlobal.h
     QskShortcutQml.h
     QskLayoutQml.h
-    QskMainQml.h
     QskQml.h)
 
 set(SOURCES
     QskShortcutQml.cpp
     QskLayoutQml.cpp
-    QskMainQml.cpp
     QskQml.cpp)
 
 set(target qskqmlexport)
-qsk_add_library(${target} SHARED ${SOURCES} ${HEADERS})
+
+if(BUILD_QSKDLL)
+    qsk_add_library(${target} SHARED ${SOURCES} ${HEADERS})
+else()
+    qsk_add_library(${target} STATIC ${SOURCES} ${HEADERS})
+endif()
 
 target_link_libraries(${target} PRIVATE qskinny)
 target_include_directories(${target} PUBLIC 

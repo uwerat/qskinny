@@ -5,6 +5,9 @@
 
 #include "QskSkinManager.h"
 #include "QskSkinFactory.h"
+#include "QskSkin.h"
+#include "QskSkinTransition.h"
+#include "QskAnimationHint.h"
 
 #include <qdir.h>
 #include <qglobalstatic.h>
@@ -20,23 +23,31 @@
 #include <qstylehints.h>
 #endif
 
-static inline QStringList qskSplitPath( const QString& s )
-{
-    const auto separator = QDir::listSeparator();
-
-    return s.split( separator, Qt::SkipEmptyParts );
-}
-
-/*
-    We could use QFactoryLoader, but as it is again a "private" class
-    and does a couple of hardcoded things we don't need ( like always resolving
-    from the application library path ) we prefer having our own code.
- */
 
 namespace
 {
     class SkinManager final : public QskSkinManager
     {
+      public:
+        SkinManager()
+        {
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
+            connect( QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged,
+                this, &SkinManager::updateColorScheme );
+#endif
+        }
+
+      private:
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
+        void updateColorScheme( Qt::ColorScheme scheme )
+        {
+            if ( QGuiApplication::desktopSettingsAware() )
+            {
+                skin()->setColorScheme(
+                    static_cast< QskSkin::ColorScheme >( scheme ) );
+            }
+        }
+#endif
     };
 }
 
@@ -48,7 +59,8 @@ static QStringList qskPathList( const char* envName )
     if ( env.isEmpty() )
         return QStringList();
 
-    return qskSplitPath( QFile::decodeName( env ) );
+    const auto name = QFile::decodeName( env );
+    return name.split( QDir::listSeparator(), Qt::SkipEmptyParts );
 }
 
 static inline QString qskResolvedPath( const QString& path )
@@ -58,6 +70,11 @@ static inline QString qskResolvedPath( const QString& path )
 
 namespace
 {
+    /*
+        We could use QFactoryLoader, but as it is again a "private" class
+        and does a couple of hardcoded things we don't need ( like always resolving
+        from the application library path ) we prefer having our own code.
+     */
     class FactoryLoader final : public QPluginLoader
     {
       public:
@@ -79,8 +96,6 @@ namespace
             const QLatin1String TokenData( "MetaData" );
             const QLatin1String TokenFactoryId( "FactoryId" );
             const QLatin1String TokenSkins( "Skins" );
-            const QLatin1String TokenName( "Name" );
-            const QLatin1String TokenScheme( "Scheme" );
 
             const QLatin1String InterfaceId( QskSkinFactoryIID );
 
@@ -100,42 +115,7 @@ namespace
                 const auto skins = factoryData.value( TokenSkins ).toArray();
 
                 for ( const auto& skin : skins )
-                {
-                    const auto& skinObject = skin.toObject();
-                    const auto& name = skinObject.value( TokenName ).toString();
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
-                    const auto& schemeString = skinObject.value( TokenScheme ).toString();
-                    Qt::ColorScheme scheme;
-
-                    if( schemeString == QStringLiteral( "Light" ) )
-                    {
-                        scheme = Qt::ColorScheme::Light;
-                    }
-                    else if( schemeString == QStringLiteral( "Dark" ) )
-                    {
-                        scheme = Qt::ColorScheme::Dark;
-                    }
-                    else
-                    {
-                        scheme = Qt::ColorScheme::Unknown;
-                    }
-
-                    const auto systemScheme = QGuiApplication::styleHints()->colorScheme();
-
-                    if( scheme == systemScheme )
-                    {
-                        m_skinNames.prepend( name );
-                    }
-                    else
-                    {
-                        m_skinNames.append( name );
-                    }
-#else
-                    Q_UNUSED( TokenScheme )
-                    m_skinNames += name;
-#endif
-                }
+                    m_skinNames += skin.toString();
             }
 
             return !m_skinNames.isEmpty();
@@ -406,6 +386,9 @@ class QskSkinManager::PrivateData
     QStringList pluginPaths;
     FactoryMap factoryMap;
 
+    QPointer< QskSkin > skin;
+    QskAnimationHint transitionHint = 500;
+
     bool pluginsRegistered : 1;
 };
 
@@ -521,7 +504,8 @@ QStringList QskSkinManager::skinNames() const
     return m_data->factoryMap.skinNames();
 }
 
-QskSkin* QskSkinManager::createSkin( const QString& skinName ) const
+QskSkin* QskSkinManager::createSkin(
+    const QString& skinName, QskSkin::ColorScheme colorScheme ) const
 {
     m_data->ensurePlugins();
 
@@ -540,7 +524,114 @@ QskSkin* QskSkinManager::createSkin( const QString& skinName ) const
         }
     }
 
-    return factory ? factory->createSkin( name ) : nullptr;
+    QskSkin* skin = nullptr;
+
+    if ( factory )
+    {
+        skin = factory->createSkin( name );
+        if ( skin )
+        {
+            skin->setObjectName( name );
+
+            if ( colorScheme == QskSkin::UnknownScheme )
+            {
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
+                colorScheme = static_cast< QskSkin::ColorScheme >(
+                    QGuiApplication::styleHints()->colorScheme() );
+#else
+                colorScheme = QskSkin::LightScheme;
+#endif
+            }
+
+            skin->setColorScheme( colorScheme );
+        }
+    }
+
+    return skin;
+}
+
+void QskSkinManager::setSkin( QskSkin* skin )
+{
+    if ( m_data->skin == skin )
+        return;
+
+    const auto oldSkin = m_data->skin;
+    m_data->skin = skin;
+
+    if ( skin )
+    {
+        if ( skin->parent() == nullptr )
+            skin->setParent( this );
+
+        connect( skin, &QskSkin::colorSchemeChanged,
+            this, &QskSkinManager::colorSchemeChanged );
+    }
+
+    if ( oldSkin )
+    {
+        disconnect( oldSkin, &QskSkin::colorSchemeChanged,
+            this, &QskSkinManager::colorSchemeChanged );
+    }
+
+    Q_EMIT skinChanged( skin );
+
+    if ( skin && oldSkin && m_data->transitionHint.isValid() )
+    {
+        QskSkinTransition transition;
+        transition.setSourceSkin( oldSkin );
+        transition.setTargetSkin( skin );
+        transition.run( m_data->transitionHint );
+    }
+
+    if ( oldSkin && oldSkin->parent() == this )
+        delete oldSkin;
+}
+
+QskSkin* QskSkinManager::setSkin( const QString& name )
+{
+    if ( !( m_data->skin && ( m_data->skin->objectName() == name ) ) )
+    {
+        auto colorScheme = QskSkin::UnknownScheme;
+        if ( m_data->skin )
+            colorScheme = m_data->skin->colorScheme();
+
+        auto skin = createSkin( name, colorScheme );
+        if ( skin )
+            setSkin( skin );
+    }
+
+    return m_data->skin;
+}
+
+QString QskSkinManager::skinName() const
+{
+    if ( m_data->skin )
+        return m_data->skin->objectName();
+
+    return QString();
+}
+
+QskSkin* QskSkinManager::skin()
+{
+    if ( m_data->skin == nullptr )
+    {
+        m_data->skin = createSkin( QString() );
+        Q_ASSERT( m_data->skin );
+
+        m_data->skin->setParent( this );
+    }
+
+    return m_data->skin;
+}
+
+void QskSkinManager::setTransitionHint( const QskAnimationHint& hint )
+{
+    m_data->transitionHint = hint;
+}
+
+QskAnimationHint QskSkinManager::transitionHint() const
+{
+    return m_data->transitionHint;
 }
 
 #include "moc_QskSkinManager.cpp"

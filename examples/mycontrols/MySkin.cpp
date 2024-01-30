@@ -179,8 +179,8 @@ namespace
 {
     class SkinBlue : public MySkin
     {
-      public:
-        SkinBlue()
+      protected:
+        void initHints() override
         {
             using namespace QskRgb;
 
@@ -201,8 +201,8 @@ namespace
 
     class SkinPink : public MySkin
     {
-      public:
-        SkinPink()
+      protected:
+        void initHints() override
         {
             using namespace QskRgb;
 

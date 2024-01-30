@@ -3,23 +3,23 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_SQUIEK_GLOBAL_H
-#define QSK_SQUIEK_GLOBAL_H
+#ifndef QSK_FUSION_GLOBAL_H
+#define QSK_FUSION_GLOBAL_H
 
 #include "QskGlobal.h"
 
 #ifdef QSK_DLL
 
-#if defined( QSK_SQUIEK_MAKEDLL )     // create a DLL library
-#define QSK_SQUIEK_EXPORT Q_DECL_EXPORT
-#else                        // use a DLL library
-#define QSK_SQUIEK_EXPORT Q_DECL_IMPORT
+#if defined( QSK_FUSION_MAKEDLL )  // create a DLL library
+#define QSK_FUSION_EXPORT Q_DECL_EXPORT
+#else                             // use a DLL library
+#define QSK_FUSION_EXPORT Q_DECL_IMPORT
 #endif
 
 #endif // QSK_DLL
 
-#ifndef QSK_SQUIEK_EXPORT
-#define QSK_SQUIEK_EXPORT
+#ifndef QSK_FUSION_EXPORT
+#define QSK_FUSION_EXPORT
 #endif
 
 #endif

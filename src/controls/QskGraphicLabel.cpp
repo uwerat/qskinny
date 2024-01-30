@@ -8,7 +8,7 @@
 #include "QskColorFilter.h"
 #include "QskGraphic.h"
 #include "QskGraphicProvider.h"
-#include "QskSetup.h"
+#include "QskSkinManager.h"
 #include "QskSkin.h"
 
 QSK_SUBCONTROL( QskGraphicLabel, Panel )
@@ -309,7 +309,7 @@ void QskGraphicLabel::changeEvent( QEvent* event )
 {
     if ( event->type() == QEvent::StyleChange )
     {
-        if ( !m_data->source.isEmpty() && qskSetup->skin()->hasGraphicProvider() )
+        if ( !m_data->source.isEmpty() && qskSkinManager->skin()->hasGraphicProvider() )
         {
             // we might need to reload from a different skin
             m_data->isSourceDirty = true;
