@@ -9,8 +9,11 @@
 #include <qmetaobject.h>
 #include <qobject.h>
 #include <qcoreapplication.h>
-#include <qsemaphore.h>
 #include <qthread.h>
+
+#if QT_CONFIG(thread)
+#include <qsemaphore.h>
+#endif
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>
@@ -192,14 +195,22 @@ static void qskInvokeMetaCall(
                 return;
             }
 
+#if QT_CONFIG(thread)
             QSemaphore semaphore;
 
             auto event = new MetaCallEvent( call, metaObject,
                 offset, index, args, &semaphore );
 
+#else
+            auto event = new MetaCallEvent( call, metaObject,
+                offset, index, args, nullptr );
+#endif
+
             QCoreApplication::postEvent( receiver, event );
 
+#if QT_CONFIG(thread)
             semaphore.acquire();
+#endif
 
             break;
         }

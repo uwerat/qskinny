@@ -13,6 +13,8 @@
 #include "QskSkinHintTable.h"
 #include "QskStandardSymbol.h"
 #include "QskPlatform.h"
+#include "QskSkinManager.h"
+#include "QskSkinTransition.h"
 
 #include "QskMargins.h"
 
@@ -21,7 +23,6 @@
 #include <qpa/qplatformtheme.h>
 
 #include <cmath>
-#include <unordered_map>
 
 #include "QskBox.h"
 #include "QskBoxSkinlet.h"
@@ -104,6 +105,8 @@
 #include "QskStatusIndicator.h"
 #include "QskStatusIndicatorSkinlet.h"
 
+#include <qhash.h>
+
 static inline QskSkinlet* qskNewSkinlet( const QMetaObject* metaObject, QskSkin* skin )
 {
     const QByteArray signature = metaObject->className() + QByteArrayLiteral( "(QskSkin*)" );
@@ -137,21 +140,23 @@ namespace
         }
 
         const QMetaObject* metaObject;
-        QskSkinlet* skinlet;
+        QskSkinlet* skinlet; // mutable ???
     };
 }
 
 class QskSkin::PrivateData
 {
   public:
-    std::unordered_map< const QMetaObject*, SkinletData > skinletMap;
+    QHash< const QMetaObject*, SkinletData > skinletMap;
 
     QskSkinHintTable hintTable;
 
-    std::unordered_map< int, QFont > fonts;
-    std::unordered_map< int, QskColorFilter > graphicFilters;
+    QHash< int, QFont > fonts;
+    QHash< int, QskColorFilter > graphicFilters;
 
     QskGraphicProviderMap graphicProviders;
+
+    int colorScheme = -1; // uninitialized
 };
 
 QskSkin::QskSkin( QObject* parent )
@@ -212,6 +217,42 @@ QskSkin::~QskSkin()
 {
 }
 
+QskSkin::ColorScheme QskSkin::colorScheme() const
+{
+    if ( m_data->colorScheme < 0 )
+        return QskSkin::UnknownScheme;
+
+    return static_cast< QskSkin::ColorScheme >( m_data->colorScheme );
+}
+
+void QskSkin::setColorScheme( ColorScheme colorScheme )
+{
+    if ( colorScheme == m_data->colorScheme )
+        return;
+
+    m_data->colorScheme = colorScheme;
+
+    const auto transitionHint = qskSkinManager->transitionHint();
+    if ( transitionHint.isValid() )
+    {
+        QskSkinTransition transition;
+        transition.setSourceSkin( this );
+
+        clearHints();
+        initHints();
+
+        transition.setTargetSkin( this );
+        transition.run( transitionHint );
+    }
+    else
+    {
+        clearHints();
+        initHints();
+    }
+
+    Q_EMIT colorSchemeChanged( colorScheme );
+}
+
 void QskSkin::setSkinHint( QskAspect aspect, const QVariant& skinHint )
 {
     m_data->hintTable.setHint( aspect, skinHint );
@@ -229,9 +270,9 @@ void QskSkin::declareSkinlet( const QMetaObject* metaObject,
 
     const auto it = m_data->skinletMap.find( metaObject );
 
-    if ( it != m_data->skinletMap.cend() )
+    if ( it != m_data->skinletMap.end() )
     {
-        auto& entry = it->second;
+        auto& entry = it.value();
         if ( entry.metaObject != skinletMetaObject )
         {
             entry.metaObject = skinletMetaObject;
@@ -242,7 +283,7 @@ void QskSkin::declareSkinlet( const QMetaObject* metaObject,
     }
     else
     {
-        m_data->skinletMap.emplace( metaObject, skinletMetaObject );
+        m_data->skinletMap.insert( metaObject, skinletMetaObject );
     }
 }
 
@@ -276,18 +317,18 @@ void QskSkin::setFont( int fontRole, const QFont& font )
 
 void QskSkin::resetFont( int fontRole )
 {
-    m_data->fonts.erase( fontRole );
+    m_data->fonts.remove( fontRole );
 }
 
 QFont QskSkin::font( int fontRole ) const
 {
-    auto it = m_data->fonts.find( fontRole );
-    if ( it != m_data->fonts.cend() )
-        return it->second;
+    auto it = m_data->fonts.constFind( fontRole );
+    if ( it != m_data->fonts.constEnd() )
+        return it.value();
 
-    it = m_data->fonts.find( QskSkin::DefaultFont );
-    if ( it != m_data->fonts.cend() )
-        return it->second;
+    it = m_data->fonts.constFind( QskSkin::DefaultFont );
+    if ( it != m_data->fonts.constEnd() )
+        return it.value();
 
     return QGuiApplication::font();
 }
@@ -299,16 +340,12 @@ void QskSkin::setGraphicFilter( int graphicRole, const QskColorFilter& colorFilt
 
 void QskSkin::resetGraphicFilter( int graphicRole )
 {
-    m_data->graphicFilters.erase( graphicRole );
+    m_data->graphicFilters.remove( graphicRole );
 }
 
 QskColorFilter QskSkin::graphicFilter( int graphicRole ) const
 {
-    auto it = m_data->graphicFilters.find( graphicRole );
-    if ( it != m_data->graphicFilters.cend() )
-        return it->second;
-
-    return QskColorFilter();
+    return m_data->graphicFilters.value( graphicRole );
 }
 
 const QskSkinHintTable& QskSkin::hintTable() const
@@ -321,12 +358,12 @@ QskSkinHintTable& QskSkin::hintTable()
     return m_data->hintTable;
 }
 
-const std::unordered_map< int, QFont >& QskSkin::fonts() const
+const QHash< int, QFont >& QskSkin::fonts() const
 {
     return m_data->fonts;
 }
 
-const std::unordered_map< int, QskColorFilter >& QskSkin::graphicFilters() const
+const QHash< int, QskColorFilter >& QskSkin::graphicFilters() const
 {
     return m_data->graphicFilters;
 }
@@ -345,6 +382,14 @@ QskGraphicProvider* QskSkin::graphicProvider( const QString& providerId ) const
 bool QskSkin::hasGraphicProvider() const
 {
     return m_data->graphicProviders.size() > 0;
+}
+
+void QskSkin::clearHints()
+{
+    m_data->hintTable.clear();
+    m_data->fonts.clear();
+    m_data->graphicFilters.clear();
+    m_data->graphicProviders.clear();
 }
 
 QString QskSkin::dialogButtonText( int action ) const
@@ -375,9 +420,9 @@ const QMetaObject* QskSkin::skinletMetaObject( const QMetaObject* metaObject ) c
 {
     while ( metaObject )
     {
-        auto it = m_data->skinletMap.find( metaObject );
-        if ( it != m_data->skinletMap.cend() )
-            return it->second.metaObject;
+        auto it = m_data->skinletMap.constFind( metaObject );
+        if ( it != m_data->skinletMap.constEnd() )
+            return it.value().metaObject;
 
         metaObject = metaObject->superClass();
     }
@@ -390,9 +435,9 @@ QskSkinlet* QskSkin::skinlet( const QMetaObject* metaObject )
     while ( metaObject )
     {
         auto it = m_data->skinletMap.find( metaObject );
-        if ( it != m_data->skinletMap.cend() )
+        if ( it != m_data->skinletMap.end() )
         {
-            auto& entry = it->second;
+            auto& entry = it.value();
 
             if ( entry.skinlet == nullptr )
                 entry.skinlet = qskNewSkinlet( entry.metaObject, this );
@@ -405,10 +450,6 @@ QskSkinlet* QskSkin::skinlet( const QMetaObject* metaObject )
 
     static QskSkinlet defaultSkinlet;
     return &defaultSkinlet;
-}
-
-void QskSkin::resetColors( const QColor& )
-{
 }
 
 #include "moc_QskSkin.cpp"

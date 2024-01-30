@@ -5,7 +5,7 @@
 
 #include "QskTreeNode.h"
 
-static constexpr auto extraFlag =
+static const auto extraFlag =
     static_cast< QSGNode::Flag >( QSGNode::IsVisitableNode << 1 );
 
 static inline QSGNode* qskCheckedNode( const QSGNode* node, QSGNode::NodeType type )

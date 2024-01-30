@@ -9,7 +9,7 @@
 #include "QskAspect.h"
 
 #include <qvariant.h>
-#include <unordered_map>
+#include <qhash.h>
 
 class QskAnimationHint;
 
@@ -17,7 +17,10 @@ class QSK_EXPORT QskSkinHintTable
 {
   public:
     QskSkinHintTable();
+    QskSkinHintTable( const QskSkinHintTable& );
     ~QskSkinHintTable();
+
+    QskSkinHintTable& operator=( const QskSkinHintTable& );
 
     bool setAnimation( QskAspect, QskAnimationHint );
     QskAnimationHint animation( QskAspect ) const;
@@ -33,7 +36,7 @@ class QSK_EXPORT QskSkinHintTable
 
     bool hasHint( QskAspect ) const;
 
-    const std::unordered_map< QskAspect, QVariant >& hints() const;
+    const QHash< QskAspect, QVariant >& hints() const;
 
     bool hasAnimators() const;
     bool hasHints() const;
@@ -53,12 +56,10 @@ class QSK_EXPORT QskSkinHintTable
     bool isResolutionMatching( QskAspect, QskAspect ) const;
 
   private:
-    Q_DISABLE_COPY( QskSkinHintTable )
 
     static const QVariant invalidHint;
 
-    typedef std::unordered_map< QskAspect, QVariant > HintMap;
-    HintMap* m_hints = nullptr;
+    QHash< QskAspect, QVariant >* m_hints = nullptr;
 
     unsigned short m_animatorCount = 0;
     QskAspect::States m_states;
@@ -81,19 +82,16 @@ inline bool QskSkinHintTable::hasAnimators() const
 
 inline bool QskSkinHintTable::hasHint( QskAspect aspect ) const
 {
-    if ( m_hints != nullptr )
-        return m_hints->find( aspect ) != m_hints->cend();
-
-    return false;
+    return m_hints && m_hints->contains( aspect );
 }
 
 inline const QVariant& QskSkinHintTable::hint( QskAspect aspect ) const
 {
     if ( m_hints != nullptr )
     {
-        auto it = m_hints->find( aspect );
-        if ( it != m_hints->cend() )
-            return it->second;
+        auto it = m_hints->constFind( aspect );
+        if ( it != m_hints->constEnd() )
+            return it.value();
     }
 
     return invalidHint;

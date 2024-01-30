@@ -23,8 +23,9 @@ class QskGraphicProviderMap
     void remove( const QString& providerId );
     void remove( QskGraphicProvider* );
 
-    QskGraphicProvider* take( const QString& providerId );
+    void clear();
 
+    QskGraphicProvider* take( const QString& providerId );
     QskGraphicProvider* provider( const QString& providerId ) const;
 
     int size() const;

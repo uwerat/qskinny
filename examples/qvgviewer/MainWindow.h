@@ -7,7 +7,6 @@
 
 #include <QskWindow.h>
 
-class QskTabView;
 class QskSkin;
 
 class MainWindow : public QskWindow
@@ -18,9 +17,5 @@ class MainWindow : public QskWindow
     MainWindow();
 
   private Q_SLOTS:
-    void setDarknessMode( bool on );
     void setGraphicRoles( QskSkin* );
-
-  private:
-    QskTabView* m_tabView;
 };

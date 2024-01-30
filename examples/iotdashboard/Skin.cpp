@@ -57,23 +57,27 @@ namespace
     }
 }
 
-Skin::Skin( const Palette& palette, QObject* parent )
+Skin::Skin( QObject* parent )
     : QskSkin( parent )
 {
+    setObjectName( "iot" );
+
     declareSkinlet< CircularProgressBar, CircularProgressBarSkinlet >();
     declareSkinlet< Diagram, DiagramSkinlet >();
     declareSkinlet< LightDisplay, LightDisplaySkinlet >();
     declareSkinlet< StorageBar, StorageBarSkinlet >();
 
-    initHints( palette );
+    setColorScheme( LightScheme );
 }
 
 Skin::~Skin()
 {
 }
 
-void Skin::initHints( const Palette& palette )
+void Skin::initHints()
 {
+    const auto palette = Skin::palette( colorScheme() );
+
     QFontDatabase db;
     db.addApplicationFont( ":/fonts/ProximaNova-Regular.otf" ); // ### use fontconfig
 
@@ -311,39 +315,41 @@ void Skin::initHints( const Palette& palette )
     }
 }
 
-Skin::Palette DaytimeSkin::palette() const
+Skin::Palette Skin::palette( QskSkin::ColorScheme colorScheme ) const
 {
-    return {
-        0xff6d7bfb,
-        0xfffbfbfb,
-        Qt::white,
-        0xfff7f7f7,
-        0xffe5e5e5,
-        0xfff4f4f4,
-        Qt::black,
-        0xffe5e5e5,
-        0xffc4c4c4,
-        { { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff }, { 0.5, 0xff6776ff },
-            { 1.0, Qt::black } } },
-        0x10000000,
-        0xffdddddd
-    };
-}
-
-Skin::Palette NighttimeSkin::palette() const
-{
-    return {
-        0xff2937A7,
-        0xff040404,
-        Qt::black,
-        0xff0a0a0a,
-        0xff1a1a1a,
-        0xff0c0c0c,
-        Qt::white,
-        0xff4a4a4a,
-        0xff555555,
-        { { { 0.0, 0xff991100 }, { 0.2, 0xff9a7a57 }, { 0.5, 0xff3726af }, { 1.0, Qt::black } } },
-        0x10ffffff,
-        0xff222222
-    };
+    if ( colorScheme == DarkScheme )
+    {
+        return {
+            0xff2937A7,
+            0xff040404,
+            Qt::black,
+            0xff0a0a0a,
+            0xff1a1a1a,
+            0xff0c0c0c,
+            Qt::white,
+            0xff4a4a4a,
+            0xff555555,
+            { { { 0.0, 0xff991100 }, { 0.2, 0xff9a7a57 }, { 0.5, 0xff3726af }, { 1.0, Qt::black } } },
+            0x10ffffff,
+            0xff222222
+        };
+    }
+    else
+    {
+        return {
+            0xff6d7bfb,
+            0xfffbfbfb,
+            Qt::white,
+            0xfff7f7f7,
+            0xffe5e5e5,
+            0xfff4f4f4,
+            Qt::black,
+            0xffe5e5e5,
+            0xffc4c4c4,
+            { { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff }, { 0.5, 0xff6776ff },
+                { 1.0, Qt::black } } },
+            0x10000000,
+            0xffdddddd
+        };
+    }
 }

@@ -15,7 +15,7 @@
 #include <QskTextLabel.h>
 #include <QskWindow.h>
 #include <QskRgbValue.h>
-#include <QskSetup.h>
+#include <QskSkinManager.h>
 
 #include <QDoubleValidator>
 #include <QFontMetricsF>
@@ -208,7 +208,7 @@ int main( int argc, char** argv )
 
     Skinny::init(); // we need a skin
     SkinnyShortcut::enable( SkinnyShortcut::Quit | SkinnyShortcut::DebugBackground );
-    qskSetup->setSkin( "squiek" );
+    qskSkinManager->setSkin( "fusion" );
 
     QskWindow window;
     window.setColor( QskRgb::Wheat );

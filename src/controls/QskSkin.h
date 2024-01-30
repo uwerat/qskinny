@@ -13,7 +13,6 @@
 
 #include <memory>
 #include <type_traits>
-#include <unordered_map>
 
 class QskSkinnable;
 class QskSkinlet;
@@ -25,6 +24,7 @@ class QskGraphicProvider;
 class QskSkinHintTable;
 
 class QVariant;
+template< typename Key, typename T > class QHash;
 
 class QSK_EXPORT QskSkin : public QObject
 {
@@ -64,8 +64,6 @@ class QSK_EXPORT QskSkin : public QObject
     template< typename Control, typename Skinlet >
     void declareSkinlet();
 
-    virtual void resetColors( const QColor& accent );
-
     void setSkinHint( QskAspect, const QVariant& hint );
     const QVariant& skinHint( QskAspect ) const;
 
@@ -93,8 +91,20 @@ class QSK_EXPORT QskSkin : public QObject
     const QskSkinHintTable& hintTable() const;
     QskSkinHintTable& hintTable();
 
-    const std::unordered_map< int, QFont >& fonts() const;
-    const std::unordered_map< int, QskColorFilter >& graphicFilters() const;
+    const QHash< int, QFont >& fonts() const;
+    const QHash< int, QskColorFilter >& graphicFilters() const;
+
+    ColorScheme colorScheme() const;
+
+  public Q_SLOTS:
+    void setColorScheme( ColorScheme );
+
+  Q_SIGNALS:
+    void colorSchemeChanged( ColorScheme );
+
+  protected:
+    void clearHints();
+    virtual void initHints() = 0;
 
   private:
     void declareSkinlet( const QMetaObject* metaObject,

@@ -27,7 +27,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_Slash },
         { Qt::Key_At, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Bar, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_AsciiTilde, Qt::Key_NumberSign },
         { },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -78,7 +78,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash },
         { Qt::Key_At, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Bar },
         { Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_AsciiTilde },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_mu, Qt::Key_NumberSign, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, 0x0b5 /*Qt::Key_micro*/, Qt::Key_NumberSign, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -103,7 +103,7 @@
         { Qt::Key_paragraph, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_AsciiCircum },
         { Qt::Key_copyright, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Dollar, Qt::Key_onequarter, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright },
         { },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_cent, Qt::Key_unknown, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_cent, Qt::Key_unknown, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_periodcentered, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -130,7 +130,7 @@
         { Qt::Key_paragraph, Qt::Key_sterling, 0x0384 /*tonos*/, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_AsciiCircum },
         { Qt::Key_copyright, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Dollar, Qt::Key_onequarter, Qt::Key_threequarters, Qt::Key_Bar },
         { },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_cent, Qt::Key_unknown, Qt::Key_mu, },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_cent, Qt::Key_unknown, 0x0b5 /*Qt::Key_micro*/, },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_periodcentered, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -155,7 +155,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash },
         { Qt::Key_At, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Bar },
         { Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_AsciiTilde },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_mu, Qt::Key_NumberSign, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, 0x0b5 /*Qt::Key_micro*/, Qt::Key_NumberSign, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -180,7 +180,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight },
         { Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright },
         { },
-        { Qt::Key_copyright, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_copyright, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -205,7 +205,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_AsciiCircum },
         { Qt::Key_At, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Bar },
         { Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_AsciiTilde, Qt::Key_NumberSign },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -230,7 +230,7 @@
         { Qt::Key_paragraph, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_AsciiCircum },
         { Qt::Key_copyright, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Dollar, Qt::Key_onequarter, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_Bar },
         { },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_cent, Qt::Key_unknown, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_cent, Qt::Key_unknown, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_periodcentered, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -245,7 +245,7 @@
         { Qt::Key_Mode_switch, Qt::Key_twosuperior, Qt::Key_Space, Qt::Key_Plus, Qt::Key_Exclam, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
     {
-        { Qt::Key_1, Qt::Key_2, Qt::Key_3, Qt::Key_4, Qt::Key_5, Qt::Key_6, Qt::Key_7, Qt::Key_8, Qt::Key_9, Qt::Key_0, Qt::Key_degree, Qt::Key_mu },
+        { Qt::Key_1, Qt::Key_2, Qt::Key_3, Qt::Key_4, Qt::Key_5, Qt::Key_6, Qt::Key_7, Qt::Key_8, Qt::Key_9, Qt::Key_0, Qt::Key_degree, 0x0b5 /*Qt::Key_micro*/ },
         { Qt::Key_A, Qt::Key_Z, Qt::Key_E, Qt::Key_R, Qt::Key_T, Qt::Key_Y, Qt::Key_U, Qt::Key_I, Qt::Key_O, Qt::Key_P, Qt::Key_sterling },
         { Qt::Key_Q, Qt::Key_S, Qt::Key_D, Qt::Key_F, Qt::Key_G, Qt::Key_H, Qt::Key_J, Qt::Key_K, Qt::Key_L, Qt::Key_M, Qt::Key_Ugrave },
         { Qt::Key_Shift, Qt::Key_W, Qt::Key_X, Qt::Key_C, Qt::Key_V, Qt::Key_B, Qt::Key_N, Qt::Key_Question, Qt::Key_Period, Qt::Key_Slash, Qt::Key_Backspace },
@@ -280,7 +280,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_currency },
         { Qt::Key_At, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Bar, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_division, Qt::Key_multiply },
         { 0x0111 /*d stroke*/, 0x0110 /*D stroke*/, LOWER( Qt::Key_Adiaeresis ), Qt::Key_Adiaeresis, LOWER( Qt::Key_Iacute ), Qt::Key_Iacute, 0x0142 /*l stroke*/, 0x0141 /*L stroke*/, Qt::Key_Dollar, Qt::Key_ssharp },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_AsciiTilde, Qt::Key_Minus, Qt::Key_Underscore, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_AsciiTilde, Qt::Key_Minus, Qt::Key_Underscore, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -305,7 +305,7 @@
         { Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash },
         { Qt::Key_At, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Bar },
         { Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_AsciiTilde },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -358,7 +358,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_acute },
         { Qt::Key_At, Qt::Key_Q, 0x0122 /*R cedilla*/, Qt::Key_W, Qt::Key_Y, Qt::Key_X, Qt::Key_Otilde, Qt::Key_Equal, 0x2013 /*en dash*/, Qt::Key_Question, Qt::Key_AsciiTilde },
         { Qt::Key_registered, LOWER( Qt::Key_Q ), 0x0157 /*r cedilla*/, LOWER( Qt::Key_W ), LOWER( Qt::Key_Y ), LOWER( Qt::Key_X ), LOWER( Qt::Key_Otilde ), 0x20AC /*Euro*/, Qt::Key_Bar, Qt::Key_QuoteDbl, Qt::Key_NumberSign },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -383,7 +383,7 @@
         { Qt::Key_1, Qt::Key_2, Qt::Key_3, Qt::Key_4, Qt::Key_5, Qt::Key_6, Qt::Key_7, Qt::Key_8, Qt::Key_9, Qt::Key_0, Qt::Key_Equal },
         { Qt::Key_At, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Dollar, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_Percent, Qt::Key_Asterisk, Qt::Key_Plus, Qt::Key_Exclam },
         { Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceLeft, Qt::Key_BraceRight, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_AsciiCircum, Qt::Key_NumberSign },
-        { Qt::Key_copyright, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_copyright, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -408,7 +408,7 @@
         { Qt::Key_paragraph, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_AsciiCircum },
         { Qt::Key_copyright, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Bar },
         { Qt::Key_ssharp, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright },
-        { Qt::Key_cent, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_cent, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_periodcentered, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -434,7 +434,7 @@
         { Qt::Key_paragraph, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_AsciiCircum },
         { Qt::Key_copyright, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Dollar, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright },
         { },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_cent, Qt::Key_unknown, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_cent, Qt::Key_unknown, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_periodcentered, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -461,7 +461,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_currency },
         { Qt::Key_At, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Bar, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_division, Qt::Key_multiply },
         { Qt::Key_section, 0x0111 /*d stroke*/, 0x0110 /*D stroke*/, Qt::Key_AsciiTilde, Qt::Key_Dollar, Qt::Key_ssharp },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -487,7 +487,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_AsciiCircum },
         { Qt::Key_At, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Bar, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_AsciiTilde },
         { Qt::Key_unknown, Qt::Key_unknown, Qt::Key_unknown, Qt::Key_unknown, Qt::Key_unknown, Qt::Key_section },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -512,7 +512,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_currency },
         { Qt::Key_At, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Bar, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_division, Qt::Key_multiply },
         { Qt::Key_section, 0x0111 /*d stroke*/, 0x0110 /*D stroke*/, 0x0142 /*l stroke*/, 0x0141 /*L stroke*/, Qt::Key_Dollar, Qt::Key_ssharp },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_AsciiTilde, Qt::Key_Minus, Qt::Key_Underscore, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_AsciiTilde, Qt::Key_Minus, Qt::Key_Underscore, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -540,7 +540,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_Slash },
         { Qt::Key_At, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Bar, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_AsciiTilde, Qt::Key_NumberSign },
         { },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -565,7 +565,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_currency },
         { Qt::Key_At, Qt::Key_registered, 0x20AC /*Euro*/, Qt::Key_Bar, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_division, Qt::Key_multiply },
         { Qt::Key_section, Qt::Key_AsciiTilde,  0x0142 /*l stroke*/, 0x0141 /*L stroke*/, Qt::Key_ssharp },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },
@@ -615,7 +615,7 @@
         { Qt::Key_degree, Qt::Key_twosuperior, Qt::Key_threesuperior, Qt::Key_sterling, Qt::Key_brokenbar, Qt::Key_notsign, Qt::Key_BraceLeft, Qt::Key_BracketLeft, Qt::Key_BracketRight, Qt::Key_BraceRight, Qt::Key_Backslash, Qt::Key_QuoteDbl },
         { Qt::Key_At, Qt::Key_registered, LOWER( Qt::Key_Eacute ), Qt::Key_Bar, Qt::Key_onequarter, Qt::Key_onehalf, Qt::Key_threequarters, LOWER( Qt::Key_I ), Qt::Key_AsciiTilde },
         { LOWER( Qt::Key_AE ), 0x20AC /*Euro*/, Qt::Key_Dollar, Qt::Key_guillemotleft, Qt::Key_guillemotright, Qt::Key_NumberSign },
-        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_ssharp, Qt::Key_mu, Qt::Key_Backspace },
+        { Qt::Key_Less, Qt::Key_Greater, Qt::Key_copyright, Qt::Key_ssharp, 0x0b5 /*Qt::Key_micro*/, Qt::Key_Backspace },
         { Qt::Key_Mode_switch, Qt::Key_Space, Qt::Key_Left, Qt::Key_Right, Qt::Key_Return }
     },
 },

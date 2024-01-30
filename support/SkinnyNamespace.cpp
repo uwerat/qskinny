@@ -5,21 +5,19 @@
 
 #include "SkinnyNamespace.h"
 
-#include <QskSetup.h>
 #include <QskSkinManager.h>
 #include <QskSkin.h>
-#include <QskSkinTransition.h>
-#include <QskAnimationHint.h>
 
 #include <QGuiApplication>
 #include <QByteArray>
+#include <QFont>
+#include <QDebug>
 
 #define STRINGIFY(x) #x
 #define STRING(x) STRINGIFY(x)
 
 #if defined( PLUGIN_PATH )
 
-#include <QByteArray>
 #include <QDir>
 
 #define STRINGIFY(x) #x
@@ -49,9 +47,9 @@ static bool pluginPath = initPluginPath();
 
 #if defined( ENSURE_SKINS )
 
-    #include <squiek/QskSquiekSkinFactory.h>
     #include <material3/QskMaterial3SkinFactory.h>
     #include <fluent2/QskFluent2SkinFactory.h>
+    #include <fusion/QskFusionSkinFactory.h>
 
     static void initSkins()
     {
@@ -64,9 +62,9 @@ static bool pluginPath = initPluginPath();
                 we manually add them here.
              */
 
-            qskSkinManager->registerFactory( "SquiekFactory", new QskSquiekSkinFactory() );
             qskSkinManager->registerFactory( "Material3Factory", new QskMaterial3SkinFactory() );
             qskSkinManager->registerFactory( "Fluent2Factory", new QskFluent2SkinFactory() );
+            qskSkinManager->registerFactory( "FusionFactory", new QskFusionSkinFactory() );
 
             qWarning() << "Couldn't find skin plugins, adding some manually.";
 
@@ -74,7 +72,7 @@ static bool pluginPath = initPluginPath();
         }
 
         if ( !skinNames.isEmpty() )
-            qskSetup->setSkin( skinNames[0] );
+            qskSkinManager->setSkin( skinNames[0] );
     }
 
     Q_COREAPP_STARTUP_FUNCTION( initSkins )
@@ -131,57 +129,39 @@ static bool pluginPath = initPluginPath();
 
 Q_COREAPP_STARTUP_FUNCTION( initFonts )
 
-void Skinny::changeSkin( QskAnimationHint hint )
+void Skinny::changeSkin()
 {
     const auto names = qskSkinManager->skinNames();
     if ( names.size() > 1 )
     {
-        auto index = names.indexOf( qskSetup->skinName() );
+        auto index = names.indexOf( qskSkinManager->skinName() );
         index = ( index + 1 ) % names.size();
 
-        setSkin( index, hint );
+        qskSkinManager->setSkin( names[ index ] );
     }
 }
 
-void Skinny::setSkin( int index, QskAnimationHint hint )
+void Skinny::changeColorScheme()
 {
-    const auto names = qskSkinManager->skinNames();
-    if ( names.size() <= 1 )
-        return;
-
-    if ( index == names.indexOf( qskSetup->skinName() ) )
-        return;
-
-    auto oldSkin = qskSetup->skin();
-    if ( oldSkin->parent() == qskSetup )
-        oldSkin->setParent( nullptr ); // otherwise setSkin deletes it
-
-    if ( auto newSkin = qskSetup->setSkin( names[ index ] ) )
+    if ( auto skin = qskSkinManager->skin() )
     {
-        QskSkinTransition transition;
+        const auto colorScheme = ( skin->colorScheme() == QskSkin::LightScheme )
+            ? QskSkin::DarkScheme : QskSkin::LightScheme;
 
-        //transition.setMask( QskAspect::Color ); // Metrics are flickering -> TODO
-        transition.setSourceSkin( oldSkin );
-        transition.setTargetSkin( newSkin );
-        transition.setAnimation( hint );
-
-        transition.process();
-
-        if ( oldSkin->parent() == nullptr )
-            delete oldSkin;
+        skin->setColorScheme( colorScheme );
     }
 }
 
 void Skinny::changeFonts( int increment )
 {
-    auto skin = qskSetup->skin();
+    auto skin = qskSkinManager->skin();
 
     const auto fonts = skin->fonts();
 
-    for ( auto it = fonts.begin(); it != fonts.end(); ++it )
+    for ( auto it = fonts.constBegin(); it != fonts.constEnd(); ++it )
     {
-        auto role = it->first;
-        auto font = it->second;
+        auto role = it.key();
+        auto font = it.value();
 
         if ( font.pixelSize() > 0 )
         {
@@ -199,7 +179,7 @@ void Skinny::changeFonts( int increment )
         skin->setFont( role, font );
     }
 
-    Q_EMIT qskSetup->skinChanged( skin );
+    Q_EMIT qskSkinManager->skinChanged( skin );
 }
 
 void Skinny::init()

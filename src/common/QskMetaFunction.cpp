@@ -7,8 +7,11 @@
 
 #include <qcoreapplication.h>
 #include <qobject.h>
-#include <qsemaphore.h>
 #include <qthread.h>
+
+#if QT_CONFIG(thread)
+#include <qsemaphore.h>
+#endif
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>
@@ -204,14 +207,21 @@ void QskMetaFunction::invoke( QObject* object,
                 return;
             }
 
+#if QT_CONFIG(thread)
             QSemaphore semaphore;
 
             auto event = new QMetaCallEvent(
                 m_functionCall, nullptr, 0, argv, &semaphore );
+#else
+            auto event = new QMetaCallEvent(
+                m_functionCall, nullptr, 0, argv, nullptr );
+#endif
 
             QCoreApplication::postEvent( receiver, event );
 
+#if QT_CONFIG(thread)
             semaphore.acquire();
+#endif
 
             break;
         }
