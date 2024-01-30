@@ -131,7 +131,7 @@ namespace
 
             setOptions( names );
 
-            if ( const auto index = names.indexOf( qskSetup->skinName() ) )
+            if ( const auto index = names.indexOf( qskSkinManager->skinName() ) )
                 setStartIndex( index );
 
             connect( this, &QskMenuButton::triggered,
@@ -141,7 +141,7 @@ namespace
         void openMenu() override
         {
             const auto names = qskSkinManager->skinNames();
-            setStartIndex( names.indexOf( qskSetup->skinName() ) );
+            setStartIndex( names.indexOf( qskSkinManager->skinName() ) );
 
             QskMenuButton::openMenu();
         }
