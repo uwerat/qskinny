@@ -133,7 +133,7 @@ bool QskSkinHintTable::setHint( QskAspect aspect, const QVariant& skinHint )
     auto it = m_hints->find( aspect );
     if ( it == m_hints->end() )
     {
-        m_hints->emplace( aspect, skinHint );
+        m_hints->insert( aspect, skinHint );
 
         if ( aspect.isAnimator() )
         {
