@@ -12,7 +12,6 @@
 #include <qobject.h>
 #include <memory>
 
-class QskSkin;
 class QQuickItem;
 class QskGraphicProvider;
 
@@ -38,11 +37,6 @@ class QSK_EXPORT QskSetup : public QObject
     void resetItemUpdateFlag( QskQuickItem::UpdateFlag );
     bool testItemUpdateFlag( QskQuickItem::UpdateFlag );
 
-    QskSkin* setSkin( const QString& );
-    QString skinName() const;
-
-    QskSkin* skin();
-
     void addGraphicProvider( const QString& providerId, QskGraphicProvider* );
     QskGraphicProvider* graphicProvider( const QString& providerId ) const;
 
@@ -50,7 +44,6 @@ class QSK_EXPORT QskSetup : public QObject
     static void cleanup();
 
   Q_SIGNALS:
-    void skinChanged( QskSkin* );
     void itemUpdateFlagsChanged();
 
   private:

@@ -5,7 +5,6 @@
 
 #include "SkinnyNamespace.h"
 
-#include <QskSetup.h>
 #include <QskSkinManager.h>
 #include <QskSkin.h>
 #include <QskSkinTransition.h>
@@ -13,13 +12,13 @@
 
 #include <QGuiApplication>
 #include <QByteArray>
+#include <QFont>
 
 #define STRINGIFY(x) #x
 #define STRING(x) STRINGIFY(x)
 
 #if defined( PLUGIN_PATH )
 
-#include <QByteArray>
 #include <QDir>
 
 #define STRINGIFY(x) #x
@@ -74,7 +73,7 @@ static bool pluginPath = initPluginPath();
         }
 
         if ( !skinNames.isEmpty() )
-            qskSetup->setSkin( skinNames[0] );
+            qskSkinManager->setSkin( skinNames[0] );
     }
 
     Q_COREAPP_STARTUP_FUNCTION( initSkins )
@@ -136,7 +135,7 @@ void Skinny::changeSkin( QskAnimationHint hint )
     const auto names = qskSkinManager->skinNames();
     if ( names.size() > 1 )
     {
-        auto index = names.indexOf( qskSetup->skinName() );
+        auto index = names.indexOf( qskSkinManager->skinName() );
         index = ( index + 1 ) % names.size();
 
         setSkin( index, hint );
@@ -149,14 +148,14 @@ void Skinny::setSkin( int index, QskAnimationHint hint )
     if ( names.size() <= 1 )
         return;
 
-    if ( index == names.indexOf( qskSetup->skinName() ) )
+    if ( index == names.indexOf( qskSkinManager->skinName() ) )
         return;
 
-    auto oldSkin = qskSetup->skin();
-    if ( oldSkin->parent() == qskSetup )
+    auto oldSkin = qskSkinManager->skin();
+    if ( oldSkin->parent() == qskSkinManager )
         oldSkin->setParent( nullptr ); // otherwise setSkin deletes it
 
-    if ( auto newSkin = qskSetup->setSkin( names[ index ] ) )
+    if ( auto newSkin = qskSkinManager->setSkin( names[ index ] ) )
     {
         QskSkinTransition transition;
 
@@ -174,7 +173,7 @@ void Skinny::setSkin( int index, QskAnimationHint hint )
 
 void Skinny::changeFonts( int increment )
 {
-    auto skin = qskSetup->skin();
+    auto skin = qskSkinManager->skin();
 
     const auto fonts = skin->fonts();
 
@@ -199,7 +198,7 @@ void Skinny::changeFonts( int increment )
         skin->setFont( role, font );
     }
 
-    Q_EMIT qskSetup->skinChanged( skin );
+    Q_EMIT qskSkinManager->skinChanged( skin );
 }
 
 void Skinny::init()

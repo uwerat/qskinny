@@ -5,6 +5,7 @@
 
 #include "QskSkinManager.h"
 #include "QskSkinFactory.h"
+#include "QskSkin.h"
 
 #include <qdir.h>
 #include <qglobalstatic.h>
@@ -19,13 +20,6 @@
 #include <qguiapplication.h>
 #include <qstylehints.h>
 #endif
-
-static inline QStringList qskSplitPath( const QString& s )
-{
-    const auto separator = QDir::listSeparator();
-
-    return s.split( separator, Qt::SkipEmptyParts );
-}
 
 /*
     We could use QFactoryLoader, but as it is again a "private" class
@@ -48,7 +42,8 @@ static QStringList qskPathList( const char* envName )
     if ( env.isEmpty() )
         return QStringList();
 
-    return qskSplitPath( QFile::decodeName( env ) );
+    const auto name = QFile::decodeName( env );
+    return name.split( QDir::listSeparator(), Qt::SkipEmptyParts );
 }
 
 static inline QString qskResolvedPath( const QString& path )
@@ -406,6 +401,8 @@ class QskSkinManager::PrivateData
     QStringList pluginPaths;
     FactoryMap factoryMap;
 
+    QPointer< QskSkin > skin;
+
     bool pluginsRegistered : 1;
 };
 
@@ -540,7 +537,64 @@ QskSkin* QskSkinManager::createSkin( const QString& skinName ) const
         }
     }
 
-    return factory ? factory->createSkin( name ) : nullptr;
+    QskSkin* skin = nullptr;
+
+    if ( factory )
+    {
+        skin = factory->createSkin( name );
+        if ( skin )
+            skin->setObjectName( name );
+    }
+
+    return skin;
+}
+
+QskSkin* QskSkinManager::setSkin( const QString& name )
+{
+    if ( m_data->skin && ( m_data->skin->objectName() == name ) )
+        return m_data->skin;
+
+    auto skin = createSkin( name );
+    if ( skin == nullptr )
+        return nullptr;
+
+    if ( skin->parent() == nullptr )
+        skin->setParent( this );
+
+    const auto oldSkin = m_data->skin;
+
+    m_data->skin = skin;
+
+    if ( oldSkin )
+    {
+        Q_EMIT skinChanged( skin );
+
+        if ( oldSkin->parent() == this )
+            delete oldSkin;
+    }
+
+    return m_data->skin;
+}
+
+QString QskSkinManager::skinName() const
+{
+    if ( m_data->skin )
+        return m_data->skin->objectName();
+
+    return QString();
+}
+
+QskSkin* QskSkinManager::skin()
+{
+    if ( m_data->skin == nullptr )
+    {
+        m_data->skin = createSkin( QString() );
+        Q_ASSERT( m_data->skin );
+
+        m_data->skin->setParent( this );
+    }
+
+    return m_data->skin;
 }
 
 #include "moc_QskSkinManager.cpp"

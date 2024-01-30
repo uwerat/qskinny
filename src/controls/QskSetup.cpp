@@ -7,12 +7,11 @@
 #include "QskControl.h"
 #include "QskControlPrivate.h"
 #include "QskGraphicProviderMap.h"
-#include "QskSkin.h"
 #include "QskSkinManager.h"
+#include "QskSkin.h"
 #include "QskWindow.h"
 
 #include <qguiapplication.h>
-#include <qpointer.h>
 #include <qstylehints.h>
 
 QskSetup* QskSetup::s_instance = nullptr;
@@ -80,9 +79,6 @@ class QskSetup::PrivateData
         : itemUpdateFlags( qskDefaultUpdateFlags() )
     {
     }
-
-    QString skinName;
-    QPointer< QskSkin > skin;
 
     QskGraphicProviderMap graphicProviders;
     QskQuickItem::UpdateFlags itemUpdateFlags;
@@ -152,53 +148,6 @@ bool QskSetup::testItemUpdateFlag( QskQuickItem::UpdateFlag flag )
     return m_data->itemUpdateFlags.testFlag( flag );
 }
 
-QskSkin* QskSetup::setSkin( const QString& skinName )
-{
-    if ( m_data->skin && ( skinName == m_data->skinName ) )
-        return m_data->skin;
-
-    auto skin = QskSkinManager::instance()->createSkin( skinName );
-    if ( skin == nullptr )
-        return nullptr;
-
-    if ( skin->parent() == nullptr )
-        skin->setParent( this );
-
-    const auto oldSkin = m_data->skin;
-
-    m_data->skin = skin;
-    m_data->skinName = skinName;
-
-    if ( oldSkin )
-    {
-        Q_EMIT skinChanged( skin );
-
-        if ( oldSkin->parent() == this )
-            delete oldSkin;
-    }
-
-    return m_data->skin;
-}
-
-QString QskSetup::skinName() const
-{
-    return m_data->skinName;
-}
-
-QskSkin* QskSetup::skin()
-{
-    if ( m_data->skin == nullptr )
-    {
-        m_data->skin = QskSkinManager::instance()->createSkin( QString() );
-        Q_ASSERT( m_data->skin );
-
-        m_data->skin->setParent( this );
-        m_data->skinName = m_data->skin->objectName();
-    }
-
-    return m_data->skin;
-}
-
 void QskSetup::addGraphicProvider( const QString& providerId, QskGraphicProvider* provider )
 {
     m_data->graphicProviders.insert( providerId, provider );
@@ -206,10 +155,9 @@ void QskSetup::addGraphicProvider( const QString& providerId, QskGraphicProvider
 
 QskGraphicProvider* QskSetup::graphicProvider( const QString& providerId ) const
 {
-    if ( m_data->skin )
+    if ( auto skin = qskSkinManager->skin() )
     {
-        QskGraphicProvider* provider = m_data->skin->graphicProvider( providerId );
-        if ( provider )
+        if ( auto provider = skin->graphicProvider( providerId ) )
             return provider;
     }
 

@@ -9,7 +9,7 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskGraphic.h"
 #include "QskGraphicProvider.h"
-#include "QskSetup.h"
+#include "QskSkinManager.h"
 #include "QskSkin.h"
 #include "QskSkinlet.h"
 #include "QskTextOptions.h"
@@ -275,7 +275,7 @@ void QskPushButton::changeEvent( QEvent* event )
         case QEvent::StyleChange:
         {
             if ( !m_data->iconSource.isEmpty() &&
-                qskSetup->skin()->hasGraphicProvider() )
+                qskSkinManager->skin()->hasGraphicProvider() )
             {
                 // we might need to reload from a different skin
                 m_data->isIconSourceDirty = true;

@@ -15,7 +15,7 @@
 #include <QskLinearBox.h>
 #include <QskPushButton.h>
 #include <QskRgbValue.h>
-#include <QskSetup.h>
+#include <QskSkinManager.h>
 #include <QskSkin.h>
 #include <QskBoxShapeMetrics.h>
 
@@ -92,10 +92,10 @@ MainWindow::MainWindow()
     connect( invertButton, &QskPushButton::toggled,
         label, &GraphicLabel::setDarknessMode );
 
-    connect( qskSetup, &QskSetup::skinChanged,
+    connect( qskSkinManager, &QskSkinManager::skinChanged,
         this, &MainWindow::setGraphicRoles );
 
-    setGraphicRoles( qskSetup->skin() );
+    setGraphicRoles( qskSkinManager->skin() );
 }
 
 void MainWindow::setGraphicRoles( QskSkin* skin )

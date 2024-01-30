@@ -38,7 +38,6 @@
 #include <QskGraphicProvider.h>
 #include <QskGraphicIO.h>
 #include <QskGraphic.h>
-#include <QskSetup.h>
 
 #include <QGuiApplication>
 
@@ -159,7 +158,7 @@ namespace
             for ( const auto& name : names )
                 menu->addOption( QUrl(), name );
 
-            if ( const auto index = names.indexOf( qskSetup->skinName() ) )
+            if ( const auto index = names.indexOf( qskSkinManager->skinName() ) )
                 menu->setCurrentIndex( index );
 
             connect( menu, &QskMenu::triggered, this, &SkinButton::changeSkin );
@@ -170,7 +169,7 @@ namespace
             const auto names = qskSkinManager->skinNames();
 
             if ( ( index >= 0 ) && ( index < names.size() )
-                 && ( index != names.indexOf( qskSetup->skinName() ) ) )
+                 && ( index != names.indexOf( qskSkinManager->skinName() ) ) )
             {
                 Skinny::setSkin( index, 500 );
             }

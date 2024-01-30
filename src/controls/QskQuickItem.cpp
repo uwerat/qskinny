@@ -8,6 +8,7 @@
 #include "QskQuick.h"
 #include "QskEvent.h"
 #include "QskSetup.h"
+#include "QskSkinManager.h"
 #include "QskSkin.h"
 #include "QskDirtyItemFilter.h"
 
@@ -76,8 +77,8 @@ namespace
                 We would also need to send QEvent::StyleChange, when
                 a window has a new skin. TODO ...
              */
-            QObject::connect( qskSetup, &QskSetup::skinChanged,
-                qskSetup, [ this ] { updateSkin(); } );
+            QObject::connect( qskSkinManager, &QskSkinManager::skinChanged,
+                qskSkinManager, [ this ] { updateSkin(); } );
         }
 
         inline void insert( QskQuickItem* item )

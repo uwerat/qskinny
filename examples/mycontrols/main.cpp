@@ -102,11 +102,11 @@ class Window : public QskWindow
   private:
     void setAlternativeSkin( bool on )
     {
-        auto oldSkin = qskSetup->skin();
-        if ( oldSkin->parent() == qskSetup )
+        auto oldSkin = qskSkinManager->skin();
+        if ( oldSkin->parent() == qskSkinManager )
             oldSkin->setParent( nullptr ); // otherwise setSkin deletes it
 
-        auto newSkin = qskSetup->setSkin( alternativeSkin( on ) );
+        auto newSkin = qskSkinManager->setSkin( alternativeSkin( on ) );
 
         QskSkinTransition transition;
 

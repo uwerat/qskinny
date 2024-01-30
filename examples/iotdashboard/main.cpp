@@ -79,7 +79,7 @@ int main( int argc, char* argv[] )
     qskSkinManager->registerFactory(
         QStringLiteral( "SampleSkinFactory" ), new SkinFactory() );
 
-    qskSetup->setSkin( "DaytimeSkin" );
+    qskSkinManager->setSkin( "DaytimeSkin" );
 
 #ifdef USE_SHORTCUTS
     // With CTRL-B you can rotate a couple of visual debug modes
@@ -92,13 +92,13 @@ int main( int argc, char* argv[] )
 
     for( int i = 1; i < argc; i++ )
     {
-      if( argv[i] == QStringLiteral("--screenshot") && i + 1 < argc )
-      {
-          QTimer::singleShot( 500, &window, [&app, &window, filename = QString(argv[i + 1])]()
-            { auto image = window.grabWindow(); image.save(filename); } );
+        if( argv[i] == QStringLiteral( "--screenshot" ) && i + 1 < argc )
+        {
+            QTimer::singleShot( 500, &window, [&app, &window, filename = QString(argv[i + 1])]()
+                { auto image = window.grabWindow(); image.save(filename); } );
 
-          break;
-      }
+            break;
+        }
     }
 
     return app.exec();
