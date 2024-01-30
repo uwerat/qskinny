@@ -24,6 +24,7 @@
 #include <QskTextLabel.h>
 #include <QskSwitchButton.h>
 #include <QskPushButton.h>
+#include <QskPageIndicator.h>
 #include <QskScrollArea.h>
 #include <QskMenuButton.h>
 #include <QskWindow.h>
@@ -150,9 +151,9 @@ namespace
             const auto names = qskSkinManager->skinNames();
 
             if ( ( index >= 0 ) && ( index < names.size() )
-                 && ( index != names.indexOf( qskSetup->skinName() ) ) )
+                 && ( index != names.indexOf( qskSkinManager->skinName() ) ) )
             {
-                Skinny::setSkin( index, 500 );
+                qskSkinManager->setSkin( names[index] );
             }
         }
     };
@@ -186,7 +187,7 @@ namespace
         Q_OBJECT
 
       public:
-        Header( QQuickItem* parent = nullptr )
+        Header( int tabCount, QQuickItem* parent = nullptr )
             : QskLinearBox( Qt::Horizontal, parent )
         {
             setPaddingHint( QskBox::Panel, 5 );
@@ -197,6 +198,9 @@ namespace
             new FileButton( "File", this );
             new SkinButton( "Skin", this );
 
+            addStretch( 10 );
+            m_pageIndicator = new QskPageIndicator( tabCount, this );
+            m_pageIndicator->setCurrentIndex( 0 );
             addStretch( 10 );
 
             {
@@ -218,9 +222,18 @@ namespace
             }
         }
 
+      public Q_SLOTS:
+        void setCurrentTab( int index )
+        {
+            m_pageIndicator->setCurrentIndex( index );
+        }
+
       Q_SIGNALS:
         void enabledToggled( bool );
         void drawerRequested();
+
+      private:
+        QskPageIndicator* m_pageIndicator;
     };
 
     class MainView : public QskMainView
@@ -229,19 +242,22 @@ namespace
         MainView( QQuickItem* parent = nullptr )
             : QskMainView( parent )
         {
-            auto header = new Header( this );
-
             auto tabView = new TabView( this );
             tabView->addPage( "Buttons", new ButtonPage() );
             tabView->addPage( "Labels", new LabelPage() );
             tabView->addPage( "Inputs", new InputPage() );
-            tabView->addPage( "Progress\nBars", new ProgressBarPage() );
+            tabView->addPage( "Indicators", new ProgressBarPage() );
             tabView->addPage( "Selectors", new SelectorPage() );
             tabView->addPage( "Dialogs", new DialogPage() );
             tabView->addPage( "ListBox", new ListBoxPage() );
 
+            auto header = new Header( tabView->count(), this );
+
             connect( header, &Header::enabledToggled,
                 tabView, &TabView::setPagesEnabled );
+
+            connect( tabView, &TabView::currentIndexChanged,
+                header, &Header::setCurrentTab );
 
             auto drawer = new Drawer( tabView );
             drawer->setEdge( Qt::RightEdge );

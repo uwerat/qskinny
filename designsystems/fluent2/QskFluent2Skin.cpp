@@ -1965,6 +1965,47 @@ QskFluent2Skin::~QskFluent2Skin()
 {
 }
 
+void QskFluent2Skin::initHints()
+{
+    struct
+    {
+        QskFluent2Theme::BaseColors baseColors;
+        QskFluent2Theme::AccentColors accentColors;
+    } colors[2];
+
+    if( colorScheme() != QskSkin::DarkScheme )
+    {
+        colors[0].baseColors = { rgbGray( 243 ), rgbGray( 249 ), rgbGray( 238 ) };
+        colors[0].accentColors = { 0xff0078d4, 0xff005eb7, 0xff003d92, 0xff001968 };
+
+        colors[1].baseColors = { rgbGray( 249 ), rgbGray( 249 ), rgbGray( 238 ) };
+        colors[1].accentColors = colors[0].accentColors;
+    }
+    else
+    {
+        colors[0].baseColors = { rgbGray( 32 ), rgbGray( 40 ), rgbGray( 28 ) };
+        colors[0].accentColors = { 0xff0078d4, 0xff0093f9, 0xff60ccfe, 0xff98ecfe };
+      
+        colors[1].baseColors = { rgbGray( 40 ), rgbGray( 44 ), rgbGray( 28 ) };
+        colors[1].accentColors = colors[0].accentColors;
+    }
+
+    setupFonts();
+    
+    Editor editor( &hintTable() );
+    editor.setupMetrics();
+
+    const QskFluent2Theme themeBody( colorScheme(),
+        colors[0].baseColors, colors[0].accentColors );
+
+    const QskFluent2Theme themeHeader( colorScheme(),
+        colors[1].baseColors, colors[1].accentColors );
+
+    addTheme( QskAspect::Body, themeBody );
+    addTheme( QskAspect::Header, themeHeader );
+    addTheme( QskAspect::Footer, themeHeader );
+}
+
 void QskFluent2Skin::setupFonts()
 {
     static QString fontName( QStringLiteral( "Segoe UI Variable" ) );

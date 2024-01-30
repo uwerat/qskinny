@@ -47,10 +47,16 @@ function(qsk_add_plugin target TYPE CLASS_NAME)
     # So for the moment better don't do:
     #      qt6_add_plugin(${target} SHARED ${CLASS_NAME} )
 
-    if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
-        qt6_add_library(${target} SHARED )
+    if(BUILD_QSKDLL)
+        set(library_type SHARED)
     else()
-        add_library(${target} SHARED )
+        set(library_type STATIC)
+    endif()
+
+    if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
+        qt6_add_library(${target} ${library_type})
+    else()
+        add_library(${target} ${library_type})
     endif()
 
     set_target_properties(${target} PROPERTIES
@@ -117,5 +123,11 @@ function(qsk_add_shaders target)
 
     qt6_add_shaders( ${target} "qskshaders" BATCHABLE PRECOMPILE QUIET
         PREFIX "/qskinny/shaders" ${ARGV} OUTPUTS ${outfiles} )
+
+    # pass on OUTPUT_TARGETS to the caller of this function
+    cmake_parse_arguments(PARSE_ARGV 1 arg "" "OUTPUT_TARGETS" "")
+    if (arg_OUTPUT_TARGETS)
+        set(${arg_OUTPUT_TARGETS} ${${arg_OUTPUT_TARGETS}} PARENT_SCOPE)
+    endif()
 
 endfunction()

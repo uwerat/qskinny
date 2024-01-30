@@ -104,7 +104,7 @@ qsk_setup_build()
 qsk_setup_install()
 
 add_subdirectory(src)
-add_subdirectory(skins)
+add_subdirectory(designsystems)
 
 include(CMakePackageConfigHelpers)
 

@@ -12,7 +12,7 @@
 #include "QskControl.h"
 #include "QskHintAnimator.h"
 #include "QskMargins.h"
-#include "QskSetup.h"
+#include "QskSkinManager.h"
 #include "QskSkin.h"
 #include "QskSkinHintTable.h"
 #include "QskSkinTransition.h"
@@ -1520,7 +1520,7 @@ QskSkin* QskSkinnable::effectiveSkin() const
             skin = qskEffectiveSkin( item->window() );
     }
 
-    return skin ? skin : qskSetup->skin();
+    return skin ? skin : qskSkinManager->skin();
 }
 
 QskAspect::Variation QskSkinnable::effectiveVariation() const

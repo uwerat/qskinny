@@ -15,9 +15,8 @@
 #include <QskLinearBox.h>
 #include <QskPushButton.h>
 #include <QskRgbValue.h>
-#include <QskSetup.h>
+#include <QskSkinManager.h>
 #include <QskSkin.h>
-#include <QskTabView.h>
 #include <QskBoxShapeMetrics.h>
 
 #include <QDir>
@@ -75,18 +74,7 @@ class GraphicLabel : public QskGraphicLabel
 
 MainWindow::MainWindow()
 {
-    m_tabView = new QskTabView();
-    m_tabView->setTabBarEdge( Qt::LeftEdge );
-
-    const QString resourceDir( ":/qvg" );
-    const QStringList icons = QDir( resourceDir ).entryList();
-
-    for ( const auto& icon : icons )
-    {
-        auto title = icon;
-        m_tabView->addTab( title.replace( ".qvg", "" ),
-            new GraphicLabel( QskGraphicIO::read( resourceDir + "/" + icon ) ) );
-    }
+    auto label = new GraphicLabel( QskGraphicIO::read( QString( ":/qvg/Tux.qvg" ) ) );
 
     auto invertButton = new QskPushButton( "Inverted" );
     invertButton->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
@@ -97,34 +85,24 @@ MainWindow::MainWindow()
     box->setPanel( true );
     box->setPadding( 5 );
     box->addItem( invertButton );
-    box->addItem( m_tabView );
+    box->addItem( label );
 
     addItem( box );
 
     connect( invertButton, &QskPushButton::toggled,
-        this, &MainWindow::setDarknessMode );
+        label, &GraphicLabel::setDarknessMode );
 
-    connect( qskSetup, &QskSetup::skinChanged,
+    connect( qskSkinManager, &QskSkinManager::skinChanged,
         this, &MainWindow::setGraphicRoles );
 
-    setGraphicRoles( qskSetup->skin() );
-}
-
-void MainWindow::setDarknessMode( bool on )
-{
-    for ( int i = 0; i < m_tabView->count(); i++ )
-    {
-        auto label = static_cast< GraphicLabel* >( m_tabView->pageAt( i ) );
-        label->setDarknessMode( on );
-    }
+    setGraphicRoles( qskSkinManager->skin() );
 }
 
 void MainWindow::setGraphicRoles( QskSkin* skin )
 {
-    // substituting black and white
+    // substituting black
     QskColorFilter colorFilter;
-    colorFilter.addColorSubstitution( qRgb( 0, 0, 0 ), qRgb( 189, 183, 107 ) );
-    colorFilter.addColorSubstitution( qRgb( 255, 255, 255 ), qRgb( 50, 50, 50 ) );
+    colorFilter.addColorSubstitution( QskRgb::Black, QskRgb::DarkKhaki );
 
     skin->setGraphicFilter( GraphicLabel::Inverted, colorFilter );
 }

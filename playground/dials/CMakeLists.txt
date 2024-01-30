@@ -4,7 +4,7 @@
 ############################################################################
 
 set(SOURCES
-    SkinFactory.h SkinFactory.cpp
+    Skin.h Skin.cpp
     Dial.h Dial.cpp
     DialSkinlet.h DialSkinlet.cpp
     Dashboard.h Dashboard.cpp
