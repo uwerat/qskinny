@@ -33,7 +33,7 @@ QskRadioBox::QskRadioBox( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    initSizePolicy( QskSizePolicy::Minimum, QskSizePolicy::Minimum );
+    initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
 
     setFocusPolicy( Qt::StrongFocus );
     setAcceptedMouseButtons( Qt::LeftButton );
