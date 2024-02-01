@@ -105,7 +105,9 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
     void setGraphic( const QskGraphic& );
 
   protected:
+    void geometryChangeEvent( QskGeometryChangeEvent* ) override;
     void changeEvent( QEvent* ) override;
+
     void updateResources() override;
     virtual QskGraphic loadSource( const QUrl& ) const;
 
