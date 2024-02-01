@@ -943,9 +943,16 @@ void Editor::setupProgressRingColors(
 void Editor::setupPushButtonMetrics()
 {
     using Q = QskPushButton;
+    using A = QskAspect;
     using W = QskFluent2Skin;
 
-    setStrutSize( Q::Panel, { 120, 32 } );
+    const qreal h = 32;
+    setStrutSize( Q::Panel, { 120, h } );
+
+    // 60: not covered by any spec, but 120 is too big for a menu bar
+    setStrutSize( Q::Panel | A::Header, { 60, h } );
+    setStrutSize( Q::Panel | A::Footer, { 60, h } );
+
     setBoxShape( Q::Panel, 4 );
     setBoxBorderMetrics( Q::Panel, 1 );
     setBoxBorderMetrics( Q::Panel | W::Accent | Q::Disabled, 0 );
