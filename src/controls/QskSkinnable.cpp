@@ -1316,7 +1316,7 @@ void QskSkinnable::startHintTransition( QskAspect aspect, int index,
     if ( control->window() == nullptr || !isTransitionAccepted( aspect ) )
         return;
 
-    if ( !QskVariantAnimator::maybeInterpolate( from, to ) )
+    if ( !QskVariantAnimator::maybeInterpolate( from, to, false ) )
         return;
 
     auto v1 = from;

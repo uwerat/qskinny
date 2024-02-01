@@ -210,30 +210,46 @@ void QskVariantAnimator::done()
 }
 
 bool QskVariantAnimator::maybeInterpolate(
-    const QVariant& value1, const QVariant& value2 )
+    const QVariant& value1, const QVariant& value2, bool acceptIdentity )
 {
     if ( !value1.isValid() && !value2.isValid() )
         return false;
 
-    const auto type1 = qskMetaType( value1 );
-    const auto type2 = qskMetaType( value2 );
-
-    if ( !value1.isValid() )
-        return value2 != qskDefaultVariant( type2 );
-
-    if ( !value2.isValid() )
-        return value1 != qskDefaultVariant( type1 );
-
-    if ( type1 != type2 )
+    if ( acceptIdentity )
     {
-        if ( value1.canConvert( type2 ) )
-            return value2 != qskConvertedVariant( value1, type2 );
+        if ( value1.isValid() && value2.isValid() )
+        {
+            const auto type1 = qskMetaType( value1 );
+            const auto type2 = qskMetaType( value2 );
 
-        if ( value2.canConvert( type1 ) )
-            return value1 != qskConvertedVariant( value2, type1 );
+            if ( type1 != type2 )
+                return value1.canConvert( type2 ) || value2.canConvert( type1 );
+        }
 
-        return false;
+        return true;
     }
+    else
+    {
+        const auto type1 = qskMetaType( value1 );
+        const auto type2 = qskMetaType( value2 );
 
-    return value1 != value2;
+        if ( !value1.isValid() )
+            return value2 != qskDefaultVariant( type2 );
+
+        if ( !value2.isValid() )
+            return value1 != qskDefaultVariant( type1 );
+
+        if ( type1 != type2 )
+        {
+            if ( value1.canConvert( type2 ) )
+                return value2 != qskConvertedVariant( value1, type2 );
+
+            if ( value2.canConvert( type1 ) )
+                return value1 != qskConvertedVariant( value2, type1 );
+
+            return false;
+        }
+
+        return value1 != value2;
+    }
 }

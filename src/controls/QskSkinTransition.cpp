@@ -365,14 +365,29 @@ void WindowAnimator::addHints( const QskControl* control,
 
         if ( v1 && v2 )
         {
-            if ( QskVariantAnimator::maybeInterpolate( *v1, *v2 ) )
+            if ( r1.section() == r2.section() )
+                aspect.setSection( r2.section() );
+
+            if ( r1.variation() == r2.variation() )
+                aspect.setVariation( r2.variation() );
+
+            if ( r1.states() == r2.states() )
+                aspect.setStates( r2.states() );
+
+            bool accecptIdentity = false;
+            if ( aspect != aspect.trunk() )
             {
-                if ( r1.variation() == r2.variation() )
-                    aspect.setVariation( r2.variation() );
+                /*
+                    We might need an animator even if the values do not differ
+                    to prevent effectiveSkinHint to find its value from
+                    another animator that might have been started with
+                    less extra bits.
+                 */
+                accecptIdentity = true;
+            }
 
-                if ( r1.states() == r2.states() )
-                    aspect.setStates( r2.states() );
-
+            if ( QskVariantAnimator::maybeInterpolate( *v1, *v2, accecptIdentity ) )
+            {
                 storeAnimator( control, aspect, *v1, *v2, animatorHint );
                 storeUpdateInfo( control, aspect );
             }
