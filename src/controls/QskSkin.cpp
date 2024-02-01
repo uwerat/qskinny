@@ -236,6 +236,7 @@ void QskSkin::setColorScheme( ColorScheme colorScheme )
     if ( transitionHint.isValid() )
     {
         QskSkinTransition transition;
+        transition.setMask( QskSkinTransition::Color );
         transition.setSourceSkin( this );
 
         clearHints();
