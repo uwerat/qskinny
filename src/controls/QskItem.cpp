@@ -69,11 +69,7 @@ namespace
             /*
                 Its faster and saves some memory to have this registry instead
                 of setting up direct connections between qskSetup and each control
-             */
-            QObject::connect( qskSetup, &QskSetup::itemUpdateFlagsChanged,
-                qskSetup, [ this ] { updateControlFlags(); } );
 
-            /*
                 We would also need to send QEvent::StyleChange, when
                 a window has a new skin. TODO ...
              */
@@ -94,9 +90,9 @@ namespace
             m_items.erase( item );
         }
 
-        void updateControlFlags()
+        void updateItemFlags()
         {
-            const auto flags = qskSetup->itemUpdateFlags();
+            const auto flags = QskSetup::updateFlags();
 
             for ( auto item : m_items )
                 qskApplyUpdateFlags( flags, item );
@@ -525,7 +521,7 @@ void QskItem::resetUpdateFlags()
 
     // clear all bits in the mask
     d->updateFlagsMask = 0;
-    d->applyUpdateFlags( qskSetup->itemUpdateFlags() );
+    d->applyUpdateFlags( QskSetup::updateFlags() );
 }
 
 void QskItem::setUpdateFlag( UpdateFlag flag, bool on )
@@ -547,7 +543,7 @@ void QskItem::resetUpdateFlag( UpdateFlag flag )
 
     d->updateFlagsMask &= ~flag;
 
-    const bool on = qskSetup->testItemUpdateFlag( flag );
+    const bool on = QskSetup::testUpdateFlag( flag );
 
     if ( testUpdateFlag( flag ) != on )
     {
@@ -1043,6 +1039,12 @@ QSGNode* QskItem::updatePaintNode( QSGNode* node, UpdatePaintNodeData* data )
 QSGNode* QskItem::updateItemPaintNode( QSGNode* node )
 {
     return node;
+}
+
+void qskUpdateItemFlags()
+{
+    if ( qskRegistry )
+        qskRegistry->updateItemFlags();
 }
 
 #include "moc_QskItem.cpp"

@@ -5,131 +5,98 @@
 
 #include "QskSetup.h"
 
-QskSetup* QskSetup::s_instance = nullptr;
+extern void qskUpdateItemFlags();
 
-static inline bool qskHasEnvironment( const char* env )
+namespace
 {
-    bool ok;
-
-    const int value = qEnvironmentVariableIntValue( env, &ok );
-    if ( ok )
-        return value != 0;
-
-    // All other strings are true, apart from "false"
-    auto result = qgetenv( env );
-    return !result.isEmpty() && result != "false";
-}
-
-static inline const QskItem::UpdateFlags qskEnvironmentUpdateFlags()
-{
-    QskItem::UpdateFlags flags;
-
-    if ( qskHasEnvironment( "QSK_PREFER_RASTER" ) )
-        flags |= QskItem::PreferRasterForTextures;
-
-    if ( qskHasEnvironment( "QSK_FORCE_BACKGROUND" ) )
-        flags |= QskItem::DebugForceBackground;
-
-    return flags;
-}
-
-static inline QskItem::UpdateFlags qskDefaultUpdateFlags()
-{
-    static QskItem::UpdateFlags flags;
-
-    if ( flags == 0 )
+    inline bool hasEnvironment( const char* env )
     {
-        flags |= QskItem::DeferredUpdate;
-        flags |= QskItem::DeferredPolish;
-        flags |= QskItem::DeferredLayout;
-        flags |= QskItem::CleanupOnVisibility;
-        flags |= qskEnvironmentUpdateFlags();
+        bool ok;
+
+        const int value = qEnvironmentVariableIntValue( env, &ok );
+        if ( ok )
+            return value != 0;
+
+        // All other strings are true, apart from "false"
+        auto result = qgetenv( env );
+        return !result.isEmpty() && result != "false";
     }
 
-    return flags;
-}
-
-static void qskApplicationHook()
-{
-    QskSetup::setup();
-    qAddPostRoutine( QskSetup::cleanup );
-}
-
-Q_CONSTRUCTOR_FUNCTION( qskApplicationHook )
-
-class QskSetup::PrivateData
-{
-  public:
-    PrivateData()
-        : itemUpdateFlags( qskDefaultUpdateFlags() )
+    inline const QskItem::UpdateFlags environmentUpdateFlags()
     {
+        QskItem::UpdateFlags flags;
+
+        if ( hasEnvironment( "QSK_PREFER_RASTER" ) )
+            flags |= QskItem::PreferRasterForTextures;
+
+        if ( hasEnvironment( "QSK_FORCE_BACKGROUND" ) )
+            flags |= QskItem::DebugForceBackground;
+
+        return flags;
     }
 
-    QskItem::UpdateFlags itemUpdateFlags;
-};
-
-QskSetup::QskSetup()
-    : m_data( new PrivateData() )
-{
-}
-
-QskSetup::~QskSetup()
-{
-    s_instance = nullptr; // we might be destroyed from Qml !
-}
-
-void QskSetup::setup()
-{
-    if ( s_instance == nullptr )
-        s_instance = new QskSetup();
-}
-
-void QskSetup::cleanup()
-{
-    delete s_instance;
-    s_instance = nullptr;
-}
-
-void QskSetup::setItemUpdateFlags( QskItem::UpdateFlags flags )
-{
-    if ( m_data->itemUpdateFlags != flags )
+    inline QskItem::UpdateFlags defaultUpdateFlags()
     {
-        m_data->itemUpdateFlags = flags;
-        Q_EMIT itemUpdateFlagsChanged();
+        static QskItem::UpdateFlags flags;
+
+        if ( flags == 0 )
+        {
+            flags |= QskItem::DeferredUpdate;
+            flags |= QskItem::DeferredPolish;
+            flags |= QskItem::DeferredLayout;
+            flags |= QskItem::CleanupOnVisibility;
+            flags |= environmentUpdateFlags();
+        }
+
+        return flags;
+    }
+
+    inline void propagateFlags()
+    {
+        qskUpdateItemFlags();
     }
 }
 
-QskItem::UpdateFlags QskSetup::itemUpdateFlags() const
+static QskItem::UpdateFlags qskUpdateFlags = defaultUpdateFlags();
+
+void QskSetup::setUpdateFlags( QskItem::UpdateFlags flags )
 {
-    return m_data->itemUpdateFlags;
+    if ( qskUpdateFlags != flags )
+    {
+        qskUpdateFlags = flags;
+        propagateFlags();
+    }
 }
 
-void QskSetup::resetItemUpdateFlags()
+QskItem::UpdateFlags QskSetup::updateFlags()
 {
-    setItemUpdateFlags( qskDefaultUpdateFlags() );
+    return qskUpdateFlags;
 }
 
-void QskSetup::setItemUpdateFlag( QskItem::UpdateFlag flag, bool on )
+void QskSetup::resetUpdateFlags()
 {
-    if ( m_data->itemUpdateFlags.testFlag( flag ) != on )
+    setUpdateFlags( defaultUpdateFlags() );
+}
+
+void QskSetup::setUpdateFlag( QskItem::UpdateFlag flag, bool on )
+{
+    if ( qskUpdateFlags.testFlag( flag ) != on )
     {
         if ( on )
-            m_data->itemUpdateFlags |= flag;
+            qskUpdateFlags |= flag;
         else
-            m_data->itemUpdateFlags &= ~flag;
+            qskUpdateFlags &= ~flag;
 
-        Q_EMIT itemUpdateFlagsChanged();
+        propagateFlags();
     }
 }
 
-void QskSetup::resetItemUpdateFlag( QskItem::UpdateFlag flag )
+void QskSetup::resetUpdateFlag( QskItem::UpdateFlag flag )
 {
-    setItemUpdateFlag( flag, flag & qskDefaultUpdateFlags() );
+    setUpdateFlag( flag, flag & defaultUpdateFlags() );
 }
 
-bool QskSetup::testItemUpdateFlag( QskItem::UpdateFlag flag )
+bool QskSetup::testUpdateFlag( QskItem::UpdateFlag flag )
 {
-    return m_data->itemUpdateFlags.testFlag( flag );
+    return qskUpdateFlags.testFlag( flag );
 }
-
-#include "moc_QskSetup.cpp"

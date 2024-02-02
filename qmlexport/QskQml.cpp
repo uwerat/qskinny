@@ -41,7 +41,6 @@
 #include <QskScrollView.h>
 #include <QskSelectionWindow.h>
 #include <QskSeparator.h>
-#include <QskSetup.h>
 #include <QskShadowMetrics.h>
 #include <QskSimpleListBox.h>
 #include <QskSkin.h>
@@ -191,7 +190,6 @@ namespace
 
 void QskQml::registerTypes()
 {
-    qmlRegisterUncreatableType< QskSetup >( QSK_MODULE_NAME, 1, 0, "Setup", QString() );
     qmlRegisterUncreatableType< QskSkin >( QSK_MODULE_NAME, 1, 0, "Skin", QString() );
     qRegisterMetaType< QskSkin* >();
 

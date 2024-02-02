@@ -128,7 +128,7 @@ static inline QSGNode* qskUpdateGraphicNode(
 
     const auto flag = QskItem::PreferRasterForTextures;
 
-    bool useRaster = qskSetup->testItemUpdateFlag( flag );
+    bool useRaster = QskSetup::testUpdateFlag( flag );
     if ( auto qItem = qobject_cast< const QskItem* >( item ) )
         useRaster = qItem->testUpdateFlag( flag );
 

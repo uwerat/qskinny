@@ -139,7 +139,7 @@ int main( int argc, char* argv[] )
     qskSkinManager->registerFactory(
         QStringLiteral( "MySkinFactory" ), new MySkinFactory() );
 
-    qskSetup->setItemUpdateFlag( QskItem::PreferRasterForTextures, true );
+    QskSetup::setUpdateFlag( QskItem::PreferRasterForTextures, true );
 
     Window window;
     window.resize( 480, 360 );

@@ -9,53 +9,15 @@
 #include "QskGlobal.h"
 #include "QskItem.h"
 
-#include <qobject.h>
-#include <memory>
-
-class QQuickItem;
-
-#if defined( qskSetup )
-#undef qskSetup
-#endif
-
-#define qskSetup QskSetup::instance()
-
-class QSK_EXPORT QskSetup : public QObject
+namespace QskSetup
 {
-    Q_OBJECT
+    QSK_EXPORT void setUpdateFlags( QskItem::UpdateFlags );
+    QSK_EXPORT void resetUpdateFlags();
+    QSK_EXPORT QskItem::UpdateFlags updateFlags();
 
-  public:
-
-    static QskSetup* instance();
-
-    void setItemUpdateFlags( QskItem::UpdateFlags );
-    void resetItemUpdateFlags();
-    QskItem::UpdateFlags itemUpdateFlags() const;
-
-    void setItemUpdateFlag( QskItem::UpdateFlag, bool on = true );
-    void resetItemUpdateFlag( QskItem::UpdateFlag );
-    bool testItemUpdateFlag( QskItem::UpdateFlag );
-
-    static void setup();
-    static void cleanup();
-
-  Q_SIGNALS:
-    void itemUpdateFlagsChanged();
-
-  private:
-    QskSetup();
-    ~QskSetup() override;
-
-    static QskSetup* s_instance;
-
-    class PrivateData;
-    std::unique_ptr< PrivateData > m_data;
+    QSK_EXPORT void setUpdateFlag( QskItem::UpdateFlag, bool on = true );
+    QSK_EXPORT void resetUpdateFlag( QskItem::UpdateFlag );
+    QSK_EXPORT bool testUpdateFlag( QskItem::UpdateFlag );
 };
-
-inline QskSetup* QskSetup::instance()
-{
-    Q_ASSERT( s_instance );
-    return s_instance;
-}
 
 #endif

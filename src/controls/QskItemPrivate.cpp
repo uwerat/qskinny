@@ -14,7 +14,7 @@ static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 }
 
 QskItemPrivate::QskItemPrivate()
-    : updateFlags( qskSetup->itemUpdateFlags() )
+    : updateFlags( QskSetup::updateFlags() )
     , updateFlagsMask( 0 )
     , polishOnResize( false )
     , blockedPolish( false )
