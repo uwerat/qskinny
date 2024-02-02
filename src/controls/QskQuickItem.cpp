@@ -352,6 +352,12 @@ bool QskQuickItem::isTabFence() const
 
 void QskQuickItem::setFocusPolicy( Qt::FocusPolicy policy )
 {
+    /*
+        Qt::FocusPolicy has always been there with widgets, got lost with
+        Qt/Quick and has been reintroduced with Qt/Quick Controls 2 ( QC2 ).
+        Unfortunately this was done by adding code on top instead of fixing
+        the foundation.
+     */
     Q_D( QskQuickItem );
     if ( policy != d->focusPolicy )
     {
@@ -361,7 +367,7 @@ void QskQuickItem::setFocusPolicy( Qt::FocusPolicy policy )
 
         if ( !tabFocus && window() )
         {
-            // Removing the activeFocusItem from the focus tab chain is not possible
+            // removing the activeFocusItem from the focus tab chain is not possible
             if ( window()->activeFocusItem() == this )
             {
                 if ( auto focusItem = nextItemInFocusChain( true ) )
@@ -712,6 +718,42 @@ bool QskQuickItem::event( QEvent* event )
                  */
                 return true;
             }
+
+            break;
+        }
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseButtonRelease:
+        {
+            if ( ( focusPolicy() & Qt::ClickFocus ) == Qt::ClickFocus )
+            {
+                if ( QGuiApplication::styleHints()->setFocusOnTouchRelease() )
+                {
+                    if ( event->type() == QEvent::MouseButtonRelease )
+                        forceActiveFocus( Qt::MouseFocusReason );
+                }
+                else
+                {
+                    if ( event->type() == QEvent::MouseButtonPress )
+                        forceActiveFocus( Qt::MouseFocusReason );
+                }
+            }
+            break;
+        }
+        case QEvent::Wheel:
+        {
+            if ( !isWheelEnabled() )
+            {
+                /*
+                    We block further processing of the event. This is in line
+                    with not receiving any mouse event that have not been
+                    explicitly enabled with setAcceptedMouseButtons().
+                 */
+                event->ignore();
+                return true;
+            }
+
+            if ( ( focusPolicy() & Qt::WheelFocus ) == Qt::WheelFocus )
+                forceActiveFocus( Qt::MouseFocusReason );
 
             break;
         }

@@ -50,8 +50,6 @@ class QSK_EXPORT QskSetup : public QObject
     QskSetup();
     ~QskSetup() override;
 
-    bool eventFilter( QObject*, QEvent* ) override final;
-
     static QskSetup* s_instance;
 
     class PrivateData;
