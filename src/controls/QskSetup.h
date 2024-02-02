@@ -7,7 +7,7 @@
 #define QSK_SETUP_H
 
 #include "QskGlobal.h"
-#include "QskQuickItem.h"
+#include "QskItem.h"
 
 #include <qobject.h>
 #include <memory>
@@ -29,13 +29,13 @@ class QSK_EXPORT QskSetup : public QObject
 
     static QskSetup* instance();
 
-    void setItemUpdateFlags( QskQuickItem::UpdateFlags );
+    void setItemUpdateFlags( QskItem::UpdateFlags );
     void resetItemUpdateFlags();
-    QskQuickItem::UpdateFlags itemUpdateFlags() const;
+    QskItem::UpdateFlags itemUpdateFlags() const;
 
-    void setItemUpdateFlag( QskQuickItem::UpdateFlag, bool on = true );
-    void resetItemUpdateFlag( QskQuickItem::UpdateFlag );
-    bool testItemUpdateFlag( QskQuickItem::UpdateFlag );
+    void setItemUpdateFlag( QskItem::UpdateFlag, bool on = true );
+    void resetItemUpdateFlag( QskItem::UpdateFlag );
+    bool testItemUpdateFlag( QskItem::UpdateFlag );
 
     void addGraphicProvider( const QString& providerId, QskGraphicProvider* );
     QskGraphicProvider* graphicProvider( const QString& providerId ) const;

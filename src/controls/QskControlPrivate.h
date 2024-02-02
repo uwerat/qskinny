@@ -8,11 +8,11 @@
 
 #include "QskGlobal.h"
 #include "QskControl.h"
-#include "QskQuickItemPrivate.h"
+#include "QskItemPrivate.h"
 
-class QskControlPrivate : public QskQuickItemPrivate
+class QskControlPrivate : public QskItemPrivate
 {
-    using Inherited = QskQuickItemPrivate;
+    using Inherited = QskItemPrivate;
 
   public:
     static bool inheritLocale( QskControl*, const QLocale& );

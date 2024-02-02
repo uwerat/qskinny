@@ -23,29 +23,29 @@ static inline bool qskHasEnvironment( const char* env )
     return !result.isEmpty() && result != "false";
 }
 
-static inline const QskQuickItem::UpdateFlags qskEnvironmentUpdateFlags()
+static inline const QskItem::UpdateFlags qskEnvironmentUpdateFlags()
 {
-    QskQuickItem::UpdateFlags flags;
+    QskItem::UpdateFlags flags;
 
     if ( qskHasEnvironment( "QSK_PREFER_RASTER" ) )
-        flags |= QskQuickItem::PreferRasterForTextures;
+        flags |= QskItem::PreferRasterForTextures;
 
     if ( qskHasEnvironment( "QSK_FORCE_BACKGROUND" ) )
-        flags |= QskQuickItem::DebugForceBackground;
+        flags |= QskItem::DebugForceBackground;
 
     return flags;
 }
 
-static inline QskQuickItem::UpdateFlags qskDefaultUpdateFlags()
+static inline QskItem::UpdateFlags qskDefaultUpdateFlags()
 {
-    static QskQuickItem::UpdateFlags flags;
+    static QskItem::UpdateFlags flags;
 
     if ( flags == 0 )
     {
-        flags |= QskQuickItem::DeferredUpdate;
-        flags |= QskQuickItem::DeferredPolish;
-        flags |= QskQuickItem::DeferredLayout;
-        flags |= QskQuickItem::CleanupOnVisibility;
+        flags |= QskItem::DeferredUpdate;
+        flags |= QskItem::DeferredPolish;
+        flags |= QskItem::DeferredLayout;
+        flags |= QskItem::CleanupOnVisibility;
         flags |= qskEnvironmentUpdateFlags();
     }
 
@@ -69,7 +69,7 @@ class QskSetup::PrivateData
     }
 
     QskGraphicProviderMap graphicProviders;
-    QskQuickItem::UpdateFlags itemUpdateFlags;
+    QskItem::UpdateFlags itemUpdateFlags;
 };
 
 QskSetup::QskSetup()
@@ -94,7 +94,7 @@ void QskSetup::cleanup()
     s_instance = nullptr;
 }
 
-void QskSetup::setItemUpdateFlags( QskQuickItem::UpdateFlags flags )
+void QskSetup::setItemUpdateFlags( QskItem::UpdateFlags flags )
 {
     if ( m_data->itemUpdateFlags != flags )
     {
@@ -103,7 +103,7 @@ void QskSetup::setItemUpdateFlags( QskQuickItem::UpdateFlags flags )
     }
 }
 
-QskQuickItem::UpdateFlags QskSetup::itemUpdateFlags() const
+QskItem::UpdateFlags QskSetup::itemUpdateFlags() const
 {
     return m_data->itemUpdateFlags;
 }
@@ -113,7 +113,7 @@ void QskSetup::resetItemUpdateFlags()
     setItemUpdateFlags( qskDefaultUpdateFlags() );
 }
 
-void QskSetup::setItemUpdateFlag( QskQuickItem::UpdateFlag flag, bool on )
+void QskSetup::setItemUpdateFlag( QskItem::UpdateFlag flag, bool on )
 {
     if ( m_data->itemUpdateFlags.testFlag( flag ) != on )
     {
@@ -126,12 +126,12 @@ void QskSetup::setItemUpdateFlag( QskQuickItem::UpdateFlag flag, bool on )
     }
 }
 
-void QskSetup::resetItemUpdateFlag( QskQuickItem::UpdateFlag flag )
+void QskSetup::resetItemUpdateFlag( QskItem::UpdateFlag flag )
 {
     setItemUpdateFlag( flag, flag & qskDefaultUpdateFlags() );
 }
 
-bool QskSetup::testItemUpdateFlag( QskQuickItem::UpdateFlag flag )
+bool QskSetup::testItemUpdateFlag( QskItem::UpdateFlag flag )
 {
     return m_data->itemUpdateFlags.testFlag( flag );
 }

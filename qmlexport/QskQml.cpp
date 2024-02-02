@@ -243,8 +243,8 @@ void QskQml::registerTypes()
         QSK_VERSION_MAJOR, QSK_VERSION_MINOR, "Skin", QString() );
 #endif
 
-    QSK_REGISTER_FLAGS( QskQuickItem::UpdateFlag );
-    QSK_REGISTER_FLAGS( QskQuickItem::UpdateFlags );
+    QSK_REGISTER_FLAGS( QskItem::UpdateFlag );
+    QSK_REGISTER_FLAGS( QskItem::UpdateFlags );
     QSK_REGISTER_FLAGS( QskSizePolicy::Policy );
 
     QSK_REGISTER_FLAGS( QskDialog::Actions );

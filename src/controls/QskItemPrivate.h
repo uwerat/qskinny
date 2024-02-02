@@ -3,26 +3,26 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_QUICK_ITEM_PRIVATE_H
-#define QSK_QUICK_ITEM_PRIVATE_H
+#ifndef QSK_ITEM_PRIVATE_H
+#define QSK_ITEM_PRIVATE_H
 
 #include "QskGlobal.h"
-#include "QskQuickItem.h"
+#include "QskItem.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
-class QskQuickItemPrivate : public QQuickItemPrivate
+class QskItemPrivate : public QQuickItemPrivate
 {
     using Inherited = QQuickItemPrivate;
 
   protected:
-    QskQuickItemPrivate();
-    ~QskQuickItemPrivate() override;
+    QskItemPrivate();
+    ~QskItemPrivate() override;
 
   public:
-    void applyUpdateFlags( QskQuickItem::UpdateFlags );
+    void applyUpdateFlags( QskItem::UpdateFlags );
     QSGTransformNode* createTransformNode() override;
 
   protected:
@@ -45,7 +45,7 @@ class QskQuickItemPrivate : public QQuickItemPrivate
     virtual QSizeF implicitSizeHint() const = 0;
 
   private:
-    Q_DECLARE_PUBLIC( QskQuickItem )
+    Q_DECLARE_PUBLIC( QskItem )
 
     quint8 updateFlags;
     quint8 updateFlagsMask;

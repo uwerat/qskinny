@@ -65,7 +65,7 @@ bool qskIsItemInDestructor( const QQuickItem* item )
     return d->inDestructor;
 #else
     /*
-        QskQuickItem sets componentComplete to false in its destructor,
+        QskItem sets componentComplete to false in its destructor,
         but for other items we will will return the wrong information
      */
     return !d->componentComplete;

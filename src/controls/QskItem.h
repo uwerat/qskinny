@@ -3,17 +3,17 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_QUICK_ITEM_H
-#define QSK_QUICK_ITEM_H
+#ifndef QSK_ITEM_H
+#define QSK_ITEM_H
 
 #include "QskGlobal.h"
 #include <qquickitem.h>
 
-class QskQuickItemPrivate;
+class QskItemPrivate;
 class QskGeometryChangeEvent;
 class QskWindowChangeEvent;
 
-class QSK_EXPORT QskQuickItem : public QQuickItem
+class QSK_EXPORT QskItem : public QQuickItem
 {
     Q_OBJECT
 
@@ -56,7 +56,7 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     Q_ENUM( UpdateFlag )
     Q_DECLARE_FLAGS( UpdateFlags, UpdateFlag )
 
-    ~QskQuickItem() override;
+    ~QskItem() override;
 
     const char* className() const;
 
@@ -136,7 +136,7 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
 #endif
 
   protected:
-    QskQuickItem( QskQuickItemPrivate&, QQuickItem* = nullptr );
+    QskItem( QskItemPrivate&, QQuickItem* = nullptr );
 
     bool event( QEvent* ) override;
 
@@ -182,40 +182,40 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     void updatePolish() override final;
     virtual void updateItemPolish();
 
-    Q_DECLARE_PRIVATE( QskQuickItem )
+    Q_DECLARE_PRIVATE( QskItem )
 };
 
-inline bool QskQuickItem::hasChildItems() const
+inline bool QskItem::hasChildItems() const
 {
     return !childItems().isEmpty();
 }
 
-inline void QskQuickItem::setGeometry( const QPointF& pos, const QSizeF& size )
+inline void QskItem::setGeometry( const QPointF& pos, const QSizeF& size )
 {
     setGeometry( pos.x(), pos.y(), size.width(), size.height() );
 }
 
-inline void QskQuickItem::setGeometry( const QRectF& rect )
+inline void QskItem::setGeometry( const QRectF& rect )
 {
     setGeometry( rect.x(), rect.y(), rect.width(), rect.height() );
 }
 
-inline void QskQuickItem::setPosition( qreal x, qreal y )
+inline void QskItem::setPosition( qreal x, qreal y )
 {
     QQuickItem::setPosition( QPointF( x, y ) );
 }
 
-inline void QskQuickItem::setSize( qreal width, qreal height )
+inline void QskItem::setSize( qreal width, qreal height )
 {
     QQuickItem::setSize( QSizeF( width, height ) );
 }
 
-inline QSizeF QskQuickItem::implicitSize() const
+inline QSizeF QskItem::implicitSize() const
 {
     return QSizeF( implicitWidth(), implicitHeight() );
 }
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( QskQuickItem::UpdateFlags )
-Q_DECLARE_METATYPE( QskQuickItem::UpdateFlags )
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskItem::UpdateFlags )
+Q_DECLARE_METATYPE( QskItem::UpdateFlags )
 
 #endif

@@ -3,7 +3,7 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskQuickItemPrivate.h"
+#include "QskItemPrivate.h"
 #include "QskTreeNode.h"
 #include "QskSetup.h"
 
@@ -13,7 +13,7 @@ static inline void qskSendEventTo( QObject* object, QEvent::Type type )
     QCoreApplication::sendEvent( object, &event );
 }
 
-QskQuickItemPrivate::QskQuickItemPrivate()
+QskItemPrivate::QskItemPrivate()
     : updateFlags( qskSetup->itemUpdateFlags() )
     , updateFlagsMask( 0 )
     , polishOnResize( false )
@@ -24,7 +24,7 @@ QskQuickItemPrivate::QskQuickItemPrivate()
     , wheelEnabled( false )
     , focusPolicy( Qt::NoFocus )
 {
-    if ( updateFlags & QskQuickItem::DeferredLayout )
+    if ( updateFlags & QskItem::DeferredLayout )
     {
         /*
             In general the geometry of an item should be the job of
@@ -49,16 +49,16 @@ QskQuickItemPrivate::QskQuickItemPrivate()
     }
 }
 
-QskQuickItemPrivate::~QskQuickItemPrivate()
+QskItemPrivate::~QskItemPrivate()
 {
 }
 
-void QskQuickItemPrivate::mirrorChange()
+void QskItemPrivate::mirrorChange()
 {
     qskSendEventTo( q_func(), QEvent::LayoutDirectionChange );
 }
 
-void QskQuickItemPrivate::applyUpdateFlags( QskQuickItem::UpdateFlags flags )
+void QskItemPrivate::applyUpdateFlags( QskItem::UpdateFlags flags )
 {
     /*
         Replace all flags, that have not been set explicitely by the
@@ -70,12 +70,12 @@ void QskQuickItemPrivate::applyUpdateFlags( QskQuickItem::UpdateFlags flags )
     if ( flags == oldFlags )
         return;
 
-    Q_Q( QskQuickItem );
+    Q_Q( QskItem );
 
     Q_STATIC_ASSERT( sizeof( updateFlags ) == 1 );
     for ( uint i = 0; i < 8; i++ )
     {
-        const auto flag = static_cast< QskQuickItem::UpdateFlag >( 1 << i );
+        const auto flag = static_cast< QskItem::UpdateFlag >( 1 << i );
 
         if ( !( this->updateFlagsMask & flag ) )
             q->applyUpdateFlag( flag, flags & flag );
@@ -85,40 +85,40 @@ void QskQuickItemPrivate::applyUpdateFlags( QskQuickItem::UpdateFlags flags )
         Q_EMIT q->updateFlagsChanged( q->updateFlags() );
 }
 
-void QskQuickItemPrivate::layoutConstraintChanged()
+void QskItemPrivate::layoutConstraintChanged()
 {
     if ( auto item = q_func()->parentItem() )
         qskSendEventTo( item, QEvent::LayoutRequest );
 }
 
-void QskQuickItemPrivate::implicitSizeChanged()
+void QskItemPrivate::implicitSizeChanged()
 {
     layoutConstraintChanged();
 }
 
-qreal QskQuickItemPrivate::getImplicitWidth() const
+qreal QskItemPrivate::getImplicitWidth() const
 {
     if ( blockedImplicitSize )
     {
-        auto that = const_cast< QskQuickItemPrivate* >( this );
+        auto that = const_cast< QskItemPrivate* >( this );
         that->updateImplicitSize( false );
     }
 
     return implicitWidth;
 }
 
-qreal QskQuickItemPrivate::getImplicitHeight() const
+qreal QskItemPrivate::getImplicitHeight() const
 {
     if ( blockedImplicitSize )
     {
-        auto that = const_cast< QskQuickItemPrivate* >( this );
+        auto that = const_cast< QskItemPrivate* >( this );
         that->updateImplicitSize( false );
     }
 
     return implicitHeight;
 }
 
-void QskQuickItemPrivate::updateImplicitSize( bool doNotify )
+void QskItemPrivate::updateImplicitSize( bool doNotify )
 {
     blockedImplicitSize = false;
 
@@ -126,7 +126,7 @@ void QskQuickItemPrivate::updateImplicitSize( bool doNotify )
     setImplicitSize( hint.width(), hint.height(), doNotify );
 }
 
-void QskQuickItemPrivate::setImplicitSize( qreal w, qreal h, bool doNotify )
+void QskItemPrivate::setImplicitSize( qreal w, qreal h, bool doNotify )
 {
     const bool doWidth = ( w != implicitWidth );
     const bool doHeight = ( h != implicitHeight );
@@ -162,7 +162,7 @@ void QskQuickItemPrivate::setImplicitSize( qreal w, qreal h, bool doNotify )
             const QRectF oldRect( x, y, oldWidth, oldHeight );
             const QRectF newRect( x, y, width, height );
 
-            Q_Q( QskQuickItem );
+            Q_Q( QskItem );
             q->geometryChange( newRect, oldRect );
         }
     }
@@ -181,7 +181,7 @@ void QskQuickItemPrivate::setImplicitSize( qreal w, qreal h, bool doNotify )
     In case of the application interferes by calling
     setImplicitWidth or setImplicitHeight manually:
  */
-void QskQuickItemPrivate::implicitWidthChanged()
+void QskItemPrivate::implicitWidthChanged()
 {
     Inherited::implicitWidthChanged();
 
@@ -189,7 +189,7 @@ void QskQuickItemPrivate::implicitWidthChanged()
     implicitSizeChanged();
 }
 
-void QskQuickItemPrivate::implicitHeightChanged()
+void QskItemPrivate::implicitHeightChanged()
 {
     Inherited::implicitWidthChanged();
 
@@ -197,7 +197,7 @@ void QskQuickItemPrivate::implicitHeightChanged()
     implicitSizeChanged();
 }
 
-void QskQuickItemPrivate::cleanupNodes()
+void QskItemPrivate::cleanupNodes()
 {
     if ( itemNodeInstance == nullptr )
         return;
@@ -243,7 +243,7 @@ void QskQuickItemPrivate::cleanupNodes()
     }
 }
 
-QSGTransformNode* QskQuickItemPrivate::createTransformNode()
+QSGTransformNode* QskItemPrivate::createTransformNode()
 {
     return new QskItemNode();
 }

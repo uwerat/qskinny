@@ -3,8 +3,8 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskQuickItem.h"
-#include "QskQuickItemPrivate.h"
+#include "QskItem.h"
+#include "QskItemPrivate.h"
 #include "QskQuick.h"
 #include "QskEvent.h"
 #include "QskSetup.h"
@@ -44,9 +44,9 @@ static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 }
 
 static inline void qskApplyUpdateFlags(
-    QskQuickItem::UpdateFlags flags, QskQuickItem* item )
+    QskItem::UpdateFlags flags, QskItem* item )
 {
-    auto d = static_cast< QskQuickItemPrivate* >( QskQuickItemPrivate::get( item ) );
+    auto d = static_cast< QskItemPrivate* >( QskItemPrivate::get( item ) );
     d->applyUpdateFlags( flags );
 }
 
@@ -61,10 +61,10 @@ static inline void qskFilterWindow( QQuickWindow* window )
 
 namespace
 {
-    class QskQuickItemRegistry
+    class QskItemRegistry
     {
       public:
-        QskQuickItemRegistry()
+        QskItemRegistry()
         {
             /*
                 Its faster and saves some memory to have this registry instead
@@ -84,12 +84,12 @@ namespace
                 qskSkinManager, [ this ] { updateSkin(); } );
         }
 
-        inline void insert( QskQuickItem* item )
+        inline void insert( QskItem* item )
         {
             m_items.insert( item );
         }
 
-        inline void remove( QskQuickItem* item )
+        inline void remove( QskItem* item )
         {
             m_items.erase( item );
         }
@@ -114,7 +114,7 @@ namespace
         }
 
       private:
-        std::unordered_set< QskQuickItem* > m_items;
+        std::unordered_set< QskItem* > m_items;
     };
 }
 
@@ -164,22 +164,22 @@ namespace
     };
 }
 
-Q_GLOBAL_STATIC( QskQuickItemRegistry, qskRegistry )
+Q_GLOBAL_STATIC( QskItemRegistry, qskRegistry )
 Q_GLOBAL_STATIC( QskWindowStore, qskReleasedWindowCounter )
 
-QskQuickItem::QskQuickItem( QskQuickItemPrivate& dd, QQuickItem* parent )
+QskItem::QskItem( QskItemPrivate& dd, QQuickItem* parent )
     : QQuickItem( dd, parent )
 {
     setFlag( QQuickItem::ItemHasContents, true );
     Inherited::setActiveFocusOnTab( false );
 
-    if ( dd.updateFlags & QskQuickItem::DeferredUpdate )
+    if ( dd.updateFlags & QskItem::DeferredUpdate )
         qskFilterWindow( window() );
 
     qskRegistry->insert( this );
 }
 
-QskQuickItem::~QskQuickItem()
+QskItem::~QskItem()
 {
     /*
         We set componentComplete to false, so that operations
@@ -197,24 +197,24 @@ QskQuickItem::~QskQuickItem()
         qskRegistry->remove( this );
 }
 
-const char* QskQuickItem::className() const
+const char* QskItem::className() const
 {
     return metaObject()->className();
 }
 
-void QskQuickItem::classBegin()
+void QskItem::classBegin()
 {
     Inherited::classBegin();
 }
 
-void QskQuickItem::componentComplete()
+void QskItem::componentComplete()
 {
 #if defined( QT_DEBUG )
-    if ( d_func()->updateFlags & QskQuickItem::DeferredLayout )
+    if ( d_func()->updateFlags & QskItem::DeferredLayout )
     {
         if ( qobject_cast< const QQuickBasePositioner* >( parent() ) )
         {
-            qWarning( "QskQuickItem in DeferredLayout mode under control of a positioner" );
+            qWarning( "QskItem in DeferredLayout mode under control of a positioner" );
         }
     }
 #endif
@@ -222,7 +222,7 @@ void QskQuickItem::componentComplete()
     Inherited::componentComplete();
 }
 
-void QskQuickItem::releaseResources()
+void QskItem::releaseResources()
 {
     Inherited::releaseResources();
 
@@ -235,37 +235,37 @@ void QskQuickItem::releaseResources()
     qskReleasedWindowCounter->setWindow( window() );
 }
 
-void QskQuickItem::setDisabled( bool on )
+void QskItem::setDisabled( bool on )
 {
     Inherited::setEnabled( !on );
 }
 
-void QskQuickItem::setHidden( bool on )
+void QskItem::setHidden( bool on )
 {
     Inherited::setVisible( !on );
 }
 
-void QskQuickItem::show()
+void QskItem::show()
 {
     Inherited::setVisible( true );
 }
 
-void QskQuickItem::hide()
+void QskItem::hide()
 {
     Inherited::setVisible( false );
 }
 
-bool QskQuickItem::isVisibleTo( const QQuickItem* ancestor ) const
+bool QskItem::isVisibleTo( const QQuickItem* ancestor ) const
 {
     return qskIsVisibleTo( this, ancestor );
 }
 
-bool QskQuickItem::isVisibleToParent() const
+bool QskItem::isVisibleToParent() const
 {
     return d_func()->explicitVisible;
 }
 
-void QskQuickItem::setGeometry( qreal x, qreal y, qreal width, qreal height )
+void QskItem::setGeometry( qreal x, qreal y, qreal width, qreal height )
 {
     // QQuickItem does not even offer changing the geometry
     // in one call - what leads to 2 calls of the updateGeometry
@@ -323,19 +323,19 @@ void QskQuickItem::setGeometry( qreal x, qreal y, qreal width, qreal height )
     }
 }
 
-QRectF QskQuickItem::rect() const
+QRectF QskItem::rect() const
 {
     Q_D( const QQuickItem );
     return QRectF( 0, 0, d->width, d->height );
 }
 
-QRectF QskQuickItem::geometry() const
+QRectF QskItem::geometry() const
 {
     Q_D( const QQuickItem );
     return QRectF( d->x, d->y, d->width, d->height );
 }
 
-void QskQuickItem::setTabFence( bool on )
+void QskItem::setTabFence( bool on )
 {
     Q_D( QQuickItem );
     if ( on != d->isTabFence )
@@ -345,12 +345,12 @@ void QskQuickItem::setTabFence( bool on )
     }
 }
 
-bool QskQuickItem::isTabFence() const
+bool QskItem::isTabFence() const
 {
     return d_func()->isTabFence;
 }
 
-void QskQuickItem::setFocusPolicy( Qt::FocusPolicy policy )
+void QskItem::setFocusPolicy( Qt::FocusPolicy policy )
 {
     /*
         Qt::FocusPolicy has always been there with widgets, got lost with
@@ -358,7 +358,7 @@ void QskQuickItem::setFocusPolicy( Qt::FocusPolicy policy )
         Unfortunately this was done by adding code on top instead of fixing
         the foundation.
      */
-    Q_D( QskQuickItem );
+    Q_D( QskItem );
     if ( policy != d->focusPolicy )
     {
         d->focusPolicy = ( policy & ~Qt::TabFocus );
@@ -381,7 +381,7 @@ void QskQuickItem::setFocusPolicy( Qt::FocusPolicy policy )
     }
 }
 
-Qt::FocusPolicy QskQuickItem::focusPolicy() const
+Qt::FocusPolicy QskItem::focusPolicy() const
 {
     uint policy = d_func()->focusPolicy;
     if ( Inherited::activeFocusOnTab() )
@@ -390,9 +390,9 @@ Qt::FocusPolicy QskQuickItem::focusPolicy() const
     return static_cast< Qt::FocusPolicy >( policy );
 }
 
-void QskQuickItem::setWheelEnabled( bool on )
+void QskItem::setWheelEnabled( bool on )
 {
-    Q_D( QskQuickItem );
+    Q_D( QskItem );
     if ( on != d->wheelEnabled )
     {
         d->wheelEnabled = on;
@@ -400,14 +400,14 @@ void QskQuickItem::setWheelEnabled( bool on )
     }
 }
 
-bool QskQuickItem::isWheelEnabled() const
+bool QskItem::isWheelEnabled() const
 {
     return d_func()->wheelEnabled;
 }
 
-void QskQuickItem::setPolishOnResize( bool on )
+void QskItem::setPolishOnResize( bool on )
 {
-    Q_D( QskQuickItem );
+    Q_D( QskItem );
     if ( on != d->polishOnResize )
     {
         d->polishOnResize = on;
@@ -417,12 +417,12 @@ void QskQuickItem::setPolishOnResize( bool on )
     }
 }
 
-bool QskQuickItem::polishOnResize() const
+bool QskItem::polishOnResize() const
 {
     return d_func()->polishOnResize;
 }
 
-bool QskQuickItem::layoutMirroring() const
+bool QskItem::layoutMirroring() const
 {
 #if 1
     /*
@@ -436,7 +436,7 @@ bool QskQuickItem::layoutMirroring() const
 #endif
 }
 
-void QskQuickItem::setLayoutMirroring( bool on, bool childrenInherit )
+void QskItem::setLayoutMirroring( bool on, bool childrenInherit )
 {
     // Again we have to deal with an existing API made for QML,
     // that is weired for C++: LayoutMirroring/QQuickLayoutMirroringAttached
@@ -464,7 +464,7 @@ void QskQuickItem::setLayoutMirroring( bool on, bool childrenInherit )
     }
 }
 
-void QskQuickItem::resetLayoutMirroring()
+void QskItem::resetLayoutMirroring()
 {
     Q_D( QQuickItem );
 
@@ -476,27 +476,27 @@ void QskQuickItem::resetLayoutMirroring()
     }
 }
 
-bool QskQuickItem::isPolishScheduled() const
+bool QskItem::isPolishScheduled() const
 {
     return d_func()->polishScheduled;
 }
 
-bool QskQuickItem::isUpdateNodeScheduled() const
+bool QskItem::isUpdateNodeScheduled() const
 {
-    Q_D( const QskQuickItem );
+    Q_D( const QskItem );
 
     return ( d->dirtyAttributes & QQuickItemPrivate::ContentUpdateMask ) &&
            ( d->flags & QQuickItem::ItemHasContents );
 }
 
-bool QskQuickItem::isInitiallyPainted() const
+bool QskItem::isInitiallyPainted() const
 {
     return d_func()->initiallyPainted;
 }
 
-bool QskQuickItem::maybeUnresized() const
+bool QskItem::maybeUnresized() const
 {
-    Q_D( const QskQuickItem );
+    Q_D( const QskItem );
 
     if ( d->width <= 0.0 && d->height <= 0.0 )
     {
@@ -514,23 +514,23 @@ bool QskQuickItem::maybeUnresized() const
     return false;
 }
 
-QskQuickItem::UpdateFlags QskQuickItem::updateFlags() const
+QskItem::UpdateFlags QskItem::updateFlags() const
 {
     return UpdateFlags( d_func()->updateFlags );
 }
 
-void QskQuickItem::resetUpdateFlags()
+void QskItem::resetUpdateFlags()
 {
-    Q_D( QskQuickItem );
+    Q_D( QskItem );
 
     // clear all bits in the mask
     d->updateFlagsMask = 0;
     d->applyUpdateFlags( qskSetup->itemUpdateFlags() );
 }
 
-void QskQuickItem::setUpdateFlag( UpdateFlag flag, bool on )
+void QskItem::setUpdateFlag( UpdateFlag flag, bool on )
 {
-    Q_D( QskQuickItem );
+    Q_D( QskItem );
 
     d->updateFlagsMask |= flag;
 
@@ -541,9 +541,9 @@ void QskQuickItem::setUpdateFlag( UpdateFlag flag, bool on )
     }
 }
 
-void QskQuickItem::resetUpdateFlag( UpdateFlag flag )
+void QskItem::resetUpdateFlag( UpdateFlag flag )
 {
-    Q_D( QskQuickItem );
+    Q_D( QskItem );
 
     d->updateFlagsMask &= ~flag;
 
@@ -556,14 +556,14 @@ void QskQuickItem::resetUpdateFlag( UpdateFlag flag )
     }
 }
 
-bool QskQuickItem::testUpdateFlag( UpdateFlag flag ) const
+bool QskItem::testUpdateFlag( UpdateFlag flag ) const
 {
     return d_func()->updateFlags & flag;
 }
 
-void QskQuickItem::applyUpdateFlag( UpdateFlag flag, bool on )
+void QskItem::applyUpdateFlag( UpdateFlag flag, bool on )
 {
-    Q_D( QskQuickItem );
+    Q_D( QskItem );
 
     if ( testUpdateFlag( flag ) == on )
         return;
@@ -575,7 +575,7 @@ void QskQuickItem::applyUpdateFlag( UpdateFlag flag, bool on )
 
     switch ( flag )
     {
-        case QskQuickItem::DeferredUpdate:
+        case QskItem::DeferredUpdate:
         {
             if ( on )
             {
@@ -589,14 +589,14 @@ void QskQuickItem::applyUpdateFlag( UpdateFlag flag, bool on )
 
             break;
         }
-        case QskQuickItem::DeferredPolish:
+        case QskItem::DeferredPolish:
         {
             if ( !on && d->blockedPolish )
                 polish();
 
             break;
         }
-        case QskQuickItem::DeferredLayout:
+        case QskItem::DeferredLayout:
         {
             if ( !on )
             {
@@ -613,14 +613,14 @@ void QskQuickItem::applyUpdateFlag( UpdateFlag flag, bool on )
 
             break;
         }
-        case QskQuickItem::CleanupOnVisibility:
+        case QskItem::CleanupOnVisibility:
         {
             if ( on && !isVisible() )
                 d->cleanupNodes();
 
             break;
         }
-        case QskQuickItem::DebugForceBackground:
+        case QskItem::DebugForceBackground:
         {
             // no need to mark it dirty
             if ( flags() & QQuickItem::ItemHasContents )
@@ -632,11 +632,11 @@ void QskQuickItem::applyUpdateFlag( UpdateFlag flag, bool on )
     }
 }
 
-void QskQuickItem::resetImplicitSize()
+void QskItem::resetImplicitSize()
 {
-    Q_D( QskQuickItem );
+    Q_D( QskItem );
 
-    if ( d->updateFlags & QskQuickItem::DeferredLayout )
+    if ( d->updateFlags & QskItem::DeferredLayout )
     {
         d->blockedImplicitSize = true;
         d->layoutConstraintChanged();
@@ -647,7 +647,7 @@ void QskQuickItem::resetImplicitSize()
     }
 }
 
-bool QskQuickItem::event( QEvent* event )
+bool QskItem::event( QEvent* event )
 {
     const int eventType = event->type();
     const bool hasContents = flags() & QQuickItem::ItemHasContents;
@@ -762,19 +762,19 @@ bool QskQuickItem::event( QEvent* event )
     return Inherited::event( event );
 }
 
-void QskQuickItem::windowChangeEvent( QskWindowChangeEvent* )
+void QskItem::windowChangeEvent( QskWindowChangeEvent* )
 {
 }
 
-void QskQuickItem::geometryChangeEvent( QskGeometryChangeEvent* )
+void QskItem::geometryChangeEvent( QskGeometryChangeEvent* )
 {
 }
 
-void QskQuickItem::changeEvent( QEvent* )
+void QskItem::changeEvent( QEvent* )
 {
 }
 
-void QskQuickItem::itemChange( QQuickItem::ItemChange change,
+void QskItem::itemChange( QQuickItem::ItemChange change,
     const QQuickItem::ItemChangeData& changeData )
 {
     switch ( change )
@@ -783,8 +783,8 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
         {
             if ( changeData.window )
             {
-                Q_D( const QskQuickItem );
-                if ( d->updateFlags & QskQuickItem::DeferredUpdate )
+                Q_D( const QskItem );
+                if ( d->updateFlags & QskItem::DeferredUpdate )
                     qskFilterWindow( changeData.window );
             }
 
@@ -824,7 +824,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
 #if 1
             if ( changeData.window == nullptr )
             {
-                Q_D( QskQuickItem );
+                Q_D( QskItem );
 
                 if( d->focus )
                 {
@@ -854,7 +854,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
         }
         case QQuickItem::ItemVisibleHasChanged:
         {
-            Q_D( QskQuickItem );
+            Q_D( QskItem );
 #if 1
             /*
                 ~QQuickItem sends QQuickItem::ItemVisibleHasChanged recursively
@@ -868,7 +868,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
                 if ( d->blockedPolish )
                     polish();
 
-                if ( d->updateFlags & QskQuickItem::DeferredUpdate )
+                if ( d->updateFlags & QskItem::DeferredUpdate )
                 {
                     if ( d->dirtyAttributes && ( d->flags & QQuickItem::ItemHasContents ) )
                         update();
@@ -876,7 +876,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
             }
             else
             {
-                if ( d->updateFlags & QskQuickItem::CleanupOnVisibility )
+                if ( d->updateFlags & QskItem::CleanupOnVisibility )
                     d->cleanupNodes();
 
                 d->initiallyPainted = false;
@@ -923,7 +923,7 @@ void QskQuickItem::itemChange( QQuickItem::ItemChange change,
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
 
-void QskQuickItem::geometryChanged(
+void QskItem::geometryChanged(
     const QRectF& newGeometry, const QRectF& oldGeometry )
 {
     geometryChange( newGeometry, oldGeometry );
@@ -931,7 +931,7 @@ void QskQuickItem::geometryChanged(
 
 #endif
 
-void QskQuickItem::geometryChange(
+void QskItem::geometryChange(
     const QRectF& newGeometry, const QRectF& oldGeometry )
 {
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
@@ -940,7 +940,7 @@ void QskQuickItem::geometryChange(
     Inherited::geometryChange( newGeometry, oldGeometry );
 #endif
 
-    Q_D( const QskQuickItem );
+    Q_D( const QskItem );
     if ( !d->polishScheduled && d->polishOnResize )
     {
         if ( newGeometry.size() != oldGeometry.size() )
@@ -951,30 +951,30 @@ void QskQuickItem::geometryChange(
     QCoreApplication::sendEvent( this, &event );
 }
 
-void QskQuickItem::mouseUngrabEvent()
+void QskItem::mouseUngrabEvent()
 {
     Inherited::mouseUngrabEvent();
 }
 
-void QskQuickItem::touchUngrabEvent()
+void QskItem::touchUngrabEvent()
 {
     Inherited::touchUngrabEvent();
 }
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
 
-void QskQuickItem::windowDeactivateEvent()
+void QskItem::windowDeactivateEvent()
 {
     Inherited::windowDeactivateEvent();
 }
 
 #endif
 
-void QskQuickItem::updatePolish()
+void QskItem::updatePolish()
 {
-    Q_D( QskQuickItem );
+    Q_D( QskItem );
 
-    if ( d->updateFlags & QskQuickItem::DeferredPolish )
+    if ( d->updateFlags & QskItem::DeferredPolish )
     {
         if ( !isVisible() )
         {
@@ -998,21 +998,21 @@ void QskQuickItem::updatePolish()
     updateItemPolish();
 }
 
-void QskQuickItem::aboutToShow()
+void QskItem::aboutToShow()
 {
 }
 
-void QskQuickItem::updateItemPolish()
+void QskItem::updateItemPolish()
 {
 }
 
-QSGNode* QskQuickItem::updatePaintNode( QSGNode* node, UpdatePaintNodeData* data )
+QSGNode* QskItem::updatePaintNode( QSGNode* node, UpdatePaintNodeData* data )
 {
     Q_UNUSED( data )
 
-    Q_D( QskQuickItem );
+    Q_D( QskItem );
 
-    Q_ASSERT( isVisible() || !( d->updateFlags & QskQuickItem::DeferredUpdate ) );
+    Q_ASSERT( isVisible() || !( d->updateFlags & QskItem::DeferredUpdate ) );
 
     d->initiallyPainted = true;
 
@@ -1040,9 +1040,9 @@ QSGNode* QskQuickItem::updatePaintNode( QSGNode* node, UpdatePaintNodeData* data
     return updateItemPaintNode( node );
 }
 
-QSGNode* QskQuickItem::updateItemPaintNode( QSGNode* node )
+QSGNode* QskItem::updateItemPaintNode( QSGNode* node )
 {
     return node;
 }
 
-#include "moc_QskQuickItem.cpp"
+#include "moc_QskItem.cpp"

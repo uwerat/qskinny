@@ -47,7 +47,7 @@ static inline bool qskMaybeGesture( QQuickItem* item,
 }
 
 QskControl::QskControl( QQuickItem* parent )
-    : QskQuickItem( *( new QskControlPrivate() ), parent )
+    : QskItem( *( new QskControlPrivate() ), parent )
 {
     if ( parent )
     {

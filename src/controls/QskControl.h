@@ -6,7 +6,7 @@
 #ifndef QSK_CONTROL_H
 #define QSK_CONTROL_H
 
-#include "QskQuickItem.h"
+#include "QskItem.h"
 #include "QskSkinnable.h"
 #include "QskAspect.h"
 #include "QskGradient.h"
@@ -19,7 +19,7 @@
 class QskControlPrivate;
 class QskGestureEvent;
 
-class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
+class QSK_EXPORT QskControl : public QskItem, public QskSkinnable
 {
     Q_OBJECT
 
@@ -49,7 +49,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     Q_PROPERTY( QSizeF preferredSize READ preferredSize WRITE setPreferredSize )
     Q_PROPERTY( QSizeF sizeConstraint READ sizeConstraint )
 
-    using Inherited = QskQuickItem;
+    using Inherited = QskItem;
 
   public:
     QSK_SUBCONTROLS( Background )

@@ -32,7 +32,7 @@ QSK_EXPORT QskTreeNode* qskTreeNodeCast( QSGNode* );
 QSK_EXPORT const QskTreeNode* qskTreeNodeCast( const QSGNode* );
 
 /*
-    Used by all QskQuickItem as root node ( = itemNode ) of its subtree
+    Used by QskItem as root node ( = itemNode ) of its subtree
     ( see qskItemNode in QskQuick.h )
  */
 class QSK_EXPORT QskItemNode final : public QSGTransformNode

@@ -126,10 +126,10 @@ static inline QSGNode* qskUpdateGraphicNode(
     if ( graphicNode == nullptr )
         graphicNode = new QskGraphicNode();
 
-    const auto flag = QskQuickItem::PreferRasterForTextures;
+    const auto flag = QskItem::PreferRasterForTextures;
 
     bool useRaster = qskSetup->testItemUpdateFlag( flag );
-    if ( auto qItem = qobject_cast< const QskQuickItem* >( item ) )
+    if ( auto qItem = qobject_cast< const QskItem* >( item ) )
         useRaster = qItem->testUpdateFlag( flag );
 
     graphicNode->setRenderHint( useRaster ? QskPaintedNode::Raster : QskPaintedNode::OpenGL );
@@ -345,7 +345,7 @@ void QskSkinlet::updateNode( QskSkinnable* skinnable, QSGNode* parentNode ) cons
         oldNode = findChildNode( parentNode, DebugRole );
 
         newNode = nullptr;
-        if ( control->testUpdateFlag( QskQuickItem::DebugForceBackground ) )
+        if ( control->testUpdateFlag( QskItem::DebugForceBackground ) )
             newNode = updateDebugNode( control, oldNode );
 
         replaceChildNode( DebugRole, parentNode, oldNode, newNode );

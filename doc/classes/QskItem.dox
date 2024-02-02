@@ -1,25 +1,25 @@
 /*!
-    \class QskQuickItem QskQuickItem.h
+    \class QskItem QskItem.h
 
     \ingroup Framework
 
-    QskQuickItem completes the C++ API of QQuickItem and re-establishs basic
+    QskItem completes the C++ API of QQuickItem and re-establishs basic
     concepts like events. It also offers better control over the operations
     happening in the update cycle.
  */
 
 /*!
-    \enum QskQuickItem::UpdateFlag
+    \enum QskItem::UpdateFlag
 
     Qt/Quick classes have a tendency to update items too early
     and too often. To avoid processing of unwanted operations
-    QskQuickItem implements a couple of modifications, that
+    QskItem implements a couple of modifications, that
     can be en/disabled individually.
 
     \sa updateFlags(), resetUpdateFlags()
         testUpdateFlag(), setUpdateFlag(), resetUpdateFlag()
 
-    \var QskQuickItem::UpdateFlag QskQuickItem::DeferredUpdate
+    \var QskItem::UpdateFlag QskItem::DeferredUpdate
 
         Creating of scene graph nodes is blocked when being invisible.
 
@@ -37,7 +37,7 @@
           such as viewport frustrum culling (i.e. hiding items outside of the
           window geometry).
 
-    \var QskQuickItem::UpdateFlag QskQuickItem::DeferredPolish
+    \var QskItem::UpdateFlag QskItem::DeferredPolish
 
         Polishing an item is blocked when being invisible.
         F.e for all items being derived from QskControl the layout calculations
@@ -45,7 +45,7 @@
 
     \saqt QQuickItem::updatePolish(), QQuickItem::polish()
 
-    \var QskQuickItem::UpdateFlag QskQuickItem::DeferredLayout
+    \var QskItem::UpdateFlag QskItem::DeferredLayout
 
         Recalculations of the implicitSize are blocked until being explicitly requested. 
 
@@ -54,15 +54,15 @@
         without recalculating the actual size hints ( f.e the implicitSize ).
 
         When having layout code that relies on binding the implicit width/height
-        the QskQuickItem::DeferredLayout flag needs to be disabled.
+        the QskItem::DeferredLayout flag needs to be disabled.
 
     \note All layout classes offered by the Qt/Quick modules of the Qt Company
           ( f.e anchors ) do require immediate updates of the implicit size. 
 
-    \sa QskQuickItem::resetImplicitSize()
+    \sa QskItem::resetImplicitSize()
     \saqt QQuickItem::implicitSize()
 
-    \var QskQuickItem::UpdateFlag QskQuickItem::CleanupOnVisibility
+    \var QskItem::UpdateFlag QskItem::CleanupOnVisibility
 
         Delete scene graph nodes, when the item becomes hidden.
         Enabling this mode will reduce the memory footprint, but comes at the cost
@@ -70,12 +70,12 @@
 
     \saqt QQuickItem::isVisible()
 
-    \var QskQuickItem::UpdateFlag QskQuickItem::PreferRasterForTextures
+    \var QskItem::UpdateFlag QskItem::PreferRasterForTextures
 
         When creating textures from QskGraphic, prefer the raster paint
         engine over the OpenGL paint engine.
 
-    \var QskQuickItem::UpdateFlag QskQuickItem::DebugForceBackground
+    \var QskItem::UpdateFlag QskItem::DebugForceBackground
 
         Always fill the background of the item with a random color.
 
@@ -84,7 +84,7 @@
 */
 
 /*!
-    \property QskQuickItem::geometry
+    \property QskItem::geometry
 
     This property holds the geometry of the item relative to its parent item.
     When changing the geometry, the item receives a QskEvent::GeometryChange event.
@@ -93,7 +93,7 @@
 */
 
 /*!
-    \property QskQuickItem::rect
+    \property QskItem::rect
 
     This property returns the internal geometry of the item.
     It equals QRect(0, 0, width(), height() ).
@@ -102,7 +102,7 @@
 */
 
 /*!
-    \var QskQuickItem::transparentForPositioners
+    \var QskItem::transparentForPositioners
 
     When transparentForPositioners is set the item indicates, that it should be excluded
     from any layout calculations. This flag is actually a concept of QQuickItem, that
@@ -112,7 +112,7 @@
 */
 
 /*!
-    \property QskQuickItem::tabFence
+    \property QskItem::tabFence
 
     The tabFence flag can be used to create local tab focus chains. It is usually
     used in combination with QQuickItem::ItemIsFocusScope.
@@ -125,7 +125,7 @@
 */
 
 /*!
-    \property QskQuickItem::visibleToParent
+    \property QskItem::visibleToParent
 
     Flag indicating if an item would become visible if its parentItem() is shown.
     The implementation relies on the internal explicitVisible flag, that has not
@@ -142,7 +142,7 @@
 */
 
 /*!
-    \property QskQuickItem::polishOnResize
+    \property QskItem::polishOnResize
 
     When polishOnResize is set QQuickItem::polish() will be called automatically
     whenever the size of the item has been changed. This is usually necessary
@@ -153,7 +153,7 @@
 */
 
 /*!
-    \property QskQuickItem::initiallyPainted
+    \property QskItem::initiallyPainted
 
     Status flag indicating that there has already been a call
     of QQuickItem::updatePaintNode() since the item has become visible.
@@ -165,7 +165,7 @@
 */
 
 /*!
-    \property QskQuickItem::hasChildItems
+    \property QskItem::hasChildItems
 
     A property indicating if the item has child items.
 
@@ -173,40 +173,40 @@
 */
 
 /*!
-    \property QskQuickItem::updateFlags
+    \property QskItem::updateFlags
 
-    QskQuickItem offers several tweaks to the Qt/Quick update cycle,
+    QskItem offers several tweaks to the Qt/Quick update cycle,
     that can be en/disabled individually.
 
     The flags are a combination from bits that have been explicitly set
     by setUpdateFlag() and those being derived from the aapplication
     wide default settings, that can be set with QskSetup.
     
-    \sa QskQuickItem::UpdateFlag, QskQuickItem::updateFlags(), QskSetup::itemUpdateFlags()
+    \sa QskItem::UpdateFlag, QskItem::updateFlags(), QskSetup::itemUpdateFlags()
 */
 
 /*!
-    \fn QskQuickItem::QskQuickItem
+    \fn QskItem::QskItem
 
     Sets the QQuickItem::ItemHasContents flag to true.
 */
 
 *!
-    \fn QskQuickItem::~QskQuickItem
+    \fn QskItem::~QskItem
 
     Sets the componentComplete to false, so that its about-to-delete state is known
     when detaching it from parent/window.
 */
 
 /*!
-    \fn QskQuickItem::className
+    \fn QskItem::className
 
     A convenience wrapper for metaObject()->className()
     \return Class name
 */
 
 /*!
-    \fn QskQuickItem::isVisibleTo
+    \fn QskItem::isVisibleTo
 
     The true case occurs if neither the item itself nor any parent up to but excluding
     ancestor has been explicitly hidden.
@@ -218,7 +218,7 @@
 */
 
 /*!
-    \fn QskQuickItem::isVisibleToParent
+    \fn QskItem::isVisibleToParent
 
     An item might be invisible because it has been explicitly hidden or
     one of its ancestors has been hidden. isVisibleToParent() indicates
@@ -231,14 +231,14 @@
 */
 
 /*!
-    \fn QskQuickItem::hasChildItems() const
+    \fn QskItem::hasChildItems() const
 
     \return true, if the item has child items
     \sa hasChildItems
 */
 
 /*!
-    \fn QskQuickItem::setGeometry( qreal, qreal, qreal, qreal )
+    \fn QskItem::setGeometry( qreal, qreal, qreal, qreal )
 
     Set the position and the size of an item
 
@@ -252,7 +252,7 @@
 */
 
 /*!
-    \fn QskQuickItem::setGeometry( const QPointF &, const QSizeF & )
+    \fn QskItem::setGeometry( const QPointF &, const QSizeF & )
 
     Set the position and the size of an item
 
@@ -261,7 +261,7 @@
 */
 
 /*!
-    \fn QskQuickItem::setGeometry( const QRectF& )
+    \fn QskItem::setGeometry( const QRectF& )
 
     Set the position and the size of an item
 
@@ -272,14 +272,14 @@
 */
 
 /*!
-    \fn QskQuickItem::geometry() const
+    \fn QskItem::geometry() const
 
     \return Position and size relative to the parent item
     \sa geometry, setGeometry()
 */
 
 /*!
-    \fn QskQuickItem::geometryChange
+    \fn QskItem::geometryChange
 
     This overloaded notifier calls QQuickItem::polish() depending on the
     polishOnResize() flag and forwards the notification to the event queue.
@@ -288,14 +288,14 @@
 */
 
 /*!
-    \fn QskQuickItem::rect() const
+    \fn QskItem::rect() const
 
     \return Internal geometry of the item, where the position is always at ( 0, 0 )
     \sa geometry
 */
 
 /*!
-    \fn QskQuickItem::implicitSize
+    \fn QskItem::implicitSize
 
     Qt/Quick offers an oversimplified layout system that is based on the
     property bindings of implicit width and height. QSkinny restablishs a layout
@@ -308,56 +308,56 @@
     \return Implicit size, 
 
     \note Layout code that relies on property bindings of the implicit width a height
-          needs to disable the QskQuickItem::DeferredLayout flag
+          needs to disable the QskItem::DeferredLayout flag
 
     \sa QskControl::preferredSize(), QskControl::sizeHint()
     \saqt QQuickItem::implicitWidth(), QQuickItem::implicitHeight()
 */
 
 /*!
-    \fn QskQuickItem::setPolishOnResize
+    \fn QskItem::setPolishOnResize
 
     Set or clear the polishOnResize flag.
     \sa polishOnResize
 */
 
 /*!
-    \fn QskQuickItem::polishOnResize() const
+    \fn QskItem::polishOnResize() const
 
     \return Value of the polishOnResize flag
     \sa setPolishOnResize()
 */
 
 /*!
-    \fn QskQuickItem::setTransparentForPositioner
+    \fn QskItem::setTransparentForPositioner
 
     Set or clear the transparentForPositioner flag
     \sa isTransparentForPositioner()
 */
 
 /*!
-    \fn QskQuickItem::isTransparentForPositioner
+    \fn QskItem::isTransparentForPositioner
 
     \return Value of the transparentForPositioner flag
     \sa transparentForPositioner
 */
 
 /*!
-    \fn QskQuickItem::setTabFence
+    \fn QskItem::setTabFence
 
     Set or clear the tabFence property
     \sa isTabFence()
 */
 
 /*!
-    \fn QskQuickItem::isTabFence
+    \fn QskItem::isTabFence
 
     \return Value of the tabFence property
     \sa setTransparentForPositioner()
 */
 
 /*!
-    \fn QskQuickItem::setLayoutMirroring
+    \fn QskItem::setLayoutMirroring
 
     Change the direction how the content is laid out horizontally.
 
@@ -373,7 +373,7 @@
 */
 
 /*!
-    \fn QskQuickItem::resetLayoutMirroring
+    \fn QskItem::resetLayoutMirroring
 
     Clear the layoutMirroring property
 
@@ -381,7 +381,7 @@
 */
 
 /*!
-    \fn QskQuickItem::layoutMirroring() const
+    \fn QskItem::layoutMirroring() const
 
     Direction how the content is layed out horizontally.
 
@@ -402,7 +402,7 @@
 */
 
 /*!
-    \fn QskQuickItem::resetUpdateFlags
+    \fn QskItem::resetUpdateFlags
 
     Reset all flags to the default settings 
 
@@ -410,16 +410,16 @@
 */
 
 /*!
-    \fn QskQuickItem::updateFlags() const
+    \fn QskItem::updateFlags() const
 
     \return Flags affecting the item update process
     \sa testUpdateFlag(), setUpdateFlag(), updateFlags
 */
 
 /*!
-    \fn QskQuickItem::setUpdateFlag
+    \fn QskItem::setUpdateFlag
 
-    QskQuickItem offers several tweaks to the Qt/Quick update cycle,
+    QskItem offers several tweaks to the Qt/Quick update cycle,
     that can be en/disables individually.
 
     The default settings for these flags are taken from QskSetup::itemUpdateFlags()
@@ -434,7 +434,7 @@
 */
 
 /*!
-    \fn QskQuickItem::resetUpdateFlag
+    \fn QskItem::resetUpdateFlag
 
     Reset the value for flag to the default settings from QskSetup. Future
     changes of the corresponding bit with QskSetup::setItemUpdateFlag() will affect
@@ -445,7 +445,7 @@
 */
 
 /*!
-    \fn QskQuickItem::testUpdateFlag
+    \fn QskItem::testUpdateFlag
 
     \param Flag affecting the item update process
     \return true, when the corresponding bit is effective
@@ -454,7 +454,7 @@
 */
 
 /*!
-    \fn QskQuickItem::updateFlagsChanged
+    \fn QskItem::updateFlagsChanged
 
     Signal indicating, that the effective update flags have changed
 
@@ -463,7 +463,7 @@
 */
 
 /*!
-    \fn QskQuickItem::classBegin
+    \fn QskItem::classBegin
 
     The QML engine initializes an item as being incomplete by
     explicitly calling classBegin(). Once the item
@@ -481,7 +481,7 @@
 */
 
 /*!
-    \fn QskQuickItem::componentComplete
+    \fn QskItem::componentComplete
 
     The QML engine initilizes an item as being incomplete by
     explicitly calling QQuickItem::classBegin(). Once the item
@@ -499,7 +499,7 @@
 */
 
 /*!
-    \fn QskQuickItem::releaseResources
+    \fn QskItem::releaseResources
 
     This specific hook is called, when the item is about to be removed
     from the window it was previously rendering to. 
@@ -510,7 +510,7 @@
 */
 
 /*!
-    \fn QskQuickItem::isPolishScheduled
+    \fn QskItem::isPolishScheduled
 
     \return True, if the item will be polished in the next
             scene graph update cycle.
@@ -519,21 +519,21 @@
 */
 
 /*!
-    \fn QskQuickItem::isUpdateNodeScheduled
+    \fn QskItem::isUpdateNodeScheduled
 
     \return True, if the item will update the paint node in
             the next scene graph update cycle
 */
 
 /*!
-    \fn QskQuickItem::isInitiallyPainted
+    \fn QskItem::isInitiallyPainted
 
     \return Value of the initiallyPainted property
     \sa initiallyPainted
 */
 
 /*!
-    \fn QskQuickItem::maybeUnresized
+    \fn QskItem::maybeUnresized
 
     Flag indicating a potential state, where the item is waiting to be
     sized by the layout system.
@@ -547,7 +547,7 @@
 */
 
 /*!
-    \fn QskQuickItem::itemFlagsChanged
+    \fn QskItem::itemFlagsChanged
 
     Signal indicating that at least one if the following attributes has changed:
 
@@ -557,7 +557,7 @@
 */
 
 /*!
-    \fn QskQuickItem::show
+    \fn QskItem::show
 
     An alternative way to call setVisible( true ).
     Useful for signal/slot connections
@@ -567,7 +567,7 @@
 */
 
 /*!
-    \fn QskQuickItem::hide
+    \fn QskItem::hide
 
     An alternative way to call setVisible( false ).
     Useful for signal/slot connections
@@ -577,7 +577,7 @@
 */
 
 /*!
-    \fn QskQuickItem::setHidden
+    \fn QskItem::setHidden
 
      Convenience function, equivalent to setVisible( !on ).
 
@@ -586,19 +586,19 @@
 */
 
 /*!
-    \fn QskQuickItem::setDisabled
+    \fn QskItem::setDisabled
 
     Convenience function, equivalent to setEnabled( !on ).
         \saqt QQuickItem::setEnabled()
 */
 
 /*!
-    \fn QskQuickItem::resetImplicitSize
+    \fn QskItem::resetImplicitSize
 
     Notifies the layout system that attributes affecting the layout
     system have changed.
 
-    If the QskQuickItem::DeferredLayout flag is enabled ( = default )
+    If the QskItem::DeferredLayout flag is enabled ( = default )
     the cached implicitSize() gets invalidated and a QEvent::LayoutRequest is sent
     to the parent item ( like QWidget::updateGeometry ).
 
@@ -607,13 +607,13 @@
 */
 
 /*!
-    \fn QskQuickItem::event
+    \fn QskItem::event
 
-    QskQuickItem handles the additional type of events.
+    QskItem handles the additional type of events.
 
     For some reason the QQuick classes introduced proprietory notfier hooks
     instead of using the well established and powerful concept of events.
-    QskQuickItem tries to revert this decision by mapping notifications
+    QskItem tries to revert this decision by mapping notifications
     to events, when possible.
 
     The following notification events are added by QSkinny - usually with a
@@ -633,7 +633,7 @@
 */
 
 /*!
-    \fn QskQuickItem::changeEvent
+    \fn QskItem::changeEvent
 
     This event handler can be reimplemented to handle certain state changes:
 
@@ -649,12 +649,12 @@
 */
 
 /*!
-    \fn QskQuickItem::geometryChangeEvent
+    \fn QskItem::geometryChangeEvent
 
     For no known reason QQuickItem propagates changes of position and size
     by calling QQuickItem::geometryChange(), instead of using events.
 
-    QskQuickItem reestablished the more powerful concept of events by sending/posting
+    QskItem reestablished the more powerful concept of events by sending/posting
     events, that can be preprocessed by event filtering.
 
     \param event Event indicating the geometry change
@@ -664,7 +664,7 @@
 */
 
 /*!
-    \fn QskQuickItem::windowChangeEvent
+    \fn QskItem::windowChangeEvent
 
     This event handler can be reimplemented to handle situations, where
     an item is added, removed or transferred between windows. It corresponds
@@ -677,7 +677,7 @@
 */
 
 /*!
-    \fn QskQuickItem::itemChange
+    \fn QskItem::itemChange
 
     For no obvious reason Qt/Quick has introduced an additional callback
     mechanism beside events and signals.
@@ -698,7 +698,7 @@
 */
 
 /*!
-    \fn QskQuickItem::aboutToShow
+    \fn QskItem::aboutToShow
 
     A specific hook that is intended to be overloaded by controls that need
     to do some specific operations, when an item is painted the first time
@@ -711,7 +711,7 @@
 */
 
 /*!
-    \fn QskQuickItem::mouseUngrabEvent
+    \fn QskItem::mouseUngrabEvent
 
     Notification, that is overloaded for debuging purposes, without
     doing anything beside calling the base class.
@@ -720,7 +720,7 @@
 */
 
 /*!
-    \fn QskQuickItem::touchUngrabEvent
+    \fn QskItem::touchUngrabEvent
 
     Notification, that is overloaded for debuging purposes, without
     doing anything beside calling the base class.
