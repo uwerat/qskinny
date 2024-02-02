@@ -26,6 +26,12 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     Q_PROPERTY( bool polishOnResize READ polishOnResize
         WRITE setPolishOnResize NOTIFY itemFlagsChanged FINAL )
 
+    Q_PROPERTY( Qt::FocusPolicy focusPolicy READ focusPolicy
+        WRITE setFocusPolicy NOTIFY focusPolicyChanged )
+
+    Q_PROPERTY( bool wheelEnabled READ isWheelEnabled
+        WRITE setWheelEnabled NOTIFY wheelEnabledChanged )
+
     Q_PROPERTY( bool visibleToParent READ isVisibleToParent )
     Q_PROPERTY( bool hasChildItems READ hasChildItems )
     Q_PROPERTY( bool initiallyPainted READ isInitiallyPainted )
@@ -75,8 +81,14 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     void setPolishOnResize( bool );
     bool polishOnResize() const;
 
+    void setFocusPolicy( Qt::FocusPolicy );
+    Qt::FocusPolicy focusPolicy() const;
+
     void setTabFence( bool );
     bool isTabFence() const;
+
+    void setWheelEnabled( bool );
+    bool isWheelEnabled() const;
 
     void setLayoutMirroring( bool on, bool childrenInherit = false );
     void resetLayoutMirroring();
@@ -85,9 +97,9 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     void resetUpdateFlags();
     UpdateFlags updateFlags() const;
 
-    Q_INVOKABLE void setUpdateFlag( UpdateFlag, bool on = true );
-    Q_INVOKABLE void resetUpdateFlag( UpdateFlag );
-    Q_INVOKABLE bool testUpdateFlag( UpdateFlag ) const;
+    void setUpdateFlag( UpdateFlag, bool on = true );
+    void resetUpdateFlag( UpdateFlag );
+    bool testUpdateFlag( UpdateFlag ) const;
 
     void classBegin() override;
     void componentComplete() override;
@@ -100,6 +112,9 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
     bool maybeUnresized() const;
 
   Q_SIGNALS:
+    void wheelEnabledChanged( bool );
+    void focusPolicyChanged( Qt::FocusPolicy );
+
     void itemFlagsChanged();
     void updateFlagsChanged( UpdateFlags );
 
@@ -158,6 +173,7 @@ class QSK_EXPORT QskQuickItem : public QQuickItem
      */
     void childrenRect() = delete;
 
+    void setActiveFocusOnTab( bool ) = delete; // use setFocusPolicy
     void applyUpdateFlag( UpdateFlag, bool on );
 
     QSGNode* updatePaintNode( QSGNode*, UpdatePaintNodeData* ) override final;

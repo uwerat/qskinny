@@ -150,8 +150,6 @@ QskControlPrivate::QskControlPrivate()
     , explicitLocale( false )
     , explicitSection( false )
     , autoLayoutChildren( false )
-    , focusPolicy( Qt::NoFocus )
-    , isWheelEnabled( false )
     , blockLayoutRequestEvents( true )
 {
 }

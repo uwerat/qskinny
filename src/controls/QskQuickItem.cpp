@@ -171,6 +171,7 @@ QskQuickItem::QskQuickItem( QskQuickItemPrivate& dd, QQuickItem* parent )
     : QQuickItem( dd, parent )
 {
     setFlag( QQuickItem::ItemHasContents, true );
+    Inherited::setActiveFocusOnTab( false );
 
     if ( dd.updateFlags & QskQuickItem::DeferredUpdate )
         qskFilterWindow( window() );
@@ -347,6 +348,55 @@ void QskQuickItem::setTabFence( bool on )
 bool QskQuickItem::isTabFence() const
 {
     return d_func()->isTabFence;
+}
+
+void QskQuickItem::setFocusPolicy( Qt::FocusPolicy policy )
+{
+    Q_D( QskQuickItem );
+    if ( policy != d->focusPolicy )
+    {
+        d->focusPolicy = ( policy & ~Qt::TabFocus );
+
+        const bool tabFocus = policy & Qt::TabFocus;
+
+        if ( !tabFocus && window() )
+        {
+            // Removing the activeFocusItem from the focus tab chain is not possible
+            if ( window()->activeFocusItem() == this )
+            {
+                if ( auto focusItem = nextItemInFocusChain( true ) )
+                    focusItem->setFocus( true );
+            }
+        }
+
+        Inherited::setActiveFocusOnTab( tabFocus );
+
+        Q_EMIT focusPolicyChanged( focusPolicy() );
+    }
+}
+
+Qt::FocusPolicy QskQuickItem::focusPolicy() const
+{
+    uint policy = d_func()->focusPolicy;
+    if ( Inherited::activeFocusOnTab() )
+        policy |= Qt::TabFocus;
+
+    return static_cast< Qt::FocusPolicy >( policy );
+}
+
+void QskQuickItem::setWheelEnabled( bool on )
+{
+    Q_D( QskQuickItem );
+    if ( on != d->wheelEnabled )
+    {
+        d->wheelEnabled = on;
+        Q_EMIT wheelEnabledChanged( on );
+    }
+}
+
+bool QskQuickItem::isWheelEnabled() const
+{
+    return d_func()->wheelEnabled;
 }
 
 void QskQuickItem::setPolishOnResize( bool on )
@@ -937,7 +987,7 @@ QSGNode* QskQuickItem::updatePaintNode( QSGNode* node, UpdatePaintNodeData* data
             it has already been allocated. When deleting it we have a dangling pointer.
             instead of the new one.
 
-            To avoid creashes for the second situation we manually clear d->paintNode. 
+            To avoid creashes for the second situation we manually clear d->paintNode.
          */
         d->paintNode = nullptr;
 #endif

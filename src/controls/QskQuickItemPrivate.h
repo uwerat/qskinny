@@ -57,6 +57,9 @@ class QskQuickItemPrivate : public QQuickItemPrivate
     bool clearPreviousNodes : 1;
 
     bool initiallyPainted : 1;
+    bool wheelEnabled : 1;
+
+    uint focusPolicy : 4;
 };
 
 #endif

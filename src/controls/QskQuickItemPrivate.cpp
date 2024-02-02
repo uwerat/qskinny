@@ -21,6 +21,8 @@ QskQuickItemPrivate::QskQuickItemPrivate()
     , blockedImplicitSize( true )
     , clearPreviousNodes( false )
     , initiallyPainted( false )
+    , wheelEnabled( false )
+    , focusPolicy( Qt::NoFocus )
 {
     if ( updateFlags & QskQuickItem::DeferredLayout )
     {

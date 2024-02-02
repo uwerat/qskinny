@@ -59,9 +59,6 @@ class QskControlPrivate : public QskQuickItemPrivate
 
     bool autoLayoutChildren : 1;
 
-    uint focusPolicy : 4;
-    bool isWheelEnabled : 1;
-
     mutable bool blockLayoutRequestEvents : 1;
 };
 

@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #include "QskSetup.h"
-#include "QskControl.h"
+#include "QskQuickItem.h"
 #include "QskGraphicProviderMap.h"
 #include "QskSkinManager.h"
 #include "QskSkin.h"
@@ -164,7 +164,7 @@ QskGraphicProvider* QskSetup::graphicProvider( const QString& providerId ) const
 
 bool QskSetup::eventFilter( QObject* object, QEvent* event )
 {
-    if ( auto control = qskControlCast( object ) )
+    if ( auto qskItem = qobject_cast< QskQuickItem* >( object ) )
     {
         /*
             Qt::FocusPolicy has always been there with widgets, got lost with
@@ -186,7 +186,7 @@ bool QskSetup::eventFilter( QObject* object, QEvent* event )
             case QEvent::MouseButtonPress:
             case QEvent::MouseButtonRelease:
             {
-                if ( ( control->focusPolicy() & Qt::ClickFocus ) == Qt::ClickFocus )
+                if ( ( qskItem->focusPolicy() & Qt::ClickFocus ) == Qt::ClickFocus )
                 {
                     const bool focusOnRelease =
                         QGuiApplication::styleHints()->setFocusOnTouchRelease();
@@ -194,19 +194,19 @@ bool QskSetup::eventFilter( QObject* object, QEvent* event )
                     if ( focusOnRelease )
                     {
                         if ( event->type() == QEvent::MouseButtonRelease )
-                            control->forceActiveFocus( Qt::MouseFocusReason );
+                            qskItem->forceActiveFocus( Qt::MouseFocusReason );
                     }
                     else
                     {
                         if ( event->type() == QEvent::MouseButtonPress )
-                            control->forceActiveFocus( Qt::MouseFocusReason );
+                            qskItem->forceActiveFocus( Qt::MouseFocusReason );
                     }
                 }
                 break;
             }
             case QEvent::Wheel:
             {
-                if ( !control->isWheelEnabled() )
+                if ( !qskItem->isWheelEnabled() )
                 {
                     /*
                         We block further processing of the event. This is in line
@@ -218,8 +218,8 @@ bool QskSetup::eventFilter( QObject* object, QEvent* event )
                     return true;
                 }
 
-                if ( ( control->focusPolicy() & Qt::WheelFocus ) == Qt::WheelFocus )
-                    control->forceActiveFocus( Qt::MouseFocusReason );
+                if ( ( qskItem->focusPolicy() & Qt::WheelFocus ) == Qt::WheelFocus )
+                    qskItem->forceActiveFocus( Qt::MouseFocusReason );
 
                 break;
             }
