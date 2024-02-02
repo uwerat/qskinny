@@ -13,7 +13,6 @@
 #include <memory>
 
 class QQuickItem;
-class QskGraphicProvider;
 
 #if defined( qskSetup )
 #undef qskSetup
@@ -36,9 +35,6 @@ class QSK_EXPORT QskSetup : public QObject
     void setItemUpdateFlag( QskItem::UpdateFlag, bool on = true );
     void resetItemUpdateFlag( QskItem::UpdateFlag );
     bool testItemUpdateFlag( QskItem::UpdateFlag );
-
-    void addGraphicProvider( const QString& providerId, QskGraphicProvider* );
-    QskGraphicProvider* graphicProvider( const QString& providerId ) const;
 
     static void setup();
     static void cleanup();

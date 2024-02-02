@@ -4,9 +4,6 @@
  *****************************************************************************/
 
 #include "QskSetup.h"
-#include "QskGraphicProviderMap.h"
-#include "QskSkinManager.h"
-#include "QskSkin.h"
 
 QskSetup* QskSetup::s_instance = nullptr;
 
@@ -68,7 +65,6 @@ class QskSetup::PrivateData
     {
     }
 
-    QskGraphicProviderMap graphicProviders;
     QskItem::UpdateFlags itemUpdateFlags;
 };
 
@@ -134,22 +130,6 @@ void QskSetup::resetItemUpdateFlag( QskItem::UpdateFlag flag )
 bool QskSetup::testItemUpdateFlag( QskItem::UpdateFlag flag )
 {
     return m_data->itemUpdateFlags.testFlag( flag );
-}
-
-void QskSetup::addGraphicProvider( const QString& providerId, QskGraphicProvider* provider )
-{
-    m_data->graphicProviders.insert( providerId, provider );
-}
-
-QskGraphicProvider* QskSetup::graphicProvider( const QString& providerId ) const
-{
-    if ( auto skin = qskSkinManager->skin() )
-    {
-        if ( auto provider = skin->graphicProvider( providerId ) )
-            return provider;
-    }
-
-    return m_data->graphicProviders.provider( providerId );
 }
 
 #include "moc_QskSetup.cpp"

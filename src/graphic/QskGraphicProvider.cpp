@@ -4,13 +4,17 @@
  *****************************************************************************/
 
 #include "QskGraphicProvider.h"
+#include "QskGraphicProviderMap.h"
 #include "QskGraphic.h"
-#include "QskSetup.h"
+#include "QskSkinManager.h"
+#include "QskSkin.h"
 
 #include <qmutex.h>
 #include <qcache.h>
 #include <qdebug.h>
 #include <qurl.h>
+
+static QskGraphicProviderMap qskGraphicProviders;
 
 class QskGraphicProvider::PrivateData
 {
@@ -92,12 +96,18 @@ const QskGraphic* QskGraphicProvider::requestGraphic( const QString& id ) const
 void Qsk::addGraphicProvider(
     const QString& providerId, QskGraphicProvider* provider )
 {
-    qskSetup->addGraphicProvider( providerId, provider );
+    qskGraphicProviders.insert( providerId, provider );
 }
 
 QskGraphicProvider* Qsk::graphicProvider( const QString& providerId )
 {
-    return qskSetup->graphicProvider( providerId );
+    if ( auto skin = qskSkinManager->skin() )
+    {
+        if ( auto provider = skin->graphicProvider( providerId ) )
+            return provider;
+    }
+
+    return qskGraphicProviders.provider( providerId );
 }
 
 QskGraphic Qsk::loadGraphic( const char* source )
@@ -122,7 +132,7 @@ QskGraphic Qsk::loadGraphic( const QUrl& url )
 
     const QskGraphic* graphic = nullptr;
 
-    if ( const auto provider = qskSetup->graphicProvider( providerId ) )
+    if ( const auto provider = Qsk::graphicProvider( providerId ) )
         graphic = provider->requestGraphic( imageId );
 
     return graphic ? *graphic : nullGraphic;
