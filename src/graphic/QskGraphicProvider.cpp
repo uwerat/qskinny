@@ -13,8 +13,9 @@
 #include <qcache.h>
 #include <qdebug.h>
 #include <qurl.h>
+#include <qglobalstatic.h>
 
-static QskGraphicProviderMap qskGraphicProviders;
+Q_GLOBAL_STATIC( QskGraphicProviderMap, qskGraphicProviders )
 
 class QskGraphicProvider::PrivateData
 {
@@ -96,7 +97,8 @@ const QskGraphic* QskGraphicProvider::requestGraphic( const QString& id ) const
 void Qsk::addGraphicProvider(
     const QString& providerId, QskGraphicProvider* provider )
 {
-    qskGraphicProviders.insert( providerId, provider );
+    if ( qskGraphicProviders )
+        qskGraphicProviders->insert( providerId, provider );
 }
 
 QskGraphicProvider* Qsk::graphicProvider( const QString& providerId )
@@ -107,7 +109,10 @@ QskGraphicProvider* Qsk::graphicProvider( const QString& providerId )
             return provider;
     }
 
-    return qskGraphicProviders.provider( providerId );
+    if ( qskGraphicProviders )
+        return qskGraphicProviders->provider( providerId );
+
+    return nullptr;
 }
 
 QskGraphic Qsk::loadGraphic( const char* source )
