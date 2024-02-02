@@ -5,11 +5,9 @@
 
 #include "QskSetup.h"
 #include "QskControl.h"
-#include "QskControlPrivate.h"
 #include "QskGraphicProviderMap.h"
 #include "QskSkinManager.h"
 #include "QskSkin.h"
-#include "QskWindow.h"
 
 #include <qguiapplication.h>
 #include <qstylehints.h>

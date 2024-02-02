@@ -639,22 +639,13 @@
 
         - QEvent::StyleChange
         - QEvent::ContentsRectChange
-        - QEvent::FontChange
-        - QEvent::PaletteChange
         - QEvent::ReadOnlyChange
         - QEvent::EnabledChange
         - QEvent::LocaleChange
         - QEvent::ParentChange
         - QEvent::LayoutDirectionChange
 
-    
-
     \param event Qt event
-
-    \note QEvent::PaletteChange, QEvent::FontChange are handled, but both event types
-          do not fit to the themeing concept of QSkinny and are not posted. However
-          it is possible to post them if an application has a concept, where they
-          make sense.
 */
 
 /*!

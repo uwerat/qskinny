@@ -46,15 +46,6 @@ namespace
             updatePreferredSize();
         }
 
-      protected:
-        void changeEvent( QEvent* event ) override
-        {
-            if ( event->type() == QEvent::FontChange )
-                updatePreferredSize();
-
-            QskGraphicLabel::changeEvent( event );
-        }
-
       private:
         void updatePreferredSize()
         {

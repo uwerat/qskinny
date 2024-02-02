@@ -624,33 +624,6 @@ bool QskQuickItem::event( QEvent* event )
             changeEvent( event );
             return true;
         }
-#if 1
-        /*
-            Font/Palette changes do not fit conceptually into the themeing
-            system of qskinny. Nevertheless we are handling the corresponding
-            events - whatever it is good for.
-         */
-        case QEvent::FontChange:
-        {
-            resetImplicitSize();
-            polish();
-
-            if ( hasContents )
-                update();
-
-            changeEvent( event );
-            return true;
-        }
-        case QEvent::PaletteChange:
-        {
-            if ( hasContents )
-                update();
-
-            changeEvent( event );
-            return true;
-        }
-#endif
-
         case QEvent::ReadOnlyChange:
         case QEvent::EnabledChange:
         case QEvent::LocaleChange:
