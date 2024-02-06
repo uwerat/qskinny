@@ -1272,7 +1272,7 @@ void Editor::setupSubWindow()
 
     // TitleBarPanel
 
-    setHint( Q::TitleBarPanel | QskAspect::Style, Q::TitleBar | Q::Title );
+    setHint( Q::TitleBarPanel | QskAspect::Style, Q::NoDecoration );
     setMargin( Q::TitleBarPanel, -1 );
 
     setGradient( Q::TitleBarPanel, m_pal.active( P::Mid ) );

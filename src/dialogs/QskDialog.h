@@ -115,18 +115,10 @@ class QSK_EXPORT QskDialog : public QObject
     Q_INVOKABLE QWindow* transientParent() const;
 
     Q_INVOKABLE Action message(
-        const QString& title, const QString& text, int symbolType,
+        const QString& title, const QString& text, uint priority = 0,
         Actions actions = Ok, Action defaultAction = NoAction ) const;
 
     Q_INVOKABLE Action information(
-        const QString& title, const QString& text,
-        Actions actions = Ok, Action defaultAction = NoAction ) const;
-
-    Q_INVOKABLE Action warning(
-        const QString& title, const QString& text,
-        Actions actions = Ok, Action defaultAction = NoAction ) const;
-
-    Q_INVOKABLE Action critical(
         const QString& title, const QString& text,
         Actions actions = Ok, Action defaultAction = NoAction ) const;
 

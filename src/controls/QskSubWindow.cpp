@@ -22,7 +22,7 @@ namespace
 {
     inline QskAspect aspectDecoration()
     {
-        return QskSubWindow::TitleBarPanel | QskAspect::NoType | QskAspect::Style;
+        return QskSubWindow::TitleBarPanel | QskAspect::Style;
     }
 }
 

@@ -11,6 +11,7 @@
 
 class QskDialogButtonBox;
 class QskPushButton;
+class QskTextLabel;
 
 class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
 {
@@ -18,6 +19,9 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
 
     Q_PROPERTY( QskDialog::Actions dialogActions
         READ dialogActions WRITE setDialogActions )
+
+    Q_PROPERTY( QString title READ title
+        WRITE setTitle NOTIFY titleChanged )
 
     using Inherited = QskSubWindow;
 
@@ -47,11 +51,19 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
     void setContentItem( QQuickItem* );
     QQuickItem* contentItem() const;
 
+    void setTitle( const QString& );
+    QString title() const;
+
+    QskTextLabel* titleLabel();
+    const QskTextLabel* titleLabel() const;
+
     // padding around the contentItem
     void setContentPadding( const QMarginsF& );
     QMarginsF contentPadding() const;
 
   Q_SIGNALS:
+    void titleChanged( const QString& );
+
     void finished( QskDialog::DialogCode );
     void accepted();
     void rejected();
@@ -64,14 +76,16 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
 
   protected:
     void setResult( QskDialog::DialogCode );
+
     void keyPressEvent( QKeyEvent* ) override;
+
+    virtual void updateGeometry();
 
     void updateLayout() override;
     void aboutToShow() override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
 
-    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
-
-    virtual QskDialogButtonBox* createButtonBox();
+    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const;
 
   private:
     void initButtonBox();

@@ -1902,7 +1902,6 @@ void Editor::setupSubWindow( const QskFluent2Theme& theme )
 
     const auto& pal = theme.palette;
 
-    setPadding( Q::Panel, { 0, 31, 0, 0 } );
     setBoxShape( Q::Panel, 7 );
     setBoxBorderMetrics( Q::Panel, 1 );
     setBoxBorderColors( Q::Panel, pal.strokeColor.surface.defaultColor );
@@ -1910,7 +1909,7 @@ void Editor::setupSubWindow( const QskFluent2Theme& theme )
     setShadowMetrics( Q::Panel, theme.shadow.dialog.metrics );
     setShadowColor( Q::Panel, theme.shadow.dialog.color );
 
-    setHint( Q::TitleBarPanel | QskAspect::Style, Q::TitleBar | Q::Title );
+    setHint( Q::TitleBarPanel | QskAspect::Style, Q::NoDecoration );
     setPadding( Q::TitleBarPanel, { 24, 31, 24, 0 } );
 
     setFontRole( Q::TitleBarText, QskFluent2Skin::Subtitle );

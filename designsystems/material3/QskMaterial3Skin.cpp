@@ -1220,8 +1220,7 @@ void Editor::setupSubWindow()
     // TitleBarPanel
     setBoxShape( Q::TitleBarPanel, { 28_dp, 28_dp, 0, 0 } );
     setPadding( Q::TitleBarPanel, { 24_dp, 24_dp, 24_dp, 16_dp } );
-    setHint( Q::TitleBarPanel | QskAspect::Style,
-        Q::TitleBar | Q::Title | Q::Symbol );
+    setHint( Q::TitleBarPanel | QskAspect::Style, Q::NoDecoration );
 
     setGradient( Q::TitleBarPanel, m_pal.secondaryContainer );
 
