@@ -220,7 +220,6 @@ list(APPEND HEADERS
     controls/QskGraphicLabelSkinlet.h
     controls/QskHintAnimator.h
     controls/QskItem.h
-    controls/QskInputGrabber.h
     controls/QskListView.h
     controls/QskListViewSkinlet.h
     controls/QskMenu.h
@@ -290,6 +289,7 @@ list(APPEND HEADERS
 
 list(APPEND PRIVATE_HEADERS
     controls/QskDirtyItemFilter.h
+    controls/QskInputGrabber.h
     controls/QskControlPrivate.h
     controls/QskItemPrivate.h
 )
