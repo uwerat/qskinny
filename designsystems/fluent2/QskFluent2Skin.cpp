@@ -56,6 +56,7 @@
 #include <QskCheckBox.h>
 #include <QskComboBox.h>
 #include <QskDialogButtonBox.h>
+#include <QskDialogSubWindow.h>
 #include <QskDrawer.h>
 #include <QskFocusIndicator.h>
 #include <QskGraphicLabel.h>
@@ -197,6 +198,7 @@ namespace
       private:
         void setupPopup( const QskFluent2Theme& );
         void setupSubWindow( const QskFluent2Theme& );
+        void setupDialogSubWindow( const QskFluent2Theme& );
 
         void setupBoxMetrics();
         void setupBoxColors( QskAspect::Section, const QskFluent2Theme& );
@@ -338,6 +340,7 @@ void Editor::setupColors( QskAspect::Section section, const QskFluent2Theme& the
         // TODO
         setupPopup( theme );
         setupSubWindow( theme );
+        setupDialogSubWindow( theme );
     }
 
     setupBoxColors( section, theme );
@@ -1918,6 +1921,15 @@ void Editor::setupSubWindow( const QskFluent2Theme& theme )
     setTextOptions( Q::TitleBarText, Qt::ElideRight, QskTextOptions::NoWrap );
 
     setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
+}
+
+void Editor::setupDialogSubWindow( const QskFluent2Theme& )
+{
+    using Q = QskDialogSubWindow;
+
+    setFontRole( Q::DialogTitle, QskFluent2Skin::Subtitle );
+    setAlignment( Q::DialogTitle, Qt::AlignLeft | Qt::AlignVCenter );
+    setTextOptions( Q::DialogTitle, Qt::ElideRight, QskTextOptions::WordWrap );
 }
 
 void Editor::setupVirtualKeyboardMetrics()

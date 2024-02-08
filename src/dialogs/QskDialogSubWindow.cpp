@@ -18,6 +18,8 @@
 #include <qquickwindow.h>
 #include <qpointer.h>
 
+QSK_SUBCONTROL( QskDialogSubWindow, DialogTitle )
+
 static inline void qskSetRejectOnClose( QskDialogSubWindow* subWindow, bool on )
 {
     if ( on )
@@ -30,6 +32,22 @@ static inline void qskSetRejectOnClose( QskDialogSubWindow* subWindow, bool on )
         QObject::disconnect( subWindow, &QskPopup::closed,
             subWindow, &QskDialogSubWindow::reject );
     }
+}
+
+namespace
+{
+    class TitleLabel final : public QskTextLabel
+    {
+      protected:
+        QskAspect::Subcontrol substitutedSubcontrol(
+            QskAspect::Subcontrol subControl ) const override
+        {
+            if ( subControl == QskTextLabel::Text )
+                return QskDialogSubWindow::DialogTitle;
+
+            return QskTextLabel::substitutedSubcontrol( subControl );
+        }
+    };
 }
 
 class QskDialogSubWindow::PrivateData
@@ -121,36 +139,30 @@ QskDialog::Actions QskDialogSubWindow::dialogActions() const
 void QskDialogSubWindow::setTitle( const QString& title )
 {
     bool changed = false;
+    auto& titleLabel = m_data->titleLabel;
 
     if ( title.isEmpty() )
     {
-        changed = m_data->titleLabel != nullptr;
-        delete m_data->titleLabel;
+        changed = ( titleLabel != nullptr );
+
+        delete titleLabel;
+        titleLabel = nullptr;
     }
     else
     {
-        changed = m_data->titleLabel && m_data->titleLabel->text() == title;
-        if ( m_data->titleLabel == nullptr )
+        if ( titleLabel == nullptr )
         {
-            auto label = new QskTextLabel();
-            label->setLayoutAlignmentHint( Qt::AlignLeft | Qt::AlignTop );
-#if 1
-            // skin hints
-            label->setFontRole( QskSkin::LargeFont );
-            label->setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
-
-            QskTextOptions options;
-            options.setElideMode( Qt::ElideRight );
-            options.setWrapMode( QskTextOptions::WordWrap );
-
-            label->setTextOptions( options );
-#endif
-
-            m_data->titleLabel = label;
-            m_data->layout->insertItem( 0, label );
+            titleLabel = new TitleLabel();
+            m_data->layout->insertItem( 0, titleLabel );
+            changed = true;
+        }
+        else
+        {
+            changed = ( titleLabel->text() != title );
         }
 
-        m_data->titleLabel->setText( title );
+        if ( changed )
+            titleLabel->setText( title );
     }
 
     if ( changed )
@@ -164,7 +176,10 @@ void QskDialogSubWindow::setTitle( const QString& title )
 
 QString QskDialogSubWindow::title() const
 {
-    return m_data->titleLabel ? m_data->titleLabel->text() : QString();
+    if ( auto label = m_data->titleLabel )
+        return label->text();
+
+    return QString();
 }
 
 QskTextLabel* QskDialogSubWindow::titleLabel()

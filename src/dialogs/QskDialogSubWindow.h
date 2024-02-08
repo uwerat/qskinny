@@ -26,6 +26,8 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
     using Inherited = QskSubWindow;
 
   public:
+    QSK_SUBCONTROLS( DialogTitle )
+
     QskDialogSubWindow( QQuickItem* parent = nullptr );
     ~QskDialogSubWindow() override;
 

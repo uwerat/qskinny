@@ -12,6 +12,7 @@
 #include <QskComboBox.h>
 #include <QskColorFilter.h>
 #include <QskDialogButtonBox.h>
+#include <QskDialogSubWindow.h>
 #include <QskDrawer.h>
 #include <QskFocusIndicator.h>
 #include <QskFunctions.h>
@@ -93,6 +94,7 @@ namespace
         Q_INVOKABLE void setupCheckBox();
         Q_INVOKABLE void setupComboBox();
         Q_INVOKABLE void setupDialogButtonBox();
+        Q_INVOKABLE void setupDialogSubWindow();
         Q_INVOKABLE void setupDrawer();
         Q_INVOKABLE void setupFocusIndicator();
         Q_INVOKABLE void setupInputPanel();
@@ -777,6 +779,17 @@ void Editor::setupDialogButtonBox()
     setGradient( Q::Panel, m_pal.secondaryContainer );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
+}
+
+void Editor::setupDialogSubWindow()
+{
+    using Q = QskDialogSubWindow;
+
+#if 1
+    setFontRole( Q::DialogTitle, QskMaterial3Skin::M3BodyLarge );
+#endif
+    setAlignment( Q::DialogTitle, Qt::AlignLeft | Qt::AlignVCenter );
+    setTextOptions( Q::DialogTitle, Qt::ElideRight, QskTextOptions::WordWrap );
 }
 
 void Editor::setupDrawer()
