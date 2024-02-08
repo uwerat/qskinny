@@ -82,8 +82,6 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
     virtual void updateGeometry();
 
     void updateLayout() override;
-    void aboutToShow() override;
-    void itemChange( ItemChange, const ItemChangeData& ) override;
 
     QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const;
 

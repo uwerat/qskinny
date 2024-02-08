@@ -31,6 +31,8 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickpositioners_p.h>
 #endif
 
+#include <private/qquickitemchangelistener_p.h>
+
 QSK_QT_PRIVATE_END
 
 #endif
@@ -160,8 +162,72 @@ namespace
     };
 }
 
+namespace
+{
+    // A helper class for the polishOnParentResize feature
+
+    class QskParentListener final : public QQuickItemChangeListener
+    {
+      public:
+        void update( QQuickItem* parentItem )
+        {
+            if ( parentItem == nullptr )
+                return;
+
+            const auto changeTypes =
+                QQuickItemPrivate::Geometry | QQuickItemPrivate::Children;
+
+            auto d = QQuickItemPrivate::get( parentItem );
+
+            if ( needListening( parentItem ) )
+                d->updateOrAddItemChangeListener( this, changeTypes );
+            else
+                d->removeItemChangeListener( this, changeTypes );
+        }
+
+      private:
+        inline bool needListening( const QQuickItem* parentItem ) const
+        {
+            const auto children = parentItem->childItems();
+            for ( auto child : children )
+            {
+                if ( auto item = qobject_cast< const QskItem* >( child ) )
+                {
+                    if ( item->polishOnParentResize() )
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        void itemGeometryChanged( QQuickItem* parentItem,
+            QQuickGeometryChange, const QRectF& ) override
+        {
+            const auto children = parentItem->childItems();
+            for ( auto child : children )
+            {
+                if ( auto item = qobject_cast< QskItem* >( child ) )
+                {
+                    if ( item->polishOnParentResize() )
+                    {
+                        item->resetImplicitSize();
+                        item->polish();
+                    }
+                }
+            }
+        }
+
+        void itemChildRemoved( QQuickItem* parentItem, QQuickItem* )
+        {
+            update( parentItem );
+        }
+    };
+}
+
 Q_GLOBAL_STATIC( QskItemRegistry, qskRegistry )
 Q_GLOBAL_STATIC( QskWindowStore, qskReleasedWindowCounter )
+Q_GLOBAL_STATIC( QskParentListener, qskParentListener )
 
 QskItem::QskItem( QskItemPrivate& dd, QQuickItem* parent )
     : QQuickItem( dd, parent )
@@ -416,6 +482,30 @@ void QskItem::setPolishOnResize( bool on )
 bool QskItem::polishOnResize() const
 {
     return d_func()->polishOnResize;
+}
+
+void QskItem::setPolishOnParentResize( bool on )
+{
+    Q_D( QskItem );
+    if ( on != d->polishOnParentResize )
+    {
+        d->polishOnParentResize = on;
+
+        if ( parentItem() && qskParentListener )
+        {
+            qskParentListener->update( parentItem() );
+
+            resetImplicitSize();
+            polish();
+        }
+
+        Q_EMIT itemFlagsChanged();
+    }
+}
+
+bool QskItem::polishOnParentResize() const
+{
+    return d_func()->polishOnParentResize;
 }
 
 bool QskItem::layoutMirroring() const
@@ -894,9 +984,13 @@ void QskItem::itemChange( QQuickItem::ItemChange change,
 
             break;
         }
-
-
         case QQuickItem::ItemParentHasChanged:
+        {
+            if( polishOnParentResize() && qskParentListener )
+                qskParentListener->update( parentItem() );
+
+            break;
+        }
         case QQuickItem::ItemChildAddedChange:
         case QQuickItem::ItemChildRemovedChange:
         {

@@ -51,6 +51,7 @@ class QskItemPrivate : public QQuickItemPrivate
     quint8 updateFlagsMask;
 
     bool polishOnResize : 1;
+    bool polishOnParentResize : 1;
 
     bool blockedPolish : 1;
     bool blockedImplicitSize : 1;

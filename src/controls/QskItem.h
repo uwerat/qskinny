@@ -26,6 +26,9 @@ class QSK_EXPORT QskItem : public QQuickItem
     Q_PROPERTY( bool polishOnResize READ polishOnResize
         WRITE setPolishOnResize NOTIFY itemFlagsChanged FINAL )
 
+    Q_PROPERTY( bool polishOnParentResize READ polishOnParentResize
+        WRITE setPolishOnParentResize NOTIFY itemFlagsChanged FINAL )
+
     Q_PROPERTY( Qt::FocusPolicy focusPolicy READ focusPolicy
         WRITE setFocusPolicy NOTIFY focusPolicyChanged )
 
@@ -80,6 +83,9 @@ class QSK_EXPORT QskItem : public QQuickItem
 
     void setPolishOnResize( bool );
     bool polishOnResize() const;
+
+    void setPolishOnParentResize( bool );
+    bool polishOnParentResize() const;
 
     void setFocusPolicy( Qt::FocusPolicy );
     Qt::FocusPolicy focusPolicy() const;

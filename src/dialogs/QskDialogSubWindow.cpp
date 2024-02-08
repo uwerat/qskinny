@@ -15,11 +15,6 @@
 #include <QskPlatform.h>
 #endif
 
-QSK_QT_PRIVATE_BEGIN
-#include <private/qquickitem_p.h>
-#include <private/qquickitemchangelistener_p.h>
-QSK_QT_PRIVATE_END
-
 #include <qquickwindow.h>
 #include <qpointer.h>
 
@@ -37,60 +32,9 @@ static inline void qskSetRejectOnClose( QskDialogSubWindow* subWindow, bool on )
     }
 }
 
-namespace
-{
-    class GeometryListener final : public QQuickItemChangeListener
-    {
-      public:
-        GeometryListener( QskControl* control )
-            : m_control( control )
-            , m_parent( m_control->parentItem() )
-        {
-            setEnabled( true );
-            m_control->polish();
-        }
-
-        ~GeometryListener()
-        {
-            setEnabled( false );
-        }
-
-      private:
-        void setEnabled( bool on )
-        {
-            const auto changeTypes = QQuickItemPrivate::Geometry;
-
-            auto d = QQuickItemPrivate::get( m_parent );
-            if ( on )
-                d->addItemChangeListener( this, changeTypes );
-            else
-                d->removeItemChangeListener( this, changeTypes );
-        }
-
-        void itemGeometryChanged( QQuickItem*,
-            QQuickGeometryChange, const QRectF& ) override
-        {
-            m_control->resetImplicitSize();
-            m_control->polish();
-        }
-
-        QskControl* m_control;
-        QQuickItem* m_parent;
-    };
-}
-
 class QskDialogSubWindow::PrivateData
 {
   public:
-    inline void resetListener( QskDialogSubWindow* subWindow )
-    {
-        delete listener;
-        listener = nullptr;
-
-        if ( subWindow->parentItem() && subWindow->isVisible() )
-            listener = new GeometryListener( subWindow );
-    }
-
     QskDialog::Actions actions = QskDialog::NoAction;
 
     QskTextLabel* titleLabel = nullptr;
@@ -99,7 +43,6 @@ class QskDialogSubWindow::PrivateData
     QPointer< QQuickItem > contentItem;
 
     QskLinearBox* layout = nullptr;
-    GeometryListener* listener = nullptr;
 
     QskDialog::DialogCode result = QskDialog::Rejected;
 };
@@ -115,14 +58,11 @@ QskDialogSubWindow::QskDialogSubWindow( QQuickItem* parent )
         QskSizePolicy::MinimumExpanding, QskSizePolicy::Constrained );
 
     setPolishOnResize( true );
-
-    if ( parent )
-        m_data->listener = new GeometryListener( this );
+    setPolishOnParentResize( true );
 }
 
 QskDialogSubWindow::~QskDialogSubWindow()
 {
-    delete m_data->listener;
 }
 
 void QskDialogSubWindow::addDialogAction( QskDialog::Action action )
@@ -432,7 +372,7 @@ void QskDialogSubWindow::updateGeometry()
 QSizeF QskDialogSubWindow::layoutSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    if ( which == Qt::MaximumSize )
+    if ( which == Qt::MaximumSize && polishOnParentResize() )
         return 0.9 * parentItem()->size();
 
     auto size = m_data->layout->effectiveSizeHint( which, constraint );
@@ -444,33 +384,6 @@ QSizeF QskDialogSubWindow::layoutSizeHint(
     }
 
     return size;
-}
-
-void QskDialogSubWindow::aboutToShow()
-{
-    updateGeometry();
-    Inherited::aboutToShow();
-}
-
-void QskDialogSubWindow::itemChange( QQuickItem::ItemChange change,
-    const QQuickItem::ItemChangeData& value )
-{
-    Inherited::itemChange( change, value );
-
-    switch( static_cast< int >( change ) )
-    {
-        case QQuickItem::ItemParentHasChanged:
-        case QQuickItem::ItemVisibleHasChanged:
-        {
-            delete m_data->listener;
-            m_data->listener = nullptr;
-
-            if ( parentItem() && isVisible() )
-                m_data->listener = new GeometryListener( this );
-
-            break;
-        }
-    }
 }
 
 #include "moc_QskDialogSubWindow.cpp"
