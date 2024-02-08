@@ -172,12 +172,11 @@ static QskDialog::Action qskMessageWindow(
 }
 
 static QString qskSelectSubWindow(
-    QQuickWindow* window, const QString& title, const QString& text,
+    QQuickWindow* window, const QString& title,
     QskDialog::Actions actions, QskDialog::Action defaultAction,
     const QStringList& entries, int selectedRow )
 {
     auto subWindow = new QskSelectionSubWindow( window->contentItem() );
-    subWindow->setInfoText( text );
     subWindow->setEntries( entries );
     subWindow->setSelectedRow( selectedRow );
 
@@ -191,12 +190,11 @@ static QString qskSelectSubWindow(
 }
 
 static QString qskSelectWindow(
-    QWindow* transientParent, const QString& title, const QString& text,
+    QWindow* transientParent, const QString& title,
     QskDialog::Actions actions, QskDialog::Action defaultAction,
     const QStringList& entries, int selectedRow )
 {
     QskSelectionWindow window;
-    window.setInfoText( text );
     window.setEntries( entries );
     window.setSelectedRow( selectedRow );
 
@@ -295,8 +293,7 @@ QskDialog::Action QskDialog::question(
     return QskDialog::message( title, text, 0, actions, defaultAction );
 }
 
-QString QskDialog::select(
-    const QString& title, const QString& text,
+QString QskDialog::select( const QString& title,
     const QStringList& entries, int selectedRow ) const
 {
 #if 1
@@ -315,11 +312,11 @@ QString QskDialog::select(
         if ( quickWindow )
         {
             return qskSelectSubWindow( quickWindow,
-                title, text, actions, defaultAction, entries, selectedRow );
+                title, actions, defaultAction, entries, selectedRow );
         }
     }
 
-    return qskSelectWindow( m_data->transientParent, title, text,
+    return qskSelectWindow( m_data->transientParent, title,
         actions, defaultAction, entries, selectedRow );
 
 }

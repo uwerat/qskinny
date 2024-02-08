@@ -59,7 +59,6 @@ namespace
 
         void execSelection()
         {
-            // of course we all love "The Teens"
             const QStringList entries =
             {
                 "Give Me More",
@@ -82,7 +81,7 @@ namespace
                 "Gimme Gimme Gimme Gimme Gimme Your Love"
             };
 
-            qskDialog->select( "Here we go ...", "Hot Hot Hot", entries, 7 );
+            qskDialog->select( "The Teens", entries, 7 );
         }
     };
 }
