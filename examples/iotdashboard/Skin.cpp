@@ -43,17 +43,10 @@
 
 namespace
 {
-    static inline QFont qskFont( qreal pointSize, bool semiBold = false )
+    inline QFont createFont( qreal pointSize,
+        QFont::Weight weight = QFont::Normal )
     {
-        QFont font( "Proxima Nova" );
-
-        if ( semiBold )
-        {
-            font.setWeight( QFont::Bold );
-        }
-
-        font.setPointSizeF( pointSize /*/ qskDpiScaled( 1.0 )*/ );
-        return font;
+        return QFont( QStringLiteral( "Proxima Nova" ), pointSize, weight );
     }
 }
 
@@ -81,14 +74,15 @@ void Skin::initHints()
     QFontDatabase db;
     db.addApplicationFont( ":/fonts/ProximaNova-Regular.otf" ); // ### use fontconfig
 
-    setFont( QskSkin::DefaultFont, qskFont( 12 ) );
-    setFont( QskSkin::TinyFont, qskFont( 9 ) );
-    setFont( QskSkin::SmallFont, qskFont( 10 ) );
-    setFont( QskSkin::MediumFont, qskFont( 13 ) );
-    setFont( QskSkin::LargeFont, qskFont( 20 ) );
-    setFont( QskSkin::HugeFont, qskFont( 27, true ) );
+    setFont( QskSkin::DefaultFont, createFont( 12 ) );
 
-    setFont( Skin::TitleFont, qskFont( 10, true ) );
+    setFont( QskSkin::TinyFont, createFont( 9 ) );
+    setFont( QskSkin::SmallFont, createFont( 10 ) );
+    setFont( QskSkin::MediumFont, createFont( 13 ) );
+    setFont( QskSkin::LargeFont, createFont( 20 ) );
+    setFont( QskSkin::HugeFont, createFont( 27, QFont::Bold ) );
+
+    setFont( Skin::TitleFont, createFont( 10, QFont::Bold ) );
 
     QskSkinHintTableEditor ed( &hintTable() );
 
