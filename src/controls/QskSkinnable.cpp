@@ -722,7 +722,18 @@ int QskSkinnable::fontRoleHint(
 
 QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
 {
-    return effectiveSkin()->font( fontRoleHint( aspect ) );
+    const auto hint = effectiveSkinHint( aspect | QskAspect::FontRole );
+    if ( hint.canConvert< QFont >() )
+    {
+        /*
+            The provided skins/controls use font roles only - however
+            application code might want to assign fonts without defining
+            font roles.
+         */
+        return hint.value< QFont >();
+    }
+    
+    return effectiveSkin()->font( hint.toInt() ); // font role
 }
 
 qreal QskSkinnable::effectiveFontHeight( const QskAspect aspect ) const
