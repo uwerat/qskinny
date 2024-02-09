@@ -364,9 +364,7 @@ void Editor::setupTextLabel()
 {
     using Q = QskTextLabel;
 
-    setAlignment( Q::Text, Qt::AlignCenter );
     setColor( Q::Text, m_pal.onSurface );
-
     setPadding( Q::Panel, 5_dp );
 }
 

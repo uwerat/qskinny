@@ -18,6 +18,7 @@ namespace
         TextLabel( int role, QQuickItem* parent = nullptr )
             : QskTextLabel( parent )
         {
+            setAlignment( Qt::AlignCenter );
             setText( textFromRole( role ) );
             setFontRole( role );
 

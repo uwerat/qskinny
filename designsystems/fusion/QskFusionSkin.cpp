@@ -365,7 +365,6 @@ void Editor::setupTextLabel()
 {
     using Q = QskTextLabel;
 
-    setAlignment( Q::Text, Qt::AlignCenter );
     setColor( Q::Text, m_pal.color( QPalette::Active, QPalette::Text ) );
     setColor( Q::Text | Q::Disabled, m_pal.color( QPalette::Disabled, QPalette::Text ) );
 
