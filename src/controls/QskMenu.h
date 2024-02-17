@@ -23,6 +23,9 @@ class QSK_EXPORT QskMenu : public QskPopup
     Q_PROPERTY( bool cascading READ isCascading WRITE setCascading
         RESET resetCascading NOTIFY cascadingChanged )
 
+    Q_PROPERTY( bool wrapping READ isWrapping
+        WRITE setWrapping NOTIFY wrappingChanged )
+
     Q_PROPERTY( QVector< QskLabelData > options READ options
         WRITE setOptions NOTIFY optionsChanged )
 
@@ -46,6 +49,9 @@ class QSK_EXPORT QskMenu : public QskPopup
     bool isCascading() const;
     void setCascading( bool );
     void resetCascading();
+
+    bool isWrapping() const;
+    void setWrapping( bool );
 
     void setOrigin( const QPointF& );
     QPointF origin() const;
@@ -87,6 +93,7 @@ class QSK_EXPORT QskMenu : public QskPopup
     Q_INVOKABLE int exec();
 
   Q_SIGNALS:
+    void wrappingChanged( bool );
     void cascadingChanged( bool );
     void originChanged( const QPointF& );
 

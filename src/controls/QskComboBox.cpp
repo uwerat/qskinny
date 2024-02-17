@@ -236,14 +236,16 @@ void QskComboBox::openPopup()
 
     auto menu = new QskMenu();
 
-    menu->setParent( this );
-    menu->setParentItem( window()->contentItem() );
-    menu->setPopupFlag( QskPopup::DeleteOnClose, true );
-
-    menu->setOrigin( mapToScene( cr.bottomLeft() ) );
+    menu->setWrapping( false );
+    menu->setOrigin( mapToScene( cr.topLeft() ) );
     menu->setFixedWidth( cr.width() );
 
     menu->setOptions( m_data->options );
+    menu->setCurrentIndex( currentIndex() );
+
+    menu->setParent( this );
+    menu->setParentItem( window()->contentItem() );
+    menu->setPopupFlag( QskPopup::DeleteOnClose, true );
 
     connect( menu, &QskMenu::currentIndexChanged,
         this, &QskComboBox::indexInPopupChanged );
