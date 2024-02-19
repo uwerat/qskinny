@@ -10,6 +10,7 @@
 
 #include <QskTextLabel.h>
 #include <QskLinearBox.h>
+#include <QskFontRole.h>
 
 QSK_SUBCONTROL( BoxWithButtons, ValueText )
 QSK_SUBCONTROL( BoxWithButtons, ValuePanel )
@@ -66,7 +67,7 @@ BoxWithButtons::BoxWithButtons(
     titleAndValue->setSubcontrolProxy( QskBox::Panel, ValuePanel );
 
     auto* titleLabel = new QskTextLabel( title, titleAndValue );
-    titleLabel->setFontRole( Skin::TitleFont );
+    titleLabel->setFontRole( { QskFontRole::Caption, QskFontRole::High } );
 
     m_valueLabel = new QskTextLabel( titleAndValue );
     m_valueLabel->setSubcontrolProxy( QskTextLabel::Text, ValueText );

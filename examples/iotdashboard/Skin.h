@@ -30,11 +30,6 @@ class Skin : public QskSkin
     Skin( QObject* parent = nullptr );
     ~Skin() override;
 
-    enum SkinFontRole
-    {
-        TitleFont = QskSkin::HugeFont + 1,
-    };
-
   private:
     void initHints() override;
 

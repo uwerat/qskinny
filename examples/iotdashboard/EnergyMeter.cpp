@@ -7,7 +7,7 @@
 #include "CircularProgressBar.h"
 
 #include <QskTextLabel.h>
-#include <QskSkin.h>
+#include <QskFontRole.h>
 
 namespace
 {
@@ -19,7 +19,7 @@ namespace
         {
             initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
             setLayoutAlignmentHint( Qt::AlignCenter );
-            setFontRole( QskSkin::SmallFont );
+            setFontRole( QskFontRole::Caption );
         }
 
         void setValue( int value )

@@ -95,6 +95,7 @@
 #include <QskGraphicIO.h>
 #include <QskMargins.h>
 #include <QskRgbValue.h>
+#include <QskFontRole.h>
 
 #include <QskNamespace.h>
 #include <QskPlatform.h>
@@ -102,22 +103,30 @@
 #include <QGuiApplication>
 #include <QScreen>
 
+namespace Fluent2
+{
+    using F = QskFontRole;
+
+    /*
+        Fluent2/Windows font roles according to:
+            https://fluent2.microsoft.design/typography
+     */
+    constexpr F Caption           = { F::Caption, F::Normal };
+
+    constexpr F Body              = { F::Body, F::Normal };
+    constexpr F BodyStrong        = { F::Body, F::High };
+    constexpr F BodyStronger      = { F::Body, F::VeryHigh };
+
+    constexpr F Subtitle          = { F::Subtitle, F::Normal };
+
+    constexpr F Title             = { F::Title, F::Normal };
+
+    constexpr F LargeTitle        = { F::Headline, F::Normal };
+    constexpr F Display           = { F::Display, F::Normal };
+}
+
 namespace
 {
-    inline QFont createFont( const QString& name, qreal lineHeight,
-        qreal size, qreal tracking, QFont::Weight weight )
-    {
-        QFont font( name, qRound( size ) );
-        font.setPixelSize( qRound( lineHeight ) );
-
-        if( !qskFuzzyCompare( tracking, 0.0 ) )
-            font.setLetterSpacing( QFont::AbsoluteSpacing, tracking );
-
-        font.setWeight( weight );
-
-        return font;
-    }
-
     inline constexpr QRgb rgbGray( int value, qreal opacity = 1.0 )
     {
         return qRgba( value, value, value, qRound( opacity * 255 ) );
@@ -395,7 +404,7 @@ void Editor::setupCheckBoxMetrics()
     setBoxBorderMetrics( Q::Box, 1 );
     setPadding( Q::Box, 5 ); // "icon size"
 
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 }
 
 void Editor::setupCheckBoxColors(
@@ -520,7 +529,7 @@ void Editor::setupComboBoxMetrics()
     setPadding( Q::Icon, { 0, 0, 8, 0 } );
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 
     setStrutSize( Q::StatusIndicator, 12, 12 );
     setSymbol( Q::StatusIndicator, symbol( "spin-box-arrow-down" ) );
@@ -767,7 +776,7 @@ void Editor::setupMenuMetrics()
     setSpacing( Q::Segment, 15 );
     setBoxBorderMetrics( Q::Segment | Q::Selected, { 3, 0, 0, 0 } );
 
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 
     setStrutSize( Q::Icon, 12, 12 );
     setPadding( Q::Icon, { 8, 8, 0, 8 } );
@@ -965,7 +974,7 @@ void Editor::setupPushButtonMetrics()
     setStrutSize( Q::Icon, 12, 12 );
     setPadding( Q::Icon, { 0, 0, 8, 0 } );
 
-    setFontRole( Q::Text, W::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 }
 
 void Editor::setupPushButtonColors(
@@ -1105,7 +1114,7 @@ void Editor::setupRadioBoxMetrics()
     setBoxBorderMetrics( Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, 0 );
     setPadding( Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, { 6, 6 } ); // indicator "strut size"
 
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 }
 
 void Editor::setupRadioBoxColors(
@@ -1288,7 +1297,7 @@ void Editor::setupSegmentedBarMetrics()
 
     setStrutSize( Q::Icon, { 12, 12 } );
 
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 
     setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
     setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
@@ -1485,7 +1494,7 @@ void Editor::setupSpinBoxMetrics()
     setPadding( Q::Panel, { 11, 0, 11, 0 } );
 
     setAlignment( Q::Text, Qt::AlignLeft );
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 
     setPadding( Q::TextPanel, { 11, 5, 0, 0 } );
 
@@ -1593,8 +1602,8 @@ void Editor::setupTabButtonMetrics()
     setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1 } );
     setBoxBorderMetrics( Q::Panel | Q::Checked, { 1, 1, 1, 0 } );
 
-    setFontRole( Q::Text, QskFluent2Skin::Body );
-    setFontRole( Q::Text | Q::Checked, QskFluent2Skin::BodyStrong );
+    setFontRole( Q::Text, Fluent2::Body );
+    setFontRole( Q::Text | Q::Checked, Fluent2::BodyStrong );
 }
 
 void Editor::setupTabButtonColors(
@@ -1689,7 +1698,7 @@ void Editor::setupTextLabelMetrics()
     setBoxShape( Q::Panel, 3 );
     setBoxBorderMetrics( Q::Panel, 1 );
 
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 }
 
 void Editor::setupTextLabelColors(
@@ -1719,7 +1728,7 @@ void Editor::setupTextInputMetrics()
     setBoxShape( Q::Panel, 3 );
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 }
 
 void Editor::setupTextInputColors(
@@ -1915,7 +1924,7 @@ void Editor::setupSubWindow( const QskFluent2Theme& theme )
     setHint( Q::TitleBarPanel | QskAspect::Style, Q::NoDecoration );
     setPadding( Q::TitleBarPanel, { 24, 31, 24, 0 } );
 
-    setFontRole( Q::TitleBarText, QskFluent2Skin::Subtitle );
+    setFontRole( Q::TitleBarText, Fluent2::Subtitle );
     setColor( Q::TitleBarText, pal.fillColor.text.primary );
     setAlignment( Q::TitleBarText, Qt::AlignLeft );
     setTextOptions( Q::TitleBarText, Qt::ElideRight, QskTextOptions::NoWrap );
@@ -1927,7 +1936,7 @@ void Editor::setupDialogSubWindow( const QskFluent2Theme& )
 {
     using Q = QskDialogSubWindow;
 
-    setFontRole( Q::DialogTitle, QskFluent2Skin::Subtitle );
+    setFontRole( Q::DialogTitle, Fluent2::Subtitle );
     setAlignment( Q::DialogTitle, Qt::AlignLeft | Qt::AlignVCenter );
     setTextOptions( Q::DialogTitle, Qt::ElideRight, QskTextOptions::WordWrap );
 }
@@ -1937,7 +1946,7 @@ void Editor::setupVirtualKeyboardMetrics()
     using Q = QskVirtualKeyboard;
 
     setMargin( Q::ButtonPanel, 2 );
-    setFontRole( Q::ButtonText, QskFluent2Skin::BodyLarge );
+    setFontRole( Q::ButtonText, Fluent2::BodyStrong );
     setPadding( Q::Panel, 8 );
 }
 
@@ -2003,13 +2012,13 @@ void QskFluent2Skin::initHints()
     {
         colors[0].baseColors = { rgbGray( 32 ), rgbGray( 40 ), rgbGray( 28 ) };
         colors[0].accentColors = { 0xff0078d4, 0xff0093f9, 0xff60ccfe, 0xff98ecfe };
-      
+
         colors[1].baseColors = { rgbGray( 40 ), rgbGray( 44 ), rgbGray( 28 ) };
         colors[1].accentColors = colors[0].accentColors;
     }
 
     setupFonts();
-    
+
     Editor editor( &hintTable() );
     editor.setupMetrics();
 
@@ -2024,19 +2033,50 @@ void QskFluent2Skin::initHints()
     addTheme( QskAspect::Footer, themeHeader );
 }
 
+static inline QFont createFont( int size, int lineHeight, QFont::Weight weight )
+{
+    Q_UNUSED( size ); // ???
+    const int pixelSize = qRound( qskDpToPixels( lineHeight ) );
+
+    /*
+        Font size determines how big or small the letters are, while line height
+        controls the vertical space between the lines of text.
+
+        https://doc.qt.io/qt-6/qfont.html#details:
+            "It is possible to set the height of characters shown on the screen
+             to a specified number of pixels with setPixelSize()"
+
+        https://doc.qt.io/qt-5/qfontmetrics.html#lineSpacing:
+            "This value is always equal to leading()+height()"
+     */
+
+    QFont font( QStringLiteral( "Segoe UI Variable" ), -1, weight );
+
+    // sp: this is like the dp unit, but it is also scaled by the user's font size preference
+    font.setPixelSize( pixelSize );
+
+    return font;
+}
+
 void QskFluent2Skin::setupFonts()
 {
-    static QString fontName( QStringLiteral( "Segoe UI Variable" ) );
-    Inherited::setupFonts( fontName );
+    // see: https://fluent2.microsoft.design/typography ( Windows )
 
-    setFont( Caption, createFont( fontName, 12, 16, 0.0, QFont::Normal ) );
-    setFont( Body, createFont( fontName, 14, 20, 0.0, QFont::Normal ) );
-    setFont( BodyStrong, createFont( fontName, 14, 20, 0.0, QFont::DemiBold ) );
-    setFont( BodyLarge, createFont( fontName, 18, 24, 0.0, QFont::Medium ) );
-    setFont( Subtitle, createFont( fontName, 20, 28, 0.0, QFont::DemiBold ) );
-    setFont( Title, createFont( fontName, 28, 36, 0.0, QFont::DemiBold ) );
-    setFont( TitleLarge, createFont( fontName, 40, 52, 0.0, QFont::DemiBold ) );
-    setFont( Display, createFont( fontName, 68, 92, 0.0, QFont::DemiBold ) );
+    setFont( Fluent2::Caption, createFont( 12, 16, QFont::Normal ) );
+
+    setFont( Fluent2::Body, createFont( 14, 20, QFont::Normal ) );
+    setFont( Fluent2::BodyStrong, createFont( 14, 20, QFont::DemiBold ) );
+    setFont( Fluent2::BodyStronger, createFont( 18, 24, QFont::Normal ) );
+
+    setFont( Fluent2::Subtitle, createFont( 20, 28, QFont::DemiBold ) );
+
+    setFont( Fluent2::Title, createFont( 28, 36, QFont::Normal ) );
+    setFont( Fluent2::LargeTitle, createFont( 40, 52, QFont::DemiBold ) );
+
+    setFont( Fluent2::Display, createFont( 68, 92, QFont::DemiBold ) );
+
+    // to have something for the unused roles
+    QskSkin::completeFontTable();
 }
 
 void QskFluent2Skin::setGraphicColor( GraphicRole role, QRgb rgb )

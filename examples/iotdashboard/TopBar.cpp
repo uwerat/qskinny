@@ -6,7 +6,7 @@
 #include "TopBar.h"
 #include "EnergyMeter.h"
 
-#include <QskSkin.h>
+#include <QskFontRole.h>
 #include <QskTextLabel.h>
 
 #include <QTime>
@@ -54,7 +54,7 @@ TopBarItem::TopBarItem(
     setSpacing( 15 );
 
     auto* textLabel = new QskTextLabel( name, this );
-    textLabel->setFontRole( QskSkin::SmallFont );
+    textLabel->setFontRole( QskFontRole::Caption );
 
     auto* pieChartAndDisplay = new QskLinearBox( Qt::Horizontal, this );
     pieChartAndDisplay->setSpacing( 10 );
@@ -71,10 +71,10 @@ TopBarItem::TopBarItem(
     display->addSpacer( 0, 1 );
 
     auto displayValue = new QskTextLabel( QString::number( value ), display );
-    displayValue->setFontRole( QskSkin::MediumFont );
+    displayValue->setFontRole( QskFontRole::Subtitle );
 
     auto displayUnit = new QskTextLabel( "kwH", display );
-    displayUnit->setFontRole( QskSkin::SmallFont );
+    displayUnit->setFontRole( QskFontRole::Caption );
     display->addSpacer( 0, 1 );
 }
 

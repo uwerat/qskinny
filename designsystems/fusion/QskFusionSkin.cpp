@@ -16,6 +16,7 @@
 #include <QskDialogSubWindow.h>
 #include <QskDrawer.h>
 #include <QskFocusIndicator.h>
+#include <QskFontRole.h>
 #include <QskFunctions.h>
 #include <QskGraphic.h>
 #include <QskGraphicIO.h>
@@ -681,7 +682,7 @@ void Editor::setupPageIndicator()
 void Editor::setupPushButton()
 {
     /*
-        QC2/Fusion offers flat/highlighted.  We could the emphasis variations to 
+        QC2/Fusion offers flat/highlighted.  We could the emphasis variations to
         have the same: TODO ...
      */
     using Q = QskPushButton;
@@ -741,7 +742,7 @@ void Editor::setupDialogSubWindow()
     using Q = QskDialogSubWindow;
 
 #if 1
-    setFontRole( Q::DialogTitle, QskFusionSkin::LargeFont );
+    setFontRole( Q::DialogTitle, QskFontRole::Headline );
 #endif
     setAlignment( Q::DialogTitle, Qt::AlignLeft | Qt::AlignVCenter );
     setTextOptions( Q::DialogTitle, Qt::ElideRight, QskTextOptions::WordWrap );
@@ -1324,7 +1325,10 @@ void QskFusionSkin::initHints()
 
     using P = QPalette;
 
-    setupFonts( QStringLiteral( "Roboto" ) );
+#if 1
+    // we should use QApplication::font somehow: TODO ...
+    setupFontTable( QStringLiteral( "Roboto" ) );
+#endif
 
     const QskFusionPalette palette( colorScheme() );
 

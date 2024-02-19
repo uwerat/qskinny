@@ -10,6 +10,7 @@ list(APPEND HEADERS
     common/QskBoxBorderMetrics.h
     common/QskBoxShapeMetrics.h
     common/QskBoxHints.h
+    common/QskFontRole.h
     common/QskFunctions.h
     common/QskGlobal.h
     common/QskGradient.h
@@ -45,6 +46,7 @@ list(APPEND SOURCES
     common/QskBoxBorderMetrics.cpp
     common/QskBoxShapeMetrics.cpp
     common/QskBoxHints.cpp
+    common/QskFontRole.cpp
     common/QskFunctions.cpp
     common/QskGradient.cpp
     common/QskGradientDirection.cpp

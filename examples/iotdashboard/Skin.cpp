@@ -38,6 +38,7 @@
 #include <QskStateCombination.h>
 #include <QskTextLabel.h>
 #include <QskGraphicLabel.h>
+#include <QskFontRole.h>
 
 #include <QFontDatabase>
 
@@ -74,15 +75,14 @@ void Skin::initHints()
     QFontDatabase db;
     db.addApplicationFont( ":/fonts/ProximaNova-Regular.otf" ); // ### use fontconfig
 
-    setFont( QskSkin::DefaultFont, createFont( 12 ) );
+    setFont( { QskFontRole::Caption, QskFontRole::Low }, createFont( 9 ) );
+    setFont( { QskFontRole::Caption, QskFontRole::Normal }, createFont( 10 ) );
+    setFont( { QskFontRole::Caption, QskFontRole::High }, createFont( 10, QFont::Bold ) );
 
-    setFont( QskSkin::TinyFont, createFont( 9 ) );
-    setFont( QskSkin::SmallFont, createFont( 10 ) );
-    setFont( QskSkin::MediumFont, createFont( 13 ) );
-    setFont( QskSkin::LargeFont, createFont( 20 ) );
-    setFont( QskSkin::HugeFont, createFont( 27, QFont::Bold ) );
-
-    setFont( Skin::TitleFont, createFont( 10, QFont::Bold ) );
+    setFont( { QskFontRole::Body, QskFontRole::Normal }, createFont( 12 ) );
+    setFont( { QskFontRole::Subtitle, QskFontRole::Normal }, createFont( 13 ) );
+    setFont( { QskFontRole::Headline, QskFontRole::Normal }, createFont( 20 ) );
+    setFont( { QskFontRole::Display, QskFontRole::Normal }, createFont( 27, QFont::Bold ) );
 
     QskSkinHintTableEditor ed( &hintTable() );
 
@@ -106,7 +106,7 @@ void Skin::initHints()
         ed.setSpacing( Q::Panel | A::Header, 10 );
 
         ed.setColor( Q::Text | A::Header, Qt::white );
-        ed.setFontRole( Q::Text | A::Header, QskSkin::SmallFont );
+        ed.setFontRole( Q::Text | A::Header, QskFontRole::Caption );
         ed.setAlignment( Q::Text | A::Header, Qt::AlignLeft | Qt::AlignVCenter );
 
         ed.setPadding( Q::Icon | A::Header, { 30, 0, 0, 0 } );
@@ -134,16 +134,16 @@ void Skin::initHints()
     // value here:
     ed.setArcMetrics( CircularProgressBar::Bar, 90, -180, 8.53 );
 
-    ed.setFontRole( TimeTitleLabel::Text, Skin::TitleFont );
+    ed.setFontRole( TimeTitleLabel::Text, { QskFontRole::Caption, QskFontRole::High } );
 
-    ed.setFontRole( TimeLabel::Text, QskSkin::HugeFont );
+    ed.setFontRole( TimeLabel::Text, QskFontRole::Display );
     ed.setColor( TimeLabel::Text, 0xff6776ff );
 
     // boxes:
     ed.setPadding( Box::Panel, 8 );
 
     // content in boxes (indoor temperature, humidity etc.):
-    ed.setFontRole( UsageBox::Separator, QskSkin::SmallFont );
+    ed.setFontRole( UsageBox::Separator, QskFontRole::Caption );
     ed.setColor( UsageBox::Separator, 0xffdddddd );
 
     ed.setPadding( BoxWithButtons::Panel, 8 );
@@ -193,7 +193,7 @@ void Skin::initHints()
         ed.setGradient( subControl | RoundedIcon::Bright, bright );
     }
 
-    ed.setFontRole( BoxWithButtons::ValueText, QskSkin::HugeFont );
+    ed.setFontRole( BoxWithButtons::ValueText, QskFontRole::Display );
     ed.setColor( BoxWithButtons::ValueText, 0xff929cb2 );
 
     ed.setPadding( BoxWithButtons::ValuePanel, 0, 10, 0, 0 );
@@ -204,7 +204,7 @@ void Skin::initHints()
 
     // diagram:
     ed.setBoxBorderMetrics( UsageDiagramBox::DaysBox, 0, 0, 3, 3 );
-    ed.setFontRole( UsageDiagramBox::DayText, QskSkin::TinyFont );
+    ed.setFontRole( UsageDiagramBox::DayText, { QskFontRole::Caption, QskFontRole::Low } );
 
     ed.setStrutSize( UsageDiagramLegend::Symbol, 8, 8 );
     ed.setBoxShape( UsageDiagramLegend::Symbol, 100, Qt::RelativeSize ); // a circle
@@ -240,7 +240,7 @@ void Skin::initHints()
     ed.setArcMetrics( LightDisplay::Tickmarks, 0, 180, 4.69 );
     ed.setColor( LightDisplay::Tickmarks, 0x55929cb2 );
 
-    ed.setFontRole( LightDisplay::ValueText, QskSkin::LargeFont );
+    ed.setFontRole( LightDisplay::ValueText, QskFontRole::Headline );
     ed.setColor( LightDisplay::ValueText, 0xff929cb2 );
 
     ed.setStrutSize( LightDisplay::Knob, { 20, 20 } );

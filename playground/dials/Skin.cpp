@@ -12,6 +12,7 @@
 #include <QskSkinHintTableEditor.h>
 #include <QskRgbValue.h>
 #include <QskPlatform.h>
+#include <QskFontRole.h>
 
 static inline QFont qskFont( qreal pointSize )
 {
@@ -30,8 +31,9 @@ void Skin::initHints()
 {
     using namespace QskRgb;
 
-    setFont( QskSkin::DefaultFont, qskFont( 13 ) );
-    setFont( QskSkin::LargeFont, qskFont( 20 ) );
+    setFont( QskFontRole::Caption, qskFont( 8 ) );
+    setFont( QskFontRole::Body, qskFont( 13 ) );
+    setFont( QskFontRole::Title, qskFont( 20 ) );
 
     const auto rgb1 = qRgb( 1, 16, 27 ); // Maastricht blue
     const auto rgb2 = qRgb( 255, 0, 22 ); // Ruddy
@@ -65,6 +67,6 @@ void Skin::initHints()
         ed.setSpacing( Q::TickLabels, 4 );
         ed.setStrutSize( Q::TickLabels, 2, 15 );
         ed.setColor( Q::TickLabels, rgb4 );
-        ed.setFontRole( Q::TickLabels, QskSkin::SmallFont );
+        ed.setFontRole( Q::TickLabels, QskFontRole::Caption );
     }
 }

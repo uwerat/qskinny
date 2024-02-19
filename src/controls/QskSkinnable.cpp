@@ -28,6 +28,7 @@
 #include "QskGradient.h"
 #include "QskTextOptions.h"
 #include "QskGraphic.h"
+#include "QskFontRole.h"
 
 #include <qfont.h>
 #include <qfontmetrics.h>
@@ -704,9 +705,11 @@ QskTextOptions QskSkinnable::textOptionsHint(
         aspect | QskAspect::Option, status ).value< QskTextOptions >();
 }
 
-bool QskSkinnable::setFontRoleHint( const QskAspect aspect, int role )
+bool QskSkinnable::setFontRoleHint(
+    const QskAspect aspect, const QskFontRole& role )
 {
-    return qskSetFlag( this, aspect | QskAspect::FontRole, role );
+    return setSkinHint( aspect | QskAspect::FontRole,
+        QVariant::fromValue( role ) );
 }
 
 bool QskSkinnable::resetFontRoleHint( const QskAspect aspect )
@@ -714,10 +717,11 @@ bool QskSkinnable::resetFontRoleHint( const QskAspect aspect )
     return resetSkinHint( aspect | QskAspect::FontRole );
 }
 
-int QskSkinnable::fontRoleHint(
+QskFontRole QskSkinnable::fontRoleHint(
     const QskAspect aspect, QskSkinHintStatus* status ) const
 {
-    return qskFlag( this, aspect | QskAspect::FontRole, status );
+    return effectiveSkinHint(
+        aspect | QskAspect::FontRole, status ).value< QskFontRole >();
 }
 
 QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
@@ -733,7 +737,7 @@ QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
         return hint.value< QFont >();
     }
     
-    return effectiveSkin()->font( hint.toInt() ); // font role
+    return effectiveSkin()->font( hint.value< QskFontRole >() );
 }
 
 qreal QskSkinnable::effectiveFontHeight( const QskAspect aspect ) const

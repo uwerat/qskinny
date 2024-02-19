@@ -5,7 +5,7 @@
 
 #include "UsageBox.h"
 
-#include <QskSkin.h>
+#include <QskFontRole.h>
 #include <QskTextLabel.h>
 
 QSK_SUBCONTROL( UsageBox, Separator )
@@ -19,13 +19,13 @@ namespace
             : QskLinearBox( Qt::Horizontal, parent )
         {
             auto infoLabel = new QskTextLabel( info, this );
-            infoLabel->setFontRole( QskSkin::SmallFont );
+            infoLabel->setFontRole( QskFontRole::Caption );
 
             auto separator = new QskTextLabel( "_____", this );
             separator->setSubcontrolProxy( QskTextLabel::Text, UsageBox::Separator );
 
             auto valueLabel = new QskTextLabel( value, this );
-            valueLabel->setFontRole( QskSkin::SmallFont );
+            valueLabel->setFontRole( QskFontRole::Caption );
         }
     };
 }

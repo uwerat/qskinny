@@ -5,7 +5,7 @@
 
 #include "StorageMeter.h"
 #include "CircularProgressBar.h"
-#include <QskSkin.h>
+#include <QskFontRole.h>
 #include <QskTextLabel.h>
 
 QSK_SUBCONTROL( StorageMeter, Status )
@@ -28,7 +28,7 @@ StorageMeter::StorageMeter( QQuickItem* parent ) noexcept
     label->setText( make_text( locale(), value() ) );
     label->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
     label->setLayoutAlignmentHint( Qt::AlignCenter );
-    label->setFontRole( QskSkin::SmallFont );
+    label->setFontRole( QskFontRole::Caption );
 }
 
 void StorageMeter::setValue( const qreal value )

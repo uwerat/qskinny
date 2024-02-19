@@ -15,6 +15,7 @@
 #include "QskShadowMetrics.h"
 #include "QskStippleMetrics.h"
 #include "QskGraphic.h"
+#include "QskFontRole.h"
 
 namespace
 {
@@ -405,7 +406,7 @@ Qt::Alignment QskSkinHintTableEditor::alignment( QskAspect aspect ) const
 }
 
 void QskSkinHintTableEditor::setFontRole(
-    QskAspect aspect, int fontRole, QskStateCombination combination )
+    QskAspect aspect, const QskFontRole& fontRole, QskStateCombination combination )
 {
     setHint( aspectFontRole( aspect ), fontRole, combination );
 }
@@ -416,9 +417,9 @@ bool QskSkinHintTableEditor::removeFontRole(
     return removeHint( aspectFontRole( aspect ), combination );
 }
 
-int QskSkinHintTableEditor::fontRole( QskAspect aspect ) const
+QskFontRole QskSkinHintTableEditor::fontRole( QskAspect aspect ) const
 {
-    return hint< int >( aspectFontRole( aspect ) );
+    return hint< QskFontRole >( aspectFontRole( aspect ) );
 }
 
 void QskSkinHintTableEditor::setGraphicRole(

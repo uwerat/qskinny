@@ -6,6 +6,7 @@
 #include "SkinnyNamespace.h"
 
 #include <QskSkinManager.h>
+#include <QskFontRole.h>
 #include <QskSkin.h>
 
 #include <QGuiApplication>
@@ -156,9 +157,9 @@ void Skinny::changeFonts( int increment )
 {
     auto skin = qskSkinManager->skin();
 
-    const auto fonts = skin->fonts();
+    const auto table = skin->fontTable();
 
-    for ( auto it = fonts.constBegin(); it != fonts.constEnd(); ++it )
+    for ( auto it = table.constBegin(); it != table.constEnd(); ++it )
     {
         auto role = it.key();
         auto font = it.value();

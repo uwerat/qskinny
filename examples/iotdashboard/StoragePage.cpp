@@ -15,7 +15,7 @@
 #include <QskGradientStop.h>
 #include <QskGraphicLabel.h>
 #include <QskPushButton.h>
-#include <QskSkin.h>
+#include <QskFontRole.h>
 #include <QskStackBox.h>
 #include <QskTextLabel.h>
 
@@ -89,9 +89,9 @@ void StoragePage::addRow( const QString& title, const QString& description,
     meter->setMaximumSize( 64, 64 );
 
     auto* const maintitle = new QskTextLabel( storage.title, center );
-    maintitle->setFontRole( QskSkin::LargeFont );
+    maintitle->setFontRole( QskFontRole::Headline );
     auto* const subtitle = new QskTextLabel( storage.description, center );
-    subtitle->setFontRole( QskSkin::MediumFont );
+    subtitle->setFontRole( QskFontRole::Subtitle );
 
     const auto& media = storage.distribution;
 
@@ -106,7 +106,7 @@ void StoragePage::addRow( const QString& title, const QString& description,
     legend->setSpacing( 12 );
     legend->addSpacer( 1, 999 );
     auto* const sync = new QskPushButton( "Update", legend );
-    sync->setFontRoleHint( QskPushButton::Text, QskSkin::SmallFont );
+    sync->setFontRoleHint( QskPushButton::Text, QskFontRole::Caption );
 
     using S = StorageBar;
     for ( const auto& pair : QVector< QPair< QString, QskGradient > >{
@@ -124,7 +124,7 @@ void StoragePage::addRow( const QString& title, const QString& description,
         dot->setMaximumSize( size, size );
         dot->setGradientHint( QskBox::Panel, pair.second );
         auto* const label = new QskTextLabel( pair.first, legend );
-        label->setFontRole( QskSkin::SmallFont );
+        label->setFontRole( QskFontRole::Caption );
     }
 
     auto* const animator = new StorageRowAnimator( window(), sync );

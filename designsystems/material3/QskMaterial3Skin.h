@@ -103,9 +103,6 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
     using Inherited = QskSkin;
 
   public:
-    QskMaterial3Skin( QObject* parent = nullptr );
-    ~QskMaterial3Skin() override;
-
     enum GraphicRole
     {
         GraphicRoleOnError,
@@ -118,13 +115,8 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
         GraphicRoleSurface,
     };
 
-    enum FontRole
-    {
-        M3BodyMedium = DefaultFont,
-        M3BodyLarge = LargeFont,
-        M3HeadlineSmall = SmallFont,
-        M3LabelLarge = HugeFont,
-    };
+    QskMaterial3Skin( QObject* parent = nullptr );
+    ~QskMaterial3Skin() override;
 
     static constexpr QskAspect::Variation Filled = QskAspect::NoVariation;
     static constexpr QskAspect::Variation Tonal = QskAspect::Huge;

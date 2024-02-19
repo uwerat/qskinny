@@ -9,13 +9,15 @@
 #include "QskControl.h"
 #include "QskTextOptions.h"
 
+class QskFontRole;
+
 class QSK_EXPORT QskTextLabel : public QskControl
 {
     Q_OBJECT
 
     Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged )
 
-    Q_PROPERTY( int fontRole READ fontRole
+    Q_PROPERTY( QskFontRole fontRole READ fontRole
         WRITE setFontRole RESET resetFontRole NOTIFY fontRoleChanged )
 
     Q_PROPERTY( QFont font READ font )
@@ -44,9 +46,9 @@ class QSK_EXPORT QskTextLabel : public QskControl
 
     QString text() const;
 
-    void setFontRole( int role );
+    void setFontRole( const QskFontRole& );
     void resetFontRole();
-    int fontRole() const;
+    QskFontRole fontRole() const;
 
     void setTextColor( const QColor& );
     void resetTextColor();
@@ -80,7 +82,7 @@ class QSK_EXPORT QskTextLabel : public QskControl
     void textChanged( const QString& );
     void textColorChanged( const QColor& );
     void textOptionsChanged( const QskTextOptions& );
-    void fontRoleChanged( int );
+    void fontRoleChanged( const QskFontRole& );
     void alignmentChanged( Qt::Alignment );
     void panelChanged( bool );
 

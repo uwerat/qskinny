@@ -19,6 +19,7 @@
 #include <QskTextLabel.h>
 #include <QskWindow.h>
 #include <QskShortcutMap.h>
+#include <QskFontRole.h>
 
 #include <QGuiApplication>
 
@@ -29,7 +30,7 @@ class Label : public QskTextLabel
         : QskTextLabel( text, parent )
     {
         setTextColor( Qt::darkRed );
-        setFontRole( QskSkin::LargeFont );
+        setFontRole( QskFontRole::Headline );
         setAlignment( Qt::AlignCenter );
     }
 };

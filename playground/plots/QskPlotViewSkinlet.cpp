@@ -13,11 +13,7 @@
 #include <QskFunctions.h>
 #include <QskSGNode.h>
 #include <QskBoxBorderMetrics.h>
-#include <QskMargins.h>
-#include <QskSkin.h>
-
-#include <qfontmetrics.h>
-#include <qquickwindow.h>
+#include <QskFontRole.h>
 
 static inline QskTextColors qskTextColors(
     const QskSkinnable* skinnable, QskAspect aspect )
@@ -84,9 +80,7 @@ namespace
             setTickMetrics( graduation.value< QskGraduationMetrics >() );
 
             setSpacing( view->spacingHint( aspect ) );
-
-            const auto fontRole = view->fontRoleHint( aspect );
-            setFont( view->effectiveSkin()->font( fontRole ) );
+            setFont( view->effectiveFont( aspect ) );
 
             setTextColors( qskTextColors( view, aspect ) );
         }

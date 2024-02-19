@@ -20,6 +20,7 @@
 #include <QskDialogWindow.h>
 #include <QskDrawer.h>
 #include <QskFocusIndicator.h>
+#include <QskFontRole.h>
 #include <QskGradient.h>
 #include <QskGradientDirection.h>
 #include <QskGraduationMetrics.h>
@@ -267,6 +268,7 @@ void QskQml::registerTypes()
     registerGadget< QskPlacementPolicy >();
     registerGadget< QskSizePolicy >();
     registerGadget< QskTextOptions >();
+    registerGadget< QskFontRole >();
 
     registerNamespace( QskStandardSymbol::staticMetaObject );
 
