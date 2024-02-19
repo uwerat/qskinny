@@ -13,6 +13,8 @@
 #include <QskWindow.h>
 #include <QskSkinManager.h>
 
+#include <QGuiApplication>
+
 namespace
 {
     class TextLabel : public QskTextLabel
