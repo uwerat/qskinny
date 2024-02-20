@@ -56,8 +56,8 @@
 #include <QskNamespace.h>
 #include <QskPlatform.h>
 
-#include <QGuiApplication>
-#include <QScreen>
+#include <qguiapplication.h>
+#include <qfontinfo.h>
 
 static const int qskDuration = 150;
 
@@ -1444,6 +1444,19 @@ static inline QFont createFont( int size, int lineHeight,
     const int pixelSize = qRound( qskDpToPixels( lineHeight ) );
 
     QFont font( QStringLiteral( "Roboto" ), -1, weight );
+
+    static bool checkFont = true;
+    if ( checkFont )
+    {
+        const QFontInfo info( font );
+        if ( info.family() != font.family() )
+        {
+            qWarning() << font.family() <<
+                "not found, using" << info.family() << "instead.";
+        }
+        checkFont = false;
+    }
+    
     font.setPixelSize( pixelSize );
 
     if ( spacing > 0.0 )

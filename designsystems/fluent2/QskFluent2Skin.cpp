@@ -100,8 +100,8 @@
 #include <QskNamespace.h>
 #include <QskPlatform.h>
 
-#include <QGuiApplication>
-#include <QScreen>
+#include <qguiapplication.h>
+#include <qfontinfo.h>
 
 namespace Fluent2
 {
@@ -2050,7 +2050,19 @@ static inline QFont createFont( int size, int lineHeight, QFont::Weight weight )
             "This value is always equal to leading()+height()"
      */
 
-    QFont font( QStringLiteral( "Segoe UI Variable" ), -1, weight );
+    QFont font( QStringLiteral( "Segoe UI" ), -1, weight );
+
+    static bool checkFont = true;
+    if ( checkFont )
+    {
+        const QFontInfo info( font );
+        if ( info.family() != font.family() )
+        {
+            qWarning() << font.family() <<
+                "not found, using" << info.family() << "instead.";
+        }
+        checkFont = false;
+    }
 
     // sp: this is like the dp unit, but it is also scaled by the user's font size preference
     font.setPixelSize( pixelSize );

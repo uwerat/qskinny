@@ -72,8 +72,7 @@ void Skin::initHints()
 {
     const auto palette = Skin::palette( colorScheme() );
 
-    QFontDatabase db;
-    db.addApplicationFont( ":/fonts/ProximaNova-Regular.otf" ); // ### use fontconfig
+    QFontDatabase::addApplicationFont( ":/fonts/ProximaNova-Regular.otf" );
 
     setFont( { QskFontRole::Caption, QskFontRole::Low }, createFont( 9 ) );
     setFont( { QskFontRole::Caption, QskFontRole::Normal }, createFont( 10 ) );

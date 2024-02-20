@@ -11,15 +11,11 @@
 
 #include <QGuiApplication>
 #include <QByteArray>
+#include <QDir>
 #include <QFont>
 #include <QDebug>
 
-#define STRINGIFY(x) #x
-#define STRING(x) STRINGIFY(x)
-
 #if defined( PLUGIN_PATH )
-
-#include <QDir>
 
 #define STRINGIFY(x) #x
 #define STRING(x) STRINGIFY(x)
@@ -77,58 +73,30 @@ static bool pluginPath = initPluginPath();
     }
 
     Q_COREAPP_STARTUP_FUNCTION( initSkins )
-
 #endif
-
-#define ENSURE_FONTS
 
 #if defined( ENSURE_FONTS )
 
-    #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-        #include <QFontDatabase>
-        #include <QElapsedTimer>
-    #endif
-
-    static void preloadFonts()
-    {
-    #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-        QElapsedTimer timer;
-        timer.start();
-
-        QFontDatabase(); // deprecated and doing nothing since Qt6
-
-        const auto elapsed = timer.elapsed();
-
-        if ( elapsed > 20 )
-        {
-            qWarning() << "Loading fonts needed" << elapsed << "ms"
-                << "- usually because of creating a font cache.";
-        }
-    #endif
-    }
+    #include <QFontDatabase>
 
     static void initFonts()
     {
-        if ( !qobject_cast< QGuiApplication* >( qApp ) )
-            return; // no fonts needed
+        const QString path = QStringLiteral( ":/fonts/" );
 
-    #ifdef FONTCONFIG_FILE
-        const char env[] = "FONTCONFIG_FILE";
-        if ( !qEnvironmentVariableIsSet( env ) )
-            qputenv( env, STRING( FONTCONFIG_FILE ) );
-    #endif
+        QDir dir( path );
+        const auto fontFiles = dir.entryList();
 
-        preloadFonts();
-
-        /*
-            The default initialization in QskSkin sets up its font table
-            with using the application font for the default font role.
-         */
-        QGuiApplication::setFont( QFont( "DejaVuSans", 12 ) );
+        for ( const auto& file : fontFiles )
+        {
+            const auto fontPath = path + file;
+            if ( QFontDatabase::addApplicationFont( fontPath ) < 0 )
+                qWarning() << "couldn't load font file:" << fontPath;
+        }
     }
-#endif
 
-Q_COREAPP_STARTUP_FUNCTION( initFonts )
+    Q_COREAPP_STARTUP_FUNCTION( initFonts )
+
+#endif
 
 void Skinny::changeSkin()
 {

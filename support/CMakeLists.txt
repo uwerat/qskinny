@@ -11,6 +11,8 @@ set(SOURCES
     SkinnyShortcut.h SkinnyShortcut.cpp
 )
 
+qt_add_resources(SOURCES fonts.qrc)
+
 set(target qsktestsupport)
 
 if (BUILD_QSKDLL)
@@ -32,30 +34,8 @@ target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 
 if(ENABLE_ENSURE_SKINS)
     target_include_directories(${target} PRIVATE ${QSK_SOURCE_DIR}/designsystems)
-    target_compile_definitions(${target} PRIVATE ENSURE_SKINS)
+    target_compile_definitions(${target} PRIVATE ENSURE_SKINS ENSURE_FONTS)
     target_link_libraries(${target} PRIVATE material3skin fluent2skin fusionskin)
-endif()
-
-set(HIDE_SYSTEM_FONTS ON)
-
-if(HIDE_SYSTEM_FONTS)
-    message( STATUS "Hiding system fonts from the examples" )
-
-    # The fonts being used in the examples are included and we do not
-    # need the fonts from the system. To avoid, that setting up the font
-    # cache slows doesn the stratup performance we hide the system fonts
-    # be using a dummy font config environment.
-    # ( this hack is pretty old ( Qt 5.4 ) - maybe it is not needed anymore TODO )
-    
-    set(QSK_FONTDIR       ${CMAKE_CURRENT_LIST_DIR}/fonts)
-    set(QSK_FONTCACHEDIR  ${CMAKE_CURRENT_BINARY_DIR}/fontconfig)
-    set(QSK_FONTCONF_FILE ${QSK_FONTCACHEDIR}/fonts.conf)
-    
-    configure_file(fonts.conf.cmake.in ${QSK_FONTCONF_FILE}
-        @ONLY NEWLINE_STYLE LF)
-
-    target_compile_definitions(${target}
-        PRIVATE FONTCONFIG_FILE=${QSK_FONTCONF_FILE})
 endif()
 
 set_target_properties(${target} PROPERTIES FOLDER libs)
