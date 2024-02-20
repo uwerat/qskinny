@@ -344,8 +344,15 @@ void QskSkin::completeFontTable()
                 continue;
             }
 
-            int weight = normalFont.weight() + ( j - 2 ) * 100;
-            weight = qBound( 0, weight, 900 );
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+            const auto step = 10; // weight: [0-99]
+#else
+            const auto step = 100; // weight: [1-1000]
+#endif
+
+            int weight = normalFont.weight() + ( j - 2 ) * step;
+            weight = qBound( static_cast<int>( QFont::Thin ),
+                weight, static_cast<int>( QFont::Black ) );
 
             auto font = normalFont;
             font.setWeight( static_cast< QFont::Weight >( weight ) );
