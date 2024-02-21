@@ -1432,7 +1432,7 @@ QskMaterial3Skin::~QskMaterial3Skin()
 static inline QFont createFont( int size, int lineHeight,
     qreal spacing, QFont::Weight weight )
 {
-    Q_UNUSED( size );
+    Q_UNUSED( lineHeight );
 
     /*
         sp (Scaleable Pixels OR scale-independent pixels) — this is
@@ -1441,7 +1441,7 @@ static inline QFont createFont( int size, int lineHeight,
         be adjusted for both the screen density and user’s preference.
      */
 
-    const int pixelSize = qRound( qskDpToPixels( lineHeight ) );
+    const int pixelSize = qRound( qskDpToPixels( size ) );
 
     QFont font( QStringLiteral( "Roboto" ), -1, weight );
 
