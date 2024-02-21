@@ -2035,8 +2035,8 @@ void QskFluent2Skin::initHints()
 
 static inline QFont createFont( int size, int lineHeight, QFont::Weight weight )
 {
-    Q_UNUSED( size ); // ???
-    const int pixelSize = qRound( qskDpToPixels( lineHeight ) );
+    Q_UNUSED( lineHeight ); // ???
+    const int pixelSize = qRound( qskPxToPixels( size ) );
 
     /*
         Font size determines how big or small the letters are, while line height
@@ -2064,7 +2064,6 @@ static inline QFont createFont( int size, int lineHeight, QFont::Weight weight )
         checkFont = false;
     }
 
-    // sp: this is like the dp unit, but it is also scaled by the user's font size preference
     font.setPixelSize( pixelSize );
 
     return font;
