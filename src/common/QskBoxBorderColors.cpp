@@ -135,17 +135,20 @@ const QskGradient& QskBoxBorderColors::gradientAt( Qt::Edge edge ) const
 
 bool QskBoxBorderColors::isVisible() const
 {
-    if ( m_gradients[ 0 ].isVisible() )
-        return true;
+    if ( isValid() )
+    {
+        if ( m_gradients[ 0 ].isVisible() )
+            return true;
 
-    if ( m_gradients[ 1 ].isVisible() )
-        return true;
+        if ( m_gradients[ 1 ].isVisible() )
+            return true;
 
-    if ( m_gradients[ 2 ].isVisible() )
-        return true;
+        if ( m_gradients[ 2 ].isVisible() )
+            return true;
 
-    if ( m_gradients[ 3 ].isVisible() )
-        return true;
+        if ( m_gradients[ 3 ].isVisible() )
+            return true;
+    }
 
     return false;
 }
@@ -175,9 +178,9 @@ bool QskBoxBorderColors::isMonochrome() const
 bool QskBoxBorderColors::isValid() const
 {
     return m_gradients[ 0 ].isValid()
-        || m_gradients[ 1 ].isValid()
-        || m_gradients[ 2 ].isValid()
-        || m_gradients[ 3 ].isValid();
+        && m_gradients[ 1 ].isValid()
+        && m_gradients[ 2 ].isValid()
+        && m_gradients[ 3 ].isValid();
 }
 
 QskBoxBorderColors QskBoxBorderColors::interpolated(
