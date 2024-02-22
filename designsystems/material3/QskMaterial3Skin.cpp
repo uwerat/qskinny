@@ -3,6 +3,11 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
+/*
+    Definitions ( where possible ) taken from
+    https://www.figma.com/file/O4H724CKmUVPocw6JoSUrd/Material-3-Design-Kit-(Community)
+ */
+
 #include "QskMaterial3Skin.h"
 
 #include <QskSkinHintTableEditor.h>
@@ -65,11 +70,8 @@ namespace
 {
     using F = QskFontRole;
 
-    /*
-        Material 3 font roles according to:
-            https://m3.material.io/styles/typography/overview
-            https://www.figma.com/file/O4H724CKmUVPocw6JoSUrd/Material-3-Design-Kit-(Community)?type=design&node-id=49848-6285&mode=design
-     */
+    // M3 font roles: https://m3.material.io/styles/typography/type-scale-tokens
+
     constexpr F LabelSmall     = { F::Caption, F::Low };
     constexpr F LabelMedium    = { F::Caption, F::Normal };
     constexpr F LabelLarge     = { F::Caption, F::High };
@@ -1433,13 +1435,6 @@ static inline QFont createFont( int size, int lineHeight,
     qreal spacing, QFont::Weight weight )
 {
     Q_UNUSED( lineHeight );
-
-    /*
-        sp (Scaleable Pixels OR scale-independent pixels) — this is
-        like the dp unit, but it is also scaled by the user’s font size preference.
-        It is recommended you use this unit when specifying font sizes, so they will
-        be adjusted for both the screen density and user’s preference.
-     */
 
     const int pixelSize = qRound( qskDpToPixels( size ) );
 

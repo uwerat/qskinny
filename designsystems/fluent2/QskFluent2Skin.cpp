@@ -2045,20 +2045,8 @@ void QskFluent2Skin::initHints()
 
 static inline QFont createFont( int size, int lineHeight, QFont::Weight weight )
 {
-    Q_UNUSED( lineHeight ); // ???
+    Q_UNUSED( lineHeight ); // TODO ...
     const int pixelSize = qRound( qskPxToPixels( size ) );
-
-    /*
-        Font size determines how big or small the letters are, while line height
-        controls the vertical space between the lines of text.
-
-        https://doc.qt.io/qt-6/qfont.html#details:
-            "It is possible to set the height of characters shown on the screen
-             to a specified number of pixels with setPixelSize()"
-
-        https://doc.qt.io/qt-5/qfontmetrics.html#lineSpacing:
-            "This value is always equal to leading()+height()"
-     */
 
     QFont font( QStringLiteral( "Segoe UI" ), -1, weight );
 
