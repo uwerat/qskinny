@@ -17,8 +17,6 @@ QSK_SUBCONTROL( QskSlider, Handle )
 QSK_SUBCONTROL( QskSlider, Ripple )
 
 QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
-QSK_SYSTEM_STATE( QskSlider, Minimum, QskAspect::LastUserState << 1 )
-QSK_SYSTEM_STATE( QskSlider, Maximum, QskAspect::LastUserState << 2 )
 
 class QskSlider::PrivateData
 {
@@ -233,9 +231,6 @@ void QskSlider::moveHandle()
 
 void QskSlider::moveHandleTo( qreal value, const QskAnimationHint& hint )
 {
-    setSkinStateFlag( QskSlider::Minimum, value <= minimum() );
-    setSkinStateFlag( QskSlider::Maximum, value >= maximum() );
-
     const qreal pos = valueAsRatio( value );
 
     if ( hint.isValid() )
