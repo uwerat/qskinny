@@ -13,7 +13,7 @@ class QSK_EXPORT QskBoundedValueInput : public QskBoundedInput
     Q_OBJECT
 
     Q_PROPERTY( qreal value READ value
-        WRITE setValue NOTIFY valueChanged )
+        WRITE setValue NOTIFY valueChanged USER true )
 
     Q_PROPERTY( qreal valueAsRatio READ valueAsRatio
         WRITE setValueAsRatio NOTIFY valueChanged )
