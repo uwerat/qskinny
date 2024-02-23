@@ -1,7 +1,6 @@
 #ifndef QSKDATACONTROLMAPPER_H
 #define QSKDATACONTROLMAPPER_H
 
-#include <QskControl.h>
 #include <QAbstractItemModel>
 
 class QskModelObjectBinder : public QObject {
@@ -28,7 +27,6 @@ private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
-
 
 
 #endif //QSKDATACONTROLMAPPER_H

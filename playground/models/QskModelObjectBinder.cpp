@@ -3,8 +3,7 @@
 //
 
 #include "QskModelObjectBinder.h"
-
-#include <QAbstractItemModel>
+#include <QMetaProperty>
 #include <QPointer>
 #include <qassert.h>
 
