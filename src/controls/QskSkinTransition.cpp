@@ -11,6 +11,8 @@
 #include "QskHintAnimator.h"
 #include "QskSkin.h"
 #include "QskSkinHintTable.h"
+#include "QskFontRole.h"
+#include "QskAspect.h"
 
 #include <qglobalstatic.h>
 #include <qguiapplication.h>
@@ -86,12 +88,10 @@ static void qskAddCandidates( const QskSkinTransition::Type mask,
                 {
                     isCandidate = mask & QskSkinTransition::Color;
                 }
-#if 0
                 else if ( aspect.primitive() == QskAspect::FontRole )
                 {
                     isCandidate = mask & QskSkinTransition::Metric;
                 }
-#endif
                 break;
             }
             case QskAspect::Color:
@@ -161,9 +161,13 @@ namespace
 
         QVariant animatedHint( QskAspect ) const;
         QVariant animatedGraphicFilter( int graphicRole ) const;
+        QVariant animatedFontSize( const QskFontRole& ) const;
 
         void addGraphicFilterAnimators( const QskAnimationHint&,
             const QHash< int, QskColorFilter >&, const QHash< int, QskColorFilter >& );
+
+        void addFontSizeAnimators( const QskAnimationHint&,
+            const QHash< QskFontRole, QFont >&, const QHash< QskFontRole, QFont >& );
 
         void addItemAspects( QQuickItem*,
             const QskAnimationHint&, const QSet< QskAspect >&,
@@ -186,8 +190,11 @@ namespace
         void storeUpdateInfo( const QskControl*, QskAspect );
 
         QQuickWindow* m_window;
+
         QHash< QskAspect, HintAnimator > m_animatorMap;
         QHash< int, QskVariantAnimator > m_graphicFilterAnimatorMap;
+        QHash< QskFontRole, QskVariantAnimator > m_fontSizeAnimatorMap;
+
         std::vector< UpdateInfo > m_updateInfos; // vector: for fast iteration
     };
 
@@ -243,6 +250,9 @@ void WindowAnimator::start()
 
     for ( auto& it : m_graphicFilterAnimatorMap )
         it.start();
+
+    for ( auto& it : m_fontSizeAnimatorMap )
+        it.start();
 }
 
 bool WindowAnimator::isRunning() const
@@ -257,6 +267,13 @@ bool WindowAnimator::isRunning() const
     if ( !m_graphicFilterAnimatorMap.empty() )
     {
         const auto& animator = m_graphicFilterAnimatorMap.constBegin().value();
+        if ( animator.isRunning() )
+            return true;
+    }
+
+    if ( !m_fontSizeAnimatorMap.empty() )
+    {
+        const auto& animator = m_fontSizeAnimatorMap.constBegin().value();
         if ( animator.isRunning() )
             return true;
     }
@@ -281,6 +298,19 @@ inline QVariant WindowAnimator::animatedGraphicFilter( int graphicRole ) const
 {
     auto it = m_graphicFilterAnimatorMap.constFind( graphicRole );
     if ( it != m_graphicFilterAnimatorMap.constEnd() )
+    {
+        const auto& animator = it.value();
+        if ( animator.isRunning() )
+            return animator.currentValue();
+    }
+
+    return QVariant();
+}
+
+inline QVariant WindowAnimator::animatedFontSize( const QskFontRole& fontRole ) const
+{
+    auto it = m_fontSizeAnimatorMap.constFind( fontRole );
+    if ( it != m_fontSizeAnimatorMap.constEnd() )
     {
         const auto& animator = it.value();
         if ( animator.isRunning() )
@@ -316,6 +346,42 @@ void WindowAnimator::addGraphicFilterAnimators(
             animator.setEndValue( QVariant::fromValue( f2 ) );
 
             m_graphicFilterAnimatorMap.insert( it2.key(), animator );
+        }
+    }
+}
+
+// from QskSkin.cpp
+extern QFont qskResolvedFont(
+    const QHash< QskFontRole, QFont >&, const QskFontRole& );
+
+void WindowAnimator::addFontSizeAnimators(
+    const QskAnimationHint& animatorHint,
+    const QHash< QskFontRole, QFont >& fonts1,
+    const QHash< QskFontRole, QFont >& fonts2 )
+{
+    for ( int i = 0; i <= QskFontRole::Display; i++ )
+    {
+        for ( int j = 0; j <= QskFontRole::VeryHigh; j++ )
+        {
+            const QskFontRole fontRole(
+                static_cast< QskFontRole::Category >( i ),
+                static_cast< QskFontRole::Emphasis >( j )
+            );
+
+            const auto size1 = qskResolvedFont( fonts1, fontRole ).pixelSize();
+            const auto size2 = qskResolvedFont( fonts2, fontRole ).pixelSize();
+
+            if ( ( size1 > 0 ) && ( size2 > 0 ) && ( size1 != size2 ) )
+            {
+                QskVariantAnimator animator;
+                animator.setWindow( m_window );
+                animator.setDuration( animatorHint.duration );
+                animator.setEasingCurve( animatorHint.type );
+                animator.setStartValue( QVariant::fromValue( size1 ) );
+                animator.setEndValue( QVariant::fromValue( size2 ) );
+
+                m_fontSizeAnimatorMap.insert( fontRole, animator );
+            }
         }
     }
 }
@@ -602,6 +668,7 @@ class QskSkinTransition::PrivateData
     {
         QskSkinHintTable hintTable;
         QHash< int, QskColorFilter > graphicFilters;
+        QHash< QskFontRole, QFont > fontTable;
     } tables[ 2 ];
 
     Type mask = QskSkinTransition::AllTypes;
@@ -632,6 +699,7 @@ void QskSkinTransition::setSourceSkin( const QskSkin* skin )
 
     tables.hintTable = skin->hintTable();
     tables.graphicFilters = skin->graphicFilters();
+    tables.fontTable = skin->fontTable();
 }
 
 void QskSkinTransition::setTargetSkin( const QskSkin* skin )
@@ -640,6 +708,7 @@ void QskSkinTransition::setTargetSkin( const QskSkin* skin )
 
     tables.hintTable = skin->hintTable();
     tables.graphicFilters = skin->graphicFilters();
+    tables.fontTable = skin->fontTable();
 }
 
 void QskSkinTransition::run( const QskAnimationHint& animationHint )
@@ -652,6 +721,9 @@ void QskSkinTransition::run( const QskAnimationHint& animationHint )
     const auto& graphicFilters1 = m_data->tables[ 0 ].graphicFilters;
     const auto& graphicFilters2 = m_data->tables[ 1 ].graphicFilters;
 
+    const auto& fontTable1 = m_data->tables[ 0 ].fontTable;
+    const auto& fontTable2 = m_data->tables[ 1 ].fontTable;
+
     QSet< QskAspect > candidates;
 
     if ( ( animationHint.duration > 0 ) && ( m_data->mask != 0 ) )
@@ -663,6 +735,7 @@ void QskSkinTransition::run( const QskAnimationHint& animationHint )
     if ( !candidates.isEmpty() )
     {
         bool doGraphicFilter = m_data->mask & QskSkinTransition::Color;
+        bool doFont = m_data->mask & QskSkinTransition::Metric;
 
         const auto windows = qGuiApp->topLevelWindows();
 
@@ -684,6 +757,12 @@ void QskSkinTransition::run( const QskAnimationHint& animationHint )
                         graphicFilters1, graphicFilters2 );
 
                     doGraphicFilter = false;
+                }
+
+                if ( doFont )
+                {
+                    animator->addFontSizeAnimators( animationHint,
+                        fontTable1, fontTable2 );
                 }
 
                 /*
@@ -729,6 +808,18 @@ QVariant QskSkinTransition::animatedGraphicFilter(
     {
         if ( const auto animator = qskApplicationAnimator->windowAnimator( window ) )
             return animator->animatedGraphicFilter( graphicRole );
+    }
+
+    return QVariant();
+}
+
+QVariant QskSkinTransition::animatedFontSize(
+    const QQuickWindow* window, const QskFontRole& fontRole )
+{
+    if ( qskApplicationAnimator.exists() )
+    {
+        if ( const auto animator = qskApplicationAnimator->windowAnimator( window ) )
+            return animator->animatedFontSize( fontRole );
     }
 
     return QVariant();

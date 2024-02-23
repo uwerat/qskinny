@@ -124,6 +124,22 @@ static inline QskSkinlet* qskNewSkinlet( const QMetaObject* metaObject, QskSkin*
     return skinlet;
 }
 
+// also used in QskSkinTransition.cpp TODO ...
+
+QFont qskResolvedFont( const QHash< QskFontRole, QFont >& fontTable,
+    const QskFontRole& fontRole )
+{
+    auto it = fontTable.constFind( fontRole );
+    if ( it != fontTable.constEnd() )
+        return it.value();
+
+    it = fontTable.constFind( QskFontRole() );
+    if ( it != fontTable.constEnd() )
+        return it.value();
+
+    return QGuiApplication::font();
+}
+
 namespace
 {
     class SkinletData
@@ -374,17 +390,7 @@ void QskSkin::resetFont( const QskFontRole& fontRole )
 
 QFont QskSkin::font( const QskFontRole& fontRole ) const
 {
-    const auto& table = m_data->fonts;
-
-    auto it = table.constFind( fontRole );
-    if ( it != table.constEnd() )
-        return it.value();
-
-    it = table.constFind( QskFontRole() );
-    if ( it != m_data->fonts.constEnd() )
-        return it.value();
-
-    return QGuiApplication::font();
+    return qskResolvedFont( m_data->fonts, fontRole );
 }
 
 void QskSkin::setGraphicFilter( int graphicRole, const QskColorFilter& colorFilter )
