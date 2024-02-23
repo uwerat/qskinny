@@ -130,7 +130,7 @@ static inline constexpr QskAspect qskAnimatorAspect( const QskAspect aspect )
         the effective aspect in animatedHint.
      */
 
-    return aspect.type() | aspect.subControl() | aspect.primitive(); 
+    return aspect.type() | aspect.subControl() | aspect.primitive();
 }
 
 static inline void qskTriggerUpdates( QskAspect aspect, QQuickItem* item )
@@ -724,7 +724,7 @@ QskFontRole QskSkinnable::fontRoleHint(
         aspect | QskAspect::FontRole, status ).value< QskFontRole >();
 }
 
-QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
+QFont QskSkinnable::effectiveFont( QskAspect aspect ) const
 {
     const auto hint = effectiveSkinHint( aspect | QskAspect::FontRole );
     if ( hint.canConvert< QFont >() )
@@ -736,8 +736,24 @@ QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
          */
         return hint.value< QFont >();
     }
-    
-    return effectiveSkin()->font( hint.value< QskFontRole >() );
+
+    const auto fontRole = hint.value< QskFontRole >();
+
+    auto font = effectiveSkin()->font( fontRole );
+
+    if ( auto item = owningItem() )
+    {
+        const auto v = QskSkinTransition::animatedFontSize(
+            item->window(), fontRole );
+
+        if ( v.canConvert< int >() )
+        {
+            font.setPixelSize( v.value< int >() );
+            item->update(); // design flaw: see effectiveGraphicFilter
+        }
+    }
+
+    return font;
 }
 
 qreal QskSkinnable::effectiveFontHeight( const QskAspect aspect ) const

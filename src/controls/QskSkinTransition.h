@@ -6,14 +6,17 @@
 #ifndef QSK_SKIN_TRANSITION_H
 #define QSK_SKIN_TRANSITION_H
 
-#include "QskAspect.h"
+#include "QskGlobal.h"
 #include <memory>
 
 class QskAnimationHint;
+class QskFontRole;
+class QskAspect;
 class QskSkin;
 
 class QQuickWindow;
 class QVariant;
+
 template< typename Key, typename T > class QHash;
 
 class QSK_EXPORT QskSkinTransition
@@ -39,8 +42,10 @@ class QSK_EXPORT QskSkinTransition
     void run( const QskAnimationHint& );
 
     static bool isRunning();
+
     static QVariant animatedHint( const QQuickWindow*, QskAspect );
     static QVariant animatedGraphicFilter( const QQuickWindow*, int graphicRole );
+    static QVariant animatedFontSize( const QQuickWindow*, const QskFontRole& );
 
   private:
     Q_DISABLE_COPY( QskSkinTransition )
