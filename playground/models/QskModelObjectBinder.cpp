@@ -21,16 +21,17 @@ public:
         {
         };
         bool valid;
-        QPointer< QObject > object;
+        QObject* object;
         int column;
         QByteArray property;
     };
+
     void updateObjectProperty(Item & x)
     {
         Q_ASSERT( x.object != nullptr );
         Q_ASSERT( ! x.property.isEmpty() );
         x.object->setProperty(x.property,
-              m->index(modelIndex.row(),x.column).data(Qt::EditRole));
+              m->index(currentRowIndex.row(),x.column).data(Qt::EditRole));
     }
 
     void updateAllObjects()
@@ -47,7 +48,7 @@ public:
         auto prop =x.object->property( x.property );
         Q_ASSERT( prop.isValid() );
 
-        m->setData(m->index(modelIndex.row(),x.column),prop);
+        m->setData(m->index(currentRowIndex.row(),x.column),prop);
     }
 
     void updateModelFields()
@@ -61,14 +62,8 @@ public:
 public:
     QMap<QObject*,Item> items;
     QAbstractItemModel* m;
-    QPersistentModelIndex modelIndex;
+    QPersistentModelIndex currentRowIndex;
 };
-
-static bool modelContainsIndex(const QModelIndex & idx, const QModelIndex & topLeft, const QModelIndex & bottomRight)
-{
-    return idx.row() >= topLeft.row() && idx.row() <= bottomRight.row()
-        && idx.column() >= topLeft.column() && idx.column() <= bottomRight.column();
-}
 
 QskModelObjectBinder::QskModelObjectBinder(QObject* parent)
 : QObject( parent )
@@ -118,7 +113,7 @@ void QskModelObjectBinder::unbindObject(QObject *obj)
 void QskModelObjectBinder::bindModel(QAbstractItemModel *model)
 {
 	m_data->m=model;
-    m_data->modelIndex=QModelIndex();
+    m_data->currentRowIndex=QModelIndex();
     if(model) {
     	connect(m_data->m,&QAbstractItemModel::dataChanged,this,
 			&QskModelObjectBinder::modelDataChanged);
@@ -127,10 +122,13 @@ void QskModelObjectBinder::bindModel(QAbstractItemModel *model)
 
 void QskModelObjectBinder::modelDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> &)
 {
-    const int row = m_data->modelIndex.row();
+    const int row = m_data->currentRowIndex.row();
     for (auto it = m_data->items.begin(); it != m_data->items.end(); ++it) {
-		if (modelContainsIndex(m_data->m->index(row,it.value().column), topLeft, bottomRight)) {
-			m_data->updateObjectProperty(it.value());
+        auto & x = it.value();
+        const int col = x.column;
+        if( qBound( topLeft.row(),row,bottomRight.row()) == row
+            && qBound( topLeft.column(), col, bottomRight.column()) == col) {
+			m_data->updateObjectProperty(x);
 		}
 	}
 }
@@ -142,13 +140,13 @@ void QskModelObjectBinder::selectRow( int row )
     if ( !m_data->m )
         return;
 
-    m_data->modelIndex = m_data->m->index( row, 0 );
+    m_data->currentRowIndex = m_data->m->index( row, 0 );
     m_data->updateAllObjects();
 }
 
 int QskModelObjectBinder::currentRow() const
 {
-    return m_data->modelIndex.row();
+    return m_data->currentRowIndex.row();
 }
 
 void QskModelObjectBinder::updateModel()
