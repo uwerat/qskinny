@@ -49,6 +49,7 @@ Window::Window( )
     mapper->bindObject(spin, 0); // needs USER=true for value in QskBoundedInput
     mapper->bindObject(txt, 1); // needs USER=true for text in QskTextInput
 
+    // this loads the record from the first row and updates the controls data.
     mapper->selectRow(0);
 
     auto v = new QskLinearBox(Qt::Vertical);
@@ -63,11 +64,18 @@ Window::Window( )
     connect(next,&QskPushButton::clicked,[=]() { mapper->selectRow( 1 ); });
     v->addItem(h);
 
-    auto save = new QskPushButton("Save",v);
+    auto save = new QskPushButton("Save Data to Model",v);
     connect(save,&QskPushButton::clicked,[=]() {
+        // this will update the current record with the data from the SpinBox and TextInput
         mapper->updateModel();
+        // just for illustration we print out the record
         auto r = table->record(mapper->currentRow());
         qDebug() << r;
+    });
+    auto set0 = new QskPushButton("Set Model field to 0",v);
+    connect(set0,&QskPushButton::clicked,[=]() {
+        // this should trigger the binder and update the spinbox
+        table->setData( table->index(mapper->currentRow(),0),0 );
     });
     v->addSpacer( 0,100 );
 }
