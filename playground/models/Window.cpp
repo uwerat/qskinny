@@ -5,12 +5,11 @@
 
 #include "Window.h"
 
-#include "QskSpinBox.h"
-
 #include <QskDialogButtonBox.h>
 #include <QskLinearBox.h>
 #include <QskPushButton.h>
 #include <QskTextInput.h>
+#include <QskSpinBox.h>
 
 #include <QskModelObjectBinder.h>
 
@@ -18,7 +17,6 @@
 #include <QSqlQuery>
 #include <QSqlTableModel>
 #include <QSqlRecord>
-#include <iostream>
 
 Window::Window( )
     
