@@ -15,7 +15,7 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( QUrl source READ source WRITE setSource NOTIFY sourceChanged )
+    Q_PROPERTY( QUrl source READ source WRITE setSource NOTIFY sourceChanged USER true )
 
     Q_PROPERTY( bool mirror READ mirror WRITE setMirror NOTIFY mirrorChanged )
 

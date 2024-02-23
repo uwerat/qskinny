@@ -30,7 +30,7 @@ class QSK_EXPORT QskTabBar : public QskBox
     Q_PROPERTY( int count READ count NOTIFY countChanged FINAL )
 
     Q_PROPERTY( int currentIndex READ currentIndex
-        WRITE setCurrentIndex NOTIFY currentIndexChanged FINAL )
+        WRITE setCurrentIndex NOTIFY currentIndexChanged USER true FINAL )
 
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
         WRITE setTextOptions NOTIFY textOptionsChanged )
