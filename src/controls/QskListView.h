@@ -17,7 +17,7 @@ class QSK_EXPORT QskListView : public QskScrollView
         WRITE setSelectionMode NOTIFY selectionModeChanged FINAL )
 
     Q_PROPERTY( int selectedRow READ selectedRow
-        WRITE setSelectedRow NOTIFY selectedRowChanged FINAL )
+        WRITE setSelectedRow NOTIFY selectedRowChanged USER true FINAL )
 
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
         WRITE setTextOptions RESET resetTextOptions

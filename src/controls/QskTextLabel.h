@@ -15,7 +15,7 @@ class QSK_EXPORT QskTextLabel : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged )
+    Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged USER true )
 
     Q_PROPERTY( QskFontRole fontRole READ fontRole
         WRITE setFontRole RESET resetFontRole NOTIFY fontRoleChanged )

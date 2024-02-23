@@ -15,7 +15,7 @@ class QSK_EXPORT QskTextInput : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged )
+    Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged USER true)
 
     Q_PROPERTY( QString description READ description
         WRITE setDescription NOTIFY descriptionChanged )
