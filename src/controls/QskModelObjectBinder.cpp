@@ -8,7 +8,6 @@
 #include <qmetaobject.h>
 #include <qabstractitemmodel.h>
 #include <qpointer.h>
-#include <qassert.h>
 
 static inline QMetaProperty qskMetaProperty(
     const QMetaObject* metaObject, const QByteArray& name )
