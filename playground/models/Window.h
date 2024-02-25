@@ -5,11 +5,7 @@
 
 #pragma once
 
-#include <QskDialog.h>
 #include <QskWindow.h>
-
-class QskDialogButtonBox;
-class QskLinearBox;
 
 class Window : public QskWindow
 {
@@ -17,6 +13,4 @@ class Window : public QskWindow
 
   public:
     Window();
-
-
 };
