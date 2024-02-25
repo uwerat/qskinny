@@ -4,8 +4,6 @@
 
 #include "QskModelObjectBinder.h"
 #include <QMetaProperty>
-#include <QPointer>
-#include <qassert.h>
 
 class QskModelObjectBinder::PrivateData
 {

@@ -2,6 +2,7 @@
 #define QSKDATACONTROLMAPPER_H
 
 #include <QAbstractItemModel>
+#include <memory>
 
 class QskModelObjectBinder : public QObject {
 	Q_OBJECT
