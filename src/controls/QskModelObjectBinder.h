@@ -19,20 +19,33 @@ class QSK_EXPORT QskModelObjectBinder : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY( int currentRow READ currentRow
+        WRITE setCurrentRow NOTIFY currentRowChanged )
+
   public:
     QskModelObjectBinder( QObject* parent = nullptr );
     QskModelObjectBinder( QAbstractItemModel*, QObject* parent = nullptr );
+
+    void setModel( QAbstractItemModel* );
+
+    const QAbstractItemModel* model() const;
+    QAbstractItemModel* model();
+
+    void setCurrentRow( int row );
+    int currentRow() const;
 
     void bindObject( QObject*, int column,
         const QByteArray& propertyName = QByteArray() );
 
     void unbindObject( QObject* );
-    void bindModel( QAbstractItemModel* );
 
-    void setCurrentRow( int row );
-    [[nodiscard]] int currentRow() const;
+  Q_SIGNALS:
+    void currentRowChanged( int );
 
-    void updateModel();
+  public Q_SLOTS:
+    void submit();
+    void revert();
+    void clearBindings();
 
   private:
     class PrivateData;

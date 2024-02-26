@@ -9,8 +9,6 @@
 
 class Window : public QskWindow
 {
-    Q_OBJECT
-
   public:
     Window();
 };

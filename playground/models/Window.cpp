@@ -17,60 +17,77 @@
 #include <QSqlTableModel>
 #include <QSqlRecord>
 
-Window::Window()
+namespace
 {
-    auto db = QSqlDatabase::addDatabase( "QSQLITE" );
-    db.setDatabaseName( ":memory:" );
-    db.open();
+    class Model : public QSqlTableModel
+    {
+      public:
+        Model( QObject *parent = nullptr )
+            : QSqlTableModel( parent, QSqlDatabase::addDatabase( "QSQLITE" ) )
+        {
+            auto db = database();
 
-    QSqlQuery q(db);
-    q.exec( "create table test(id integer,value text);" );
-    q.exec( "insert into test (id,value) values (1,'HELLO');" );
-    q.exec( "insert into test (id,value) values (2,'WORLD');" );
+            db.setDatabaseName( ":memory:" );
+            db.open();
 
-    auto table = new QSqlTableModel( nullptr, db );
-    table->setTable( "test" );
-    table->select();
+            QSqlQuery query( db );
+            query.exec( "create table test(id integer,value text);" );
+            query.exec( "insert into test (id,value) values (1,'HELLO');" );
+            query.exec( "insert into test (id,value) values (2,'WORLD');" );
 
-    auto txt = new QskTextInput();
-    auto spin = new QskSpinBox();
+            setTable( "test" );
+            select();
+        }
 
-    auto mapper = new QskModelObjectBinder();
-    mapper->bindModel( table );
-
-    mapper->bindObject( spin, 0 );
-    mapper->bindObject( txt, 1 );
-
-    // this loads the record from the first row and updates the controls data.
-    mapper->setCurrentRow(0);
-
-    auto v = new QskLinearBox(Qt::Vertical);
-    v->addSpacer( 0,100 );
-    v->addItem( spin );
-    v->addItem( txt );
-    addItem(v);
-
-    auto h = new QskLinearBox(Qt::Horizontal);
-    auto prev = new QskPushButton("<",h);
-    auto next = new QskPushButton(">",h);
-    connect(prev,&QskPushButton::clicked,[ = ]() { mapper->setCurrentRow( 0 ); });
-    connect(next,&QskPushButton::clicked,[ = ]() { mapper->setCurrentRow( 1 ); });
-    v->addItem(h);
-
-    auto save = new QskPushButton("Save Data to Model",v);
-    connect(save,&QskPushButton::clicked,[ = ]() {
-        // this will update the current record with the data from the SpinBox and TextInput
-        mapper->updateModel();
-        // just for illustration we print out the record
-        auto r = table->record(mapper->currentRow() );
-        qDebug() << r;
-    });
-    auto set0 = new QskPushButton("Set Model field to 0",v);
-    connect(set0,&QskPushButton::clicked,[ = ]() {
-        // this should trigger the binder and update the spinbox
-        table->setData( table->index(mapper->currentRow(),0),0 );
-    });
-    v->addSpacer( 0,100 );
+        void setValue( int row, const QVariant &value )
+        {
+            setData( index( row, 0 ), value );
+        }
+    };
 }
 
-#include "moc_Window.cpp"
+Window::Window()
+{
+    auto model = new Model( this );
+
+    auto textInput = new QskTextInput();
+    auto spinBox = new QskSpinBox();
+
+    auto mapper = new QskModelObjectBinder( model, this );
+
+    mapper->bindObject( spinBox, 0 );
+    mapper->bindObject( textInput, 1 );
+
+    auto vBox = new QskLinearBox( Qt::Vertical );
+    vBox->addSpacer( 0, 100 );
+    vBox->addItem( spinBox );
+    vBox->addItem( textInput );
+
+    addItem( vBox );
+
+    auto hBox = new QskLinearBox( Qt::Horizontal );
+
+    {
+        auto prev = new QskPushButton( "<", hBox );
+        auto next = new QskPushButton( ">", hBox);
+
+        connect(prev, &QskPushButton::clicked,
+            [ mapper ]() { mapper->setCurrentRow( 0 ); });
+
+        connect( next, &QskPushButton::clicked,
+            [ mapper ]() { mapper->setCurrentRow( 1 ); });
+
+        vBox->addItem( hBox );
+    }
+
+    // update the current record with the data from the SpinBox and TextInput
+    auto save = new QskPushButton( "Save Data to Model", vBox );
+    connect( save, &QskPushButton::clicked,
+        [=]() { mapper->submit(); qDebug() << model->record( mapper->currentRow() ); });
+
+    // trigger the binder and update the spinbox
+    auto set0 = new QskPushButton( "Set Model field to 0", vBox );
+    connect( set0, &QskPushButton::clicked,
+         [=]() { model->setValue( mapper->currentRow(), 0 ); } );
+    vBox->addSpacer( 0,100 );
+}
