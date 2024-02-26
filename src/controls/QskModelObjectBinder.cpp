@@ -133,8 +133,8 @@ void QskModelObjectBinder::bindObject(
 
 void QskModelObjectBinder::unbindObject( QObject* object )
 {
-    auto it = m_data->bindings.find( object );
-    if ( it != m_data->bindings.end() )
+    auto it = m_data->bindings.constFind( object );
+    if ( it != m_data->bindings.constEnd() )
     {
         qskEnableConnections( object, this, false );
         m_data->bindings.erase( it );
@@ -149,6 +149,28 @@ void QskModelObjectBinder::clearBindings()
         qskEnableConnections( it.key(), this, false );
 
     bindings.clear();
+}
+
+QObjectList QskModelObjectBinder::boundObjects() const
+{
+    auto& bindings = m_data->bindings;
+
+    QObjectList objects;
+    objects.reserve( bindings.count() );
+
+    for ( auto it = bindings.constBegin(); it != bindings.constEnd(); ++it )
+        objects += it.key();
+
+    return objects;
+}
+
+QMetaProperty QskModelObjectBinder::boundProperty( const QObject* object ) const
+{
+    auto it = m_data->bindings.constFind( const_cast< QObject* >( object ) );
+    if ( it != m_data->bindings.constEnd() )
+        return it.value().property;
+
+    return QMetaProperty();
 }
 
 void QskModelObjectBinder::setModel( QAbstractItemModel* model )

@@ -5,10 +5,17 @@
 
 #pragma once
 
-#include <QskWindow.h>
+#include <QskMainView.h>
 
-class Window : public QskWindow
+class QskModelObjectBinder;
+
+class MainView : public QskMainView
 {
   public:
-    Window();
+    MainView( QQuickItem* = nullptr );
+
+  private:
+    void toogleRow();
+
+    QskModelObjectBinder* m_binder;
 };

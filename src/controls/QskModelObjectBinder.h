@@ -14,6 +14,7 @@
 #include <memory>
 
 class QAbstractItemModel;
+class QMetaProperty;
 
 class QSK_EXPORT QskModelObjectBinder : public QObject
 {
@@ -38,6 +39,9 @@ class QSK_EXPORT QskModelObjectBinder : public QObject
         const QByteArray& propertyName = QByteArray() );
 
     void unbindObject( QObject* );
+
+    QMetaProperty boundProperty( const QObject* ) const;
+    QObjectList boundObjects() const;
 
   Q_SIGNALS:
     void currentRowChanged( int );
