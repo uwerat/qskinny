@@ -1497,13 +1497,22 @@ void Editor::setupSpinBoxMetrics()
 {
     using Q = QskSpinBox;
 
+    /*
+        The F2 NumberBox has 2 modes for the Up/Down panels ( a.k.a Spinner ):
+
+            - compact ( -> QskSpinBox::UpDownControl )
+            - inline ( -> QskSpinBox::ButtonsRight )
+
+        TODO: in compact mode the panels/indicators are blown up, when being hovered
+     */
     setHint( Q::Panel | QskAspect::Style, Q::ButtonsRight );
+
     setStrutSize( Q::Panel, { -1, 32_px } );
     setBoxBorderMetrics( Q::Panel, 1_px );
     setBoxShape( Q::Panel, 3_px );
     setPadding( Q::Panel, { 11_px, 0, 11_px, 0 } );
 
-    setAlignment( Q::Text, Qt::AlignLeft );
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setFontRole( Q::Text, Fluent2::Body );
 
     setPadding( Q::TextPanel, { 11_px, 5_px, 0, 0 } );

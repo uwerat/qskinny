@@ -887,7 +887,6 @@ void Editor::setupSpinBox()
     setStrutSize( Q::UpPanel, 40_dp,40_dp );
     setStrutSize( Q::DownPanel, 40_dp, 40_dp );
 
-    setAlignment( Q::Panel, Qt::AlignHCenter );
     setAlignment( Q::Text, Qt::AlignCenter );
 
     for( const auto subControl : { Q::DownPanel, Q::UpPanel, Q::TextPanel } )

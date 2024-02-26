@@ -117,11 +117,7 @@ QSGNode* QskSpinBoxSkinlet::updateSubNode(
         case TextRole:
         {
             auto spinBox = static_cast< const QskSpinBox* >( skinnable );
-
-            const auto rect = subControlRect( spinBox, spinBox->contentsRect(), Q::Text );
-
-            return updateTextNode( spinBox, node, rect,
-                spinBox->textAlignment(), spinBox->text(), Q::Text );
+            return updateTextNode( spinBox, node, spinBox->text(), Q::Text );
         }
     }
 

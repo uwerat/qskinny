@@ -859,8 +859,6 @@ void Editor::setupSpinBox()
 
     setPadding( Q::TextPanel, 5_dp );
     setBoxShape( Q::TextPanel, 2, 0, 2, 0 );
-
-    setColor( Q::Text, m_pal.active( P::Text ) );
     setGradient( Q::TextPanel | Q::Disabled, m_pal.disabled( P::Base ) );
 
     setBoxBorderMetrics( Q::TextPanel, 1_dp );
@@ -871,6 +869,9 @@ void Editor::setupSpinBox()
     setBoxBorderColors( Q::TextPanel | Q::Focused, m_pal.highlightedOutline,
         Combination( { Q::Increasing, Q::Decreasing, Q::Hovered } ) );
 #endif
+
+    setColor( Q::Text, m_pal.active( P::Text ) );
+    setAlignment( Q::Text, Qt::AlignCenter );
 
     setBoxShape( Q::UpPanel, 0, 2_dp, 0, 0 );
     setBoxBorderMetrics( Q::UpPanel, 0_dp, 1_dp, 1_dp, 0_dp );
