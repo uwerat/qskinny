@@ -67,7 +67,7 @@ class QskModelObjectBinder::PrivateData
         if ( !( model && currentRowIndex.isValid() ) )
             return;
 
-        if ( !roles.isEmpty() && roles.contains( Qt::EditRole ) )
+        if ( !( roles.isEmpty() || roles.contains( Qt::EditRole ) ) )
             return;
 
         const int row = currentRowIndex.row();
