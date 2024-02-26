@@ -133,11 +133,13 @@ void QskModelObjectBinder::bindObject(
 
 void QskModelObjectBinder::unbindObject( QObject* object )
 {
-    auto it = m_data->bindings.constFind( object );
-    if ( it != m_data->bindings.constEnd() )
+    auto& bindings = m_data->bindings;
+
+    auto it = bindings.find( object );
+    if ( it != bindings.end() )
     {
         qskEnableConnections( object, this, false );
-        m_data->bindings.erase( it );
+        bindings.erase( it );
     }
 }
 
