@@ -4,4 +4,4 @@
 ############################################################################
 
 qsk_add_example(models Window.h Window.cpp main.cpp)
-target_link_libraries(models PRIVATE Qt::Sql)
+target_link_libraries(models)

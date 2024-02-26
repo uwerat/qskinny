@@ -54,11 +54,11 @@ macro(qsk_setup_Qt)
         # C++, but QSkinny itself does not need the WebEngine at all.
 
         if (QT_VERSION_MAJOR VERSION_LESS 6)
-            find_package(Qt${QT_VERSION_MAJOR} QUIET OPTIONAL_COMPONENTS WebEngine Sql)
+            find_package(Qt${QT_VERSION_MAJOR} QUIET OPTIONAL_COMPONENTS WebEngine)
             set( Qt5WebEngineQuick_FOUND ${Qt5WebEngine_FOUND} )
         else()
             find_package(Qt${QT_VERSION_MAJOR} QUIET
-                OPTIONAL_COMPONENTS WebEngineCore WebEngineQuick Sql)
+                OPTIONAL_COMPONENTS WebEngineCore WebEngineQuick)
         endif()
 
         if( NOT Qt${QT_VERSION_MAJOR}WebEngineQuick_FOUND)

@@ -9,39 +9,41 @@
 #include <QskPushButton.h>
 #include <QskTextInput.h>
 #include <QskSpinBox.h>
-
 #include <QskModelObjectBinder.h>
 
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlTableModel>
-#include <QSqlRecord>
+#include <QStandardItemModel>
 
 namespace
 {
-    class Model : public QSqlTableModel
+    class Model : public QStandardItemModel
     {
       public:
-        Model( QObject *parent = nullptr )
-            : QSqlTableModel( parent, QSqlDatabase::addDatabase( "QSQLITE" ) )
+        Model( QObject* parent = nullptr )
+            : QStandardItemModel( 2, 2, parent )
         {
-            auto db = database();
+            setValue( 0, 0, 1 );
+            setValue( 0, 1, "HELLO" );
 
-            db.setDatabaseName( ":memory:" );
-            db.open();
-
-            QSqlQuery query( db );
-            query.exec( "create table test(id integer,value text);" );
-            query.exec( "insert into test (id,value) values (1,'HELLO');" );
-            query.exec( "insert into test (id,value) values (2,'WORLD');" );
-
-            setTable( "test" );
-            select();
+            setValue( 1, 0, 2 );
+            setValue( 1, 1, "WORLD" );
         }
 
-        void setValue( int row, const QVariant &value )
+        void setValue( int row, int col, const QVariant& value )
         {
-            setData( index( row, 0 ), value );
+            setData( index( row, col ), value, Qt::EditRole );
+        }
+
+        void dump()
+        {
+            qDebug() << "Model";
+            for ( int row = 0; row < rowCount(); row++ )
+            {
+                for ( int col = 0; col < columnCount(); col++ )
+                {
+                    qDebug() << '\t' << row << col
+                        << data( index( row, col ), Qt::EditRole );
+                }
+            }
         }
     };
 }
@@ -72,10 +74,10 @@ Window::Window()
         auto next = new QskPushButton( ">", hBox);
 
         connect(prev, &QskPushButton::clicked,
-            [ mapper ]() { mapper->setCurrentRow( 0 ); });
+            [ mapper ]() { mapper->setCurrentRow( 0 ); } );
 
         connect( next, &QskPushButton::clicked,
-            [ mapper ]() { mapper->setCurrentRow( 1 ); });
+            [ mapper ]() { mapper->setCurrentRow( 1 ); } );
 
         vBox->addItem( hBox );
     }
@@ -83,11 +85,12 @@ Window::Window()
     // update the current record with the data from the SpinBox and TextInput
     auto save = new QskPushButton( "Save Data to Model", vBox );
     connect( save, &QskPushButton::clicked,
-        [=]() { mapper->submit(); qDebug() << model->record( mapper->currentRow() ); });
+        [ = ]() { mapper->submit(); model->dump(); } );
 
     // trigger the binder and update the spinbox
-    auto set0 = new QskPushButton( "Set Model field to 0", vBox );
+    auto set0 = new QskPushButton( "Set Model field to 42", vBox );
     connect( set0, &QskPushButton::clicked,
-         [=]() { model->setValue( mapper->currentRow(), 0 ); } );
-    vBox->addSpacer( 0,100 );
+        [ = ]() { model->setValue( mapper->currentRow(), 0, 42 ); } );
+
+    vBox->addSpacer( 0, 100 );
 }

@@ -8,6 +8,7 @@ add_subdirectory(shadows)
 add_subdirectory(shapes)
 add_subdirectory(charts)
 add_subdirectory(plots)
+add_subdirectory(models)
 
 if (BUILD_INPUTCONTEXT)
     add_subdirectory(inputpanel)
@@ -31,8 +32,4 @@ endif()
 
 if(TARGET Qt::QuickWidgets)
     add_subdirectory(grids)
-endif()
-
-if(TARGET Qt::Sql)
-    add_subdirectory(models)
 endif()
