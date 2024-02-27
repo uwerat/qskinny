@@ -105,6 +105,15 @@ namespace
         return qskDpToPixels( value );
     }
 
+    class Combination : public QskStateCombination
+    {
+      public:
+        constexpr Combination( const QskAspect::States states )
+            : QskStateCombination( CombinationNoState, states )
+        {
+        }
+    };
+
     class Editor : private QskSkinHintTableEditor
     {
         Q_GADGET
@@ -585,7 +594,7 @@ void Editor::setupSegmentedBar()
     {
         // Icon
 
-        setSymbol( Q::Icon, symbol( "segmented-button-check" ) );
+        setSymbol( Q::Icon, symbol( "check" ) );
         setStrutSize( Q::Icon, 18_dp, 18_dp );
 
         setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnSurface );
@@ -881,6 +890,15 @@ void Editor::setupSpinBox()
     using Q = QskSpinBox;
 
     setHint( Q::Panel | QskAspect::Style, Q::ButtonsLeftAndRight );
+
+    setBoxShape( Q::Panel, 4_dp );
+    setBoxBorderMetrics( Q::Panel, 1_dp );
+
+    setBoxBorderColors( Q::Panel, m_pal.outline );
+    setBoxBorderColors( Q::Panel | Q::Focused, m_pal.primary,
+        Combination( { Q::Increasing, Q::Decreasing } ) );
+
+    setPadding( Q::Panel, 4_dp );
     setSpacing( Q::Panel, 4_dp );
 
     setStrutSize( Q::TextPanel, 80_dp, 40_dp );
@@ -897,31 +915,31 @@ void Editor::setupSpinBox()
 
     for( const auto subControl : { Q::DownPanel, Q::UpPanel } )
     {
-        setGradient( subControl, m_pal.primary );
-        setGradient( subControl | Q::Disabled, m_pal.onSurface12 );
+        setGradient( subControl | Q::Hovered, m_pal.primary8 );
         setPadding( subControl, 10 );
     }
 
     {
-        const auto focusColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.12 );
-
-        setGradient( Q::DownPanel | Q::Decreasing, focusColor );
-        setGradient( Q::UpPanel | Q::Increasing, focusColor );
+        setGradient( Q::DownPanel | Q::Decreasing, m_pal.primary12 );
+        setGradient( Q::UpPanel | Q::Increasing, m_pal.primary12 );
     }
 
-    setSymbol( Q::UpIndicator, symbol( "combo-box-arrow-open" ) );
-    setSymbol( Q::DownIndicator, symbol( "combo-box-arrow-closed" ) );
+    setSymbol( Q::UpIndicator, symbol( "add" ) );
+    setSymbol( Q::DownIndicator, symbol( "remove" ) );
 
     for( const auto subControl : { Q::DownIndicator, Q::UpIndicator } )
     {
         setAlignment( subControl, Qt::AlignCenter );
+#if 0
         setGraphicRole( subControl, QskMaterial3Skin::GraphicRoleOnPrimary );
         setGraphicRole( subControl | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
+#endif
     }
 
     setColor( Q::Text, m_pal.onBackground );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
+#if 0
     setPadding( Q::TextPanel, 5_dp );
     setBoxShape( Q::TextPanel, 4_dp, 4_dp, 0, 0 );
     setBoxBorderMetrics( Q::TextPanel, 0, 0, 0, 1_dp );
@@ -938,6 +956,7 @@ void Editor::setupSpinBox()
 
     setColor( Q::TextPanel | Q::Disabled, m_pal.onSurface38 );
     setBoxBorderColors( Q::TextPanel | Q::Disabled, m_pal.onSurface38 );
+#endif
 }
 
 void Editor::setupSwitchButton()
