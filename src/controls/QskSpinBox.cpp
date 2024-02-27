@@ -39,7 +39,7 @@ namespace
         return QskAspect::NoSubcontrol;
     }
 
-    inline constexpr QskAspect aspectDecoration()
+    inline QskAspect aspectDecoration()
     {
         return QskSpinBox::Panel | QskAspect::Style;
     }
