@@ -65,3 +65,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         DESTINATION
             ${QSK_INSTALL_LIBS} OPTIONAL)
 endif()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    #target_compile_options(${target} PRIVATE "-Wa,-mbig-obj")
+    set_source_files_properties(QskQml.cpp PROPERTIES COMPILE_FLAGS "-Wa,-mbig-obj")
+endif()
