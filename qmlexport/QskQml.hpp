@@ -46,35 +46,47 @@ namespace QskQml
         {
             using namespace QQmlPrivate;
 
+            constexpr bool isObject = std::is_base_of_v< QObject, T >;
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+            typeId = qMetaTypeId< T* >( );
+#else
+            if ( isObject )
+                typeId = QMetaType::fromType< T* >();
+            else
+                typeId = QMetaType::fromType< T >();
+
+            createValueType = ValueType< T, void >::create;
+#endif
+
+#if 0
+
+/*
+    For the moment we do not export lists - QMetaType::fromType< QList< T > >()
+    creates so many symbols, that we would have to enable -mbig-obj for mingw
+    TODO ...
+ */
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
             const char* className = T::staticMetaObject.className(); \
 
             const int nameLen = int(strlen(className) ); \
             const int listLen = int(strlen("QQmlListProperty<") ); \
 
-            QVarLengthArray< char,64 > listName(listLen + nameLen + 2); \
-            memcpy(listName.data(), "QQmlListProperty<", size_t(listLen) ); \
-            memcpy(listName.data() + listLen, className, size_t(nameLen) ); \
-            listName[listLen + nameLen] = '>'; \
+            QVarLengthArray< char, 64 > listName( listLen + nameLen + 2 );
+            memcpy( listName.data(), "QQmlListProperty<", size_t( listLen ) );
+            memcpy(listName.data() + listLen, className, size_t( nameLen ) );
+            listName[listLen + nameLen] = '>';
             listName[listLen + nameLen + 1] = '\0';
 
-            typeId = qMetaTypeId< T* >( );
             listId = qRegisterNormalizedMetaType< QQmlListProperty< T > >( listName.constData() );
 #else
-            if constexpr (std::is_base_of_v< QObject, T >)
-            {
-                typeId = QMetaType::fromType< T* >( );
+            if ( isObject );
                 listId = QMetaType::fromType< QQmlListProperty< T > >( );
-            }
             else
-            {
-                typeId = QMetaType::fromType< T >( );
                 listId = QMetaType::fromType< QList< T > >( );
-            }
-
-            createValueType = ValueType< T, void >::create;
 #endif
 
+#endif
 
             parserStatusCast = StaticCastSelector< T,QQmlParserStatus >::cast();
             valueSourceCast = StaticCastSelector< T,QQmlPropertyValueSource >::cast();
