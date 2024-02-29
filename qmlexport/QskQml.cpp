@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "QskQml.h"
-#include "QskQml.hpp"
 
+#include "QskQmlRegister.h"
 #include "QskLayoutQml.h"
 #include "QskShortcutQml.h"
 
@@ -44,8 +44,6 @@
 #include <QskSeparator.h>
 #include <QskShadowMetrics.h>
 #include <QskSimpleListBox.h>
-#include <QskSkin.h>
-#include <QskSkinManager.h>
 #include <QskSlider.h>
 #include <QskSpinBox.h>
 #include <QskStandardSymbol.h>
@@ -61,9 +59,9 @@
 #include <QskWindow.h>
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 2, 0 )
-    QSK_QT_PRIVATE_BEGIN
+QSK_QT_PRIVATE_BEGIN
         #include <private/qqmlmetatype_p.h>
-    QSK_QT_PRIVATE_END
+QSK_QT_PRIVATE_END
 #endif
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 5, 0 )
@@ -191,9 +189,6 @@ namespace
 
 void QskQml::registerTypes()
 {
-    qmlRegisterUncreatableType< QskSkin >( QSK_MODULE_NAME, 1, 0, "Skin", QString() );
-    qRegisterMetaType< QskSkin* >();
-
     registerObject< QskShortcutQml >( "Shortcut" );
 
     registerObject< QskWindow >();
