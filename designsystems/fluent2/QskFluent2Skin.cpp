@@ -1510,18 +1510,20 @@ void Editor::setupSpinBoxMetrics()
     setStrutSize( Q::Panel, { -1, 32_px } );
     setBoxBorderMetrics( Q::Panel, 1_px );
     setBoxShape( Q::Panel, 3_px );
-    setPadding( Q::Panel, { 11_px, 0, 11_px, 0 } );
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setFontRole( Q::Text, Fluent2::Body );
 
-    setPadding( Q::TextPanel, { 11_px, 5_px, 0, 0 } );
+    setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
 
+#if 1
+    // probably obsolete once QskGraphic supports viewBox
     setStrutSize( Q::UpPanel, 32_px, 20_px );
     setPadding( Q::UpPanel, { 11_px, 7_px, 11_px, 7_px } );
 
     setStrutSize( Q::DownPanel, 34_px, 20_px );
     setPadding( Q::DownPanel, { 11_px, 7_px, 13_px, 7_px } );
+#endif
 
     setSymbol( Q::UpIndicator, symbol( "spin-box-arrow-up" ) );
     setSymbol( Q::DownIndicator, symbol( "spin-box-arrow-down" ) );
