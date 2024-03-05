@@ -62,15 +62,9 @@ namespace
 
             {
                 auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0, this );
+                spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
                 spinBox->setPageSize( 5 );
                 spinBox->setValue( 35 );
-            }
-
-            {
-                auto spinBox = new QskSpinBox( 10.0, 100.0, 1.0, this );
-                spinBox->setPageSize( 10 );
-                spinBox->setDecoration( QskSpinBox::NoDecoration );
-                spinBox->setValue( 50 );
             }
         }
     };
