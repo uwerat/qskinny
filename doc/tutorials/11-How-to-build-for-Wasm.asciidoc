@@ -13,16 +13,16 @@ layout: docs
 
 Build Qt for Wasm from source as described here: https://doc.qt.io/qt-6/wasm.html#building-qt-from-source ; The verified Qt version for QSkinny as of this writing was 6.6.0. It might also work to use a downloaded version of Qt for Wasm, but some additional libraries will need to be built.
 After configuring Qt as described in the link above, for QSkinny you will need the qtbase, qtdeclarative, qtshadertools and qtsvg modules.
-Assuming the Emscripten SDK in `~/dev/emscripten` and Qt in `~/dev/qt5`, Qt can be compiled the following way:
+Assuming the Emscripten SDK in `~/dev/emscripten` and Qt in `~/dev/qt6`, Qt can be compiled the following way:
 
 [source]
 ....
-cd ~/dev/qt5
+cd ~/dev/qt6
 source "~/dev/emsdk/emsdk_env.sh"
 cmake --build . -t qtbase -t qtdeclarative -t qtshadertools -t qtsvg
 ....
 
-This will install all required libs in `~/dev/qt5/qtbase/lib`.
+This will install all required libs in `~/dev/qt6/qtbase/lib`.
 
 
 === Build QSkinny for Wasm
@@ -34,7 +34,7 @@ With the Qt version from above QSkinny can be built for WAsm, assuming it has be
 ....
 mkdir -p ~/dev/qskinny-wasm-build
 source "~/dev/emsdk/emsdk_env.sh"
-~/dev/qt5/qtbase/bin/qt-cmake -S ~/dev/qskinny -B ~/dev/qskinny-wasm-build -DBUILD_QSKDLL=OFF
+~/dev/qt6/qtbase/bin/qt-cmake -S ~/dev/qskinny -B ~/dev/qskinny-wasm-build -DBUILD_QSKDLL=OFF
 ....
 
 
