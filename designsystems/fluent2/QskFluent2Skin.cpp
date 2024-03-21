@@ -103,6 +103,13 @@
 #include <qguiapplication.h>
 #include <qfontinfo.h>
 
+static void qskFluent2InitResources()
+{
+    Q_INIT_RESOURCE( QskFluent2Icons );
+}
+
+Q_CONSTRUCTOR_FUNCTION( qskFluent2InitResources )
+
 namespace Fluent2
 {
     using F = QskFontRole;
