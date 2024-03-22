@@ -64,6 +64,13 @@
 #include <qguiapplication.h>
 #include <qfontinfo.h>
 
+static void qskMaterial3InitResources()
+{
+    Q_INIT_RESOURCE( QskMaterial3Icons );
+}
+
+Q_CONSTRUCTOR_FUNCTION( qskMaterial3InitResources )
+
 static const int qskDuration = 150;
 
 namespace
