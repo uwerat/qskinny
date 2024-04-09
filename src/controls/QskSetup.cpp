@@ -26,7 +26,7 @@ namespace
     {
         QskItem::UpdateFlags flags;
 
-        if ( hasEnvironment( "QSK_PREFER_RASTER" ) )
+        if ( !hasEnvironment( "QSK_PREFER_FBO_PAINTING" ) )
             flags |= QskItem::PreferRasterForTextures;
 
         if ( hasEnvironment( "QSK_FORCE_BACKGROUND" ) )
