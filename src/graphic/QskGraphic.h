@@ -29,6 +29,7 @@ class QSK_EXPORT QskGraphic : public QPaintDevice
     Q_GADGET
 
     Q_PROPERTY( qreal aspectRatio READ aspectRatio )
+    Q_PROPERTY( QRectF viewBox READ viewBox WRITE setViewBox )
     Q_PROPERTY( QRectF boundingRect READ boundingRect )
     Q_PROPERTY( QRectF controlPointRect READ controlPointRect )
     Q_PROPERTY( QSizeF defaultSize READ defaultSize )
@@ -106,8 +107,10 @@ class QSK_EXPORT QskGraphic : public QPaintDevice
     const QVector< QskPainterCommand >& commands() const;
     void setCommands( const QVector< QskPainterCommand >& );
 
-    void setDefaultSize( const QSizeF& );
     QSizeF defaultSize() const;
+
+    void setViewBox( const QRectF& );
+    QRectF viewBox() const;
 
     qreal aspectRatio() const;
 

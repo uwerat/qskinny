@@ -57,6 +57,21 @@ int main( int argc, char* argv[] )
 
     QskGraphic graphic;
 
+    {
+        /*
+            QSvgRenderer::viewBoxF() returns a bounding box when no viewBox
+            has been defined. So we clear the viewBox and compare the result with
+            the initial value - assuming, that there was a viewBox when they differ.
+            
+         */
+        const auto viewBox = renderer.viewBoxF();
+        renderer.setViewBox( QRectF() );
+
+        if ( viewBox != renderer.viewBoxF() )
+            graphic.setViewBox( viewBox );
+    }
+
+
     QPainter painter( &graphic );
     renderer.render( &painter );
     painter.end();

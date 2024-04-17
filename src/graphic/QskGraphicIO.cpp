@@ -241,6 +241,9 @@ QskGraphic QskGraphicIO::read( QIODevice* dev )
         return QskGraphic();
     }
 
+    QRectF viewBox;
+    stream >> viewBox;
+
     quint32 numCommands;
     stream >> numCommands;
 
@@ -280,6 +283,7 @@ QskGraphic QskGraphicIO::read( QIODevice* dev )
     }
 
     QskGraphic graphic;
+    graphic.setViewBox( viewBox );
     graphic.setCommands( commands );
 
     return graphic;
@@ -314,6 +318,8 @@ bool QskGraphicIO::write( const QskGraphic& graphic, QIODevice* dev )
 #endif
     stream.setByteOrder( QDataStream::BigEndian );
     stream.writeRawData( qskMagicNumber, 4 );
+
+    stream << graphic.viewBox();
 
     const auto numCommands = graphic.commands().size();
     const QskPainterCommand* cmds = graphic.commands().constData();
