@@ -25,6 +25,22 @@ static void usage( const char* appName )
     qWarning() << "usage: " << appName << "svgfile qvgfile";
 }
 
+static QRectF viewBox( QSvgRenderer& renderer )
+{
+    /*
+        QSvgRenderer::viewBoxF() returns a bounding box when no viewBox
+        has been defined. So we clear the viewBox and compare the result with
+        the initial value - assuming, that there was a viewBox when they differ.
+     */
+    const auto viewBox = renderer.viewBoxF();
+
+    renderer.setViewBox( QRectF() );
+    const bool hasViewBox = ( viewBox != renderer.viewBoxF() );
+    renderer.setViewBox( viewBox );
+
+    return hasViewBox ? viewBox : QRectF( 0.0, 0.0, -1.0, -1.0 );
+}
+
 int main( int argc, char* argv[] )
 {
     if ( argc != 3 )
@@ -56,21 +72,7 @@ int main( int argc, char* argv[] )
         return -2;
 
     QskGraphic graphic;
-
-    {
-        /*
-            QSvgRenderer::viewBoxF() returns a bounding box when no viewBox
-            has been defined. So we clear the viewBox and compare the result with
-            the initial value - assuming, that there was a viewBox when they differ.
-            
-         */
-        const auto viewBox = renderer.viewBoxF();
-        renderer.setViewBox( QRectF() );
-
-        if ( viewBox != renderer.viewBoxF() )
-            graphic.setViewBox( viewBox );
-    }
-
+    graphic.setViewBox( ::viewBox( renderer ) );
 
     QPainter painter( &graphic );
     renderer.render( &painter );
