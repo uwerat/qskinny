@@ -419,7 +419,6 @@ void Editor::setupCheckBoxMetrics()
     setStrutSize( Q::Box, { 20_px, 20_px } ); // 18 + 2*1 border
     setBoxShape( Q::Box, 4_px ); // adapt to us taking the border into account
     setBoxBorderMetrics( Q::Box, 1_px );
-    setPadding( Q::Box, 5_px ); // "icon size"
 
     setFontRole( Q::Text, Fluent2::Body );
 }
@@ -548,9 +547,9 @@ void Editor::setupComboBoxMetrics()
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setFontRole( Q::Text, Fluent2::Body );
 
-    setStrutSize( Q::StatusIndicator, 12_px, 12_px );
-    setSymbol( Q::StatusIndicator, symbol( "spin-box-arrow-down" ) );
-    setSymbol( Q::StatusIndicator | Q::PopupOpen, symbol( "spin-box-arrow-up" ) );
+    setStrutSize( Q::StatusIndicator, 16_px, 16_px );
+    setSymbol( Q::StatusIndicator, symbol( "chevron_down" ) );
+    // setSymbol( Q::StatusIndicator | Q::PopupOpen, symbol( "chevron_up" ) );
 
     // Using Focused (Pressed doesn't exist yet):
     setBoxBorderMetrics( Q::Panel | Q::Focused, { 1_px, 1_px, 1_px, 2_px } );
@@ -1523,20 +1522,19 @@ void Editor::setupSpinBoxMetrics()
 
     setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
 
-#if 1
-    // probably obsolete once QskGraphic supports viewBox
-    setStrutSize( Q::UpPanel, 32_px, 20_px );
-    setPadding( Q::UpPanel, { 11_px, 7_px, 11_px, 7_px } );
+    for ( auto panel : { Q::UpPanel, Q::DownPanel } )
+        setStrutSize( panel, 32_px, 18_px );
 
-    setStrutSize( Q::DownPanel, 34_px, 20_px );
-    setPadding( Q::DownPanel, { 11_px, 7_px, 13_px, 7_px } );
+    setSymbol( Q::UpIndicator, symbol( "chevron_up" ) );
+    setSymbol( Q::DownIndicator, symbol( "chevron_down" ) );
+
+    setPadding( Q::UpPanel, { 0, 1_px, 0, 0 } );
+    setPadding( Q::DownPanel, { 0, 0, 0, 1_px } );
+
+#if 0
+    // QskSpinBox::Pressed is missing yet
+    setBoxBorderMetrics( Q::Panel | Q::Pressed, { 1_px, 1_px, 1_px, 2_px } );
 #endif
-
-    setSymbol( Q::UpIndicator, symbol( "spin-box-arrow-up" ) );
-    setSymbol( Q::DownIndicator, symbol( "spin-box-arrow-down" ) );
-
-    // Focused (Pressed doesn't exist yet):
-    setBoxBorderMetrics( Q::Panel | Q::Focused, { 1_px, 1_px, 1_px, 2_px } );
 }
 
 void Editor::setupSpinBoxColors(
@@ -1599,7 +1597,16 @@ void Editor::setupSpinBoxColors(
         panelColor = rgbSolid( panelColor, pal.background.solid.base );
 
         setGradient( panel, panelColor );
+
         setBoxBorderGradient( panel, borderColor1, borderColor2, panelColor );
+
+        if ( state == Q::Focused )
+        {
+            const auto colors = boxBorderColors( panel );
+
+            setBoxBorderColors( panel | Q::Decreasing, colors );
+            setBoxBorderColors( panel | Q::Increasing, colors );
+        }
 
         setColor( text, textColor );
 
