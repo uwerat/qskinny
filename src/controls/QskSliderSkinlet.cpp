@@ -161,9 +161,24 @@ QRectF QskSliderSkinlet::innerRect( const QskSlider* slider,
 }
 
 QRectF QskSliderSkinlet::grooveRect(
-    const QskSlider* slider, const QRectF& rect ) const
+    const QskSlider* slider, const QRectF& contentsRect ) const
 {
-    return innerRect( slider, rect, QskSlider::Groove );
+    const auto r = qskInnerPanelRect( slider, contentsRect );
+    auto grooveRect = innerRect( slider, contentsRect, QskSlider::Groove );
+    const auto pos = qBound( 0.0, slider->handlePosition(), 1.0 );
+
+    if ( slider->orientation() == Qt::Horizontal )
+    {
+        grooveRect.setLeft( r.left() + pos * r.width() );
+        grooveRect.setRight( r.right() );
+    }
+    else
+    {
+        grooveRect.setBottom( r.bottom() - pos * r.height() );
+        grooveRect.setTop( r.top() );
+    }
+
+    return grooveRect;
 }
 
 QRectF QskSliderSkinlet::scaleRect(
@@ -254,14 +269,17 @@ QSizeF QskSliderSkinlet::sizeHint( const QskSkinnable* skinnable,
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    const auto slider = static_cast< const QskSlider* >( skinnable );
+    const auto panelHint = skinnable->strutSizeHint( QskSlider::Panel );
+    const auto grooveHint = skinnable->strutSizeHint( QskSlider::Groove );
+    const auto fillHint = skinnable->strutSizeHint( QskSlider::Fill );
+    const auto handleHint = skinnable->strutSizeHint( QskSlider::Handle );
 
-    // strutSizeHint( ... ) ???
-    const qreal m1 = slider->metric( QskSlider::Panel | QskAspect::Size );
-    const qreal m2 = 4 * m1;
+    auto hint = panelHint;
+    hint = hint.expandedTo( grooveHint );
+    hint = hint.expandedTo( fillHint );
+    hint = hint.expandedTo( handleHint );
 
-    return ( slider->orientation() == Qt::Horizontal )
-        ? QSizeF( m2, m1 ) : QSizeF( m1, m2 );
+    return hint;
 }
 
 #include "moc_QskSliderSkinlet.cpp"
