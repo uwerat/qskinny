@@ -24,6 +24,8 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
         FillRole,
         HandleRole,
         RippleRole,
+        LabelContainerRole,
+        LabelTextRole,
 
         RoleCount
     };
@@ -48,8 +50,11 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
     QRectF handleRect( const QskSlider*, const QRectF& ) const;
     QRectF scaleRect( const QskSlider*, const QRectF& ) const;
     QRectF rippleRect( const QskSlider*, const QRectF& ) const;
+    QRectF labelContainerRect( const QskSlider*, const QRectF& ) const;
 
     QRectF innerRect( const QskSlider*, const QRectF&, QskAspect::Subcontrol ) const;
+
+    QString labelValue( const QskSlider* ) const;
 };
 
 #endif

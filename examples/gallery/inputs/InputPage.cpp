@@ -79,6 +79,8 @@ InputPage::InputPage( QQuickItem* parent )
     auto inputBox = new InputBox();
 
     auto gridBox = new QskGridBox( this );
+    gridBox->setSpacing( 30 );
+    gridBox->setMargins( 30 );
 
     gridBox->addItem( sliderV, 0, 0, -1, 1 );
     gridBox->addItem( sliderH, 0, 1, 1, -1 );
