@@ -874,6 +874,21 @@ void Editor::setupSlider()
     const auto disabledColor = flattenedColor( m_pal.onSurface, m_pal.background, 0.38 );
     setGradient( Q::Handle | Q::Disabled, disabledColor );
 
+    for( const auto state : { Q::Focused, Q::Pressed } )
+    {
+        setStrutSize( Q::LabelContainer | state, 48_dp, 44_dp,
+            { QskStateCombination::CombinationNoState, Q::Hovered } );
+    }
+
+    setBoxShape( Q::LabelContainer, 100, Qt::RelativeSize );
+    setGradient( Q::LabelContainer, m_pal.inverseSurface );
+    setMargin( Q::LabelContainer | A::Horizontal, { 0, 0, 0, 4_dp } );
+    setMargin( Q::LabelContainer | A::Vertical, { 4_dp, 0, 0, 0 } );
+
+    setFontRole( Q::LabelText, LabelMedium );
+    setColor( Q::LabelText, m_pal.inverseOnSurface );
+    setAlignment( Q::LabelText, Qt::AlignCenter );
+
     // move the handle smoothly when using keys
     setAnimation( Q::Handle | A::Metric | A::Position, 2 * qskDuration );
     setAnimation( Q::Handle | A::Metric | A::Position | Q::Pressed, 0 );
@@ -1471,7 +1486,7 @@ static inline QFont createFont( int size, int lineHeight,
         }
         checkFont = false;
     }
-    
+
     font.setPixelSize( pixelSize );
 
     if ( spacing > 0.0 )
