@@ -865,14 +865,37 @@ void Editor::setupSlider()
     setBoxBorderMetrics( Q::Handle, 0 );
 
     const QSizeF handleSize( 4_dp, 44_dp );
+    const QSizeF handleSizeFocusedPressed( 2_dp, 44_dp );
     setStrutSize( Q::Handle | A::Horizontal, handleSize );
+    setStrutSize( Q::Handle | A::Horizontal, handleSizeFocusedPressed,
+        { QskStateCombination::Combination, Q::Focused | Q::Pressed } );
+
     setStrutSize( Q::Handle | A::Vertical, handleSize.transposed() );
+    setStrutSize( Q::Handle | A::Vertical, handleSizeFocusedPressed.transposed(),
+        { QskStateCombination::Combination, Q::Focused | Q::Pressed } );
 
     setGradient( Q::Handle, m_pal.primary );
     setGradient( Q::Handle | Q::Pressed, m_pal.primary );
 
     const auto disabledColor = flattenedColor( m_pal.onSurface, m_pal.background, 0.38 );
     setGradient( Q::Handle | Q::Disabled, disabledColor );
+
+    for( auto indicator : { Q::GrooveStopIndicators, Q::FillStopIndicators } )
+    {
+        setStrutSize( indicator, { 4_dp, 4_dp } );
+        setBoxShape( indicator, 100, Qt::RelativeSize );
+    }
+
+    const auto p = 6_dp;
+    setPadding( Q::GrooveStopIndicators | A::Horizontal, { p, 0, p, 0 } );
+    setPadding( Q::GrooveStopIndicators | A::Vertical, { 0, p, 0, p } );
+    setPadding( Q::FillStopIndicators | A::Horizontal, { p, 0, p, 0 } );
+    setPadding( Q::FillStopIndicators | A::Vertical, { 0, p, 0, p } );
+
+    setGradient( Q::GrooveStopIndicators, m_pal.primary );
+    setGradient( Q::GrooveStopIndicators | Q::Disabled, m_pal.onSurface );
+    setGradient( Q::FillStopIndicators, m_pal.secondaryContainer );
+    setGradient( Q::FillStopIndicators | Q::Disabled, m_pal.inverseOnSurface );
 
     for( const auto state : { Q::Focused, Q::Pressed } )
     {
