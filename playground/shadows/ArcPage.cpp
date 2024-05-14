@@ -87,16 +87,18 @@ ArcPage::ArcPage( QQuickItem* parent )
         arc->setSpanAngle( 270.0 );
         arc->setThickness( 10.0 );
 
-        arc->setFillColor( Qt::darkRed );
+        arc->setFillColor( Qt::yellow );
 
-        arc->setBorderWidth( 0 );
-        arc->setBorderColor( Qt::darkYellow );
+        arc->setBorderWidth( 2.0 );
+        arc->setBorderColor( Qt::darkBlue );
 
+#if 0
         arc->setShadowColor( Qt::black );
         arc->setSpreadRadius( 0.0 );
         arc->setBlurRadius( 4.0 );
         arc->setOffsetX( 2.0 );
         arc->setOffsetY( 2.0 );
+#endif
     }
 
     auto panel = new ControlPanel( arc );

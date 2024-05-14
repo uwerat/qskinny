@@ -6,6 +6,7 @@
 #include "QskArcNode.h"
 #include "QskArcMetrics.h"
 #include "QskArcShadowNode.h"
+#include "QskArcRenderNode.h"
 #include "QskMargins.h"
 #include "QskGradient.h"
 #include "QskShapeNode.h"
@@ -13,8 +14,17 @@
 #include "QskSGNode.h"
 #include "QskShadowMetrics.h"
 
-#include <qpen.h>
 #include <qpainterpath.h>
+
+#define ARC_RENDERER
+
+#ifdef ARC_RENDERER
+    using BorderNode = QskArcRenderNode;
+#else
+    #include <qpen.h>
+    using BorderNode = QskStrokeNode;
+#endif
+
 
 namespace
 {
@@ -107,7 +117,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     auto fillNode = static_cast< QskShapeNode* >(
         QskSGNode::findChildNode( this, FillRole ) );
 
-    auto borderNode = static_cast< QskStrokeNode* >(
+    auto borderNode = static_cast< BorderNode* >(
         QskSGNode::findChildNode( this, BorderRole ) );
 
     const auto arcRect = qskEffectiveRect( rect, borderWidth );
@@ -173,14 +183,19 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     {
         if ( borderNode == nullptr )
         {
-            borderNode = new QskStrokeNode;
+            borderNode = new BorderNode;
             QskSGNode::setNodeRole( borderNode, BorderRole );
         }
 
+#ifdef ARC_RENDERER
+        borderNode->updateNode( arcRect, metricsArc, borderWidth,
+            borderColor, gradient );
+#else
         QPen pen( borderColor, borderWidth );
         pen.setCapStyle( Qt::FlatCap );
 
         borderNode->updateNode( path, QTransform(), pen );
+#endif
     }
     else
     {
@@ -188,7 +203,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
         borderNode = nullptr;
     }
 
-    qskUpdateChildren(this, ShadowRole, shadowNode);
-    qskUpdateChildren(this, FillRole, fillNode);
-    qskUpdateChildren(this, BorderRole, borderNode);
+    qskUpdateChildren( this, ShadowRole, shadowNode );
+    qskUpdateChildren( this, FillRole, fillNode );
+    qskUpdateChildren( this, BorderRole, borderNode );
 }
