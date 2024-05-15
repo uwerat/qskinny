@@ -87,7 +87,7 @@ ArcPage::ArcPage( QQuickItem* parent )
         arc->setSpanAngle( 270.0 );
         arc->setThickness( 10.0 );
 
-        arc->setFillColor( Qt::yellow );
+        arc->setFillColor( Qt::red );
 
         arc->setBorderWidth( 2.0 );
         arc->setBorderColor( Qt::darkBlue );

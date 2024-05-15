@@ -86,8 +86,8 @@ void QskArcRenderNode::updateNode(
     {
         d->hash = hash;
 
-        QskArcRenderer::renderBorderGeometry(
-            rect, metrics, borderWidth, *geometry() );
+        QskArcRenderer::renderBorder(
+            rect, metrics, borderWidth, borderColor, *geometry() );
 
         markDirty( QSGNode::DirtyGeometry );
         markDirty( QSGNode::DirtyMaterial );

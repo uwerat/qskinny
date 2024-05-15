@@ -46,6 +46,9 @@ namespace QskArcRenderer
 
     QSK_EXPORT void renderArc( const QRectF&, const QskArcMetrics&,
         const QskGradient&, QSGGeometry& );
+
+    QSK_EXPORT void renderBorder( const QRectF&, const QskArcMetrics&,
+        qreal borderWidth, const QColor& borderColor, QSGGeometry& );
 }
 
 #endif

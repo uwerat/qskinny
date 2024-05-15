@@ -129,13 +129,14 @@ namespace
         int fillCount() const;
         int borderCount() const;
 
-        int setBorderLines( QskVertex::ColoredLine* ) const;
+        int setBorderLines( QskVertex::ColoredLine*, const QskVertex::Color ) const;
+        int setBorderLines( QskVertex::Line* ) const;
 
       private:
         int arcLineCount() const;
 
         void setArcLines( QskVertex::ColoredLine*, int lineCount,
-            const QPointF&, const qreal width, const qreal height,
+            const QPointF&, const QSizeF&,
             const qreal radians1, const qreal radians2,
             qreal arcWidth, const QskVertex::Color ) const;
 
@@ -179,21 +180,24 @@ namespace
     }
 
     void Stroker::setArcLines( QskVertex::ColoredLine* lines, int lineCount,
-        const QPointF& center, const qreal w, const qreal h,
+        const QPointF& center, const QSizeF& size,
         const qreal radians1, const qreal radians2,
         qreal arcWidth, const QskVertex::Color color ) const
     {
-        const auto w2 = w - arcWidth;
-        const auto h2 = h - arcWidth;
+        const auto w1 = size.width();
+        const auto h1 = size.height();
+
+        const auto w2 = w1 - arcWidth;
+        const auto h2 = h1 - arcWidth;
 
         auto l = lines;
 
         for ( AngleIterator it( radians1, radians2, lineCount - 1 ); !it.isDone(); ++it )
         {
-            const auto x1 = center.x() + w * it.cos();
+            const auto x1 = center.x() + w1 * it.cos();
             const auto x2 = center.x() + w2 * it.cos();
 
-            const auto y1 = center.y() + h * it.sin();
+            const auto y1 = center.y() + h1 * it.sin();
             const auto y2 = center.y() + h2 * it.sin();
 
             l++->setLine( x1, y1, x2, y2, color );
@@ -204,7 +208,13 @@ namespace
         Q_ASSERT( l - lines == lineCount );
     }
 
-    int Stroker::setBorderLines( QskVertex::ColoredLine* lines ) const
+    int Stroker::setBorderLines( QskVertex::Line* ) const
+    {
+        return 0;
+    }
+
+    int Stroker::setBorderLines( QskVertex::ColoredLine* lines,
+        const QskVertex::Color color ) const
     {
         const auto center = m_rect.center();
 
@@ -213,17 +223,36 @@ namespace
 
         const int n = arcLineCount();
 
-        const QskVertex::Color color( QColor( Qt::darkBlue ) );
+        auto size = 0.5 * m_rect.size();
 
-        auto w = 0.5 * m_rect.width();
-        auto h = 0.5 * m_rect.height();
+        setArcLines( lines, n, center, size,
+            radians1, radians2, m_borderWidth, color );
 
-        setArcLines( lines, n, center, w, h, radians1, radians2, m_borderWidth, color );
+        const bool stretched = true;
 
-        w -= m_metrics.thickness() - m_borderWidth;
-        h -= m_metrics.thickness() - m_borderWidth;
+        if ( !stretched )
+        {
+            size.rwidth() -= m_metrics.thickness() - m_borderWidth;
+            size.rheight() -= m_metrics.thickness() - m_borderWidth;
+        }
+        else
+        {
+            qreal tx = m_metrics.thickness();
+            qreal ty = m_metrics.thickness();
 
-        setArcLines( lines + n + 1, n, center, w, h, radians2, radians1, m_borderWidth, color );
+            const qreal ratio = m_rect.width() / m_rect.height();
+
+            if ( ratio >= 1.0 )
+                tx *= ratio;
+            else
+                ty /= ratio;
+
+            size.rwidth() -= tx;
+            size.rheight() -= ty;
+        }
+
+        setArcLines( lines + n + 1, n, center, size,
+            radians2, radians1, m_borderWidth, color );
 
         lines[n] = { lines[n - 1].p2, lines[n + 1].p1 };
 
@@ -240,7 +269,7 @@ void QskArcRenderer::renderBorderGeometry( const QRectF& rect,
 
     const auto lineCount = stroker.borderCount();
 
-    const auto lines = qskAllocateColoredLines( geometry, lineCount );
+    const auto lines = qskAllocateLines( geometry, lineCount );
     if ( lines )
     {
         const auto effectiveCount = stroker.setBorderLines( lines );
@@ -297,4 +326,24 @@ void QskArcRenderer::renderArc( const QRectF& rect, const QskArcMetrics& metrics
     const QskGradient& gradient, QSGGeometry& geometry )
 {
     renderArc( rect, metrics, 0, QColor(), gradient, geometry );
+}
+
+void QskArcRenderer::renderBorder( const QRectF& rect, const QskArcMetrics& metrics,
+    qreal borderWidth, const QColor& borderColor, QSGGeometry& geometry )
+{
+    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+
+    Stroker stroker( rect, metrics, borderWidth );
+
+    const auto lineCount = stroker.borderCount();
+
+    const auto lines = qskAllocateColoredLines( geometry, lineCount );
+    if ( lines )
+    {
+        const auto effectiveCount = stroker.setBorderLines( lines, borderColor );
+        if ( lineCount != effectiveCount )
+        {
+            qWarning() << lineCount << effectiveCount;
+        }
+    }
 }
