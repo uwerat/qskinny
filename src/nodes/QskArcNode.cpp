@@ -120,8 +120,9 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     }
 
     const auto isFillNodeVisible = gradient.isVisible() && !metricsArc.isNull();
-    const auto isStrokeNodeVisible = borderWidth > 0.0 && borderColor.alpha() > 0;
-    const auto isShadowNodeVisible = shadowColor.alpha() > 0.0 && isFillNodeVisible;
+    const auto isStrokeNodeVisible = ( borderWidth > 0.0 ) && ( borderColor.alpha() > 0 );
+    const auto isShadowNodeVisible = isFillNodeVisible &&
+        shadowColor.isValid() && ( shadowColor.alpha() > 0.0 );
 
     const auto path = metricsArc.painterPath( arcRect );
 
@@ -188,7 +189,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
         borderNode = nullptr;
     }
 
-    qskUpdateChildren(this, ShadowRole, shadowNode);
-    qskUpdateChildren(this, FillRole, fillNode);
-    qskUpdateChildren(this, BorderRole, borderNode);
+    qskUpdateChildren( this, ShadowRole, shadowNode );
+    qskUpdateChildren( this, FillRole, fillNode );
+    qskUpdateChildren( this, BorderRole, borderNode );
 }
