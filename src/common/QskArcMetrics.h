@@ -22,15 +22,16 @@ class QSK_EXPORT QskArcMetrics
 
     Q_PROPERTY( qreal thickness READ thickness WRITE setThickness )
     Q_PROPERTY( Qt::SizeMode sizeMode READ sizeMode WRITE setSizeMode )
+    Q_PROPERTY( bool proportional READ isProportional WRITE setProportional )
 
   public:
     constexpr QskArcMetrics() noexcept = default;
 
     constexpr QskArcMetrics( qreal thickness,
-        Qt::SizeMode = Qt::AbsoluteSize ) noexcept;
+        Qt::SizeMode = Qt::AbsoluteSize, bool proportional = false ) noexcept;
 
-    constexpr QskArcMetrics( qreal startAngle, qreal spanAngle,
-        qreal thickness, Qt::SizeMode = Qt::AbsoluteSize ) noexcept;
+    constexpr QskArcMetrics( qreal startAngle, qreal spanAngle, qreal thickness,
+        Qt::SizeMode = Qt::AbsoluteSize, bool proportional = false ) noexcept;
 
     bool operator==( const QskArcMetrics& ) const noexcept;
     bool operator!=( const QskArcMetrics& ) const noexcept;
@@ -51,6 +52,19 @@ class QSK_EXPORT QskArcMetrics
 
     void setThickness( qreal ) noexcept;
     constexpr qreal thickness() const noexcept;
+
+    /*
+        A proportional arc scales the thickness of the arc according to the
+        aspect ratio of the target rectangle. F.e when having a 20x10 rectangle
+        the thickness in west/east direction is doubled, while for a
+        10x20 rectangle the thickness in north/south direction is doubled.
+        This matches the lines that result from a filling with a conic gradient.
+
+        A non proportional arc will have a fixed thickness regardless of
+        the aspect ratio.
+     */
+    void setProportional( bool ) noexcept;
+    constexpr bool isProportional() const noexcept;
 
     void setSizeMode( Qt::SizeMode ) noexcept;
     constexpr Qt::SizeMode sizeMode() const noexcept;
@@ -76,32 +90,35 @@ class QSK_EXPORT QskArcMetrics
     qreal m_spanAngle = 0.0;
 
     qreal m_thickness = 0.0;
-    Qt::SizeMode m_sizeMode = Qt::AbsoluteSize;
+
+    bool m_relativeSize = false;
+    bool m_proportional = false;
 };
 
 inline constexpr QskArcMetrics::QskArcMetrics(
-        qreal thickness, Qt::SizeMode sizeMode ) noexcept
-    : QskArcMetrics( 0.0, 360.0, thickness, sizeMode )
+        qreal thickness, Qt::SizeMode sizeMode, bool proportional ) noexcept
+    : QskArcMetrics( 0.0, 360.0, thickness, sizeMode, proportional )
 {
 }
 
-inline constexpr QskArcMetrics::QskArcMetrics(
-        qreal startAngle, qreal spanAngle,
-        qreal thickness, Qt::SizeMode sizeMode ) noexcept
+inline constexpr QskArcMetrics::QskArcMetrics( qreal startAngle, qreal spanAngle,
+        qreal thickness, Qt::SizeMode sizeMode, bool proportional ) noexcept
     : m_startAngle( startAngle )
     , m_spanAngle( spanAngle )
     , m_thickness( thickness )
-    , m_sizeMode( sizeMode )
+    , m_relativeSize( sizeMode == Qt::RelativeSize )
+    , m_proportional( proportional )
 {
 }
 
 inline bool QskArcMetrics::operator==(
     const QskArcMetrics& other ) const noexcept
 {
-    return ( qskFuzzyCompare( m_thickness, other.m_thickness )
+    return qskFuzzyCompare( m_thickness, other.m_thickness )
         && qskFuzzyCompare( m_startAngle, other.m_startAngle )
         && qskFuzzyCompare( m_spanAngle, other.m_spanAngle )
-        && m_sizeMode == other.m_sizeMode );
+        && ( m_relativeSize == other.m_relativeSize )
+        && ( m_proportional == other.m_proportional );
 }
 
 inline bool QskArcMetrics::operator!=(
@@ -142,7 +159,12 @@ inline constexpr qreal QskArcMetrics::angleAtRatio( qreal ratio ) const noexcept
 
 inline constexpr Qt::SizeMode QskArcMetrics::sizeMode() const noexcept
 {
-    return m_sizeMode;
+    return m_relativeSize ? Qt::RelativeSize : Qt::AbsoluteSize;
+}
+
+inline constexpr bool QskArcMetrics::isProportional() const noexcept
+{
+    return m_proportional;
 }
 
 #ifndef QT_NO_DEBUG_STREAM

@@ -27,7 +27,7 @@ CircularChart::CircularChart( QQuickItem* parentItem )
     setGradientHint( Panel, QskGradient() );
     setBoxBorderMetricsHint( Panel, 0 );
 
-    setArcMetricsHint( Arc, { 90.0, -360.0, 100.0, Qt::RelativeSize } );
+    setArcMetricsHint( Arc, { 90.0, -360.0, 100.0, Qt::RelativeSize, true } );
 
     setGradientHint( Arc, QskRgb::toTransparent( QskRgb::LightGray, 100 ) );
     setColor( Arc | QskAspect::Border, QskRgb::LightGray );

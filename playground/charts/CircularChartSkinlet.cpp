@@ -334,8 +334,7 @@ QSGNode* CircularChartSkinlet::updateSampleNode( const QskSkinnable* skinnable,
     return nullptr;
 }
 
-QSGNode* CircularChartSkinlet::updateArcSegmentNode(
-    const QskSkinnable* skinnable,
+QSGNode* CircularChartSkinlet::updateArcSegmentNode( const QskSkinnable* skinnable,
     QSGNode* node, qreal borderWidth, const QColor& borderColor,
     const QskGradient& gradient, const QskArcMetrics& metrics ) const
 {

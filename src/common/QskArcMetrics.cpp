@@ -48,7 +48,12 @@ void QskArcMetrics::setSpanAngle( qreal spanAngle ) noexcept
 
 void QskArcMetrics::setSizeMode( Qt::SizeMode sizeMode ) noexcept
 {
-    m_sizeMode = sizeMode;
+    m_relativeSize = ( sizeMode == Qt::RelativeSize );
+}
+
+void QskArcMetrics::setProportional( bool on ) noexcept
+{
+    m_proportional = on;
 }
 
 bool QskArcMetrics::isClosed() const
@@ -79,7 +84,7 @@ bool QskArcMetrics::containsAngle( qreal angle ) const
 QskArcMetrics QskArcMetrics::interpolated(
     const QskArcMetrics& to, qreal ratio ) const noexcept
 {
-    if ( ( *this == to ) || ( m_sizeMode != to.m_sizeMode ) )
+    if ( ( *this == to ) || ( m_relativeSize != to.m_relativeSize ) )
         return to;
 
     const qreal thickness = qskInterpolated( m_thickness, to.m_thickness, ratio );
@@ -87,7 +92,7 @@ QskArcMetrics QskArcMetrics::interpolated(
     const qreal s1 = qskInterpolated( m_startAngle, to.m_startAngle, ratio );
     const qreal s2 = qskInterpolated( endAngle(), to.endAngle(), ratio );
 
-    return QskArcMetrics( s1, s2 - s1, thickness, m_sizeMode );
+    return QskArcMetrics( s1, s2 - s1, thickness, sizeMode(), to.isProportional() );
 }
 
 QVariant QskArcMetrics::interpolate(
@@ -110,26 +115,37 @@ QskArcMetrics QskArcMetrics::toAbsolute( qreal radiusX, qreal radiusY ) const no
 
 QskArcMetrics QskArcMetrics::toAbsolute( qreal radius ) const noexcept
 {
-    if ( m_sizeMode != Qt::RelativeSize )
+    if ( !m_relativeSize )
         return *this;
 
     const qreal t = qskEffectiveThickness( radius, m_thickness );
-    return QskArcMetrics( m_startAngle, m_spanAngle, t, Qt::AbsoluteSize );
+    return QskArcMetrics( m_startAngle, m_spanAngle, t,
+        Qt::AbsoluteSize, m_proportional );
 }
 
 QPainterPath QskArcMetrics::painterPath( const QRectF& ellipseRect ) const
 {
-    const auto sz = qMin( ellipseRect.width(), ellipseRect.height() );
-
     qreal t = m_thickness;
-    if ( m_sizeMode == Qt::RelativeSize )
+
+    if ( m_relativeSize )
+    {
+        const auto sz = qMin( ellipseRect.width(), ellipseRect.height() );
         t = qskEffectiveThickness( 0.5 * sz, t );
+    }
 
     if ( t <= 0.0 || qFuzzyIsNull( m_spanAngle ) )
         return QPainterPath();
 
-    const auto tx = t * ellipseRect.width() / sz;
-    const auto ty = t * ellipseRect.height() / sz;
+    auto tx = t;
+    auto ty = t;
+
+    if ( m_proportional )
+    {
+        const auto sz = qMin( ellipseRect.width(), ellipseRect.height() );
+
+        tx *= ellipseRect.width() / sz;
+        ty *= ellipseRect.height() / sz;
+    }
 
     const auto innerRect = ellipseRect.adjusted( tx, ty, -tx, -ty );
 
@@ -211,9 +227,9 @@ QskHashValue QskArcMetrics::hash( QskHashValue seed ) const noexcept
     auto hash = qHash( m_thickness, seed );
     hash = qHash( m_startAngle, hash );
     hash = qHash( m_spanAngle, hash );
+    hash = qHash( m_relativeSize, hash );
 
-    const int mode = m_sizeMode;
-    return qHashBits( &mode, sizeof( mode ), hash );
+    return qHash( m_proportional, hash );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
@@ -226,7 +242,8 @@ QDebug operator<<( QDebug debug, const QskArcMetrics& metrics )
     debug.nospace();
 
     debug << "QskArcMetrics" << '(';
-    debug << metrics.thickness() << ',' << metrics.sizeMode();
+    debug << metrics.thickness() << ',' << metrics.sizeMode() << ','
+        << metrics.isProportional();
     debug << ",[" << metrics.startAngle() << ',' << metrics.spanAngle() << ']';
     debug << ')';
 
