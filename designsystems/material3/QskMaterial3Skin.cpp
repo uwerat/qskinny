@@ -862,6 +862,7 @@ void Editor::setupSlider()
     setGradient( Q::Fill | Q::Disabled, m_pal.onSurface38 );
 
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
+    setPadding(Q::Handle, 20 );
     setBoxBorderMetrics( Q::Handle, 0 );
 
     const QSizeF handleSize( 4_dp, 44_dp );

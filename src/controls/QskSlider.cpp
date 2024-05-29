@@ -121,7 +121,8 @@ QSizeF QskSlider::handleSize() const
 
 QRectF QskSlider::handleRect() const
 {
-    return subControlRect( QskSlider::Handle );
+    const auto padding = paddingHint( Handle);
+    return subControlRect( Handle ).marginsAdded( padding );
 }
 
 void QskSlider::mousePressEvent( QMouseEvent* event )
