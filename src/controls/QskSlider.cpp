@@ -121,7 +121,15 @@ QSizeF QskSlider::handleSize() const
 
 QRectF QskSlider::handleRect() const
 {
-    return subControlRect( QskSlider::Handle );
+    auto rect = subControlRect( Handle );
+
+#if 1 // minimum handle strut size hardcoded here for now
+    const QSizeF strutSize( 60, 60 );
+    const auto w = qMax( ( strutSize.width() - rect.width() ) / 2, 0.0 );
+    const auto h = qMax( ( strutSize.height() - rect.height() ) / 2, 0.0 );
+#endif
+
+    return rect.marginsAdded( { w, h, w, h } );
 }
 
 void QskSlider::mousePressEvent( QMouseEvent* event )
