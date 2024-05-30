@@ -21,6 +21,10 @@ class QSK_EXPORT QskArcRenderNode : public QSGGeometryNode
   public:
     QskArcRenderNode();
 
+    void updateNode( const QRectF&, const QskArcMetrics&, const QskGradient& );
+    void updateNode( const QRectF&, const QskArcMetrics&, qreal borderWidth,
+        const QColor& borderColor );
+
     void updateNode( const QRectF&, const QskArcMetrics&, qreal borderWidth,
         const QColor& borderColor, const QskGradient& );
 

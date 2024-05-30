@@ -16,15 +16,21 @@
 
 #include <qpainterpath.h>
 
-#define ARC_RENDERER
+// #define ARC_BORDER_NODE
+#define ARC_FILL_NODE
 
-#ifdef ARC_RENDERER
+#ifdef ARC_BORDER_NODE
     using BorderNode = QskArcRenderNode;
 #else
     #include <qpen.h>
     using BorderNode = QskStrokeNode;
 #endif
 
+#ifdef ARC_FILL_NODE
+    using FillNode = QskArcRenderNode;
+#else
+    using FillNode = QskShapeNode;
+#endif
 
 namespace
 {
@@ -114,7 +120,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     auto shadowNode = static_cast< QskArcShadowNode* >(
         QskSGNode::findChildNode( this, ShadowRole ) );
 
-    auto fillNode = static_cast< QskShapeNode* >(
+    auto fillNode = static_cast< FillNode* >(
         QskSGNode::findChildNode( this, FillRole ) );
 
     auto borderNode = static_cast< BorderNode* >(
@@ -168,11 +174,15 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     {
         if ( fillNode == nullptr )
         {
-            fillNode = new QskShapeNode;
+            fillNode = new FillNode;
             QskSGNode::setNodeRole( fillNode, FillRole );
         }
 
+#ifdef ARC_FILL_NODE
+        fillNode->updateNode( arcRect, metricsArc, gradient );
+#else
         fillNode->updateNode( path, QTransform(), arcRect, gradient );
+#endif
     }
     else
     {
@@ -188,9 +198,8 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
             QskSGNode::setNodeRole( borderNode, BorderRole );
         }
 
-#ifdef ARC_RENDERER
-        borderNode->updateNode( arcRect, metricsArc, borderWidth,
-            borderColor, gradient );
+#ifdef ARC_BORDER_NODE
+        borderNode->updateNode( arcRect, metricsArc, borderWidth, borderColor );
 #else
         QPen pen( borderColor, borderWidth );
         pen.setCapStyle( Qt::FlatCap );

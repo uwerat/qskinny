@@ -51,11 +51,6 @@ void QskArcMetrics::setSizeMode( Qt::SizeMode sizeMode ) noexcept
     m_relativeSize = ( sizeMode == Qt::RelativeSize );
 }
 
-void QskArcMetrics::setProportional( bool on ) noexcept
-{
-    m_proportional = on;
-}
-
 bool QskArcMetrics::isClosed() const
 {
     return qAbs( m_spanAngle ) >= 360.0;
@@ -92,7 +87,7 @@ QskArcMetrics QskArcMetrics::interpolated(
     const qreal s1 = qskInterpolated( m_startAngle, to.m_startAngle, ratio );
     const qreal s2 = qskInterpolated( endAngle(), to.endAngle(), ratio );
 
-    return QskArcMetrics( s1, s2 - s1, thickness, sizeMode(), to.isProportional() );
+    return QskArcMetrics( s1, s2 - s1, thickness, sizeMode() );
 }
 
 QVariant QskArcMetrics::interpolate(
@@ -119,8 +114,7 @@ QskArcMetrics QskArcMetrics::toAbsolute( qreal radius ) const noexcept
         return *this;
 
     const qreal t = qskEffectiveThickness( radius, m_thickness );
-    return QskArcMetrics( m_startAngle, m_spanAngle, t,
-        Qt::AbsoluteSize, m_proportional );
+    return QskArcMetrics( m_startAngle, m_spanAngle, t, Qt::AbsoluteSize );
 }
 
 QPainterPath QskArcMetrics::painterPath( const QRectF& ellipseRect ) const
@@ -136,18 +130,7 @@ QPainterPath QskArcMetrics::painterPath( const QRectF& ellipseRect ) const
     if ( t <= 0.0 || qFuzzyIsNull( m_spanAngle ) )
         return QPainterPath();
 
-    auto tx = t;
-    auto ty = t;
-
-    if ( m_proportional )
-    {
-        const auto sz = qMin( ellipseRect.width(), ellipseRect.height() );
-
-        tx *= ellipseRect.width() / sz;
-        ty *= ellipseRect.height() / sz;
-    }
-
-    const auto innerRect = ellipseRect.adjusted( tx, ty, -tx, -ty );
+    const auto innerRect = ellipseRect.adjusted( t, t, -t, -t );
 
     QPainterPath path;
 
@@ -168,32 +151,18 @@ QPainterPath QskArcMetrics::painterPath( const QRectF& ellipseRect ) const
     }
     else
     {
-        if ( qAbs( m_spanAngle ) >= 360.0 )
-        {
-            path.addEllipse( ellipseRect );
+        const auto t2 = 0.5 * t;
+        const auto r = ellipseRect.adjusted( t2, t2, -t2, -t2 );
 
-            QPainterPath innerPath;
-            innerPath.addEllipse( innerRect );
-            path -= innerPath;
-        }
-        else
-        {
-            /*
-                We need the end point of the inner arc to add the line that connects
-                the inner/outer arcs. As QPainterPath does not offer such a method
-                we insert a dummy arcMoveTo and grab the calculated position.
-             */
-            path.arcMoveTo( innerRect, m_startAngle + m_spanAngle );
-            const auto pos = path.currentPosition();
+        QPainterPath arcPath;
+        arcPath.arcMoveTo( r, m_startAngle ); // replaces the dummy arcMoveTo above
+        arcPath.arcTo( r, m_startAngle, m_spanAngle );
 
-            path.arcMoveTo( ellipseRect, m_startAngle ); // replaces the dummy arcMoveTo above
-            path.arcTo( ellipseRect, m_startAngle, m_spanAngle );
+        QPainterPathStroker stroker;
+        stroker.setCapStyle( Qt::FlatCap );
+        stroker.setWidth( t );
 
-            path.lineTo( pos );
-            path.arcTo( innerRect, m_startAngle + m_spanAngle, -m_spanAngle );
-
-            path.closeSubpath();
-        }
+        path = stroker.createStroke( arcPath );
     }
 
     return path;
@@ -227,9 +196,8 @@ QskHashValue QskArcMetrics::hash( QskHashValue seed ) const noexcept
     auto hash = qHash( m_thickness, seed );
     hash = qHash( m_startAngle, hash );
     hash = qHash( m_spanAngle, hash );
-    hash = qHash( m_relativeSize, hash );
 
-    return qHash( m_proportional, hash );
+    return qHash( m_relativeSize, hash );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
@@ -242,8 +210,7 @@ QDebug operator<<( QDebug debug, const QskArcMetrics& metrics )
     debug.nospace();
 
     debug << "QskArcMetrics" << '(';
-    debug << metrics.thickness() << ',' << metrics.sizeMode() << ','
-        << metrics.isProportional();
+    debug << metrics.thickness() << ',' << metrics.sizeMode();
     debug << ",[" << metrics.startAngle() << ',' << metrics.spanAngle() << ']';
     debug << ')';
 

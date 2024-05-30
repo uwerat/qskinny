@@ -49,6 +49,18 @@ QskArcRenderNode::QskArcRenderNode()
     setFlag( QSGNode::OwnsMaterial, false );
 }
 
+void QskArcRenderNode::updateNode( const QRectF& rect,
+    const QskArcMetrics& metrics, const QskGradient& gradient )
+{
+    updateNode( rect, metrics, 0.0, QColor(), gradient );
+}
+
+void QskArcRenderNode::updateNode( const QRectF& rect,
+    const QskArcMetrics& metrics, qreal borderWidth, const QColor& borderColor )
+{
+    updateNode( rect, metrics, borderWidth, borderColor, QskGradient() );
+}
+
 void QskArcRenderNode::updateNode(
     const QRectF& rect, const QskArcMetrics& metrics, qreal borderWidth,
     const QColor& borderColor, const QskGradient& gradient )
@@ -86,8 +98,16 @@ void QskArcRenderNode::updateNode(
     {
         d->hash = hash;
 
-        QskArcRenderer::renderBorder(
-            rect, metrics, borderWidth, borderColor, *geometry() );
+        if ( borderWidth > 0.0 )
+        {
+            QskArcRenderer::renderBorder(
+                rect, metrics, borderWidth, borderColor, *geometry() );
+        }
+        else
+        {
+            QskArcRenderer::renderFillGeometry(
+                rect, metrics, *geometry() );
+        }
 
         markDirty( QSGNode::DirtyGeometry );
         markDirty( QSGNode::DirtyMaterial );

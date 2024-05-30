@@ -106,7 +106,7 @@ ShadowedArc::ShadowedArc( QQuickItem* parent )
     setBorderWidth( 0 );
     setBorderColor( Qt::gray );
 
-    setShadowColor( Qt::black );
+    setShadowColor( QColor() );
     setShadowMetrics( { 0, 0, QPointF( 0, 0 ), Qt::AbsoluteSize } );
 }
 
