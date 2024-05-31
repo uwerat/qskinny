@@ -25,6 +25,29 @@ static inline QskVertex::ColoredLine* qskAllocateColoredLines(
     return reinterpret_cast< QskVertex::ColoredLine* >( geometry.vertexData() );
 }
 
+static inline QPointF qskThicknessVector( qreal w, qreal h, qreal cos, qreal sin )
+{
+    // normalized normal vector of the tangent at a specific angle
+
+    if ( qFuzzyIsNull( cos ) )
+        return { cos, sin };
+
+    const qreal m = ( w / h ) * ( sin / cos );
+
+    /*
+        We know: x² + y² = 1.0 and y = m * x;
+
+        => x² + m² * x² = 1.0;
+        => x = 1.0 / sqrt( 1.0 + m² ); 
+     */
+    const qreal t = 1.0 / qSqrt( 1.0 + m * m ); 
+
+    const auto x = ( cos >= 0.0 ) ? t : -t;
+    const auto y = m * x;
+
+    return { x, y };
+}
+
 namespace
 {
     class AngleIterator
@@ -100,7 +123,7 @@ namespace
 
       private:
         int arcLineCount( qreal radians = 2.0 * M_PI ) const;
-        QLineF fillLineAt( qreal x, qreal y, qreal sin, qreal cos ) const;
+        QLineF fillLineAt( qreal w, qreal h, qreal sin, qreal cos ) const;
 
         const QRectF& m_rect;
         const QskArcMetrics& m_metrics;
@@ -204,13 +227,10 @@ namespace
         return l - lines;
     }
 
-    inline qreal sqr( qreal x )
-    {
-        return x * x;
-    }
-
     QLineF Stroker::fillLineAt( qreal w, qreal h, qreal cos, qreal sin ) const
     {
+        const auto off = 0.5 * m_metrics.thickness() * qskThicknessVector( w, h, cos, sin );
+
         const auto x = w * cos;
         const auto y = h * sin;
 
@@ -219,30 +239,11 @@ namespace
             normal vector of the tangent at the ellipse point.
          */
 
-        const auto t = 0.5 * m_metrics.thickness();
+        const auto x1 = x + off.x();
+        const auto y1 = y + off.y();
 
-        if ( qFuzzyIsNull( sin ) )
-        {
-            const qreal dx = cos * t;
-            return QLineF( x + dx, y, x - dx, y );
-        }
-        else if ( qFuzzyIsNull( cos ) )
-        {
-            const qreal dy = sin * t;
-            return QLineF( x, y + dy, x, y - dy );
-        }
-
-        const qreal m = qSqrt( w * w - x * x ) * ( w / h ) / x;
-        const auto dt = t * qSqrt( ( 1.0 / ( 1.0 + m * m ) ) ); 
-
-        const qreal dx = ( x >= 0 ) ? dt : -dt;
-        const qreal dy = m * ( ( y >= 0 ) ? dx : -dx );
-
-        const auto x1 = x + dx;
-        const auto y1 = y + dy;
-
-        const auto x2 = x - dx;
-        const auto y2 = y - dy;
+        const auto x2 = x - off.x();
+        const auto y2 = y - off.y();
 
         return QLineF( x1, y1, x2, y2 );
     }
