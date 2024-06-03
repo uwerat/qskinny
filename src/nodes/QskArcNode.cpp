@@ -97,23 +97,22 @@ QskArcNode::~QskArcNode()
 }
 
 void QskArcNode::setArcData( const QRectF& rect,
-    const QskArcMetrics& arcMetrics, const QskGradient& fillGradient )
+    const QskArcMetrics& arcMetrics, const QskGradient& gradient )
 {
-    setArcData( rect, arcMetrics, 0.0, QColor(), fillGradient, {}, {} );
+    setArcData( rect, arcMetrics, 0.0, QColor(), gradient, {}, {} );
 }
 
 void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics,
-    const qreal borderWidth, const QColor& borderColor, const QskGradient& fillGradient )
+    const qreal borderWidth, const QColor& borderColor, const QskGradient& gradient )
 {
-    setArcData( rect, arcMetrics, borderWidth, borderColor, fillGradient, {}, {} );
+    setArcData( rect, arcMetrics, borderWidth, borderColor, gradient, {}, {} );
 }
 
 void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics,
-    const qreal borderWidth, const QColor& borderColor, const QskGradient& fillGradient,
+    const qreal borderWidth, const QColor& borderColor, const QskGradient& gradient,
     const QColor& shadowColor, const QskShadowMetrics& shadowMetrics )
 {
     const auto metricsArc = qskEffectiveMetrics( arcMetrics, rect );
-    const auto gradient = qskEffectiveGradient( fillGradient, metricsArc );
 
     auto shadowNode = static_cast< QskArcShadowNode* >(
         QskSGNode::findChildNode( this, ShadowRole ) );
@@ -197,7 +196,9 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
                 pathNode = new QskShapeNode;
                 QskSGNode::setNodeRole( pathNode, PathRole );
             }
-            pathNode->updateNode( path, QTransform(), arcRect, gradient );
+
+            pathNode->updateNode( path, QTransform(), arcRect,
+                qskEffectiveGradient( gradient, metricsArc ) );
         }
     }
     else

@@ -106,7 +106,7 @@ void QskArcRenderNode::updateNode(
         else
         {
             QskArcRenderer::renderFillGeometry(
-                rect, metrics, *geometry() );
+                rect, metrics, borderWidth, gradient, *geometry() );
         }
 
         markDirty( QSGNode::DirtyGeometry );

@@ -46,31 +46,6 @@ namespace
 
                 addItem( slider, 1, 1);
             }
-            {
-                auto slider = new Slider( "Spread Radius", -10, 50, 1, arc->spreadRadius() );
-                connect( slider, &Slider::valueChanged, arc, &ShadowedArc::setSpreadRadius );
-
-                addItem( slider, 2, 0 );
-            }
-            {
-                auto slider = new Slider( "Blur Radius", 0, 50, 1, arc->blurRadius() );
-                connect( slider, &Slider::valueChanged, arc, &ShadowedArc::setBlurRadius );
-
-                addItem( slider, 2, 1 );
-            }
-            {
-                auto slider = new Slider( "Offset X", -50, 50, 1, arc->offsetX() );
-                connect( slider, &Slider::valueChanged, arc, &ShadowedArc::setOffsetX );
-
-                addItem( slider, 3, 0 );
-
-            }
-            {
-                auto slider = new Slider( "Offset Y", -50, 50, 1, arc->offsetY() );
-                connect( slider, &Slider::valueChanged, arc, &ShadowedArc::setOffsetY );
-
-                addItem( slider, 3, 1 );
-            }
         }
     };
 }
@@ -87,18 +62,8 @@ ArcPage::ArcPage( QQuickItem* parent )
         arc->setSpanAngle( 270.0 );
         arc->setThickness( 10.0 );
 
-        arc->setFillColor( Qt::red );
-
         arc->setBorderWidth( 2.0 );
         arc->setBorderColor( Qt::darkBlue );
-
-#if 0
-        arc->setShadowColor( Qt::black );
-        arc->setSpreadRadius( 0.0 );
-        arc->setBlurRadius( 4.0 );
-        arc->setOffsetX( 2.0 );
-        arc->setOffsetY( 2.0 );
-#endif
     }
 
     auto panel = new ControlPanel( arc );

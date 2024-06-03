@@ -25,29 +25,6 @@ static inline QskVertex::ColoredLine* qskAllocateColoredLines(
     return reinterpret_cast< QskVertex::ColoredLine* >( geometry.vertexData() );
 }
 
-static inline QPointF qskThicknessVector( qreal w, qreal h, qreal cos, qreal sin )
-{
-    // normalized normal vector of the tangent at a specific angle
-
-    if ( qFuzzyIsNull( cos ) )
-        return { cos, sin };
-
-    const qreal m = ( w / h ) * ( sin / cos );
-
-    /*
-        We know: x² + y² = 1.0 and y = m * x;
-
-        => x² + m² * x² = 1.0;
-        => x = 1.0 / sqrt( 1.0 + m² ); 
-     */
-    const qreal t = 1.0 / qSqrt( 1.0 + m * m ); 
-
-    const auto x = ( cos >= 0.0 ) ? t : -t;
-    const auto y = m * x;
-
-    return { x, y };
-}
-
 namespace
 {
     /*
@@ -115,10 +92,10 @@ namespace
 
 namespace
 {
-    class Stroker
+    class EllipseStroker
     {
       public:
-        Stroker( const QRectF&, const QskArcMetrics& metrics, qreal borderWidth );
+        EllipseStroker( const QRectF&, const QskArcMetrics&, qreal borderWidth );
 
         int fillCount() const;
         int borderCount() const;
@@ -129,35 +106,43 @@ namespace
       private:
         int arcLineCount( qreal radians ) const;
 
-        const QRectF& m_rect;
-        const QskArcMetrics& m_metrics;
-        const qreal m_borderWidth;
+        // radius
+        const qreal m_rx;
+        const qreal m_ry;
+
+        // center
+        const qreal m_cx;
+        const qreal m_cy;
+
+        const qreal m_radians1;
+        const qreal m_radians2;
+        const bool m_inverted;
+
+        const qreal m_extent;
     };
 
-    Stroker::Stroker( const QRectF& rect,
-            const QskArcMetrics& metrics, qreal borderWidth )
-        : m_rect( rect )
-        , m_metrics( metrics )
-        , m_borderWidth( borderWidth )
+    EllipseStroker::EllipseStroker( const QRectF& rect,
+            const QskArcMetrics& m, qreal borderWidth )
+        : m_rx( 0.5 * rect.width() )
+        , m_ry( 0.5 * rect.height() )
+        , m_cx( rect.x() + m_rx )
+        , m_cy( rect.y() + m_ry )
+        , m_radians1( qDegreesToRadians( qMin( m.startAngle(), m.endAngle() ) ) )
+        , m_radians2( qDegreesToRadians( qMax( m.startAngle(), m.endAngle() ) ) )
+        , m_inverted( m.spanAngle() >= 0.0 )
+        , m_extent( 0.5 * ( m.thickness() - borderWidth ) )
     {
-        Q_ASSERT( metrics.sizeMode() == Qt::AbsoluteSize );
     }
 
-    int Stroker::fillCount() const
+    int EllipseStroker::fillCount() const
     {
         int n = 0;
 
-        qreal radians1 = qDegreesToRadians( m_metrics.startAngle() );
-        qreal radians2 = qDegreesToRadians( m_metrics.endAngle() );
-
-        if ( radians2 < radians1 )
-            qSwap( radians1, radians2 );
-
-        for ( auto r = qFloor( radians1 / M_PI_2 ) * M_PI_2;
-            r < radians2; r += M_PI_2 )
+        for ( auto r = qFloor( m_radians1 / M_PI_2 ) * M_PI_2;
+            r < m_radians2; r += M_PI_2 )
         {
-            const auto r1 = qMax( r, radians1 );
-            const auto r2 = qMin( r + M_PI_2, radians2 );
+            const auto r1 = qMax( r, m_radians1 );
+            const auto r2 = qMin( r + M_PI_2, m_radians2 );
 
             n += arcLineCount( r2 - r1 );
         }
@@ -165,27 +150,24 @@ namespace
         return n;
     }
 
-    int Stroker::arcLineCount( qreal radians ) const
+    int EllipseStroker::arcLineCount( qreal radians ) const
     {
         Q_ASSERT( radians >= 0.0 );
 
         // not very sophisticated - TODO ...
 
-        const auto radius = 0.5 * qMax( m_rect.width(), m_rect.height() );
-        
+        const auto radius = qMax( m_rx, m_ry );
+
         const auto count = qCeil( ( radius * radians ) / 3.0 );
         return qBound( 3, count, 40 );
     }
 
-    int Stroker::borderCount() const
+    int EllipseStroker::borderCount() const
     {
-        if ( m_metrics.isNull() )
-            return 0;
-
         return 0;
     }
 
-    int Stroker::setBorderLines( QskVertex::ColoredLine* lines,
+    int EllipseStroker::setBorderLines( QskVertex::ColoredLine* lines,
         const QskVertex::Color color ) const
     {
         Q_UNUSED( lines );
@@ -194,74 +176,64 @@ namespace
         return 0;
     }
 
-    int Stroker::setFillLines( QskVertex::ColoredLine* lines,
+    int EllipseStroker::setFillLines( QskVertex::ColoredLine* lines,
         const QskVertex::Color color ) const
     {
-        qreal radians1 = qDegreesToRadians( m_metrics.startAngle() );
-        qreal radians2 = qDegreesToRadians( m_metrics.endAngle() );
-
-        if ( m_metrics.spanAngle() < 0.0 )
-            std::swap( radians1, radians2 );
-
-        const qreal t = 0.5 * m_metrics.thickness();
-        const qreal w = 0.5 * m_rect.width() - t;
-        const qreal h = 0.5 * m_rect.height() - t;
-
-        const auto center = m_rect.center();
+        const auto w = m_rx - m_extent;
+        const auto h = m_ry - m_extent;
+        const auto aspectRatio = w / h;
 
         auto l = lines;
 
-        for ( auto r = qFloor( radians1 / M_PI_2 ) * M_PI_2;
-            r < radians2; r += M_PI_2 )
+        for ( auto r = qFloor( m_radians1 / M_PI_2 ) * M_PI_2;
+            r < m_radians2; r += M_PI_2 )
         {
-            const auto r1 = qMax( r, radians1 );
-            const auto r2 = qMin( r + M_PI_2, radians2 );
+            const auto r1 = qMax( r, m_radians1 );
+            const auto r2 = qMin( r + M_PI_2, m_radians2 );
 
             const auto lineCount = arcLineCount( r2 - r1 );
 
             for ( AngleIterator it( r1, r2, lineCount ); !it.isDone(); ++it )
             {
-                const auto x = center.x() + w * it.cos();
-                const auto y = center.y() - h * it.sin();
+                qreal dx, dy;
 
                 /*
                     The inner/outer points are found by shifting along the
                     normal vector of the tangent at the ellipse point.
                  */
 
-                const auto v = t * qskThicknessVector( w, h, it.cos(), it.sin() );
-                l++->setLine( x + v.x(), y - v.y(), x - v.x(), y + v.y(), color );
+                if ( qFuzzyIsNull( it.cos() ) )
+                {
+                    dx = 0.0;
+                    dy = ( it.sin() > 0.0 ) ? m_extent : -m_extent;
+                }
+                else
+                {
+                    // expanding orthogonally to the ellipse tangent
+
+                    /*
+                        m = w / h * tan( angle )
+                        y = m * x;
+                        x² + y² = dt 
+
+                        => x = dt / sqrt( 1.0 + m² );
+                     */
+                    const qreal m = aspectRatio * ( it.sin() / it.cos() );
+                    const qreal t = m_extent / qSqrt( 1.0 + m * m );
+
+                    dx = ( it.cos() >= 0.0 ) ? t : -t;
+                    dy = m * dx;
+                }
+
+                const auto x = m_cx + w * it.cos();
+                const auto y = m_cy - h * it.sin();
+
+                l++->setLine( x + dx, y - dy, x - dx, y + dy, color );
             }
         }
 
         return l - lines;
     }
-}
-
-void QskArcRenderer::renderFillGeometry( const QRectF& rect,
-    const QskArcMetrics& metrics, qreal borderWidth, QSGGeometry& geometry )
-{
-    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
-
-    Stroker stroker( rect, metrics, borderWidth );
-
-    const auto lineCount = stroker.fillCount();
-
-    const auto lines = qskAllocateColoredLines( geometry, lineCount );
-    if ( lines )
-    {
-        const auto effectiveCount = stroker.setFillLines( lines, QColor( Qt::darkRed ) );
-        if ( lineCount != effectiveCount )
-        {
-            qWarning() << lineCount << effectiveCount;
-        }
-    }
-}
-
-void QskArcRenderer::renderFillGeometry( const QRectF& rect,
-    const QskArcMetrics& metrics, QSGGeometry& geometry )
-{
-    renderFillGeometry( rect, metrics, 0.0, geometry );
 }
 
 bool QskArcRenderer::isGradientSupported( const QskGradient& gradient )
@@ -272,22 +244,27 @@ bool QskArcRenderer::isGradientSupported( const QskGradient& gradient )
     return true;
 }
 
-void QskArcRenderer::renderArc( const QRectF& rect,
-    const QskArcMetrics& metrics, qreal borderWidth, const QColor& borderColor,
+void QskArcRenderer::renderFillGeometry( const QRectF& rect,
+    const QskArcMetrics& metrics, qreal borderWidth,
     const QskGradient& gradient, QSGGeometry& geometry )
 {
-    Q_UNUSED( rect );
-    Q_UNUSED( metrics );
-    Q_UNUSED( borderWidth );
-    Q_UNUSED( borderColor );
-    Q_UNUSED( gradient );
-    Q_UNUSED( geometry );
-}
+    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
 
-void QskArcRenderer::renderArc( const QRectF& rect, const QskArcMetrics& metrics,
-    const QskGradient& gradient, QSGGeometry& geometry )
-{
-    renderArc( rect, metrics, 0, QColor(), gradient, geometry );
+    EllipseStroker stroker( rect, metrics, borderWidth );
+
+    const auto lineCount = stroker.fillCount();
+
+    const auto lines = qskAllocateColoredLines( geometry, lineCount );
+    if ( lines )
+    {
+        const QskVertex::Color color = gradient.rgbStart();
+
+        const auto effectiveCount = stroker.setFillLines( lines, color );
+        if ( lineCount != effectiveCount )
+        {
+            qWarning() << lineCount << effectiveCount;
+        }
+    }
 }
 
 void QskArcRenderer::renderBorder( const QRectF& rect, const QskArcMetrics& metrics,
@@ -295,7 +272,7 @@ void QskArcRenderer::renderBorder( const QRectF& rect, const QskArcMetrics& metr
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
 
-    Stroker stroker( rect, metrics, borderWidth );
+    EllipseStroker stroker( rect, metrics, borderWidth );
 
     const auto lineCount = stroker.borderCount();
 

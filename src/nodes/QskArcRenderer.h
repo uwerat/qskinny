@@ -31,24 +31,17 @@ namespace QskArcRenderer
     QSK_EXPORT void renderFillGeometry( const QRectF&,
         const QskArcMetrics&, qreal borderWidth, QSGGeometry& );
 
-    QSK_EXPORT void renderFillGeometry( const QRectF&,
-        const QskArcMetrics&, QSGGeometry& );
-
     /*
         Filling the geometry with color information:
             see QSGGeometry::defaultAttributes_ColoredPoint2D()
      */
     QSK_EXPORT bool isGradientSupported( const QskGradient& );
 
-    QSK_EXPORT void renderArc( const QRectF&,
-        const QskArcMetrics&, qreal borderWidth, const QColor& borderColor,
-        const QskGradient&, QSGGeometry& );
-
-    QSK_EXPORT void renderArc( const QRectF&, const QskArcMetrics&,
-        const QskGradient&, QSGGeometry& );
-
     QSK_EXPORT void renderBorder( const QRectF&, const QskArcMetrics&,
         qreal borderWidth, const QColor& borderColor, QSGGeometry& );
+
+    QSK_EXPORT void renderFillGeometry( const QRectF&, const QskArcMetrics&,
+        qreal borderWidth, const QskGradient&, QSGGeometry& );
 }
 
 #endif
