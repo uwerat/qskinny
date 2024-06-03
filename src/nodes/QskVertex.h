@@ -26,7 +26,7 @@ namespace QskVertex
         Color( QRgb ) noexcept;
         Color( const QColor& );
 
-        Color interpolatedTo( Color, double ratio ) const noexcept;
+        Color interpolatedTo( Color, qreal ratio ) const noexcept;
 
         constexpr bool operator==( const Color& ) const noexcept;
         constexpr bool operator!=( const Color& ) const noexcept;
@@ -60,7 +60,7 @@ namespace QskVertex
 
         if ( a < 255 )
         {
-            const double af = a / 255.0;
+            const auto af = a / 255.0;
 
             r *= af;
             g *= af;
@@ -214,15 +214,15 @@ namespace QskVertex
             m_stepIndex = 0;
             m_stepCount = stepCount;
 
-            const double angleStep = M_PI_2 / stepCount;
+            const auto angleStep = M_PI_2 / stepCount;
             m_cosStep = qFastCos( angleStep );
             m_sinStep = qFastSin( angleStep );
         }
 
         inline bool isInverted() const { return m_inverted; }
 
-        inline double cos() const { return m_cos; }
-        inline double sin() const { return m_inverted ? -m_sin : m_sin; }
+        inline qreal cos() const { return m_cos; }
+        inline qreal sin() const { return m_inverted ? -m_sin : m_sin; }
 
         inline int step() const { return m_stepIndex; }
         inline int stepCount() const { return m_stepCount; }
@@ -253,7 +253,7 @@ namespace QskVertex
             }
             else
             {
-                const double cos0 = m_cos;
+                const auto cos0 = m_cos;
 
                 m_cos = m_cos * m_cosStep + m_sin * m_sinStep;
                 m_sin = m_sin * m_cosStep - cos0 * m_sinStep;
@@ -269,9 +269,9 @@ namespace QskVertex
 
         inline void operator++() { increment(); }
 
-        static int segmentHint( double radius )
+        static int segmentHint( qreal radius )
         {
-            const double arcLength = radius * M_PI_2;
+            const auto arcLength = radius * M_PI_2;
             return qBound( 3, qCeil( arcLength / 3.0 ), 18 ); // every 3 pixels
         }
 
@@ -292,12 +292,12 @@ namespace QskVertex
         }
 
       private:
-        double m_cos;
-        double m_sin;
+        qreal m_cos;
+        qreal m_sin;
 
         int m_stepIndex;
-        double m_cosStep;
-        double m_sinStep;
+        qreal m_cosStep;
+        qreal m_sinStep;
 
         int m_stepCount;
         bool m_inverted;
