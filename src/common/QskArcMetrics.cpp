@@ -130,12 +130,17 @@ QPainterPath QskArcMetrics::painterPath( const QRectF& ellipseRect ) const
     if ( t <= 0.0 || qFuzzyIsNull( m_spanAngle ) )
         return QPainterPath();
 
+#if 0
+    /*
+        We do not have a proper solution for situations, where
+        the width leads to overlapping upper/lower or left/right parts. 
+     */
+
     const auto innerRect = ellipseRect.adjusted( t, t, -t, -t );
-
-    QPainterPath path;
-
     if ( innerRect.isEmpty() )
     {
+        QPainterPath path;
+
         if ( qAbs( m_spanAngle ) >= 360.0 )
         {
             path.addEllipse( ellipseRect );
@@ -148,24 +153,23 @@ QPainterPath QskArcMetrics::painterPath( const QRectF& ellipseRect ) const
             path.lineTo( ellipseRect.center() );
             path.closeSubpath();
         }
+
+        return path;
     }
-    else
-    {
-        const auto t2 = 0.5 * t;
-        const auto r = ellipseRect.adjusted( t2, t2, -t2, -t2 );
+#endif
 
-        QPainterPath arcPath;
-        arcPath.arcMoveTo( r, m_startAngle ); // replaces the dummy arcMoveTo above
-        arcPath.arcTo( r, m_startAngle, m_spanAngle );
+    const auto t2 = 0.5 * t;
+    const auto r = ellipseRect.adjusted( t2, t2, -t2, -t2 );
 
-        QPainterPathStroker stroker;
-        stroker.setCapStyle( Qt::FlatCap );
-        stroker.setWidth( t );
+    QPainterPath path;
+    path.arcMoveTo( r, m_startAngle ); // replaces the dummy arcMoveTo above
+    path.arcTo( r, m_startAngle, m_spanAngle );
 
-        path = stroker.createStroke( arcPath );
-    }
+    QPainterPathStroker stroker;
+    stroker.setCapStyle( Qt::FlatCap );
+    stroker.setWidth( t );
 
-    return path;
+    return stroker.createStroke( path );
 }
 
 QRectF QskArcMetrics::boundingRect( const QRectF& ellipseRect ) const

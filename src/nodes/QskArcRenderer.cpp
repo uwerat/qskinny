@@ -264,13 +264,12 @@ void QskArcRenderer::renderFillGeometry( const QRectF& rect,
     renderFillGeometry( rect, metrics, 0.0, geometry );
 }
 
-bool QskArcRenderer::isGradientSupported(
-    const QskArcMetrics& metrics, const QskGradient& gradient )
+bool QskArcRenderer::isGradientSupported( const QskGradient& gradient )
 {
-    if ( metrics.isNull() || !gradient.isVisible() || gradient.isMonochrome() )
-        return true;
+    if ( gradient.isVisible() && !gradient.isMonochrome() )
+        return gradient.type() == QskGradient::Stops;
 
-    return gradient.type() == QskGradient::Stops;
+    return true;
 }
 
 void QskArcRenderer::renderArc( const QRectF& rect,

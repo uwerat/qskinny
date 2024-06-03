@@ -7,6 +7,7 @@
 #include "QskArcMetrics.h"
 #include "QskArcShadowNode.h"
 #include "QskArcRenderNode.h"
+#include "QskArcRenderer.h"
 #include "QskMargins.h"
 #include "QskGradient.h"
 #include "QskShapeNode.h"
@@ -17,7 +18,6 @@
 #include <qpainterpath.h>
 
 // #define ARC_BORDER_NODE
-#define ARC_FILL_NODE
 
 #ifdef ARC_BORDER_NODE
     using BorderNode = QskArcRenderNode;
@@ -26,18 +26,15 @@
     using BorderNode = QskStrokeNode;
 #endif
 
-#ifdef ARC_FILL_NODE
-    using FillNode = QskArcRenderNode;
-#else
-    using FillNode = QskShapeNode;
-#endif
-
 namespace
 {
     enum NodeRole
     {
         ShadowRole,
-        FillRole,
+
+        PathRole,
+        ArcRole,
+
         BorderRole
     };
 }
@@ -84,7 +81,8 @@ static inline QRectF qskEffectiveRect(
 
 static void qskUpdateChildren( QSGNode* parentNode, quint8 role, QSGNode* node )
 {
-    static const QVector< quint8 > roles = { ShadowRole, FillRole, BorderRole };
+    static const QVector< quint8 > roles =
+        { ShadowRole, PathRole, ArcRole, BorderRole };
 
     auto oldNode = QskSGNode::findChildNode( parentNode, role );
     QskSGNode::replaceChildNode( roles, role, parentNode, oldNode, node );
@@ -120,17 +118,21 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     auto shadowNode = static_cast< QskArcShadowNode* >(
         QskSGNode::findChildNode( this, ShadowRole ) );
 
-    auto fillNode = static_cast< FillNode* >(
-        QskSGNode::findChildNode( this, FillRole ) );
+    auto pathNode = static_cast< QskShapeNode* >(
+        QskSGNode::findChildNode( this, PathRole ) );
+
+    auto arcNode = static_cast< QskArcRenderNode* >(
+        QskSGNode::findChildNode( this, ArcRole ) );
 
     auto borderNode = static_cast< BorderNode* >(
         QskSGNode::findChildNode( this, BorderRole ) );
 
     const auto arcRect = qskEffectiveRect( rect, borderWidth );
-    if ( arcRect.isEmpty() )
+    if ( metricsArc.isNull() || arcRect.isEmpty() )
     {
         delete shadowNode;
-        delete fillNode;
+        delete pathNode;
+        delete arcNode;
         delete borderNode;
         return;
     }
@@ -172,22 +174,39 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
 
     if ( isFillNodeVisible )
     {
-        if ( fillNode == nullptr )
+        if ( QskArcRenderer::isGradientSupported( gradient ) )
         {
-            fillNode = new FillNode;
-            QskSGNode::setNodeRole( fillNode, FillRole );
-        }
+            delete pathNode;
+            pathNode = nullptr;
 
-#ifdef ARC_FILL_NODE
-        fillNode->updateNode( arcRect, metricsArc, gradient );
-#else
-        fillNode->updateNode( path, QTransform(), arcRect, gradient );
-#endif
+            if ( arcNode == nullptr )
+            {
+                arcNode = new QskArcRenderNode;
+                QskSGNode::setNodeRole( arcNode, ArcRole );
+            }
+
+            arcNode->updateNode( arcRect, metricsArc, gradient );
+        }
+        else
+        {
+            delete arcNode;
+            arcNode = nullptr;
+
+            if ( pathNode == nullptr )
+            {
+                pathNode = new QskShapeNode;
+                QskSGNode::setNodeRole( pathNode, PathRole );
+            }
+            pathNode->updateNode( path, QTransform(), arcRect, gradient );
+        }
     }
     else
     {
-        delete fillNode;
-        fillNode = nullptr;
+        delete pathNode;
+        pathNode = nullptr;
+
+        delete arcNode;
+        arcNode = nullptr;
     }
 
     if ( isStrokeNodeVisible )
@@ -214,6 +233,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     }
 
     qskUpdateChildren( this, ShadowRole, shadowNode );
-    qskUpdateChildren( this, FillRole, fillNode );
+    qskUpdateChildren( this, PathRole, pathNode );
+    qskUpdateChildren( this, ArcRole, arcNode );
     qskUpdateChildren( this, BorderRole, borderNode );
 }

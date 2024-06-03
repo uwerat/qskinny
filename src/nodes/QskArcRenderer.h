@@ -22,7 +22,7 @@ namespace QskArcRenderer
             see QSGGeometry::defaultAttributes_Point2D()
 
         - clip nodes
-        - using shaders setting the color information
+        - using shaders setting the colors
      */
 
     QSK_EXPORT void renderBorderGeometry( const QRectF&,
@@ -35,10 +35,10 @@ namespace QskArcRenderer
         const QskArcMetrics&, QSGGeometry& );
 
     /*
-        Filling the geometry usually with color information:
+        Filling the geometry with color information:
             see QSGGeometry::defaultAttributes_ColoredPoint2D()
      */
-    QSK_EXPORT bool isGradientSupported( const QskArcMetrics&, const QskGradient& );
+    QSK_EXPORT bool isGradientSupported( const QskGradient& );
 
     QSK_EXPORT void renderArc( const QRectF&,
         const QskArcMetrics&, qreal borderWidth, const QColor& borderColor,
