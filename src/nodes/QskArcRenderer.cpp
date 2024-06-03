@@ -50,6 +50,11 @@ static inline QPointF qskThicknessVector( qreal w, qreal h, qreal cos, qreal sin
 
 namespace
 {
+    /*
+        QskVertex::ArcIterator is slightly more efficient as it increments
+        cos/sin instead of doing the table lookups that are behind qFastCos/qFastSin.
+        For the moment we go with qFastCos/qFastSin, maybe later: TODO ...
+     */
     class AngleIterator
     {
       public:
@@ -122,8 +127,7 @@ namespace
         int setFillLines( QskVertex::ColoredLine*, const QskVertex::Color ) const;
 
       private:
-        int arcLineCount( qreal radians = 2.0 * M_PI ) const;
-        QLineF fillLineAt( qreal w, qreal h, qreal sin, qreal cos ) const;
+        int arcLineCount( qreal radians ) const;
 
         const QRectF& m_rect;
         const QskArcMetrics& m_metrics;
@@ -161,17 +165,16 @@ namespace
         return n;
     }
 
-    int Stroker::arcLineCount( const qreal radians ) const
+    int Stroker::arcLineCount( qreal radians ) const
     {
+        Q_ASSERT( radians >= 0.0 );
+
         // not very sophisticated - TODO ...
 
-        const auto ratio = qAbs( radians ) / ( 2.0 * M_PI );
-
-        int n = ( m_rect.width() + m_rect.height() ) * M_PI_2;
-        n = qBound( 3, n, 80 );
-        n = qCeil( n * ratio  );
-
-        return n;
+        const auto radius = 0.5 * qMax( m_rect.width(), m_rect.height() );
+        
+        const auto count = qCeil( ( radius * radians ) / 3.0 );
+        return qBound( 3, count, 40 );
     }
 
     int Stroker::borderCount() const
@@ -200,8 +203,9 @@ namespace
         if ( m_metrics.spanAngle() < 0.0 )
             std::swap( radians1, radians2 );
 
-        const qreal w = 0.5 * ( m_rect.width() - m_metrics.thickness() );
-        const qreal h = 0.5 * ( m_rect.height() - m_metrics.thickness() );
+        const qreal t = 0.5 * m_metrics.thickness();
+        const qreal w = 0.5 * m_rect.width() - t;
+        const qreal h = 0.5 * m_rect.height() - t;
 
         const auto center = m_rect.center();
 
@@ -217,35 +221,20 @@ namespace
 
             for ( AngleIterator it( r1, r2, lineCount ); !it.isDone(); ++it )
             {
-                const auto line = fillLineAt( w, h, it.cos(), it.sin() );
+                const auto x = center.x() + w * it.cos();
+                const auto y = center.y() - h * it.sin();
 
-                l++->setLine( center.x() + line.x1(), center.y() - line.y1(),
-                    center.x() + line.x2(), center.y() - line.y2(), color );
+                /*
+                    The inner/outer points are found by shifting along the
+                    normal vector of the tangent at the ellipse point.
+                 */
+
+                const auto v = t * qskThicknessVector( w, h, it.cos(), it.sin() );
+                l++->setLine( x + v.x(), y - v.y(), x - v.x(), y + v.y(), color );
             }
         }
 
         return l - lines;
-    }
-
-    QLineF Stroker::fillLineAt( qreal w, qreal h, qreal cos, qreal sin ) const
-    {
-        const auto off = 0.5 * m_metrics.thickness() * qskThicknessVector( w, h, cos, sin );
-
-        const auto x = w * cos;
-        const auto y = h * sin;
-
-        /*
-            The inner/outer points are found by shifting along the
-            normal vector of the tangent at the ellipse point.
-         */
-
-        const auto x1 = x + off.x();
-        const auto y1 = y + off.y();
-
-        const auto x2 = x - off.x();
-        const auto y2 = y - off.y();
-
-        return QLineF( x1, y1, x2, y2 );
     }
 }
 
