@@ -7,6 +7,7 @@
 #include "QskArcMetrics.h"
 #include "QskGradient.h"
 #include "QskVertex.h"
+#include "QskBoxColorMap.h"
 
 #include <qsggeometry.h>
 #include <qdebug.h>
@@ -40,23 +41,25 @@ namespace
         inline void operator++() { increment(); }
         void increment();
 
-        inline double cos() const { return m_cos; }
-        inline double sin() const { return m_sin; }
+        inline qreal cos() const { return m_cos; }
+        inline qreal sin() const { return m_sin; }
 
         inline int step() const { return m_stepIndex; }
         inline int stepCount() const { return m_stepCount; }
         inline bool isDone() const { return m_stepIndex >= m_stepCount; }
 
+        inline qreal progress() const { return qreal( m_stepIndex ) / m_stepCount; }
+
       private:
-        double m_cos;
-        double m_sin;
+        qreal m_cos;
+        qreal m_sin;
 
         int m_stepIndex;
         int m_stepCount;
 
-        const double m_radians1;
-        const double m_radians2;
-        const double m_radiansStep;
+        const qreal m_radians1;
+        const qreal m_radians2;
+        const qreal m_radiansStep;
     };
 
     inline AngleIterator::AngleIterator( qreal radians1, qreal radians2, int stepCount )
@@ -95,16 +98,17 @@ namespace
     class EllipseStroker
     {
       public:
-        EllipseStroker( const QRectF&, const QskArcMetrics&, qreal borderWidth );
+        EllipseStroker( const QRectF&, const QskArcMetrics&,
+            qreal borderWidth, const QskGradient& );
 
         int fillCount() const;
         int borderCount() const;
 
         int setBorderLines( QskVertex::ColoredLine*, const QskVertex::Color ) const;
-        int setFillLines( QskVertex::ColoredLine*, const QskVertex::Color ) const;
+        int setFillLines( QskVertex::ColoredLine* ) const;
 
       private:
-        int arcLineCount( qreal radians ) const;
+        int arcLineCount() const;
 
         // radius
         const qreal m_rx;
@@ -116,50 +120,39 @@ namespace
 
         const qreal m_radians1;
         const qreal m_radians2;
-        const bool m_inverted;
 
         const qreal m_extent;
+
+        const QskGradient& m_gradient;
     };
 
     EllipseStroker::EllipseStroker( const QRectF& rect,
-            const QskArcMetrics& m, qreal borderWidth )
+            const QskArcMetrics& m, qreal borderWidth, const QskGradient& gradient )
         : m_rx( 0.5 * rect.width() )
         , m_ry( 0.5 * rect.height() )
         , m_cx( rect.x() + m_rx )
         , m_cy( rect.y() + m_ry )
-        , m_radians1( qDegreesToRadians( qMin( m.startAngle(), m.endAngle() ) ) )
-        , m_radians2( qDegreesToRadians( qMax( m.startAngle(), m.endAngle() ) ) )
-        , m_inverted( m.spanAngle() >= 0.0 )
+        , m_radians1( qDegreesToRadians( m.startAngle() ) )
+        , m_radians2( qDegreesToRadians( m.endAngle() ) )
         , m_extent( 0.5 * ( m.thickness() - borderWidth ) )
+        , m_gradient( gradient )
     {
     }
 
     int EllipseStroker::fillCount() const
     {
-        int n = 0;
-
-        for ( auto r = qFloor( m_radians1 / M_PI_2 ) * M_PI_2;
-            r < m_radians2; r += M_PI_2 )
-        {
-            const auto r1 = qMax( r, m_radians1 );
-            const auto r2 = qMin( r + M_PI_2, m_radians2 );
-
-            n += arcLineCount( r2 - r1 );
-        }
-
-        return n;
+        return arcLineCount();
     }
 
-    int EllipseStroker::arcLineCount( qreal radians ) const
+    int EllipseStroker::arcLineCount() const
     {
-        Q_ASSERT( radians >= 0.0 );
-
         // not very sophisticated - TODO ...
 
         const auto radius = qMax( m_rx, m_ry );
+        const auto radians = qAbs( m_radians2 - m_radians1 );
 
         const auto count = qCeil( ( radius * radians ) / 3.0 );
-        return qBound( 3, count, 40 );
+        return qBound( 3, count, 160 );
     }
 
     int EllipseStroker::borderCount() const
@@ -176,8 +169,7 @@ namespace
         return 0;
     }
 
-    int EllipseStroker::setFillLines( QskVertex::ColoredLine* lines,
-        const QskVertex::Color color ) const
+    int EllipseStroker::setFillLines( QskVertex::ColoredLine* lines ) const
     {
         const auto w = m_rx - m_extent;
         const auto h = m_ry - m_extent;
@@ -185,51 +177,51 @@ namespace
 
         auto l = lines;
 
-        for ( auto r = qFloor( m_radians1 / M_PI_2 ) * M_PI_2;
-            r < m_radians2; r += M_PI_2 )
+        const QskVertex::Color color1 = m_gradient.rgbStart();
+        const QskVertex::Color color2 = m_gradient.rgbEnd();
+
+        for ( AngleIterator it( m_radians1, m_radians2, arcLineCount() ); !it.isDone(); ++it )
         {
-            const auto r1 = qMax( r, m_radians1 );
-            const auto r2 = qMin( r + M_PI_2, m_radians2 );
+            /*
+                The inner/outer points are found by shifting orthogonally along the
+                ellipse tangent:
 
-            const auto lineCount = arcLineCount( r2 - r1 );
+                    m = w / h * tan( angle )
+                    y = m * x;
+                    x² + y² = dt 
 
-            for ( AngleIterator it( r1, r2, lineCount ); !it.isDone(); ++it )
+                    => x = dt / sqrt( 1.0 + m² );
+
+                Note: the angle of the orthogonal vector could
+                      also be found ( first quadrant ) by:
+
+                    atan2( tan( angle ), h / w );
+             */
+
+            qreal dx, dy;
+
+            if ( qFuzzyIsNull( it.cos() ) )
             {
-                qreal dx, dy;
-
-                /*
-                    The inner/outer points are found by shifting along the
-                    normal vector of the tangent at the ellipse point.
-                 */
-
-                if ( qFuzzyIsNull( it.cos() ) )
-                {
-                    dx = 0.0;
-                    dy = ( it.sin() > 0.0 ) ? m_extent : -m_extent;
-                }
-                else
-                {
-                    // expanding orthogonally to the ellipse tangent
-
-                    /*
-                        m = w / h * tan( angle )
-                        y = m * x;
-                        x² + y² = dt 
-
-                        => x = dt / sqrt( 1.0 + m² );
-                     */
-                    const qreal m = aspectRatio * ( it.sin() / it.cos() );
-                    const qreal t = m_extent / qSqrt( 1.0 + m * m );
-
-                    dx = ( it.cos() >= 0.0 ) ? t : -t;
-                    dy = m * dx;
-                }
-
-                const auto x = m_cx + w * it.cos();
-                const auto y = m_cy - h * it.sin();
-
-                l++->setLine( x + dx, y - dy, x - dx, y + dy, color );
+                dx = 0.0;
+                dy = ( it.sin() > 0.0 ) ? m_extent : -m_extent;
             }
+            else
+            {
+                const qreal m = aspectRatio * ( it.sin() / it.cos() );
+                const qreal t = m_extent / qSqrt( 1.0 + m * m );
+
+                dx = ( it.cos() >= 0.0 ) ? t : -t;
+                dy = m * dx;
+            }
+
+            const auto x = m_cx + w * it.cos();
+            const auto y = m_cy - h * it.sin();
+
+            auto color = color1;
+            if ( color1 != color2 )
+                color = color.interpolatedTo( color2, it.progress() );
+
+            l++->setLine( x + dx, y - dy, x - dx, y + dy, color );
         }
 
         return l - lines;
@@ -250,16 +242,14 @@ void QskArcRenderer::renderFillGeometry( const QRectF& rect,
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
 
-    EllipseStroker stroker( rect, metrics, borderWidth );
+    EllipseStroker stroker( rect, metrics, borderWidth, gradient );
 
     const auto lineCount = stroker.fillCount();
 
     const auto lines = qskAllocateColoredLines( geometry, lineCount );
     if ( lines )
     {
-        const QskVertex::Color color = gradient.rgbStart();
-
-        const auto effectiveCount = stroker.setFillLines( lines, color );
+        const auto effectiveCount = stroker.setFillLines( lines );
         if ( lineCount != effectiveCount )
         {
             qWarning() << lineCount << effectiveCount;
@@ -272,7 +262,7 @@ void QskArcRenderer::renderBorder( const QRectF& rect, const QskArcMetrics& metr
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
 
-    EllipseStroker stroker( rect, metrics, borderWidth );
+    EllipseStroker stroker( rect, metrics, borderWidth, QskGradient() );
 
     const auto lineCount = stroker.borderCount();
 
