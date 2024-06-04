@@ -103,8 +103,15 @@ ShadowedArc::ShadowedArc( QQuickItem* parent )
 
     //setFillColor( Qt::darkRed );
 
-    const QskGradient gradient( Qt::darkRed, Qt::darkYellow );
-    setGradientHint( Arc, gradient );
+    const QskGradientStops stops =
+    {
+        { 0.1, Qt::darkRed  },
+        { 0.5, Qt::darkYellow },
+        { 0.75, Qt::darkBlue },
+        { 1.0, Qt::darkRed }
+    };
+
+    setGradientHint( Arc, stops );
 
     setBorderWidth( 0 );
     setBorderColor( Qt::gray );

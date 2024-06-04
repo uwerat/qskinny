@@ -28,73 +28,6 @@ static inline QskVertex::ColoredLine* qskAllocateColoredLines(
 
 namespace
 {
-    /*
-        QskVertex::ArcIterator is slightly more efficient as it increments
-        cos/sin instead of doing the table lookups that are behind qFastCos/qFastSin.
-        For the moment we go with qFastCos/qFastSin, maybe later: TODO ...
-     */
-    class AngleIterator
-    {
-      public:
-        AngleIterator( qreal radians1, qreal radians2, int stepCount );
-
-        inline void operator++() { increment(); }
-        void increment();
-
-        inline qreal cos() const { return m_cos; }
-        inline qreal sin() const { return m_sin; }
-
-        inline int step() const { return m_stepIndex; }
-        inline int stepCount() const { return m_stepCount; }
-        inline bool isDone() const { return m_stepIndex >= m_stepCount; }
-
-        inline qreal progress() const { return qreal( m_stepIndex ) / m_stepCount; }
-
-      private:
-        qreal m_cos;
-        qreal m_sin;
-
-        int m_stepIndex;
-        int m_stepCount;
-
-        const qreal m_radians1;
-        const qreal m_radians2;
-        const qreal m_radiansStep;
-    };
-
-    inline AngleIterator::AngleIterator( qreal radians1, qreal radians2, int stepCount )
-        : m_stepIndex( 0 )
-        , m_stepCount( stepCount )
-        , m_radians1( radians1 )
-        , m_radians2( radians2 )
-        , m_radiansStep( ( radians2 - radians1 ) / ( stepCount - 1 ) )
-    {
-        m_cos = qFastCos( radians1 );
-        m_sin = qFastSin( radians1 );
-    }
-
-    inline void AngleIterator::increment()
-    {
-        if ( ++m_stepIndex >= m_stepCount )
-        {
-            if ( m_stepIndex == m_stepCount )
-            {
-                m_cos = qFastCos( m_radians2 );
-                m_sin = qFastSin( m_radians2 );
-            }
-        }
-        else
-        {
-            const auto radians = m_radians1 + m_stepIndex * m_radiansStep;
-
-            m_cos = qFastCos( radians );
-            m_sin = qFastSin( radians );
-        }
-    }
-}
-
-namespace
-{
     class EllipseStroker
     {
       public:
@@ -109,6 +42,12 @@ namespace
 
       private:
         int arcLineCount() const;
+        qreal radiansAt( qreal progress ) const;
+
+        void setFillLine( const qreal radians,
+            const QskVertex::Color, QskVertex::ColoredLine& ) const;
+
+        const qreal m_extent;
 
         // radius
         const qreal m_rx;
@@ -121,34 +60,33 @@ namespace
         const qreal m_radians1;
         const qreal m_radians2;
 
-        const qreal m_extent;
 
         const QskGradient& m_gradient;
     };
 
     EllipseStroker::EllipseStroker( const QRectF& rect,
             const QskArcMetrics& m, qreal borderWidth, const QskGradient& gradient )
-        : m_rx( 0.5 * rect.width() )
-        , m_ry( 0.5 * rect.height() )
-        , m_cx( rect.x() + m_rx )
-        , m_cy( rect.y() + m_ry )
+        : m_extent( 0.5 * ( m.thickness() - borderWidth ) )
+        , m_rx( 0.5 * rect.width() - m_extent )
+        , m_ry( 0.5 * rect.height() - m_extent )
+        , m_cx( rect.center().x() )
+        , m_cy( rect.center().y() )
         , m_radians1( qDegreesToRadians( m.startAngle() ) )
         , m_radians2( qDegreesToRadians( m.endAngle() ) )
-        , m_extent( 0.5 * ( m.thickness() - borderWidth ) )
         , m_gradient( gradient )
     {
     }
 
     int EllipseStroker::fillCount() const
     {
-        return arcLineCount();
+        return arcLineCount() + m_gradient.stepCount() - 1;
     }
 
     int EllipseStroker::arcLineCount() const
     {
         // not very sophisticated - TODO ...
 
-        const auto radius = qMax( m_rx, m_ry );
+        const auto radius = qMax( m_rx, m_ry ) + m_extent; // outer border
         const auto radians = qAbs( m_radians2 - m_radians1 );
 
         const auto count = qCeil( ( radius * radians ) / 3.0 );
@@ -169,62 +107,85 @@ namespace
         return 0;
     }
 
+    inline void EllipseStroker::setFillLine( const qreal radians,
+        const QskVertex::Color color, QskVertex::ColoredLine& line  ) const
+    {
+        const auto cos = qFastCos( radians );
+        const auto sin = qFastSin( radians );
+
+        /*
+            The inner/outer points are found by shifting orthogonally along the
+            ellipse tangent:
+
+                m = w / h * tan( angle )
+                y = m * x;
+                x² + y² = dt
+
+                => x = dt / sqrt( 1.0 + m² );
+
+            Note: the angle of the orthogonal vector could
+                  also be found ( first quadrant ) by:
+
+                atan2( tan( angle ), h / w );
+         */
+
+        qreal dx, dy;
+
+        if ( qFuzzyIsNull( cos ) )
+        {
+            dx = 0.0;
+            dy = ( sin > 0.0 ) ? m_extent : -m_extent;
+        }
+        else
+        {
+            const qreal m = ( m_rx / m_ry ) * ( sin / cos );
+            const qreal t = m_extent / qSqrt( 1.0 + m * m );
+
+            dx = ( cos >= 0.0 ) ? t : -t;
+            dy = m * dx;
+        }
+
+        const auto x = m_cx + m_rx * cos;
+        const auto y = m_cy - m_ry * sin;
+
+        line.setLine( x + dx, y - dy, x - dx, y + dy, color );
+    }
+
     int EllipseStroker::setFillLines( QskVertex::ColoredLine* lines ) const
     {
-        const auto w = m_rx - m_extent;
-        const auto h = m_ry - m_extent;
-        const auto aspectRatio = w / h;
-
         auto l = lines;
 
-        const QskVertex::Color color1 = m_gradient.rgbStart();
-        const QskVertex::Color color2 = m_gradient.rgbEnd();
-
-        for ( AngleIterator it( m_radians1, m_radians2, arcLineCount() ); !it.isDone(); ++it )
+        QskBoxRenderer::GradientIterator it;
+        if ( m_gradient.stepCount() <= 1 )
         {
-            /*
-                The inner/outer points are found by shifting orthogonally along the
-                ellipse tangent:
+            it.reset( m_gradient.rgbStart(), m_gradient.rgbEnd() );
+        }
+        else
+        {
+            it.reset( m_gradient.stops() );
+            it.advance(); // the first stop is always covered by the contour
+        }
 
-                    m = w / h * tan( angle )
-                    y = m * x;
-                    x² + y² = dt 
+        const auto stepCount = arcLineCount();
+        const auto stepSize = ( m_radians2 - m_radians1 ) / ( stepCount - 1 );
 
-                    => x = dt / sqrt( 1.0 + m² );
+        for ( int i = 0; i < stepCount; i++ )
+        {
+            const auto progress = qreal( i ) / stepCount;
 
-                Note: the angle of the orthogonal vector could
-                      also be found ( first quadrant ) by:
+            for ( ; it.position() < progress; it.advance() )
+                setFillLine( radiansAt( it.position() ), it.color(), *l++ );
 
-                    atan2( tan( angle ), h / w );
-             */
-
-            qreal dx, dy;
-
-            if ( qFuzzyIsNull( it.cos() ) )
-            {
-                dx = 0.0;
-                dy = ( it.sin() > 0.0 ) ? m_extent : -m_extent;
-            }
-            else
-            {
-                const qreal m = aspectRatio * ( it.sin() / it.cos() );
-                const qreal t = m_extent / qSqrt( 1.0 + m * m );
-
-                dx = ( it.cos() >= 0.0 ) ? t : -t;
-                dy = m * dx;
-            }
-
-            const auto x = m_cx + w * it.cos();
-            const auto y = m_cy - h * it.sin();
-
-            auto color = color1;
-            if ( color1 != color2 )
-                color = color.interpolatedTo( color2, it.progress() );
-
-            l++->setLine( x + dx, y - dy, x - dx, y + dy, color );
+            const auto color = it.colorAt( progress );
+            setFillLine( m_radians1 + i * stepSize, color, *l++ );
         }
 
         return l - lines;
+    }
+
+    inline qreal EllipseStroker::radiansAt( qreal progress ) const
+    {
+        return m_radians1 + progress * ( m_radians2 - m_radians1 );
     }
 }
 
@@ -250,9 +211,21 @@ void QskArcRenderer::renderFillGeometry( const QRectF& rect,
     if ( lines )
     {
         const auto effectiveCount = stroker.setFillLines( lines );
-        if ( lineCount != effectiveCount )
+        if ( effectiveCount > lineCount )
         {
-            qWarning() << lineCount << effectiveCount;
+            qFatal( "geometry: allocated memory exceeded: %d vs. %d",
+                effectiveCount, lineCount );
+        }
+
+        if ( effectiveCount < lineCount )
+        {
+            /*
+                Gradient or contour lines might be at the same position
+                and we end up with less lines, than expected.
+             */
+
+            for ( int i = effectiveCount; i < lineCount; i++ )
+                lines[i] = lines[i - 1];
         }
     }
 }
