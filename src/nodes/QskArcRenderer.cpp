@@ -166,15 +166,20 @@ namespace
             it.advance(); // the first stop is always covered by the contour
         }
 
-        const auto stepCount = arcLineCount();
-        const auto stepSize = ( m_radians2 - m_radians1 ) / ( stepCount - 1 );
+        const auto count = arcLineCount();
 
-        for ( int i = 0; i < stepCount; i++ )
+        const qreal stepMax = count - 1;
+        const auto stepSize = ( m_radians2 - m_radians1 ) / stepMax;
+
+        for ( int i = 0; i < count; i++ )
         {
-            const auto progress = qreal( i ) / stepCount;
+            const auto progress = i / stepMax;
 
-            for ( ; it.position() < progress; it.advance() )
+            while( !it.isDone() && ( it.position() < progress ) )
+            {
                 setFillLine( radiansAt( it.position() ), it.color(), *l++ );
+                it.advance();
+            }
 
             const auto color = it.colorAt( progress );
             setFillLine( m_radians1 + i * stepSize, color, *l++ );

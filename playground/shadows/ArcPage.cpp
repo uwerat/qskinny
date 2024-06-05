@@ -48,23 +48,49 @@ namespace
             }
         }
     };
+
+    class Arc : public ShadowedArc
+    {
+      public:
+        Arc()
+        {
+            setStartAngle( 45.0 );
+            setSpanAngle( 270.0 );
+            setThickness( 10.0 );
+
+            setBorderWidth( 2.0 );
+            setBorderColor( Qt::black );
+
+#if 0
+            const QskGradientStops stops =
+            {
+                { 0.1, Qt::darkRed  },
+                { 0.1, Qt::darkYellow },
+                { 0.5, Qt::darkYellow },
+                { 0.5, Qt::darkBlue },
+                { 0.75, Qt::darkBlue },
+                { 0.75, Qt::darkRed }
+            };
+#else
+            const QskGradientStops stops =
+            {
+                { 0.1, Qt::darkRed  },
+                { 0.5, Qt::darkYellow },
+                { 0.75, Qt::darkBlue },
+                { 1.0, Qt::darkRed }
+            };
+#endif
+
+            setFillGradient( stops );
+        }
+    };
 }
 
 ArcPage::ArcPage( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
 {
-    auto arc = new ShadowedArc();
+    auto arc = new Arc();
     arc->setMargins( 40 ); // some extra space for testing the offsets
-
-    {
-        // initial settings
-        arc->setStartAngle( 45.0 );
-        arc->setSpanAngle( 270.0 );
-        arc->setThickness( 10.0 );
-
-        arc->setBorderWidth( 2.0 );
-        arc->setBorderColor( Qt::darkBlue );
-    }
 
     auto panel = new ControlPanel( arc );
     panel->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
