@@ -58,6 +58,7 @@ class QSK_EXPORT QskArcMetrics
     QskArcMetrics interpolated( const QskArcMetrics&,
         qreal value ) const noexcept;
 
+    QskArcMetrics toAbsolute( const QSizeF& ) const noexcept;
     QskArcMetrics toAbsolute( qreal radiusX, qreal radiusY ) const noexcept;
     QskArcMetrics toAbsolute( qreal radius ) const noexcept;
 
@@ -76,7 +77,8 @@ class QSK_EXPORT QskArcMetrics
     qreal m_spanAngle = 0.0;
 
     qreal m_thickness = 0.0;
-    Qt::SizeMode m_sizeMode = Qt::AbsoluteSize;
+
+    bool m_relativeSize = false;
 };
 
 inline constexpr QskArcMetrics::QskArcMetrics(
@@ -85,23 +87,22 @@ inline constexpr QskArcMetrics::QskArcMetrics(
 {
 }
 
-inline constexpr QskArcMetrics::QskArcMetrics(
-        qreal startAngle, qreal spanAngle,
+inline constexpr QskArcMetrics::QskArcMetrics( qreal startAngle, qreal spanAngle,
         qreal thickness, Qt::SizeMode sizeMode ) noexcept
     : m_startAngle( startAngle )
     , m_spanAngle( spanAngle )
     , m_thickness( thickness )
-    , m_sizeMode( sizeMode )
+    , m_relativeSize( sizeMode == Qt::RelativeSize )
 {
 }
 
 inline bool QskArcMetrics::operator==(
     const QskArcMetrics& other ) const noexcept
 {
-    return ( qskFuzzyCompare( m_thickness, other.m_thickness )
+    return qskFuzzyCompare( m_thickness, other.m_thickness )
         && qskFuzzyCompare( m_startAngle, other.m_startAngle )
         && qskFuzzyCompare( m_spanAngle, other.m_spanAngle )
-        && m_sizeMode == other.m_sizeMode );
+        && ( m_relativeSize == other.m_relativeSize );
 }
 
 inline bool QskArcMetrics::operator!=(
@@ -142,7 +143,7 @@ inline constexpr qreal QskArcMetrics::angleAtRatio( qreal ratio ) const noexcept
 
 inline constexpr Qt::SizeMode QskArcMetrics::sizeMode() const noexcept
 {
-    return m_sizeMode;
+    return m_relativeSize ? Qt::RelativeSize : Qt::AbsoluteSize;
 }
 
 #ifndef QT_NO_DEBUG_STREAM
