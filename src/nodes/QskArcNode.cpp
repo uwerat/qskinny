@@ -56,20 +56,6 @@ static inline QskGradient qskEffectiveGradient(
     return gradient;
 }
 
-static inline QskArcMetrics qskEffectiveMetrics(
-    const QskArcMetrics& metrics, const QRectF& rect )
-{
-    if ( metrics.sizeMode() == Qt::RelativeSize )
-    {
-        const auto rx = 0.5 * rect.width();
-        const auto ry = 0.5 * rect.height();
-
-        return metrics.toAbsolute( rx, ry );
-    }
-
-    return metrics;
-}
-
 static inline QRectF qskEffectiveRect(
     const QRectF& rect, const qreal borderWidth )
 {
@@ -112,7 +98,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     const qreal borderWidth, const QColor& borderColor, const QskGradient& gradient,
     const QColor& shadowColor, const QskShadowMetrics& shadowMetrics )
 {
-    const auto metricsArc = qskEffectiveMetrics( arcMetrics, rect );
+    const auto metricsArc = arcMetrics.toAbsolute( rect.size() );
 
     auto shadowNode = static_cast< QskArcShadowNode* >(
         QskSGNode::findChildNode( this, ShadowRole ) );
@@ -136,7 +122,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
         return;
     }
 
-    const auto isFillNodeVisible = gradient.isVisible() && !metricsArc.isNull();
+    const auto isFillNodeVisible = gradient.isVisible();
     const auto isStrokeNodeVisible = ( borderWidth > 0.0 ) && ( borderColor.alpha() > 0 );
     const auto isShadowNodeVisible = isFillNodeVisible &&
         shadowColor.isValid() && ( shadowColor.alpha() > 0.0 );
@@ -184,7 +170,8 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
                 QskSGNode::setNodeRole( arcNode, ArcRole );
             }
 
-            arcNode->updateNode( arcRect, metricsArc, gradient );
+            arcNode->updateNode( arcRect, metricsArc, false,
+                borderWidth, QColor(), gradient );
         }
         else
         {

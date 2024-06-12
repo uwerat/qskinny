@@ -58,10 +58,26 @@ class QSK_EXPORT QskArcMetrics
     QskArcMetrics interpolated( const QskArcMetrics&,
         qreal value ) const noexcept;
 
+    QskArcMetrics toAbsolute( const QSizeF& ) const noexcept;
     QskArcMetrics toAbsolute( qreal radiusX, qreal radiusY ) const noexcept;
     QskArcMetrics toAbsolute( qreal radius ) const noexcept;
 
-    QPainterPath painterPath( const QRectF& ellipseRect ) const;
+    /*
+        The arc is interpolated by pairs of points, where one point is on
+        the outer and the other on the inner side of the arc. The length between
+        these points depends on the thickness.
+
+        When radial is set the inner point lies on the line between the outer point
+        and the center of the arc. This corresponds to the lines of a conic gradient.
+          
+        Otherwise the line between the inner and outer point is orthogonal to the
+        tangent at the point in the middle of the arc. This is how the width
+        of the pen is expanded by QPainter::drawArc.
+
+        Note, that the radial flag is irrelevant for circular arcs as the tangent
+        is always orthogonal to any point on the circle.
+     */
+    QPainterPath painterPath( const QRectF& ellipseRect, bool radial = false ) const;
 
     QRectF boundingRect( const QRectF& ellipseRect ) const;
     QSizeF boundingSize( const QSizeF& ellipseSize ) const;

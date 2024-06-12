@@ -26,10 +26,10 @@ namespace QskArcRenderer
      */
 
     QSK_EXPORT void renderBorderGeometry( const QRectF&,
-        const QskArcMetrics&, qreal borderWidth, QSGGeometry& );
+        const QskArcMetrics&, bool radial, qreal borderWidth, QSGGeometry& );
 
     QSK_EXPORT void renderFillGeometry( const QRectF&,
-        const QskArcMetrics&, qreal borderWidth, QSGGeometry& );
+        const QskArcMetrics&, bool radial, qreal borderWidth, QSGGeometry& );
 
     /*
         Filling the geometry with color information:
@@ -38,10 +38,10 @@ namespace QskArcRenderer
     QSK_EXPORT bool isGradientSupported( const QskGradient& );
 
     QSK_EXPORT void renderBorder( const QRectF&, const QskArcMetrics&,
-        qreal borderWidth, const QColor& borderColor, QSGGeometry& );
+        bool radial, qreal borderWidth, const QColor& borderColor, QSGGeometry& );
 
     QSK_EXPORT void renderFillGeometry( const QRectF&, const QskArcMetrics&,
-        qreal borderWidth, const QskGradient&, QSGGeometry& );
+        bool radial, qreal borderWidth, const QskGradient&, QSGGeometry& );
 }
 
 #endif

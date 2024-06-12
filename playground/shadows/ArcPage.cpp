@@ -71,7 +71,8 @@ namespace
                 { 0.75, Qt::darkBlue },
                 { 0.75, Qt::darkRed }
             };
-#else
+#endif
+#if 0
             const QskGradientStops stops =
             {
                 { 0.1, Qt::darkRed  },
@@ -79,6 +80,16 @@ namespace
                 { 0.75, Qt::darkBlue },
                 { 1.0, Qt::darkRed }
             };
+#endif
+#if 1
+            QskGradientStops stops;
+            for ( int i = 0; i < 100; i++ )
+            {
+                const auto pos = i * 1.0 / 100;
+
+                stops += { pos, ( i % 2 ) ? Qt::darkRed : Qt::darkBlue };
+                stops += { pos, ( i % 2 ) ? Qt::darkBlue : Qt::darkRed };
+            }
 #endif
 
             setFillGradient( stops );
