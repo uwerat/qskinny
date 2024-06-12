@@ -95,6 +95,28 @@ namespace
             setFillGradient( stops );
         }
     };
+
+    class Arc : public ShadowedArc
+    {
+      public:
+        Arc()
+        {
+            setStartAngle( 45.0 );
+            setSpanAngle( 270.0 );
+            setThickness( 10.0 );
+
+            setFillGradient( Qt::darkRed );
+
+            setBorderWidth( 0 );
+            setBorderColor( Qt::darkYellow );
+
+            setShadowColor( Qt::black );
+            setSpreadRadius( 0.0 );
+            setBlurRadius( 4.0 );
+            setOffsetX( 2.0 );
+            setOffsetY( 2.0 );
+        }
+    };
 }
 
 ArcPage::ArcPage( QQuickItem* parent )

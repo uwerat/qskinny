@@ -101,7 +101,7 @@ ShadowedArc::ShadowedArc( QQuickItem* parent )
 
     setArcMetrics( { 0.0, 360.0, 1.0, Qt::RelativeSize } );
 
-    setFillGradient( Qt::white );
+    setFillGradient( Qt::darkRed );
 
     setBorderWidth( 0 );
     setBorderColor( Qt::gray );
