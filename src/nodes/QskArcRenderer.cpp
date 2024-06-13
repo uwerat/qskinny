@@ -137,11 +137,10 @@ namespace
         const qreal m_cy;
     };
 
-    class EllipseStroker
+    class ArcStroker
     {
       public:
-        EllipseStroker( const QRectF&, const QskArcMetrics&,
-            bool radial, const QskGradient& );
+        ArcStroker( const QRectF&, const QskArcMetrics&, bool radial, const QskGradient& );
 
         int fillCount() const;
         int borderCount() const;
@@ -162,27 +161,27 @@ namespace
         const qreal m_radians1;
         const qreal m_radians2;
 
-        const bool m_radial;
+        const bool m_radial; // for circular arcs radial/orthogonal does not differ
 
         const QskGradient& m_gradient;
     };
 
-    EllipseStroker::EllipseStroker( const QRectF& rect,
+    ArcStroker::ArcStroker( const QRectF& rect,
             const QskArcMetrics& metrics, bool radial, const QskGradient& gradient )
         : m_rect( rect )
         , m_radians1( qDegreesToRadians( metrics.startAngle() ) )
         , m_radians2( qDegreesToRadians( metrics.endAngle() ) )
-        , m_radial( radial )
+        , m_radial( qFuzzyCompare( rect.width(), rect.height() ) ? true : radial )
         , m_gradient( gradient )
     {
     }
 
-    int EllipseStroker::fillCount() const
+    int ArcStroker::fillCount() const
     {
         return arcLineCount() + m_gradient.stepCount() - 1;
     }
 
-    int EllipseStroker::arcLineCount() const
+    int ArcStroker::arcLineCount() const
     {
         // not very sophisticated - TODO ...
 
@@ -193,12 +192,12 @@ namespace
         return qBound( 3, count, 160 );
     }
 
-    int EllipseStroker::borderCount() const
+    int ArcStroker::borderCount() const
     {
         return 0;
     }
 
-    int EllipseStroker::setBorderLines( QskVertex::ColoredLine* lines,
+    int ArcStroker::setBorderLines( QskVertex::ColoredLine* lines,
         const QskVertex::Color color ) const
     {
         Q_UNUSED( lines );
@@ -207,7 +206,7 @@ namespace
         return 0;
     }
 
-    inline int EllipseStroker::setFillLines(
+    inline int ArcStroker::setFillLines(
         const int length, QskVertex::ColoredLine* lines ) const
     {
         if ( m_radial )
@@ -223,7 +222,7 @@ namespace
     }
 
     template< class LineStroker >
-    inline int EllipseStroker::renderFillLines(
+    inline int ArcStroker::renderFillLines(
         const LineStroker& stroker, QskVertex::ColoredLine* lines ) const
     {
         auto l = lines;
@@ -261,7 +260,7 @@ namespace
         return l - lines;
     }
 
-    inline qreal EllipseStroker::radiansAt( qreal progress ) const
+    inline qreal ArcStroker::radiansAt( qreal progress ) const
     {
         return m_radians1 + progress * ( m_radians2 - m_radians1 );
     }
@@ -279,13 +278,12 @@ void QskArcRenderer::renderFillGeometry( const QRectF& rect,
     const QskArcMetrics& metrics, bool radial, qreal borderWidth,
     const QskGradient& gradient, QSGGeometry& geometry )
 {
-#if 1
-    // TODO ...
-    borderWidth = 0.0;
-#endif
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
 
-    EllipseStroker stroker( rect, metrics, radial, gradient );
+    const auto b2 = 0.5 * borderWidth;
+    const auto r = rect.adjusted( b2, b2, -b2, -b2 );
+
+    ArcStroker stroker( r, metrics, radial, gradient );
 
     const auto lineCount = stroker.fillCount();
 
@@ -322,7 +320,7 @@ void QskArcRenderer::renderBorder( const QRectF& rect, const QskArcMetrics& metr
 
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
 
-    EllipseStroker stroker( rect, metrics, radial, QskGradient() );
+    ArcStroker stroker( rect, metrics, radial, QskGradient() );
 
     const auto lineCount = stroker.borderCount();
 
