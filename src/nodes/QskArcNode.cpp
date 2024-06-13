@@ -98,6 +98,8 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     const qreal borderWidth, const QColor& borderColor, const QskGradient& gradient,
     const QColor& shadowColor, const QskShadowMetrics& shadowMetrics )
 {
+    const bool radial = false;
+
     const auto metricsArc = arcMetrics.toAbsolute( rect.size() );
 
     auto shadowNode = static_cast< QskArcShadowNode* >(
@@ -127,7 +129,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     const auto isShadowNodeVisible = isFillNodeVisible &&
         shadowColor.isValid() && ( shadowColor.alpha() > 0.0 );
 
-    const auto path = metricsArc.painterPath( arcRect );
+    const auto path = metricsArc.painterPath( arcRect, radial );
 
     if ( isShadowNodeVisible )
     {
@@ -170,7 +172,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
                 QskSGNode::setNodeRole( arcNode, ArcRole );
             }
 
-            arcNode->updateNode( arcRect, metricsArc, false,
+            arcNode->updateNode( arcRect, metricsArc, radial,
                 borderWidth, QColor(), gradient );
         }
         else
