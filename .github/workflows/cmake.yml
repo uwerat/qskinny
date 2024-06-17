@@ -277,7 +277,8 @@ jobs:
       - name: Install dependencies on macos
         if: startsWith(matrix.config.os, 'macos')
         run: |
-          brew install p7zip cmake ninja
+          find /opt/homebrew/ -name EXTERNALLY-MANAGED|xargs rm
+          brew install cmake ninja
           ninja --version
           cmake --version
 
@@ -322,7 +323,7 @@ jobs:
 
       - name: Install Qt5
         if: endsWith(matrix.config.name, 'Qt5')
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: "5.15.2"
           target: "desktop"
@@ -336,7 +337,7 @@ jobs:
 
       - name: Install Qt6
         if: endsWith(matrix.config.name, 'Qt6')
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: "6.5.0"
           target: "desktop"
