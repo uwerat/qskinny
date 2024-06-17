@@ -15,6 +15,10 @@ QSK_SUBCONTROL( QskSlider, Fill )
 QSK_SUBCONTROL( QskSlider, Scale )
 QSK_SUBCONTROL( QskSlider, Handle )
 QSK_SUBCONTROL( QskSlider, Ripple )
+QSK_SUBCONTROL( QskSlider, GrooveStopIndicators )
+QSK_SUBCONTROL( QskSlider, FillStopIndicators )
+QSK_SUBCONTROL( QskSlider, LabelContainer )
+QSK_SUBCONTROL( QskSlider, LabelText )
 
 QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
 
@@ -117,7 +121,8 @@ QSizeF QskSlider::handleSize() const
 
 QRectF QskSlider::handleRect() const
 {
-    return subControlRect( QskSlider::Handle );
+    const auto padding = paddingHint( Handle);
+    return subControlRect( Handle ).marginsAdded( padding );
 }
 
 void QskSlider::mousePressEvent( QMouseEvent* event )
