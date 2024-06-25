@@ -35,6 +35,8 @@ class QSK_EXPORT QskGraphic : public QPaintDevice
     Q_PROPERTY( QSizeF defaultSize READ defaultSize )
     Q_PROPERTY( quint64 modificationId READ modificationId )
 
+    using Inherited = QPaintDevice;
+
   public:
     enum RenderHint
     {
