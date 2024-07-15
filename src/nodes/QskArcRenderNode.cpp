@@ -101,16 +101,17 @@ void QskArcRenderNode::updateNode(
     {
         d->hash = hash;
 
-#if 0
-        if ( borderWidth > 0.0 )
+        if ( borderWidth > 0.0 && borderColor.isValid() )
         {
             QskArcRenderer::renderBorder(
-                rect, metrics, borderWidth, radial, borderColor, *geometry() );
+                rect, metrics, radial, borderWidth, borderColor, *geometry() );
         }
-#endif
 
-        QskArcRenderer::renderFillGeometry(
-            rect, metrics, radial, borderWidth, gradient, *geometry() );
+        if ( gradient.isVisible() )
+        {
+            QskArcRenderer::renderFillGeometry(
+                rect, metrics, radial, borderWidth, gradient, *geometry() );
+        }
 
         markDirty( QSGNode::DirtyGeometry );
         markDirty( QSGNode::DirtyMaterial );

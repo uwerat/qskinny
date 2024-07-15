@@ -208,7 +208,8 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
         }
 
 #ifdef ARC_BORDER_NODE
-        borderNode->updateNode( arcRect, metricsArc, borderWidth, borderColor );
+        borderNode->updateNode( arcRect, metricsArc, radial,
+            borderWidth, borderColor, QskGradient() );
 #else
         QPen pen( borderColor, borderWidth );
         pen.setCapStyle( Qt::FlatCap );
