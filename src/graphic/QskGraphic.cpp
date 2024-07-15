@@ -496,6 +496,16 @@ int QskGraphic::metric( PaintDeviceMetric deviceMetric ) const
             value = metric( PdmDevicePixelRatio ) * devicePixelRatioFScale();
             break;
         }
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 8, 0 )
+        case PdmDevicePixelRatioF_EncodedA:
+        case PdmDevicePixelRatioF_EncodedB:
+        {
+#if 0
+            value = QPaintDevice::encodeMetricF( metric, devicePixelRatio() );
+#endif
+            break;
+        }
+#endif
     }
 
     return value;
