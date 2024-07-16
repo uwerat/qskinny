@@ -41,7 +41,7 @@ namespace
                 addItem( slider, 1, 0 );
             }
             {
-                auto slider = new Slider( "Border", 0, 10, 1, arc->borderWidth() );
+                auto slider = new Slider( "Border", 0, 50, 1, arc->borderWidth() );
                 connect( slider, &Slider::valueChanged, arc, &ShadowedArc::setBorderWidth );
 
                 addItem( slider, 1, 1);
@@ -59,7 +59,7 @@ namespace
             setThickness( 10.0 );
 
             setBorderWidth( 2.0 );
-            setBorderColor( Qt::black );
+            setBorderColor( QColor( 0, 0, 0, 150 ) );
 
 #if 0
             const QskGradientStops stops =

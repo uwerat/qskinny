@@ -17,7 +17,7 @@
 
 #include <qpainterpath.h>
 
-// #define ARC_BORDER_NODE
+#define ARC_BORDER_NODE
 
 #ifdef ARC_BORDER_NODE
     using BorderNode = QskArcRenderNode;
