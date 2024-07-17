@@ -68,11 +68,15 @@ void QskArcRenderNode::updateNode(
     Q_D( QskArcRenderNode );
 
     const auto metrics = arcMetrics.toAbsolute( rect.size() );
+    const auto borderMax = 0.5 * metrics.thickness();
+
+    const auto hasFilling = gradient.isVisible()
+        && ( borderWidth < borderMax );
 
     bool visible = !( rect.isEmpty() || metrics.isNull() );
     if ( visible )
     {
-        visible = gradient.isVisible();
+        visible = hasFilling;
         if ( !visible )
         {
             visible = ( borderWidth > 0.0 )
@@ -103,11 +107,12 @@ void QskArcRenderNode::updateNode(
 
         if ( borderWidth > 0.0 && borderColor.isValid() )
         {
+            borderWidth = std::min( borderWidth, borderMax );
             QskArcRenderer::renderBorder(
                 rect, metrics, radial, borderWidth, borderColor, *geometry() );
         }
 
-        if ( gradient.isVisible() )
+        if ( hasFilling )
         {
             QskArcRenderer::renderFillGeometry(
                 rect, metrics, radial, borderWidth, gradient, *geometry() );

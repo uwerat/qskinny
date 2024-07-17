@@ -8,6 +8,7 @@
 #include "Slider.h"
 
 #include <QskGridBox.h>
+#include <QskRgbValue.h>
 
 namespace
 {
@@ -54,6 +55,9 @@ namespace
       public:
         Arc()
         {
+            setBackgroundColor( QskRgb::LemonChiffon );
+            setClip( true ); // for testing if the arc stays inside its bounding rectangle
+
             setStartAngle( 45.0 );
             setSpanAngle( 270.0 );
             setThickness( 10.0 );
@@ -101,7 +105,6 @@ ArcPage::ArcPage( QQuickItem* parent )
     : QskLinearBox( Qt::Vertical, parent )
 {
     auto arc = new Arc();
-    arc->setMargins( 40 ); // some extra space for testing the offsets
 
     auto panel = new ControlPanel( arc );
     panel->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );

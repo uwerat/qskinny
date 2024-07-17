@@ -378,8 +378,7 @@ void QskArcRenderer::renderFillGeometry( const QRectF& rect,
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
 
-    const auto b2 = 0.5 * borderWidth;
-    const auto r = rect.adjusted( b2, b2, -b2, -b2 );
+    const auto r = rect.adjusted( borderWidth, borderWidth, -borderWidth, -borderWidth );
 
     FillStroker stroker( r, metrics, radial, gradient );
 
@@ -390,7 +389,7 @@ void QskArcRenderer::renderFillGeometry( const QRectF& rect,
         return;
 
     const auto effectiveCount = stroker.setLines(
-        metrics.thickness() - borderWidth, lines );
+        metrics.thickness() - 2 * borderWidth, lines );
 
     if ( effectiveCount > lineCount )
     {
