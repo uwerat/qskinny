@@ -128,7 +128,7 @@ namespace QskVertex
         inline void setLine( float x1, float y1, float x2, float y2, Color ) noexcept
         {
             /* The color parameter makes no sense, but is useful
-               when being using from templated code
+               when being used from templated code
              */
             setLine( x1, y1, x2, y2 );
         }
