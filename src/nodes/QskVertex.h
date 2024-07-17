@@ -128,10 +128,19 @@ namespace QskVertex
         inline void setLine( float x1, float y1, float x2, float y2, Color ) noexcept
         {
             /* The color parameter makes no sense, but is useful
-               when being using from templated code
+               when being used from templated code
              */
             setLine( x1, y1, x2, y2 );
         }
+
+        inline float x1() const noexcept { return p1.x; }
+        inline float y1() const noexcept { return p1.y; }
+
+        inline float x2() const noexcept { return p2.x; }
+        inline float y2() const noexcept { return p2.y; }
+
+        inline float dx() const noexcept { return p2.x - p1.x; }
+        inline float dy() const noexcept { return p2.y - p1.y; }
 
         QSGGeometry::Point2D p1;
         QSGGeometry::Point2D p2;
@@ -171,6 +180,15 @@ namespace QskVertex
         {
             setLine( x, y1, color, x, y2, color );
         }
+
+        inline float x1() const noexcept { return p1.x; }
+        inline float y1() const noexcept { return p1.y; }
+
+        inline float x2() const noexcept { return p2.x; }
+        inline float y2() const noexcept { return p2.y; }
+
+        inline float dx() const noexcept { return p2.x - p1.x; }
+        inline float dy() const noexcept { return p2.y - p1.y; }
 
         QSGGeometry::ColoredPoint2D p1;
         QSGGeometry::ColoredPoint2D p2;
