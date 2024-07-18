@@ -99,7 +99,7 @@ ShadowedArc::ShadowedArc( QQuickItem* parent )
 
     // initial settings
 
-    setArcMetrics( { 0.0, 360.0, 1.0, Qt::RelativeSize } );
+    setArcMetrics( { 0.0, 360.0, 1.0, Qt::AbsoluteSize } );
 
     setFillGradient( Qt::darkRed );
 

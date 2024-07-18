@@ -60,9 +60,9 @@ namespace
 
             setStartAngle( 45.0 );
             setSpanAngle( 270.0 );
-            setThickness( 10.0 );
+            setThickness( 30.0 );
 
-            setBorderWidth( 2.0 );
+            setBorderWidth( 5.0 );
             setBorderColor( QColor( 0, 0, 0, 150 ) );
 
 #if 0

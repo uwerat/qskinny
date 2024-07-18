@@ -31,10 +31,13 @@ namespace
     class OrthogonalStroker
     {
       public:
-        OrthogonalStroker( const QRectF& rect, qreal length )
-            : m_l2( 0.5 * length )
-            , m_rx( 0.5 * ( rect.width() - length ) )
-            , m_ry( 0.5 * ( rect.height() - length ) )
+        OrthogonalStroker( const QRectF& rect, qreal thickness, qreal border )
+            : m_thickness( thickness )
+            , m_border( border )
+            , m_rx( 0.5 * ( rect.width() - m_thickness ) )
+            , m_ry( 0.5 * ( rect.height() - m_thickness ) )
+            , m_offsetOut( 0.5 * m_thickness )
+            , m_offsetIn( m_offsetOut - border )
             , m_aspectRatio( m_rx / m_ry )
             , m_cx( rect.x() + 0.5 * rect.width() )
             , m_cy( rect.y() + 0.5 * rect.height() )
@@ -49,10 +52,45 @@ namespace
 
             const auto x = m_cx + m_rx * cos;
             const auto y = m_cy - m_ry * sin;
-            const auto v = normalVector( cos, sin ) * m_l2;
+
+            const auto v = normalVector( cos, sin ) * m_offsetIn;
 
             line.setLine( x + v.x(), y - v.y(), x - v.x(), y + v.y(), color );
         }
+
+        inline void setBorderLines( const qreal radians,
+            const QskVertex::Color color, QskVertex::ColoredLine& outer,
+            QskVertex::ColoredLine& inner  ) const
+        {
+            const auto cos = qFastCos( radians );
+            const auto sin = qFastSin( radians );
+
+            const auto x = m_cx + m_rx * cos;
+            const auto y = m_cy - m_ry * sin;
+
+            const auto v = normalVector( cos, sin );
+
+            const auto v1 = v * m_offsetOut;
+            const auto v2 = v * m_offsetIn;
+
+            outer.setLine( x + v1.x(), y - v1.y(), x + v2.x(), y - v2.y(), color );
+            inner.setLine( x - v1.x(), y + v1.y(), x - v2.x(), y + v2.y(), color );
+        }
+
+        inline void setClosingBorderLines( const QSGGeometry::ColoredPoint2D& pos,
+            QskVertex::ColoredLine* lines, qreal sign, const QskVertex::Color color ) const
+        {
+            const auto& l0 = lines[0];
+
+            const auto dx = sign * l0.dy();
+            const auto dy = sign * l0.dx();
+
+            lines[-3].setLine( pos.x, pos.y, pos.x, pos.y, color );
+            lines[-2].setLine( pos.x + dx, pos.y - dy, pos.x, pos.y, color );
+            lines[-1].setLine( l0.x1() + dx, l0.y1() - dy, l0.x1(), l0.y1(), color );
+        }
+
+      private:
 
         inline QPointF normalVector( const qreal radians ) const
         {
@@ -87,45 +125,34 @@ namespace
             return { dx, m * dx };
         }
 
-        inline void setBorderLines( const qreal radians, qreal border,
-            const QskVertex::Color color, QskVertex::ColoredLine& outer,
-            QskVertex::ColoredLine& inner  ) const
-        {
-            const auto cos = qFastCos( radians );
-            const auto sin = qFastSin( radians );
+        const qreal m_thickness;
+        const qreal m_border;
 
-            const auto x = m_cx + m_rx * cos;
-            const auto y = m_cy - m_ry * sin;
-            const auto v = normalVector( cos, sin );
+        // radii t the middle of the arc
+        const qreal m_rx, m_ry;
 
-            const auto v1 = v * m_l2;
-            const auto v2 = v * ( m_l2 - border );
+        // distances between the middle and inner/outer of the border
+        const qreal m_offsetOut, m_offsetIn;
 
-            outer.setLine( x + v1.x(), y - v1.y(), x + v2.x(), y - v2.y(), color );
-            inner.setLine( x - v1.x(), y + v1.y(), x - v2.x(), y + v2.y(), color );
-        }
-
-        const qreal m_l2; // half of the length
-
-        // radius
-        const qreal m_rx;
-        const qreal m_ry;
         const qreal m_aspectRatio; // m_rx / m_ry
 
         // center
-        const qreal m_cx;
-        const qreal m_cy;
+        const qreal m_cx, m_cy;
     };
 
     class RadialStroker
     {
       public:
-        RadialStroker( const QRectF& rect, qreal length )
-            : m_length( length )
+        RadialStroker( const QRectF& rect, qreal thickness, qreal border )
+            : m_inner( thickness - 2 * border )
             , m_rx1( 0.5 * rect.width() )
             , m_ry1( 0.5 * rect.height() )
-            , m_rx2( m_rx1 - ( ( m_rx1 > m_ry1 ) ? length * m_rx1 / m_ry1 : length ) )
-            , m_ry2( m_ry1 - ( ( m_ry1 > m_rx1 ) ? length * m_ry1 / m_rx1 : length ) )
+            , m_rx2( m_rx1 - border )
+            , m_ry2( m_ry1 - border )
+            , m_rx3( m_rx2 - ( ( m_rx1 > m_ry1 ) ? m_inner * m_rx1 / m_ry1 : m_inner ) )
+            , m_ry3( m_ry2 - ( ( m_rx1 < m_ry1 ) ? m_inner * m_ry1 / m_rx1 : m_inner ) )
+            , m_rx4( m_rx3 - border )
+            , m_ry4( m_ry3 - border )
             , m_cx( rect.x() + m_rx1 )
             , m_cy( rect.y() + m_ry1 )
         {
@@ -137,24 +164,50 @@ namespace
             const auto cos = qFastCos( radians );
             const auto sin = qFastSin( radians );
 
-            line.setLine( m_cx + m_rx1 * cos, m_cy - m_ry1 * sin,
+            line.setLine( m_cx + m_rx2 * cos, m_cy - m_ry2 * sin,
+                m_cx + m_rx3 * cos, m_cy - m_ry3 * sin, color );
+        }
+
+        inline void setBorderLines( const qreal radians,
+            const QskVertex::Color color, QskVertex::ColoredLine& outer,
+            QskVertex::ColoredLine& inner  ) const
+        {
+            const auto cos = qFastCos( radians );
+            const auto sin = qFastSin( radians );
+
+            outer.setLine( m_cx + m_rx1 * cos, m_cy - m_ry1 * sin,
                 m_cx + m_rx2 * cos, m_cy - m_ry2 * sin, color );
+
+            inner.setLine( m_cx + m_rx3 * cos, m_cy - m_ry3 * sin,
+                m_cx + m_rx4 * cos, m_cy - m_ry4 * sin, color );
+        }
+
+        inline void setClosingBorderLines( const QSGGeometry::ColoredPoint2D& pos,
+            QskVertex::ColoredLine* lines, qreal sign, const QskVertex::Color color ) const
+        {
+            // TODO ...
+#if 1
+            Q_UNUSED( pos );
+            Q_UNUSED( sign );
+
+            const auto& l0 = lines[0];
+            const qreal dx = 0.0;
+            const qreal dy = 0.0;
+
+            lines[-3].setLine( l0.x1() + dx, l0.y1() - dy, l0.x1(), l0.y1(), color );
+            lines[-2].setLine( l0.x1() + dx, l0.y1() - dy, l0.x1(), l0.y1(), color );
+            lines[-1].setLine( l0.x1() + dx, l0.y1() - dy, l0.x1(), l0.y1(), color );
+#endif
         }
 
       private:
-        const qreal m_length;
+        const qreal m_inner;
 
-        // outer radii
-        const qreal m_rx1;
-        const qreal m_ry1;
-
-        // inner radii
-        const qreal m_rx2;
-        const qreal m_ry2;
+        // radii: out->in
+        const qreal m_rx1, m_ry1, m_rx2, m_ry2, m_rx3, m_ry3, m_rx4, m_ry4;
 
         // center point
-        const qreal m_cx;
-        const qreal m_cy;
+        const qreal m_cx, m_cy;
     };
 }
 
@@ -207,7 +260,7 @@ namespace
             bool radial, const QskGradient& );
 
         int lineCount() const;
-        int setLines( qreal length, QskVertex::ColoredLine* ) const;
+        int setLines( qreal thickness, qreal border, QskVertex::ColoredLine* ) const;
 
       private:
         template< class LineStroker >
@@ -228,17 +281,17 @@ namespace
         return arcLineCount() + m_gradient.stepCount() - 1;
     }
 
-    inline int FillStroker::setLines(
-        const qreal length, QskVertex::ColoredLine* lines ) const
+    inline int FillStroker::setLines( const qreal thickness,
+        const qreal border, QskVertex::ColoredLine* lines ) const
     {
         if ( m_radial )
         {
-            const RadialStroker lineStroker( m_rect, length );
+            const RadialStroker lineStroker( m_rect, thickness, border );
             return renderLines( lineStroker, lines );
         }
         else
         {
-            const OrthogonalStroker lineStroker( m_rect, length );
+            const OrthogonalStroker lineStroker( m_rect, thickness, border );
             return renderLines( lineStroker, lines );
         }
     }
@@ -292,11 +345,11 @@ namespace
             bool radial, const QColor& color );
 
         int lineCount() const;
-        int setLines( qreal length, qreal border, QskVertex::ColoredLine* ) const;
+        int setLines( qreal thickness, qreal border, QskVertex::ColoredLine* ) const;
 
       private:
-        void setClosingLines( const QSGGeometry::ColoredPoint2D&,
-            QskVertex::ColoredLine* ) const;
+        template< class LineStroker >
+        int renderLines( const LineStroker&, QskVertex::ColoredLine* ) const;
 
         const QskVertex::Color m_color;
     };
@@ -317,7 +370,23 @@ namespace
         return count;
     }
 
-    int BorderStroker::setLines( qreal length, qreal border,
+    int BorderStroker::setLines( const qreal thickness, const qreal border,
+        QskVertex::ColoredLine* lines ) const
+    {
+        if ( m_radial )
+        {
+            const RadialStroker stroker( m_rect, thickness, border );
+            return renderLines( stroker, lines );
+        }
+        else
+        {
+            const OrthogonalStroker stroker( m_rect, thickness, border );
+            return renderLines( stroker, lines );
+        }
+    }
+
+    template< class LineStroker >
+    inline int BorderStroker::renderLines( const LineStroker& stroker,
         QskVertex::ColoredLine* lines ) const
     {
         const auto count = arcLineCount();
@@ -333,34 +402,21 @@ namespace
         if ( !m_closed )
             inner += 3;
 
-        OrthogonalStroker stroker( m_rect, length );
         for ( int i = 0; i < count; i++ )
         {
             stroker.setBorderLines( m_radians1 + i * stepSize,
-                border, m_color, outer[i], inner[count - 1 - i] );
+                m_color, outer[i], inner[count - 1 - i] );
         }
 
         if ( !m_closed )
         {
-            setClosingLines( inner[count - 1].p1, outer );
-            setClosingLines( outer[count - 1].p1, inner );
+            const auto sign = ( stepSize > 0.0 ) ? 1.0 : -1.0;
+
+            stroker.setClosingBorderLines( inner[count - 1].p1, outer, sign, m_color );
+            stroker.setClosingBorderLines( outer[count - 1].p1, inner, sign, m_color );
         }
 
         return 2 * ( count + ( m_closed ? 0 : 3 ) );
-    }
-
-    void BorderStroker::setClosingLines( const QSGGeometry::ColoredPoint2D& pos,
-        QskVertex::ColoredLine* lines ) const
-    {
-        const auto& l0 = lines[0];
-
-        const auto sign = ( m_radians1 <= m_radians2 ) ? 1.0 : -1.0;
-        const auto dx = sign * l0.dy();
-        const auto dy = sign * l0.dx();
-
-        lines[-3].setLine( pos.x, pos.y, pos.x, pos.y, m_color );
-        lines[-2].setLine( pos.x + dx, pos.y - dy, pos.x, pos.y, m_color );
-        lines[-1].setLine( l0.x1() + dx, l0.y1() - dy, l0.x1(), l0.y1(), m_color );
     }
 }
 
@@ -378,9 +434,7 @@ void QskArcRenderer::renderFillGeometry( const QRectF& rect,
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
 
-    const auto r = rect.adjusted( borderWidth, borderWidth, -borderWidth, -borderWidth );
-
-    FillStroker stroker( r, metrics, radial, gradient );
+    FillStroker stroker( rect, metrics, radial, gradient );
 
     const auto lineCount = stroker.lineCount();
 
@@ -389,7 +443,7 @@ void QskArcRenderer::renderFillGeometry( const QRectF& rect,
         return;
 
     const auto effectiveCount = stroker.setLines(
-        metrics.thickness() - 2 * borderWidth, lines );
+        metrics.thickness(), borderWidth, lines );
 
     if ( effectiveCount > lineCount )
     {
