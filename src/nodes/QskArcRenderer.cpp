@@ -144,15 +144,16 @@ namespace
     {
       public:
         RadialStroker( const QRectF& rect, qreal thickness, qreal border )
-            : m_inner( thickness - 2 * border )
+            : m_sx( qMax( rect.width() / rect.height(), 1.0 ) )
+            , m_sy( qMax( rect.height() / rect.width(), 1.0 ) )
             , m_rx1( 0.5 * rect.width() )
             , m_ry1( 0.5 * rect.height() )
-            , m_rx2( m_rx1 - border )
-            , m_ry2( m_ry1 - border )
-            , m_rx3( m_rx2 - ( ( m_rx1 > m_ry1 ) ? m_inner * m_rx1 / m_ry1 : m_inner ) )
-            , m_ry3( m_ry2 - ( ( m_rx1 < m_ry1 ) ? m_inner * m_ry1 / m_rx1 : m_inner ) )
-            , m_rx4( m_rx3 - border )
-            , m_ry4( m_ry3 - border )
+            , m_rx2( m_rx1 - m_sx * border )
+            , m_ry2( m_ry1 - m_sy * border )
+            , m_rx3( m_rx1 - m_sx * ( thickness - border ) )
+            , m_ry3( m_ry1 - m_sy * ( thickness - border ) )
+            , m_rx4( m_rx1 - m_sx * thickness )
+            , m_ry4( m_ry1 - m_sy * thickness )
             , m_cx( rect.x() + m_rx1 )
             , m_cy( rect.y() + m_ry1 )
         {
@@ -178,30 +179,28 @@ namespace
             outer.setLine( m_cx + m_rx1 * cos, m_cy - m_ry1 * sin,
                 m_cx + m_rx2 * cos, m_cy - m_ry2 * sin, color );
 
-            inner.setLine( m_cx + m_rx3 * cos, m_cy - m_ry3 * sin,
-                m_cx + m_rx4 * cos, m_cy - m_ry4 * sin, color );
+            inner.setLine( m_cx + m_rx4 * cos, m_cy - m_ry4 * sin,
+                m_cx + m_rx3 * cos, m_cy - m_ry3 * sin, color );
         }
 
         inline void setClosingBorderLines( const QSGGeometry::ColoredPoint2D& pos,
             QskVertex::ColoredLine* lines, qreal sign, const QskVertex::Color color ) const
         {
-            // TODO ...
-#if 1
-            Q_UNUSED( pos );
-            Q_UNUSED( sign );
-
+            // Good enough until it is decided if we want to keep the radial mode.
             const auto& l0 = lines[0];
-            const qreal dx = 0.0;
-            const qreal dy = 0.0;
 
-            lines[-3].setLine( l0.x1() + dx, l0.y1() - dy, l0.x1(), l0.y1(), color );
-            lines[-2].setLine( l0.x1() + dx, l0.y1() - dy, l0.x1(), l0.y1(), color );
+            const auto s = m_sx / m_sy;
+            const auto dx = sign * l0.dy() * s;
+            const auto dy = sign * l0.dx() / s;
+
+            lines[-3].setLine( pos.x, pos.y, pos.x, pos.y, color );
+            lines[-2].setLine( pos.x + dx, pos.y - dy, pos.x, pos.y, color );
             lines[-1].setLine( l0.x1() + dx, l0.y1() - dy, l0.x1(), l0.y1(), color );
-#endif
         }
 
       private:
-        const qreal m_inner;
+        // stretch factors of the ellipse
+        const qreal m_sx, m_sy;
 
         // radii: out->in
         const qreal m_rx1, m_ry1, m_rx2, m_ry2, m_rx3, m_ry3, m_rx4, m_ry4;

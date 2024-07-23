@@ -200,11 +200,26 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
         borderNode->updateNode( rect, metricsArc, radial,
             borderWidth, borderColor, QskGradient() );
 #else
-        QPen pen( borderColor, borderWidth );
-        pen.setCapStyle( Qt::FlatCap );
+        {
+            /*
+                Qt centers the border over the boundaries, while we
+                always want to have the complete borders inside.
+                So we have to subtract 0.5 * border.
+             */
+                
+            QPen pen( borderColor, borderWidth );
+            pen.setCapStyle( Qt::SquareCap );
+            pen.setJoinStyle( Qt::MiterJoin );
 
-        const auto path = metricsArc.painterPath( rect, radial );
-        borderNode->updateNode( path, QTransform(), pen );
+            const auto b2 = 0.5 * borderWidth;
+            const auto r = rect.adjusted( b2, b2, -b2, -b2 ); 
+
+            const auto m = QskArcMetrics( metricsArc.startAngle(), metricsArc.spanAngle(),
+                metricsArc.thickness() - borderWidth );
+
+            const auto path = m.painterPath( r, radial );
+            borderNode->updateNode( path, QTransform(), pen );
+        }
 #endif
     }
     else
