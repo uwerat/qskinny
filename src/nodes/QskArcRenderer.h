@@ -37,11 +37,11 @@ namespace QskArcRenderer
      */
     QSK_EXPORT bool isGradientSupported( const QskGradient& );
 
-    QSK_EXPORT void renderBorder( const QRectF&, const QskArcMetrics&,
-        bool radial, qreal borderWidth, const QColor& borderColor, QSGGeometry& );
+    QSK_EXPORT void renderArc( const QRectF&, const QskArcMetrics&, bool radial,
+        qreal borderWidth, const QskGradient&, const QColor& borderColor, QSGGeometry& );
 
-    QSK_EXPORT void renderFillGeometry( const QRectF&, const QskArcMetrics&,
-        bool radial, qreal borderWidth, const QskGradient&, QSGGeometry& );
+    QSK_EXPORT void renderArc( const QRectF&, const QskArcMetrics&, bool radial,
+        const QskGradient&, QSGGeometry& );
 }
 
 #endif

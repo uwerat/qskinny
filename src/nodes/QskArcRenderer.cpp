@@ -8,6 +8,7 @@
 #include "QskGradient.h"
 #include "QskVertex.h"
 #include "QskBoxColorMap.h"
+#include "QskRgbValue.h"
 
 #include <qsggeometry.h>
 #include <qdebug.h>
@@ -210,12 +211,12 @@ namespace
     {
       public:
         ArcStroker( const QRectF&, const QskArcMetrics&,
-            bool radial, const QskGradient&, const QColor& borderColor );
+            bool radial, const QskGradient&, const QskVertex::Color& );
 
         int fillCount() const;
-        int setFillLines( qreal thickness, qreal border, QskVertex::ColoredLine* ) const;
-
         int borderCount() const;
+
+        int setFillLines( qreal thickness, qreal border, QskVertex::ColoredLine* ) const;
         int setBorderLines( qreal thickness, qreal border, QskVertex::ColoredLine* ) const;
 
       private:
@@ -240,7 +241,7 @@ namespace
     };
 
     ArcStroker::ArcStroker( const QRectF& rect, const QskArcMetrics& metrics,
-            bool radial, const QskGradient& gradient, const QColor& borderColor )
+            bool radial, const QskGradient& gradient, const QskVertex::Color& borderColor )
         : m_rect( rect )
         , m_radians1( qDegreesToRadians( metrics.startAngle() ) )
         , m_radians2( qDegreesToRadians( metrics.endAngle() ) )
@@ -264,6 +265,9 @@ namespace
 
     int ArcStroker::fillCount() const
     {
+        if ( !m_gradient.isVisible() )
+            return 0;
+
         return arcLineCount() + m_gradient.stepCount() - 1;
     }
 
@@ -325,6 +329,9 @@ namespace
 
     int ArcStroker::borderCount() const
     {
+        if ( m_borderColor.a == 0 )
+            return 0;
+
         auto count = 2 * arcLineCount();
         if ( !m_closed )
             count += 2 * 3;
@@ -390,62 +397,74 @@ bool QskArcRenderer::isGradientSupported( const QskGradient& gradient )
     return true;
 }
 
-void QskArcRenderer::renderFillGeometry( const QRectF& rect,
-    const QskArcMetrics& metrics, bool radial, qreal borderWidth,
-    const QskGradient& gradient, QSGGeometry& geometry )
+void QskArcRenderer::renderArc( const QRectF& rect, const QskArcMetrics& metrics,
+    bool radial, const QskGradient& gradient, QSGGeometry& geometry )
+{
+    renderArc( rect, metrics, radial, 0, gradient, QColor(), geometry );
+}
+
+void QskArcRenderer::renderArc( const QRectF& rect, const QskArcMetrics& metrics,
+    bool radial, qreal borderWidth, const QskGradient& gradient,
+    const QColor& borderColor, QSGGeometry& geometry )
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
 
-    ArcStroker stroker( rect, metrics, radial, gradient, QColor() );
+    ArcStroker stroker( rect, metrics, radial, gradient,
+        borderColor.isValid() ? borderColor : QColor( 0, 0, 0, 0 )  );
 
-    const auto lineCount = stroker.fillCount();
+    const auto borderCount = stroker.borderCount();
+    const auto fillCount = stroker.fillCount();
+
+    auto lineCount = borderCount + fillCount;
+    if ( borderCount && fillCount )
+        lineCount++; // connecting line
 
     const auto lines = qskAllocateColoredLines( geometry, lineCount );
     if ( lines == nullptr )
         return;
 
-    const auto effectiveCount = stroker.setFillLines(
-        metrics.thickness(), borderWidth, lines );
-
-    if ( effectiveCount > lineCount )
+    if ( fillCount )
     {
-        qFatal( "geometry: allocated memory exceeded: %d vs. %d",
-            effectiveCount, lineCount );
-    }
-
-    if ( effectiveCount < lineCount )
-    {
-        /*
-            Gradient or contour lines might be at the same position
-            and we end up with less lines, than expected.
-         */
-
-        for ( int i = effectiveCount; i < lineCount; i++ )
-            lines[i] = lines[i - 1];
-    }
-}
-
-void QskArcRenderer::renderBorder( const QRectF& rect, const QskArcMetrics& metrics,
-    bool radial, qreal borderWidth, const QColor& borderColor, QSGGeometry& geometry )
-{
-    Q_ASSERT( borderWidth > 0.0 );
-
-    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
-
-    ArcStroker stroker( rect, metrics, radial, QskGradient(), borderColor );
-
-    const auto lineCount = stroker.borderCount();
-
-    const auto lines = qskAllocateColoredLines( geometry, lineCount );
-    if ( lines )
-    {
-        const auto effectiveCount = stroker.setBorderLines(
+        const auto effectiveCount = stroker.setFillLines(
             metrics.thickness(), borderWidth, lines );
 
-        if ( lineCount != effectiveCount )
+        if ( effectiveCount > fillCount )
+        {
+            qFatal( "geometry: allocated memory exceeded: %d vs. %d",
+                effectiveCount, fillCount );
+        }
+
+        if ( effectiveCount < fillCount )
+        {
+            /*
+                Gradient or contour lines might be at the same position
+                and we end up with less lines, than expected.
+             */
+
+            for ( int i = effectiveCount; i < fillCount; i++ )
+                lines[i] = lines[i - 1];
+        }
+    }
+
+    if ( borderCount > 0 )
+    {
+        auto borderLines = lines + lineCount - borderCount;
+
+        const auto effectiveCount = stroker.setBorderLines(
+            metrics.thickness(), borderWidth, borderLines );
+
+        if ( borderCount != effectiveCount )
         {
             qFatal( "geometry: allocated memory does not match: %d vs. %d",
-                effectiveCount, lineCount );
+                effectiveCount, borderCount );
+        }
+
+        if ( fillCount && borderCount )
+        {
+            const auto idx = fillCount;
+
+            lines[idx].p1 = lines[idx-1].p2;
+            lines[idx].p2 = lines[idx+1].p1;
         }
     }
 }

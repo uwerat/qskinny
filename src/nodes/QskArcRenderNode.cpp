@@ -70,13 +70,10 @@ void QskArcRenderNode::updateNode(
     const auto metrics = arcMetrics.toAbsolute( rect.size() );
     const auto borderMax = 0.5 * metrics.thickness();
 
-    const auto hasFilling = gradient.isVisible()
-        && ( borderWidth < borderMax );
-
     bool visible = !( rect.isEmpty() || metrics.isNull() );
     if ( visible )
     {
-        visible = hasFilling;
+        visible = gradient.isVisible() && ( borderWidth < borderMax );
         if ( !visible )
         {
             visible = ( borderWidth > 0.0 )
@@ -92,11 +89,13 @@ void QskArcRenderNode::updateNode(
         return;
     }
 
+    borderWidth = qMin( borderWidth, borderMax );
+
     QskHashValue hash = 3496;
 
     hash = qHashBits( &rect, sizeof( QRectF ), hash );
     hash = qHash( borderWidth, hash );
-    hash = qHash( borderColor.rgba(), hash );
+    hash = qHashBits( &borderColor, sizeof( borderColor ), hash );
     hash = metrics.hash( hash );
     hash = gradient.hash( hash );
     hash = qHash( radial, hash );
@@ -105,18 +104,8 @@ void QskArcRenderNode::updateNode(
     {
         d->hash = hash;
 
-        if ( borderWidth > 0.0 && borderColor.isValid() )
-        {
-            borderWidth = std::min( borderWidth, borderMax );
-            QskArcRenderer::renderBorder(
-                rect, metrics, radial, borderWidth, borderColor, *geometry() );
-        }
-
-        if ( hasFilling )
-        {
-            QskArcRenderer::renderFillGeometry(
-                rect, metrics, radial, borderWidth, gradient, *geometry() );
-        }
+        QskArcRenderer::renderArc( rect, metrics, radial,
+            borderWidth, gradient, borderColor, *geometry() );
 
         markDirty( QSGNode::DirtyGeometry );
         markDirty( QSGNode::DirtyMaterial );
