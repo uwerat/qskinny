@@ -110,7 +110,7 @@ namespace
              */
 
             if ( qFuzzyIsNull( cos ) )
-                return { 0.0, ( sin > 0.0 ) ? 1.0 : -1.0 };
+                return { 0.0, ( sin < 0.0 ) ? 1.0 : -1.0 };
 
             const qreal m = m_aspectRatio * ( sin / cos );
             const qreal t = 1.0 / qSqrt( 1.0 + m * m );
