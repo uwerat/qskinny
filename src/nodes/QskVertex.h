@@ -115,6 +115,11 @@ namespace QskVertex
             p2.set( x2, y2 );
         }
 
+        inline void setLine( const QPointF& p1, const QPointF& p2 ) noexcept
+        {
+            setLine( p1.x(), p1.y(), p2.x(), p2.y() );
+        }
+
         inline void setHLine( float x1, float x2, float y ) noexcept
         {
             setLine( x1, y, x2, y );
@@ -123,6 +128,15 @@ namespace QskVertex
         inline void setVLine( float x, float y1, float y2 ) noexcept
         {
             setLine( x, y1, x, y2 );
+        }
+
+        inline void setLine( const QPointF& p1, const QPointF& p2, Color ) noexcept
+        {
+            /* The color parameter makes no sense, but is useful
+               when being used from templated code
+             */
+
+            setLine( p1.x(), p1.y(), p2.x(), p2.y() );
         }
 
         inline void setLine( float x1, float y1, float x2, float y2, Color ) noexcept

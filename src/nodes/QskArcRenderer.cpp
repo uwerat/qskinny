@@ -29,6 +29,7 @@ static inline QskVertex::ColoredLine* qskAllocateColoredLines(
 
 namespace
 {
+    template< class Line >
     class OrthogonalStroker
     {
       public:
@@ -46,8 +47,7 @@ namespace
 
         inline void setLinesAt( const qreal radians,
             const QskVertex::Color fillColor, const QskVertex::Color borderColor,
-            QskVertex::ColoredLine* fill, QskVertex::ColoredLine* outerBorder,
-            QskVertex::ColoredLine* innerBorder  ) const
+            Line* fill, Line* outerBorder, Line* innerBorder  ) const
         {
             const auto cos = qFastCos( radians );
             const auto sin = qFastSin( radians );
@@ -73,9 +73,10 @@ namespace
             }
         }
 
-        inline void setClosingBorderLines( const QSGGeometry::ColoredPoint2D& pos,
-            QskVertex::ColoredLine* lines, qreal sign, const QskVertex::Color color ) const
+        inline void setClosingBorderLines( const Line& l,
+            Line* lines, qreal sign, const QskVertex::Color color ) const
         {
+            const auto& pos = l.p1;
             const auto& l0 = lines[0];
 
             const auto dx = sign * l0.dy();
@@ -133,6 +134,7 @@ namespace
         const qreal m_cx, m_cy;
     };
 
+    template< class Line >
     class RadialStroker
     {
       public:
@@ -153,8 +155,7 @@ namespace
 
         inline void setLinesAt( const qreal radians,
             const QskVertex::Color fillColor, const QskVertex::Color borderColor,
-            QskVertex::ColoredLine* fill, QskVertex::ColoredLine* outer,
-            QskVertex::ColoredLine* inner  ) const
+            Line* fill, Line* outer, Line* inner  ) const
         {
             const QPointF v( qFastCos( radians ), -qFastSin( radians ) );
 
@@ -180,9 +181,11 @@ namespace
             }
         }
 
-        inline void setClosingBorderLines( const QSGGeometry::ColoredPoint2D& pos,
-            QskVertex::ColoredLine* lines, qreal sign, const QskVertex::Color color ) const
+        inline void setClosingBorderLines( const Line& l,
+            Line* lines, qreal sign, const QskVertex::Color color ) const
         {
+            const auto& pos = l.p1;
+
             // Good enough until it is decided if we want to keep the radial mode.
             const auto& l0 = lines[0];
 
@@ -206,6 +209,7 @@ namespace
         const QPointF m_center;
     };
 
+    template< class Line >
     class CircularStroker
     {
       public:
@@ -219,8 +223,7 @@ namespace
 
         inline void setLinesAt( const qreal radians,
             const QskVertex::Color fillColor, const QskVertex::Color borderColor,
-            QskVertex::ColoredLine* fill, QskVertex::ColoredLine* outer,
-            QskVertex::ColoredLine* inner  ) const
+            Line* fill, Line* outer, Line* inner  ) const
         {
             const QPointF v( qFastCos( radians ), -qFastSin( radians ) );
 
@@ -245,9 +248,10 @@ namespace
             }
         }
 
-        inline void setClosingBorderLines( const QSGGeometry::ColoredPoint2D& pos,
-            QskVertex::ColoredLine* lines, qreal sign, const QskVertex::Color color ) const
+        inline void setClosingBorderLines( const Line& l,
+            Line* lines, qreal sign, const QskVertex::Color color ) const
         {
+            const auto& pos = l.p1;
             const auto& l0 = lines[0];
 
             const auto dx = sign * l0.dy();
@@ -279,15 +283,14 @@ namespace
         int fillCount() const;
         int borderCount() const;
 
-        void renderArc( const qreal thickness, const qreal border,
-            QskVertex::ColoredLine*, QskVertex::ColoredLine* ) const;
+        template< class Line >
+        void renderArc( const qreal thickness, const qreal border, Line*, Line* ) const;
 
       private:
         int arcLineCount() const;
 
-        template< class LineStroker >
-        void renderLines( const LineStroker&,
-            QskVertex::ColoredLine*, QskVertex::ColoredLine* ) const;
+        template< class LineStroker, class Line >
+        void renderLines( const LineStroker&, Line*, Line* ) const;
 
         const QRectF& m_rect;
 
@@ -332,32 +335,30 @@ namespace
         return arcLineCount() + m_gradient.stepCount() - 1;
     }
 
+    template< class Line >
     void Renderer::renderArc( const qreal thickness, const qreal border,
-        QskVertex::ColoredLine* fillLines, QskVertex::ColoredLine* borderLines ) const
+        Line* fillLines, Line* borderLines ) const
     {
         if ( qskFuzzyCompare( m_rect.width(), m_rect.height() ) )
         {
-            const CircularStroker lineStroker( m_rect, thickness, border );
-            renderLines( lineStroker, fillLines, borderLines );
+            const CircularStroker< Line > stroker( m_rect, thickness, border );
+            renderLines( stroker, fillLines, borderLines );
+        }
+        else if ( m_radial )
+        {
+            const RadialStroker< Line > stroker( m_rect, thickness, border );
+            renderLines( stroker, fillLines, borderLines );
         }
         else
         {
-            if ( m_radial )
-            {
-                const RadialStroker lineStroker( m_rect, thickness, border );
-                renderLines( lineStroker, fillLines, borderLines );
-            }
-            else
-            {
-                const OrthogonalStroker lineStroker( m_rect, thickness, border );
-                renderLines( lineStroker, fillLines, borderLines );
-            }
+            const OrthogonalStroker< Line > stroker( m_rect, thickness, border );
+            renderLines( stroker, fillLines, borderLines );
         }
     }
 
-    template< class LineStroker >
+    template< class LineStroker, class Line >
     void Renderer::renderLines( const LineStroker& lineStroker,
-        QskVertex::ColoredLine* fillLines, QskVertex::ColoredLine* borderLines ) const
+        Line* fillLines, Line* borderLines ) const
     {
         QskBoxRenderer::GradientIterator it;
 
@@ -423,8 +424,8 @@ namespace
         {
             const auto sign = ( radiansSpan > 0.0 ) ? 1.0 : -1.0;
 
-            lineStroker.setClosingBorderLines( inner[count - 1].p1, outer, sign, m_borderColor );
-            lineStroker.setClosingBorderLines( outer[count - 1].p1, inner, sign, m_borderColor );
+            lineStroker.setClosingBorderLines( inner[count - 1], outer, sign, m_borderColor );
+            lineStroker.setClosingBorderLines( outer[count - 1], inner, sign, m_borderColor );
         }
     }
 
@@ -459,12 +460,6 @@ void QskArcRenderer::renderArc( const QRectF& rect, const QskArcMetrics& metrics
     bool radial, qreal borderWidth, const QskGradient& gradient,
     const QColor& borderColor, QSGGeometry& geometry )
 {
-    if ( !radial )
-    {
-        if ( gradient.isMonochrome() && borderWidth <= 0.0 )
-            radial = false;
-    }
-
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
 
     const Renderer renderer( rect, metrics, radial, gradient,
@@ -498,20 +493,29 @@ void QskArcRenderer::renderArc( const QRectF& rect, const QskArcMetrics& metrics
 void QskArcRenderer::renderBorderGeometry( const QRectF& rect,
     const QskArcMetrics& metrics, bool radial, qreal borderWidth, QSGGeometry& geometry )
 {
-    Q_UNUSED( rect );
-    Q_UNUSED( metrics );
-    Q_UNUSED( radial );
-    Q_UNUSED( borderWidth );
-    Q_UNUSED( geometry );
+    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+            
+    const Renderer renderer( rect, metrics, radial, QskGradient(), 0 );
+                
+    const auto lines = qskAllocateLines( geometry, renderer.borderCount() );
+    if ( lines )
+    {
+        QskVertex::Line* fill = nullptr;
+        renderer.renderArc( metrics.thickness(), borderWidth, fill, lines );
+    }
 }
 
 void QskArcRenderer::renderFillGeometry( const QRectF& rect,
     const QskArcMetrics& metrics, bool radial, qreal borderWidth, QSGGeometry& geometry )
 {
-    Q_UNUSED( rect );
-    Q_UNUSED( metrics );
-    Q_UNUSED( radial );
-    Q_UNUSED( borderWidth );
-    Q_UNUSED( geometry );
-}
+    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
 
+    const Renderer renderer( rect, metrics, radial, QskRgb::Black, 0 );
+
+    const auto lines = qskAllocateLines( geometry, renderer.fillCount() );
+    if ( lines )
+    {
+        QskVertex::Line* border = nullptr;
+        renderer.renderArc( metrics.thickness(), borderWidth, lines, border );
+    }
+}
