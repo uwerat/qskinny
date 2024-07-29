@@ -205,6 +205,67 @@ namespace
         // center point
         const QPointF m_center;
     };
+
+    class CircularStroker
+    {
+      public:
+        CircularStroker( const QRectF& rect, qreal thickness, qreal border )
+            : m_center( rect.center() )
+            , m_radius( 0.5 * ( rect.width() - thickness ) )
+            , m_distOut( 0.5 * thickness )
+            , m_distIn( m_distOut - border )
+        {
+        }
+
+        inline void setLinesAt( const qreal radians,
+            const QskVertex::Color fillColor, const QskVertex::Color borderColor,
+            QskVertex::ColoredLine* fill, QskVertex::ColoredLine* outer,
+            QskVertex::ColoredLine* inner  ) const
+        {
+            const QPointF v( qFastCos( radians ), -qFastSin( radians ) );
+
+            const auto p0 = m_center + m_radius * v;
+            const auto dv1 = v * m_distIn;
+
+            const auto p2 = p0 + dv1;
+            const auto p3 = p0 - dv1;
+
+            if ( fill )
+                fill->setLine( p2, p3, fillColor );
+
+            if ( outer )
+            {
+                const auto dv2 = v * m_distOut;
+
+                const auto p1 = p0 + dv2;
+                const auto p4 = p0 - dv2;
+
+                outer->setLine( p1, p2, borderColor );
+                inner->setLine( p4, p3, borderColor );
+            }
+        }
+
+        inline void setClosingBorderLines( const QSGGeometry::ColoredPoint2D& pos,
+            QskVertex::ColoredLine* lines, qreal sign, const QskVertex::Color color ) const
+        {
+            const auto& l0 = lines[0];
+
+            const auto dx = sign * l0.dy();
+            const auto dy = sign * l0.dx();
+
+            lines[-3].setLine( pos.x, pos.y, pos.x, pos.y, color );
+            lines[-2].setLine( pos.x + dx, pos.y - dy, pos.x, pos.y, color );
+            lines[-1].setLine( l0.x1() + dx, l0.y1() - dy, l0.x1(), l0.y1(), color );
+        }
+
+      private:
+        // center point
+        const QPointF m_center;
+        const qreal m_radius; // middle of the arc
+
+        // distances from the middle to the inner/outer side of the border
+        const qreal m_distOut, m_distIn;
+    };
 }
 
 namespace
@@ -274,15 +335,23 @@ namespace
     void ArcStroker::setStripLines( const qreal thickness, const qreal border,
         QskVertex::ColoredLine* fillLines, QskVertex::ColoredLine* borderLines ) const
     {
-        if ( m_radial )
+        if ( qskFuzzyCompare( m_rect.width(), m_rect.height() ) )
         {
-            const RadialStroker lineStroker( m_rect, thickness, border );
+            const CircularStroker lineStroker( m_rect, thickness, border );
             renderStripLines( lineStroker, fillLines, borderLines );
         }
         else
         {
-            const OrthogonalStroker lineStroker( m_rect, thickness, border );
-            renderStripLines( lineStroker, fillLines, borderLines );
+            if ( m_radial )
+            {
+                const RadialStroker lineStroker( m_rect, thickness, border );
+                renderStripLines( lineStroker, fillLines, borderLines );
+            }
+            else
+            {
+                const OrthogonalStroker lineStroker( m_rect, thickness, border );
+                renderStripLines( lineStroker, fillLines, borderLines );
+            }
         }
     }
 
@@ -392,9 +461,6 @@ void QskArcRenderer::renderArc( const QRectF& rect, const QskArcMetrics& metrics
 {
     if ( !radial )
     {
-        if ( qskFuzzyCompare( rect.width(), rect.height() ) )
-            radial = false;
-
         if ( gradient.isMonochrome() && borderWidth <= 0.0 )
             radial = false;
     }
