@@ -7,23 +7,25 @@
 #define QSK_ARC_RENDER_NODE_H
 
 #include "QskGlobal.h"
-#include <qsgnode.h>
+#include "QskFillNode.h"
 
 class QskGradient;
 class QskArcMetrics;
 
 class QskArcRenderNodePrivate;
 
-class QSK_EXPORT QskArcRenderNode : public QSGGeometryNode
+class QSK_EXPORT QskArcRenderNode : public QskFillNode
 {
-    using Inherited = QSGGeometryNode;
+    using Inherited = QskFillNode;
 
   public:
     QskArcRenderNode();
+    ~QskArcRenderNode() override;
 
     void updateNode( const QRectF&, const QskArcMetrics&, const QskGradient& );
-    void updateNode( const QRectF&, const QskArcMetrics&, qreal borderWidth,
-        const QColor& borderColor );
+
+    void updateNode( const QRectF&, const QskArcMetrics&,
+        qreal borderWidth, const QColor& borderColor );
 
     void updateNode( const QRectF&, const QskArcMetrics&, bool radial,
         qreal borderWidth, const QColor& borderColor, const QskGradient& );

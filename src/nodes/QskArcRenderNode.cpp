@@ -9,44 +9,23 @@
 #include "QskArcMetrics.h"
 #include "QskGradient.h"
 #include "QskSGNode.h"
+#include "QskFillNodePrivate.h"
 
-QSK_QT_PRIVATE_BEGIN
-#include <private/qsgnode_p.h>
-QSK_QT_PRIVATE_END
-
-#if 1
-#include <qsgvertexcolormaterial.h>
-#include <qglobalstatic.h>
-// deriving from QskFillNode:TODO ...
-Q_GLOBAL_STATIC( QSGVertexColorMaterial, qskMaterialColorVertex )
-#endif
-
-class QskArcRenderNodePrivate final : public QSGGeometryNodePrivate
+class QskArcRenderNodePrivate final : public QskFillNodePrivate
 {
   public:
-    QskArcRenderNodePrivate()
-        : geometry( QSGGeometry::defaultAttributes_ColoredPoint2D(), 0 )
-    {
-    }
+    inline void resetValues() { hash = 0; }
 
-    inline void resetValues()
-    {
-        hash = 0;
-    }
-
-    QSGGeometry geometry;
     QskHashValue hash = 0;
 };
 
 QskArcRenderNode::QskArcRenderNode()
-    : QSGGeometryNode( *new QskArcRenderNodePrivate )
+    : QskFillNode( *new QskArcRenderNodePrivate )
 {
-    Q_D( QskArcRenderNode );
+}
 
-    setGeometry( &d->geometry );
-
-    setMaterial( qskMaterialColorVertex );
-    setFlag( QSGNode::OwnsMaterial, false );
+QskArcRenderNode::~QskArcRenderNode()
+{
 }
 
 void QskArcRenderNode::updateNode( const QRectF& rect,
@@ -70,18 +49,11 @@ void QskArcRenderNode::updateNode(
     const auto metrics = arcMetrics.toAbsolute( rect.size() );
     const auto borderMax = 0.5 * metrics.thickness();
 
-    bool visible = !( rect.isEmpty() || metrics.isNull() );
-    if ( visible )
-    {
-        visible = gradient.isVisible() && ( borderWidth < borderMax );
-        if ( !visible )
-        {
-            visible = ( borderWidth > 0.0 )
+    const bool hasFill = gradient.isVisible() && ( borderWidth < borderMax );
+    const bool hasBorder = ( borderWidth > 0.0 )
                 && borderColor.isValid() && ( borderColor.alpha() > 0 );
-        }
-    }
 
-    if ( !visible )
+    if ( rect.isEmpty() || metrics.isNull() || !( hasFill || hasBorder ) )
     {
         d->resetValues();
         QskSGNode::resetGeometry( this );
@@ -100,14 +72,50 @@ void QskArcRenderNode::updateNode(
     hash = gradient.hash( hash );
     hash = qHash( radial, hash );
 
-    if ( hash != d->hash )
+    if ( hash == d->hash )
+        return;
+
+    d->hash = hash;
+
+    auto coloring = QskFillNode::Polychrome;
+
+#if 0
+    if ( !( hasFill && hasBorder ) )
     {
-        d->hash = hash;
+        if ( hasBorder || ( hasFill && gradient.isMonochrome() ) )
+            coloring = QskFillNode::Monochrome;
+    }
+#endif
+
+    auto& geometry = *this->geometry();
+
+    if ( coloring == QskFillNode::Polychrome )
+    {
+        setColoring( coloring );
 
         QskArcRenderer::renderArc( rect, metrics, radial,
-            borderWidth, gradient, borderColor, *geometry() );
-
-        markDirty( QSGNode::DirtyGeometry );
-        markDirty( QSGNode::DirtyMaterial );
+            borderWidth, gradient, borderColor, geometry );
     }
+    else
+    {
+        if ( hasFill )
+        {
+            setColoring( gradient.rgbStart() );
+
+            QskArcRenderer::renderArc( rect, metrics, radial,
+                borderWidth, gradient, borderColor, geometry );
+        }
+        else
+        {
+            setColoring( borderColor );
+
+            QskArcRenderer::renderArc( rect, metrics, radial,
+                borderWidth, gradient, borderColor, geometry );
+        }
+    }
+
+    markDirty( QSGNode::DirtyGeometry );
+    markDirty( QSGNode::DirtyMaterial );
+
+    geometry.markVertexDataDirty();
 }
