@@ -442,12 +442,45 @@ namespace
     }
 }
 
-bool QskArcRenderer::isGradientSupported( const QskGradient& gradient )
+bool QskArcRenderer::isGradientSupported( const QRectF& rect,
+    const QskArcMetrics& metrics, const QskGradient& gradient )
 {
-    if ( gradient.isVisible() && !gradient.isMonochrome() )
-        return gradient.type() == QskGradient::Stops;
+    if ( rect.isEmpty() || metrics.isNull() )
+        return true;
 
-    return true;
+    if ( !gradient.isVisible() || gradient.isMonochrome() )
+        return true;
+
+    switch( gradient.type() )
+    {
+        case QskGradient::Stops:
+        {
+            return true;
+        }
+        case QskGradient::Conic:
+        {
+            const auto direction = gradient.conicDirection();
+            if ( direction.center() == rect.center() )
+            {
+                const auto aspectRatio = rect.width() / rect.height();
+                if ( qskFuzzyCompare( direction.aspectRatio(), aspectRatio ) )
+                {
+                    /*
+                      we should be able to create a list of stops from
+                      this gradient that works for the renderer. TODO ...
+                     */
+                }
+            }
+
+            return false;
+        }
+        default:
+        {
+            return false;
+        }
+    }
+
+    return false;
 }
 
 void QskArcRenderer::renderArc( const QRectF& rect, const QskArcMetrics& metrics,

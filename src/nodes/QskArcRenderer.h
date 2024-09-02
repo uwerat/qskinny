@@ -35,7 +35,8 @@ namespace QskArcRenderer
         Filling the geometry with color information:
             see QSGGeometry::defaultAttributes_ColoredPoint2D()
      */
-    QSK_EXPORT bool isGradientSupported( const QskGradient& );
+    QSK_EXPORT bool isGradientSupported(
+        const QRectF&, const QskArcMetrics&, const QskGradient& );
 
     QSK_EXPORT void renderArc( const QRectF&, const QskArcMetrics&, bool radial,
         qreal borderWidth, const QskGradient&, const QColor& borderColor, QSGGeometry& );

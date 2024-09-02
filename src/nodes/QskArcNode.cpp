@@ -120,8 +120,8 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
             metricsArc.startAngle(), metricsArc.spanAngle(), shadowColor );
     }
 
-    auto pathNode = qskInsertOrRemoveNode< QskShapeNode >(
-        this, PathRole, hasFilling && !QskArcRenderer::isGradientSupported( gradient ) );
+    auto pathNode = qskInsertOrRemoveNode< QskShapeNode >( this, PathRole,
+        hasFilling && !QskArcRenderer::isGradientSupported( rect, metricsArc, gradient ) );
 
     if ( pathNode )
     {
