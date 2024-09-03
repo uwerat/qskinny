@@ -322,7 +322,7 @@ Skin::Palette Skin::palette( QskSkin::ColorScheme colorScheme ) const
             Qt::white,
             0xff4a4a4a,
             0xff555555,
-            { { { 0.0, 0xff991100 }, { 0.2, 0xff9a7a57 }, { 0.5, 0xff3726af }, { 1.0, Qt::black } } },
+            { { { 0.0, 0xff991100 }, { 0.4, 0xff9a7a57 }, { 1.0, 0xff3726af } } },
             0x10ffffff,
             0xff222222
         };
@@ -339,8 +339,7 @@ Skin::Palette Skin::palette( QskSkin::ColorScheme colorScheme ) const
             Qt::black,
             0xffe5e5e5,
             0xffc4c4c4,
-            { { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff }, { 0.5, 0xff6776ff },
-                { 1.0, Qt::black } } },
+            { { { 0.0, 0xffff3122 }, { 0.4, 0xfffeeeb7 }, { 0.6, 0xffa7b0ff }, { 1.0, 0xff6776ff } } },
             0x10000000,
             0xffdddddd
         };
