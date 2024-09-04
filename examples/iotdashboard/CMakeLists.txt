@@ -6,8 +6,6 @@
 set(SOURCES
     Box.h Box.cpp
     BoxWithButtons.h BoxWithButtons.cpp
-    CircularProgressBar.h CircularProgressBar.cpp
-    CircularProgressBarSkinlet.h CircularProgressBarSkinlet.cpp
     Diagram.h Diagram.cpp
     DiagramSkinlet.h DiagramSkinlet.cpp
     EnergyMeter.h EnergyMeter.cpp

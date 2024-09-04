@@ -5,18 +5,20 @@
 
 #pragma once
 
-#include "CircularProgressBar.h"
-#include <QskControl.h>
+#include <QskProgressRing.h>
 
-class StorageMeter final : public CircularProgressBar
+class QskTextLabel;
+
+class StorageMeter final : public QskProgressRing
 {
   public:
     QSK_SUBCONTROLS( Status )
-    explicit StorageMeter( QQuickItem* parent = nullptr ) noexcept;
-  public Q_SLOTS:
-    void setValue( qreal value );
+
+    StorageMeter( QQuickItem* parent = nullptr ) noexcept;
 
   private:
-    QSizeF contentsSizeHint( Qt::SizeHint which, const QSizeF& constraint ) const override;
-    class QskTextLabel* label = nullptr;
+    void updateMeter( qreal value );
+    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
+
+    QskTextLabel* m_label = nullptr;
 };

@@ -4,44 +4,47 @@
  *****************************************************************************/
 
 #include "StorageMeter.h"
-#include "CircularProgressBar.h"
+
 #include <QskFontRole.h>
 #include <QskTextLabel.h>
 
 QSK_SUBCONTROL( StorageMeter, Status )
 
-namespace
-{
-    inline QString make_text( const QLocale& locale, const qreal value )
-    {
-        return locale.toString( static_cast< int >( value ) ) + " " + locale.percent();
-    }
-}
-
 StorageMeter::StorageMeter( QQuickItem* parent ) noexcept
-    : CircularProgressBar( parent )
-    , label( new QskTextLabel( this ) )
+    : QskProgressRing( parent )
 {
     setAutoLayoutChildren( true );
-    setSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Constrained );
+    initSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::Constrained );
 
-    label->setText( make_text( locale(), value() ) );
-    label->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-    label->setLayoutAlignmentHint( Qt::AlignCenter );
-    label->setFontRole( QskFontRole::Caption );
+    m_label = new QskTextLabel( this );
+    m_label->setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+    m_label->setLayoutAlignmentHint( Qt::AlignCenter );
+    m_label->setFontRole( QskFontRole::Caption );
+
+    connect( this, &QskProgressRing::valueChanged,
+        this, &StorageMeter::updateMeter );
+
+    updateMeter( value() );
 }
 
-void StorageMeter::setValue( const qreal value )
+void StorageMeter::updateMeter( const qreal value )
 {
-    const auto gradient = gradientHint( StorageMeter::Status );
-    const auto color = gradient.extracted( value / 100.0, value / 100.0 ).startColor();
-    setGradientHint( StorageMeter::Fill, { color, color.lighter() } );
-    CircularProgressBar::setValue( value );
-    label->setTextColor( color );
-    label->setText( make_text( locale(), value ) );
+    const auto color = qskInterpolatedColorAt(
+        gradientHint( Status ).stops(), value / 100.0 );
+
+    setFillGradient( { color, color.lighter() } );
+
+    m_label->setTextColor( color );
+
+    const auto locale = this->locale();
+    const auto text = locale.toString( static_cast< int >( value ) )
+        + " " + locale.percent();
+
+    m_label->setText( text );
 }
 
-QSizeF StorageMeter::contentsSizeHint( Qt::SizeHint which, const QSizeF& constraint ) const
+QSizeF StorageMeter::contentsSizeHint(
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();

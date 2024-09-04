@@ -159,6 +159,7 @@ void ProgressBarPage::populate()
         {
             auto* ring = new QskProgressRing( determinateRingsHBox );
             ring->setSize( size );
+            ring->setLayoutAlignmentHint( Qt::AlignCenter );
 
             QQuickItem* parentItem;
 

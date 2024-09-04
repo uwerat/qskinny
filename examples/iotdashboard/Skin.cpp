@@ -7,8 +7,6 @@
 
 #include "Box.h"
 #include "BoxWithButtons.h"
-#include "CircularProgressBar.h"
-#include "CircularProgressBarSkinlet.h"
 #include "DashboardPage.h"
 #include "Diagram.h"
 #include "DiagramSkinlet.h"
@@ -56,7 +54,6 @@ Skin::Skin( QObject* parent )
 {
     setObjectName( "iot" );
 
-    declareSkinlet< CircularProgressBar, CircularProgressBarSkinlet >();
     declareSkinlet< Diagram, DiagramSkinlet >();
     declareSkinlet< LightDisplay, LightDisplaySkinlet >();
     declareSkinlet< StorageBar, StorageBarSkinlet >();
@@ -127,10 +124,10 @@ void Skin::initHints()
     ed.setGradient( TopBarItem::Item4, 0xff6776ff, 0xff6100ff );
 
     // the bar gradient is defined through the top bar items above
-    ed.setArcMetrics( CircularProgressBar::Groove, 90, -360, 8.53 );
+    ed.setArcMetrics( QskProgressRing::Groove, 90, -360, 8.53 );
     // the span angle will be set in the progress bar, we just give a dummy
     // value here:
-    ed.setArcMetrics( CircularProgressBar::Fill, 90, -360, 8.53 );
+    ed.setArcMetrics( QskProgressRing::Fill, 90, -360, 8.53 );
 
     ed.setFontRole( TimeTitleLabel::Text, { QskFontRole::Caption, QskFontRole::High } );
 
@@ -282,8 +279,8 @@ void Skin::initHints()
     ed.setColor( QskTextLabel::Text, palette.text );
     ed.setColor( UsageDiagramBox::DayText, palette.text );
 
-    ed.setMetric( CircularProgressBar::Groove | QskAspect::Border, 2 );
-    ed.setColor( CircularProgressBar::Groove | QskAspect::Border,
+    ed.setMetric( QskProgressRing::Groove | QskAspect::Border, 2 );
+    ed.setColor( QskProgressRing::Groove | QskAspect::Border,
         palette.circularProgressBarGroove );
 
     // storage bar

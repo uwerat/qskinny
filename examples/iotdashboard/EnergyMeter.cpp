@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "EnergyMeter.h"
-#include "CircularProgressBar.h"
 
+#include <QskProgressRing.h>
 #include <QskTextLabel.h>
 #include <QskFontRole.h>
 
@@ -35,8 +35,10 @@ EnergyMeter::EnergyMeter( const QColor& textColor,
 {
     setAutoLayoutChildren( true );
 
-    auto valueBar = new CircularProgressBar( this );
-    valueBar->setGradientHint( CircularProgressBar::Fill, gradient );
+    auto valueBar = new QskProgressRing( this );
+    valueBar->setSizePolicy(
+        QskSizePolicy::MinimumExpanding, QskSizePolicy::Constrained );
+    valueBar->setFillGradient( gradient );
     valueBar->setValue( value );
 
     auto valueLabel = new ValueLabel( this );

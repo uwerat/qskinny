@@ -24,22 +24,7 @@ QRectF QskProgressRingSkinlet::subControlRect(
     QskAspect::Subcontrol subControl ) const
 {
     if( subControl == Q::Groove || subControl == Q::Fill )
-    {
-        const auto ring = static_cast< const Q* >( skinnable );
-
-        const auto size = ring->strutSizeHint( Q::Fill );
-
-        auto rect = contentsRect;
-        if( ring->layoutMirroring() )
-            rect.setLeft( rect.right() - size.width() );
-        else
-            rect.setWidth( size.width() );
-
-        rect.setTop( rect.top() + 0.5 * ( rect.height() - size.height() ) );
-        rect.setHeight( size.height() );
-
-        return rect;
-    }
+        return contentsRect;
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
