@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include <QskProgressIndicator.h>
+#include <QskProgressRing.h>
 
-class CircularProgressBar : public QskProgressIndicator
+class CircularProgressBar : public QskProgressRing
 {
     Q_OBJECT
 
-    using Inherited = QskProgressIndicator;
+    using Inherited = QskProgressRing;
 
   public:
     CircularProgressBar( qreal min, qreal max, QQuickItem* parent = nullptr );

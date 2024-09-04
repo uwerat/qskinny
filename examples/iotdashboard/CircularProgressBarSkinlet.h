@@ -5,32 +5,19 @@
 
 #pragma once
 
-#include <QskSkinlet.h>
+#include <QskProgressRingSkinlet.h>
 
-class CircularProgressBar;
-
-class CircularProgressBarSkinlet : public QskSkinlet
+class CircularProgressBarSkinlet : public QskProgressRingSkinlet
 {
     Q_GADGET
 
-    using Inherited = QskSkinlet;
+    using Inherited = QskProgressRingSkinlet;
 
   public:
-    enum NodeRole
-    {
-        GrooveRole,
-        BarRole,
-
-        RoleCount,
-    };
 
     Q_INVOKABLE CircularProgressBarSkinlet( QskSkin* = nullptr );
     ~CircularProgressBarSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const override;
-
-  protected:
-    QSGNode* updateSubNode( const QskSkinnable*,
-        quint8 nodeRole, QSGNode* ) const override;
 };

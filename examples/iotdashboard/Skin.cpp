@@ -121,17 +121,16 @@ void Skin::initHints()
     ed.setColor( TopBarItem::Item3 | QskAspect::TextColor, 0xfff99055 );
     ed.setColor( TopBarItem::Item4 | QskAspect::TextColor, 0xff6776ff );
 
-    // arcs are counterclockwise, so specify the 2nd color first:
-    ed.setGradient( TopBarItem::Item1, 0xffff3122, 0xffff5c00 );
-    ed.setGradient( TopBarItem::Item2, 0xff6100ff, 0xff6776ff );
-    ed.setGradient( TopBarItem::Item3, 0xffff3122, 0xffffce50 );
-    ed.setGradient( TopBarItem::Item4, 0xff6100ff, 0xff6776ff );
+    ed.setGradient( TopBarItem::Item1, 0xffff5c00, 0xffff3122 );
+    ed.setGradient( TopBarItem::Item2, 0xff6776ff, 0xff6100ff );
+    ed.setGradient( TopBarItem::Item3, 0xffffce50, 0xffff3122 );
+    ed.setGradient( TopBarItem::Item4, 0xff6776ff, 0xff6100ff );
 
     // the bar gradient is defined through the top bar items above
     ed.setArcMetrics( CircularProgressBar::Groove, 90, -360, 8.53 );
     // the span angle will be set in the progress bar, we just give a dummy
     // value here:
-    ed.setArcMetrics( CircularProgressBar::Fill, 90, -180, 8.53 );
+    ed.setArcMetrics( CircularProgressBar::Fill, 90, -360, 8.53 );
 
     ed.setFontRole( TimeTitleLabel::Text, { QskFontRole::Caption, QskFontRole::High } );
 
