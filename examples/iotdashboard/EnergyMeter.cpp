@@ -36,7 +36,7 @@ EnergyMeter::EnergyMeter( const QColor& textColor,
     setAutoLayoutChildren( true );
 
     auto valueBar = new CircularProgressBar( this );
-    valueBar->setGradientHint( CircularProgressBar::Bar, gradient );
+    valueBar->setGradientHint( CircularProgressBar::Fill, gradient );
     valueBar->setValue( value );
 
     auto valueLabel = new ValueLabel( this );

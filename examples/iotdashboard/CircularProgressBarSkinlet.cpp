@@ -39,7 +39,7 @@ QSGNode* CircularProgressBarSkinlet::updateSubNode(
             const qreal spanAngle = 360.0 * bar->valueAsRatio();
 
             return updateArcNode( skinnable, node, startAngle, -spanAngle,
-                CircularProgressBar::Bar );
+                CircularProgressBar::Fill );
         }
     }
 

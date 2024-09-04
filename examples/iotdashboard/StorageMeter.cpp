@@ -35,7 +35,7 @@ void StorageMeter::setValue( const qreal value )
 {
     const auto gradient = gradientHint( StorageMeter::Status );
     const auto color = gradient.extracted( value / 100.0, value / 100.0 ).startColor();
-    setGradientHint( StorageMeter::Bar, { color, color.lighter() } );
+    setGradientHint( StorageMeter::Fill, { color, color.lighter() } );
     CircularProgressBar::setValue( value );
     label->setTextColor( color );
     label->setText( make_text( locale(), value ) );

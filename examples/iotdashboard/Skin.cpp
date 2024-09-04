@@ -131,7 +131,7 @@ void Skin::initHints()
     ed.setArcMetrics( CircularProgressBar::Groove, 90, -360, 8.53 );
     // the span angle will be set in the progress bar, we just give a dummy
     // value here:
-    ed.setArcMetrics( CircularProgressBar::Bar, 90, -180, 8.53 );
+    ed.setArcMetrics( CircularProgressBar::Fill, 90, -180, 8.53 );
 
     ed.setFontRole( TimeTitleLabel::Text, { QskFontRole::Caption, QskFontRole::High } );
 
