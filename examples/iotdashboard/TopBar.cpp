@@ -62,9 +62,9 @@ TopBarItem::TopBarItem(
     const auto subcontrol = subcontrolForIndex( index );
     const auto textColor = color( subcontrol | QskAspect::TextColor );
 
-    auto pieChart = new EnergyMeter(
+    auto meter = new EnergyMeter(
         textColor, gradient, progress, pieChartAndDisplay );
-    pieChart->setSizePolicy( Qt::Horizontal, QskSizePolicy::Constrained );
+    meter->setSizePolicy( Qt::Horizontal, QskSizePolicy::Constrained );
 
     auto display = new QskLinearBox( Qt::Vertical, pieChartAndDisplay );
     display->setSpacing( 0 );

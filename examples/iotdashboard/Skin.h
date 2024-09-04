@@ -34,5 +34,4 @@ class Skin : public QskSkin
     void initHints() override;
 
     Palette palette( ColorScheme ) const;
-    void initHints( const Palette& );
 };

@@ -6,7 +6,6 @@
 #pragma once
 
 #include <QskBoundedValueInput.h>
-#include <QskBoxShapeMetrics.h>
 #include <QskShadowMetrics.h>
 
 class LightDisplay : public QskBoundedValueInput
@@ -22,9 +21,6 @@ class LightDisplay : public QskBoundedValueInput
 
     bool isPressed() const;
 
-    void setGradient( const QskGradient& );
-    const QskGradient& gradient() const;
-
   protected:
     void mousePressEvent( QMouseEvent* e ) override;
     void mouseMoveEvent( QMouseEvent* e ) override;
@@ -33,9 +29,4 @@ class LightDisplay : public QskBoundedValueInput
   private:
     qreal angleFromPoint( const QRectF&, const QPointF& ) const;
     bool arcContainsPoint( const QRectF&, const QPointF& ) const;
-
-    QskShadowMetrics m_shadow;
-    QColor m_shadowColor = Qt::black;
-
-    QskGradient m_gradient;
 };
