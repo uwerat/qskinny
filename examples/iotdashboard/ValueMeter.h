@@ -9,16 +9,17 @@
 
 class QskTextLabel;
 
-class StorageMeter final : public QskProgressRing
+class ValueMeter : public QskProgressRing
 {
   public:
-    QSK_SUBCONTROLS( Status )
+    ValueMeter( QQuickItem* parent = nullptr );
 
-    StorageMeter( QQuickItem* parent = nullptr ) noexcept;
+    void setTextColor( const QColor& );
+
+  protected:
+    virtual QString text( qreal ) const;
 
   private:
     void updateMeter( qreal value );
-    QSizeF contentsSizeHint( Qt::SizeHint, const QSizeF& ) const override;
-
     QskTextLabel* m_label = nullptr;
 };

@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #include "TopBar.h"
-#include "EnergyMeter.h"
+#include "ValueMeter.h"
 
 #include <QskFontRole.h>
 #include <QskTextLabel.h>
@@ -41,6 +41,22 @@ namespace
                 return TopBarItem::Item4;
         }
     }
+
+    class EnergyMeter : public ValueMeter
+    {
+      public:
+        EnergyMeter( const QColor& textColor,
+                const QskGradient& gradient, int value, QQuickItem* parent )
+            : ValueMeter( parent ) 
+        {
+            setFillGradient( gradient );
+            setValue( value ); 
+            setTextColor( textColor );
+
+            setFixedSize( 57, 57 );
+        }
+    };
+
 }
 
 TopBarItem::TopBarItem(
@@ -62,9 +78,7 @@ TopBarItem::TopBarItem(
     const auto subcontrol = subcontrolForIndex( index );
     const auto textColor = color( subcontrol | QskAspect::TextColor );
 
-    auto meter = new EnergyMeter(
-        textColor, gradient, progress, pieChartAndDisplay );
-    meter->setSizePolicy( Qt::Horizontal, QskSizePolicy::Constrained );
+    (void) new EnergyMeter( textColor, gradient, progress, pieChartAndDisplay );
 
     auto display = new QskLinearBox( Qt::Vertical, pieChartAndDisplay );
     display->setSpacing( 0 );

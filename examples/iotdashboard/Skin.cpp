@@ -19,7 +19,6 @@
 #include "RoundedIcon.h"
 #include "StorageBar.h"
 #include "StorageBarSkinlet.h"
-#include "StorageMeter.h"
 #include "StoragePage.h"
 #include "TopBar.h"
 #include "UsageBox.h"
@@ -35,6 +34,7 @@
 #include <QskSkinHintTableEditor.h>
 #include <QskStateCombination.h>
 #include <QskTextLabel.h>
+#include <QskProgressRing.h>
 #include <QskGraphicLabel.h>
 #include <QskFontRole.h>
 
@@ -298,9 +298,13 @@ void Skin::initHints()
 
     // storage meter
     {
-        ed.setGradient( StorageMeter::Status,
-            { { { 0.00, "#00ff00" }, { 0.33, "#00ff00" }, { 0.33, "#ffaf00" }, { 0.66, "#ffaf00" },
-                { 0.66, "#ff0000" }, { 1.00, "#ff0000" } } } );
+        ed.setGradient( StoragePage::Status,
+            { {
+                { 0.00, "#00ff00" }, { 0.33, "#00ff00" },
+                { 0.33, "#ffaf00" }, { 0.66, "#ffaf00" },
+                { 0.66, "#ff0000" }, { 1.00, "#ff0000" }
+            } }
+        );
     }
 }
 
