@@ -74,12 +74,25 @@ QSGNode* QskProgressRingSkinlet::updateFillNode(
 }
 
 QSizeF QskProgressRingSkinlet::sizeHint( const QskSkinnable* skinnable,
-    Qt::SizeHint which, const QSizeF& ) const
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    return skinnable->strutSizeHint( Q::Fill );
+    auto hint = skinnable->strutSizeHint( Q::Fill );
+    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Groove ) );
+
+    if ( !constraint.isEmpty() )
+    {
+        const qreal aspectRatio = hint.isEmpty() ? 1.0 : hint.width() / hint.height();
+
+        if ( constraint.width() >= 0.0 )
+            hint.setHeight( constraint.width() / aspectRatio );
+        else 
+            hint.setWidth( constraint.height() * aspectRatio );
+    }
+
+    return hint;
 }
 
 QskIntervalF QskProgressRingSkinlet::fillInterval(

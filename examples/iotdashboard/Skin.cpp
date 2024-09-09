@@ -84,9 +84,9 @@ void Skin::initHints()
 
     ed.setPadding( MainContentGridBox::Panel, { 19, 0, 27, 24 } );
 
-    // menu bar:
-
     {
+        // menu bar:
+
         using Q = QskPushButton;
         using A = QskAspect;
 
@@ -110,24 +110,27 @@ void Skin::initHints()
         ed.setAlignment( Q::Icon | A::Header, Qt::AlignCenter );
     }
 
-    // top bar:
-    ed.setPadding( TopBar::Panel, { 25, 35, 25, 0 } );
+    {
+        // top bar:
 
-    ed.setColor( TopBarItem::Item1 | QskAspect::TextColor, 0xffff3122 );
-    ed.setColor( TopBarItem::Item2 | QskAspect::TextColor, 0xff6776ff );
-    ed.setColor( TopBarItem::Item3 | QskAspect::TextColor, 0xfff99055 );
-    ed.setColor( TopBarItem::Item4 | QskAspect::TextColor, 0xff6776ff );
+        ed.setPadding( TopBar::Panel, { 25, 35, 25, 0 } );
 
-    ed.setGradient( TopBarItem::Item1, 0xffff5c00, 0xffff3122 );
-    ed.setGradient( TopBarItem::Item2, 0xff6776ff, 0xff6100ff );
-    ed.setGradient( TopBarItem::Item3, 0xffffce50, 0xffff3122 );
-    ed.setGradient( TopBarItem::Item4, 0xff6776ff, 0xff6100ff );
+        ed.setColor( TopBarItem::Item1 | QskAspect::TextColor, 0xffff3122 );
+        ed.setColor( TopBarItem::Item2 | QskAspect::TextColor, 0xff6776ff );
+        ed.setColor( TopBarItem::Item3 | QskAspect::TextColor, 0xfff99055 );
+        ed.setColor( TopBarItem::Item4 | QskAspect::TextColor, 0xff6776ff );
+
+        ed.setGradient( TopBarItem::Item1, 0xffff5c00, 0xffff3122 );
+        ed.setGradient( TopBarItem::Item2, 0xff6776ff, 0xff6100ff );
+        ed.setGradient( TopBarItem::Item3, 0xffffce50, 0xffff3122 );
+        ed.setGradient( TopBarItem::Item4, 0xff6776ff, 0xff6100ff );
+    }
 
     // the bar gradient is defined through the top bar items above
     ed.setArcMetrics( QskProgressRing::Groove, 90, -360, 8.53 );
     // the span angle will be set in the progress bar, we just give a dummy
     // value here:
-    ed.setArcMetrics( QskProgressRing::Fill, 90, -360, 8.53 );
+    ed.setArcMetrics( QskProgressRing::Fill, ed.arcMetrics( QskProgressRing::Groove ) );
 
     ed.setFontRole( TimeTitleLabel::Text, { QskFontRole::Caption, QskFontRole::High } );
 

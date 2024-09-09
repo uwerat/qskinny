@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "QskProgressRing.h"
-
 #include "QskIntervalF.h"
 
 QSK_SUBCONTROL( QskProgressRing, Groove )
