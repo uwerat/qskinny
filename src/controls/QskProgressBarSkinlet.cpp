@@ -15,13 +15,13 @@ using Q = QskProgressBar;
 
 namespace
 {
-    QskIntervalF qskFillInterval( const Q* bar )
+    QskIntervalF qskFillInterval( const QskProgressIndicator* indicator )
     {
         qreal pos1, pos2;
 
-        if ( bar->isIndeterminate() )
+        if ( indicator->isIndeterminate() )
         {
-            const auto pos = bar->positionHint( QskProgressIndicator::Fill );
+            const auto pos = indicator->positionHint( QskProgressIndicator::Fill );
 
             static const QEasingCurve curve( QEasingCurve::InOutCubic );
 
@@ -32,10 +32,11 @@ namespace
         }
         else
         {
-            pos1 = bar->valueAsRatio( bar->origin() );
-            pos2 = bar->valueAsRatio( bar->value() );
+            pos1 = indicator->valueAsRatio( indicator->origin() );
+            pos2 = indicator->valueAsRatio( indicator->value() );
         }
 
+        auto bar = static_cast< const QskProgressBar* >( indicator );
         if( bar->orientation() == Qt::Horizontal )
         {
             if ( bar->layoutMirroring() )
@@ -107,11 +108,11 @@ QSGNode* QskProgressBarSkinlet::updateFillNode(
 
     const auto subControl = Q::Fill;
 
-    const auto rect = bar->subControlRect( subControl );
+    const auto rect = indicator->subControlRect( subControl );
     if ( rect.isEmpty() )
         return nullptr;
 
-    auto gradient = bar->gradientHint( subControl );
+    auto gradient = indicator->gradientHint( subControl );
     if ( !gradient.isVisible() )
         return nullptr;
 

@@ -6,11 +6,8 @@
 set(SOURCES
     Box.h Box.cpp
     BoxWithButtons.h BoxWithButtons.cpp
-    CircularProgressBar.h CircularProgressBar.cpp
-    CircularProgressBarSkinlet.h CircularProgressBarSkinlet.cpp
     Diagram.h Diagram.cpp
     DiagramSkinlet.h DiagramSkinlet.cpp
-    EnergyMeter.h EnergyMeter.cpp
     GraphicProvider.h GraphicProvider.cpp
     GridBox.h GridBox.cpp
     LightDisplaySkinlet.h LightDisplaySkinlet.cpp
@@ -31,7 +28,7 @@ set(SOURCES
     UsageBox.h UsageBox.cpp
     UsageDiagram.h UsageDiagram.cpp
     StoragePage.h StoragePage.cpp
-    StorageMeter.h StorageMeter.cpp
+    ValueMeter.h ValueMeter.cpp
     StorageBar.h StorageBar.cpp
     StorageBarSkinlet.h StorageBarSkinlet.cpp
     nodes/DiagramDataNode.h nodes/DiagramDataNode.cpp
