@@ -28,7 +28,8 @@ ClassInfo::ClassInfo( const char* qmlName, const QMetaObject* metaObject )
     m_info.createValueType = nullptr;
 
     m_info.uri = QskQmlModule::name;
-    m_info.version = QTypeRevision::fromVersion( QskQmlModule::name[0], QskQmlModule::name[1] );
+    m_info.version = QTypeRevision::fromVersion(
+        QskQmlModule::version[0], QskQmlModule::version[1] );
 
     m_info.elementName = qmlName;
     m_info.metaObject = metaObject;
