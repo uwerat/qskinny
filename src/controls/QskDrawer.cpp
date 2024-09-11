@@ -16,7 +16,6 @@
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
-#include <private/qquickitemchangelistener_p.h>
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskDrawer, Panel )
@@ -110,52 +109,6 @@ static QPointF qskDrawerTranslation( const QskDrawer* drawer, const QSizeF& size
 
 namespace
 {
-    // Using an eventFilter for QskEvent::GeometryChange instead ???
-
-    class GeometryListener final : public QQuickItemChangeListener
-    {
-      public:
-        GeometryListener( QQuickItem* item, QQuickItem* adjustedItem )
-            : m_item( item )
-            , m_adjustedItem( adjustedItem )
-        {
-            adjust();
-            setEnabled( true );
-        }
-
-        ~GeometryListener()
-        {
-            setEnabled( false );
-        }
-
-      private:
-        void itemGeometryChanged( QQuickItem*,
-            QQuickGeometryChange, const QRectF& ) override
-        {
-            adjust();
-        }
-
-      private:
-        void adjust()
-        {
-            m_adjustedItem->polish();
-        }
-
-        void setEnabled( bool on )
-        {
-            const auto changeTypes = QQuickItemPrivate::Geometry;
-
-            auto d = QQuickItemPrivate::get( m_item );
-            if ( on )
-                d->addItemChangeListener( this, changeTypes );
-            else
-                d->removeItemChangeListener( this, changeTypes );
-        }
-
-        QQuickItem* m_item;
-        QQuickItem* m_adjustedItem;
-    };
-
     class GestureRecognizer : public QskPanGestureRecognizer
     {
         using Inherited = QskPanGestureRecognizer;
@@ -216,16 +169,6 @@ class QskDrawer::PrivateData
     {
     }
 
-    inline void resetListener( QskDrawer* drawer )
-    {
-        delete listener;
-        listener = nullptr;
-
-        if ( drawer->parentItem() && drawer->isVisible() )
-            listener = new GeometryListener( drawer->parentItem(), drawer );
-    }
-
-    GeometryListener* listener = nullptr;
     GestureRecognizer* gestureRecognizer = nullptr;
 
     qreal dragMargin = qskDefaultDragMargin();
@@ -235,6 +178,7 @@ class QskDrawer::PrivateData
 QskDrawer::QskDrawer( QQuickItem* parentItem )
     : QskDrawer( Qt::LeftEdge, parentItem )
 {
+    setPolishOnParentResize( true );
 }
 
 QskDrawer::QskDrawer( Qt::Edge edge, QQuickItem* parentItem )
@@ -262,7 +206,6 @@ QskDrawer::QskDrawer( Qt::Edge edge, QQuickItem* parentItem )
 
 QskDrawer::~QskDrawer()
 {
-    delete m_data->listener;
 }
 
 Qt::Edge QskDrawer::edge() const
@@ -361,12 +304,6 @@ void QskDrawer::itemChange( QQuickItem::ItemChange change,
             if ( parentItem() && isInteractive() )
                 qskCatchMouseEvents( parentItem() );
 
-            m_data->resetListener( this );
-            break;
-        }
-        case QQuickItem::ItemVisibleHasChanged:
-        {
-            m_data->resetListener( this );
             break;
         }
     }

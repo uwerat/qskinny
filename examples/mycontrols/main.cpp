@@ -139,8 +139,6 @@ int main( int argc, char* argv[] )
     qskSkinManager->registerFactory(
         QStringLiteral( "MySkinFactory" ), new MySkinFactory() );
 
-    qskSetup->setItemUpdateFlag( QskQuickItem::PreferRasterForTextures, true );
-
     Window window;
     window.resize( 480, 360 );
     window.show();

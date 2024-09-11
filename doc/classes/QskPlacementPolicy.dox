@@ -53,7 +53,7 @@
       The default value
 
     \accessors visiblePolicy(), setVisiblePolicy()
-    \sa hiddenPolicy, QskQuickItem::isVisibleToParent(), qskIsVisibleToParent()
+    \sa hiddenPolicy, QskItem::isVisibleToParent(), qskIsVisibleToParent()
 
     \note QskPlacementPolicy::Ignore is stored in the transparentForPositioner
           bit in QQuickItem and might have an impact on Qt/Quick layout code.
@@ -78,7 +78,7 @@
       Sometimes an item wants to have its proper size even when being hidden.
       
     \accessors hiddenPolicy(), setHiddenPolicy()
-    \sa visiblePolicy, QskQuickItem::isVisibleToParent(), qskIsVisibleToParent()
+    \sa visiblePolicy, QskItem::isVisibleToParent(), qskIsVisibleToParent()
     
     \note QskPlacementPolicy::Ignore is stored in the transparentForPositioner
           bit in QQuickItem and might have an impact on Qt/Quick layout code.

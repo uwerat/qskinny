@@ -10,6 +10,7 @@ list(APPEND HEADERS
     common/QskBoxBorderMetrics.h
     common/QskBoxShapeMetrics.h
     common/QskBoxHints.h
+    common/QskFontRole.h
     common/QskFunctions.h
     common/QskGlobal.h
     common/QskGradient.h
@@ -45,6 +46,7 @@ list(APPEND SOURCES
     common/QskBoxBorderMetrics.cpp
     common/QskBoxShapeMetrics.cpp
     common/QskBoxHints.cpp
+    common/QskFontRole.cpp
     common/QskFunctions.cpp
     common/QskGradient.cpp
     common/QskGradientDirection.cpp
@@ -99,6 +101,8 @@ list(APPEND SOURCES
 
 list(APPEND HEADERS
     nodes/QskArcNode.h
+    nodes/QskArcRenderer.h
+    nodes/QskArcRenderNode.h
     nodes/QskArcShadowNode.h
     nodes/QskBasicLinesNode.h
     nodes/QskBoxNode.h
@@ -139,6 +143,8 @@ list(APPEND PRIVATE_HEADERS
 
 list(APPEND SOURCES
     nodes/QskArcNode.cpp
+    nodes/QskArcRenderer.cpp
+    nodes/QskArcRenderNode.cpp
     nodes/QskArcShadowNode.cpp
     nodes/QskBasicLinesNode.cpp
     nodes/QskBoxNode.cpp
@@ -219,7 +225,7 @@ list(APPEND HEADERS
     controls/QskGraphicLabel.h
     controls/QskGraphicLabelSkinlet.h
     controls/QskHintAnimator.h
-    controls/QskInputGrabber.h
+    controls/QskItem.h
     controls/QskListView.h
     controls/QskListViewSkinlet.h
     controls/QskMenu.h
@@ -239,7 +245,6 @@ list(APPEND HEADERS
     controls/QskPushButton.h
     controls/QskPushButtonSkinlet.h
     controls/QskQuick.h
-    controls/QskQuickItem.h
     controls/QskRadioBox.h
     controls/QskRadioBoxSkinlet.h
     controls/QskScrollArea.h
@@ -290,8 +295,9 @@ list(APPEND HEADERS
 
 list(APPEND PRIVATE_HEADERS
     controls/QskDirtyItemFilter.h
+    controls/QskInputGrabber.h
     controls/QskControlPrivate.h
-    controls/QskQuickItemPrivate.h
+    controls/QskItemPrivate.h
 )
 
 list(APPEND SOURCES
@@ -324,6 +330,8 @@ list(APPEND SOURCES
     controls/QskGraphicLabelSkinlet.cpp
     controls/QskHintAnimator.cpp
     controls/QskInputGrabber.cpp
+    controls/QskItem.cpp
+    controls/QskItemPrivate.cpp
     controls/QskListView.cpp
     controls/QskListViewSkinlet.cpp
     controls/QskMenuSkinlet.cpp
@@ -343,8 +351,6 @@ list(APPEND SOURCES
     controls/QskPushButton.cpp
     controls/QskPushButtonSkinlet.cpp
     controls/QskQuick.cpp
-    controls/QskQuickItem.cpp
-    controls/QskQuickItemPrivate.cpp
     controls/QskScrollArea.cpp
     controls/QskScrollBox.cpp
     controls/QskScrollView.cpp

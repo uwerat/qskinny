@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "QskProgressRing.h"
-
 #include "QskIntervalF.h"
 
 QSK_SUBCONTROL( QskProgressRing, Groove )
@@ -20,6 +19,8 @@ QskProgressRing::QskProgressRing( qreal min, qreal max, QQuickItem* parent )
     : Inherited( min, max, parent )
     , m_data( new PrivateData )
 {
+    initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
+
     m_data->size = NormalSize;
 
     setSubcontrolProxy( Inherited::Groove, Groove );

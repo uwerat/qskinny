@@ -31,18 +31,6 @@ class QSK_FLUENT2_EXPORT QskFluent2Skin : public QskSkin
         GraphicRoleFillColorTextSecondary,
     };
 
-    enum FontRole
-    {
-        Caption = TinyFont,
-        Body = DefaultFont,
-        BodyStrong = SmallFont,
-        BodyLarge = MediumFont,
-        Subtitle = LargeFont,
-        Title = HugeFont,
-        TitleLarge,
-        Display,
-    };
-
     static constexpr QskAspect::Variation Standard = QskAspect::NoVariation;
     static constexpr QskAspect::Variation Accent = QskAspect::Large;
 

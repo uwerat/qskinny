@@ -9,152 +9,9 @@
 
 #include <QskIntervalF.h>
 #include <QskArcMetrics.h>
-#include <QskArcNode.h>
+#include <QskArcRenderNode.h>
 
-#include <qpainterpath.h>
 #include <qmath.h>
-
-#define PAINTED_NODE 0
-
-#if PAINTED_NODE
-
-/*
-    This is a fallback implementation for a user who is using an outdated
-    version of QSkinny where only shaders for linear gradients are available.
- */
-#include <QskPaintedNode.h>
-#include <qpainter.h>
-#include <qpainterpath.h>
-#include <qpen.h>
-#include <qbrush.h>
-
-namespace
-{
-    QConicalGradient qskQConicalGradient(
-        const QskGradientStops& stops, qreal startAngle, qreal spanAngle )
-    {
-        QskGradientStops scaledStops;
-        scaledStops.reserve( stops.size() );
-
-        const auto ratio = qAbs( spanAngle ) / 360.0;
-
-        if ( spanAngle > 0.0 )
-        {
-            for ( auto it = stops.cbegin(); it != stops.cend(); ++it )
-                scaledStops += { ratio * it->position(), it->color() };
-        }
-        else
-        {
-            for ( auto it = stops.crbegin(); it != stops.crend(); ++it )
-                scaledStops += { 1.0 - ratio * it->position(), it->color() };
-        }
-
-        QConicalGradient qGradient( QPointF(), startAngle );
-        qGradient.setStops( qskToQGradientStops( scaledStops ) );
-
-        return qGradient;
-    }
-
-    class PaintedArcNode : public QskPaintedNode
-    {
-      public:
-        void setArcData( const QRectF&, const QskArcMetrics&,
-            qreal, const QColor&, const QskGradient&, QQuickWindow* );
-
-      protected:
-        void paint( QPainter*, const QSize&, const void* nodeData ) override;
-        QskHashValue hash( const void* nodeData ) const override;
-
-      private:
-        QskHashValue arcHash( const QRectF&, const QskArcMetrics&,
-            qreal, const QColor&, const QskGradient& ) const;
-
-        QBrush fillBrush( const QskGradient&, const QRectF&, qreal, qreal ) const;
-
-        struct ArcData
-        {
-            QPointF translation;
-            QPen pen;
-            QBrush brush;
-            QPainterPath path;
-
-            QskHashValue hash;
-        };
-    };
-
-    void PaintedArcNode::setArcData(
-        const QRectF& rect, const QskArcMetrics& metrics,
-        qreal borderWidth, const QColor& borderColor,
-        const QskGradient& gradient, QQuickWindow* window )
-    {
-        const auto hash = arcHash( rect, metrics, borderWidth, borderColor, gradient );
-
-        const auto brush = fillBrush( gradient, rect,
-            metrics.startAngle(), metrics.spanAngle() );
-
-        QPen pen( borderColor, borderWidth );
-        if ( borderWidth <= 0.0 )
-            pen.setStyle( Qt::NoPen );
-
-        const auto path = metrics.painterPath( rect );
-        const auto r = path.controlPointRect();
-
-        const ArcData arcData { r.topLeft(), pen, brush, path, hash };
-        update( window, r, QSizeF(), &arcData );
-    }
-
-    void PaintedArcNode::paint( QPainter* painter, const QSize&, const void* nodeData )
-    {
-        const auto arcData = reinterpret_cast< const ArcData* >( nodeData );
-
-        painter->setRenderHint( QPainter::Antialiasing, true );
-        painter->translate( -arcData->translation );
-        painter->setPen( arcData->pen );
-        painter->setBrush( arcData->brush );
-        painter->drawPath( arcData->path );
-    }
-
-    QskHashValue PaintedArcNode::hash( const void* nodeData ) const
-    {
-        const auto arcData = reinterpret_cast< const ArcData* >( nodeData );
-        return arcData->hash;
-    }
-
-    QBrush PaintedArcNode::fillBrush( const QskGradient& gradient,
-        const QRectF& rect, qreal startAngle, qreal spanAngle ) const
-    {
-        const auto qGradient = qskQConicalGradient(
-            gradient.stops(), startAngle, spanAngle );
-
-        const qreal sz = qMax( rect.width(), rect.height() );
-        const qreal sx = rect.width() / sz;
-        const qreal sy = rect.height() / sz;
-
-        QTransform t;
-        t.scale( sx, sy );
-        t.translate( rect.center().x() / sx, rect.center().y() / sy );
-
-        QBrush brush( qGradient );
-        brush.setTransform( t );
-
-        return brush;
-    }
-
-    inline QskHashValue PaintedArcNode::arcHash(
-        const QRectF& rect, const QskArcMetrics& metrics, qreal borderWidth,
-        const QColor& borderColor, const QskGradient& gradient ) const
-    {
-        auto hash = metrics.hash( 6753 );
-        hash = qHashBits( &rect, sizeof( rect ), hash );
-        hash = qHash( borderWidth, hash );
-        hash = qHash( borderColor.rgba(), hash );
-        hash = gradient.hash( hash );
-
-        return hash;
-    }
-}
-
-#endif // PAINTED_NODE
 
 namespace
 {
@@ -334,39 +191,16 @@ QSGNode* CircularChartSkinlet::updateSampleNode( const QskSkinnable* skinnable,
     return nullptr;
 }
 
-QSGNode* CircularChartSkinlet::updateArcSegmentNode(
-    const QskSkinnable* skinnable,
+QSGNode* CircularChartSkinlet::updateArcSegmentNode( const QskSkinnable*,
     QSGNode* node, qreal borderWidth, const QColor& borderColor,
     const QskGradient& gradient, const QskArcMetrics& metrics ) const
 {
-#if PAINTED_NODE
-    auto arcNode = static_cast< PaintedArcNode* >( node );
+    auto arcNode = static_cast< QskArcRenderNode* >( node );
     if ( arcNode == nullptr )
-        arcNode = new PaintedArcNode();
+        arcNode = new QskArcRenderNode();
 
-    const auto chart = static_cast< const CircularChart* >( skinnable );
-
-    arcNode->setArcData( m_data->closedArcRect, metrics,
-        borderWidth, borderColor, gradient, chart->window() );
-#else
-    Q_UNUSED( skinnable )
-
-    auto fillGradient = gradient;
-
-    if ( fillGradient.type() == QskGradient::Stops )
-    {
-        fillGradient.setStretchMode( QskGradient::StretchToSize );
-        fillGradient.setConicDirection( 0.5, 0.5,
-            metrics.startAngle(), metrics.spanAngle() );
-    }
-
-    auto arcNode = static_cast< QskArcNode* >( node );
-    if ( arcNode == nullptr )
-        arcNode = new QskArcNode();
-
-    arcNode->setArcData( m_data->closedArcRect, metrics,
-        borderWidth, borderColor, fillGradient );
-#endif
+    arcNode->updateNode( m_data->closedArcRect, metrics, true,
+        borderWidth, borderColor, gradient );
 
     return arcNode;
 }

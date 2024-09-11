@@ -6,7 +6,7 @@
 #ifndef QSK_CONTROL_H
 #define QSK_CONTROL_H
 
-#include "QskQuickItem.h"
+#include "QskItem.h"
 #include "QskSkinnable.h"
 #include "QskAspect.h"
 #include "QskGradient.h"
@@ -19,7 +19,7 @@
 class QskControlPrivate;
 class QskGestureEvent;
 
-class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
+class QSK_EXPORT QskControl : public QskItem, public QskSkinnable
 {
     Q_OBJECT
 
@@ -31,12 +31,6 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
 
     Q_PROPERTY( bool autoLayoutChildren READ autoLayoutChildren
         WRITE setAutoLayoutChildren )
-
-    Q_PROPERTY( Qt::FocusPolicy focusPolicy READ focusPolicy
-        WRITE setFocusPolicy NOTIFY focusPolicyChanged )
-
-    Q_PROPERTY( bool wheelEnabled READ isWheelEnabled
-        WRITE setWheelEnabled NOTIFY wheelEnabledChanged )
 
     Q_PROPERTY( bool visibleToLayout READ isVisibleToLayout )
 
@@ -55,7 +49,7 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     Q_PROPERTY( QSizeF preferredSize READ preferredSize WRITE setPreferredSize )
     Q_PROPERTY( QSizeF sizeConstraint READ sizeConstraint )
 
-    using Inherited = QskQuickItem;
+    using Inherited = QskItem;
 
   public:
     QSK_SUBCONTROLS( Background )
@@ -94,12 +88,6 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
 
     void setAutoLayoutChildren( bool );
     bool autoLayoutChildren() const;
-
-    void setWheelEnabled( bool );
-    bool isWheelEnabled() const;
-
-    void setFocusPolicy( Qt::FocusPolicy );
-    Qt::FocusPolicy focusPolicy() const;
 
     void setSection( QskAspect::Section );
     void resetSection();
@@ -180,8 +168,6 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     void marginsChanged( const QMarginsF& );
     void focusIndicatorRectChanged();
     void localeChanged( const QLocale& );
-    void focusPolicyChanged();
-    void wheelEnabledChanged();
 
   public Q_SLOTS:
     void setLocale( const QLocale& );
@@ -209,7 +195,6 @@ class QSK_EXPORT QskControl : public QskQuickItem, public QskSkinnable
     virtual QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const;
 
   private:
-    void setActiveFocusOnTab( bool ) = delete;                 // use setFocusPolicy
     void updateInputMethod( Qt::InputMethodQueries ) = delete; // use qskUpdateInputMethod
 
     QSGNode* updateItemPaintNode( QSGNode* ) override final;

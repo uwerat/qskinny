@@ -3,7 +3,6 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "label/LabelPage.h"
 #include "progressbar/ProgressBarPage.h"
 #include "inputs/InputPage.h"
 #include "button/ButtonPage.h"
@@ -261,7 +260,6 @@ namespace
         {
             auto tabView = new TabView( this );
             tabView->addPage( "Buttons", new ButtonPage() );
-            tabView->addPage( "Labels", new LabelPage() );
             tabView->addPage( "Inputs", new InputPage() );
             tabView->addPage( "Indicators", new ProgressBarPage() );
             tabView->addPage( "Selectors", new SelectorPage() );

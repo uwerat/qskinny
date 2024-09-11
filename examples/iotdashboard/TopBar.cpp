@@ -4,9 +4,9 @@
  *****************************************************************************/
 
 #include "TopBar.h"
-#include "EnergyMeter.h"
+#include "ValueMeter.h"
 
-#include <QskSkin.h>
+#include <QskFontRole.h>
 #include <QskTextLabel.h>
 
 #include <QTime>
@@ -41,6 +41,22 @@ namespace
                 return TopBarItem::Item4;
         }
     }
+
+    class EnergyMeter : public ValueMeter
+    {
+      public:
+        EnergyMeter( const QColor& textColor,
+                const QskGradient& gradient, int value, QQuickItem* parent )
+            : ValueMeter( parent ) 
+        {
+            setFillGradient( gradient );
+            setValue( value ); 
+            setTextColor( textColor );
+
+            setFixedSize( 57, 57 );
+        }
+    };
+
 }
 
 TopBarItem::TopBarItem(
@@ -54,7 +70,7 @@ TopBarItem::TopBarItem(
     setSpacing( 15 );
 
     auto* textLabel = new QskTextLabel( name, this );
-    textLabel->setFontRole( QskSkin::SmallFont );
+    textLabel->setFontRole( QskFontRole::Caption );
 
     auto* pieChartAndDisplay = new QskLinearBox( Qt::Horizontal, this );
     pieChartAndDisplay->setSpacing( 10 );
@@ -62,19 +78,17 @@ TopBarItem::TopBarItem(
     const auto subcontrol = subcontrolForIndex( index );
     const auto textColor = color( subcontrol | QskAspect::TextColor );
 
-    auto pieChart = new EnergyMeter(
-        textColor, gradient, progress, pieChartAndDisplay );
-    pieChart->setSizePolicy( Qt::Horizontal, QskSizePolicy::Constrained );
+    (void) new EnergyMeter( textColor, gradient, progress, pieChartAndDisplay );
 
     auto display = new QskLinearBox( Qt::Vertical, pieChartAndDisplay );
     display->setSpacing( 0 );
     display->addSpacer( 0, 1 );
 
     auto displayValue = new QskTextLabel( QString::number( value ), display );
-    displayValue->setFontRole( QskSkin::MediumFont );
+    displayValue->setFontRole( QskFontRole::Subtitle );
 
     auto displayUnit = new QskTextLabel( "kwH", display );
-    displayUnit->setFontRole( QskSkin::SmallFont );
+    displayUnit->setFontRole( QskFontRole::Caption );
     display->addSpacer( 0, 1 );
 }
 

@@ -4,7 +4,6 @@
 ############################################################################
 
 set(SOURCES
-    label/LabelPage.h label/LabelPage.cpp
     inputs/InputPage.h inputs/InputPage.cpp
     progressbar/ProgressBarPage.h progressbar/ProgressBarPage.cpp
     button/ButtonPage.h button/ButtonPage.cpp

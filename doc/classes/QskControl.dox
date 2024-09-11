@@ -8,7 +8,7 @@
     what is needed to support a layout system, that is on par with what
     is known from Qt/Widgets.
 
-    \todo Explain: QskQuickItem::geometry(), QskQuickItem::rect(),
+    \todo Explain: QskItem::geometry(), QskItem::rect(),
                    QQuickItem::boundingRect(), layoutRect(), contentsRect(),
                    subControlRect(), focusIndicatorRect(), QQuickItem::clipRect(),
                    QQuickItem::contains() 
@@ -22,7 +22,7 @@
         A state bit that is set, when QQuickItem::isEnabled() == false.
 
     \extends QskAspect::State
-    \sa   QskQuickItem::setDisabled()
+    \sa   QskItem::setDisabled()
     \saqt QQuickItem::enabled
 
     \var QskControl::Hovered
@@ -71,7 +71,7 @@
     \accessors autoLayoutChildren(), setAutoLayoutChildren()
 
     \sa layoutRect(), layoutHints(), layoutAlignmentHint(),
-        QskQuickItem::transparentForPositioners
+        QskItem::transparentForPositioners
     \saqt QQuickItem::updatePolish()
 
     \note Auto layouting is similar to what happens when putting several items
@@ -274,7 +274,7 @@
     \aspect QskControl::Background | QskAspect::Color
 
     \sa setBackground()
-    \sa QskQuickItem::DebugForceBackground
+    \sa QskItem::DebugForceBackground
 */
 
 /*!
@@ -554,7 +554,7 @@
     A control has an impact on the layout calutaions, when:
 
     - isTransparentForPositioner() is false
-    - QskQuickItem::isVisibleToParent() is true, or RetainSizeWhenHidden is set
+    - QskItem::isVisibleToParent() is true, or RetainSizeWhenHidden is set
 
     \sa isVisibleToParent(), RetainSizeWhenHidden
 */

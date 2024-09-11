@@ -28,6 +28,7 @@
 #include "QskGradient.h"
 #include "QskTextOptions.h"
 #include "QskGraphic.h"
+#include "QskFontRole.h"
 
 #include <qfont.h>
 #include <qfontmetrics.h>
@@ -129,7 +130,7 @@ static inline constexpr QskAspect qskAnimatorAspect( const QskAspect aspect )
         the effective aspect in animatedHint.
      */
 
-    return aspect.type() | aspect.subControl() | aspect.primitive(); 
+    return aspect.type() | aspect.subControl() | aspect.primitive();
 }
 
 static inline void qskTriggerUpdates( QskAspect aspect, QQuickItem* item )
@@ -704,9 +705,11 @@ QskTextOptions QskSkinnable::textOptionsHint(
         aspect | QskAspect::Option, status ).value< QskTextOptions >();
 }
 
-bool QskSkinnable::setFontRoleHint( const QskAspect aspect, int role )
+bool QskSkinnable::setFontRoleHint(
+    const QskAspect aspect, const QskFontRole& role )
 {
-    return qskSetFlag( this, aspect | QskAspect::FontRole, role );
+    return setSkinHint( aspect | QskAspect::FontRole,
+        QVariant::fromValue( role ) );
 }
 
 bool QskSkinnable::resetFontRoleHint( const QskAspect aspect )
@@ -714,15 +717,43 @@ bool QskSkinnable::resetFontRoleHint( const QskAspect aspect )
     return resetSkinHint( aspect | QskAspect::FontRole );
 }
 
-int QskSkinnable::fontRoleHint(
+QskFontRole QskSkinnable::fontRoleHint(
     const QskAspect aspect, QskSkinHintStatus* status ) const
 {
-    return qskFlag( this, aspect | QskAspect::FontRole, status );
+    return effectiveSkinHint(
+        aspect | QskAspect::FontRole, status ).value< QskFontRole >();
 }
 
-QFont QskSkinnable::effectiveFont( const QskAspect aspect ) const
+QFont QskSkinnable::effectiveFont( QskAspect aspect ) const
 {
-    return effectiveSkin()->font( fontRoleHint( aspect ) );
+    const auto hint = effectiveSkinHint( aspect | QskAspect::FontRole );
+    if ( hint.canConvert< QFont >() )
+    {
+        /*
+            The provided skins/controls use font roles only - however
+            application code might want to assign fonts without defining
+            font roles.
+         */
+        return hint.value< QFont >();
+    }
+
+    const auto fontRole = hint.value< QskFontRole >();
+
+    auto font = effectiveSkin()->font( fontRole );
+
+    if ( auto item = owningItem() )
+    {
+        const auto v = QskSkinTransition::animatedFontSize(
+            item->window(), fontRole );
+
+        if ( v.canConvert< int >() )
+        {
+            font.setPixelSize( v.value< int >() );
+            item->update(); // design flaw: see effectiveGraphicFilter
+        }
+    }
+
+    return font;
 }
 
 qreal QskSkinnable::effectiveFontHeight( const QskAspect aspect ) const
@@ -1316,7 +1347,7 @@ void QskSkinnable::startHintTransition( QskAspect aspect, int index,
     if ( control->window() == nullptr || !isTransitionAccepted( aspect ) )
         return;
 
-    if ( !QskVariantAnimator::maybeInterpolate( from, to ) )
+    if ( !QskVariantAnimator::maybeInterpolate( from, to, false ) )
         return;
 
     auto v1 = from;

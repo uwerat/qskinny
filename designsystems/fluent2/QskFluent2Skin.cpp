@@ -56,6 +56,7 @@
 #include <QskCheckBox.h>
 #include <QskComboBox.h>
 #include <QskDialogButtonBox.h>
+#include <QskDialogSubWindow.h>
 #include <QskDrawer.h>
 #include <QskFocusIndicator.h>
 #include <QskGraphicLabel.h>
@@ -94,27 +95,53 @@
 #include <QskGraphicIO.h>
 #include <QskMargins.h>
 #include <QskRgbValue.h>
+#include <QskFontRole.h>
 
 #include <QskNamespace.h>
 #include <QskPlatform.h>
 
-#include <QGuiApplication>
-#include <QScreen>
+#include <qguiapplication.h>
+#include <qfontinfo.h>
+
+static void qskFluent2InitResources()
+{
+    Q_INIT_RESOURCE( QskFluent2Icons );
+}
+
+Q_CONSTRUCTOR_FUNCTION( qskFluent2InitResources )
+
+namespace Fluent2
+{
+    using F = QskFontRole;
+
+    /*
+        Fluent2/Windows font roles according to:
+            https://fluent2.microsoft.design/typography
+     */
+    constexpr F Caption           = { F::Caption, F::Normal };
+
+    constexpr F Body              = { F::Body, F::Normal };
+    constexpr F BodyStrong        = { F::Body, F::High };
+    constexpr F BodyStronger      = { F::Body, F::VeryHigh };
+
+    constexpr F Subtitle          = { F::Subtitle, F::Normal };
+
+    constexpr F Title             = { F::Title, F::Normal };
+
+    constexpr F LargeTitle        = { F::Headline, F::Normal };
+    constexpr F Display           = { F::Display, F::Normal };
+}
 
 namespace
 {
-    inline QFont createFont( const QString& name, qreal lineHeight,
-        qreal size, qreal tracking, QFont::Weight weight )
+    Q_DECL_UNUSED inline double operator ""_px( long double value )
     {
-        QFont font( name, qRound( size ) );
-        font.setPixelSize( qRound( lineHeight ) );
+        return qskPxToPixels( static_cast< qreal >( value ) );
+    }
 
-        if( !qskFuzzyCompare( tracking, 0.0 ) )
-            font.setLetterSpacing( QFont::AbsoluteSpacing, tracking );
-
-        font.setWeight( weight );
-
-        return font;
+    Q_DECL_UNUSED inline double operator ""_px( unsigned long long value )
+    {
+        return qskPxToPixels( value );
     }
 
     inline constexpr QRgb rgbGray( int value, qreal opacity = 1.0 )
@@ -197,6 +224,7 @@ namespace
       private:
         void setupPopup( const QskFluent2Theme& );
         void setupSubWindow( const QskFluent2Theme& );
+        void setupDialogSubWindow( const QskFluent2Theme& );
 
         void setupBoxMetrics();
         void setupBoxColors( QskAspect::Section, const QskFluent2Theme& );
@@ -338,6 +366,7 @@ void Editor::setupColors( QskAspect::Section section, const QskFluent2Theme& the
         // TODO
         setupPopup( theme );
         setupSubWindow( theme );
+        setupDialogSubWindow( theme );
     }
 
     setupBoxColors( section, theme );
@@ -384,15 +413,14 @@ void Editor::setupCheckBoxMetrics()
 {
     using Q = QskCheckBox;
 
-    setStrutSize( Q::Panel, 126, 38 );
-    setSpacing( Q::Panel, 8 );
+    setStrutSize( Q::Panel, 126_px, 38_px );
+    setSpacing( Q::Panel, 8_px );
 
-    setStrutSize( Q::Box, { 20, 20 } ); // 18 + 2*1 border
-    setBoxShape( Q::Box, 4 ); // adapt to us taking the border into account
-    setBoxBorderMetrics( Q::Box, 1 );
-    setPadding( Q::Box, 5 ); // "icon size"
+    setStrutSize( Q::Box, { 20_px, 20_px } ); // 18 + 2*1 border
+    setBoxShape( Q::Box, 4_px ); // adapt to us taking the border into account
+    setBoxBorderMetrics( Q::Box, 1_px );
 
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 }
 
 void Editor::setupCheckBoxColors(
@@ -508,23 +536,23 @@ void Editor::setupComboBoxMetrics()
 {
     using Q = QskComboBox;
 
-    setStrutSize( Q::Panel, { -1, 32 } );
-    setBoxBorderMetrics( Q::Panel, 1 );
-    setBoxShape( Q::Panel, 3 );
-    setPadding( Q::Panel, { 11, 0, 11, 0 } );
+    setStrutSize( Q::Panel, { -1, 32_px } );
+    setBoxBorderMetrics( Q::Panel, 1_px );
+    setBoxShape( Q::Panel, 3_px );
+    setPadding( Q::Panel, { 11_px, 0_px, 11_px, 0_px } );
 
-    setStrutSize( Q::Icon, 12, 12 );
-    setPadding( Q::Icon, { 0, 0, 8, 0 } );
+    setStrutSize( Q::Icon, 12_px, 12_px );
+    setPadding( Q::Icon, { 0, 0, 8_px, 0 } );
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 
-    setStrutSize( Q::StatusIndicator, 12, 12 );
-    setSymbol( Q::StatusIndicator, symbol( "spin-box-arrow-down" ) );
-    setSymbol( Q::StatusIndicator | Q::PopupOpen, symbol( "spin-box-arrow-up" ) );
+    setStrutSize( Q::StatusIndicator, 16_px, 16_px );
+    setSymbol( Q::StatusIndicator, symbol( "chevron_down" ) );
+    // setSymbol( Q::StatusIndicator | Q::PopupOpen, symbol( "chevron_up" ) );
 
     // Using Focused (Pressed doesn't exist yet):
-    setBoxBorderMetrics( Q::Panel | Q::Focused, { 1, 1, 1, 2 } );
+    setBoxBorderMetrics( Q::Panel | Q::Focused, { 1_px, 1_px, 1_px, 2_px } );
 }
 
 void Editor::setupComboBoxColors(
@@ -608,7 +636,7 @@ void Editor::setupComboBoxColors(
 
 void Editor::setupDialogButtonBoxMetrics()
 {
-    setPadding( QskDialogButtonBox::Panel, 20 );
+    setPadding( QskDialogButtonBox::Panel, 20_px );
 }
 
 void Editor::setupDialogButtonBoxColors(
@@ -637,9 +665,9 @@ void Editor::setupFocusIndicatorMetrics()
 {
     using Q = QskFocusIndicator;
 
-    setBoxBorderMetrics( Q::Panel, 2 );
-    setPadding( Q::Panel, 3 );
-    setBoxShape( Q::Panel, 4 );
+    setBoxBorderMetrics( Q::Panel, 2_px );
+    setPadding( Q::Panel, 3_px );
+    setBoxShape( Q::Panel, 4_px );
 }
 
 void Editor::setupFocusIndicatorColors(
@@ -666,10 +694,10 @@ void Editor::setupListViewMetrics()
     using A = QskAspect;
 
     for ( auto state : { A::NoState, Q::Hovered, Q::Pressed } )
-        setBoxBorderMetrics( Q::Cell | state | Q::Selected, { 3, 0, 0, 0 } );
+        setBoxBorderMetrics( Q::Cell | state | Q::Selected, { 3_px, 0, 0, 0 } );
 #if 1
     // taken from M3 - what are the actual values, TODO ...
-    setPadding( Q::Cell, { 16, 12, 16, 12 } );
+    setPadding( Q::Cell, { 16_px, 12_px, 16_px, 12_px } );
 #endif
 }
 
@@ -756,18 +784,18 @@ void Editor::setupMenuMetrics()
     using Q = QskMenu;
     using A = QskAspect;
 
-    setPadding( Q::Panel, { 4, 6, 4, 6 } );
-    setBoxBorderMetrics( Q::Panel, 1 );
-    setBoxShape( Q::Panel, 7 );
+    setPadding( Q::Panel, { 4_px, 6_px, 4_px, 6_px } );
+    setBoxBorderMetrics( Q::Panel, 1_px );
+    setBoxShape( Q::Panel, 7_px );
 
-    setPadding( Q::Segment, { 0, 10, 10, 10 } );
-    setSpacing( Q::Segment, 15 );
-    setBoxBorderMetrics( Q::Segment | Q::Selected, { 3, 0, 0, 0 } );
+    setPadding( Q::Segment, { 0, 10_px, 10_px, 10_px } );
+    setSpacing( Q::Segment, 15_px );
+    setBoxBorderMetrics( Q::Segment | Q::Selected, { 3_px, 0, 0, 0 } );
 
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 
-    setStrutSize( Q::Icon, 12, 12 );
-    setPadding( Q::Icon, { 8, 8, 0, 8 } );
+    setStrutSize( Q::Icon, 12_px, 12_px );
+    setPadding( Q::Icon, { 8_px, 8_px, 0, 8_px } );
 
     setAnimation( Q::Panel | A::Position, 100 );
 }
@@ -821,8 +849,8 @@ void Editor::setupPageIndicatorMetrics()
     using Q = QskPageIndicator;
     using A = QskAspect;
 
-    setPadding( Q::Panel, 5 );
-    setSpacing( Q::Panel, 6 );
+    setPadding( Q::Panel, 5_px );
+    setSpacing( Q::Panel, 6_px );
 
     // circles, without border
 
@@ -839,7 +867,7 @@ void Editor::setupPageIndicatorMetrics()
             - Q::Hovered | Q::Selected : 7
      */
 
-    setStrutSize( Q::Bullet, 6, 6 );
+    setStrutSize( Q::Bullet, 6_px, 6_px );
 
     /*
         Using the margin to adjust sizes is a weired type of implementation.
@@ -848,7 +876,7 @@ void Editor::setupPageIndicatorMetrics()
     for ( auto state : { A::NoState, Q::Disabled } )
     {
         setMargin( Q::Bullet | state | Q::Selected, 0 );
-        setMargin( Q::Bullet | state, 1 );
+        setMargin( Q::Bullet | state, 1_px );
     }
 }
 
@@ -893,10 +921,10 @@ void Editor::setupProgressBarMetrics()
     using Q = QskProgressBar;
     using A = QskAspect;
 
-    setMetric( Q::Groove | A::Size, 1 );
+    setMetric( Q::Groove | A::Size, 1_px );
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
 
-    setMetric( Q::Fill | A::Size, 3 );
+    setMetric( Q::Fill | A::Size, 3_px );
     setBoxShape( Q::Fill, 100, Qt::RelativeSize );
 }
 
@@ -920,9 +948,9 @@ void Editor::setupProgressRingMetrics()
     static constexpr QskAspect::Variation NormalSize = A::NoVariation;
     static constexpr QskAspect::Variation LargeSize = A::Large;
 
-    setStrutSize( Q::Fill | SmallSize, { 16, 16 } );
-    setStrutSize( Q::Fill | NormalSize, { 32, 32 } );
-    setStrutSize( Q::Fill | LargeSize, { 64, 64 } );
+    setStrutSize( Q::Fill | SmallSize, { 16_px, 16_px } );
+    setStrutSize( Q::Fill | NormalSize, { 32_px, 32_px } );
+    setStrutSize( Q::Fill | LargeSize, { 64_px, 64_px } );
 
     const auto startAngle = 90, spanAngle = -360;
     setArcMetrics( Q::Fill | SmallSize, startAngle, spanAngle, 1.5 );
@@ -943,19 +971,26 @@ void Editor::setupProgressRingColors(
 void Editor::setupPushButtonMetrics()
 {
     using Q = QskPushButton;
+    using A = QskAspect;
     using W = QskFluent2Skin;
 
-    setStrutSize( Q::Panel, { 120, 32 } );
-    setBoxShape( Q::Panel, 4 );
-    setBoxBorderMetrics( Q::Panel, 1 );
+    const qreal h = 32_px;
+    setStrutSize( Q::Panel, { 120_px, h } );
+
+    // 60: not covered by any spec, but 120 is too big for a menu bar
+    setStrutSize( Q::Panel | A::Header, { 60_px, h } );
+    setStrutSize( Q::Panel | A::Footer, { 60_px, h } );
+
+    setBoxShape( Q::Panel, 4_px );
+    setBoxBorderMetrics( Q::Panel, 1_px );
     setBoxBorderMetrics( Q::Panel | W::Accent | Q::Disabled, 0 );
 
     // Fluent buttons don't really have icons,
 
-    setStrutSize( Q::Icon, 12, 12 );
-    setPadding( Q::Icon, { 0, 0, 8, 0 } );
+    setStrutSize( Q::Icon, 12_px, 12_px );
+    setPadding( Q::Icon, { 0, 0, 8_px, 0 } );
 
-    setFontRole( Q::Text, W::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 }
 
 void Editor::setupPushButtonColors(
@@ -1061,8 +1096,8 @@ void Editor::setupRadioBoxMetrics()
 {
     using Q = QskRadioBox;
 
-    setSpacing( Q::Button, 8 );
-    setStrutSize( Q::Button, { 115, 38 } );
+    setSpacing( Q::Button, 8_px );
+    setStrutSize( Q::Button, { 115_px, 38_px } );
 
     /*
         We do not have an indicator - states are indicated by the panel border
@@ -1075,27 +1110,27 @@ void Editor::setupRadioBoxMetrics()
 
     setBoxShape( Q::CheckIndicator, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::CheckIndicator, 0 );
-    setBoxBorderMetrics( Q::CheckIndicator | Q::Selected, 1 );
-    setBoxBorderMetrics( Q::CheckIndicator | Q::Pressed | Q::Selected, 1 );
+    setBoxBorderMetrics( Q::CheckIndicator | Q::Selected, 1_px );
+    setBoxBorderMetrics( Q::CheckIndicator | Q::Pressed | Q::Selected, 1_px );
 
     setBoxShape( Q::CheckIndicatorPanel, 100, Qt::RelativeSize );
-    setStrutSize( Q::CheckIndicatorPanel, { 20, 20 } );
+    setStrutSize( Q::CheckIndicatorPanel, { 20_px, 20_px } );
 
-    setBoxBorderMetrics( Q::CheckIndicatorPanel, 1 );
+    setBoxBorderMetrics( Q::CheckIndicatorPanel, 1_px );
 
     setBoxBorderMetrics( Q::CheckIndicatorPanel | Q::Selected, 0 );
-    setPadding( Q::CheckIndicatorPanel | Q::Selected, { 5, 5 } ); // indicator "strut size"
+    setPadding( Q::CheckIndicatorPanel | Q::Selected, { 5_px, 5_px } ); // indicator "strut size"
 
-    setPadding( Q::CheckIndicatorPanel | Q::Hovered | Q::Selected, { 4, 4 } ); // indicator "strut size"
-    setPadding( Q::CheckIndicatorPanel | Q::Pressed, { 7, 7 } ); // indicator "strut size"
+    setPadding( Q::CheckIndicatorPanel | Q::Hovered | Q::Selected, { 4_px, 4_px } ); // indicator "strut size"
+    setPadding( Q::CheckIndicatorPanel | Q::Pressed, { 7_px, 7_px } ); // indicator "strut size"
 
     setBoxBorderMetrics( Q::CheckIndicatorPanel | Q::Pressed | Q::Selected, 0 );
-    setPadding( Q::CheckIndicatorPanel | Q::Pressed | Q::Selected, { 6, 6 } ); // indicator "strut size"
+    setPadding( Q::CheckIndicatorPanel | Q::Pressed | Q::Selected, { 6_px, 6_px } ); // indicator "strut size"
 
     setBoxBorderMetrics( Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, 0 );
-    setPadding( Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, { 6, 6 } ); // indicator "strut size"
+    setPadding( Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, { 6_px, 6_px } ); // indicator "strut size"
 
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 }
 
 void Editor::setupRadioBoxColors(
@@ -1189,11 +1224,11 @@ void Editor::setupScrollViewMetrics()
 
     for ( auto subControl : { Q::HorizontalScrollBar, Q::VerticalScrollBar } )
     {
-        setMetric( subControl | A::Size, 6 );
+        setMetric( subControl | A::Size, 6_px );
 
         // The scrollbar is expanding, when being hovered/pressed
 
-        const qreal padding = 4;
+        const qreal padding = 4_px;
 
         if ( subControl == Q::HorizontalScrollBar )
             setPadding( Q::HorizontalScrollBar, 0, padding, 0, 0 );
@@ -1217,7 +1252,7 @@ void Editor::setupScrollViewMetrics()
     setBoxShape( Q::HorizontalScrollHandle, 100, Qt::RelativeSize );
     setBoxShape( Q::VerticalScrollHandle, 100, Qt::RelativeSize );
 
-    const auto handleExtent = 40.0;
+    const auto handleExtent = 40_px;
     setStrutSize( Q::HorizontalScrollHandle, handleExtent, 0.0 );
     setStrutSize( Q::VerticalScrollHandle, 0.0, handleExtent );
 }
@@ -1270,20 +1305,20 @@ void Editor::setupSegmentedBarMetrics()
     using Q = QskSegmentedBar;
     using A = QskAspect;
 
-    const QSizeF segmentStrutSize( 120, 32 );
+    const QSizeF segmentStrutSize( 120_px, 32_px );
 
-    setBoxBorderMetrics( Q::Panel, 1 );
+    setBoxBorderMetrics( Q::Panel, 1_px );
     setBoxBorderMetrics( Q::Panel | Q::Selected | Q::Disabled, 0 );
-    setSpacing( Q::Panel, 8 );
+    setSpacing( Q::Panel, 8_px );
 
-    setStrutSize( Q::Icon, { 12, 12 } );
+    setStrutSize( Q::Icon, { 12_px, 12_px } );
 
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 
     setStrutSize( Q::Segment | A::Horizontal, segmentStrutSize );
     setStrutSize( Q::Segment | A::Vertical, segmentStrutSize.transposed() );
-    setBoxShape( Q::Segment, 4 );
-    setPadding( Q::Segment, { 8, 0, 8, 0 } );
+    setBoxShape( Q::Segment, 4_px );
+    setPadding( Q::Segment, { 8_px, 0, 8_px, 0 } );
 }
 
 void Editor::setupSegmentedBarColors(
@@ -1373,7 +1408,7 @@ void Editor::setupSeparatorMetrics()
     using Q = QskSeparator;
     using A = QskAspect;
 
-    setMetric( Q::Panel | A::Size, 1 );
+    setMetric( Q::Panel | A::Size, 1_px );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
 }
@@ -1392,7 +1427,7 @@ void Editor::setupSliderMetrics()
     using Q = QskSlider;
     using A = QskAspect;
 
-    const qreal extent = 22;
+    const qreal extent = 22_px;
     setMetric( Q::Panel | A::Size, extent );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
@@ -1400,22 +1435,22 @@ void Editor::setupSliderMetrics()
     setPadding( Q::Panel | A::Horizontal, QskMargins( 0.5 * extent, 0 ) );
     setPadding( Q::Panel | A::Vertical, QskMargins( 0, 0.5 * extent ) );
 
-    setMetric( Q::Groove | A::Size, 4 );
+    setMetric( Q::Groove | A::Size, 4_px );
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
 
-    setMetric( Q::Fill | A::Size, 4 );
+    setMetric( Q::Fill | A::Size, 4_px );
     setBoxShape( Q::Fill, 100, Qt::RelativeSize );
 
-    setStrutSize( Q::Handle, { 22, 22 } );
+    setStrutSize( Q::Handle, { 22_px, 22_px } );
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
-    setBoxBorderMetrics( Q::Handle, 1 );
+    setBoxBorderMetrics( Q::Handle, 1_px );
 
-    setStrutSize( Q::Ripple, { 12, 12 } );
+    setStrutSize( Q::Ripple, { 12_px, 12_px } );
     setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
 
-    setStrutSize( Q::Ripple | Q::Hovered, { 14, 14 } );
+    setStrutSize( Q::Ripple | Q::Hovered, { 14_px, 14_px } );
 
-    setStrutSize( Q::Ripple | Q::Pressed, { 10, 10 } );
+    setStrutSize( Q::Ripple | Q::Pressed, { 10_px, 10_px } );
 }
 
 void Editor::setupSliderColors(
@@ -1468,28 +1503,38 @@ void Editor::setupSpinBoxMetrics()
 {
     using Q = QskSpinBox;
 
+    /*
+        The F2 NumberBox has 2 modes for the Up/Down panels ( a.k.a Spinner ):
+
+            - compact ( -> QskSpinBox::UpDownControl )
+            - inline ( -> QskSpinBox::ButtonsRight )
+
+        TODO: in compact mode the panels/indicators are blown up, when being hovered
+     */
     setHint( Q::Panel | QskAspect::Style, Q::ButtonsRight );
-    setStrutSize( Q::Panel, { -1, 32 } );
-    setBoxBorderMetrics( Q::Panel, 1 );
-    setBoxShape( Q::Panel, 3 );
-    setPadding( Q::Panel, { 11, 0, 11, 0 } );
 
-    setAlignment( Q::Text, Qt::AlignLeft );
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setStrutSize( Q::Panel, { -1, 32_px } );
+    setBoxBorderMetrics( Q::Panel, 1_px );
+    setBoxShape( Q::Panel, 3_px );
 
-    setPadding( Q::TextPanel, { 11, 5, 0, 0 } );
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+    setFontRole( Q::Text, Fluent2::Body );
 
-    setStrutSize( Q::UpPanel, 32, 20 );
-    setPadding( Q::UpPanel, { 11, 7, 11, 7 } );
+    setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
 
-    setStrutSize( Q::DownPanel, 34, 20 );
-    setPadding( Q::DownPanel, { 11, 7, 13, 7 } );
+    for ( auto panel : { Q::UpPanel, Q::DownPanel } )
+        setStrutSize( panel, 32_px, 18_px );
 
-    setSymbol( Q::UpIndicator, symbol( "spin-box-arrow-up" ) );
-    setSymbol( Q::DownIndicator, symbol( "spin-box-arrow-down" ) );
+    setSymbol( Q::UpIndicator, symbol( "chevron_up" ) );
+    setSymbol( Q::DownIndicator, symbol( "chevron_down" ) );
 
-    // Focused (Pressed doesn't exist yet):
-    setBoxBorderMetrics( Q::Panel | Q::Focused, { 1, 1, 1, 2 } );
+    setPadding( Q::UpPanel, { 0, 1_px, 0, 0 } );
+    setPadding( Q::DownPanel, { 0, 0, 0, 1_px } );
+
+#if 0
+    // QskSpinBox::Pressed is missing yet
+    setBoxBorderMetrics( Q::Panel | Q::Pressed, { 1_px, 1_px, 1_px, 2_px } );
+#endif
 }
 
 void Editor::setupSpinBoxColors(
@@ -1552,7 +1597,16 @@ void Editor::setupSpinBoxColors(
         panelColor = rgbSolid( panelColor, pal.background.solid.base );
 
         setGradient( panel, panelColor );
+
         setBoxBorderGradient( panel, borderColor1, borderColor2, panelColor );
+
+        if ( state == Q::Focused )
+        {
+            const auto colors = boxBorderColors( panel );
+
+            setBoxBorderColors( panel | Q::Decreasing, colors );
+            setBoxBorderColors( panel | Q::Increasing, colors );
+        }
 
         setColor( text, textColor );
 
@@ -1574,17 +1628,17 @@ void Editor::setupTabButtonMetrics()
 {
     using Q = QskTabButton;
 
-    setStrutSize( Q::Panel, { -1, 31 } );
-    setPadding( Q::Panel, { 7, 0, 7, 0 } );
-    setBoxShape( Q::Panel, { 7, 7, 0, 0 } );
+    setStrutSize( Q::Panel, { -1, 31_px } );
+    setPadding( Q::Panel, { 7_px, 0, 7_px, 0 } );
+    setBoxShape( Q::Panel, { 7_px, 7_px, 0, 0 } );
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
 
-    setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1 } );
-    setBoxBorderMetrics( Q::Panel | Q::Checked, { 1, 1, 1, 0 } );
+    setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_px } );
+    setBoxBorderMetrics( Q::Panel | Q::Checked, { 1_px, 1_px, 1_px, 0 } );
 
-    setFontRole( Q::Text, QskFluent2Skin::Body );
-    setFontRole( Q::Text | Q::Checked, QskFluent2Skin::BodyStrong );
+    setFontRole( Q::Text, Fluent2::Body );
+    setFontRole( Q::Text | Q::Checked, Fluent2::BodyStrong );
 }
 
 void Editor::setupTabButtonColors(
@@ -1654,9 +1708,9 @@ void Editor::setupGraphicLabelMetrics()
 {
     using Q = QskGraphicLabel;
 
-    setPadding( Q::Panel, 10 );
-    setBoxShape( Q::Panel, 3 );
-    setBoxBorderMetrics( Q::Panel, 1 );
+    setPadding( Q::Panel, 10_px );
+    setBoxShape( Q::Panel, 3_px );
+    setBoxBorderMetrics( Q::Panel, 1_px );
 }
 
 void Editor::setupGraphicLabelColors(
@@ -1675,11 +1729,11 @@ void Editor::setupTextLabelMetrics()
 {
     using Q = QskTextLabel;
 
-    setPadding( Q::Panel, 10 );
-    setBoxShape( Q::Panel, 3 );
-    setBoxBorderMetrics( Q::Panel, 1 );
+    setPadding( Q::Panel, 10_px );
+    setBoxShape( Q::Panel, 3_px );
+    setBoxBorderMetrics( Q::Panel, 1_px );
 
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 }
 
 void Editor::setupTextLabelColors(
@@ -1699,17 +1753,17 @@ void Editor::setupTextInputMetrics()
 {
     using Q = QskTextInput;
 
-    setStrutSize( Q::Panel, { -1, 30 } );
-    setPadding( Q::Panel, { 11, 0, 11, 0 } );
+    setStrutSize( Q::Panel, { -1, 30_px } );
+    setPadding( Q::Panel, { 11_px, 0, 11_px, 0 } );
 
-    setBoxBorderMetrics( Q::Panel, 1 );
+    setBoxBorderMetrics( Q::Panel, 1_px );
     for( const auto& state : { Q::Focused, Q::Editing } )
-        setBoxBorderMetrics( Q::Panel | state, { 1, 1, 1, 2 } );
+        setBoxBorderMetrics( Q::Panel | state, { 1_px, 1_px, 1_px, 2_px } );
 
-    setBoxShape( Q::Panel, 3 );
+    setBoxShape( Q::Panel, 3_px );
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
-    setFontRole( Q::Text, QskFluent2Skin::Body );
+    setFontRole( Q::Text, Fluent2::Body );
 }
 
 void Editor::setupTextInputColors(
@@ -1772,12 +1826,12 @@ void Editor::setupSwitchButtonMetrics()
     using Q = QskSwitchButton;
     using A = QskAspect;
 
-    const QSizeF strutSize( 38, 18 );
+    const QSizeF strutSize( 38_px, 18_px );
     setStrutSize( Q::Groove | A::Horizontal, strutSize );
     setStrutSize( Q::Groove | A::Vertical, strutSize.transposed() );
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
 
-    setBoxBorderMetrics( Q::Groove, 1 );
+    setBoxBorderMetrics( Q::Groove, 1_px );
     setBoxBorderMetrics( Q::Groove | Q::Checked, 0 );
 
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
@@ -1786,15 +1840,15 @@ void Editor::setupSwitchButtonMetrics()
         { QskStateCombination::CombinationNoState, Q::Disabled } );
 
     setBoxBorderMetrics( Q::Handle, 0 );
-    setBoxBorderMetrics( Q::Handle | Q::Checked, 1 );
+    setBoxBorderMetrics( Q::Handle | Q::Checked, 1_px );
     setBoxBorderMetrics( Q::Handle | Q::Disabled | Q::Checked, 0 );
 
-    setStrutSize( Q::Handle, 12, 12 );
+    setStrutSize( Q::Handle, 12_px, 12_px );
 
-    setStrutSize( Q::Handle | Q::Hovered, 14, 14,
+    setStrutSize( Q::Handle | Q::Hovered, 14_px, 14_px,
         { QskStateCombination::CombinationNoState, Q::Checked } );
 
-    const QSizeF pressedSize( 17, 14 );
+    const QSizeF pressedSize( 17_px, 14_px );
 
     setStrutSize( Q::Handle | Q::Pressed | A::Horizontal,
         pressedSize, { QskStateCombination::CombinationNoState, Q::Checked }  );
@@ -1802,7 +1856,7 @@ void Editor::setupSwitchButtonMetrics()
     setStrutSize( Q::Handle | Q::Pressed | A::Vertical,
         pressedSize.transposed(), { QskStateCombination::CombinationNoState, Q::Checked }  );
 
-    setStrutSize( Q::Handle | Q::Disabled, 12, 12,
+    setStrutSize( Q::Handle | Q::Disabled, 12_px, 12_px,
         { QskStateCombination::CombinationNoState, Q::Checked } );
 
     setAnimation( Q::Handle | A::Metric, 100 );
@@ -1895,18 +1949,17 @@ void Editor::setupSubWindow( const QskFluent2Theme& theme )
 
     const auto& pal = theme.palette;
 
-    setPadding( Q::Panel, { 0, 31, 0, 0 } );
-    setBoxShape( Q::Panel, 7 );
-    setBoxBorderMetrics( Q::Panel, 1 );
+    setBoxShape( Q::Panel, 7_px );
+    setBoxBorderMetrics( Q::Panel, 1_px );
     setBoxBorderColors( Q::Panel, pal.strokeColor.surface.defaultColor );
     setGradient( Q::Panel, pal.background.layer.alt );
     setShadowMetrics( Q::Panel, theme.shadow.dialog.metrics );
     setShadowColor( Q::Panel, theme.shadow.dialog.color );
 
-    setHint( Q::TitleBarPanel | QskAspect::Style, Q::TitleBar | Q::Title );
-    setPadding( Q::TitleBarPanel, { 24, 31, 24, 0 } );
+    setHint( Q::TitleBarPanel | QskAspect::Style, Q::NoDecoration );
+    setPadding( Q::TitleBarPanel, { 24_px, 31_px, 24_px, 0 } );
 
-    setFontRole( Q::TitleBarText, QskFluent2Skin::Subtitle );
+    setFontRole( Q::TitleBarText, Fluent2::Subtitle );
     setColor( Q::TitleBarText, pal.fillColor.text.primary );
     setAlignment( Q::TitleBarText, Qt::AlignLeft );
     setTextOptions( Q::TitleBarText, Qt::ElideRight, QskTextOptions::NoWrap );
@@ -1914,13 +1967,22 @@ void Editor::setupSubWindow( const QskFluent2Theme& theme )
     setAnimation( Q::Panel | A::Position, 300, QEasingCurve::OutCubic );
 }
 
+void Editor::setupDialogSubWindow( const QskFluent2Theme& )
+{
+    using Q = QskDialogSubWindow;
+
+    setFontRole( Q::DialogTitle, Fluent2::Subtitle );
+    setAlignment( Q::DialogTitle, Qt::AlignLeft | Qt::AlignVCenter );
+    setTextOptions( Q::DialogTitle, Qt::ElideRight, QskTextOptions::WordWrap );
+}
+
 void Editor::setupVirtualKeyboardMetrics()
 {
     using Q = QskVirtualKeyboard;
 
-    setMargin( Q::ButtonPanel, 2 );
-    setFontRole( Q::ButtonText, QskFluent2Skin::BodyLarge );
-    setPadding( Q::Panel, 8 );
+    setMargin( Q::ButtonPanel, 2_px );
+    setFontRole( Q::ButtonText, Fluent2::BodyStrong );
+    setPadding( Q::Panel, 8_px );
 }
 
 void Editor::setupVirtualKeyboardColors(
@@ -1985,13 +2047,13 @@ void QskFluent2Skin::initHints()
     {
         colors[0].baseColors = { rgbGray( 32 ), rgbGray( 40 ), rgbGray( 28 ) };
         colors[0].accentColors = { 0xff0078d4, 0xff0093f9, 0xff60ccfe, 0xff98ecfe };
-      
+
         colors[1].baseColors = { rgbGray( 40 ), rgbGray( 44 ), rgbGray( 28 ) };
         colors[1].accentColors = colors[0].accentColors;
     }
 
     setupFonts();
-    
+
     Editor editor( &hintTable() );
     editor.setupMetrics();
 
@@ -2006,19 +2068,49 @@ void QskFluent2Skin::initHints()
     addTheme( QskAspect::Footer, themeHeader );
 }
 
+static inline QFont createFont( int size, int lineHeight, QFont::Weight weight )
+{
+    Q_UNUSED( lineHeight ); // TODO ...
+    const int pixelSize = qRound( qskPxToPixels( size ) );
+
+    QFont font( QStringLiteral( "Segoe UI" ), -1, weight );
+
+    static bool checkFont = true;
+    if ( checkFont )
+    {
+        const QFontInfo info( font );
+        if ( info.family() != font.family() )
+        {
+            qWarning() << font.family() <<
+                "not found, using" << info.family() << "instead.";
+        }
+        checkFont = false;
+    }
+
+    font.setPixelSize( pixelSize );
+
+    return font;
+}
+
 void QskFluent2Skin::setupFonts()
 {
-    static QString fontName( QStringLiteral( "Segoe UI Variable" ) );
-    Inherited::setupFonts( fontName );
+    // see: https://fluent2.microsoft.design/typography ( Windows )
 
-    setFont( Caption, createFont( fontName, 12, 16, 0.0, QFont::Normal ) );
-    setFont( Body, createFont( fontName, 14, 20, 0.0, QFont::Normal ) );
-    setFont( BodyStrong, createFont( fontName, 14, 20, 0.0, QFont::DemiBold ) );
-    setFont( BodyLarge, createFont( fontName, 18, 24, 0.0, QFont::Medium ) );
-    setFont( Subtitle, createFont( fontName, 20, 28, 0.0, QFont::DemiBold ) );
-    setFont( Title, createFont( fontName, 28, 36, 0.0, QFont::DemiBold ) );
-    setFont( TitleLarge, createFont( fontName, 40, 52, 0.0, QFont::DemiBold ) );
-    setFont( Display, createFont( fontName, 68, 92, 0.0, QFont::DemiBold ) );
+    setFont( Fluent2::Caption, createFont( 12, 16, QFont::Normal ) );
+
+    setFont( Fluent2::Body, createFont( 14, 20, QFont::Normal ) );
+    setFont( Fluent2::BodyStrong, createFont( 14, 20, QFont::DemiBold ) );
+    setFont( Fluent2::BodyStronger, createFont( 18, 24, QFont::Normal ) );
+
+    setFont( Fluent2::Subtitle, createFont( 20, 28, QFont::DemiBold ) );
+
+    setFont( Fluent2::Title, createFont( 28, 36, QFont::Normal ) );
+    setFont( Fluent2::LargeTitle, createFont( 40, 52, QFont::DemiBold ) );
+
+    setFont( Fluent2::Display, createFont( 68, 92, QFont::DemiBold ) );
+
+    // to have something for the unused roles
+    QskSkin::completeFontTable();
 }
 
 void QskFluent2Skin::setGraphicColor( GraphicRole role, QRgb rgb )

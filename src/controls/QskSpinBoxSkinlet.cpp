@@ -117,11 +117,7 @@ QSGNode* QskSpinBoxSkinlet::updateSubNode(
         case TextRole:
         {
             auto spinBox = static_cast< const QskSpinBox* >( skinnable );
-
-            const auto rect = subControlRect( spinBox, spinBox->contentsRect(), Q::Text );
-
-            return updateTextNode( spinBox, node, rect,
-                spinBox->textAlignment(), spinBox->text(), Q::Text );
+            return updateTextNode( spinBox, node, spinBox->text(), Q::Text );
         }
     }
 
@@ -135,11 +131,11 @@ QRectF QskSpinBoxSkinlet::textPanelRect(
 
     auto spinBox = static_cast< const QskSpinBox* >( skinnable );
 
+    auto r = spinBox->innerBox( Q::Panel, rect );
+
     const auto decoration = spinBox->decoration();
     if ( decoration == Q::NoDecoration )
-        return rect;
-
-    auto r = rect;
+        return r;
 
     const auto spacing = spinBox->spacingHint( Q::Panel );
 
@@ -174,11 +170,13 @@ QRectF QskSpinBoxSkinlet::textPanelRect(
 }
 
 QRectF QskSpinBoxSkinlet::buttonRect( const QskSkinnable* skinnable,
-    const QRectF& rect, QskAspect::Subcontrol subControl ) const
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     using Q = QskSpinBox;
 
     const auto spinBox = static_cast< const QskSpinBox* >( skinnable );
+
+    const auto rect = spinBox->innerBox( Q::Panel, contentsRect );
 
     if ( const auto decoration = spinBox->decoration() )
     {
@@ -212,7 +210,7 @@ QRectF QskSpinBoxSkinlet::buttonRect( const QskSkinnable* skinnable,
 
             if( subControl == Q::UpPanel )
             {
-                const auto downRect = buttonRect( skinnable, rect, Q::DownPanel );
+                const auto downRect = subControlRect( skinnable, contentsRect, Q::DownPanel );
                 x = downRect.left() - w;
             }
             else
@@ -220,7 +218,7 @@ QRectF QskSpinBoxSkinlet::buttonRect( const QskSkinnable* skinnable,
                 x = rect.right() - w;
             }
 
-            y = 0.5 * ( rect.height() - h );
+            y = rect.top() + 0.5 * ( rect.height() - h );
         }
         else
         {
@@ -235,7 +233,7 @@ QRectF QskSpinBoxSkinlet::buttonRect( const QskSkinnable* skinnable,
                 w = h;
 
             x = ( subControl == Q::UpPanel ) ? rect.right() - w : rect.left();
-            y = 0.5 * ( rect.height() - h );
+            y = rect.top() +  0.5 * ( rect.height() - h );
         }
 
         return QRectF( x, y, w, h );
@@ -308,7 +306,9 @@ QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
         }
     }
 
+    hint = hint.grownBy( spinBox->paddingHint( Q::Panel ) );
     hint = hint.expandedTo( spinBox->strutSizeHint( Q::Panel ) );
+
     return hint;
 }
 

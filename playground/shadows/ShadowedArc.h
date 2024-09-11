@@ -9,6 +9,7 @@
 
 class QskShadowMetrics;
 class QskArcMetrics;
+class QskGradient;
 
 class ShadowedArc : public QskControl
 {
@@ -35,7 +36,7 @@ class ShadowedArc : public QskControl
     qreal blurRadius() const;
 
     QColor borderColor() const;
-    QColor fillColor() const;
+    QskGradient fillGradient() const;
     QColor shadowColor() const;
 
   public Q_SLOTS:
@@ -52,7 +53,7 @@ class ShadowedArc : public QskControl
     void setBlurRadius( qreal );
 
     void setBorderColor( const QColor& );
-    void setFillColor( const QColor& );
+    void setFillGradient( const QskGradient& );
     void setShadowColor( const QColor& );
 
   private:

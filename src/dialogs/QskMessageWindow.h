@@ -9,7 +9,6 @@
 #include "QskDialogWindow.h"
 
 class QskTextOptions;
-class QskGraphic;
 
 class QSK_EXPORT QskMessageWindow : public QskDialogWindow
 {
@@ -21,8 +20,6 @@ class QSK_EXPORT QskMessageWindow : public QskDialogWindow
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
         WRITE setTextOptions NOTIFY textOptionsChanged )
 
-    Q_PROPERTY( QUrl symbolSource READ symbolSource WRITE setSymbolSource )
-
     using Inherited = QskDialogWindow;
 
   public:
@@ -33,14 +30,6 @@ class QSK_EXPORT QskMessageWindow : public QskDialogWindow
     QskTextOptions textOptions() const;
 
     QString text() const;
-
-    void setSymbolSource( const QUrl& url );
-    QUrl symbolSource() const;
-
-    void setSymbolType( int symbolType );
-
-    void setSymbol( const QskGraphic& );
-    QskGraphic symbol() const;
 
   public Q_SLOTS:
     void setText( const QString& );

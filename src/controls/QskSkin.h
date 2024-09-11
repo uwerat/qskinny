@@ -20,6 +20,7 @@ class QskSkinlet;
 class QskColorFilter;
 class QskGraphic;
 class QskGraphicProvider;
+class QskFontRole;
 
 class QskSkinHintTable;
 
@@ -33,19 +34,6 @@ class QSK_EXPORT QskSkin : public QObject
     using Inherited = QObject;
 
   public:
-    enum SkinFontRole
-    {
-        DefaultFont = 0,
-
-        TinyFont,
-        SmallFont,
-        MediumFont,
-        LargeFont,
-        HugeFont
-    };
-
-    Q_ENUM( SkinFontRole )
-
 #if 1
     // Use Qt::ColorScheme once minimum version is Qt 6.5
     enum ColorScheme
@@ -71,12 +59,9 @@ class QSK_EXPORT QskSkin : public QObject
     void resetGraphicFilter( int graphicRole );
     QskColorFilter graphicFilter( int graphicRole ) const;
 
-    void setFont( int fontRole, const QFont& );
-    void resetFont( int fontRole );
-    QFont font( int fontRole ) const;
-
-    void setupFonts( const QString& family,
-        int weight = -1, bool italic = false );
+    void setFont( const QskFontRole&, const QFont& );
+    void resetFont( const QskFontRole& );
+    QFont font( const QskFontRole& ) const;
 
     void addGraphicProvider( const QString& providerId, QskGraphicProvider* );
     QskGraphicProvider* graphicProvider( const QString& providerId ) const;
@@ -91,7 +76,7 @@ class QSK_EXPORT QskSkin : public QObject
     const QskSkinHintTable& hintTable() const;
     QskSkinHintTable& hintTable();
 
-    const QHash< int, QFont >& fonts() const;
+    const QHash< QskFontRole, QFont >& fontTable() const;
     const QHash< int, QskColorFilter >& graphicFilters() const;
 
     ColorScheme colorScheme() const;
@@ -105,6 +90,9 @@ class QSK_EXPORT QskSkin : public QObject
   protected:
     void clearHints();
     virtual void initHints() = 0;
+
+    void setupFontTable( const QString& family, bool italic = false );
+    void completeFontTable();
 
   private:
     void declareSkinlet( const QMetaObject* metaObject,

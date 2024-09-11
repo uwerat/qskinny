@@ -10,31 +10,6 @@
 
 using Q = QskProgressRing;
 
-namespace
-{
-    QskIntervalF qskFillInterval( const Q* ring )
-    {
-        qreal pos1, pos2;
-
-        if ( ring->isIndeterminate() )
-        {
-            const auto pos = ring->positionHint( QskProgressIndicator::Fill );
-
-            pos1 = pos2 = pos;
-        }
-        else
-        {
-            pos1 = ring->valueAsRatio( ring->origin() );
-            pos2 = ring->valueAsRatio( ring->value() );
-        }
-
-        if ( pos1 > pos2 )
-            std::swap( pos1, pos2 );
-
-        return QskIntervalF( pos1, pos2 );
-    }
-}
-
 QskProgressRingSkinlet::QskProgressRingSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
@@ -48,27 +23,8 @@ QRectF QskProgressRingSkinlet::subControlRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect,
     QskAspect::Subcontrol subControl ) const
 {
-    const auto ring = static_cast< const Q* >( skinnable );
-
     if( subControl == Q::Groove || subControl == Q::Fill )
-    {
-        auto rect = contentsRect;
-        const auto size = ring->strutSizeHint( Q::Fill );
-
-        if( ring->layoutMirroring() )
-        {
-            rect.setLeft( rect.right() - size.width() );
-        }
-        else
-        {
-            rect.setWidth( size.width() );
-        }
-
-        rect.setTop( rect.top() + 0.5 * ( rect.height() - size.height() ) );
-        rect.setHeight( size.height() );
-
-        return rect;
-    }
+        return contentsRect;
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
@@ -90,36 +46,74 @@ QSGNode* QskProgressRingSkinlet::updateFillNode(
     if ( rect.isEmpty() )
         return nullptr;
 
+    const auto metrics = ring->arcMetricsHint( subControl );
+    if ( metrics.isNull() )
+        return nullptr;
+
     auto gradient = ring->gradientHint( subControl );
     if ( !gradient.isVisible() )
         return nullptr;
 
+    const auto intv = fillInterval( ring );
+
     if ( ( gradient.type() == QskGradient::Stops ) && !gradient.isMonochrome() )
     {
-        const auto center = rect.center();
-        const auto arcMetrics = ring->arcMetricsHint( Q::Fill );
-        gradient.setConicDirection( center.x(), center.y(), arcMetrics.startAngle(), arcMetrics.spanAngle() );
+        const auto stops = qskExtractedGradientStops( gradient.stops(),
+            intv.lowerBound(), intv.upperBound() );
+
+        gradient.setStops( stops );
+
+        if ( metrics.spanAngle() < 0.0 )
+            gradient.reverse();
     }
 
-    const auto interval = qskFillInterval( ring );
-    const auto arcMetrics = ring->arcMetricsHint( subControl );
-
-    const auto startAngle = arcMetrics.startAngle() + interval.lowerBound() * arcMetrics.spanAngle();
-    const auto spanAngle = interval.upperBound() * arcMetrics.spanAngle();
+    const auto startAngle = metrics.startAngle() + intv.lowerBound() * metrics.spanAngle();
+    const auto spanAngle = intv.upperBound() * metrics.spanAngle();
 
     return updateArcNode( ring, node, rect, gradient, startAngle, spanAngle, subControl );
 }
 
 QSizeF QskProgressRingSkinlet::sizeHint( const QskSkinnable* skinnable,
-    Qt::SizeHint which, const QSizeF& ) const
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    const auto ring = static_cast< const Q* >( skinnable );
+    auto hint = skinnable->strutSizeHint( Q::Fill );
+    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Groove ) );
 
-    const auto r = ring->strutSizeHint( Q::Fill );
-    return r;
+    if ( !constraint.isEmpty() )
+    {
+        const qreal aspectRatio = hint.isEmpty() ? 1.0 : hint.width() / hint.height();
+
+        if ( constraint.width() >= 0.0 )
+            hint.setHeight( constraint.width() / aspectRatio );
+        else 
+            hint.setWidth( constraint.height() * aspectRatio );
+    }
+
+    return hint;
+}
+
+QskIntervalF QskProgressRingSkinlet::fillInterval(
+    const QskProgressIndicator* indicator ) const
+{
+    qreal pos1, pos2;
+
+    if ( indicator->isIndeterminate() )
+    {
+        pos1 = pos2 = indicator->positionHint( QskProgressIndicator::Fill );
+    }
+    else
+    {
+        pos1 = indicator->valueAsRatio( indicator->origin() );
+        pos2 = indicator->valueAsRatio( indicator->value() );
+    }
+
+    if ( pos1 > pos2 )
+        std::swap( pos1, pos2 );
+
+    return QskIntervalF( pos1, pos2 );
 }
 
 #include "moc_QskProgressRingSkinlet.cpp"

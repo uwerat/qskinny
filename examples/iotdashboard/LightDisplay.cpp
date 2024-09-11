@@ -51,17 +51,6 @@ bool LightDisplay::isPressed() const
     return hasSkinState( Pressed );
 }
 
-void LightDisplay::setGradient( const QskGradient& gradient )
-{
-    m_gradient = gradient;
-    update();
-}
-
-const QskGradient& LightDisplay::gradient() const
-{
-    return m_gradient;
-}
-
 void LightDisplay::mousePressEvent( QMouseEvent* event )
 {
     QRectF handleRect = subControlRect( LightDisplay::Knob );

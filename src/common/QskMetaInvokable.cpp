@@ -26,15 +26,6 @@ static void qskRegisterMetaInvokable()
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterMetaInvokable )
 
-static inline void* qskMetaTypeCreate( int type, const void* copy )
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    return QMetaType( type ).create( copy );
-#else
-    return QMetaType::create( type, copy );
-#endif
-}
-
 namespace
 {
     using CallFunction = QObjectPrivate::StaticMetaCallFunction;

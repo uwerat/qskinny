@@ -3,16 +3,25 @@
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
-set(HEADERS
+list(APPEND HEADERS
     QskQmlGlobal.h
     QskShortcutQml.h
     QskLayoutQml.h
-    QskQml.h)
+    QskQmlModule.h
+    QskQmlRegister.h
+    QskQml.h
+)
 
-set(SOURCES
+list(APPEND SOURCES
     QskShortcutQml.cpp
     QskLayoutQml.cpp
-    QskQml.cpp)
+    QskQml.cpp
+)
+
+if (QT_VERSION_MAJOR GREATER_EQUAL 6)
+    list(APPEND HEADERS QskQmlClassInfo.h)
+    list(APPEND SOURCES QskQmlClassInfo.cpp)
+endif()
 
 set(target qskqmlexport)
 

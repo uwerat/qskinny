@@ -4,31 +4,26 @@
  *****************************************************************************/
 
 #include "QskSelectionSubWindow.h"
-#include "QskLinearBox.h"
 #include "QskSimpleListBox.h"
-#include "QskTextLabel.h"
+
+/*
+    QInputDialog uses a combo box instead of a list widget
+    Guess we should do the same TODO ...
+ */
+static inline QskSimpleListBox* qskListBox(
+    QskSelectionSubWindow* subWindow )
+{
+    return qobject_cast< QskSimpleListBox* >( subWindow->contentItem() );
+}
+
+static inline const QskSimpleListBox* qskListBox(
+    const QskSelectionSubWindow* subWindow )
+{
+    return qobject_cast< QskSimpleListBox* >( subWindow->contentItem() );
+}
 
 namespace
 {
-    class TextLabel final : public QskTextLabel
-    {
-      public:
-        TextLabel( QskSelectionSubWindow* subWindow )
-        {
-            setObjectName( QStringLiteral( "QskSelectionSubWindowTextLabel" ) );
-            initSizePolicy( QskSizePolicy::Preferred, QskSizePolicy::Constrained );
-
-            setAlignment( Qt::AlignLeft | Qt::AlignTop );
-            setWrapMode( QskTextOptions::WordWrap );
-
-            connect( this, &QskTextLabel::textChanged,
-                subWindow, &QskSelectionSubWindow::infoTextChanged );
-
-            connect( this, &QskTextLabel::textOptionsChanged,
-                subWindow, &QskSelectionSubWindow::infoTextOptionsChanged );
-        }
-    };
-
     class ListBox final : public QskSimpleListBox
     {
       public:
@@ -48,32 +43,15 @@ namespace
     };
 }
 
-class QskSelectionSubWindow::PrivateData
-{
-  public:
-    QskTextLabel* textLabel;
-    QskSimpleListBox* listBox;
-};
-
 QskSelectionSubWindow::QskSelectionSubWindow( QQuickItem* parent )
     : Inherited( parent )
-    , m_data( new PrivateData )
 {
-    m_data->textLabel = new TextLabel( this );
-    m_data->textLabel->setVisible( false );
-
-    m_data->listBox = new ListBox( this );
+    auto listBox = new ListBox( this );
 #if 1
-    m_data->listBox->setPreferredSize( 500, 500 );
+    listBox->setPreferredSize( 500, 500 );
 #endif
 
-    auto box = new QskLinearBox( Qt::Vertical );
-    box->setSpacing( 10 ); // hint
-    box->addItem( m_data->textLabel );
-    box->addItem( m_data->listBox );
-    box->setStretchFactor( 1, 10 );
-
-    setContentItem( box );
+    setContentItem( listBox );
     setDialogActions( QskDialog::Ok | QskDialog::Cancel );
 }
 
@@ -81,54 +59,40 @@ QskSelectionSubWindow::~QskSelectionSubWindow()
 {
 }
 
-void QskSelectionSubWindow::setInfoText( const QString& text )
-{
-    m_data->textLabel->setText( text );
-    m_data->textLabel->setVisible( !text.isEmpty() );
-}
-
-QString QskSelectionSubWindow::infoText() const
-{
-    return m_data->textLabel->text();
-}
-
-void QskSelectionSubWindow::setInfoTextOptions( const QskTextOptions& options )
-{
-    if ( options != infoTextOptions() )
-    {
-        m_data->textLabel->setTextOptions( options );
-        Q_EMIT infoTextOptionsChanged( options );
-    }
-}
-
-QskTextOptions QskSelectionSubWindow::infoTextOptions() const
-{
-    return m_data->textLabel->textOptions();
-}
-
 void QskSelectionSubWindow::setEntries( const QStringList& entries )
 {
-    m_data->listBox->setEntries( entries );
+    if ( auto listBox = qskListBox( this ) )
+        listBox->setEntries( entries );
 }
 
 QStringList QskSelectionSubWindow::entries() const
 {
-    return m_data->listBox->entries();
+    if ( auto listBox = qskListBox( this ) )
+        return listBox->entries();
+
+    return QStringList();
 }
 
 void QskSelectionSubWindow::setSelectedRow( int row )
 {
-    m_data->listBox->setSelectedRow( row );
+    if ( auto listBox = qskListBox( this ) )
+        listBox->setSelectedRow( row );
 }
 
 int QskSelectionSubWindow::selectedRow() const
 {
-    return m_data->listBox->selectedRow();
+    if ( auto listBox = qskListBox( this ) )
+        return listBox->selectedRow();
+
+    return -1;
 }
 
 QString QskSelectionSubWindow::selectedEntry() const
 {
-    return m_data->listBox->selectedEntry();
+    if ( auto listBox = qskListBox( this ) )
+        listBox->selectedEntry();
+
+    return QString();
 }
 
 #include "moc_QskSelectionSubWindow.cpp"

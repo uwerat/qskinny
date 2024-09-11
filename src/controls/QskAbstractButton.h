@@ -28,7 +28,7 @@ class QSK_EXPORT QskAbstractButton : public QskControl
         WRITE setPressed NOTIFY pressedChanged FINAL )
 
     Q_PROPERTY( bool checked READ isChecked
-        WRITE setChecked NOTIFY checkedChanged FINAL )
+        WRITE setChecked NOTIFY checkedChanged USER true FINAL )
 
     using Inherited = QskControl;
 

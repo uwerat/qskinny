@@ -18,7 +18,7 @@ QSK_SUBCONTROL( StorageBar, Free )
 
 using S = StorageBar;
 
-StorageBar::StorageBar( QskQuickItem* const parent )
+StorageBar::StorageBar( QskItem* const parent )
     : Inherited( parent )
 {
     static constexpr qreal size = 16.0;

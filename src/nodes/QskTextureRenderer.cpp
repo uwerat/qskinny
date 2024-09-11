@@ -122,7 +122,7 @@ quint32 QskTextureRenderer::createPaintedTextureGL(
         Binding GL_ARRAY_BUFFER/GL_ELEMENT_ARRAY_BUFFER to 0 seems to be enough.
 
         However - as we do not know what is finally painted and what the
-        OpenGL paint engine is doing with better reinitialize everything.
+        OpenGL paint engine is doing we better reinitialize everything.
 
         Hope this has no side effects as the context will leave the function
         in a modified state. Otherwise we could try to change the buffers

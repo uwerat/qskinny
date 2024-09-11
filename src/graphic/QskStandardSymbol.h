@@ -22,11 +22,6 @@ namespace QskStandardSymbol
         Ok,
         Cancel,
 
-        Information,
-        Warning,
-        Critical,
-        Question,
-
         CheckMark,
         CrossMark,
 

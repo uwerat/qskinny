@@ -15,7 +15,7 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( QUrl source READ source WRITE setSource NOTIFY sourceChanged )
+    Q_PROPERTY( QUrl source READ source WRITE setSource NOTIFY sourceChanged USER true )
 
     Q_PROPERTY( bool mirror READ mirror WRITE setMirror NOTIFY mirrorChanged )
 
@@ -105,7 +105,9 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
     void setGraphic( const QskGraphic& );
 
   protected:
+    void geometryChangeEvent( QskGeometryChangeEvent* ) override;
     void changeEvent( QEvent* ) override;
+
     void updateResources() override;
     virtual QskGraphic loadSource( const QUrl& ) const;
 

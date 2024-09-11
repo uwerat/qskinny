@@ -5,8 +5,8 @@
 
 #include "DevicesPage.h"
 
-#include <QskSkin.h>
 #include <QskTextLabel.h>
+#include <QskFontRole.h>
 
 QSK_SUBCONTROL( DevicesPage, Panel )
 
@@ -15,7 +15,7 @@ DevicesPage::DevicesPage( QQuickItem* parent )
 {
     auto* const textLabel = new QskTextLabel( "devices page", this );
     textLabel->setAlignmentHint( QskTextLabel::Text, Qt::AlignCenter );
-    textLabel->setFontRole( QskSkin::HugeFont );
+    textLabel->setFontRole( QskFontRole::Display );
 }
 
 #include "moc_DevicesPage.cpp"

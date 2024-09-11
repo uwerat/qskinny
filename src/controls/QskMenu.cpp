@@ -53,6 +53,8 @@ class QskMenu::PrivateData
 
     int triggeredIndex = -1;
     int currentIndex = -1;
+
+    bool wrapping = true;
     bool isPressed = false;
 };
 
@@ -103,6 +105,20 @@ QRectF QskMenu::clipRect() const
     }
 
     return Inherited::clipRect();
+}
+
+bool QskMenu::isWrapping() const
+{
+    return m_data->wrapping;
+}
+
+void QskMenu::setWrapping( bool on )
+{
+    if ( m_data->wrapping != on )
+    {
+        m_data->wrapping = on;
+        Q_EMIT wrappingChanged( on );
+    }
 }
 
 #if 1
@@ -421,6 +437,9 @@ void QskMenu::traverse( int steps )
 
     int action1 = qskActionIndex( actions, m_data->currentIndex );
     int action2 = action1 + steps;
+
+    if ( !m_data->wrapping )
+        action2 = qBound( 0, action2, count - 1 );
 
     // when cycling we want to slide in
     int index1;

@@ -111,7 +111,7 @@ void SkinnyShortcut::showBackground()
         scengraphDebugMode = sgDebugModes[ id - 2 ];
     }
 
-    qskSetup->setItemUpdateFlag( QskQuickItem::DebugForceBackground, forceBackground );
+    QskSetup::setUpdateFlag( QskItem::DebugForceBackground, forceBackground );
 
     const auto windows = QGuiApplication::topLevelWindows();
     for ( auto window : windows )

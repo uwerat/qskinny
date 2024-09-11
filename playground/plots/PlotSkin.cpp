@@ -30,6 +30,7 @@
 #include <QskStippleMetrics.h>
 
 #include <QskGraduationRenderer.h>
+#include <QskFontRole.h>
 
 #include <qbrush.h>
 
@@ -98,7 +99,7 @@ void SkinEditor::setupPlotHints()
         setPadding( Q::AxisScale | A::Bottom, 0, padding, 0, 0 );
 
         setColor( Q::AxisScale, qRgb( 20, 20, 20 ) );
-        setFontRole( Q::AxisScale, QskSkin::MediumFont );
+        setFontRole( Q::AxisScale, QskFontRole::Caption );
         setFlag( Q::AxisScale | A::Style, QskGraduationRenderer::Backbone );
 
         // thickness/length of the major ticks

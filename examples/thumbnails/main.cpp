@@ -138,7 +138,7 @@ class IconGrid : public QskLinearBox
             When having too many nodes, the scene graph becomes horribly slow.
             So we explicitely hide all items outside the visible area
             ( see updateVisibilities below ) and make use of the DeferredUpdate and
-            CleanupOnVisibility features of QskQuickItem.
+            CleanupOnVisibility features of QskItem.
          */
         setSize( sizeConstraint() );
         updateLayout(); // so that every item has its initial geometry

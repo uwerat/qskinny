@@ -7,7 +7,7 @@
 #include "Diagram.h"
 
 #include <QskGridBox.h>
-#include <QskSkin.h>
+#include <QskFontRole.h>
 #include <QskTextLabel.h>
 
 QSK_SUBCONTROL( UsageDiagramLegend, Panel )
@@ -52,7 +52,7 @@ namespace
             }
 
             auto label = new QskTextLabel( text );
-            label->setFontRole( QskSkin::TinyFont );
+            label->setFontRole( { QskFontRole::Caption, QskFontRole::Low } );
 
             addItem( symbol );
             addItem( label );

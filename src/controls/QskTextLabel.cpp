@@ -6,6 +6,7 @@
 #include "QskTextLabel.h"
 #include "QskAspect.h"
 #include "QskTextOptions.h"
+#include "QskFontRole.h"
 
 QSK_SUBCONTROL( QskTextLabel, Panel )
 QSK_SUBCONTROL( QskTextLabel, Text )
@@ -161,7 +162,7 @@ Qt::TextElideMode QskTextLabel::elideMode() const
     return textOptions().elideMode();
 }
 
-void QskTextLabel::setFontRole( int role )
+void QskTextLabel::setFontRole( const QskFontRole& role )
 {
     if ( setFontRoleHint( Text, role ) )
         Q_EMIT fontRoleChanged( role );
@@ -173,7 +174,7 @@ void QskTextLabel::resetFontRole()
         Q_EMIT fontRoleChanged( fontRoleHint( Text ) );
 }
 
-int QskTextLabel::fontRole() const
+QskFontRole QskTextLabel::fontRole() const
 {
     return fontRoleHint( Text );
 }

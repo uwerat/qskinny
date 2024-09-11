@@ -28,7 +28,6 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-    qskSetup->setItemUpdateFlag( QskQuickItem::PreferRasterForTextures, true );
     qskSkinManager->setSkin( new Skin() );
 
     Qsk::addGraphicProvider( QString(), new GraphicProvider() );

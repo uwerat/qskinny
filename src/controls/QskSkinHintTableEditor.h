@@ -26,6 +26,7 @@ class QskGraduationMetrics;
 class QskShadowMetrics;
 class QskStippleMetrics;
 class QskGraphic;
+class QskFontRole;
 
 class QSK_EXPORT QskSkinHintTableEditor
 {
@@ -178,9 +179,10 @@ class QSK_EXPORT QskSkinHintTableEditor
 
     // fontRole
 
-    void setFontRole( QskAspect, int, QskStateCombination = QskStateCombination() );
+    void setFontRole( QskAspect, const QskFontRole&,
+        QskStateCombination = QskStateCombination() );
     bool removeFontRole( QskAspect, QskStateCombination = QskStateCombination() );
-    int fontRole( QskAspect ) const;
+    QskFontRole fontRole( QskAspect ) const;
 
     // graphicRole
 
