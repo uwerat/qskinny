@@ -27,6 +27,8 @@ class QSK_EXPORT QskModelObjectBinder : public QObject
     QskModelObjectBinder( QObject* parent = nullptr );
     QskModelObjectBinder( QAbstractItemModel*, QObject* parent = nullptr );
 
+    ~QskModelObjectBinder() override;
+
     void setModel( QAbstractItemModel* );
 
     const QAbstractItemModel* model() const;

@@ -108,6 +108,10 @@ QskModelObjectBinder::QskModelObjectBinder( QAbstractItemModel* model, QObject* 
     setModel( model );
 }
 
+QskModelObjectBinder::~QskModelObjectBinder()
+{
+}
+
 void QskModelObjectBinder::bindObject(
     QObject* object, int column, const QByteArray& propertyName )
 {
