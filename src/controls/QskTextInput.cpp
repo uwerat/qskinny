@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskTextInput.h"
+#include "QskFontRole.h"
 #include "QskQuick.h"
 
 QSK_QT_PRIVATE_BEGIN
@@ -561,7 +562,7 @@ static inline void qskUpdateInputMethodFont( const QskTextInput* input )
     qskUpdateInputMethod( input, queries );
 }
 
-void QskTextInput::setFontRole( int role )
+void QskTextInput::setFontRole( const QskFontRole& role )
 {
     if ( setFontRoleHint( Text, role ) )
     {
@@ -579,7 +580,7 @@ void QskTextInput::resetFontRole()
     }
 }
 
-int QskTextInput::fontRole() const
+QskFontRole QskTextInput::fontRole() const
 {
     return fontRoleHint( Text );
 }

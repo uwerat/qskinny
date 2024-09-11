@@ -108,4 +108,7 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     std::unique_ptr< PrivateData > m_data;
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskSubWindow::Decorations )
+Q_DECLARE_METATYPE( QskSubWindow::Decorations )
+
 #endif

@@ -3,6 +3,11 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
+/*
+    Definitions ( where possible ) taken from
+    https://www.figma.com/file/O4H724CKmUVPocw6JoSUrd/Material-3-Design-Kit-(Community)
+ */
+
 #include "QskMaterial3Skin.h"
 
 #include <QskSkinHintTableEditor.h>
@@ -12,6 +17,7 @@
 #include <QskComboBox.h>
 #include <QskColorFilter.h>
 #include <QskDialogButtonBox.h>
+#include <QskDialogSubWindow.h>
 #include <QskDrawer.h>
 #include <QskFocusIndicator.h>
 #include <QskFunctions.h>
@@ -50,14 +56,49 @@
 #include <QskMargins.h>
 #include <QskHctColor.h>
 #include <QskRgbValue.h>
+#include <QskFontRole.h>
 
 #include <QskNamespace.h>
 #include <QskPlatform.h>
 
-#include <QGuiApplication>
-#include <QScreen>
+#include <qguiapplication.h>
+#include <qfontinfo.h>
+
+static void qskMaterial3InitResources()
+{
+    Q_INIT_RESOURCE( QskMaterial3Icons );
+}
+
+Q_CONSTRUCTOR_FUNCTION( qskMaterial3InitResources )
 
 static const int qskDuration = 150;
+
+namespace
+{
+    using F = QskFontRole;
+
+    // M3 font roles: https://m3.material.io/styles/typography/type-scale-tokens
+
+    constexpr F LabelSmall     = { F::Caption, F::Low };
+    constexpr F LabelMedium    = { F::Caption, F::Normal };
+    constexpr F LabelLarge     = { F::Caption, F::High };
+
+    constexpr F BodySmall      = { F::Body, F::Low };
+    constexpr F BodyMedium     = { F::Body, F::Normal };
+    constexpr F BodyLarge      = { F::Body, F::High };
+
+    constexpr F TitleSmall     = { F::Title, F::Low };
+    constexpr F TitleMedium    = { F::Title, F::Normal };
+    constexpr F TitleLarge     = { F::Title, F::High };
+
+    constexpr F HeadlineSmall  = { F::Headline, F::Low };
+    constexpr F HeadlineMedium = { F::Headline, F::Normal };
+    constexpr F HeadlineLarge  = { F::Headline, F::High };
+
+    constexpr F DisplaySmall   = { F::Display, F::Low };
+    constexpr F DisplayMedium  = { F::Display, F::Normal };
+    constexpr F DisplayLarge   = { F::Display, F::High };
+}
 
 namespace
 {
@@ -70,6 +111,15 @@ namespace
     {
         return qskDpToPixels( value );
     }
+
+    class Combination : public QskStateCombination
+    {
+      public:
+        constexpr Combination( const QskAspect::States states )
+            : QskStateCombination( CombinationNoState, states )
+        {
+        }
+    };
 
     class Editor : private QskSkinHintTableEditor
     {
@@ -93,6 +143,7 @@ namespace
         Q_INVOKABLE void setupCheckBox();
         Q_INVOKABLE void setupComboBox();
         Q_INVOKABLE void setupDialogButtonBox();
+        Q_INVOKABLE void setupDialogSubWindow();
         Q_INVOKABLE void setupDrawer();
         Q_INVOKABLE void setupFocusIndicator();
         Q_INVOKABLE void setupInputPanel();
@@ -128,20 +179,6 @@ namespace
 
         const QskMaterial3Theme& m_pal;
     };
-
-    QFont createFont( const QString& name, qreal lineHeight,
-        qreal size, qreal tracking, QFont::Weight weight )
-    {
-        QFont font( name, qRound( size ) );
-        font.setPixelSize( qRound( lineHeight ) );
-
-        if( !qskFuzzyCompare( tracking, 0.0 ) )
-            font.setLetterSpacing( QFont::AbsoluteSpacing, tracking );
-
-        font.setWeight( weight );
-
-        return font;
-    }
 
     inline QRgb flattenedColor(
         QRgb foregroundColor, QRgb backgroundColor, qreal ratio )
@@ -268,7 +305,7 @@ void Editor::setupComboBox()
     setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnSurface );
 
     setColor( Q::Text, m_pal.onSurface );
-    setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
+    setFontRole( Q::Text, BodyMedium );
 
     setStrutSize( Q::StatusIndicator, 12_dp, 12_dp );
     setGraphicRole( Q::StatusIndicator, QskMaterial3Skin::GraphicRoleOnSurface );
@@ -351,7 +388,7 @@ void Editor::setupMenu()
     setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnSurface );
 
     setColor( Q::Text, m_pal.onSurface );
-    setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
+    setFontRole( Q::Text, BodyMedium );
 
     setAnimation( Q::Cursor | A::Position | A::Metric, 75, QEasingCurve::OutCubic );
 
@@ -362,9 +399,7 @@ void Editor::setupTextLabel()
 {
     using Q = QskTextLabel;
 
-    setAlignment( Q::Text, Qt::AlignCenter );
     setColor( Q::Text, m_pal.onSurface );
-
     setPadding( Q::Panel, 5_dp );
 }
 
@@ -392,7 +427,7 @@ void Editor::setupTextInput()
     // ### Also add a pressed state
 
     setColor( Q::Text, m_pal.onSurface );
-    setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
+    setFontRole( Q::Text, BodyMedium );
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
 
     const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
@@ -553,7 +588,7 @@ void Editor::setupSegmentedBar()
     {
         // Text
 
-        setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
+        setFontRole( Q::Text, LabelLarge );
         setTextOptions( Q::Text, Qt::ElideMiddle, QskTextOptions::NoWrap );
 
         setColor( Q::Text, m_pal.onSurface );
@@ -566,7 +601,7 @@ void Editor::setupSegmentedBar()
     {
         // Icon
 
-        setSymbol( Q::Icon, symbol( "segmented-button-check" ) );
+        setSymbol( Q::Icon, symbol( "check" ) );
         setStrutSize( Q::Icon, 18_dp, 18_dp );
 
         setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnSurface );
@@ -630,7 +665,7 @@ void Editor::setupPushButton()
     setPadding( Q::Icon, { 0, 0, 8_dp, 0 } );
     setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnPrimary );
 
-    setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
+    setFontRole( Q::Text, LabelLarge );
     setPadding( Q::Text, 0 );
 
     setBoxShape( Q::Splash, 40_dp );
@@ -779,6 +814,17 @@ void Editor::setupDialogButtonBox()
     setBoxBorderMetrics( Q::Panel, 0 );
 }
 
+void Editor::setupDialogSubWindow()
+{
+    using Q = QskDialogSubWindow;
+
+#if 1
+    setFontRole( Q::DialogTitle, BodyLarge );
+#endif
+    setAlignment( Q::DialogTitle, Qt::AlignLeft | Qt::AlignVCenter );
+    setTextOptions( Q::DialogTitle, Qt::ElideRight, QskTextOptions::WordWrap );
+}
+
 void Editor::setupDrawer()
 {
     using Q = QskDrawer;
@@ -851,13 +897,21 @@ void Editor::setupSpinBox()
     using Q = QskSpinBox;
 
     setHint( Q::Panel | QskAspect::Style, Q::ButtonsLeftAndRight );
+
+    setBoxShape( Q::Panel, 4_dp );
+    setBoxBorderMetrics( Q::Panel, 1_dp );
+
+    setBoxBorderColors( Q::Panel, m_pal.outline );
+    setBoxBorderColors( Q::Panel | Q::Focused, m_pal.primary,
+        Combination( { Q::Increasing, Q::Decreasing } ) );
+
+    setPadding( Q::Panel, 4_dp );
     setSpacing( Q::Panel, 4_dp );
 
     setStrutSize( Q::TextPanel, 80_dp, 40_dp );
     setStrutSize( Q::UpPanel, 40_dp,40_dp );
     setStrutSize( Q::DownPanel, 40_dp, 40_dp );
 
-    setAlignment( Q::Panel, Qt::AlignHCenter );
     setAlignment( Q::Text, Qt::AlignCenter );
 
     for( const auto subControl : { Q::DownPanel, Q::UpPanel, Q::TextPanel } )
@@ -868,31 +922,31 @@ void Editor::setupSpinBox()
 
     for( const auto subControl : { Q::DownPanel, Q::UpPanel } )
     {
-        setGradient( subControl, m_pal.primary );
-        setGradient( subControl | Q::Disabled, m_pal.onSurface12 );
+        setGradient( subControl | Q::Hovered, m_pal.primary8 );
         setPadding( subControl, 10 );
     }
 
     {
-        const auto focusColor = flattenedColor( m_pal.onPrimary, m_pal.primary, 0.12 );
-
-        setGradient( Q::DownPanel | Q::Decreasing, focusColor );
-        setGradient( Q::UpPanel | Q::Increasing, focusColor );
+        setGradient( Q::DownPanel | Q::Decreasing, m_pal.primary12 );
+        setGradient( Q::UpPanel | Q::Increasing, m_pal.primary12 );
     }
 
-    setSymbol( Q::UpIndicator, symbol( "combo-box-arrow-open" ) );
-    setSymbol( Q::DownIndicator, symbol( "combo-box-arrow-closed" ) );
+    setSymbol( Q::UpIndicator, symbol( "add" ) );
+    setSymbol( Q::DownIndicator, symbol( "remove" ) );
 
     for( const auto subControl : { Q::DownIndicator, Q::UpIndicator } )
     {
         setAlignment( subControl, Qt::AlignCenter );
+#if 0
         setGraphicRole( subControl, QskMaterial3Skin::GraphicRoleOnPrimary );
         setGraphicRole( subControl | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
+#endif
     }
 
     setColor( Q::Text, m_pal.onBackground );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
+#if 0
     setPadding( Q::TextPanel, 5_dp );
     setBoxShape( Q::TextPanel, 4_dp, 4_dp, 0, 0 );
     setBoxBorderMetrics( Q::TextPanel, 0, 0, 0, 1_dp );
@@ -909,6 +963,7 @@ void Editor::setupSpinBox()
 
     setColor( Q::TextPanel | Q::Disabled, m_pal.onSurface38 );
     setBoxBorderColors( Q::TextPanel | Q::Disabled, m_pal.onSurface38 );
+#endif
 }
 
 void Editor::setupSwitchButton()
@@ -1024,7 +1079,7 @@ void Editor::setupTabButton()
 
     setAnimation( Q::Panel | A::Color, qskDuration );
 
-    setFontRole( Q::Text, QskMaterial3Skin::M3LabelLarge );
+    setFontRole( Q::Text, LabelLarge );
     setAlignment( Q::Text, Qt::AlignCenter );
 }
 
@@ -1095,7 +1150,7 @@ void Editor::setupVirtualKeyboard()
     setAnimation( Q::ButtonPanel | A::Metric, qskDuration );
 
     setColor( Q::ButtonText, m_pal.onBackground );
-    setFontRole( Q::ButtonText, QskMaterial3Skin::M3HeadlineSmall );
+    setFontRole( Q::ButtonText, HeadlineSmall );
 
     // panel
     setGradient( Q::Panel, m_pal.background );
@@ -1191,7 +1246,7 @@ void Editor::setupListView()
         }
     }
 
-    setFontRole( Q::Text, QskMaterial3Skin::M3BodyMedium );
+    setFontRole( Q::Text, BodyMedium );
 
     setColor( Q::Text, m_pal.onSurface );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
@@ -1220,13 +1275,12 @@ void Editor::setupSubWindow()
     // TitleBarPanel
     setBoxShape( Q::TitleBarPanel, { 28_dp, 28_dp, 0, 0 } );
     setPadding( Q::TitleBarPanel, { 24_dp, 24_dp, 24_dp, 16_dp } );
-    setHint( Q::TitleBarPanel | QskAspect::Style,
-        Q::TitleBar | Q::Title | Q::Symbol );
+    setHint( Q::TitleBarPanel | QskAspect::Style, Q::NoDecoration );
 
     setGradient( Q::TitleBarPanel, m_pal.secondaryContainer );
 
     // TitleBarText
-    setFontRole( Q::TitleBarText, QskMaterial3Skin::M3HeadlineSmall );
+    setFontRole( Q::TitleBarText, HeadlineSmall );
     setColor( Q::TitleBarText, m_pal.onSurface );
     setAlignment( Q::TitleBarText, Qt::AlignCenter );
 
@@ -1402,17 +1456,63 @@ QskMaterial3Skin::~QskMaterial3Skin()
 {
 }
 
+static inline QFont createFont( int size, int lineHeight,
+    qreal spacing, QFont::Weight weight )
+{
+    Q_UNUSED( lineHeight );
+
+    const int pixelSize = qRound( qskDpToPixels( size ) );
+
+    QFont font( QStringLiteral( "Roboto" ), -1, weight );
+
+    static bool checkFont = true;
+    if ( checkFont )
+    {
+        const QFontInfo info( font );
+        if ( info.family() != font.family() )
+        {
+            qWarning() << font.family() <<
+                "not found, using" << info.family() << "instead.";
+        }
+        checkFont = false;
+    }
+    
+    font.setPixelSize( pixelSize );
+
+    if ( spacing > 0.0 )
+        font.setLetterSpacing( QFont::AbsoluteSpacing, spacing );
+
+    return font;
+}
+
 void QskMaterial3Skin::setupFonts()
 {
-    Inherited::setupFonts( QStringLiteral( "Roboto" ) );
+    setFont( LabelSmall, createFont( 11, 16, 0.5, QFont::Medium ) );
+    setFont( LabelMedium, createFont( 12, 16, 0.5, QFont::Medium ) );
+    setFont( LabelLarge, createFont( 14, 20, 0.1, QFont::Medium ) );
 
-    setFont( M3BodyMedium,
-        createFont( QStringLiteral( "Roboto Regular"), 20_dp, 14_dp, 0.25, QFont::Normal ) );
-    setFont( M3BodyLarge,
-        createFont( QStringLiteral( "Roboto Medium" ), 24_dp, 16_dp, 0.5, QFont::Normal ) );
-    setFont( M3HeadlineSmall,
-        createFont( QStringLiteral( "Roboto Regular" ), 32_dp, 28_dp, 0.0, QFont::Normal ) );
-    setFont( M3LabelLarge, createFont( "Roboto Medium", 20_dp, 14_dp, 0.1, QFont::Medium ) );
+    setFont( BodySmall, createFont( 12, 16, 0.4, QFont::Normal ) );
+    setFont( BodyMedium, createFont( 14, 20, 0.25, QFont::Normal ) );
+    setFont( BodyLarge, createFont( 16, 24, 0.5, QFont::Normal ) );
+
+    setFont( TitleSmall, createFont( 14, 20, 0.1, QFont::Medium ) );
+    setFont( TitleMedium, createFont( 16, 24, 0.15, QFont::Medium ) );
+    setFont( TitleLarge, createFont( 22, 28, 0.0, QFont::Normal ) );
+
+    setFont( HeadlineSmall, createFont( 24, 32, 0.0, QFont::Normal ) );
+    setFont( HeadlineMedium, createFont( 28, 36, 0.0, QFont::Medium ) );
+    setFont( HeadlineLarge, createFont( 32, 40, 0.0, QFont::Medium ) );
+
+    setFont( DisplaySmall, createFont( 36, 44, 0.0, QFont::Normal ) );
+    setFont( DisplayMedium, createFont( 45, 52, 0.0, QFont::Normal ) );
+    setFont( DisplayLarge, createFont( 57, 64, 0.0, QFont::Normal ) );
+
+    // to have something for the unused roles
+
+    setFont( { QskFontRole::Subtitle, QskFontRole::Normal },
+        createFont( 16, 24, 0.0, QFont::Normal ) );
+
+    QskSkin::completeFontTable();
 }
 
 void QskMaterial3Skin::setGraphicColor( GraphicRole role, QRgb rgb )

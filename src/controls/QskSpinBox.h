@@ -22,9 +22,6 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     Q_PROPERTY( int decimals READ decimals
         WRITE setDecimals NOTIFY decimalsChanged )
 
-    Q_PROPERTY( Qt::Alignment textAlignment READ textAlignment
-        WRITE setTextAlignment RESET textAlignment NOTIFY textAlignmentChanged )
-
     Q_PROPERTY( QString text READ text NOTIFY textChanged )
 
   public:
@@ -53,11 +50,6 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     void resetDecoration();
     Decoration decoration() const;
 
-    // Qt::AlignLeft, Qt::AlignRight or Qt::AlignHCenter.
-    void setTextAlignment( Qt::Alignment );
-    void resetTextAlignment();
-    Qt::Alignment textAlignment() const;
-
     void setWrapping( bool );
     bool isWrapping() const;
 
@@ -71,10 +63,7 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
 
   Q_SIGNALS:
     void decorationChanged( Decoration );
-    void textAlignmentChanged( Qt::Alignment );
-
     void wrappingChanged( bool );
-
     void decimalsChanged( int );
     void textChanged();
 

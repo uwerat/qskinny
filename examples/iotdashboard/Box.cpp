@@ -7,6 +7,7 @@
 #include "Skin.h"
 
 #include <QskTextLabel.h>
+#include <QskFontRole.h>
 
 QSK_SUBCONTROL( Box, Panel )
 
@@ -19,7 +20,7 @@ Box::Box( const QString& title, QQuickItem* parent )
     if ( !title.isEmpty() )
     {
         auto label = new QskTextLabel( title, this );
-        label->setFontRole( Skin::TitleFont );
+        label->setFontRole( { QskFontRole::Caption, QskFontRole::High } );
     }
 }
 

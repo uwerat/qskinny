@@ -27,7 +27,7 @@ class QSK_EXPORT QskDialog : public QObject
     Q_PROPERTY( Policy policy READ policy
         WRITE setPolicy NOTIFY policyChanged )
 
-    Q_PROPERTY( QWindow* transientParent READ transientParent
+    Q_PROPERTY( QWindow * transientParent READ transientParent
         WRITE setTransientParent NOTIFY transientParentChanged )
 
   public:
@@ -115,18 +115,10 @@ class QSK_EXPORT QskDialog : public QObject
     Q_INVOKABLE QWindow* transientParent() const;
 
     Q_INVOKABLE Action message(
-        const QString& title, const QString& text, int symbolType,
+        const QString& title, const QString& text, uint priority = 0,
         Actions actions = Ok, Action defaultAction = NoAction ) const;
 
     Q_INVOKABLE Action information(
-        const QString& title, const QString& text,
-        Actions actions = Ok, Action defaultAction = NoAction ) const;
-
-    Q_INVOKABLE Action warning(
-        const QString& title, const QString& text,
-        Actions actions = Ok, Action defaultAction = NoAction ) const;
-
-    Q_INVOKABLE Action critical(
         const QString& title, const QString& text,
         Actions actions = Ok, Action defaultAction = NoAction ) const;
 
@@ -135,8 +127,7 @@ class QSK_EXPORT QskDialog : public QObject
         Actions actions = Actions( Yes | No ),
         Action defaultAction = NoAction ) const;
 
-    Q_INVOKABLE QString select(
-        const QString& title, const QString& text,
+    Q_INVOKABLE QString select( const QString& title,
         const QStringList& entries, int selectedRow = 0 ) const;
 
     static ActionRole actionRole( Action action );

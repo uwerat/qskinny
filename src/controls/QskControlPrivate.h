@@ -8,11 +8,11 @@
 
 #include "QskGlobal.h"
 #include "QskControl.h"
-#include "QskQuickItemPrivate.h"
+#include "QskItemPrivate.h"
 
-class QskControlPrivate : public QskQuickItemPrivate
+class QskControlPrivate : public QskItemPrivate
 {
-    using Inherited = QskQuickItemPrivate;
+    using Inherited = QskItemPrivate;
 
   public:
     static bool inheritLocale( QskControl*, const QLocale& );
@@ -58,9 +58,6 @@ class QskControlPrivate : public QskQuickItemPrivate
     bool explicitSection : 1;
 
     bool autoLayoutChildren : 1;
-
-    uint focusPolicy : 4;
-    bool isWheelEnabled : 1;
 
     mutable bool blockLayoutRequestEvents : 1;
 };

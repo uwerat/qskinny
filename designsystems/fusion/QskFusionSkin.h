@@ -24,7 +24,8 @@ class QSK_FUSION_EXPORT QskFusionSkin : public QskSkin
         GraphicNormal,
         GraphicDisabled,
         GraphicHighlighted,
-        GraphicError
+        GraphicError,
+        GraphicIndicator
     };
 
   protected:

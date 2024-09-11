@@ -7,6 +7,7 @@
 
 #include <QskSkin.h>
 #include <QskTextLabel.h>
+#include <QskFontRole.h>
 
 QSK_SUBCONTROL( MembersPage, Panel )
 
@@ -15,7 +16,7 @@ MembersPage::MembersPage( QQuickItem* parent )
 {
     auto* const textLabel = new QskTextLabel( "members page", this );
     textLabel->setAlignmentHint( QskTextLabel::Text, Qt::AlignCenter );
-    textLabel->setFontRole( QskSkin::HugeFont );
+    textLabel->setFontRole( QskFontRole::Display );
 }
 
 #include "moc_MembersPage.cpp"

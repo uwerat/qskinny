@@ -76,10 +76,15 @@ static inline qreal qskRoundedDpi( qreal dpi )
 qreal qskDpToPixelsFactor()
 {
     if ( const auto screen = QGuiApplication::primaryScreen() )
-    {
-        // see: https://en.wikipedia.org/wiki/Device-independent_pixel
         return qskRoundedDpi( screen->physicalDotsPerInch() ) / 160.0;
-    }
+
+    return 1.0;
+}
+
+qreal qskPxToPixelsFactor()
+{
+    if ( const auto screen = QGuiApplication::primaryScreen() )
+        return screen->physicalDotsPerInch() / 96.0;
 
     return 1.0;
 }

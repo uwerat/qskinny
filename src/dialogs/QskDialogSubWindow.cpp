@@ -5,12 +5,20 @@
 
 #include "QskDialogSubWindow.h"
 #include "QskDialogButtonBox.h"
+#include "QskTextLabel.h"
 #include "QskPushButton.h"
+#include "QskLinearBox.h"
 #include "QskQuick.h"
 #include "QskEvent.h"
+#if 1
+#include "QskSkin.h"
+#include <QskPlatform.h>
+#endif
 
 #include <qquickwindow.h>
 #include <qpointer.h>
+
+QSK_SUBCONTROL( QskDialogSubWindow, DialogTitle )
 
 static inline void qskSetRejectOnClose( QskDialogSubWindow* subWindow, bool on )
 {
@@ -26,15 +34,33 @@ static inline void qskSetRejectOnClose( QskDialogSubWindow* subWindow, bool on )
     }
 }
 
+namespace
+{
+    class TitleLabel final : public QskTextLabel
+    {
+      protected:
+        QskAspect::Subcontrol substitutedSubcontrol(
+            QskAspect::Subcontrol subControl ) const override
+        {
+            if ( subControl == QskTextLabel::Text )
+                return QskDialogSubWindow::DialogTitle;
+
+            return QskTextLabel::substitutedSubcontrol( subControl );
+        }
+    };
+}
+
 class QskDialogSubWindow::PrivateData
 {
   public:
     QskDialog::Actions actions = QskDialog::NoAction;
 
-    QPointer< QQuickItem > contentItem;
+    QskTextLabel* titleLabel = nullptr;
     QskDialogButtonBox* buttonBox = nullptr;
 
-    QMarginsF contentPadding;
+    QPointer< QQuickItem > contentItem;
+
+    QskLinearBox* layout = nullptr;
 
     QskDialog::DialogCode result = QskDialog::Rejected;
 };
@@ -43,8 +69,14 @@ QskDialogSubWindow::QskDialogSubWindow( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    setPolishOnResize( true );
     qskSetRejectOnClose( this, true );
+
+    m_data->layout = new QskLinearBox( Qt::Vertical, this );
+    m_data->layout->setSizePolicy(
+        QskSizePolicy::MinimumExpanding, QskSizePolicy::Constrained );
+
+    setPolishOnResize( true );
+    setPolishOnParentResize( true );
 }
 
 QskDialogSubWindow::~QskDialogSubWindow()
@@ -58,8 +90,7 @@ void QskDialogSubWindow::addDialogAction( QskDialog::Action action )
         if ( m_data->buttonBox == nullptr )
             initButtonBox();
 
-        if ( m_data->buttonBox )
-            m_data->buttonBox->addAction( action );
+        m_data->buttonBox->addAction( action );
     }
 }
 
@@ -71,8 +102,7 @@ void QskDialogSubWindow::addDialogButton(
         if ( m_data->buttonBox == nullptr )
             initButtonBox();
 
-        if ( m_data->buttonBox )
-            m_data->buttonBox->addButton( button, actionRole );
+        m_data->buttonBox->addButton( button, actionRole );
     }
 }
 
@@ -85,37 +115,17 @@ void QskDialogSubWindow::setDialogActions( QskDialog::Actions actions )
 
     if ( actions == QskDialog::NoAction )
     {
-        if ( m_data->buttonBox->parent() == this )
-        {
-            delete m_data->buttonBox;
-        }
-        else
-        {
-            m_data->buttonBox->setParentItem( nullptr );
-
-            disconnect( m_data->buttonBox, &QskDialogButtonBox::accepted,
-                this, &QskDialogSubWindow::accept );
-
-            disconnect( m_data->buttonBox, &QskDialogButtonBox::rejected,
-                this, &QskDialogSubWindow::reject );
-
-        }
-
+        delete m_data->buttonBox;
         m_data->buttonBox = nullptr;
     }
     else
     {
         if ( m_data->buttonBox == nullptr )
-        {
             initButtonBox();
-        }
 
         if ( m_data->buttonBox )
             m_data->buttonBox->setActions( actions );
     }
-
-    resetImplicitSize();
-    polish();
 }
 
 QskDialog::Actions QskDialogSubWindow::dialogActions() const
@@ -126,6 +136,62 @@ QskDialog::Actions QskDialogSubWindow::dialogActions() const
     return QskDialog::NoAction;
 }
 
+void QskDialogSubWindow::setTitle( const QString& title )
+{
+    bool changed = false;
+    auto& titleLabel = m_data->titleLabel;
+
+    if ( title.isEmpty() )
+    {
+        changed = ( titleLabel != nullptr );
+
+        delete titleLabel;
+        titleLabel = nullptr;
+    }
+    else
+    {
+        if ( titleLabel == nullptr )
+        {
+            titleLabel = new TitleLabel();
+            m_data->layout->insertItem( 0, titleLabel );
+            changed = true;
+        }
+        else
+        {
+            changed = ( titleLabel->text() != title );
+        }
+
+        if ( changed )
+            titleLabel->setText( title );
+    }
+
+    if ( changed )
+    {
+        resetImplicitSize();
+        polish();
+
+        Q_EMIT titleChanged( title );
+    }
+}
+
+QString QskDialogSubWindow::title() const
+{
+    if ( auto label = m_data->titleLabel )
+        return label->text();
+
+    return QString();
+}
+
+QskTextLabel* QskDialogSubWindow::titleLabel()
+{
+    return m_data->titleLabel;
+}
+
+const QskTextLabel* QskDialogSubWindow::titleLabel() const
+{
+    return m_data->titleLabel;
+}
+
 void QskDialogSubWindow::setContentItem( QQuickItem* item )
 {
     if ( item == m_data->contentItem )
@@ -133,24 +199,19 @@ void QskDialogSubWindow::setContentItem( QQuickItem* item )
 
     if ( m_data->contentItem )
     {
-        if ( m_data->contentItem->parent() == this )
+        if ( m_data->contentItem->parent() == m_data->layout )
             delete m_data->contentItem;
         else
-            m_data->contentItem->setParentItem( nullptr );
+            m_data->layout->removeItem( m_data->contentItem );
     }
 
     m_data->contentItem = item;
 
     if ( item )
     {
-        item->setParentItem( this );
-
-        if ( item->parent() == nullptr )
-            item->setParent( this );
+        const int index = m_data->titleLabel ? 1 : 0;
+        m_data->layout->insertItem( index, m_data->contentItem );
     }
-
-    resetImplicitSize();
-    polish();
 }
 
 QQuickItem* QskDialogSubWindow::contentItem() const
@@ -161,19 +222,12 @@ QQuickItem* QskDialogSubWindow::contentItem() const
 void QskDialogSubWindow::setContentPadding( const QMarginsF& padding )
 {
     // should be a skin hint ???
-
-    if ( m_data->contentPadding != padding )
-    {
-        m_data->contentPadding = padding;
-
-        resetImplicitSize();
-        polish();
-    }
+    m_data->layout->setMargins( padding );
 }
 
 QMarginsF QskDialogSubWindow::contentPadding() const
 {
-    return m_data->contentPadding;
+    return m_data->layout->margins();
 }
 
 void QskDialogSubWindow::setDefaultDialogAction( QskDialog::Action action )
@@ -287,134 +341,64 @@ void QskDialogSubWindow::keyPressEvent( QKeyEvent* event )
     Inherited::keyPressEvent( event );
 }
 
-QskDialogButtonBox* QskDialogSubWindow::createButtonBox()
-{
-    return new QskDialogButtonBox();
-}
-
 void QskDialogSubWindow::initButtonBox()
 {
-    m_data->buttonBox = createButtonBox();
+    auto buttonBox = new QskDialogButtonBox();
+    m_data->layout->addItem( buttonBox );
 
-    if ( m_data->buttonBox )
-    {
-        m_data->buttonBox->setParentItem( this );
+    connect( buttonBox, &QskDialogButtonBox::accepted,
+        this, &QskDialogSubWindow::accept );
 
-        if ( m_data->buttonBox->parent() == nullptr )
-            m_data->buttonBox->setParent( this );
+    connect( buttonBox, &QskDialogButtonBox::rejected,
+        this, &QskDialogSubWindow::reject );
 
-        connect( m_data->buttonBox, &QskDialogButtonBox::accepted,
-            this, &QskDialogSubWindow::accept, Qt::UniqueConnection );
-
-        connect( m_data->buttonBox, &QskDialogButtonBox::rejected,
-            this, &QskDialogSubWindow::reject, Qt::UniqueConnection );
-    }
-}
-
-void QskDialogSubWindow::aboutToShow()
-{
-    if ( size().isEmpty() )
-    {
-        // setting an initial size from the hint, centered inside the window
-
-        const qreal cx = 0.5 * parentItem()->width();
-        const qreal cy = 0.5 * parentItem()->height();
-
-        QRectF rect;
-        rect.setSize( sizeConstraint() );
-        rect.moveCenter( QPointF( cx, cy ) );
-
-        setGeometry( rect );
-    }
-
-    Inherited::aboutToShow();
+    m_data->buttonBox = buttonBox;
 }
 
 void QskDialogSubWindow::updateLayout()
 {
-    Inherited::updateLayout();
+    updateGeometry();
+    m_data->layout->setGeometry( layoutRect() );
+}
 
-    auto rect = layoutRect();
+void QskDialogSubWindow::updateGeometry()
+{
+    /*
+        This code is for Preferred/Constrained without checking
+        the actual sizePolicy. TODO ...
+     */
+    const auto minSize = minimumSize();
+    const auto maxSize = maximumSize();
 
-    if ( m_data->buttonBox && m_data->buttonBox->isVisibleToParent() )
-    {
-        const auto h = m_data->buttonBox->sizeConstraint().height();
-        rect.setBottom( rect.bottom() - h );
+    auto width = sizeHint().width();
+    width = qMin( width, maxSize.width() );
+    width = qMax( width, minSize.width() );
 
-        m_data->buttonBox->setGeometry( rect.x(), rect.bottom(), rect.width(), h );
-    }
+    auto height = heightForWidth( width );
+    height = qMin( height, maxSize.height() );
+    height = qMax( height, minSize.height() );
 
-    if ( m_data->contentItem )
-    {
-        rect = rect.marginsRemoved( m_data->contentPadding );
-        qskSetItemGeometry( m_data->contentItem, rect );
-    }
+    QRectF rect( 0.0, 0.0, width, height );
+    rect.moveCenter( qskItemRect( parentItem() ).center() );
+
+    setGeometry( rect );
 }
 
 QSizeF QskDialogSubWindow::layoutSizeHint(
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
+    if ( which == Qt::MaximumSize && polishOnParentResize() )
+        return 0.9 * parentItem()->size();
 
-    QSizeF buttonBoxHint;
+    auto size = m_data->layout->effectiveSizeHint( which, constraint );
 
-    qreal constraintHeight = constraint.height();
-
-    if ( auto buttonBox = m_data->buttonBox )
+    if ( which == Qt::MinimumSize )
     {
-        if ( buttonBox->isVisibleToLayout() )
-        {
-            buttonBoxHint = buttonBox->sizeConstraint(
-                which, QSizeF( constraint.width(), -1 ) );
-
-            if ( constraint.width() >= 0.0 )
-                buttonBoxHint.rwidth() = constraint.width();
-
-            if ( constraintHeight >= 0.0 && buttonBoxHint.height() >= 0.0 )
-            {
-                constraintHeight -= buttonBoxHint.height();
-                constraintHeight = qMax( constraintHeight, 0.0 );
-            }
-        }
+        const auto w = qMax( qskDpToPixels( 300.0 ), size.width() );
+        size.setWidth( w );
     }
 
-    QSizeF contentHint;
-
-    if ( qskIsVisibleToLayout( m_data->contentItem ) )
-    {
-        const auto& m = m_data->contentPadding;
-        const qreal dw = m.left() + m.right();
-        const qreal dh = m.top() + m.bottom();
-
-        qreal constraintWidth = constraint.width();
-
-        if ( constraintWidth > 0.0 )
-            constraintWidth = qMax( constraintWidth - dw, 0.0 );
-
-        if ( constraintHeight > 0.0 )
-            constraintHeight = qMax( constraintHeight - dh, 0.0 );
-
-        contentHint = qskSizeConstraint( m_data->contentItem,
-            which, QSizeF( constraintWidth, constraintHeight ) );
-
-        if ( contentHint.width() >= 0 )
-            contentHint.rwidth() += dw;
-
-        if ( contentHint.height() >= 0 )
-            contentHint.rheight() += dh;
-    }
-
-    qreal w = -1;
-    w = qMax( w, buttonBoxHint.width() );
-    w = qMax( w, contentHint.width() );
-
-    qreal h = -1;
-
-    if ( buttonBoxHint.height() > 0.0 && contentHint.height() > 0.0 )
-        h = buttonBoxHint.height() + contentHint.height();
-
-    return QSizeF( w, h );
+    return size;
 }
 
 #include "moc_QskDialogSubWindow.cpp"

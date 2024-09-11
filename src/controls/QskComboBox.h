@@ -24,7 +24,7 @@ class QSK_EXPORT QskComboBox : public QskControl
         WRITE setCurrentIndex NOTIFY currentIndexChanged )
 
     Q_PROPERTY( QString currentText READ currentText
-        NOTIFY currentIndexChanged )
+        NOTIFY currentIndexChanged USER true)
 
     Q_PROPERTY( int count READ count )
 

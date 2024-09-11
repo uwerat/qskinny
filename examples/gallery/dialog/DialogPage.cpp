@@ -8,8 +8,60 @@
 #include <QskDialog.h>
 #include <QskLinearBox.h>
 #include <QskPushButton.h>
-#include <QskStandardSymbol.h>
-#include <QskBoxShapeMetrics.h>
+
+#if QT_CONFIG(thread)
+    /*
+        WebAssembly without asyncify support does not allow recursive
+        event loops. As we did not implement QskDialog::message and friends
+        with callbacks yet ( TODO ) we do have some dummy code here to avoid
+        crashes.
+     */
+    #define QSK_USE_EXEC
+#endif
+
+#ifndef QSK_USE_EXEC
+
+#include <QskMessageSubWindow.h>
+#include <QskSelectionSubWindow.h>
+#include <qquickwindow.h>
+
+namespace
+{
+    void openMessageSubWindow( QQuickWindow* window, const QString& title,
+        const QString& text, QskDialog::Actions actions, QskDialog::Action defaultAction )
+    {
+        auto subWindow = new QskMessageSubWindow( window->contentItem() );
+        subWindow->setPopupFlag( QskPopup::DeleteOnClose );
+        subWindow->setModal( true );
+
+        subWindow->setTitle( title );
+        subWindow->setDialogActions( actions );
+        subWindow->setDefaultDialogAction( defaultAction );
+
+        subWindow->setText( text );
+        ( void ) subWindow->open();
+    }
+
+    void openSelectSubWindow( QQuickWindow* window, const QString& title,
+        QskDialog::Actions actions, QskDialog::Action defaultAction,
+        const QStringList& entries, int selectedRow )
+    {
+        auto subWindow = new QskSelectionSubWindow( window->contentItem() );
+        subWindow->setPopupFlag( QskPopup::DeleteOnClose );
+        subWindow->setModal( true );
+
+        subWindow->setTitle( title );
+        subWindow->setDialogActions( actions );
+        subWindow->setDefaultDialogAction( defaultAction );
+
+        subWindow->setEntries( entries );
+        subWindow->setSelectedRow( selectedRow );
+
+        ( void ) subWindow->open();
+    }
+}
+
+#endif
 
 namespace
 {
@@ -19,6 +71,7 @@ namespace
         Button( const QString& text, QQuickItem* parent = nullptr )
             : QskPushButton( text, parent )
         {
+            setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
         }
     };
 
@@ -26,9 +79,10 @@ namespace
     {
       public:
         ButtonBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Horizontal, 2, parent )
+            : QskLinearBox( Qt::Vertical, parent )
         {
             setObjectName( "ButtonBox" );
+            setDefaultAlignment( Qt::AlignCenter );
 
             setMargins( 10 );
             setSpacing( 20 );
@@ -36,17 +90,8 @@ namespace
             auto messageButton = new Button( "Message", this );
             connect( messageButton, &Button::clicked, this, &ButtonBox::execMessage );
 
-            auto informationButton = new Button( "Information", this );
-            connect( informationButton, &Button::clicked, this, &ButtonBox::execInformation );
-
             auto questionButton = new Button( "Question", this );
             connect( questionButton, &Button::clicked, this, &ButtonBox::execQuestion );
-
-            auto warningButton = new Button( "Warning", this );
-            connect( warningButton, &Button::clicked, this, &ButtonBox::execWarning );
-
-            auto criticalButton = new Button( "Critical", this );
-            connect( criticalButton, &Button::clicked, this, &ButtonBox::execCritical );
 
             auto selectButton = new Button( "Selection", this );
             connect( selectButton, &Button::clicked, this, &ButtonBox::execSelection );
@@ -57,35 +102,32 @@ namespace
       private:
         void execMessage()
         {
-            qskDialog->message( "Message", "Request vector, over.",
-                QskStandardSymbol::NoSymbol, QskDialog::Close );
-        }
-
-        void execInformation()
-        {
-            qskDialog->information( "Information",
-                "We have clearance, Clarence." );
+            const QString title( "Message" );
+            const QString message( "Request vector, over." );
+#ifndef QSK_USE_EXEC
+            openMessageSubWindow( window(), title, message,
+                QskDialog::Ok, QskDialog::Ok );
+#else
+            qskDialog->information( title, message );
+#endif
         }
 
         void execQuestion()
         {
-            qskDialog->question( "Question",
-                "Roger, Roger. Do we have a vector, Victor ?" );
-        }
-
-        void execWarning()
-        {
-            qskDialog->warning( "Warning", "We have clearance, Clarence." );
-        }
-
-        void execCritical()
-        {
-            qskDialog->critical( "Critical", "That's Clarence Oveur. Over." );
+            const QString title( "Question" );
+            const QString question( "Roger, Roger. Do we have a vector, Victor ?" );
+#ifndef QSK_USE_EXEC
+            openMessageSubWindow( window(), title, question,
+                QskDialog::Yes | QskDialog::No, QskDialog::Yes );
+#else
+            (void )qskDialog->question( title, question );
+#endif
         }
 
         void execSelection()
         {
-            // of course we all love "The Teens"
+            const QString title( "The Teens" );
+
             const QStringList entries =
             {
                 "Give Me More",
@@ -108,7 +150,12 @@ namespace
                 "Gimme Gimme Gimme Gimme Gimme Your Love"
             };
 
-            qskDialog->select( "Here we go ...", "Hot Hot Hot", entries, 7 );
+#ifndef QSK_USE_EXEC
+            openSelectSubWindow( window(), title,
+                QskDialog::Ok | QskDialog::Cancel, QskDialog::Ok, entries, 7 );
+#else
+            (void )qskDialog->select( title, entries, 7 );
+#endif
         }
     };
 }

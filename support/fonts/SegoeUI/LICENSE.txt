@@ -1,0 +1,1 @@
+For the Segue-UI fonts on Linux see: https://github.com/mrbvrz/segoe-ui-linux

@@ -17,8 +17,6 @@ namespace Engine
 {
     // What about using qskFuzzyCompare and friends ???
 
-    const double _eps = 1.0e-6;
-
     inline int fuzzyCompare( double value1, double value2, double intervalSize )
     {
         const double eps = std::abs( 1.0e-6 * intervalSize );

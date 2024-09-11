@@ -10,13 +10,14 @@
 #include "QskColorFilter.h"
 #include "QskGraphic.h"
 #include "QskGraphicProviderMap.h"
-#include "QskSkinHintTable.h"
 #include "QskStandardSymbol.h"
 #include "QskPlatform.h"
+#include "QskMargins.h"
+#include "QskFontRole.h"
+
+#include "QskSkinHintTable.h"
 #include "QskSkinManager.h"
 #include "QskSkinTransition.h"
-
-#include "QskMargins.h"
 
 #include <qguiapplication.h>
 #include <qpa/qplatformdialoghelper.h>
@@ -123,6 +124,22 @@ static inline QskSkinlet* qskNewSkinlet( const QMetaObject* metaObject, QskSkin*
     return skinlet;
 }
 
+// also used in QskSkinTransition.cpp TODO ...
+
+QFont qskResolvedFont( const QHash< QskFontRole, QFont >& fontTable,
+    const QskFontRole& fontRole )
+{
+    auto it = fontTable.constFind( fontRole );
+    if ( it != fontTable.constEnd() )
+        return it.value();
+
+    it = fontTable.constFind( QskFontRole() );
+    if ( it != fontTable.constEnd() )
+        return it.value();
+
+    return QGuiApplication::font();
+}
+
 namespace
 {
     class SkinletData
@@ -151,7 +168,7 @@ class QskSkin::PrivateData
 
     QskSkinHintTable hintTable;
 
-    QHash< int, QFont > fonts;
+    QHash< QskFontRole, QFont > fonts;
     QHash< int, QskColorFilter > graphicFilters;
 
     QskGraphicProviderMap graphicProviders;
@@ -194,7 +211,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskRadioBox, QskRadioBoxSkinlet >();
 
     const QFont font = QGuiApplication::font();
-    setupFonts( font.family(), font.weight(), font.italic() );
+    setupFontTable( font.family(), font.italic() );
 
     const auto noMargins = QVariant::fromValue( QskMargins( 0 ) );
 
@@ -236,6 +253,7 @@ void QskSkin::setColorScheme( ColorScheme colorScheme )
     if ( transitionHint.isValid() )
     {
         QskSkinTransition transition;
+        transition.setMask( QskSkinTransition::Color );
         transition.setSourceSkin( this );
 
         clearHints();
@@ -287,50 +305,92 @@ void QskSkin::declareSkinlet( const QMetaObject* metaObject,
     }
 }
 
-void QskSkin::setupFonts( const QString& family, int weight, bool italic )
+static inline void qskSetFont( QskSkin* skin,
+    QskFontRole::Category category, QskFontRole::Emphasis emphasis,  
+    QFont font, QFont::Weight weight )
 {
-    const int sizes[] = { 10, 15, 20, 32, 66 };
-    static_assert( sizeof( sizes ) / sizeof( sizes[ 0 ] ) == HugeFont,
-        "QskSkin::setupFonts: bad list size." );
-
-    QFont font( family, -1, weight, italic );
-
-    for ( int i = TinyFont; i <= HugeFont; i++ )
-    {
-        font.setPixelSize( qRound( qskDpToPixels( sizes[i - 1] ) ) );
-        m_data->fonts[ i ] = font;
-    }
-
-    const QFont appFont( QGuiApplication::font() );
-    if ( appFont.pixelSize() > 0 )
-        font.setPixelSize( appFont.pixelSize() );
-    else
-        font.setPointSize( appFont.pointSize() );
-
-    m_data->fonts[ QskSkin::DefaultFont ] = font;
+    font.setWeight( weight );
+    skin->setFont( { category, emphasis }, font );
 }
 
-void QskSkin::setFont( int fontRole, const QFont& font )
+static inline void qskSetNormalFont( QskSkin* skin,
+    QskFontRole::Category category, QFont font, int pixelSize )
+{
+    font.setPixelSize( qRound( qskDpToPixels( pixelSize ) ) );
+    qskSetFont( skin, category, QskFontRole::Normal, font, QFont::Normal );
+}
+
+void QskSkin::setupFontTable( const QString& family, bool italic )
+{
+    const QFont font( family, -1, -1, italic );
+
+    qskSetNormalFont( this, QskFontRole::Caption, font, 10 );
+    qskSetNormalFont( this, QskFontRole::Subtitle, font, 15 );
+    qskSetNormalFont( this, QskFontRole::Body, font, 20 );
+    qskSetNormalFont( this, QskFontRole::Title, font, 24 );
+    qskSetNormalFont( this, QskFontRole::Headline, font, 32 );
+    qskSetNormalFont( this, QskFontRole::Display, font, 66 );
+
+    completeFontTable();
+}
+
+void QskSkin::completeFontTable()
+{
+    // varying the weight of QskFontRole::Normal
+        
+    for ( int i = QskFontRole::Caption; i <= QskFontRole::Display; i++ )
+    {
+        auto& table = m_data->fonts;
+
+        const auto category = static_cast< QskFontRole::Category >( i );
+
+        const auto it = table.constFind( { category, QskFontRole::Normal } );
+        if ( it == table.constEnd() )
+            continue;
+
+        const auto normalFont = it.value();
+
+        for ( int j = QskFontRole::VeryLow; j <= QskFontRole::VeryHigh; j++ )
+        {
+            const auto emphasis = static_cast< QskFontRole::Emphasis >( j );
+
+            if ( emphasis == QskFontRole::Normal
+                || table.contains( { category, emphasis } ) )
+            {
+                continue;
+            }
+
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+            const auto step = 10; // weight: [0-99]
+#else
+            const auto step = 100; // weight: [1-1000]
+#endif
+
+            int weight = normalFont.weight() + ( j - 2 ) * step;
+            weight = qBound( static_cast<int>( QFont::Thin ),
+                weight, static_cast<int>( QFont::Black ) );
+
+            auto font = normalFont;
+            font.setWeight( static_cast< QFont::Weight >( weight ) );
+
+            m_data->fonts[ { category, emphasis } ] = font;
+        }
+    }
+}
+
+void QskSkin::setFont( const QskFontRole& fontRole, const QFont& font )
 {
     m_data->fonts[ fontRole ] = font;
 }
 
-void QskSkin::resetFont( int fontRole )
+void QskSkin::resetFont( const QskFontRole& fontRole )
 {
     m_data->fonts.remove( fontRole );
 }
 
-QFont QskSkin::font( int fontRole ) const
+QFont QskSkin::font( const QskFontRole& fontRole ) const
 {
-    auto it = m_data->fonts.constFind( fontRole );
-    if ( it != m_data->fonts.constEnd() )
-        return it.value();
-
-    it = m_data->fonts.constFind( QskSkin::DefaultFont );
-    if ( it != m_data->fonts.constEnd() )
-        return it.value();
-
-    return QGuiApplication::font();
+    return qskResolvedFont( m_data->fonts, fontRole );
 }
 
 void QskSkin::setGraphicFilter( int graphicRole, const QskColorFilter& colorFilter )
@@ -358,7 +418,7 @@ QskSkinHintTable& QskSkin::hintTable()
     return m_data->hintTable;
 }
 
-const QHash< int, QFont >& QskSkin::fonts() const
+const QHash< QskFontRole, QFont >& QskSkin::fontTable() const
 {
     return m_data->fonts;
 }

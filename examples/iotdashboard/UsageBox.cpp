@@ -4,22 +4,28 @@
  *****************************************************************************/
 
 #include "UsageBox.h"
-#include "Skin.h"
 
+#include <QskFontRole.h>
 #include <QskTextLabel.h>
 
 QSK_SUBCONTROL( UsageBox, Separator )
 
 namespace
 {
-    class SeparatorLabel : public QskTextLabel
+    class UsageLine : public QskLinearBox
     {
       public:
-
-        SeparatorLabel( QQuickItem* parent = nullptr )
-            : QskTextLabel( "_____", parent )
+        UsageLine( const QString& info, const QString& value, QQuickItem* parent )
+            : QskLinearBox( Qt::Horizontal, parent )
         {
-            setSubcontrolProxy( QskTextLabel::Text, UsageBox::Separator );
+            auto infoLabel = new QskTextLabel( info, this );
+            infoLabel->setFontRole( QskFontRole::Caption );
+
+            auto separator = new QskTextLabel( "_____", this );
+            separator->setSubcontrolProxy( QskTextLabel::Text, UsageBox::Separator );
+
+            auto valueLabel = new QskTextLabel( value, this );
+            valueLabel->setFontRole( QskFontRole::Caption );
         }
     };
 }
@@ -27,30 +33,7 @@ namespace
 UsageBox::UsageBox( QQuickItem* parent )
     : Box( "Usage", parent )
 {
-    auto today = new QskLinearBox( Qt::Horizontal, this );
-    auto todayText = new QskTextLabel( "Usage today", today );
-    todayText->setFontRole( QskSkin::SmallFont );
-
-    new SeparatorLabel( today );
-
-    auto todayValue = new QskTextLabel( "0,5 kwH", today );
-    todayValue->setFontRole( QskSkin::SmallFont );
-
-    auto month = new QskLinearBox( Qt::Horizontal, this );
-    auto monthText = new QskTextLabel( "Usage this month", month );
-    monthText->setFontRole( QskSkin::SmallFont );
-
-    new SeparatorLabel( month );
-
-    auto monthValue = new QskTextLabel( "66 kwH", month );
-    monthValue->setFontRole( QskSkin::SmallFont );
-
-    auto total = new QskLinearBox( Qt::Horizontal, this );
-    auto totalText = new QskTextLabel( "Total working hours", total );
-    totalText->setFontRole( QskSkin::SmallFont );
-
-    new SeparatorLabel( total );
-
-    auto totalValue = new QskTextLabel( "125 hrs", total );
-    totalValue->setFontRole( QskSkin::SmallFont );
+    ( void ) new UsageLine( "Usage today", "0,5 kwH", this );
+    ( void ) new UsageLine( "Usage this month", "66 kwH", this );
+    ( void ) new UsageLine( "Total working hours", "125 hrs", this );
 }

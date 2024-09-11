@@ -11,6 +11,7 @@
 #include <QskGridBox.h>
 #include <QskSkin.h>
 #include <QskTextLabel.h>
+#include <QskFontRole.h>
 
 #include <QImage>
 
@@ -32,7 +33,7 @@ namespace
             icon->setCheckable( true );
 
             auto textLabel = new QskTextLabel( name, this );
-            textLabel->setFontRole( QskSkin::TinyFont );
+            textLabel->setFontRole( { QskFontRole::Caption, QskFontRole::Low } );
             textLabel->setAlignment( Qt::AlignHCenter );
         }
     };

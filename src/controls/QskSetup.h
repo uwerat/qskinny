@@ -7,61 +7,17 @@
 #define QSK_SETUP_H
 
 #include "QskGlobal.h"
-#include "QskQuickItem.h"
+#include "QskItem.h"
 
-#include <qobject.h>
-#include <memory>
-
-class QQuickItem;
-class QskGraphicProvider;
-
-#if defined( qskSetup )
-#undef qskSetup
-#endif
-
-#define qskSetup QskSetup::instance()
-
-class QSK_EXPORT QskSetup : public QObject
+namespace QskSetup
 {
-    Q_OBJECT
+    QSK_EXPORT void setUpdateFlags( QskItem::UpdateFlags );
+    QSK_EXPORT void resetUpdateFlags();
+    QSK_EXPORT QskItem::UpdateFlags updateFlags();
 
-  public:
-
-    static QskSetup* instance();
-
-    void setItemUpdateFlags( QskQuickItem::UpdateFlags );
-    void resetItemUpdateFlags();
-    QskQuickItem::UpdateFlags itemUpdateFlags() const;
-
-    void setItemUpdateFlag( QskQuickItem::UpdateFlag, bool on = true );
-    void resetItemUpdateFlag( QskQuickItem::UpdateFlag );
-    bool testItemUpdateFlag( QskQuickItem::UpdateFlag );
-
-    void addGraphicProvider( const QString& providerId, QskGraphicProvider* );
-    QskGraphicProvider* graphicProvider( const QString& providerId ) const;
-
-    static void setup();
-    static void cleanup();
-
-  Q_SIGNALS:
-    void itemUpdateFlagsChanged();
-
-  private:
-    QskSetup();
-    ~QskSetup() override;
-
-    bool eventFilter( QObject*, QEvent* ) override final;
-
-    static QskSetup* s_instance;
-
-    class PrivateData;
-    std::unique_ptr< PrivateData > m_data;
+    QSK_EXPORT void setUpdateFlag( QskItem::UpdateFlag, bool on = true );
+    QSK_EXPORT void resetUpdateFlag( QskItem::UpdateFlag );
+    QSK_EXPORT bool testUpdateFlag( QskItem::UpdateFlag );
 };
-
-inline QskSetup* QskSetup::instance()
-{
-    Q_ASSERT( s_instance );
-    return s_instance;
-}
 
 #endif

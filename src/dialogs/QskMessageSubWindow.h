@@ -8,7 +8,6 @@
 
 #include "QskDialogSubWindow.h"
 
-class QskGraphic;
 class QskTextOptions;
 
 class QSK_EXPORT QskMessageSubWindow : public QskDialogSubWindow
@@ -21,8 +20,6 @@ class QSK_EXPORT QskMessageSubWindow : public QskDialogSubWindow
     Q_PROPERTY( QskTextOptions textOptions READ textOptions
         WRITE setTextOptions NOTIFY textOptionsChanged )
 
-    Q_PROPERTY( QUrl symbolSource READ symbolSource WRITE setSymbolSource )
-
     using Inherited = QskDialogSubWindow;
 
   public:
@@ -34,24 +31,12 @@ class QSK_EXPORT QskMessageSubWindow : public QskDialogSubWindow
 
     QString text() const;
 
-    void setSymbolSource( const QUrl& url );
-    QUrl symbolSource() const;
-
-    void setSymbolType( int symbolType );
-
-    void setSymbol( const QskGraphic& );
-    QskGraphic symbol() const;
-
   public Q_SLOTS:
     void setText( const QString& );
 
   Q_SIGNALS:
     void textChanged( const QString& );
     void textOptionsChanged( const QskTextOptions& );
-
-  private:
-    class PrivateData;
-    std::unique_ptr< PrivateData > m_data;
 };
 
 #endif

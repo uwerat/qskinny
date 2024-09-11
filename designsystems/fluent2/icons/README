@@ -1,0 +1,10 @@
+SVGs have been taken from https://github.com/microsoft/fluentui-system-icons/tree/main/assets.
+
+Icons are available in different sizes. As SVGs can be scaled we only need
+one version of them - chosing the '12'.
+
+As we are replacing the colors of the SVGs using graphic filters we set the
+color in the SVGs manually to black ( instead of #212121 ). So they are in
+line with icons coming from somewhere else.
+
+Names have been shortened ( ic_fluent_xyz_16_regular.svg -> xyz.svg )

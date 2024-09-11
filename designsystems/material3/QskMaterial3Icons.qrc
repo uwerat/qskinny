@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/m3">
+
+		<!-- needed until we have fixed a rendering bug for small icons -->
+
+        <file>icons/qvg/check_small.qvg</file>
+        <file>icons/qvg/combo-box-arrow-closed.qvg</file>
+        <file>icons/qvg/combo-box-arrow-open.qvg</file>
+        <file>icons/qvg/segmented-button-check.qvg</file>
+
+		<!-- https://github.com/marella/material-design-icons/tree/main/svg/round -->
+
+        <file>icons/qvg/add.qvg</file>
+        <file>icons/qvg/arrow_drop_down.qvg</file>
+        <file>icons/qvg/arrow_drop_up.qvg</file>
+        <file>icons/qvg/check.qvg</file>
+        <file>icons/qvg/remove.qvg</file>
+    </qresource>
+</RCC>
