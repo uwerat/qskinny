@@ -6,18 +6,14 @@
 #ifndef QSK_ARC_NODE_H
 #define QSK_ARC_NODE_H
 
-#include "QskShapeNode.h"
+#include "QskGlobal.h"
+#include <qsgnode.h>
 
 class QskArcMetrics;
 class QskGradient;
 class QskShadowMetrics;
 
-/*
-    For the moment a QPainterPath/QskShapeNode.
-    But we can do better by creatig vertex lists manually
-    like what is done by the box renderer. TODO ...
- */
-class QSK_EXPORT QskArcNode : public QskShapeNode
+class QSK_EXPORT QskArcNode : public QSGNode
 {
   public:
     QskArcNode();

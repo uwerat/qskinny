@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/fonts">
+
+        <file alias="segoeuib.ttf">fonts/SegoeUI/segoeuib.ttf</file>
+        <file alias="segoeuii.ttf">fonts/SegoeUI/segoeuii.ttf</file>
+        <file alias="segoeuil.ttf">fonts/SegoeUI/segoeuil.ttf</file>
+        <file alias="segoeuisl.ttf">fonts/SegoeUI/segoeuisl.ttf</file>
+        <file alias="segoeui.ttf">fonts/SegoeUI/segoeui.ttf</file>
+        <file alias="segoeuiz.ttf">fonts/SegoeUI/segoeuiz.ttf</file>
+        <file alias="seguibli.ttf">fonts/SegoeUI/seguibli.ttf</file>
+        <file alias="seguibl.ttf">fonts/SegoeUI/seguibl.ttf</file>
+        <file alias="seguili.ttf">fonts/SegoeUI/seguili.ttf</file>
+        <file alias="seguisbi.ttf">fonts/SegoeUI/seguisbi.ttf</file>
+        <file alias="seguisb.ttf">fonts/SegoeUI/seguisb.ttf</file>
+        <file alias="seguisli.ttf">fonts/SegoeUI/seguisli.ttf</file>
+
+    </qresource>
+</RCC>

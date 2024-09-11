@@ -339,7 +339,7 @@ class QskGraphic::PrivateData : public QSharedData
 
     PrivateData( const PrivateData& other )
         : QSharedData( other )
-        , defaultSize( other.defaultSize )
+        , viewBox( other.viewBox )
         , commands( other.commands )
         , pathInfos( other.pathInfos )
         , boundingRect( other.boundingRect )
@@ -354,7 +354,18 @@ class QskGraphic::PrivateData : public QSharedData
     {
         return ( modificationId == other.modificationId ) &&
             ( renderHints == other.renderHints ) &&
-            ( defaultSize == other.defaultSize );
+            ( viewBox == other.viewBox );
+    }
+
+    void resetCommands()
+    {
+        commands.clear();
+        pathInfos.clear();
+
+        commandTypes = 0;
+        boundingRect = pointRect = { 0.0, 0.0, -1.0, -1.0 };
+
+        modificationId = 0;
     }
 
     inline void addCommand( const QskPainterCommand& command )
@@ -365,7 +376,7 @@ class QskGraphic::PrivateData : public QSharedData
         modificationId = nextId.fetchAndAddRelaxed( 1 );
     }
 
-    QSizeF defaultSize;
+    QRectF viewBox = { 0.0, 0.0, -1.0, -1.0 };
     QVector< QskPainterCommand > commands;
     QVector< QskGraphicPrivate::PathInfo > pathInfos;
 
@@ -485,6 +496,16 @@ int QskGraphic::metric( PaintDeviceMetric deviceMetric ) const
             value = metric( PdmDevicePixelRatio ) * devicePixelRatioFScale();
             break;
         }
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 8, 0 )
+        case PdmDevicePixelRatioF_EncodedA:
+        case PdmDevicePixelRatioF_EncodedB:
+        {
+#if 0
+            value = QPaintDevice::encodeMetricF( metric, devicePixelRatio() );
+#endif
+            break;
+        }
+#endif
     }
 
     return value;
@@ -492,16 +513,9 @@ int QskGraphic::metric( PaintDeviceMetric deviceMetric ) const
 
 void QskGraphic::reset()
 {
-    m_data->commands.clear();
-    m_data->pathInfos.clear();
+    m_data->resetCommands();
 
-    m_data->commandTypes = 0;
-
-    m_data->boundingRect = QRectF( 0.0, 0.0, -1.0, -1.0 );
-    m_data->pointRect = QRectF( 0.0, 0.0, -1.0, -1.0 );
-    m_data->defaultSize = QSizeF();
-
-    m_data->modificationId = 0;
+    m_data->viewBox = { 0.0, 0.0, -1.0, -1.0 };
 
     delete m_paintEngine;
     m_paintEngine = nullptr;
@@ -580,18 +594,20 @@ QSize QskGraphic::sizeMetrics() const
     return QSize( qCeil( sz.width() ), qCeil( sz.height() ) );
 }
 
-void QskGraphic::setDefaultSize( const QSizeF& size )
+void QskGraphic::setViewBox( const QRectF& rect )
 {
-    const double w = qMax( qreal( 0.0 ), size.width() );
-    const double h = qMax( qreal( 0.0 ), size.height() );
+    m_data->viewBox = rect;
+}
 
-    m_data->defaultSize = QSizeF( w, h );
+QRectF QskGraphic::viewBox() const
+{
+    return m_data->viewBox;
 }
 
 QSizeF QskGraphic::defaultSize() const
 {
-    if ( !m_data->defaultSize.isEmpty() )
-        return m_data->defaultSize;
+    if ( !m_data->viewBox.isEmpty() )
+        return m_data->viewBox.size();
 
     return boundingRect().size();
 }
@@ -670,30 +686,42 @@ void QskGraphic::render( QPainter* painter, const QRectF& rect,
     if ( isEmpty() || rect.isEmpty() )
         return;
 
+    const bool scalePens = !( m_data->renderHints & RenderPensUnscaled );
+
     qreal sx = 1.0;
     qreal sy = 1.0;
 
-    if ( m_data->pointRect.width() > 0.0 )
-        sx = rect.width() / m_data->pointRect.width();
+    QRectF boundingBox = m_data->viewBox;
 
-    if ( m_data->pointRect.height() > 0.0 )
-        sy = rect.height() / m_data->pointRect.height();
-
-    const bool scalePens = !( m_data->renderHints & RenderPensUnscaled );
-
-    for ( const auto& info : std::as_const( m_data->pathInfos ) )
+    if ( !boundingBox.isEmpty() )
     {
-        const qreal ssx = info.scaleFactorX( m_data->pointRect,
-            rect, m_data->boundingRect, scalePens );
+        sx = rect.width() / boundingBox.width();
+        sy = rect.height() / boundingBox.height();
+    }
+    else
+    {
+        boundingBox = m_data->boundingRect;
 
-        if ( ssx > 0.0 )
-            sx = qMin( sx, ssx );
+        if ( m_data->pointRect.width() > 0.0 )
+            sx = rect.width() / m_data->pointRect.width();
 
-        const qreal ssy = info.scaleFactorY( m_data->pointRect,
-            rect, m_data->boundingRect, scalePens );
+        if ( m_data->pointRect.height() > 0.0 )
+            sy = rect.height() / m_data->pointRect.height();
 
-        if ( ssy > 0.0 )
-            sy = qMin( sy, ssy );
+        for ( const auto& info : std::as_const( m_data->pathInfos ) )
+        {
+            const qreal ssx = info.scaleFactorX( m_data->pointRect,
+                rect, m_data->boundingRect, scalePens );
+
+            if ( ssx > 0.0 )
+                sx = qMin( sx, ssx );
+
+            const qreal ssy = info.scaleFactorY( m_data->pointRect,
+                rect, m_data->boundingRect, scalePens );
+
+            if ( ssy > 0.0 )
+                sy = qMin( sy, ssy );
+        }
     }
 
     if ( aspectRatioMode == Qt::KeepAspectRatio )
@@ -705,15 +733,17 @@ void QskGraphic::render( QPainter* painter, const QRectF& rect,
         sx = sy = qMax( sx, sy );
     }
 
-    const auto& br = m_data->boundingRect;
-    const auto rc = rect.center();
-
     QTransform tr;
-    tr.translate(
-        rc.x() - 0.5 * sx * br.width(),
-        rc.y() - 0.5 * sy * br.height() );
-    tr.scale( sx, sy );
-    tr.translate( -br.x(), -br.y() );
+
+    {
+        const auto rc = rect.center();
+
+        tr.translate(
+            rc.x() - 0.5 * sx * boundingBox.width(),
+            rc.y() - 0.5 * sy * boundingBox.height() );
+        tr.scale( sx, sy );
+        tr.translate( -boundingBox.x(), -boundingBox.y() );
+    }
 
     const auto transform = painter->transform();
 
@@ -986,7 +1016,7 @@ const QVector< QskPainterCommand >& QskGraphic::commands() const
 
 void QskGraphic::setCommands( const QVector< QskPainterCommand >& commands )
 {
-    reset();
+    m_data->resetCommands();
 
     const int numCommands = commands.size();
     if ( numCommands <= 0 )
@@ -1019,9 +1049,7 @@ quint64 QskGraphic::modificationId() const
 QskHashValue QskGraphic::hash( QskHashValue seed ) const
 {
     auto hash = qHash( m_data->renderHints, seed );
-
-    hash = qHash( m_data->defaultSize.width(), hash );
-    hash = qHash( m_data->defaultSize.height(), hash );
+    hash = qHashBits( &m_data->viewBox, sizeof( QRectF ), hash );
 
     return qHash( m_data->modificationId, hash );
 }

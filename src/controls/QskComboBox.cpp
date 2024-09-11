@@ -237,7 +237,7 @@ void QskComboBox::openPopup()
     auto menu = new QskMenu();
 
     menu->setWrapping( false );
-    menu->setOrigin( mapToScene( cr.topLeft() ) );
+    menu->setOrigin( mapToScene( cr.bottomLeft() ) );
     menu->setFixedWidth( cr.width() );
 
     menu->setOptions( m_data->options );

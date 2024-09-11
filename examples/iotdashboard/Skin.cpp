@@ -7,8 +7,6 @@
 
 #include "Box.h"
 #include "BoxWithButtons.h"
-#include "CircularProgressBar.h"
-#include "CircularProgressBarSkinlet.h"
 #include "DashboardPage.h"
 #include "Diagram.h"
 #include "DiagramSkinlet.h"
@@ -21,7 +19,6 @@
 #include "RoundedIcon.h"
 #include "StorageBar.h"
 #include "StorageBarSkinlet.h"
-#include "StorageMeter.h"
 #include "StoragePage.h"
 #include "TopBar.h"
 #include "UsageBox.h"
@@ -37,6 +34,7 @@
 #include <QskSkinHintTableEditor.h>
 #include <QskStateCombination.h>
 #include <QskTextLabel.h>
+#include <QskProgressRing.h>
 #include <QskGraphicLabel.h>
 #include <QskFontRole.h>
 
@@ -56,7 +54,6 @@ Skin::Skin( QObject* parent )
 {
     setObjectName( "iot" );
 
-    declareSkinlet< CircularProgressBar, CircularProgressBarSkinlet >();
     declareSkinlet< Diagram, DiagramSkinlet >();
     declareSkinlet< LightDisplay, LightDisplaySkinlet >();
     declareSkinlet< StorageBar, StorageBarSkinlet >();
@@ -87,9 +84,9 @@ void Skin::initHints()
 
     ed.setPadding( MainContentGridBox::Panel, { 19, 0, 27, 24 } );
 
-    // menu bar:
-
     {
+        // menu bar:
+
         using Q = QskPushButton;
         using A = QskAspect;
 
@@ -113,25 +110,27 @@ void Skin::initHints()
         ed.setAlignment( Q::Icon | A::Header, Qt::AlignCenter );
     }
 
-    // top bar:
-    ed.setPadding( TopBar::Panel, { 25, 35, 25, 0 } );
+    {
+        // top bar:
 
-    ed.setColor( TopBarItem::Item1 | QskAspect::TextColor, 0xffff3122 );
-    ed.setColor( TopBarItem::Item2 | QskAspect::TextColor, 0xff6776ff );
-    ed.setColor( TopBarItem::Item3 | QskAspect::TextColor, 0xfff99055 );
-    ed.setColor( TopBarItem::Item4 | QskAspect::TextColor, 0xff6776ff );
+        ed.setPadding( TopBar::Panel, { 25, 35, 25, 0 } );
 
-    // arcs are counterclockwise, so specify the 2nd color first:
-    ed.setGradient( TopBarItem::Item1, 0xffff3122, 0xffff5c00 );
-    ed.setGradient( TopBarItem::Item2, 0xff6100ff, 0xff6776ff );
-    ed.setGradient( TopBarItem::Item3, 0xffff3122, 0xffffce50 );
-    ed.setGradient( TopBarItem::Item4, 0xff6100ff, 0xff6776ff );
+        ed.setColor( TopBarItem::Item1 | QskAspect::TextColor, 0xffff3122 );
+        ed.setColor( TopBarItem::Item2 | QskAspect::TextColor, 0xff6776ff );
+        ed.setColor( TopBarItem::Item3 | QskAspect::TextColor, 0xfff99055 );
+        ed.setColor( TopBarItem::Item4 | QskAspect::TextColor, 0xff6776ff );
+
+        ed.setGradient( TopBarItem::Item1, 0xffff5c00, 0xffff3122 );
+        ed.setGradient( TopBarItem::Item2, 0xff6776ff, 0xff6100ff );
+        ed.setGradient( TopBarItem::Item3, 0xffffce50, 0xffff3122 );
+        ed.setGradient( TopBarItem::Item4, 0xff6776ff, 0xff6100ff );
+    }
 
     // the bar gradient is defined through the top bar items above
-    ed.setArcMetrics( CircularProgressBar::Groove, 90, -360, 8.53 );
+    ed.setArcMetrics( QskProgressRing::Groove, 90, -360, 8.53 );
     // the span angle will be set in the progress bar, we just give a dummy
     // value here:
-    ed.setArcMetrics( CircularProgressBar::Bar, 90, -180, 8.53 );
+    ed.setArcMetrics( QskProgressRing::Fill, ed.arcMetrics( QskProgressRing::Groove ) );
 
     ed.setFontRole( TimeTitleLabel::Text, { QskFontRole::Caption, QskFontRole::High } );
 
@@ -283,8 +282,8 @@ void Skin::initHints()
     ed.setColor( QskTextLabel::Text, palette.text );
     ed.setColor( UsageDiagramBox::DayText, palette.text );
 
-    ed.setMetric( CircularProgressBar::Groove | QskAspect::Border, 2 );
-    ed.setColor( CircularProgressBar::Groove | QskAspect::Border,
+    ed.setMetric( QskProgressRing::Groove | QskAspect::Border, 2 );
+    ed.setColor( QskProgressRing::Groove | QskAspect::Border,
         palette.circularProgressBarGroove );
 
     // storage bar
@@ -302,9 +301,13 @@ void Skin::initHints()
 
     // storage meter
     {
-        ed.setGradient( StorageMeter::Status,
-            { { { 0.00, "#00ff00" }, { 0.33, "#00ff00" }, { 0.33, "#ffaf00" }, { 0.66, "#ffaf00" },
-                { 0.66, "#ff0000" }, { 1.00, "#ff0000" } } } );
+        ed.setGradient( StoragePage::Status,
+            { {
+                { 0.00, "#00ff00" }, { 0.33, "#00ff00" },
+                { 0.33, "#ffaf00" }, { 0.66, "#ffaf00" },
+                { 0.66, "#ff0000" }, { 1.00, "#ff0000" }
+            } }
+        );
     }
 }
 
@@ -322,7 +325,7 @@ Skin::Palette Skin::palette( QskSkin::ColorScheme colorScheme ) const
             Qt::white,
             0xff4a4a4a,
             0xff555555,
-            { { { 0.0, 0xff991100 }, { 0.2, 0xff9a7a57 }, { 0.5, 0xff3726af }, { 1.0, Qt::black } } },
+            { { { 0.0, 0xff991100 }, { 0.4, 0xff9a7a57 }, { 1.0, 0xff3726af } } },
             0x10ffffff,
             0xff222222
         };
@@ -339,8 +342,7 @@ Skin::Palette Skin::palette( QskSkin::ColorScheme colorScheme ) const
             Qt::black,
             0xffe5e5e5,
             0xffc4c4c4,
-            { { { 0.0, 0xffff3122 }, { 0.2, 0xfffeeeb7 }, { 0.3, 0xffa7b0ff }, { 0.5, 0xff6776ff },
-                { 1.0, Qt::black } } },
+            { { { 0.0, 0xffff3122 }, { 0.4, 0xfffeeeb7 }, { 0.6, 0xffa7b0ff }, { 1.0, 0xff6776ff } } },
             0x10000000,
             0xffdddddd
         };

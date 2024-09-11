@@ -26,7 +26,7 @@ namespace QskVertex
         Color( QRgb ) noexcept;
         Color( const QColor& );
 
-        Color interpolatedTo( Color, double ratio ) const noexcept;
+        Color interpolatedTo( Color, qreal ratio ) const noexcept;
 
         constexpr bool operator==( const Color& ) const noexcept;
         constexpr bool operator!=( const Color& ) const noexcept;
@@ -60,7 +60,7 @@ namespace QskVertex
 
         if ( a < 255 )
         {
-            const double af = a / 255.0;
+            const auto af = a / 255.0;
 
             r *= af;
             g *= af;
@@ -115,6 +115,11 @@ namespace QskVertex
             p2.set( x2, y2 );
         }
 
+        inline void setLine( const QPointF& p1, const QPointF& p2 ) noexcept
+        {
+            setLine( p1.x(), p1.y(), p2.x(), p2.y() );
+        }
+
         inline void setHLine( float x1, float x2, float y ) noexcept
         {
             setLine( x1, y, x2, y );
@@ -125,13 +130,31 @@ namespace QskVertex
             setLine( x, y1, x, y2 );
         }
 
+        inline void setLine( const QPointF& p1, const QPointF& p2, Color ) noexcept
+        {
+            /* The color parameter makes no sense, but is useful
+               when being used from templated code
+             */
+
+            setLine( p1.x(), p1.y(), p2.x(), p2.y() );
+        }
+
         inline void setLine( float x1, float y1, float x2, float y2, Color ) noexcept
         {
             /* The color parameter makes no sense, but is useful
-               when being using from templated code
+               when being used from templated code
              */
             setLine( x1, y1, x2, y2 );
         }
+
+        inline float x1() const noexcept { return p1.x; }
+        inline float y1() const noexcept { return p1.y; }
+
+        inline float x2() const noexcept { return p2.x; }
+        inline float y2() const noexcept { return p2.y; }
+
+        inline float dx() const noexcept { return p2.x - p1.x; }
+        inline float dy() const noexcept { return p2.y - p1.y; }
 
         QSGGeometry::Point2D p1;
         QSGGeometry::Point2D p2;
@@ -171,6 +194,15 @@ namespace QskVertex
         {
             setLine( x, y1, color, x, y2, color );
         }
+
+        inline float x1() const noexcept { return p1.x; }
+        inline float y1() const noexcept { return p1.y; }
+
+        inline float x2() const noexcept { return p2.x; }
+        inline float y2() const noexcept { return p2.y; }
+
+        inline float dx() const noexcept { return p2.x - p1.x; }
+        inline float dy() const noexcept { return p2.y - p1.y; }
 
         QSGGeometry::ColoredPoint2D p1;
         QSGGeometry::ColoredPoint2D p2;
@@ -214,15 +246,15 @@ namespace QskVertex
             m_stepIndex = 0;
             m_stepCount = stepCount;
 
-            const double angleStep = M_PI_2 / stepCount;
+            const auto angleStep = M_PI_2 / stepCount;
             m_cosStep = qFastCos( angleStep );
             m_sinStep = qFastSin( angleStep );
         }
 
         inline bool isInverted() const { return m_inverted; }
 
-        inline double cos() const { return m_cos; }
-        inline double sin() const { return m_inverted ? -m_sin : m_sin; }
+        inline qreal cos() const { return m_cos; }
+        inline qreal sin() const { return m_inverted ? -m_sin : m_sin; }
 
         inline int step() const { return m_stepIndex; }
         inline int stepCount() const { return m_stepCount; }
@@ -253,7 +285,7 @@ namespace QskVertex
             }
             else
             {
-                const double cos0 = m_cos;
+                const auto cos0 = m_cos;
 
                 m_cos = m_cos * m_cosStep + m_sin * m_sinStep;
                 m_sin = m_sin * m_cosStep - cos0 * m_sinStep;
@@ -269,9 +301,9 @@ namespace QskVertex
 
         inline void operator++() { increment(); }
 
-        static int segmentHint( double radius )
+        static int segmentHint( qreal radius )
         {
-            const double arcLength = radius * M_PI_2;
+            const auto arcLength = radius * M_PI_2;
             return qBound( 3, qCeil( arcLength / 3.0 ), 18 ); // every 3 pixels
         }
 
@@ -292,12 +324,12 @@ namespace QskVertex
         }
 
       private:
-        double m_cos;
-        double m_sin;
+        qreal m_cos;
+        qreal m_sin;
 
         int m_stepIndex;
-        double m_cosStep;
-        double m_sinStep;
+        qreal m_cosStep;
+        qreal m_sinStep;
 
         int m_stepCount;
         bool m_inverted;

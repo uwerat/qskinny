@@ -14,17 +14,6 @@
 #include "TopBar.h"
 #include "UsageBox.h"
 
-#include <QskBoxBorderColors.h>
-#include <QskBoxBorderMetrics.h>
-#include <QskBoxShapeMetrics.h>
-#include <QskGridBox.h>
-#include <QskSetup.h>
-#include <QskSkin.h>
-#include <QskTextLabel.h>
-#include <QskQuick.h>
-
-#include <QTimer>
-
 QSK_SUBCONTROL( DashboardPage, Panel )
 
 namespace

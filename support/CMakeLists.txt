@@ -11,7 +11,7 @@ set(SOURCES
     SkinnyShortcut.h SkinnyShortcut.cpp
 )
 
-qt_add_resources(SOURCES fonts.qrc)
+qt_add_resources(SOURCES DejaVuSans.qrc Roboto.qrc SegoeUI.qrc)
 
 set(target qsktestsupport)
 

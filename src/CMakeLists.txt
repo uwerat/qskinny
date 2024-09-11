@@ -101,6 +101,8 @@ list(APPEND SOURCES
 
 list(APPEND HEADERS
     nodes/QskArcNode.h
+    nodes/QskArcRenderer.h
+    nodes/QskArcRenderNode.h
     nodes/QskArcShadowNode.h
     nodes/QskBasicLinesNode.h
     nodes/QskBoxNode.h
@@ -141,6 +143,8 @@ list(APPEND PRIVATE_HEADERS
 
 list(APPEND SOURCES
     nodes/QskArcNode.cpp
+    nodes/QskArcRenderer.cpp
+    nodes/QskArcRenderNode.cpp
     nodes/QskArcShadowNode.cpp
     nodes/QskBasicLinesNode.cpp
     nodes/QskBoxNode.cpp

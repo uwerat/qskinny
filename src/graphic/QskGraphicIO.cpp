@@ -19,10 +19,9 @@ static const char qskMagicNumber[] = "QSKG";
 /*
     To avoid crashes ( fonts ), when svg2qvg was running with a different Qt
     version, than the one of the application we hardcode
-    the datastream format to Qt 5.6. Once everything is running with
-    Qt 5.15 we can increase the version. TODO ...
+    the datastream format.
  */
-static const int qskDataStreamVersion = QDataStream::Qt_5_6;
+static const int qskDataStreamVersion = QDataStream::Qt_5_15;
 
 static inline void qskWritePathData(
     const QPainterPath& path, QDataStream& s )
@@ -242,6 +241,9 @@ QskGraphic QskGraphicIO::read( QIODevice* dev )
         return QskGraphic();
     }
 
+    QRectF viewBox;
+    stream >> viewBox;
+
     quint32 numCommands;
     stream >> numCommands;
 
@@ -281,6 +283,7 @@ QskGraphic QskGraphicIO::read( QIODevice* dev )
     }
 
     QskGraphic graphic;
+    graphic.setViewBox( viewBox );
     graphic.setCommands( commands );
 
     return graphic;
@@ -315,6 +318,8 @@ bool QskGraphicIO::write( const QskGraphic& graphic, QIODevice* dev )
 #endif
     stream.setByteOrder( QDataStream::BigEndian );
     stream.writeRawData( qskMagicNumber, 4 );
+
+    stream << graphic.viewBox();
 
     const auto numCommands = graphic.commands().size();
     const QskPainterCommand* cmds = graphic.commands().constData();
