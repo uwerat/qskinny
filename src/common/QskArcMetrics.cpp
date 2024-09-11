@@ -21,6 +21,83 @@ static void qskRegisterArcMetrics()
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterArcMetrics )
 
+static inline QPainterPath qskRadialPathPath(
+    const QRectF& rect, qreal startAngle, qreal spanAngle, qreal width )
+{
+    const auto sz = qMin( rect.width(), rect.height() );
+
+    const auto tx = width * rect.width() / sz;
+    const auto ty = width * rect.height() / sz;
+
+    const auto innerRect = rect.adjusted( tx, ty, -tx, -ty );
+
+    QPainterPath path;
+
+    if ( innerRect.isEmpty() )
+    {
+        if ( qAbs( spanAngle ) >= 360.0 )
+        {
+            path.addEllipse( rect );
+        }
+        else
+        {
+            // pie
+            path.arcMoveTo( rect, startAngle );
+            path.arcTo( rect, startAngle, spanAngle );
+            path.lineTo( rect.center() );
+            path.closeSubpath();
+        }
+    }
+    else
+    {
+        if ( qAbs( spanAngle ) >= 360.0 )
+        {
+            path.addEllipse( rect );
+
+            QPainterPath innerPath;
+            innerPath.addEllipse( innerRect );
+            path -= innerPath;
+        }
+        else
+        {
+            /*
+                We need the end point of the inner arc to add the line that connects
+                the inner/outer arcs. As QPainterPath does not offer such a method
+                we insert a dummy arcMoveTo and grab the calculated position.
+             */
+            path.arcMoveTo( innerRect, startAngle + spanAngle );
+            const auto pos = path.currentPosition();
+
+            path.arcMoveTo( rect, startAngle ); // replaces the dummy arcMoveTo above
+            path.arcTo( rect, startAngle, spanAngle );
+
+            path.lineTo( pos );
+            path.arcTo( innerRect, startAngle + spanAngle, -spanAngle );
+
+            path.closeSubpath();
+        }
+    }
+
+    return path;
+}
+
+static inline QPainterPath qskOrthogonalPath(
+    const QRectF& rect, qreal startAngle, qreal spanAngle, qreal width )
+{
+    const auto t2 = 0.5 * width;
+    const auto r = rect.adjusted( t2, t2, -t2, -t2 );
+
+    QPainterPath arcPath;
+    arcPath.arcMoveTo( r, startAngle );
+    arcPath.arcTo( r, startAngle, spanAngle );
+
+    QPainterPathStroker stroker;
+    stroker.setCapStyle( Qt::FlatCap );
+    stroker.setWidth( width );
+
+    return stroker.createStroke( arcPath );
+}
+
 static inline qreal qskInterpolated( qreal from, qreal to, qreal ratio )
 {
     return from + ( to - from ) * ratio;
@@ -122,66 +199,26 @@ QskArcMetrics QskArcMetrics::toAbsolute( qreal radius ) const noexcept
     return QskArcMetrics( m_startAngle, m_spanAngle, t, Qt::AbsoluteSize );
 }
 
-QPainterPath QskArcMetrics::painterPath( const QRectF& ellipseRect ) const
+QPainterPath QskArcMetrics::painterPath( const QRectF& rect, bool radial ) const
 {
-    const auto sz = qMin( ellipseRect.width(), ellipseRect.height() );
-
-    qreal t = m_thickness;
-    if ( m_relativeSize )
-        t = qskEffectiveThickness( 0.5 * sz, t );
-
-    if ( t <= 0.0 || qFuzzyIsNull( m_spanAngle ) )
-        return QPainterPath();
-
-    const auto tx = t * ellipseRect.width() / sz;
-    const auto ty = t * ellipseRect.height() / sz;
-
-    const auto innerRect = ellipseRect.adjusted( tx, ty, -tx, -ty );
-
     QPainterPath path;
 
-    if ( innerRect.isEmpty() )
+    if ( !qFuzzyIsNull( m_spanAngle ) )
     {
-        if ( qAbs( m_spanAngle ) >= 360.0 )
+        qreal t = m_thickness;
+
+        if ( m_relativeSize )
         {
-            path.addEllipse( ellipseRect );
+            const auto sz = qMin( rect.width(), rect.height() );
+            t = qskEffectiveThickness( 0.5 * sz, t );
         }
-        else
+
+        if ( t > 0.0 )
         {
-            // pie
-            path.arcMoveTo( ellipseRect, m_startAngle );
-            path.arcTo( ellipseRect, m_startAngle, m_spanAngle );
-            path.lineTo( ellipseRect.center() );
-            path.closeSubpath();
-        }
-    }
-    else
-    {
-        if ( qAbs( m_spanAngle ) >= 360.0 )
-        {
-            path.addEllipse( ellipseRect );
-
-            QPainterPath innerPath;
-            innerPath.addEllipse( innerRect );
-            path -= innerPath;
-        }
-        else
-        {
-            /*
-                We need the end point of the inner arc to add the line that connects
-                the inner/outer arcs. As QPainterPath does not offer such a method
-                we insert a dummy arcMoveTo and grab the calculated position.
-             */
-            path.arcMoveTo( innerRect, m_startAngle + m_spanAngle );
-            const auto pos = path.currentPosition();
-
-            path.arcMoveTo( ellipseRect, m_startAngle ); // replaces the dummy arcMoveTo above
-            path.arcTo( ellipseRect, m_startAngle, m_spanAngle );
-
-            path.lineTo( pos );
-            path.arcTo( innerRect, m_startAngle + m_spanAngle, -m_spanAngle );
-
-            path.closeSubpath();
+            if ( radial )
+                path = qskRadialPathPath( rect, m_startAngle, m_spanAngle, t );
+            else
+                path = qskOrthogonalPath( rect, m_startAngle, m_spanAngle, t );
         }
     }
 
