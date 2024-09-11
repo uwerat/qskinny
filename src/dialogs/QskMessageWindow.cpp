@@ -4,14 +4,8 @@
  *****************************************************************************/
 
 #include "QskMessageWindow.h"
-#include "QskGraphicLabel.h"
-#include "QskGraphic.h"
-#include "QskLinearBox.h"
-#include "QskStandardSymbol.h"
 #include "QskTextLabel.h"
 #include "QskTextOptions.h"
-
-#include <qfontmetrics.h>
 
 namespace
 {
@@ -33,47 +27,11 @@ namespace
                 box, &QskMessageWindow::textOptionsChanged );
         }
     };
-
-    class SymbolLabel final : public QskGraphicLabel
-    {
-      public:
-        SymbolLabel( QskMessageWindow* )
-        {
-            setObjectName( QStringLiteral( "QskMessageWindowSymbolLabel" ) );
-            initSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
-
-            setAlignment( Qt::AlignTop | Qt::AlignHCenter );
-            updatePreferredSize();
-        }
-
-      protected:
-        void changeEvent( QEvent* event ) override
-        {
-            if ( event->type() == QEvent::FontChange )
-                updatePreferredSize();
-
-            QskGraphicLabel::changeEvent( event );
-        }
-
-      private:
-        void updatePreferredSize()
-        {
-            // when there is no explicit size known,
-            // we always adjust the icon according to the font
-
-            if ( graphicStrutSize().isEmpty() )
-            {
-                const QFont font = effectiveFont( QskTextLabel::Text );
-                setPreferredSize( -1.0, 1.5 * QFontMetricsF( font ).height() );
-            }
-        }
-    };
 }
 
 class QskMessageWindow::PrivateData
 {
   public:
-    QskGraphicLabel* symbolLabel;
     QskTextLabel* textLabel;
 };
 
@@ -85,19 +43,7 @@ QskMessageWindow::QskMessageWindow( QWindow* parent )
         Qt::WindowCloseButtonHint | Qt::WindowSystemMenuHint );
 
     m_data->textLabel = new TextLabel( this );
-
-    m_data->symbolLabel = new SymbolLabel( this );
-    m_data->symbolLabel->hide();
-
-    auto box = new QskLinearBox( Qt::Horizontal );
-
-    box->setDefaultAlignment( Qt::AlignTop | Qt::AlignHCenter );
-    box->setSpacing( 0 );
-    box->addItem( m_data->symbolLabel );
-    box->addItem( m_data->textLabel );
-    box->setStretchFactor( m_data->textLabel, 10 );
-
-    setDialogContentItem( box );
+    setDialogContentItem( m_data->textLabel );
 }
 
 QskMessageWindow::~QskMessageWindow()
@@ -122,43 +68,6 @@ void QskMessageWindow::setTextOptions( const QskTextOptions& options )
 QskTextOptions QskMessageWindow::textOptions() const
 {
     return m_data->textLabel->textOptions();
-}
-
-void QskMessageWindow::setSymbolSource( const QUrl& url )
-{
-    m_data->symbolLabel->setSource( url );
-    m_data->symbolLabel->setVisible( !url.isEmpty() );
-
-    if ( auto box = qobject_cast< QskLinearBox* >( contentItem() ) )
-        box->setSpacing( m_data->symbolLabel->isVisible() ? 15 : 0 ); // metrics !!
-}
-
-void QskMessageWindow::setSymbolType( int symbolType )
-{
-#if 1
-    const auto graphic = QskStandardSymbol::graphic(
-        static_cast< QskStandardSymbol::Type >( symbolType ) );
-#else
-    const auto graphic = symbolHint( ... ); // TODO
-#endif
-
-    setSymbol( graphic );
-}
-
-QUrl QskMessageWindow::symbolSource() const
-{
-    return m_data->symbolLabel->source();
-}
-
-void QskMessageWindow::setSymbol( const QskGraphic& symbol )
-{
-    m_data->symbolLabel->setVisible( !symbol.isNull() );
-    m_data->symbolLabel->setGraphic( symbol );
-}
-
-QskGraphic QskMessageWindow::symbol() const
-{
-    return m_data->symbolLabel->graphic();
 }
 
 #include "moc_QskMessageWindow.cpp"

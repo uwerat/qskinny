@@ -101,7 +101,7 @@ ShadowedArc::ShadowedArc( QQuickItem* parent )
 
     setArcMetrics( { 0.0, 360.0, 1.0, Qt::RelativeSize } );
 
-    setFillColor( Qt::darkRed );
+    setFillGradient( Qt::darkRed );
 
     setBorderWidth( 0 );
     setBorderColor( Qt::gray );
@@ -216,14 +216,14 @@ qreal ShadowedArc::blurRadius() const
     return shadowMetrics().blurRadius();
 }
 
-void ShadowedArc::setFillColor( const QColor& color )
+void ShadowedArc::setFillGradient( const QskGradient& gradient )
 {
-    setColor( Arc, color );
+    setGradientHint( Arc, gradient );
 }
 
-QColor ShadowedArc::fillColor() const
+QskGradient ShadowedArc::fillGradient() const
 {
-    return color( Arc );
+    return gradientHint( Arc );
 }
 
 void ShadowedArc::setShadowColor( const QColor& color )

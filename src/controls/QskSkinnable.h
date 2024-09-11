@@ -36,6 +36,7 @@ class QskTextOptions;
 class QskBoxHints;
 class QskGradient;
 class QskGraphic;
+class QskFontRole;
 
 class QskSkin;
 class QskSkinlet;
@@ -245,9 +246,9 @@ class QSK_EXPORT QskSkinnable
     bool resetTextOptionsHint( QskAspect );
     QskTextOptions textOptionsHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
-    bool setFontRoleHint( QskAspect, int role );
+    bool setFontRoleHint( QskAspect, const QskFontRole& );
     bool resetFontRoleHint( QskAspect );
-    int fontRoleHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
+    QskFontRole fontRoleHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     bool setGraphicRoleHint( QskAspect, int role );
     bool resetGraphicRoleHint( QskAspect );

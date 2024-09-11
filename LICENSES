@@ -19,3 +19,13 @@ b) Cassowary constraint solving algorithm
 	Code: https://github.com/nucleic/kiwi
 	SPDX-License-Identifier: BSD 3-Clause "New" or "Revised" License
 	Copyright (c) 2013, Nucleic Development Team
+
+c) Material3 Icons
+
+    Code: https://github.com/marella/material-design-icons
+	SPDX-License-Identifier: Apache License 2.0
+
+d) Fluent2 Icons
+
+	Code: https://github.com/microsoft/fluentui-system-icons
+	SPDX-License-Identifier: MIT License

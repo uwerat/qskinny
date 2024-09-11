@@ -26,6 +26,7 @@ class SubWindow : public QskSubWindow
         : QskSubWindow( parent )
     {
         setObjectName( iconSource );
+        setDecorations( TitleBar | Title | Symbol );
 
         const QUrl url( iconSource );
 

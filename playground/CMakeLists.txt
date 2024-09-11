@@ -1,6 +1,7 @@
 add_subdirectory(anchors)
 add_subdirectory(dials)
 add_subdirectory(dialogbuttons)
+add_subdirectory(fonts)
 add_subdirectory(gradients)
 add_subdirectory(invoker)
 add_subdirectory(shadows)

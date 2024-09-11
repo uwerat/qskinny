@@ -5,8 +5,8 @@
 
 #include "StatisticsPage.h"
 
-#include <QskSkin.h>
 #include <QskTextLabel.h>
+#include <QskFontRole.h>
 
 QSK_SUBCONTROL( StatisticsPage, Panel )
 
@@ -15,7 +15,7 @@ StatisticsPage::StatisticsPage( QQuickItem* parent )
 {
     auto* const textLabel = new QskTextLabel( "statistics page", this );
     textLabel->setAlignmentHint( QskTextLabel::Text, Qt::AlignCenter );
-    textLabel->setFontRole( QskSkin::HugeFont );
+    textLabel->setFontRole( QskFontRole::Display );
 }
 
 #include "moc_StatisticsPage.cpp"

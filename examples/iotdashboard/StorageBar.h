@@ -20,7 +20,7 @@ class StorageBar final : public QskControl
 
   public:
     QSK_SUBCONTROLS( Pictures, Music, Videos, Documents, Others, Free )
-    explicit StorageBar( QskQuickItem* parent = nullptr );
+    explicit StorageBar( QskItem* parent = nullptr );
 
     qreal pictures() const;
     void setPictures( qreal newPictures );

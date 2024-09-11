@@ -41,12 +41,7 @@ namespace
 
     inline QskAspect aspectDecoration()
     {
-        return QskSpinBox::Panel | QskAspect::NoType | QskAspect::Style;
-    }
-
-    inline QskAspect aspectTextAlignment()
-    {
-        return QskSpinBox::TextPanel | QskAspect::NoType | QskAspect::Alignment;
+        return QskSpinBox::Panel | QskAspect::Style;
     }
 }
 
@@ -174,26 +169,6 @@ void QskSpinBox::resetDecoration()
 QskSpinBox::Decoration QskSpinBox::decoration() const
 {
     return flagHint< QskSpinBox::Decoration >( aspectDecoration(), ButtonsLeftAndRight );
-}
-
-void QskSpinBox::setTextAlignment( Qt::Alignment alignment )
-{
-    alignment &= Qt::AlignHorizontal_Mask;
-
-    if ( setFlagHint( aspectTextAlignment(), alignment ) )
-        Q_EMIT textAlignmentChanged( alignment );
-}
-
-void QskSpinBox::resetTextAlignment()
-{
-    if ( resetSkinHint( aspectTextAlignment() ) )
-        Q_EMIT textAlignmentChanged( textAlignment() );
-}
-
-Qt::Alignment QskSpinBox::textAlignment() const
-{
-    return flagHint< Qt::Alignment >(
-        aspectTextAlignment(), Qt::AlignLeft ) & Qt::AlignHorizontal_Mask;
 }
 
 void QskSpinBox::setWrapping( bool on )

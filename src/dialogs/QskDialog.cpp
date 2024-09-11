@@ -13,7 +13,6 @@
 #include "QskSelectionWindow.h"
 
 #include "QskFocusIndicator.h"
-#include "QskStandardSymbol.h"
 
 #include <qguiapplication.h>
 #include <qpointer.h>
@@ -79,7 +78,10 @@ static void qskSetupSubWindow(
 {
     subWindow->setPopupFlag( QskPopup::DeleteOnClose );
     subWindow->setModal( true );
-    subWindow->setWindowTitle( title );
+#if 0
+    subWindow->setWindowTitle( ... );
+#endif
+    subWindow->setTitle( title );
     subWindow->setDialogActions( actions );
 
     if ( actions != QskDialog::NoAction && defaultAction == QskDialog::NoAction )
@@ -126,11 +128,11 @@ static void qskSetupWindow(
 
 static QskDialog::Action qskMessageSubWindow(
     QQuickWindow* window, const QString& title,
-    const QString& text, int symbolType, QskDialog::Actions actions,
+    const QString& text, uint priority, QskDialog::Actions actions,
     QskDialog::Action defaultAction )
 {
     auto subWindow = new QskMessageSubWindow( window->contentItem() );
-    subWindow->setSymbolType( symbolType );
+    subWindow->setPriority( priority );
     subWindow->setText( text );
 
     qskSetupSubWindow( title, actions, defaultAction, subWindow );
@@ -148,11 +150,12 @@ static QskDialog::Action qskMessageSubWindow(
 
 static QskDialog::Action qskMessageWindow(
     QWindow* transientParent, const QString& title,
-    const QString& text, int symbolType, QskDialog::Actions actions,
+    const QString& text, uint priority, QskDialog::Actions actions,
     QskDialog::Action defaultAction )
 {
+    Q_UNUSED( priority ); // can we do something with it ?
+
     QskMessageWindow messageWindow;
-    messageWindow.setSymbolType( symbolType );
     messageWindow.setText( text );
 
     qskSetupWindow( transientParent, title, actions, defaultAction, &messageWindow );
@@ -169,12 +172,11 @@ static QskDialog::Action qskMessageWindow(
 }
 
 static QString qskSelectSubWindow(
-    QQuickWindow* window, const QString& title, const QString& text,
+    QQuickWindow* window, const QString& title,
     QskDialog::Actions actions, QskDialog::Action defaultAction,
     const QStringList& entries, int selectedRow )
 {
     auto subWindow = new QskSelectionSubWindow( window->contentItem() );
-    subWindow->setInfoText( text );
     subWindow->setEntries( entries );
     subWindow->setSelectedRow( selectedRow );
 
@@ -188,12 +190,11 @@ static QString qskSelectSubWindow(
 }
 
 static QString qskSelectWindow(
-    QWindow* transientParent, const QString& title, const QString& text,
+    QWindow* transientParent, const QString& title,
     QskDialog::Actions actions, QskDialog::Action defaultAction,
     const QStringList& entries, int selectedRow )
 {
     QskSelectionWindow window;
-    window.setInfoText( text );
     window.setEntries( entries );
     window.setSelectedRow( selectedRow );
 
@@ -257,7 +258,7 @@ QWindow* QskDialog::transientParent() const
 }
 
 QskDialog::Action QskDialog::message(
-    const QString& title, const QString& text, int symbolType,
+    const QString& title, const QString& text, uint priority,
     Actions actions, Action defaultAction ) const
 {
     if ( m_data->policy == EmbeddedBox )
@@ -270,48 +271,29 @@ QskDialog::Action QskDialog::message(
         if ( quickWindow )
         {
             return qskMessageSubWindow( quickWindow,
-                title, text, symbolType, actions, defaultAction );
+                title, text, priority, actions, defaultAction );
         }
     }
 
     return qskMessageWindow( m_data->transientParent,
-        title, text, symbolType, actions, defaultAction );
+        title, text, priority, actions, defaultAction );
 }
 
 QskDialog::Action QskDialog::information(
     const QString& title, const QString& text,
     Actions actions, Action defaultAction ) const
 {
-    return QskDialog::message( title, text,
-        QskStandardSymbol::Information, actions, defaultAction );
-}
-
-QskDialog::Action QskDialog::warning(
-    const QString& title, const QString& text,
-    Actions actions, Action defaultAction ) const
-{
-    return QskDialog::message( title, text,
-        QskStandardSymbol::Warning, actions, defaultAction );
-}
-
-QskDialog::Action QskDialog::critical(
-    const QString& title, const QString& text,
-    Actions actions, Action defaultAction ) const
-{
-    return QskDialog::message( title, text,
-        QskStandardSymbol::Critical, actions, defaultAction );
+    return QskDialog::message( title, text, 0, actions, defaultAction );
 }
 
 QskDialog::Action QskDialog::question(
     const QString& title, const QString& text,
     Actions actions, Action defaultAction ) const
 {
-    return QskDialog::message( title, text,
-        QskStandardSymbol::Question, actions, defaultAction );
+    return QskDialog::message( title, text, 0, actions, defaultAction );
 }
 
-QString QskDialog::select(
-    const QString& title, const QString& text,
+QString QskDialog::select( const QString& title,
     const QStringList& entries, int selectedRow ) const
 {
 #if 1
@@ -330,11 +312,11 @@ QString QskDialog::select(
         if ( quickWindow )
         {
             return qskSelectSubWindow( quickWindow,
-                title, text, actions, defaultAction, entries, selectedRow );
+                title, actions, defaultAction, entries, selectedRow );
         }
     }
 
-    return qskSelectWindow( m_data->transientParent, title, text,
+    return qskSelectWindow( m_data->transientParent, title,
         actions, defaultAction, entries, selectedRow );
 
 }

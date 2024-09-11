@@ -10,6 +10,7 @@
 #include "QskGraphicProvider.h"
 #include "QskSkinManager.h"
 #include "QskSkin.h"
+#include "QskEvent.h"
 
 QSK_SUBCONTROL( QskGraphicLabel, Panel )
 QSK_SUBCONTROL( QskGraphicLabel, Graphic )
@@ -303,6 +304,25 @@ QSizeF QskGraphicLabel::effectiveSourceSize() const
     }
 
     return sz;
+}
+
+void QskGraphicLabel::geometryChangeEvent( QskGeometryChangeEvent* event )
+{
+    /*
+        textures will finally be scaled into a target rectangle in integer
+        coordinates. This rectangle might have a different size - depending
+        on how its coordinates are rounded ( ceiled/floored ) - even if
+        the site in floating point coordinates is the same.
+
+        So we always trigger updates - even for translations.
+
+        Note that an update triggers the checks, that are needed to decide if
+        the texture needs to be recreated - it does not necessarily
+        result in actually doing it.
+     */
+    update();
+
+    Inherited::geometryChangeEvent( event );
 }
 
 void QskGraphicLabel::changeEvent( QEvent* event )

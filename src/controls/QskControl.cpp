@@ -47,10 +47,8 @@ static inline bool qskMaybeGesture( QQuickItem* item,
 }
 
 QskControl::QskControl( QQuickItem* parent )
-    : QskQuickItem( *( new QskControlPrivate() ), parent )
+    : QskItem( *( new QskControlPrivate() ), parent )
 {
-    Inherited::setActiveFocusOnTab( false );
-
     if ( parent )
     {
         // inheriting attributes from parent
@@ -89,55 +87,6 @@ void QskControl::setAutoLayoutChildren( bool on )
 bool QskControl::autoLayoutChildren() const
 {
     return d_func()->autoLayoutChildren;
-}
-
-void QskControl::setWheelEnabled( bool on )
-{
-    Q_D( QskControl );
-    if ( on != d->isWheelEnabled )
-    {
-        d->isWheelEnabled = on;
-        Q_EMIT wheelEnabledChanged();
-    }
-}
-
-bool QskControl::isWheelEnabled() const
-{
-    return d_func()->isWheelEnabled;
-}
-
-void QskControl::setFocusPolicy( Qt::FocusPolicy policy )
-{
-    Q_D( QskControl );
-    if ( policy != d->focusPolicy )
-    {
-        d->focusPolicy = ( policy & ~Qt::TabFocus );
-
-        const bool tabFocus = policy & Qt::TabFocus;
-
-        if ( !tabFocus && window() )
-        {
-            // Removing the activeFocusItem from the focus tab chain is not possible
-            if ( window()->activeFocusItem() == this )
-            {
-                if ( auto focusItem = nextItemInFocusChain( true ) )
-                    focusItem->setFocus( true );
-            }
-        }
-
-        Inherited::setActiveFocusOnTab( tabFocus );
-
-        Q_EMIT focusPolicyChanged();
-    }
-}
-
-Qt::FocusPolicy QskControl::focusPolicy() const
-{
-    uint policy = d_func()->focusPolicy;
-    if ( Inherited::activeFocusOnTab() )
-        policy |= Qt::TabFocus;
-
-    return static_cast< Qt::FocusPolicy >( policy );
 }
 
 void QskControl::setBackgroundColor( const QColor& color )
@@ -857,7 +806,7 @@ bool QskControl::childMouseEventFilter( QQuickItem* child, QEvent* event )
 {
     /*
         The strategy implemented in many classes of the Qt development is
-        to analyze the events without blocking the handling of the child. 
+        to analyze the events without blocking the handling of the child.
         Once a gesture is detected the gesture handling trys to steal the
         mouse grab hoping for the child to abort its operation.
 

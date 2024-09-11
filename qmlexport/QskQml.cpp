@@ -4,8 +4,8 @@
  *****************************************************************************/
 
 #include "QskQml.h"
-#include "QskQml.hpp"
 
+#include "QskQmlRegister.h"
 #include "QskLayoutQml.h"
 #include "QskShortcutQml.h"
 
@@ -20,6 +20,7 @@
 #include <QskDialogWindow.h>
 #include <QskDrawer.h>
 #include <QskFocusIndicator.h>
+#include <QskFontRole.h>
 #include <QskGradient.h>
 #include <QskGradientDirection.h>
 #include <QskGraduationMetrics.h>
@@ -41,11 +42,8 @@
 #include <QskScrollView.h>
 #include <QskSelectionWindow.h>
 #include <QskSeparator.h>
-#include <QskSetup.h>
 #include <QskShadowMetrics.h>
 #include <QskSimpleListBox.h>
-#include <QskSkin.h>
-#include <QskSkinManager.h>
 #include <QskSlider.h>
 #include <QskSpinBox.h>
 #include <QskStandardSymbol.h>
@@ -61,9 +59,9 @@
 #include <QskWindow.h>
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 2, 0 )
-    QSK_QT_PRIVATE_BEGIN
+QSK_QT_PRIVATE_BEGIN
         #include <private/qqmlmetatype_p.h>
-    QSK_QT_PRIVATE_END
+QSK_QT_PRIVATE_END
 #endif
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 5, 0 )
@@ -191,10 +189,6 @@ namespace
 
 void QskQml::registerTypes()
 {
-    qmlRegisterUncreatableType< QskSetup >( QSK_MODULE_NAME, 1, 0, "Setup", QString() );
-    qmlRegisterUncreatableType< QskSkin >( QSK_MODULE_NAME, 1, 0, "Skin", QString() );
-    qRegisterMetaType< QskSkin* >();
-
     registerObject< QskShortcutQml >( "Shortcut" );
 
     registerObject< QskWindow >();
@@ -243,8 +237,8 @@ void QskQml::registerTypes()
         QSK_VERSION_MAJOR, QSK_VERSION_MINOR, "Skin", QString() );
 #endif
 
-    QSK_REGISTER_FLAGS( QskQuickItem::UpdateFlag );
-    QSK_REGISTER_FLAGS( QskQuickItem::UpdateFlags );
+    QSK_REGISTER_FLAGS( QskItem::UpdateFlag );
+    QSK_REGISTER_FLAGS( QskItem::UpdateFlags );
     QSK_REGISTER_FLAGS( QskSizePolicy::Policy );
 
     QSK_REGISTER_FLAGS( QskDialog::Actions );
@@ -269,6 +263,7 @@ void QskQml::registerTypes()
     registerGadget< QskPlacementPolicy >();
     registerGadget< QskSizePolicy >();
     registerGadget< QskTextOptions >();
+    registerGadget< QskFontRole >();
 
     registerNamespace( QskStandardSymbol::staticMetaObject );
 

@@ -87,6 +87,10 @@ void QskPushButton::setEmphasis( Emphasis emphasis )
     if ( emphasis != m_data->emphasis )
     {
         m_data->emphasis = emphasis;
+
+        resetImplicitSize();
+        update();
+
         Q_EMIT emphasisChanged( emphasis );
     }
 }

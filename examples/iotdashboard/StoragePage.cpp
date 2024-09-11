@@ -6,7 +6,7 @@
 #include "StoragePage.h"
 #include "Box.h"
 #include "StorageBar.h"
-#include "StorageMeter.h"
+#include "ValueMeter.h"
 #include <QTimer>
 #include <QskAnimator.h>
 #include <QskBox.h>
@@ -15,11 +15,65 @@
 #include <QskGradientStop.h>
 #include <QskGraphicLabel.h>
 #include <QskPushButton.h>
-#include <QskSkin.h>
+#include <QskFontRole.h>
 #include <QskStackBox.h>
 #include <QskTextLabel.h>
 
 QSK_SUBCONTROL( StoragePage, Panel )
+QSK_SUBCONTROL( StoragePage, Status )
+
+namespace
+{
+    struct Storage
+    {
+        struct Media
+        {
+            qreal pictures = 0;
+            qreal music = 0;
+            qreal videos = 0;
+            qreal documents = 0;
+            qreal others = 0;
+
+            inline constexpr bool operator==( const Media& rhs ) const noexcept
+            {
+                return pictures == rhs.pictures && music == rhs.music && videos == rhs.videos &&
+                       documents == rhs.documents && others == rhs.others;
+            }
+
+            inline constexpr qreal free() const noexcept
+            {
+                return 1.0 - pictures - music - videos - documents - others;
+            }
+        };
+
+        QString title;
+        QString description;
+        Media distribution;
+    };
+
+    class StorageMeter final : public ValueMeter
+    {
+      public:
+        StorageMeter( QQuickItem* parent = nullptr )
+            : ValueMeter( parent )
+        {
+            setFixedSize( 64, 64 );
+
+            connect( this, &ValueMeter::valueChanged,
+                this, &StorageMeter::setStatusColor );
+        }
+
+      private:
+        void setStatusColor( qreal value )
+        {
+            const auto color = qskInterpolatedColorAt(
+                gradientHint( StoragePage::Status ).stops(), value / 100.0 );
+
+            setFillGradient( { color, color.lighter() } );
+            setTextColor( color ); 
+        }
+    };
+}
 
 struct StorageRowAnimator final : public QObject, public QskAnimator
 {
@@ -85,13 +139,11 @@ void StoragePage::addRow( const QString& title, const QString& description,
     const auto percent = 100.0 * ( 1.0 - storage.distribution.free() );
     auto* const meter = new StorageMeter( left );
     meter->setValue( percent );
-    meter->setMinimumSize( 64, 64 );
-    meter->setMaximumSize( 64, 64 );
 
     auto* const maintitle = new QskTextLabel( storage.title, center );
-    maintitle->setFontRole( QskSkin::LargeFont );
+    maintitle->setFontRole( QskFontRole::Headline );
     auto* const subtitle = new QskTextLabel( storage.description, center );
-    subtitle->setFontRole( QskSkin::MediumFont );
+    subtitle->setFontRole( QskFontRole::Subtitle );
 
     const auto& media = storage.distribution;
 
@@ -106,7 +158,7 @@ void StoragePage::addRow( const QString& title, const QString& description,
     legend->setSpacing( 12 );
     legend->addSpacer( 1, 999 );
     auto* const sync = new QskPushButton( "Update", legend );
-    sync->setFontRoleHint( QskPushButton::Text, QskSkin::SmallFont );
+    sync->setFontRoleHint( QskPushButton::Text, QskFontRole::Caption );
 
     using S = StorageBar;
     for ( const auto& pair : QVector< QPair< QString, QskGradient > >{
@@ -124,7 +176,7 @@ void StoragePage::addRow( const QString& title, const QString& description,
         dot->setMaximumSize( size, size );
         dot->setGradientHint( QskBox::Panel, pair.second );
         auto* const label = new QskTextLabel( pair.first, legend );
-        label->setFontRole( QskSkin::SmallFont );
+        label->setFontRole( QskFontRole::Caption );
     }
 
     auto* const animator = new StorageRowAnimator( window(), sync );
@@ -136,5 +188,6 @@ void StoragePage::addRow( const QString& title, const QString& description,
         bar->setDocuments( media.documents * v );
         bar->setOthers( media.others * v );
     };
-    connect( sync, &QskPushButton::clicked, animator, [ animator ]() { animator->start(); } );
+    connect( sync, &QskPushButton::clicked,
+        animator, [ animator ]() { animator->start(); } );
 }

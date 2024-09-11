@@ -13,8 +13,10 @@
 #include <QskComboBox.h>
 #include <QskColorFilter.h>
 #include <QskDialogButtonBox.h>
+#include <QskDialogSubWindow.h>
 #include <QskDrawer.h>
 #include <QskFocusIndicator.h>
+#include <QskFontRole.h>
 #include <QskFunctions.h>
 #include <QskGraphic.h>
 #include <QskGraphicIO.h>
@@ -110,6 +112,7 @@ namespace
         Q_INVOKABLE void setupCheckBox();
         Q_INVOKABLE void setupComboBox();
         Q_INVOKABLE void setupDialogButtonBox();
+        Q_INVOKABLE void setupDialogSubWindow();
         Q_INVOKABLE void setupDrawer();
         Q_INVOKABLE void setupFocusIndicator();
         Q_INVOKABLE void setupGraphicLabel();
@@ -142,13 +145,21 @@ namespace
 
             if ( strcmp( name, "checkMark" ) == 0 )
             {
+                graphic.setViewBox( QRectF( 0.0, 0.0, 14.0, 14.0 ) );
+
                 QPainterPath path;
-                path.moveTo( 0.11, 0.47 );
-                path.lineTo( 0.5, 1.0);
-                path.lineTo( 1.0, 0.0 );
+                path.moveTo( 3.5, 7.0 );
+                path.lineTo( 6.5, 14.0 );
+                path.lineTo( 11.0, 1.0 );
+
+                QPen pen( Qt::black, 2.8 );
+                pen.setCapStyle( Qt::FlatCap );
+                pen.setJoinStyle( Qt::BevelJoin );
 
                 QPainter painter( &graphic );
-                painter.setPen( QPen( Qt::black, 0.25 ) );
+                painter.setRenderHint( QPainter::Antialiasing );
+
+                painter.setPen( pen );
                 painter.drawPath( path );
             }
 
@@ -206,19 +217,12 @@ void Editor::setupCheckBox()
         }
     }
 
-    setGraphicRole( Q::Indicator, QskFusionSkin::GraphicNormal );
+    setGraphicRole( Q::Indicator, QskFusionSkin::GraphicIndicator );
     setGraphicRole( Q::Indicator | Q::Disabled, QskFusionSkin::GraphicDisabled );
     setGraphicRole( Q::Indicator | Q::Error, QskFusionSkin::GraphicError );
 
-#if 0
-    // aligning/scaling of the symbols needs to be fixed in the skinlet TODO ..
-
-    setPadding( Q::Box, 4_dp );
+    setPadding( Q::Box, 3_dp );
     const auto checkMark = symbol( "checkMark" );
-#else
-    setPadding( Q::Box, 2_dp );
-    const auto checkMark = QskStandardSymbol::graphic( QskStandardSymbol::CheckMark );
-#endif
 
     for ( auto state : { QskAspect::NoState, Q::Disabled } )
     {
@@ -274,6 +278,7 @@ void Editor::setupComboBox()
     setGraphicRole( Q::Icon | Q::Disabled, QskFusionSkin::GraphicDisabled );
 
     setStrutSize( Q::StatusIndicator, 10_dp, 10_dp );
+    setGraphicRole( Q::StatusIndicator, QskFusionSkin::GraphicIndicator );
     setGraphicRole( Q::StatusIndicator | Q::Disabled, QskFusionSkin::GraphicDisabled );
 
     setAlignment( Q::StatusIndicator, Qt::AlignRight | Qt::AlignVCenter );
@@ -363,7 +368,6 @@ void Editor::setupTextLabel()
 {
     using Q = QskTextLabel;
 
-    setAlignment( Q::Text, Qt::AlignCenter );
     setColor( Q::Text, m_pal.color( QPalette::Active, QPalette::Text ) );
     setColor( Q::Text | Q::Disabled, m_pal.color( QPalette::Disabled, QPalette::Text ) );
 
@@ -680,7 +684,7 @@ void Editor::setupPageIndicator()
 void Editor::setupPushButton()
 {
     /*
-        QC2/Fusion offers flat/highlighted.  We could the emphasis variations to 
+        QC2/Fusion offers flat/highlighted.  We could the emphasis variations to
         have the same: TODO ...
      */
     using Q = QskPushButton;
@@ -733,6 +737,17 @@ void Editor::setupDialogButtonBox()
 
     setGradient( Q::Panel, m_pal.active( P::Base ) );
     setGradient( Q::Panel | Q::Disabled, m_pal.disabled( P::Base ) );
+}
+
+void Editor::setupDialogSubWindow()
+{
+    using Q = QskDialogSubWindow;
+
+#if 1
+    setFontRole( Q::DialogTitle, QskFontRole::Headline );
+#endif
+    setAlignment( Q::DialogTitle, Qt::AlignLeft | Qt::AlignVCenter );
+    setTextOptions( Q::DialogTitle, Qt::ElideRight, QskTextOptions::WordWrap );
 }
 
 void Editor::setupDrawer()
@@ -846,8 +861,6 @@ void Editor::setupSpinBox()
 
     setPadding( Q::TextPanel, 5_dp );
     setBoxShape( Q::TextPanel, 2, 0, 2, 0 );
-
-    setColor( Q::Text, m_pal.active( P::Text ) );
     setGradient( Q::TextPanel | Q::Disabled, m_pal.disabled( P::Base ) );
 
     setBoxBorderMetrics( Q::TextPanel, 1_dp );
@@ -858,6 +871,9 @@ void Editor::setupSpinBox()
     setBoxBorderColors( Q::TextPanel | Q::Focused, m_pal.highlightedOutline,
         Combination( { Q::Increasing, Q::Decreasing, Q::Hovered } ) );
 #endif
+
+    setColor( Q::Text, m_pal.active( P::Text ) );
+    setAlignment( Q::Text, Qt::AlignCenter );
 
     setBoxShape( Q::UpPanel, 0, 2_dp, 0, 0 );
     setBoxBorderMetrics( Q::UpPanel, 0_dp, 1_dp, 1_dp, 0_dp );
@@ -1272,7 +1288,7 @@ void Editor::setupSubWindow()
 
     // TitleBarPanel
 
-    setHint( Q::TitleBarPanel | QskAspect::Style, Q::TitleBar | Q::Title );
+    setHint( Q::TitleBarPanel | QskAspect::Style, Q::NoDecoration );
     setMargin( Q::TitleBarPanel, -1 );
 
     setGradient( Q::TitleBarPanel, m_pal.active( P::Mid ) );
@@ -1312,7 +1328,10 @@ void QskFusionSkin::initHints()
 
     using P = QPalette;
 
-    setupFonts( QStringLiteral( "Roboto" ) );
+#if 1
+    // we should use QApplication::font somehow: TODO ...
+    setupFontTable( QStringLiteral( "Roboto" ) );
+#endif
 
     const QskFusionPalette palette( colorScheme() );
 
@@ -1321,6 +1340,13 @@ void QskFusionSkin::initHints()
 
     setGraphicColor( GraphicError, palette.error );
     setGraphicColor( GraphicHighlighted, palette.active( P::HighlightedText ) );
+
+    {
+        auto rgb = palette.darker( P::Active, P::Text, 120 );
+        rgb = QskRgb::toTransparent( rgb, 180 );
+
+        setGraphicColor( GraphicIndicator, rgb );
+    }
 
     Editor editor( palette, &hintTable() );
     editor.setup();
