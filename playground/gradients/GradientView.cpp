@@ -168,7 +168,9 @@ QSGNode* GradientView::updatePaintNode(
         case BoxRectangle:
         {
             QskBoxShapeMetrics shape;
+#if 0
             shape.setRadius( 80 );
+#endif
 
             if ( !QskBoxRenderer::isGradientSupported( shape, m_gradient ) )
             {

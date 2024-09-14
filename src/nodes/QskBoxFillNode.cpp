@@ -71,15 +71,6 @@ void QskBoxFillNode::updateNode(
     d->gradientHash = gradientHash;
     d->rect = rect;
 
-    if ( dirtyMetrics )
-    {
-        QskBoxRenderer::renderFillGeometry(
-            rect, shapeMetrics, borderMetrics, *geometry() );
-
-        markDirty( QSGNode::DirtyGeometry );
-        geometry()->markVertexDataDirty();
-    }
-
     if ( gradient.isMonochrome() )
     {
         if ( dirtyColors )
@@ -91,5 +82,14 @@ void QskBoxFillNode::updateNode(
 
         if ( dirtyColors || dirtyMetrics )
             setColoring( rect, gradient.effectiveGradient() );
+    }
+
+    if ( dirtyMetrics )
+    {
+        QskBoxRenderer::renderFillGeometry(
+            rect, shapeMetrics, borderMetrics, *geometry() );
+
+        markDirty( QSGNode::DirtyGeometry );
+        geometry()->markVertexDataDirty();
     }
 }
