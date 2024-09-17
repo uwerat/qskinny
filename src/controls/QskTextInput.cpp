@@ -14,8 +14,12 @@ QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextInput, Panel )
 QSK_SUBCONTROL( QskTextInput, Text )
+
+#if 1
+// shouldn't this be a Selected state, TODO ...
 QSK_SUBCONTROL( QskTextInput, PanelSelected )
 QSK_SUBCONTROL( QskTextInput, TextSelected )
+#endif
 
 QSK_SYSTEM_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
@@ -458,6 +462,9 @@ void QskTextInput::focusInEvent( QFocusEvent* event )
                 break;
 
             default:
+#if 1
+                // auto selecting the complete text ???
+#endif
                 setEditing( true );
         }
     }

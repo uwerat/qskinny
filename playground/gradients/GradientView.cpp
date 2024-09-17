@@ -10,7 +10,6 @@
 #endif
 
 #include <QskPaintedNode.h>
-#include <QskBoxFillNode.h>
 #include <QskBoxRectangleNode.h>
 #include <QskGradient.h>
 #include <QskGradientDirection.h>
@@ -75,20 +74,20 @@ namespace
             switch( nodeType )
             {
                 case GradientView::Painted:
-                    text = "QskPaintedNode";
+                    text = "Raster PaintEngine";
                     break;
 
                 case GradientView::BoxRectangle:
-                    text = "QskBoxRectangleNode";
+                    text = "Colored Vertices";
                     break;
 
                 case GradientView::BoxFill:
-                    text = "QskBoxFillNode";
+                    text = "Qskinny Shader";
                     break;
 
         #ifdef SHAPE_GRADIENT
                 case GradientView::Shape:
-                    text = "QQuickShapeGenericNode";
+                    text = "Qt/Quick Shape Shader";
                     break;
         #endif
 
@@ -149,6 +148,11 @@ QSGNode* GradientView::updatePaintNode(
 {
     const QRectF rect( 0, 0, width(), height() );
 
+    QskBoxShapeMetrics shape;
+#if 0
+    shape.setRadius( 80 );
+#endif
+
     switch( m_nodeType )
     {
         case Painted:
@@ -160,24 +164,17 @@ QSGNode* GradientView::updatePaintNode(
         }
         case BoxFill:
         {
-            auto node = gradientNode< QskBoxFillNode >( oldNode );
-            node->updateNode( rect, m_gradient );
+            auto node = gradientNode< QskBoxRectangleNode >( oldNode );
+            node->setHint( QskFillNode::PreferColoredGeometry, false );
+            node->updateFilling( rect, shape, m_gradient );
 
             return node;
         }
         case BoxRectangle:
         {
-            QskBoxShapeMetrics shape;
-            shape.setRadius( 80 );
-
-            if ( !QskBoxRenderer::isGradientSupported( shape, m_gradient ) )
-            {
-                delete oldNode;
-                return nullptr;
-            }
-
             auto node = gradientNode< QskBoxRectangleNode >( oldNode );
-            node->updateNode( rect, shape, m_gradient );
+            node->setHint( QskFillNode::PreferColoredGeometry, true );
+            node->updateFilling( rect, shape, m_gradient );
 
             return node;
         }

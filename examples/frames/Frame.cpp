@@ -150,7 +150,7 @@ void Frame::updateFrameNode( const QRectF& rect, QskBoxRectangleNode* node )
     const QskBoxBorderColors borderColors( c1, c1, c2, c2 );
     const qreal radius = effectiveRadius( rect, m_radius );
 
-    node->updateNode( rect, radius, m_frameWidth, borderColors, m_color );
+    node->updateBox( rect, radius, m_frameWidth, borderColors, m_color );
 }
 
 #include "moc_Frame.cpp"

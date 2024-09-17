@@ -5,13 +5,14 @@
 
 set(SOURCES GradientView.h GradientView.cpp main.cpp)
 
-if(TARGET quickshapes_private)
+if(TARGET Qt::QuickShapesPrivate)
     list(APPEND SOURCES GradientQuickShape.h GradientQuickShape.cpp)
 endif()
 
-qsk_add_example(gradients ${SOURCES})
+set(target gradients)
+qsk_add_example(${target} ${SOURCES})
 
-if(TARGET quickshapes_private)
-    target_compile_definitions(gradients PRIVATE SHAPE_GRADIENT)
-    target_link_libraries(gradients PRIVATE quickshapes_private)
+if(TARGET Qt::QuickShapesPrivate)
+    target_compile_definitions(${target} PRIVATE SHAPE_GRADIENT)
+    target_link_libraries(${target} PRIVATE Qt::QuickShapesPrivate )
 endif()
