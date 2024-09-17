@@ -19,6 +19,8 @@ class QskFillNodePrivate : public QSGGeometryNodePrivate
   public:
     inline QskFillNodePrivate()
         : geometry( QSGGeometry::defaultAttributes_ColoredPoint2D(), 0 )
+        , coloring( QskFillNode::Polychrome )
+        , hints( QskFillNode::PreferColoredGeometry )
     {
     }
 
@@ -26,7 +28,9 @@ class QskFillNodePrivate : public QSGGeometryNodePrivate
     friend class QskFillNode;
 
     QSGGeometry geometry;
-    QskFillNode::Coloring coloring = QskFillNode::Polychrome;
+
+    uint coloring : 5;
+    uint hints : 3;
 };
 
 #endif

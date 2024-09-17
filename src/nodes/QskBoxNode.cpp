@@ -4,10 +4,8 @@
  *****************************************************************************/
 
 #include "QskBoxNode.h"
-#include "QskBoxFillNode.h"
 #include "QskBoxShadowNode.h"
 #include "QskBoxRectangleNode.h"
-#include "QskBoxRenderer.h"
 #include "QskSGNode.h"
 
 #include "QskGradient.h"
@@ -67,7 +65,7 @@ void QskBoxNode::updateNode( const QRectF& rect,
 
     QskBoxShadowNode* shadowNode = nullptr;
     QskBoxRectangleNode* rectNode = nullptr;
-    QskBoxFillNode* fillNode = nullptr;
+    QskBoxRectangleNode* fillNode = nullptr;
 
     if ( !shadowMetrics.isNull()
         && shadowColor.isValid() && shadowColor.alpha() != 0 )
@@ -77,29 +75,23 @@ void QskBoxNode::updateNode( const QRectF& rect,
             shape, shadowMetrics.blurRadius(), shadowColor );
     }
 
-    /*
-        QskBoxRectangleNode is more efficient and creates batchable geometries.
-        So we prefer using it where possible.
-        Note, that the border is always done with a QskBoxRectangleNode
-     */
-
-    if ( QskBoxRenderer::isGradientSupported( shape, gradient ) )
+    if ( QskBoxRectangleNode::isCombinedGeometrySupported( gradient ) )
     {
         rectNode = qskNode< QskBoxRectangleNode >( this, BoxRole );
-        rectNode->updateNode( rect, shape, borderMetrics, borderColors, gradient );
+        rectNode->updateBox( rect, shape, borderMetrics, borderColors, gradient );
     }
     else
     {
         if ( !borderMetrics.isNull() && borderColors.isVisible() )
         {
             rectNode = qskNode< QskBoxRectangleNode >( this, BoxRole );
-            rectNode->updateNode( rect, shape, borderMetrics, borderColors, QskGradient() );
+            rectNode->updateBorder( rect, shape, borderMetrics, borderColors );
         }
 
         if ( gradient.isVisible() )
         {
-            fillNode = qskNode< QskBoxFillNode >( this, FillRole );
-            fillNode->updateNode( rect, shape, borderMetrics, gradient );
+            fillNode = qskNode< QskBoxRectangleNode >( this, FillRole );
+            fillNode->updateFilling( rect, shape, borderMetrics, gradient );
         }
     }
 

@@ -14,7 +14,6 @@ QSK_QT_PRIVATE_BEGIN
     #define signals Q_SIGNALS
 #endif
 
-#include <private/qquickitem_p.h>
 #include <private/qquickshape_p.h>
 #include <private/qquickshape_p_p.h>
 
