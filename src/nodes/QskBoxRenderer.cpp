@@ -67,8 +67,7 @@ static inline bool qskMaybeSpreading( const QskGradient& gradient )
     return true;
 }
 
-bool QskBoxRenderer::isGradientSupported(
-    const QskBoxShapeMetrics&, const QskGradient& gradient )
+bool QskBoxRenderer::isGradientSupported( const QskGradient& gradient )
 {
     if ( !gradient.isVisible() || gradient.isMonochrome() )
         return true;

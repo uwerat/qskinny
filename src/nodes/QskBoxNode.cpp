@@ -83,7 +83,7 @@ void QskBoxNode::updateNode( const QRectF& rect,
         Note, that the border is always done with a QskBoxRectangleNode
      */
 
-    if ( QskBoxRenderer::isGradientSupported( shape, gradient ) )
+    if ( QskBoxRenderer::isGradientSupported( gradient ) )
     {
         rectNode = qskNode< QskBoxRectangleNode >( this, BoxRole );
         rectNode->updateNode( rect, shape, borderMetrics, borderColors, gradient );

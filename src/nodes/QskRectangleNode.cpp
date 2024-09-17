@@ -72,7 +72,7 @@ void QskRectangleNode::updateNode(
     d->rect = rect;
     d->shape = effectiveShape;
 
-    if ( QskBoxRenderer::isGradientSupported( effectiveShape, effectiveGradient ) )
+    if ( QskBoxRenderer::isGradientSupported( effectiveGradient ) )
     {
         setColoring( Polychrome );
 

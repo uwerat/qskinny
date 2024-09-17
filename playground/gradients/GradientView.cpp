@@ -172,7 +172,7 @@ QSGNode* GradientView::updatePaintNode(
             shape.setRadius( 80 );
 #endif
 
-            if ( !QskBoxRenderer::isGradientSupported( shape, m_gradient ) )
+            if ( !QskBoxRenderer::isGradientSupported( m_gradient ) )
             {
                 delete oldNode;
                 return nullptr;
