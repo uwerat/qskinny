@@ -115,7 +115,7 @@ void QskFillNode::setColoring( Coloring coloring )
 
 QskFillNode::Coloring QskFillNode::coloring() const
 {
-    return d_func()->coloring;
+    return static_cast< QskFillNode::Coloring >( d_func()->coloring );
 }
 
 void QskFillNode::setColoring( const QColor& color )
@@ -147,7 +147,34 @@ void QskFillNode::setColoring( const QRectF& rect, const QskGradient& gradient )
     }
 }
 
+void QskFillNode::setHint( Hint hint, bool on )
+{
+    Q_D( QskFillNode );
+
+    if ( on )
+        d->hints |= hint;
+    else
+        d->hints &= ~hint;
+}
+
+void QskFillNode::setHints( Hints hints )
+{
+    d_func()->hints = hints;
+}
+
+QskFillNode::Hints QskFillNode::hints() const
+{
+    return static_cast< QskFillNode::Hints >( d_func()->hints );
+}
+
+bool QskFillNode::hasHint( Hint hint ) const
+{
+    return d_func()->hints & hint;
+}
+
 bool QskFillNode::isGeometryColored() const
 {
     return d_func()->geometry.attributeCount() != 1;
 }
+
+#include "moc_QskFillNode.cpp"
