@@ -10,7 +10,6 @@
 #endif
 
 #include <QskPaintedNode.h>
-#include <QskBoxFillNode.h>
 #include <QskBoxRectangleNode.h>
 #include <QskGradient.h>
 #include <QskGradientDirection.h>
@@ -165,15 +164,17 @@ QSGNode* GradientView::updatePaintNode(
         }
         case BoxFill:
         {
-            auto node = gradientNode< QskBoxFillNode >( oldNode );
-            node->updateNode( rect, m_gradient );
+            auto node = gradientNode< QskBoxRectangleNode >( oldNode );
+            node->setHint( QskFillNode::PreferColoredGeometry, false );
+            node->updateFilling( rect, shape, m_gradient );
 
             return node;
         }
         case BoxRectangle:
         {
             auto node = gradientNode< QskBoxRectangleNode >( oldNode );
-            node->updateNode( rect, shape, m_gradient );
+            node->setHint( QskFillNode::PreferColoredGeometry, true );
+            node->updateFilling( rect, shape, m_gradient );
 
             return node;
         }

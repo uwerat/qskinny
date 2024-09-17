@@ -34,6 +34,9 @@ static inline QskVertex::ColoredLine* qskAllocateColoredLines(
 static inline QskGradient qskEffectiveGradient(
     const QRectF& rect, const QskGradient& gradient )
 {
+    if ( !gradient.isVisible() )
+        return gradient;
+
     const auto dir = gradient.linearDirection();
 
     auto g = gradient;
@@ -111,6 +114,7 @@ void QskBoxRenderer::renderBorderGeometry(
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+    geometry.markVertexDataDirty();
 
     const QskBoxMetrics metrics( rect, shape, border );
     const QskBoxBasicStroker stroker( metrics );
@@ -131,6 +135,7 @@ void QskBoxRenderer::renderFillGeometry(
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+    geometry.markVertexDataDirty();
 
     const QskBoxMetrics metrics( rect, shape, border );
     QskBoxBasicStroker stroker( metrics );
@@ -153,6 +158,7 @@ void QskBoxRenderer::renderBox( const QRectF& rect,
     QSGGeometry& geometry )
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+    geometry.markVertexDataDirty();
 
     const QskBoxMetrics metrics( rect, shape, border );
     const auto effectiveGradient = qskEffectiveGradient( metrics.innerRect, gradient );
