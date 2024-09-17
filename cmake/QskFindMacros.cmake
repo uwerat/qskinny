@@ -54,15 +54,28 @@ macro(qsk_setup_Qt)
         # C++, but QSkinny itself does not need the WebEngine at all.
 
         if (QT_VERSION_MAJOR VERSION_LESS 6)
-            find_package(Qt${QT_VERSION_MAJOR} QUIET OPTIONAL_COMPONENTS WebEngine)
+            find_package(Qt${QT_VERSION_MAJOR} QUIET
+                OPTIONAL_COMPONENTS WebEngine)
+
+            find_package(Qt${QT_VERSION_MAJOR} QUIET
+                OPTIONAL_COMPONENTS QuickShapes)
+
             set( Qt5WebEngineQuick_FOUND ${Qt5WebEngine_FOUND} )
+            set( Qt5QuickShapesPrivate_FOUND ${Qt5QuickShapes_FOUND} )
         else()
             find_package(Qt${QT_VERSION_MAJOR} QUIET
                 OPTIONAL_COMPONENTS WebEngineCore WebEngineQuick)
+
+            find_package(Qt${QT_VERSION_MAJOR} QUIET
+                OPTIONAL_COMPONENTS QuickShapesPrivate)
         endif()
 
         if( NOT Qt${QT_VERSION_MAJOR}WebEngineQuick_FOUND)
             message(STATUS "No Qt/Quick WebEngine support: skipping some unimportant examples")
+        endif()
+
+        if (NOT Qt${QT_VERSION_MAJOR}QuickShapesPrivate_FOUND)
+            message(STATUS "No Qt/Quick Shapes support: skipping some unimportant examples")
         endif()
     endif()
 endmacro()

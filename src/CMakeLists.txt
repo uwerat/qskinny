@@ -107,7 +107,6 @@ list(APPEND HEADERS
     nodes/QskBasicLinesNode.h
     nodes/QskBoxNode.h
     nodes/QskBoxClipNode.h
-    nodes/QskBoxFillNode.h
     nodes/QskBoxRectangleNode.h
     nodes/QskBoxRenderer.h
     nodes/QskBoxMetrics.h
@@ -149,7 +148,6 @@ list(APPEND SOURCES
     nodes/QskBasicLinesNode.cpp
     nodes/QskBoxNode.cpp
     nodes/QskBoxClipNode.cpp
-    nodes/QskBoxFillNode.cpp
     nodes/QskBoxRectangleNode.cpp
     nodes/QskBoxRenderer.cpp
     nodes/QskBoxMetrics.cpp
@@ -164,7 +162,6 @@ list(APPEND SOURCES
     nodes/QskLinesNode.cpp
     nodes/QskPaintedNode.cpp
     nodes/QskPlainTextRenderer.cpp
-    nodes/QskRectangleNode.cpp
     nodes/QskRichTextRenderer.cpp
     nodes/QskSceneTexture.cpp
     nodes/QskSGNode.cpp

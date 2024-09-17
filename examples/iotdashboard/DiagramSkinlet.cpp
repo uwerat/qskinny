@@ -173,7 +173,7 @@ QSGNode* DiagramSkinlet::updateChartNode( const Diagram* diagram, QSGNode* node 
                         color = diagram->color( barSubcontrol );
 
                         const auto shape = diagram->boxShapeHint( barSubcontrol );
-                        barNode->updateNode( barRect, shape, {}, {}, color );
+                        barNode->updateFilling( barRect, shape, color );
                     }
                 }
                 else

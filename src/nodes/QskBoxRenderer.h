@@ -39,7 +39,7 @@ namespace QskBoxRenderer
         Filling the geometry usually with color information:
             see QSGGeometry::defaultAttributes_ColoredPoint2D()
      */
-    QSK_EXPORT bool isGradientSupported( const QskBoxShapeMetrics&, const QskGradient& );
+    QSK_EXPORT bool isGradientSupported( const QskGradient& );
 
     QSK_EXPORT void renderBox( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,

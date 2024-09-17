@@ -22,7 +22,6 @@
 #include "QskGraphicNode.h"
 #include "QskGraphic.h"
 #include "QskLinesNode.h"
-#include "QskRectangleNode.h"
 #include "QskSGNode.h"
 #include "QskStippleMetrics.h"
 #include "QskTextColors.h"
@@ -373,8 +372,9 @@ QSGNode* QskSkinlet::updateBackgroundNode(
     if ( !gradient.isValid() )
         return nullptr;
 
-    auto rectNode = QskSGNode::ensureNode< QskRectangleNode >( node );
-    rectNode->updateNode( rect, gradient );
+    auto rectNode = QskSGNode::ensureNode< QskBoxRectangleNode >( node );
+    rectNode->updateFilling( rect, QskBoxShapeMetrics(),
+        QskBoxBorderMetrics(), gradient );
 
     return rectNode;
 }

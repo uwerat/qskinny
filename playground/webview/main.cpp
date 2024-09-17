@@ -40,9 +40,9 @@ int main( int argc, char* argv[] )
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     // namespace QtWebEngine doesn't exist in Qt6: https://doc.qt.io/qt-5/qtwebengine.html
     QtWebEngine::initialize();
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app( argc, argv );
 
     SkinnyShortcut::enable( SkinnyShortcut::Quit | SkinnyShortcut::DebugShortcuts );
