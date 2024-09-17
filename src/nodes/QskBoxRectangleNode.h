@@ -24,14 +24,28 @@ class QSK_EXPORT QskBoxRectangleNode : public QskFillNode
     QskBoxRectangleNode();
     ~QskBoxRectangleNode() override;
 
-    void updateNode( const QRectF&,
+    void updateBox( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient& );
 
-    void updateNode( const QRectF& rect, const QskGradient& );
+    void updateBorder( const QRectF&,
+        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
+        const QskBoxBorderColors& );
 
-    void updateNode( const QRectF& rect,
+    void updateFilling( const QRectF& rect, const QskGradient& );
+
+    void updateFilling( const QRectF& rect,
         const QskBoxShapeMetrics&, const QskGradient& );
+
+    void updateFilling( const QRectF& rect, const QskBoxShapeMetrics&,
+        const QskBoxBorderMetrics&, const QskGradient& );
+
+    /*
+        If true border/filling can be rendered together into the same geometry.
+        This should not make much difference as the scene graph batches geometries
+        for the same material anyway.
+     */
+    static bool isCombinedGeometrySupported( const QskGradient& );
 
   private:
     Q_DECLARE_PRIVATE( QskBoxRectangleNode )
