@@ -14,7 +14,11 @@
 class QskArcRenderNodePrivate final : public QskFillNodePrivate
 {
   public:
-    inline void resetValues() { hash = 0; }
+    inline void resetNode( QskArcRenderNode* node )
+    {
+        hash = 0;
+        node->resetGeometry();
+    }
 
     QskHashValue hash = 0;
 };
@@ -55,9 +59,7 @@ void QskArcRenderNode::updateNode(
 
     if ( rect.isEmpty() || metrics.isNull() || !( hasFill || hasBorder ) )
     {
-        d->resetValues();
-        QskSGNode::resetGeometry( this );
-
+        d->resetNode( this );
         return;
     }
 
@@ -77,45 +79,18 @@ void QskArcRenderNode::updateNode(
 
     d->hash = hash;
 
-    auto coloring = QskFillNode::Polychrome;
-
-#if 0
-    if ( !( hasFill && hasBorder ) )
-    {
-        if ( hasBorder || ( hasFill && gradient.isMonochrome() ) )
-            coloring = QskFillNode::Monochrome;
-    }
+#if 1
+    const bool coloredGeometry = hasHint( PreferColoredGeometry )
+        && QskArcRenderer::isGradientSupported( rect, metrics, gradient );
+    Q_ASSERT( coloredGeometry ); // TODO ...
 #endif
 
     auto& geometry = *this->geometry();
 
-    if ( coloring == QskFillNode::Polychrome )
-    {
-        setColoring( coloring );
+    setColoring( QskFillNode::Polychrome );
 
-        QskArcRenderer::renderArc( rect, metrics, radial,
-            borderWidth, gradient, borderColor, geometry );
-    }
-    else
-    {
-        if ( hasFill )
-        {
-            setColoring( gradient.rgbStart() );
-
-            QskArcRenderer::renderArc( rect, metrics, radial,
-                borderWidth, gradient, borderColor, geometry );
-        }
-        else
-        {
-            setColoring( borderColor );
-
-            QskArcRenderer::renderArc( rect, metrics, radial,
-                borderWidth, gradient, borderColor, geometry );
-        }
-    }
+    QskArcRenderer::setColoredBorderAndFillLines( rect, metrics, radial,
+        borderWidth, borderColor, gradient, geometry );
 
     markDirty( QSGNode::DirtyGeometry );
-    markDirty( QSGNode::DirtyMaterial );
-
-    geometry.markVertexDataDirty();
 }
