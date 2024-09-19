@@ -67,7 +67,7 @@ void QskBoxClipNode::setBox( const QRectF& rect,
     else
     {
         setIsRectangular( false );
-        QskBoxRenderer::renderFillGeometry( rect, shape, border, m_geometry );
+        QskBoxRenderer::setFillLines( rect, shape, border, m_geometry );
     }
 
     /*

@@ -369,12 +369,11 @@ QSGNode* QskSkinlet::updateBackgroundNode(
         return nullptr;
 
     const auto gradient = control->background();
-    if ( !gradient.isValid() )
+    if ( !gradient.isVisible() )
         return nullptr;
 
     auto rectNode = QskSGNode::ensureNode< QskBoxRectangleNode >( node );
-    rectNode->updateFilling( rect, QskBoxShapeMetrics(),
-        QskBoxBorderMetrics(), gradient );
+    rectNode->updateFilling( rect, gradient );
 
     return rectNode;
 }
