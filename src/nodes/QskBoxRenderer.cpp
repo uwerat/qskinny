@@ -109,7 +109,7 @@ bool QskBoxRenderer::isGradientSupported( const QskGradient& gradient )
     return false;
 }
 
-void QskBoxRenderer::renderBorderGeometry(
+void QskBoxRenderer::setBorderLines(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
@@ -124,13 +124,13 @@ void QskBoxRenderer::renderBorderGeometry(
         stroker.setBorderLines( lines );
 }
 
-void QskBoxRenderer::renderFillGeometry(
+void QskBoxRenderer::setFillLines(
     const QRectF& rect, const QskBoxShapeMetrics& shape, QSGGeometry& geometry )
 {
-    renderFillGeometry( rect, shape, QskBoxBorderMetrics(), geometry );
+    setFillLines( rect, shape, QskBoxBorderMetrics(), geometry );
 }
 
-void QskBoxRenderer::renderFillGeometry(
+void QskBoxRenderer::setFillLines(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
@@ -144,15 +144,28 @@ void QskBoxRenderer::renderFillGeometry(
         stroker.setFillLines( lines );
 }
 
-void QskBoxRenderer::renderBox( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, const QskGradient& gradient,
-    QSGGeometry& geometry )
+void QskBoxRenderer::setColoredFillLines( const QRectF& rect,
+    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
+    const QskGradient& gradient, QSGGeometry& geometry )
 {
-    renderBox( rect, shape, QskBoxBorderMetrics(),
+    setColoredBorderAndFillLines( rect, shape, border,
         QskBoxBorderColors(), gradient, geometry );
 }
 
-void QskBoxRenderer::renderBox( const QRectF& rect,
+void QskBoxRenderer::setColoredBorderLines( const QRectF& rect,
+    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
+    const QskBoxBorderColors& borderColors, QSGGeometry& geometry )
+{
+    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+    geometry.markVertexDataDirty();
+
+    const QskBoxBasicStroker stroker( QskBoxMetrics( rect, shape, border ), borderColors );
+
+    if ( auto lines = qskAllocateColoredLines( geometry, stroker.borderCount() ) )
+        stroker.setBoxLines( lines, nullptr );
+}
+
+void QskBoxRenderer::setColoredBorderAndFillLines( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient,
     QSGGeometry& geometry )
