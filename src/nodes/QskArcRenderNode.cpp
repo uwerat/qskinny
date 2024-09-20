@@ -20,6 +20,31 @@ class QskArcRenderNodePrivate final : public QskFillNodePrivate
         node->resetGeometry();
     }
 
+    inline bool updateHash( const QRectF& rect, const QskArcMetrics& metrics,
+        bool radial, qreal borderWidth, const QColor& borderColor,
+        const QskGradient& gradient )
+    {
+        QskHashValue value = 3496;
+
+        value = qHashBits( &rect, sizeof( QRectF ), value );
+        value = metrics.hash( value );
+        value = qHash( radial, value );
+        value = qHash( borderWidth, value );
+        value = qHashBits( &borderColor, sizeof( borderColor ), value );
+
+        if ( gradient.isVisible() )
+            value = gradient.hash( value );
+
+        if ( hash != value )
+        {
+            hash = value;
+            return true;
+        }
+
+        return false;
+    }
+
+  private:
     QskHashValue hash = 0;
 };
 
@@ -39,10 +64,45 @@ void QskArcRenderNode::updateFilling( const QRectF& rect,
 }
 
 void QskArcRenderNode::updateFilling( const QRectF& rect,
-    const QskArcMetrics& metrics, bool radial,
+    const QskArcMetrics& arcMetrics, bool radial,
     qreal borderWidth, const QskGradient& gradient )
 {
-    updateArc( rect, metrics, radial, borderWidth, QColor(), gradient );
+    Q_D( QskArcRenderNode );
+
+    const auto metrics = arcMetrics.toAbsolute( rect.size() );
+    const auto borderMax = 0.5 * metrics.thickness();
+
+    const bool hasFill = gradient.isVisible() && ( borderWidth < borderMax );
+    const bool hasBorder = false;
+
+    if ( rect.isEmpty() || metrics.isNull() || !( hasFill || hasBorder ) )
+    {
+        d->resetNode( this );
+        return;
+    }
+
+    borderWidth = qMin( borderWidth, borderMax );
+
+    if ( !d->updateHash( rect, metrics, radial, borderWidth, QColor(), gradient ) )
+    {
+        d->resetNode( this );
+        return;
+    }
+
+#if 1
+    const bool coloredGeometry = hasHint( PreferColoredGeometry )
+        && QskArcRenderer::isGradientSupported( rect, metrics, gradient );
+    Q_ASSERT( coloredGeometry ); // TODO ...
+#endif
+
+    auto& geometry = *this->geometry();
+
+    setColoring( QskFillNode::Polychrome );
+
+    QskArcRenderer::setColoredFillLines( rect, metrics, radial,
+        borderWidth, gradient, geometry );
+
+    markDirty( QSGNode::DirtyGeometry );
 }
 
 void QskArcRenderNode::updateBorder( const QRectF& rect,
@@ -73,19 +133,11 @@ void QskArcRenderNode::updateArc(
 
     borderWidth = qMin( borderWidth, borderMax );
 
-    QskHashValue hash = 3496;
-
-    hash = qHashBits( &rect, sizeof( QRectF ), hash );
-    hash = qHash( borderWidth, hash );
-    hash = qHashBits( &borderColor, sizeof( borderColor ), hash );
-    hash = metrics.hash( hash );
-    hash = gradient.hash( hash );
-    hash = qHash( radial, hash );
-
-    if ( hash == d->hash )
+    if ( !d->updateHash( rect, metrics, radial, borderWidth, borderColor, gradient ) )
+    {
+        d->resetNode( this );
         return;
-
-    d->hash = hash;
+    }
 
 #if 1
     const bool coloredGeometry = hasHint( PreferColoredGeometry )

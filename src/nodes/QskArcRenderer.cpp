@@ -505,7 +505,7 @@ void QskArcRenderer::setColoredBorderLines( const QRectF& rect,
 }
 
 void QskArcRenderer::setColoredFillLines( const QRectF& rect, const QskArcMetrics& metrics,
-    bool radial, const QskGradient& gradient, QSGGeometry& geometry )
+    bool radial, qreal borderWidth, const QskGradient& gradient, QSGGeometry& geometry )
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
     geometry.markVertexDataDirty();
@@ -520,7 +520,7 @@ void QskArcRenderer::setColoredFillLines( const QRectF& rect, const QskArcMetric
 
     if ( const auto lines = qskAllocateColoredLines( geometry, renderer.fillCount() ) )
     {
-        renderer.renderArc( metrics.thickness(), 0.0, lines,
+        renderer.renderArc( metrics.thickness(), borderWidth, lines,
             static_cast< QskVertex::ColoredLine* >( nullptr ) );
     }
 }

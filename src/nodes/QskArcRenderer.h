@@ -45,7 +45,8 @@ namespace QskArcRenderer
         const QColor& borderColor, QSGGeometry& );
 
     QSK_EXPORT void setColoredFillLines( const QRectF&,
-        const QskArcMetrics&, bool radial, const QskGradient&, QSGGeometry& );
+        const QskArcMetrics&, bool radial, qreal borderWidth,
+        const QskGradient&, QSGGeometry& );
 
     QSK_EXPORT void setColoredBorderAndFillLines( const QRectF&,
         const QskArcMetrics&, bool radial, qreal borderWidth,

@@ -21,7 +21,7 @@ class QskBoxRectangleNodePrivate final : public QskFillNodePrivate
         node->resetGeometry();
     }
 
-    bool updateMetrics( const QRectF& rect,
+    inline bool updateMetrics( const QRectF& rect,
         const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics )
     {
         QskHashValue hash = 13000;
@@ -33,7 +33,8 @@ class QskBoxRectangleNodePrivate final : public QskFillNodePrivate
         return updateValue( m_metricsHash, hash );
     }
 
-    bool updateColors( const QskBoxBorderColors& borderColors, const QskGradient& gradient )
+    inline bool updateColors(
+        const QskBoxBorderColors& borderColors, const QskGradient& gradient )
     {
         QskHashValue hash = 13000;
 
