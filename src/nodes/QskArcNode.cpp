@@ -135,7 +135,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
 
     if ( arcNode )
     {
-        arcNode->updateNode( rect, metricsArc, radial,
+        arcNode->updateArc( rect, metricsArc, radial,
             borderWidth, borderColor, pathNode ? QskGradient() : gradient );
     }
 }
