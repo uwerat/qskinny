@@ -22,7 +22,9 @@ class QSK_EXPORT QskArcRenderNode : public QskFillNode
     QskArcRenderNode();
     ~QskArcRenderNode() override;
 
-    void updateNode( const QRectF&, const QskArcMetrics&, const QskGradient& );
+    void updateFilling( const QRectF&, const QskArcMetrics&, const QskGradient& );
+    void updateFilling( const QRectF&, const QskArcMetrics&, bool radial,
+        qreal borderWidth, const QskGradient& );
 
     void updateNode( const QRectF&, const QskArcMetrics&,
         qreal borderWidth, const QColor& borderColor );

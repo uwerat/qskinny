@@ -32,10 +32,17 @@ QskArcRenderNode::~QskArcRenderNode()
 {
 }
 
-void QskArcRenderNode::updateNode( const QRectF& rect,
+void QskArcRenderNode::updateFilling( const QRectF& rect,
     const QskArcMetrics& metrics, const QskGradient& gradient )
 {
-    updateNode( rect, metrics, false, 0.0, QColor(), gradient );
+    updateFilling( rect, metrics, false, 0.0, gradient );
+}
+
+void QskArcRenderNode::updateFilling( const QRectF& rect,
+    const QskArcMetrics& metrics, bool radial,
+    qreal borderWidth, const QskGradient& gradient )
+{
+    updateNode( rect, metrics, radial, borderWidth, QColor(), gradient );
 }
 
 void QskArcRenderNode::updateNode( const QRectF& rect,
