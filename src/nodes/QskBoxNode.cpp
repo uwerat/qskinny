@@ -67,31 +67,34 @@ void QskBoxNode::updateNode( const QRectF& rect,
     QskBoxRectangleNode* rectNode = nullptr;
     QskBoxRectangleNode* fillNode = nullptr;
 
-    if ( !shadowMetrics.isNull()
-        && shadowColor.isValid() && shadowColor.alpha() != 0 )
+    if ( !rect.isEmpty() )
     {
-        shadowNode = qskNode< QskBoxShadowNode >( this, ShadowRole );
-        shadowNode->setShadowData( shadowMetrics.shadowRect( rect ),
-            shape, shadowMetrics.blurRadius(), shadowColor );
-    }
-
-    if ( QskBoxRectangleNode::isCombinedGeometrySupported( gradient ) )
-    {
-        rectNode = qskNode< QskBoxRectangleNode >( this, BoxRole );
-        rectNode->updateBox( rect, shape, borderMetrics, borderColors, gradient );
-    }
-    else
-    {
-        if ( !borderMetrics.isNull() && borderColors.isVisible() )
+        if ( !shadowMetrics.isNull()
+            && shadowColor.isValid() && shadowColor.alpha() != 0 )
         {
-            rectNode = qskNode< QskBoxRectangleNode >( this, BoxRole );
-            rectNode->updateBorder( rect, shape, borderMetrics, borderColors );
+            shadowNode = qskNode< QskBoxShadowNode >( this, ShadowRole );
+            shadowNode->setShadowData( shadowMetrics.shadowRect( rect ),
+                shape, shadowMetrics.blurRadius(), shadowColor );
         }
 
-        if ( gradient.isVisible() )
+        if ( QskBoxRectangleNode::isCombinedGeometrySupported( gradient ) )
         {
-            fillNode = qskNode< QskBoxRectangleNode >( this, FillRole );
-            fillNode->updateFilling( rect, shape, borderMetrics, gradient );
+            rectNode = qskNode< QskBoxRectangleNode >( this, BoxRole );
+            rectNode->updateBox( rect, shape, borderMetrics, borderColors, gradient );
+        }
+        else
+        {
+            if ( !borderMetrics.isNull() && borderColors.isVisible() )
+            {
+                rectNode = qskNode< QskBoxRectangleNode >( this, BoxRole );
+                rectNode->updateBorder( rect, shape, borderMetrics, borderColors );
+            }
+
+            if ( gradient.isVisible() )
+            {
+                fillNode = qskNode< QskBoxRectangleNode >( this, FillRole );
+                fillNode->updateFilling( rect, shape, borderMetrics, gradient );
+            }
         }
     }
 
