@@ -10,7 +10,6 @@
 #include "QskArcRenderer.h"
 #include "QskMargins.h"
 #include "QskGradient.h"
-#include "QskShapeNode.h"
 #include "QskSGNode.h"
 #include "QskShadowMetrics.h"
 
@@ -22,40 +21,38 @@ namespace
     {
         ShadowRole,
 
-        PathRole,
-        ArcRole
+        /*
+            If possible border + filling will be displayed by ArcRole
+            Otherwise ArcRole displays the border and FillRole the filling
+         */
+
+        ArcRole,
+        FillRole
     };
 }
 
-static inline QskGradient qskEffectiveGradient(
-    const QskGradient& gradient, const QskArcMetrics& metrics )
+static void qskUpdateChildren( QSGNode* parentNode, quint8 role, QSGNode* node )
 {
-    if ( !gradient.isMonochrome() )
-    {
-        if ( gradient.type() == QskGradient::Stops )
-        {
-            QskGradient g( gradient.stops() );
-            g.setConicDirection( 0.5, 0.5, metrics.startAngle(), 360.0 );
+    static const QVector< quint8 > roles = { ShadowRole, ArcRole, FillRole };
 
-            return g;
-        }
-    }
-
-    return gradient;
+    auto oldNode = QskSGNode::findChildNode( parentNode, role );
+    QskSGNode::replaceChildNode( roles, role, parentNode, oldNode, node );
 }
 
 template< typename Node >
-inline Node* qskInsertOrRemoveNode( QSGNode* parentNode, quint8 role, bool isValid )
+inline Node* qskNode( QSGNode* parentNode, quint8 role )
 {
     using namespace QskSGNode;
 
-    Node* oldNode = static_cast< Node* >( findChildNode( parentNode, role ) );
-    Node* newNode = isValid ? ensureNode< Node >( oldNode ) : nullptr;
+    auto node = static_cast< Node* > ( findChildNode( parentNode, role ) );
 
-    static const QVector< quint8 > roles = { ShadowRole, PathRole, ArcRole };
-    replaceChildNode( roles, role, parentNode, oldNode, newNode );
+    if ( node == nullptr )
+    {
+        node = new Node();
+        setNodeRole( node, role );
+    }
 
-    return newNode;
+    return node;
 }
 
 QskArcNode::QskArcNode()
@@ -82,60 +79,68 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
     const qreal borderWidth, const QColor& borderColor, const QskGradient& gradient,
     const QColor& shadowColor, const QskShadowMetrics& shadowMetrics )
 {
-    const bool radial = false;
+    using namespace QskSGNode;
 
-    const auto metricsArc = arcMetrics.toAbsolute( rect.size() );
+    QskArcShadowNode* shadowNode = nullptr;
+    QskArcRenderNode* arcNode = nullptr;
+    QskArcRenderNode* fillNode = nullptr;
 
-    if ( metricsArc.isNull() || rect.isEmpty() )
+    if ( !( rect.isEmpty() || arcMetrics.isNull() ) )
     {
-        delete QskSGNode::findChildNode( this, ShadowRole );
-        delete QskSGNode::findChildNode( this, PathRole );
-        delete QskSGNode::findChildNode( this, ArcRole );
+        const bool radial = false;
+        const auto metricsArc = arcMetrics.toAbsolute( rect.size() );
 
-        return;
+        const auto hasFilling = gradient.isVisible();
+        const auto hasBorder = ( borderWidth > 0.0 )
+            && borderColor.isValid() && ( borderColor.alpha() > 0 );
+
+        const auto hasShadow = shadowColor.isValid() && ( shadowColor.alpha() > 0 );
+
+        if ( hasShadow && hasFilling )
+        {
+            /*
+                The shader of the shadow node is for circular arcs and we have some
+                unwanted scaling issues for the spread/blur values when having ellipsoid
+                arcs. We might also want to add the spread value to the ends of the arc
+                and not only to its radius. TODO ...
+             */
+
+            auto shadowNode = qskNode< QskArcShadowNode >( this, ShadowRole );
+
+            const auto sm = shadowMetrics.toAbsolute( rect.size() );
+            const auto shadowRect = sm.shadowRect( rect );
+            const auto spreadRadius = sm.spreadRadius() + 0.5 * metricsArc.thickness();
+
+            shadowNode->setShadowData( shadowRect, spreadRadius, sm.blurRadius(),
+                metricsArc.startAngle(), metricsArc.spanAngle(), shadowColor );
+        }
+
+        if ( hasBorder || hasFilling )
+        {
+            arcNode = qskNode< QskArcRenderNode >( this, ArcRole );
+
+            if ( hasBorder && hasFilling )
+            {
+                if ( !QskArcRenderer::isGradientSupported( rect, metricsArc, gradient ) )
+                    fillNode = qskNode< QskArcRenderNode >( this, FillRole );
+            }
+
+            if ( fillNode )
+            {
+                arcNode->updateBorder( rect, metricsArc,
+                    radial, borderWidth, borderColor );
+
+                fillNode->updateFilling( rect, metricsArc, radial, borderWidth, gradient );
+            }
+            else
+            {
+                arcNode->updateArc( rect, metricsArc,
+                    radial, borderWidth, borderColor, gradient );
+            }
+        }
     }
 
-    const auto hasFilling = gradient.isVisible();
-    const auto hasBorder = ( borderWidth > 0.0 )
-        && borderColor.isValid() && ( borderColor.alpha() > 0 );
-    const auto hasShadow = shadowColor.isValid() && ( shadowColor.alpha() > 0 );
-
-    auto shadowNode = qskInsertOrRemoveNode< QskArcShadowNode >(
-        this, ShadowRole, hasFilling && hasShadow );
-
-    if ( shadowNode )
-    {
-        /*
-            The shader of the shadow node is for circular arcs and we have some
-            unwanted scaling issues for the spread/blur values when having ellipsoid
-            arcs. We might also want to add the spread value to the ends of the arc
-            and not only to its radius. TODO ...
-         */
-
-        const auto sm = shadowMetrics.toAbsolute( rect.size() );
-        const auto shadowRect = sm.shadowRect( rect );
-        const auto spreadRadius = sm.spreadRadius() + 0.5 * metricsArc.thickness();
-
-        shadowNode->setShadowData( shadowRect, spreadRadius, sm.blurRadius(),
-            metricsArc.startAngle(), metricsArc.spanAngle(), shadowColor );
-    }
-
-    auto pathNode = qskInsertOrRemoveNode< QskShapeNode >( this, PathRole,
-        hasFilling && !QskArcRenderer::isGradientSupported( rect, metricsArc, gradient ) );
-
-    if ( pathNode )
-    {
-        const auto path = metricsArc.painterPath( rect, radial );
-        pathNode->updateNode( path, QTransform(), rect,
-            qskEffectiveGradient( gradient, metricsArc ) );
-    }
-
-    auto arcNode = qskInsertOrRemoveNode< QskArcRenderNode >(
-        this, ArcRole, hasBorder || ( hasFilling && !pathNode ) );
-
-    if ( arcNode )
-    {
-        arcNode->updateArc( rect, metricsArc, radial,
-            borderWidth, borderColor, pathNode ? QskGradient() : gradient );
-    }
+    qskUpdateChildren( this, ShadowRole, shadowNode );
+    qskUpdateChildren( this, ArcRole, arcNode );
+    qskUpdateChildren( this, FillRole, fillNode );
 }
