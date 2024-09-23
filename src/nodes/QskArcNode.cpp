@@ -105,7 +105,7 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
                 and not only to its radius. TODO ...
              */
 
-            auto shadowNode = qskNode< QskArcShadowNode >( this, ShadowRole );
+            shadowNode = qskNode< QskArcShadowNode >( this, ShadowRole );
 
             const auto sm = shadowMetrics.toAbsolute( rect.size() );
             const auto shadowRect = sm.shadowRect( rect );
