@@ -109,11 +109,13 @@ void QskBoxRectangleNode::updateFilling( const QRectF& rect,
     const bool coloredGeometry = hasHint( PreferColoredGeometry )
         && QskBoxRenderer::isGradientSupported( fillGradient );
 
-    const bool dirtyMetrics = d->updateMetrics( rect, shape, borderMetrics );
-    const bool dirtyColors = d->updateColors( QskBoxBorderColors(), fillGradient )
-        || ( coloredGeometry != isGeometryColored() );
+    bool dirtyGeometry = d->updateMetrics( rect, shape, borderMetrics );
+    bool dirtyMaterial = d->updateColors( QskBoxBorderColors(), fillGradient );
 
-    if ( dirtyMetrics || dirtyColors )
+    if ( coloredGeometry != isGeometryColored() )
+        dirtyGeometry = dirtyMaterial = true;
+
+    if ( dirtyGeometry || dirtyMaterial )
     {
         if ( coloredGeometry )
         {
@@ -128,16 +130,15 @@ void QskBoxRectangleNode::updateFilling( const QRectF& rect,
         {
             if ( fillGradient.isMonochrome() )
             {
-                if ( dirtyColors )
+                if ( dirtyMaterial )
                     setColoring( fillGradient.rgbStart() );
             }
             else
             {
-                // dirtyMetrics: the shader also depends on rect !
                 setColoring( rect, fillGradient );
             }
 
-            if ( dirtyMetrics )
+            if ( dirtyGeometry )
             {
                 QskBoxRenderer::setFillLines(
                     rect, shape, borderMetrics, *geometry() );
@@ -163,11 +164,13 @@ void QskBoxRectangleNode::updateBorder( const QRectF& rect,
     const bool coloredGeometry = hasHint( PreferColoredGeometry )
         || !borderColors.isMonochrome();
 
-    const bool dirtyMetrics = d->updateMetrics( rect, shape, borderMetrics );
-    const bool dirtyColors = d->updateColors( borderColors, QskGradient() )
-        || ( coloredGeometry != isGeometryColored() );
+    bool dirtyGeometry = d->updateMetrics( rect, shape, borderMetrics );
+    bool dirtyMaterial = d->updateColors( borderColors, QskGradient() );
 
-    if ( dirtyMetrics || dirtyColors )
+    if ( coloredGeometry != isGeometryColored() )
+        dirtyGeometry = dirtyMaterial = true;
+
+    if ( dirtyGeometry || dirtyMaterial )
     {
         if ( coloredGeometry )
         {
@@ -182,7 +185,7 @@ void QskBoxRectangleNode::updateBorder( const QRectF& rect,
         {
             setColoring( borderColors.left().rgbStart() );
 
-            if ( dirtyMetrics )
+            if ( dirtyGeometry )
             {
                 QskBoxRenderer::setBorderLines( rect, shape,
                     borderMetrics, *geometry() );
@@ -210,10 +213,10 @@ void QskBoxRectangleNode::updateBox( const QRectF& rect,
 
     if ( hasFill && hasBorder )
     {
-        const bool dirtyMetrics = d->updateMetrics( rect, shape, borderMetrics );
-        const bool dirtyColors = d->updateColors( borderColors, gradient );
+        const bool isDirty = d->updateMetrics( rect, shape, borderMetrics )
+            || d->updateColors( borderColors, gradient ) || !isGeometryColored();
 
-        if ( dirtyMetrics || dirtyColors )
+        if ( isDirty )
         {
             /*
                 For monochrome border/fiiling with the same color we might be
