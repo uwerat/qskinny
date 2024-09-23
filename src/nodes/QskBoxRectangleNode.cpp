@@ -128,15 +128,7 @@ void QskBoxRectangleNode::updateFilling( const QRectF& rect,
         }
         else
         {
-            if ( fillGradient.isMonochrome() )
-            {
-                if ( dirtyMaterial )
-                    setColoring( fillGradient.rgbStart() );
-            }
-            else
-            {
-                setColoring( rect, fillGradient );
-            }
+            setColoring( rect, fillGradient );
 
             if ( dirtyGeometry )
             {
