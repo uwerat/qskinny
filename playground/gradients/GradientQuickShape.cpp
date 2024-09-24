@@ -57,7 +57,7 @@ namespace
             auto effectiveGradient = gradient.effectiveGradient();
             effectiveGradient.stretchTo( rect );
 
-            switch( static_cast< int >( gradient.type() ) )
+            switch( static_cast< int >( effectiveGradient.type() ) )
             {
                 case QskGradient::Linear:
                 {
