@@ -136,10 +136,12 @@ void QskFillNode::setColoring( const QColor& color )
 {
     setColoring( Monochrome );
 
+    const auto colorRgb = color.toRgb();
+
     auto mat = static_cast< QSGFlatColorMaterial* >( material() );
-    if ( mat->color() != color )
+    if ( mat->color() != colorRgb )
     {
-        mat->setColor( color );
+        mat->setColor( colorRgb );
         markDirty( QSGNode::DirtyMaterial );
     }
 }
@@ -148,16 +150,25 @@ void QskFillNode::setColoring( const QRectF& rect, const QskGradient& gradient )
 {
     if ( gradient.isMonochrome() )
     {
-        setColoring( gradient.startColor().toRgb() );
+        setColoring( gradient.startColor() );
     }
     else
     {
-        const auto effectiveGradient = gradient.effectiveGradient();
-        setColoring( qskColoring( effectiveGradient.type() ) );
+        if ( gradient.type() == QskGradient::Stops )
+        {
+            qWarning() << "QskFillNode::setColoring:"
+                << "QskGradient::Stops is not supported, using the first color instead.";
 
-        auto mat = static_cast< QskGradientMaterial* >( material() );
-        if ( mat->updateGradient( rect, effectiveGradient ) )
-            markDirty( QSGNode::DirtyMaterial );
+            setColoring( gradient.startColor() );
+        }
+        else
+        {
+            setColoring( qskColoring( gradient.type() ) );
+
+            auto mat = static_cast< QskGradientMaterial* >( material() );
+            if ( mat->updateGradient( rect, gradient ) )
+                markDirty( QSGNode::DirtyMaterial );
+        }
     }
 }
 

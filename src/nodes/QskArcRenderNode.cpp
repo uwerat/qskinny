@@ -104,8 +104,17 @@ void QskArcRenderNode::updateFilling( const QRectF& rect,
         return;
     }
 
-    const bool coloredGeometry = hasHint( PreferColoredGeometry )
-        && QskArcRenderer::isGradientSupported( rect, metrics, gradient );
+    bool coloredGeometry = hasHint( PreferColoredGeometry );
+    if ( coloredGeometry )
+    {
+        // not all gradients are supported by the renderer
+        coloredGeometry = QskArcRenderer::isGradientSupported( rect, metrics, gradient );
+    }
+    else
+    {
+        // QskGradient::Stops is specific for QskArcRenderer
+        coloredGeometry = ( gradient.type() == QskGradient::Stops );
+    }
 
     bool dirtyGeometry = d->updateMetrics( rect, metrics, radial, borderWidth );
     bool dirtyMaterial = d->updateColors( QColor(), gradient );

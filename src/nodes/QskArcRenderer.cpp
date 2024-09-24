@@ -458,6 +458,7 @@ bool QskArcRenderer::isGradientSupported( const QRectF& rect,
         }
         case QskGradient::Conic:
         {
+#if 0
             const auto direction = gradient.conicDirection();
             if ( direction.center() == rect.center() )
             {
@@ -470,6 +471,7 @@ bool QskArcRenderer::isGradientSupported( const QRectF& rect,
                      */
                 }
             }
+#endif
 
             return false;
         }
@@ -572,7 +574,7 @@ void QskArcRenderer::setBorderLines( const QRectF& rect,
         return;
     }
 
-    const Renderer renderer( rect, metrics, radial, QskGradient(), 0 );
+    const Renderer renderer( rect, metrics, radial, QskGradient(), QskRgb::Black );
 
     const auto lines = qskAllocateLines( geometry, renderer.borderCount() );
     if ( lines )
