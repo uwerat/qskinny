@@ -7,6 +7,7 @@
 
 #include <QskGradient.h>
 #include <QskGradientDirection.h>
+#include <QskBoxRenderer.h>
 
 QSK_QT_PRIVATE_BEGIN
 
@@ -54,7 +55,7 @@ namespace
         {
             QQuickShapeGradient* shapeGradient = nullptr;
 
-            auto effectiveGradient = gradient.effectiveGradient();
+            auto effectiveGradient = QskBoxRenderer::effectiveGradient( gradient );
             effectiveGradient.stretchTo( rect );
 
             switch( static_cast< int >( effectiveGradient.type() ) )

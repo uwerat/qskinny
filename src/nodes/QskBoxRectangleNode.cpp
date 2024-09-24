@@ -103,7 +103,7 @@ void QskBoxRectangleNode::updateFilling( const QRectF& rect,
         return;
     }
 
-    const auto fillGradient = gradient.effectiveGradient();
+    const auto fillGradient = QskBoxRenderer::effectiveGradient( gradient );
     const auto shape = shapeMetrics.toAbsolute( rect.size() );
 
     const bool coloredGeometry = hasHint( PreferColoredGeometry )
@@ -211,13 +211,13 @@ void QskBoxRectangleNode::updateBox( const QRectF& rect,
         if ( isDirty )
         {
             /*
-                For monochrome border/fiiling with the same color we might be
+                For monochrome border/filling with the same color we might be
                 able to do QskFillNode::Monochrome. However this is not implemeted in
                 QskBoxRenderer yet. TODO ...
              */
             setColoring( QskFillNode::Polychrome );
 
-            auto fillGradient = gradient.effectiveGradient();
+            auto fillGradient = QskBoxRenderer::effectiveGradient( gradient );
             if ( !QskBoxRenderer::isGradientSupported( fillGradient ) )
             {
                 qWarning() << "QskBoxRenderer does not support radial/conic gradients";
