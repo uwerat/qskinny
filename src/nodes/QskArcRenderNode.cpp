@@ -9,11 +9,12 @@
 #include "QskArcMetrics.h"
 #include "QskGradient.h"
 #include "QskSGNode.h"
+#include "QskRgbValue.h"
 #include "QskFillNodePrivate.h"
 
 static inline bool qskHasBorder( qreal width, const QColor& color )
 {
-    return ( width > 0.0 ) && color.isValid() && ( color.alpha() > 0 );
+    return ( width > 0.0 ) && QskRgb::isVisible( color );
 }
 
 class QskArcRenderNodePrivate final : public QskFillNodePrivate
@@ -42,7 +43,7 @@ class QskArcRenderNodePrivate final : public QskFillNodePrivate
     {
         QskHashValue hash = 13000;
 
-        if ( borderColor.isValid() && ( borderColor.alpha() > 0 ) )
+        if ( QskRgb::isVisible( borderColor ) )
             hash = qHashBits( &borderColor, sizeof( borderColor ), hash );
 
         if ( gradient.isVisible() )

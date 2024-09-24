@@ -489,7 +489,7 @@ void QskArcRenderer::setColoredBorderLines( const QRectF& rect,
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
     geometry.markVertexDataDirty();
 
-    if ( borderWidth <= 0.0 || !( borderColor.isValid() && borderColor.alpha() > 0 ) )
+    if ( borderWidth <= 0.0 || !QskRgb::isVisible( borderColor ) )
     {
         qskAllocateColoredLines( geometry, 0 );
         return;

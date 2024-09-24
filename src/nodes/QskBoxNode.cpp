@@ -13,6 +13,7 @@
 #include "QskShadowMetrics.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
+#include "QskRgbValue.h"
 
 namespace
 {
@@ -69,8 +70,10 @@ void QskBoxNode::updateNode( const QRectF& rect,
 
     if ( !rect.isEmpty() )
     {
-        if ( !shadowMetrics.isNull()
-            && shadowColor.isValid() && shadowColor.alpha() != 0 )
+        const auto hasShadow = !shadowMetrics.isNull()
+            && QskRgb::isVisible( shadowColor );
+
+        if ( hasShadow )
         {
             shadowNode = qskNode< QskBoxShadowNode >( this, ShadowRole );
             shadowNode->setShadowData( shadowMetrics.shadowRect( rect ),
