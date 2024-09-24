@@ -26,6 +26,17 @@ static inline QskFillNode::Coloring qskColoring( QskGradient::Type type )
     return static_cast< QskFillNode::Coloring >( coloring );
 }
 
+static inline QskFillNode::Hints qskDefaultFillNodeHints()
+{
+    extern bool qskHasEnvironment( const char* );
+
+    QskFillNode::Hints hints;
+    if ( !qskHasEnvironment( "QSK_PREFER_SHADER_COLORS" ) )
+        hints |= QskFillNode::PreferColoredGeometry;
+        
+    return hints;
+}
+
 QskFillNode::QskFillNode()
     : QskFillNode( *new QskFillNodePrivate )
 {
@@ -34,6 +45,9 @@ QskFillNode::QskFillNode()
 QskFillNode::QskFillNode( QskFillNodePrivate& dd )
     : QSGGeometryNode( dd )
 {
+    static const auto hints = qskDefaultFillNodeHints();
+
+    dd.hints = hints;
     setGeometry( &dd.geometry );
 
     setMaterial( qskMaterialColorVertex );

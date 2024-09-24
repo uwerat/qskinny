@@ -233,3 +233,17 @@ float qskConstrainedRadians( float radians )
 
     return radians;
 }
+
+// do not export;
+bool qskHasEnvironment( const char* env )
+{
+    bool ok;
+
+    const int value = qEnvironmentVariableIntValue( env, &ok );
+    if ( ok )
+        return value != 0;
+
+    // All other strings are true, apart from "false"
+    auto result = qgetenv( env );
+    return !result.isEmpty() && result != "false";
+}

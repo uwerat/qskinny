@@ -6,6 +6,7 @@
 #include "QskStrokeNode.h"
 #include "QskVertex.h"
 #include "QskGradient.h"
+#include "QskRgbValue.h"
 
 #include <qpainterpath.h>
 
@@ -24,7 +25,7 @@ static inline bool qskIsPenVisible( const QPen& pen )
     }
     else
     {
-        if ( !pen.color().isValid() || ( pen.color().alpha() == 0 ) )
+        if ( !QskRgb::isVisible( pen.color() ) )
             return false;
     }
 

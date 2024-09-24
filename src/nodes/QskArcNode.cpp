@@ -12,6 +12,7 @@
 #include "QskGradient.h"
 #include "QskSGNode.h"
 #include "QskShadowMetrics.h"
+#include "QskRgbValue.h"
 
 #include <qpainterpath.h>
 
@@ -91,12 +92,10 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
         const auto metricsArc = arcMetrics.toAbsolute( rect.size() );
 
         const auto hasFilling = gradient.isVisible();
-        const auto hasBorder = ( borderWidth > 0.0 )
-            && borderColor.isValid() && ( borderColor.alpha() > 0 );
+        const auto hasBorder = ( borderWidth > 0.0 ) && QskRgb::isVisible( borderColor );
+        const auto hasShadow = hasFilling && QskRgb::isVisible( shadowColor );
 
-        const auto hasShadow = shadowColor.isValid() && ( shadowColor.alpha() > 0 );
-
-        if ( hasShadow && hasFilling )
+        if ( hasShadow )
         {
             /*
                 The shader of the shadow node is for circular arcs and we have some
@@ -121,7 +120,10 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
 
             if ( hasBorder && hasFilling )
             {
-                if ( !QskArcRenderer::isGradientSupported( rect, metricsArc, gradient ) )
+                const bool doCombine = arcNode->hasHint( QskFillNode::PreferColoredGeometry )
+                    && QskArcRenderer::isGradientSupported( rect, metricsArc, gradient );
+
+                if ( !doCombine )
                     fillNode = qskNode< QskArcRenderNode >( this, FillRole );
             }
 
