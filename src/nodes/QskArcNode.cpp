@@ -120,7 +120,10 @@ void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics
 
             if ( hasBorder && hasFilling )
             {
-                if ( !QskArcRenderer::isGradientSupported( rect, metricsArc, gradient ) )
+                const bool doCombine = arcNode->hasHint( QskFillNode::PreferColoredGeometry )
+                    && QskArcRenderer::isGradientSupported( rect, metricsArc, gradient );
+
+                if ( !doCombine )
                     fillNode = qskNode< QskArcRenderNode >( this, FillRole );
             }
 

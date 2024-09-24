@@ -70,7 +70,10 @@ void QskBoxNode::updateNode( const QRectF& rect,
 
     if ( !rect.isEmpty() )
     {
-        const auto hasShadow = !shadowMetrics.isNull()
+        const auto hasFilling = gradient.isVisible();
+        const auto hasBorder = !borderMetrics.isNull() && borderColors.isVisible();
+
+        const auto hasShadow = hasFilling && !shadowMetrics.isNull()
             && QskRgb::isVisible( shadowColor );
 
         if ( hasShadow )
@@ -80,23 +83,27 @@ void QskBoxNode::updateNode( const QRectF& rect,
                 shape, shadowMetrics.blurRadius(), shadowColor );
         }
 
-        if ( QskBoxRectangleNode::isCombinedGeometrySupported( gradient ) )
+        if ( hasBorder || hasFilling )
         {
             rectNode = qskNode< QskBoxRectangleNode >( this, BoxRole );
-            rectNode->updateBox( rect, shape, borderMetrics, borderColors, gradient );
-        }
-        else
-        {
-            if ( !borderMetrics.isNull() && borderColors.isVisible() )
-            {
-                rectNode = qskNode< QskBoxRectangleNode >( this, BoxRole );
-                rectNode->updateBorder( rect, shape, borderMetrics, borderColors );
-            }
 
-            if ( gradient.isVisible() )
+            if ( hasBorder && hasFilling )
             {
-                fillNode = qskNode< QskBoxRectangleNode >( this, FillRole );
+                const bool doCombine = rectNode->hasHint( QskFillNode::PreferColoredGeometry )
+                    && QskBoxRectangleNode::isCombinedGeometrySupported( gradient );
+
+                if ( !doCombine )
+                    fillNode = qskNode< QskBoxRectangleNode >( this, FillRole );
+            }
+                    
+            if ( fillNode )
+            {
+                rectNode->updateBorder( rect, shape, borderMetrics, borderColors );
                 fillNode->updateFilling( rect, shape, borderMetrics, gradient );
+            }
+            else
+            {
+                rectNode->updateBox( rect, shape, borderMetrics, borderColors, gradient );
             }
         }
     }
