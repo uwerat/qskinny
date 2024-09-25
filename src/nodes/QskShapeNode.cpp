@@ -6,6 +6,7 @@
 #include "QskShapeNode.h"
 #include "QskGradient.h"
 #include "QskGradientDirection.h"
+#include "QskVertex.h"
 #include "QskFillNodePrivate.h"
 
 QSK_QT_PRIVATE_BEGIN
@@ -26,7 +27,7 @@ static void qskUpdateGeometry( const QPainterPath& path,
     auto vertexData = reinterpret_cast< float* >( geometry.vertexData() );
     const auto points = ts.vertices.constData();
 
-    for ( int i = 0; i < ts.vertices.count(); i++ )
+    for ( int i = 0; i < ts.vertices.size(); i++ )
         vertexData[i] = points[i];
 
     memcpy( geometry.indexData(), ts.indices.data(),
@@ -36,17 +37,17 @@ static void qskUpdateGeometry( const QPainterPath& path,
 #endif
 
 static void qskUpdateGeometry( const QPainterPath& path,
-    const QTransform& transform, QSGGeometry& geometry )
+    const QTransform& transform, const QColor& color, QSGGeometry& geometry )
 {
     const auto ts = qTriangulate( path, transform, 1, false );
 
     /*
-        The triangulation of a random path does not lead to index lists
-        that are substantially reducing the number of vertices.
+        The triangulation of a random path usually does not lead to index lists
+        that allow substantially reducing the number of vertices.
 
         As we have to iterate over the vertex buffer to copy qreal to float
         anyway we reorder according to the index buffer and drop
-        the index buffer. 
+        the index buffer.
 
         QTriangleSet:
 
@@ -60,11 +61,25 @@ static void qskUpdateGeometry( const QPainterPath& path,
 
     geometry.allocate( ts.indices.size() );
 
-    auto vertexData = geometry.vertexDataAsPoint2D();
-    for ( int i = 0; i < ts.indices.size(); i++ )
+    if ( color.isValid() )
     {
-        const int j = 2 * indices[i];
-        vertexData[i].set( points[j], points[j + 1] );
+        const QskVertex::Color c = color;
+
+        auto vertexData = geometry.vertexDataAsColoredPoint2D();
+        for ( int i = 0; i < ts.indices.size(); i++ )
+        {
+            const int j = 2 * indices[i];
+            vertexData[i].set( points[j], points[j + 1], c.r, c.g, c.b, c.a );
+        }
+    }
+    else
+    {
+        auto vertexData = geometry.vertexDataAsPoint2D();
+        for ( int i = 0; i < ts.indices.size(); i++ )
+        {
+            const int j = 2 * indices[i];
+            vertexData[i].set( points[j], points[j + 1] );
+        }
     }
 }
 
@@ -82,7 +97,6 @@ class QskShapeNodePrivate final : public QskFillNodePrivate
 QskShapeNode::QskShapeNode()
     : QskFillNode( *new QskShapeNodePrivate )
 {
-    setColoring( Monochrome );
     geometry()->setDrawingMode( QSGGeometry::DrawTriangles );
 }
 
@@ -104,14 +118,24 @@ void QskShapeNode::updateNode( const QPainterPath& path,
         return;
     }
 
-    setColoring( rect, gradient );
+    QColor c;
 
-    if ( ( transform != d->transform ) || ( path != d->path ) )
+    if ( gradient.isMonochrome() && hasHint( PreferColoredGeometry ) )
+        c = gradient.startColor();
+
+    const bool isDirty = ( isGeometryColored() != c.isValid() );
+
+    if ( c.isValid() )
+        setColoring( QskFillNode::Polychrome );
+    else
+        setColoring( rect, gradient );
+
+    if ( isDirty || ( transform != d->transform ) || ( path != d->path ) )
     {
         d->path = path;
         d->transform = transform;
 
-        qskUpdateGeometry( path, transform, *geometry() );
+        qskUpdateGeometry( path, transform, c, *geometry() );
 
         geometry()->markVertexDataDirty();
         markDirty( QSGNode::DirtyGeometry );
