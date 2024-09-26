@@ -114,6 +114,15 @@ void QskComboBox::setPopupOpen( bool on )
     if ( on == isPopupOpen() )
         return;
 
+#if 1
+    if ( on && window() == nullptr )
+    {
+        // We need a delayed open call to avoid this problem.TODO ...
+        qWarning() << "QskComboBox can't be opened before being added to a scene.";
+        return;
+    }
+#endif
+
     setSkinStateFlag( PopupOpen, on );
 
     if( on )
