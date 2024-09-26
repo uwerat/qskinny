@@ -54,6 +54,8 @@ namespace QskBoxRenderer
     QSK_EXPORT void setColoredBorderAndFillLines( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
+
+    QSK_EXPORT QskGradient effectiveGradient( const QskGradient& );
 }
 
 #endif

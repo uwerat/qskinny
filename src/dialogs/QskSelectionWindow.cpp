@@ -93,7 +93,7 @@ int QskSelectionWindow::selectedRow() const
 QString QskSelectionWindow::selectedEntry() const
 {
     if ( auto listBox = qskListBox( this ) )
-        listBox->selectedEntry();
+        return listBox->selectedEntry();
 
     return QString();
 }

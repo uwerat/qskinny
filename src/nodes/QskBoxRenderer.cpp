@@ -231,3 +231,18 @@ void QskBoxRenderer::setColoredBorderAndFillLines( const QRectF& rect,
         }
     }
 }
+
+QskGradient QskBoxRenderer::effectiveGradient( const QskGradient& gradient )
+{
+    if ( ( gradient.type() == QskGradient::Stops ) || gradient.isMonochrome() )
+    {   
+        // the shader for linear gradients is the fastest
+    
+        auto g = gradient;
+        g.setDirection( QskGradient::Linear );
+    
+        return g;
+    }
+    
+    return gradient;
+}
