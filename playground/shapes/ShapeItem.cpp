@@ -221,7 +221,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         }
 
         const auto transform = ::transformForRects( pathRect, rect );
-        borderNode->updateNode( m_data->path, transform, pen );
+        borderNode->updatePath( m_data->path, transform, pen );
     }
     else
     {
