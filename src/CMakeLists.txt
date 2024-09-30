@@ -103,7 +103,6 @@ list(APPEND HEADERS
     nodes/QskArcNode.h
     nodes/QskArcRenderer.h
     nodes/QskArcRenderNode.h
-    nodes/QskArcShadowNode.h
     nodes/QskBasicLinesNode.h
     nodes/QskBoxNode.h
     nodes/QskBoxClipNode.h
@@ -144,7 +143,6 @@ list(APPEND SOURCES
     nodes/QskArcNode.cpp
     nodes/QskArcRenderer.cpp
     nodes/QskArcRenderNode.cpp
-    nodes/QskArcShadowNode.cpp
     nodes/QskBasicLinesNode.cpp
     nodes/QskBoxNode.cpp
     nodes/QskBoxClipNode.cpp
@@ -180,8 +178,6 @@ if (QT_VERSION_MAJOR VERSION_LESS 6)
     qt_add_resources(SOURCES nodes/shaders.qrc)
 else()
     list(APPEND SHADERS
-        nodes/shaders/arcshadow-vulkan.vert
-        nodes/shaders/arcshadow-vulkan.frag
         nodes/shaders/boxshadow-vulkan.vert
         nodes/shaders/boxshadow-vulkan.frag
         nodes/shaders/crisplines-vulkan.vert
