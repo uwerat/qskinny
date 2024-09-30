@@ -1456,12 +1456,15 @@ QskMaterial3Skin::~QskMaterial3Skin()
 {
 }
 
-static inline QFont createFont( int size, int lineHeight,
+static inline QFont createFont( int pointSize, int lineHeight,
     qreal spacing, QFont::Weight weight )
 {
     Q_UNUSED( lineHeight );
 
-    const int pixelSize = qRound( qskDpToPixels( size ) );
+    // convert to px according to https://www.w3.org/TR/css3-values/#absolute-lengths :
+    const double pxSize = pointSize / 72.0 * 96.0;
+
+    const int pixelSize = qRound( qskDpToPixels( pxSize ) );
 
     QFont font( QStringLiteral( "Roboto" ), -1, weight );
 
