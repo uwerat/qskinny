@@ -452,33 +452,126 @@ void Editor::setupTextInput()
 {
     using Q = QskTextInput;
 
-    setStrutSize( Q::Panel,  -1.0, 56_dp );
-    setPadding( Q::Panel, { 12_dp, 8_dp, 12_dp, 8_dp } );
-    setGradient( Q::Panel, m_pal.surfaceVariant );
-    setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
-    setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_dp } );
-    setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );
-    setSpacing( Q::Panel, 8_dp );
+    const QskStateCombination allStates( QskStateCombination::CombinationNoState, QskAspect::AllStates );
 
-    const auto hoverColor = flattenedColor( m_pal.onSurfaceVariant,
+    // Panel
+
+    setStrutSize( Q::Panel,  -1.0, 56_dp );
+    setGradient( Q::Panel, m_pal.surfaceVariant );
+
+    setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
+
+    setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_dp } );
+    setBoxBorderMetrics( Q::Panel | Q::Focused, { 0, 0, 0, 2_dp }, allStates );
+
+    setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );
+    setBoxBorderColors( Q::Panel | Q::Error, m_pal.error, allStates );
+    setBoxBorderColors( Q::Panel | Q::Error | Q::Hovered, m_pal.onErrorContainer, allStates );
+
+    const auto normalHoverColor = flattenedColor( m_pal.onSurfaceVariant,
         m_pal.surfaceVariant, m_pal.hoverOpacity );
-    setGradient( Q::Panel | Q::Hovered, hoverColor );
+    setGradient( Q::Panel | Q::Hovered, normalHoverColor, allStates );
+
+    const auto errorHoverColor = flattenedColor( m_pal.onSurface,
+        m_pal.surfaceVariant, m_pal.hoverOpacity );
+    setGradient( Q::Panel | Q::Error | Q::Hovered, errorHoverColor, allStates );
 
     const auto focusColor = flattenedColor( m_pal.onSurfaceVariant,
         m_pal.surfaceVariant, m_pal.focusOpacity );
-    setGradient( Q::Panel | Q::Focused, focusColor );
-
-    // ### Also add a pressed state
-
-    setColor( Q::InputText, m_pal.onSurface );
-    setFontRole( Q::InputText, BodyMedium );
-    setAlignment( Q::InputText, Qt::AlignLeft | Qt::AlignVCenter );
+    setGradient( Q::Panel | Q::Focused, focusColor, allStates );
 
     const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
-    setGradient( Q::Panel | Q::Disabled, disabledPanelColor );
-    setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
+    setGradient( Q::Panel | Q::Disabled, disabledPanelColor, allStates );
+    setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38, allStates );
+
+
+    // LeadingIcon
+
+    setStrutSize( Q::LeadingIcon, { 24_dp, 24_dp } );
+    setMargin( Q::LeadingIcon, { 12_dp, 0, 0, 0 } );
+    const auto leadingIcon = symbol( "text_field_search" );
+    setSymbol( Q::LeadingIcon, leadingIcon );
+
+    setGraphicRole( Q::LeadingIcon, QskMaterial3Skin::GraphicRoleOnSurface );
+    setGraphicRole( Q::LeadingIcon | Q::Error, QskMaterial3Skin::GraphicRoleOnSurfaceVariant, allStates );
+
+
+    // LabelText
+
+    setAlignment( Q::LabelText, Qt::AlignLeft | Qt::AlignVCenter );
+
+    const QskStateCombination textEmptyStates( QskStateCombination::CombinationNoState,
+        Q::Focused | Q::Hovered | Q::ReadOnly | Q::Disabled );
+
+    setFontRole( Q::LabelText | Q::TextEmpty, BodyMedium, textEmptyStates );
+    setColor( Q::LabelText | Q::TextEmpty, m_pal.onSurfaceVariant, textEmptyStates );
+
+    const QskStateCombination editingHoveredFocused( QskStateCombination::CombinationNoState,
+        Q::Editing | Q::Hovered | Q::Focused );
+
+    setMargin( Q::LabelText, { 16_dp, 8_dp, 16_dp, 16_dp }, editingHoveredFocused );
+    setColor( Q::LabelText, m_pal.primary, editingHoveredFocused );
+    setFontRole( Q::LabelText, BodySmall, editingHoveredFocused );
+
+    setColor( Q::LabelText | Q::Error, m_pal.error, allStates );
+    setColor( Q::LabelText | Q::Error | Q::Hovered, m_pal.onErrorContainer, allStates );
+
+
+    // InputText
+
+    setMargin( Q::InputText, { 16_dp, 8_dp, 16_dp, 8_dp } );
+    setColor( Q::InputText, m_pal.onSurface );
+    setFontRole( Q::InputText, BodyMedium );
+    setAlignment( Q::InputText, Qt::AlignLeft | Qt::AlignBottom );
+
+    setColor( Q::InputText | Q::Error, m_pal.onSurface, allStates ); // same as with Hovered and Focused
 
     setColor( Q::InputText | Q::Disabled, m_pal.onSurface38 );
+
+
+    // HintText
+
+    setColor( Q::HintText, color( Q::InputText ) );
+    setFontRole( Q::HintText, fontRole( Q::InputText ) );
+    setAlignment( Q::HintText, alignment( Q::InputText ) );
+
+
+    // TrailingIcon
+
+    setStrutSize( Q::TrailingIcon, { 24_dp, 24_dp } );
+    setMargin( Q::TrailingIcon, { 0, 0, 12_dp, 0 } );
+    setGraphicRole( Q::TrailingIcon, QskMaterial3Skin::GraphicRoleOnSurface );
+    const auto trailingIcon = symbol( "text_field_cancel" );
+    setSymbol( Q::TrailingIcon, trailingIcon );
+
+    const auto errorIcon = symbol( "text_field_error" );
+    setSymbol( Q::TrailingIcon | Q::Error, errorIcon, allStates );
+    setGraphicRole( Q::TrailingIcon | Q::Error, QskMaterial3Skin::GraphicRoleError, allStates );
+    setGraphicRole( Q::TrailingIcon | Q::Error | Q::Hovered, QskMaterial3Skin::GraphicRoleOnErrorContainer, allStates );
+
+
+    // TrailingIconRipple
+
+    setStrutSize( Q::TrailingIconRipple, { 45_dp, 45_dp } );
+    setGradient( Q::TrailingIconRipple | Q::Hovered, m_pal.onSurface8, allStates );
+    setBoxShape( Q::TrailingIconRipple, 100, Qt::RelativeSize );
+
+
+    // SupportingText
+
+    setMargin( Q::SupportingText, { 16_dp, 4_dp, 16_dp, 4_dp } );
+    setColor( Q::SupportingText, m_pal.onSurfaceVariant );
+    setColor( Q::SupportingText | Q::Error, m_pal.error, allStates );
+    setFontRole( Q::SupportingText, BodySmall );
+    setAlignment( Q::SupportingText, Qt::AlignLeft | Qt::AlignVCenter );
+
+
+    // CharacterCount
+
+    setMargin( Q::CharacterCount, margin( Q::SupportingText ) );
+    setColor( Q::CharacterCount, color( Q::SupportingText ) );
+    setFontRole( Q::CharacterCount, fontRole( Q::SupportingText ) );
+    setAlignment( Q::CharacterCount, Qt::AlignRight | Qt::AlignVCenter );
 }
 
 void Editor::setupProgressBar()
@@ -1661,10 +1754,12 @@ void QskMaterial3Skin::setGraphicColor( GraphicRole role, QRgb rgb )
 
 void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& theme )
 {
+    setGraphicColor( GraphicRoleError, theme.error );
     setGraphicColor( GraphicRoleOnPrimary, theme.onPrimary );
     setGraphicColor( GraphicRoleOnPrimaryContainer, theme.onPrimaryContainer );
     setGraphicColor( GraphicRoleOnSecondaryContainer, theme.onSecondaryContainer );
     setGraphicColor( GraphicRoleOnError, theme.onError );
+    setGraphicColor( GraphicRoleOnErrorContainer, theme.onErrorContainer );
     setGraphicColor( GraphicRoleOnSurface, theme.onSurface );
     setGraphicColor( GraphicRoleOnSurface38, theme.onSurface38 );
     setGraphicColor( GraphicRoleOnSurfaceVariant, theme.onSurfaceVariant );

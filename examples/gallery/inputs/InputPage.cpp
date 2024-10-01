@@ -67,26 +67,51 @@ namespace
         InputBox( QQuickItem* parent = nullptr )
             : QskLinearBox( Qt::Horizontal, parent )
         {
-            setSpacing( 20 );
+            setSpacing( 40 );
+            setDefaultAlignment( Qt::AlignHCenter | Qt::AlignTop );
 
             {
-                new QskTextInput( "Edit Me", this );
+                auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0, this );
+                spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+                spinBox->setPageSize( 5 );
+                spinBox->setValue( 35 );
             }
 
             {
-                auto input = new QskTextInput( "Only Read Me", this );
+                auto input = new QskTextInput( this );
+                input->setLabelText( "filled" );
+                input->setHintText( "hint text" );
+                input->setSupportingText( "supporting text" );
+                input->setMaxLength( 10 );
+            }
+
+            {
+                auto input = new QskTextInput( this );
+                input->setLeadingIcon( {} );
+                input->setLabelText( "no leading icon" );
+                input->setHintText( "hint text" );
+                input->setSupportingText( "supporting text" );
+            }
+                auto input = new QskTextInput( this );
+                input->setSkinStateFlag( QskTextInput::Error );
+                input->setLabelText( "error" );
+                input->setHintText( "hint text" );
+                input->setSupportingText( "error text" );
+            }
+
+            {
+                auto input = new QskTextInput( this );
                 input->setReadOnly( true );
+                input->setLabelText( "read only" );
                 input->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
             }
 
             {
-                auto input = new QskTextInput( "12345", this );
-                input->setMaxLength( 5 );
-                input->setEchoMode( QskTextInput::PasswordEchoOnEdit );
-#if 1
-                input->setFixedWidth( 80 );
-#endif
-            }
+                auto input = new QskTextInput( this );
+                input->setMaxLength( 15 );
+                input->setLabelText( "password" );
+                input->setEchoMode( QskTextInput::Password );
+                input->setHintText( "better be strong" );
         }
     };
 }

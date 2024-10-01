@@ -7,6 +7,7 @@
 #define QSK_TEXT_INPUT_H
 
 #include "QskControl.h"
+#include "QskGraphic.h"
 #include "QskTextOptions.h"
 
 class QValidator;
@@ -18,13 +19,18 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     Q_PROPERTY( QString inputText READ inputText WRITE setInputText NOTIFY inputTextChanged USER true )
 
-    Q_PROPERTY( QString description READ description
-        WRITE setDescription NOTIFY descriptionChanged )
+    Q_PROPERTY( QString labelText READ labelText WRITE setLabelText NOTIFY labelTextChanged )
+
+    Q_PROPERTY( QString hintText READ hintText
+        WRITE setHintText NOTIFY hintTextChanged )
+
+    Q_PROPERTY( QString supportingText READ supportingText
+        WRITE setSupportingText NOTIFY supportingTextChanged )
 
     Q_PROPERTY( QskFontRole fontRole READ fontRole
         WRITE setFontRole RESET resetFontRole NOTIFY fontRoleChanged )
 
-    Q_PROPERTY( QFont font READ font )
+    Q_PROPERTY( QFont font READ font CONSTANT )
 
     Q_PROPERTY( Qt::Alignment alignment READ alignment
         WRITE setAlignment RESET resetAlignment NOTIFY alignmentChanged )
@@ -55,8 +61,11 @@ class QSK_EXPORT QskTextInput : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, InputText )
-    QSK_STATES( ReadOnly, Editing, Selected )
+    QSK_SUBCONTROLS( Panel, LeadingIcon, LabelText, InputText,
+        TrailingIconRipple, TrailingIcon, HintText, SupportingText,
+        CharacterCount )
+
+    QSK_STATES( ReadOnly, Editing, Selected, Error, TextEmpty )
 
     enum ActivationMode
     {
@@ -84,7 +93,7 @@ class QSK_EXPORT QskTextInput : public QskControl
     Q_ENUM( EchoMode )
 
     QskTextInput( QQuickItem* parent = nullptr );
-    QskTextInput( const QString&, QQuickItem* parent = nullptr );
+    QskTextInput( const QString&, QQuickItem* parent = nullptr ); // ### do we need this constructor?
 
     ~QskTextInput() override;
 
@@ -92,8 +101,16 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     QString inputText() const;
 
-    void setDescription( const QString& );
-    QString description() const;
+    QString labelText() const;
+
+    QskGraphic leadingIcon() const;
+    void setLeadingIcon( const QskGraphic& );
+
+    void setHintText( const QString& );
+    QString hintText() const;
+
+    void setSupportingText( const QString& );
+    QString supportingText() const;
 
     void setPanel( bool );
     bool hasPanel() const;
@@ -164,6 +181,8 @@ class QSK_EXPORT QskTextInput : public QskControl
 
   public Q_SLOTS:
     void setInputText( const QString& );
+    void setLabelText( const QString& );
+
     void setEditing( bool );
 
   Q_SIGNALS:
@@ -174,10 +193,13 @@ class QSK_EXPORT QskTextInput : public QskControl
     void panelChanged( bool );
 
     void inputTextChanged( const QString& );
+    void labelTextChanged( const QString& );
+
     void displayTextChanged( const QString& );
 
     void textEdited( const QString& );
-    void descriptionChanged( const QString& );
+    void hintTextChanged( const QString& );
+    void supportingTextChanged( const QString& );
 
     void fontRoleChanged();
     void alignmentChanged();
@@ -200,6 +222,10 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     void focusInEvent( QFocusEvent* ) override;
     void focusOutEvent( QFocusEvent* ) override;
+
+    void hoverEnterEvent( QHoverEvent* ) override;
+    void hoverMoveEvent( QHoverEvent* ) override;
+    void hoverLeaveEvent( QHoverEvent* ) override;
 
     void mousePressEvent( QMouseEvent* ) override;
     void mouseMoveEvent( QMouseEvent* ) override;

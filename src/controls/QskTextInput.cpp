@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskTextInput.h"
+#include "QskEvent.h"
 #include "QskFontRole.h"
 #include "QskQuick.h"
 
@@ -13,11 +14,20 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextInput, Panel )
+QSK_SUBCONTROL( QskTextInput, LeadingIcon )
+QSK_SUBCONTROL( QskTextInput, LabelText )
 QSK_SUBCONTROL( QskTextInput, InputText )
+QSK_SUBCONTROL( QskTextInput, TrailingIconRipple )
+QSK_SUBCONTROL( QskTextInput, TrailingIcon )
+QSK_SUBCONTROL( QskTextInput, HintText )
+QSK_SUBCONTROL( QskTextInput, SupportingText )
+QSK_SUBCONTROL( QskTextInput, CharacterCount )
 
 QSK_SYSTEM_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
 QSK_SYSTEM_STATE( QskTextInput, Selected, QskAspect::FirstSystemState << 3 )
+QSK_SYSTEM_STATE( QskTextInput, Error, QskAspect::FirstSystemState << 4 )
+QSK_SYSTEM_STATE( QskTextInput, TextEmpty, QskAspect::LastUserState << 1 )
 
 static inline void qskPropagateReadOnly( QskTextInput* input )
 {
@@ -284,7 +294,9 @@ class QskTextInput::PrivateData
 {
   public:
     TextInput* textInput;
-    QString description; // f.e. used as prompt in QskInputPanel
+    QString labelText;
+    QString hintText;
+    QString supportingText;
 
     unsigned int activationModes : 3;
     bool hasPanel : 1;
@@ -318,12 +330,20 @@ QskTextInput::QskTextInput( QQuickItem* parent )
     m_data->textInput->setAcceptedMouseButtons( Qt::NoButton );
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
+
+    setSkinStateFlag( TextEmpty );
+
+    connect( m_data->textInput, &QQuickTextInput::textChanged, this, [this]()
+    {
+        setSkinStateFlag( TextEmpty, m_data->textInput->text().isEmpty() );
+        update(); // character count might have changed
+    } );
 }
 
 QskTextInput::QskTextInput( const QString& text, QQuickItem* parent )
     : QskTextInput( parent )
 {
-    m_data->textInput->setText( text );
+    setInputText( text );
 }
 
 QskTextInput::~QskTextInput()
@@ -420,7 +440,14 @@ void QskTextInput::keyReleaseEvent( QKeyEvent* event )
 
 void QskTextInput::mousePressEvent( QMouseEvent* event )
 {
-    m_data->textInput->handleEvent( event );
+    if( !isReadOnly() && subControlContentsRect( TrailingIcon ).contains( event->position() ) )
+    {
+        setInputText( {} );
+    }
+    else
+    {
+        m_data->textInput->handleEvent( event );
+    }
 
     if ( !isReadOnly() && !qGuiApp->styleHints()->setFocusOnTouchRelease() )
         setEditing( true );
@@ -489,6 +516,36 @@ void QskTextInput::focusOutEvent( QFocusEvent* event )
     Inherited::focusOutEvent( event );
 }
 
+void QskTextInput::hoverEnterEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( TrailingIconRipple | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+    update();
+
+    Inherited::hoverEnterEvent( event );
+}
+
+void QskTextInput::hoverMoveEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( TrailingIconRipple | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+    update();
+
+    Inherited::hoverMoveEvent( event );
+}
+
+void QskTextInput::hoverLeaveEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( TrailingIconRipple | Hovered | A::Metric | A::Position, QPointF() );
+    update();
+
+    Inherited::hoverLeaveEvent( event );
+}
+
 QSizeF QskTextInput::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
 {
     if ( which != Qt::PreferredSize )
@@ -504,6 +561,12 @@ QSizeF QskTextInput::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
     {
         hint = outerBoxSize( Panel, hint );
         hint = hint.expandedTo( strutSizeHint( Panel ) );
+    }
+
+    if( !supportingText().isEmpty() || maxLength() != 32767 ) // magic number hardcoded in qquicktextinput.cpp
+    {
+        const auto margins = marginHint( SupportingText );
+        hint.rheight() += margins.top() + effectiveFontHeight( SupportingText ) + margins.bottom();
     }
 
     return hint;
@@ -534,18 +597,56 @@ void QskTextInput::setInputText( const QString& text )
     m_data->textInput->setText( text );
 }
 
-void QskTextInput::setDescription( const QString& text )
+QString QskTextInput::labelText() const
 {
-    if ( m_data->description != text )
+    return m_data->labelText;
+}
+
+void QskTextInput::setLabelText( const QString& text )
+{
+    if ( m_data->labelText != text )
     {
-        m_data->description = text;
-        Q_EMIT descriptionChanged( text );
+        m_data->labelText = text;
+        Q_EMIT labelTextChanged( text );
     }
 }
 
-QString QskTextInput::description() const
+QskGraphic QskTextInput::leadingIcon() const
 {
-    return m_data->description;
+    return symbolHint( LeadingIcon );
+}
+
+void QskTextInput::setLeadingIcon( const QskGraphic& icon )
+{
+    setSymbolHint( LeadingIcon, icon );
+}
+
+void QskTextInput::setHintText( const QString& text )
+{
+    if ( m_data->hintText != text )
+    {
+        m_data->hintText = text;
+        Q_EMIT hintTextChanged( text );
+    }
+}
+
+QString QskTextInput::hintText() const
+{
+    return m_data->hintText;
+}
+
+void QskTextInput::setSupportingText( const QString& text )
+{
+    if ( m_data->supportingText != text )
+    {
+        m_data->supportingText = text;
+        Q_EMIT supportingTextChanged( text );
+    }
+}
+
+QString QskTextInput::supportingText() const
+{
+    return m_data->supportingText;
 }
 
 QskTextInput::ActivationModes QskTextInput::activationModes() const

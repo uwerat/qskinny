@@ -18,6 +18,13 @@ class QSK_EXPORT QskTextInputSkinlet : public QskSkinlet
     enum NodeRole
     {
         PanelRole,
+        LeadingIconRole,
+        LabelTextRole,
+        HintTextRole,
+        SupportingTextRole,
+        TrailingIconRippleRole,
+        TrailingIconRole,
+        CharacterCountRole,
         RoleCount
     };
 
