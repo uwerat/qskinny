@@ -14,7 +14,7 @@ skinlet, and therefore it will read information from both the control
 itself as well as read the skin hints from the skin:
 
 .Skinlets query the control and the skin
-image::../images/skins-1.png[Styling controls]
+image::/doc/tutorials/images/skins-1.png[Styling controls]
 
 For instance, a button skinlet will read the margins from the skin and
 the text to render from the button.
@@ -44,10 +44,10 @@ has a traditional desktop skin, the other is a flat button with a skin
 often found in mobile devices.
 
 .desktop style button
-image::../images/skinlets-button-1.png[desktop style button]
+image::/doc/tutorials/images/skinlets-button-1.png[desktop style button]
 
 .flat button
-image::../images/skinlets-button-2.png[flat button]
+image::/doc/tutorials/images/skinlets-button-2.png[flat button]
 
 === Skin hints
 
@@ -85,7 +85,7 @@ public:
 ....
 
 .A button styled with skin hints
-image::../images/skin-hints.png[Button with skin hints]
+image::/doc/tutorials/images/skin-hints.png[Button with skin hints]
 
 When writing a new skin, a developer needs to know which hints to set
 for which control. This usually depends on the control itself; however,
@@ -154,10 +154,10 @@ public:
 ....
 
 .button in normal state
-image::../images/skin-hints-states-1.png[button in normal state]
+image::/doc/tutorials/images/skin-hints-states-1.png[button in normal state]
 
 .button in hovered state
-image::../images/skin-hints-states-2.png[button in hovered state]
+image::/doc/tutorials/images/skin-hints-states-2.png[button in hovered state]
 
 ==== Local skin hints
 
@@ -181,7 +181,7 @@ Taking animations and local skin hints into account, the architecture
 diagram now looks like this:
 
 .Skinlets can also read from local skinlets and animators
-image::../images/skins-2.png[Animators and local skin hints]
+image::/doc/tutorials/images/skins-2.png[Animators and local skin hints]
 
 === Skinlets
 
@@ -214,7 +214,7 @@ different skinlets, so a more complete version of the architecture
 diagram looks like this:
 
 .There is one skinlet for each atomic control
-image::../images/skins-3.png[Animators and local skin hints]
+image::/doc/tutorials/images/skins-3.png[Animators and local skin hints]
 
 === Skin factories and switching between skins
 
@@ -298,8 +298,8 @@ Switching between skins will change the look of `QskPushButton`
 instances:
 
 .button in `MySkin` (as above)
-image::../images/skin-hints-states-1.png[button in normal state]
+image::/doc/tutorials/images/skin-hints-states-1.png[button in normal state]
 
 .button in `OtherSkin`
-image::../images/skin-factory.png[Styling controls]
+image::/doc/tutorials/images/skin-factory.png[Styling controls]
 
