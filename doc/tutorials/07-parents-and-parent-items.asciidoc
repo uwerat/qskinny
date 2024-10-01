@@ -41,7 +41,7 @@ Let’s look at the "Nesting layouts" example from the
 link:Layouts.html[layouts documentation]. The UI looks like this:
 
 .UI with nested layouts
-image::../images/nesting-layouts.png[Nested layouts]
+image::/doc/tutorials/images/nesting-layouts.png[Nested layouts]
 
 The code for this UI is below:
 
@@ -92,7 +92,7 @@ on. For information on how to obtain this tree, see
 https://doc.qt.io/qt-5/qobject.html#dumpObjectTree[QObject::dumpObjectTree()].
 
 .QObject tree (and item tree) of the nested layouts UI
-image::../images/object-hierarchy.png[QObject hierarchy]
+image::/doc/tutorials/images/object-hierarchy.png[QObject hierarchy]
 
 ==== Item tree
 
@@ -136,7 +136,7 @@ topBar->setOpacity( 0.2 );
 ....
 
 .Changing opacity of an item will affect all its child items
-image::../images/nesting-layouts-item-tree-1.png[Changing the item tree]
+image::/doc/tutorials/images/nesting-layouts-item-tree-1.png[Changing the item tree]
 
 ==== Difference in object trees and item trees
 
@@ -151,7 +151,7 @@ topLabel1->setParentItem( bottomBar );
 ....
 
 .Moving a label from the top bar to the bottom bar
-image::../images/nesting-layouts-item-tree-2.png[Moving a label to the bottom bar]
+image::/doc/tutorials/images/nesting-layouts-item-tree-2.png[Moving a label to the bottom bar]
 
 Now we decide to get rid of our top bar altogether:
 
@@ -163,7 +163,7 @@ topBar->deleteLater();
 This will also delete our label from the bottom bar:
 
 .Deleting the top bar will delete all its children
-image::../images/nesting-layouts-item-tree-3.png[Deleting the top bar]
+image::/doc/tutorials/images/nesting-layouts-item-tree-3.png[Deleting the top bar]
 
 The reason why the label from the bottom bar was also deleted is that
 with the call to `setParentItem()` above we set a new parent item; the
@@ -188,4 +188,4 @@ topBar->deleteLater();
 ....
 
 .Reparenting the label will keep it alive when deleting the top bar
-image::../images/nesting-layouts-item-tree-4.png[Reparenting the item]
+image::/doc/tutorials/images/nesting-layouts-item-tree-4.png[Reparenting the item]
