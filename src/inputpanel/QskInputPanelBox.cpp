@@ -35,7 +35,7 @@ namespace
             if ( subControl == QskTextInput::Panel )
                 return m_panelBox->effectiveSubcontrol( QskInputPanelBox::ProxyPanel );
 
-            if ( subControl == QskTextInput::Text )
+            if ( subControl == QskTextInput::InputText )
                 return m_panelBox->effectiveSubcontrol( QskInputPanelBox::ProxyText );
 
             return subControl;
@@ -187,7 +187,7 @@ QskAspect::Subcontrol QskInputPanelBox::substitutedSubcontrol(
         return QskTextInput::Panel;
 
     if ( subControl == QskInputPanelBox::ProxyText )
-        return QskTextInput::Text;
+        return QskTextInput::InputText;
 #endif
 
     return subControl;

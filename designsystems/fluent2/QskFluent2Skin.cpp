@@ -1773,8 +1773,8 @@ void Editor::setupTextInputMetrics()
 
     setBoxShape( Q::Panel, 3_px );
 
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
-    setFontRole( Q::Text, Fluent2::Body );
+    setAlignment( Q::InputText, Qt::AlignLeft | Qt::AlignVCenter );
+    setFontRole( Q::InputText, Fluent2::Body );
 }
 
 void Editor::setupTextInputColors(
@@ -1785,8 +1785,8 @@ void Editor::setupTextInputColors(
 
     const auto& pal = theme.palette;
 
-    setColor( Q::PanelSelected, pal.fillColor.accent.selectedTextBackground );
-    setColor( Q::TextSelected, pal.fillColor.textOnAccent.selectedText );
+    setColor( Q::Panel | Q::Selected, pal.fillColor.accent.selectedTextBackground );
+    setColor( Q::InputText | Q::Selected, pal.fillColor.textOnAccent.selectedText );
 
     for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
     {
@@ -1821,7 +1821,7 @@ void Editor::setupTextInputColors(
         }
 
         const auto panel = Q::Panel | section | state;
-        const auto text = Q::Text | section | state;
+        const auto text = Q::InputText | section | state;
 
         panelColor = rgbSolid( panelColor, pal.background.solid.base );
 

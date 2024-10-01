@@ -52,7 +52,7 @@ namespace
 
             m_input = new QskTextInput( this );
             m_input->setValidator( new InputValidator( m_input ) );
-            m_input->setText( QString::number( value ) );
+            m_input->setInputText( QString::number( value ) );
 
             const QFontMetricsF fm( m_input->font() );
             m_input->setFixedWidth( fm.horizontalAdvance( "-0.000" ) );
@@ -65,7 +65,7 @@ namespace
 
         qreal value() const
         {
-            return m_input->text().toDouble();
+            return m_input->inputText().toDouble();
         }
 
       Q_SIGNALS:

@@ -23,7 +23,7 @@ QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         return contentsRect;
     }
-    else if ( subControl == QskTextInput::Text )
+    else if ( subControl == QskTextInput::InputText )
     {
         return skinnable->subControlContentsRect( contentsRect, QskTextInput::Panel );
     }

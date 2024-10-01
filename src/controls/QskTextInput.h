@@ -16,7 +16,7 @@ class QSK_EXPORT QskTextInput : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged USER true)
+    Q_PROPERTY( QString inputText READ inputText WRITE setInputText NOTIFY inputTextChanged USER true )
 
     Q_PROPERTY( QString description READ description
         WRITE setDescription NOTIFY descriptionChanged )
@@ -55,8 +55,8 @@ class QSK_EXPORT QskTextInput : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Text, PanelSelected, TextSelected )
-    QSK_STATES( ReadOnly, Editing )
+    QSK_SUBCONTROLS( Panel, InputText )
+    QSK_STATES( ReadOnly, Editing, Selected )
 
     enum ActivationMode
     {
@@ -84,13 +84,13 @@ class QSK_EXPORT QskTextInput : public QskControl
     Q_ENUM( EchoMode )
 
     QskTextInput( QQuickItem* parent = nullptr );
-    QskTextInput( const QString& text, QQuickItem* parent = nullptr );
+    QskTextInput( const QString&, QQuickItem* parent = nullptr );
 
     ~QskTextInput() override;
 
     void setupFrom( const QQuickItem* );
 
-    QString text() const;
+    QString inputText() const;
 
     void setDescription( const QString& );
     QString description() const;
@@ -163,7 +163,7 @@ class QSK_EXPORT QskTextInput : public QskControl
     void ensureVisible( int position );
 
   public Q_SLOTS:
-    void setText( const QString& );
+    void setInputText( const QString& );
     void setEditing( bool );
 
   Q_SIGNALS:
@@ -173,7 +173,7 @@ class QSK_EXPORT QskTextInput : public QskControl
     void readOnlyChanged( bool );
     void panelChanged( bool );
 
-    void textChanged( const QString& );
+    void inputTextChanged( const QString& );
     void displayTextChanged( const QString& );
 
     void textEdited( const QString& );

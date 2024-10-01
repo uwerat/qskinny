@@ -470,15 +470,15 @@ void Editor::setupTextInput()
 
     // ### Also add a pressed state
 
-    setColor( Q::Text, m_pal.onSurface );
-    setFontRole( Q::Text, BodyMedium );
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+    setColor( Q::InputText, m_pal.onSurface );
+    setFontRole( Q::InputText, BodyMedium );
+    setAlignment( Q::InputText, Qt::AlignLeft | Qt::AlignVCenter );
 
     const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
     setGradient( Q::Panel | Q::Disabled, disabledPanelColor );
     setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
 
-    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+    setColor( Q::InputText | Q::Disabled, m_pal.onSurface38 );
 }
 
 void Editor::setupProgressBar()

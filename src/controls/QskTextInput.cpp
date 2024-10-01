@@ -13,16 +13,11 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextInput, Panel )
-QSK_SUBCONTROL( QskTextInput, Text )
-
-#if 1
-// shouldn't this be a Selected state, TODO ...
-QSK_SUBCONTROL( QskTextInput, PanelSelected )
-QSK_SUBCONTROL( QskTextInput, TextSelected )
-#endif
+QSK_SUBCONTROL( QskTextInput, InputText )
 
 QSK_SYSTEM_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskTextInput, Selected, QskAspect::FirstSystemState << 3 )
 
 static inline void qskPropagateReadOnly( QskTextInput* input )
 {
@@ -36,13 +31,13 @@ static inline void qskBindSignals(
     const QQuickTextInput* wrappedInput, QskTextInput* input )
 {
     QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
-        input, [ input ] { Q_EMIT input->textChanged( input->text() ); } );
+        input, [ input ] { Q_EMIT input->inputTextChanged( input->inputText() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::displayTextChanged,
         input, [ input ] { Q_EMIT input->displayTextChanged( input->displayText() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::textEdited,
-        input, [ input ] { Q_EMIT input->textEdited( input->text() ); } );
+        input, [ input ] { Q_EMIT input->textEdited( input->inputText() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::validatorChanged,
         input, &QskTextInput::validatorChanged );
@@ -252,7 +247,7 @@ namespace
 
         QColor color;
 
-        color = input->color( QskTextInput::Text );
+        color = input->color( QskTextInput::InputText );
         if ( d->color != color )
         {
             d->color = color;
@@ -261,14 +256,14 @@ namespace
 
         if ( d->hasSelectedText() )
         {
-            color = input->color( QskTextInput::PanelSelected );
+            color = input->color( QskTextInput::Panel | QskTextInput::Selected );
             if ( d->selectionColor != color )
             {
                 d->selectionColor = color;
                 isDirty = true;
             }
 
-            color = input->color( QskTextInput::TextSelected );
+            color = input->color( QskTextInput::InputText | QskTextInput::Selected );
             if ( d->selectedTextColor != color )
             {
                 d->selectedTextColor = color;
@@ -519,7 +514,7 @@ void QskTextInput::updateLayout()
     auto input = m_data->textInput;
 
     input->updateMetrics();
-    qskSetItemGeometry( input, subControlRect( Text ) );
+    qskSetItemGeometry( input, subControlRect( InputText ) );
 }
 
 void QskTextInput::updateNode( QSGNode* node )
@@ -528,12 +523,12 @@ void QskTextInput::updateNode( QSGNode* node )
     Inherited::updateNode( node );
 }
 
-QString QskTextInput::text() const
+QString QskTextInput::inputText() const
 {
     return m_data->textInput->text();
 }
 
-void QskTextInput::setText( const QString& text )
+void QskTextInput::setInputText( const QString& text )
 {
     m_data->textInput->setText( text );
 }
@@ -574,7 +569,7 @@ static inline void qskUpdateInputMethodFont( const QskTextInput* input )
 
 void QskTextInput::setFontRole( const QskFontRole& role )
 {
-    if ( setFontRoleHint( Text, role ) )
+    if ( setFontRoleHint( InputText, role ) )
     {
         qskUpdateInputMethodFont( this );
         Q_EMIT fontRoleChanged();
@@ -583,7 +578,7 @@ void QskTextInput::setFontRole( const QskFontRole& role )
 
 void QskTextInput::resetFontRole()
 {
-    if ( resetFontRoleHint( Text ) )
+    if ( resetFontRoleHint( InputText ) )
     {
         qskUpdateInputMethodFont( this );
         Q_EMIT fontRoleChanged();
@@ -592,12 +587,12 @@ void QskTextInput::resetFontRole()
 
 QskFontRole QskTextInput::fontRole() const
 {
-    return fontRoleHint( Text );
+    return fontRoleHint( InputText );
 }
 
 void QskTextInput::setAlignment( Qt::Alignment alignment )
 {
-    if ( setAlignmentHint( Text, alignment ) )
+    if ( setAlignmentHint( InputText, alignment ) )
     {
         m_data->textInput->setAlignment( alignment );
         Q_EMIT alignmentChanged();
@@ -606,7 +601,7 @@ void QskTextInput::setAlignment( Qt::Alignment alignment )
 
 void QskTextInput::resetAlignment()
 {
-    if ( resetAlignmentHint( Text ) )
+    if ( resetAlignmentHint( InputText ) )
     {
         m_data->textInput->setAlignment( alignment() );
         Q_EMIT alignmentChanged();
@@ -615,7 +610,7 @@ void QskTextInput::resetAlignment()
 
 Qt::Alignment QskTextInput::alignment() const
 {
-    return alignmentHint( Text, Qt::AlignLeft | Qt::AlignTop );
+    return alignmentHint( InputText, Qt::AlignLeft | Qt::AlignTop );
 }
 
 void QskTextInput::setWrapMode( QskTextOptions::WrapMode wrapMode ) 
@@ -632,7 +627,7 @@ QskTextOptions::WrapMode QskTextInput::wrapMode() const
 
 QFont QskTextInput::font() const
 {
-    return effectiveFont( QskTextInput::Text );
+    return effectiveFont( QskTextInput::InputText );
 }
 
 bool QskTextInput::isReadOnly() const
@@ -922,7 +917,7 @@ void QskTextInput::setupFrom( const QQuickItem* item )
     if ( event.queries() & Qt::ImSurroundingText )
     {
         const auto text = event.value( Qt::ImSurroundingText ).toString();
-        setText( text );
+        setInputText( text );
     }
 
     if ( event.queries() & Qt::ImCursorPosition )
