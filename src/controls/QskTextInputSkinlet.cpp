@@ -6,6 +6,9 @@
 #include "QskTextInputSkinlet.h"
 #include "QskTextInput.h"
 
+#include "QskBoxBorderColors.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxShapeMetrics.h"
 #include "QskFunctions.h"
 
 #include <QFontMetricsF>
@@ -19,6 +22,39 @@ namespace
         QString s = QString::number( input->inputText().length() )
                     + " / " + QString::number( input->maxLength() );
         return s;
+    }
+
+    // We need to "cut a hole" in the upper gradient for the label text:
+    QskBoxBorderColors outlineColors( const QskTextInput* input )
+    {
+        auto borderColors = input->boxBorderColorsHint( Q::Panel );
+        auto topGradient = borderColors.gradientAt( Qt::TopEdge );
+
+        const auto panelRect = input->subControlRect( Q::Panel );
+
+        const auto margins = input->marginHint( Q::LabelText );
+        const auto iconMargins = input->marginHint( Q::LeadingIcon );
+
+        const auto x1 = iconMargins.left() - margins.left();
+        const auto r1 = x1 / panelRect.width();
+
+        const auto w = qskHorizontalAdvance( input->effectiveFont( Q::LabelText ), input->labelText() );
+
+        const auto x2 = x1 + w + margins.right();
+        const auto r2 = x2 / panelRect.width();
+
+        topGradient.setStops( {
+            { 0.0, topGradient.startColor() },
+            { r1, topGradient.startColor() },
+            { r1, Qt::transparent },
+            { r2, Qt::transparent },
+            { r2, topGradient.startColor() },
+            { 1.0, topGradient.startColor() }
+        } );
+
+        borderColors.setGradientAt( Qt::TopEdge, topGradient );
+
+        return borderColors;
     }
 }
 
@@ -50,6 +86,13 @@ QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         auto rect = contentsRect;
 
+        if( input->emphasis() == Q::LowEmphasis )
+        {
+            const auto fontHeight = input->effectiveFontHeight( Q::LabelText | Q::Focused );
+            rect.setY( fontHeight / 2 );
+        }
+
+
         const auto h = input->strutSizeHint( subControl ).height();
         rect.setHeight( h );
 
@@ -78,13 +121,27 @@ QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         const auto inputRect = input->subControlRect( Q::InputText );
 
-        if( input->hasSkinState( Q::Focused ) || !input->inputText().isEmpty() )
+        if( !input->inputText().isEmpty()
+             || input->hasSkinState( Q::Focused )
+             || input->hasSkinState( Q::Editing ) )
         {
             const auto margins = input->marginHint( subControl );
             auto rect = inputRect;
-            rect.setY( contentsRect.y() + margins.top() );
-            const QFontMetricsF fm ( input->effectiveFont( subControl ) );
+            const QFontMetricsF fm( input->effectiveFont( subControl ) );
+
+            if( input->emphasis() == Q::LowEmphasis )
+            {
+                const auto iconMargins = input->marginHint( Q::LeadingIcon );
+                rect.setX( iconMargins.left() );
+                rect.setY( 0 );
+            }
+            else
+            {
+                rect.setY( contentsRect.y() + margins.top() );
+            }
+
             rect.setHeight( fm.height() );
+
             return rect;
         }
         else
@@ -107,7 +164,8 @@ QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
     }
     else if ( subControl == Q::HintText )
     {
-        if( input->hasSkinState( Q::Focused ) && input->inputText().isEmpty() ) // ### has TextEmpty state
+        if( input->hasSkinState( Q::TextEmpty )
+            && ( input->hasSkinState( Q::Focused ) || input->hasSkinState( Q::Editing ) ) )
         {
             return input->subControlRect( Q::InputText );
         }
@@ -213,7 +271,23 @@ QSGNode* QskTextInputSkinlet::updateSubNode(
             if ( !input->hasPanel() )
                 return nullptr;
 
-            return updateBoxNode( skinnable, node, Q::Panel );
+            if( input->emphasis() == Q::LowEmphasis
+                 && ( !input->hasSkinState( Q::TextEmpty )
+                    || input->hasSkinState( Q::Focused )
+                    || input->hasSkinState( Q::Editing ) ) )
+            {
+                const auto shape = skinnable->boxShapeHint( Q::Panel );
+                const auto borderMetrics = skinnable->boxBorderMetricsHint( Q::Panel );
+                const auto borderColors = outlineColors( input );
+                const auto gradient = input->gradientHint( Q::Panel );
+
+                return updateBoxNode( skinnable, node, input->subControlRect( Q::Panel ),
+                    shape, borderMetrics, borderColors, gradient );
+            }
+            else
+            {
+                return updateBoxNode( skinnable, node, Q::Panel );
+            }
         }
 
         case LeadingIconRole:

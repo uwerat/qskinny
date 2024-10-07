@@ -61,57 +61,70 @@ namespace
         }
     };
 
-    class InputBox : public QskLinearBox
+    class TextInputBox : public QskLinearBox
     {
       public:
-        InputBox( QQuickItem* parent = nullptr )
+        TextInputBox( QQuickItem* parent = nullptr )
             : QskLinearBox( Qt::Horizontal, parent )
         {
-            setSpacing( 40 );
+            setSpacing( 25 );
             setDefaultAlignment( Qt::AlignHCenter | Qt::AlignTop );
-
             {
-                auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0, this );
-                spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
-                spinBox->setPageSize( 5 );
-                spinBox->setValue( 35 );
             }
 
+            for( const auto& emphasis : { QskTextInput::NoEmphasis, QskTextInput::LowEmphasis } )
             {
-                auto input = new QskTextInput( this );
-                input->setLabelText( "filled" );
-                input->setHintText( "hint text" );
-                input->setSupportingText( "supporting text" );
-                input->setMaxLength( 10 );
-            }
+                {
+                    auto input = new QskTextInput( this );
+                    input->setEmphasis( emphasis );
+                    const QString text = ( emphasis == QskTextInput::NoEmphasis ) ? "filled" : "outlined";
+                    input->setLabelText( text );
+                    input->setHintText( "hint text" );
+                    input->setSupportingText( "supporting text" );
+                    input->setMaxLength( 10 );
+                }
 
-            {
-                auto input = new QskTextInput( this );
-                input->setLeadingIcon( {} );
-                input->setLabelText( "no leading icon" );
-                input->setHintText( "hint text" );
-                input->setSupportingText( "supporting text" );
-            }
-                auto input = new QskTextInput( this );
-                input->setSkinStateFlag( QskTextInput::Error );
-                input->setLabelText( "error" );
-                input->setHintText( "hint text" );
-                input->setSupportingText( "error text" );
-            }
+                {
+                    auto input = new QskTextInput( this );
+                    input->setEmphasis( emphasis );
+                    input->setLeadingIcon( {} );
+                    input->setLabelText( "no leading icon" );
+                    input->setHintText( "hint text" );
+                    input->setSupportingText( "supporting text" );
+                }
+                {
+                    auto input = new QskTextInput( this );
+                    input->setEmphasis( emphasis );
+                    input->setLeadingIcon( {} );
+                    input->setLabelText( "no hint text" );
+                }
 
-            {
-                auto input = new QskTextInput( this );
-                input->setReadOnly( true );
-                input->setLabelText( "read only" );
-                input->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
-            }
+                {
+                    auto input = new QskTextInput( this );
+                    input->setEmphasis( emphasis );
+                    input->setSkinStateFlag( QskTextInput::Error );
+                    input->setLabelText( "error" );
+                    input->setHintText( "hint text" );
+                    input->setSupportingText( "error text" );
+                }
 
-            {
-                auto input = new QskTextInput( this );
-                input->setMaxLength( 15 );
-                input->setLabelText( "password" );
-                input->setEchoMode( QskTextInput::Password );
-                input->setHintText( "better be strong" );
+                {
+                    auto input = new QskTextInput( this );
+                    input->setEmphasis( emphasis );
+                    input->setReadOnly( true );
+                    input->setLabelText( "read only" );
+                    input->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
+                }
+
+                {
+                    auto input = new QskTextInput( this );
+                    input->setEmphasis( emphasis );
+                    input->setMaxLength( 15 );
+                    input->setLabelText( "password" );
+                    input->setEchoMode( QskTextInput::Password );
+                    input->setHintText( "better be strong" );
+                }
+            }
         }
     };
 }
@@ -136,12 +149,17 @@ InputPage::InputPage( QQuickItem* parent )
     auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0 );
     spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
 
-    auto inputBox = new InputBox();
+    auto textInputBox = new TextInputBox();
     inputBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
 
     auto vBox = new QskLinearBox( Qt::Vertical );
     vBox->setSpacing( 30 );
     vBox->setExtraSpacingAt( Qt::RightEdge | Qt::BottomEdge );
+    
+    auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0 );
+    spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+    spinBox->setPageSize( 5 );
+    spinBox->setValue( 35 );
 
     vBox->addItem( sliders[0].continous );
     vBox->addItem( sliders[0].discrete );

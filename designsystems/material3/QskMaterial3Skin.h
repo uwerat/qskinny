@@ -102,6 +102,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
 
     qreal stateOpacity( int state ) const;
 
+    QskBoxShapeMetrics shapeExtraSmall;
     QskBoxShapeMetrics shapeExtraSmallTop;
 };
 

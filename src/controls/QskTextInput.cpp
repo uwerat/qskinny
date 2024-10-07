@@ -293,6 +293,11 @@ namespace
 class QskTextInput::PrivateData
 {
   public:
+    PrivateData()
+        : emphasis( NoEmphasis )
+    {
+    }
+
     TextInput* textInput;
     QString labelText;
     QString hintText;
@@ -300,6 +305,7 @@ class QskTextInput::PrivateData
 
     unsigned int activationModes : 3;
     bool hasPanel : 1;
+    int emphasis : 4;
 };
 
 QskTextInput::QskTextInput( QQuickItem* parent )
@@ -563,6 +569,12 @@ QSizeF QskTextInput::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
         hint = hint.expandedTo( strutSizeHint( Panel ) );
     }
 
+    if( emphasis() == LowEmphasis )
+    {
+        const auto fontHeight = effectiveFontHeight( LabelText | TextEmpty );
+        hint.rheight() += fontHeight / 2;
+    }
+
     if( !supportingText().isEmpty() || maxLength() != 32767 ) // magic number hardcoded in qquicktextinput.cpp
     {
         const auto margins = marginHint( SupportingText );
@@ -585,6 +597,24 @@ void QskTextInput::updateNode( QSGNode* node )
     m_data->textInput->updateColors();
     m_data->textInput->updateMetrics();
     Inherited::updateNode( node );
+}
+
+void QskTextInput::setEmphasis( Emphasis emphasis )
+{
+    if ( emphasis != m_data->emphasis )
+    {
+        m_data->emphasis = emphasis;
+
+        resetImplicitSize();
+        update();
+
+        Q_EMIT emphasisChanged( emphasis );
+    }
+}
+
+QskTextInput::Emphasis QskTextInput::emphasis() const
+{
+    return static_cast< Emphasis >( m_data->emphasis );
 }
 
 QString QskTextInput::inputText() const
@@ -796,6 +826,18 @@ bool QskTextInput::isEditing() const
 void QskTextInput::ensureVisible( int position )
 {
     m_data->textInput->ensureVisible( position );
+}
+
+QskAspect::Variation QskTextInput::effectiveVariation() const
+{
+    switch( m_data->emphasis )
+    {
+        case LowEmphasis:
+            return QskAspect::Small;
+
+        default:
+            return QskAspect::NoVariation;
+    }
 }
 
 int QskTextInput::cursorPosition() const

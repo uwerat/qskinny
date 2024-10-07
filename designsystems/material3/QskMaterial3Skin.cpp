@@ -451,12 +451,16 @@ void Editor::setupTextLabel()
 void Editor::setupTextInput()
 {
     using Q = QskTextInput;
+    using M3 = QskMaterial3Skin;
 
     const QskStateCombination allStates( QskStateCombination::CombinationNoState, QskAspect::AllStates );
 
     // Panel
 
     setStrutSize( Q::Panel,  -1.0, 56_dp );
+
+    // Panel - Filled
+
     setGradient( Q::Panel, m_pal.surfaceVariant );
 
     setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
@@ -484,6 +488,16 @@ void Editor::setupTextInput()
     setGradient( Q::Panel | Q::Disabled, disabledPanelColor, allStates );
     setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38, allStates );
 
+    // Panel - Outlined
+
+    setGradient( Q::Panel | M3::Outlined, Qt::transparent );
+    setBoxShape( Q::Panel | M3::Outlined, m_pal.shapeExtraSmall );
+    setBoxBorderMetrics( Q::Panel | M3::Outlined, 1_dp );
+    setBoxBorderColors( Q::Panel | M3::Outlined, m_pal.outline );
+
+    setBoxBorderMetrics( Q::Panel | M3::Outlined | Q::Focused, 2_dp, allStates );
+    setBoxBorderColors( Q::Panel | M3::Outlined | Q::Focused, m_pal.primary, allStates );
+
 
     // LeadingIcon
 
@@ -492,18 +506,19 @@ void Editor::setupTextInput()
     const auto leadingIcon = symbol( "text_field_search" );
     setSymbol( Q::LeadingIcon, leadingIcon );
 
-    setGraphicRole( Q::LeadingIcon, QskMaterial3Skin::GraphicRoleOnSurface );
-    setGraphicRole( Q::LeadingIcon | Q::Error, QskMaterial3Skin::GraphicRoleOnSurfaceVariant, allStates );
+    setGraphicRole( Q::LeadingIcon, M3::GraphicRoleOnSurface );
+    setGraphicRole( Q::LeadingIcon | Q::Error, M3::GraphicRoleOnSurfaceVariant, allStates );
 
 
     // LabelText
 
-    setAlignment( Q::LabelText, Qt::AlignLeft | Qt::AlignVCenter );
+    setAlignment( Q::LabelText, Qt::AlignLeft | Qt::AlignTop );
 
     const QskStateCombination textEmptyStates( QskStateCombination::CombinationNoState,
-        Q::Focused | Q::Hovered | Q::ReadOnly | Q::Disabled );
+        Q::Hovered | Q::ReadOnly | Q::Disabled | Q::Error );
 
-    setFontRole( Q::LabelText | Q::TextEmpty, BodyMedium, textEmptyStates );
+    setAlignment( Q::LabelText | Q::TextEmpty, Qt::AlignLeft | Qt::AlignVCenter, textEmptyStates );
+    setFontRole( Q::LabelText | Q::TextEmpty, BodyLarge, textEmptyStates );
     setColor( Q::LabelText | Q::TextEmpty, m_pal.onSurfaceVariant, textEmptyStates );
 
     const QskStateCombination editingHoveredFocused( QskStateCombination::CombinationNoState,
@@ -516,17 +531,25 @@ void Editor::setupTextInput()
     setColor( Q::LabelText | Q::Error, m_pal.error, allStates );
     setColor( Q::LabelText | Q::Error | Q::Hovered, m_pal.onErrorContainer, allStates );
 
+    // LabelText - Outlined
+
+    setMargin( Q::LabelText | M3::Outlined, { 4_dp, 0, 4_dp, 0 }, editingHoveredFocused );
+
 
     // InputText
 
     setMargin( Q::InputText, { 16_dp, 8_dp, 16_dp, 8_dp } );
     setColor( Q::InputText, m_pal.onSurface );
-    setFontRole( Q::InputText, BodyMedium );
+    setFontRole( Q::InputText, BodyLarge );
     setAlignment( Q::InputText, Qt::AlignLeft | Qt::AlignBottom );
 
     setColor( Q::InputText | Q::Error, m_pal.onSurface, allStates ); // same as with Hovered and Focused
 
     setColor( Q::InputText | Q::Disabled, m_pal.onSurface38 );
+
+    // InputText - Outlined
+
+    setAlignment( Q::InputText | M3::Outlined, Qt::AlignLeft | Qt::AlignVCenter );
 
 
     // HintText
@@ -534,20 +557,21 @@ void Editor::setupTextInput()
     setColor( Q::HintText, color( Q::InputText ) );
     setFontRole( Q::HintText, fontRole( Q::InputText ) );
     setAlignment( Q::HintText, alignment( Q::InputText ) );
+    setAlignment( Q::HintText | M3::Outlined, alignment( Q::InputText | M3::Outlined ) );
 
 
     // TrailingIcon
 
     setStrutSize( Q::TrailingIcon, { 24_dp, 24_dp } );
     setMargin( Q::TrailingIcon, { 0, 0, 12_dp, 0 } );
-    setGraphicRole( Q::TrailingIcon, QskMaterial3Skin::GraphicRoleOnSurface );
+    setGraphicRole( Q::TrailingIcon, M3::GraphicRoleOnSurfaceVariant );
     const auto trailingIcon = symbol( "text_field_cancel" );
     setSymbol( Q::TrailingIcon, trailingIcon );
 
     const auto errorIcon = symbol( "text_field_error" );
     setSymbol( Q::TrailingIcon | Q::Error, errorIcon, allStates );
-    setGraphicRole( Q::TrailingIcon | Q::Error, QskMaterial3Skin::GraphicRoleError, allStates );
-    setGraphicRole( Q::TrailingIcon | Q::Error | Q::Hovered, QskMaterial3Skin::GraphicRoleOnErrorContainer, allStates );
+    setGraphicRole( Q::TrailingIcon | Q::Error, M3::GraphicRoleError, allStates );
+    setGraphicRole( Q::TrailingIcon | Q::Error | Q::Hovered, M3::GraphicRoleOnErrorContainer, allStates );
 
 
     // TrailingIconRipple
@@ -1654,6 +1678,7 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
     elevation2 = QskShadowMetrics( -2, 8, { 0, 2 } );
     elevation3 = QskShadowMetrics( -1, 11, { 0, 2 } );
 
+    shapeExtraSmall = QskBoxShapeMetrics( 4_dp, 4_dp, 4_dp, 4_dp );
     shapeExtraSmallTop = QskBoxShapeMetrics( 4_dp, 4_dp, 0, 0 );
 }
 
