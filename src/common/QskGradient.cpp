@@ -615,8 +615,6 @@ void QskGradient::setLinearDirection( const QskLinearDirection& direction )
 
 QskLinearDirection QskGradient::linearDirection() const
 {
-    Q_ASSERT( m_type == Linear );
-
     if ( m_type != Linear )
         return QskLinearDirection( 0.0, 0.0, 0.0, 0.0 );
 
@@ -644,8 +642,6 @@ void QskGradient::setRadialDirection( const QskRadialDirection& direction )
 
 QskRadialDirection QskGradient::radialDirection() const
 {
-    Q_ASSERT( m_type == Radial );
-
     if ( m_type != Radial )
         return QskRadialDirection( 0.5, 0.5, 0.0 );
 
@@ -683,8 +679,6 @@ void QskGradient::setConicDirection( const QskConicDirection& direction )
 
 QskConicDirection QskGradient::conicDirection() const
 {
-    Q_ASSERT( m_type == Conic );
-
     if ( m_type != Conic )
         return QskConicDirection( 0.5, 0.5, 0.0, 0.0 );
 
