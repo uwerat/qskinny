@@ -74,15 +74,30 @@ InputPage::InputPage( QQuickItem* parent )
     : Page( Qt::Horizontal, parent )
 {
     auto sliderH = new Slider( Qt::Horizontal );
+
+    auto discreteSliderH = new Slider( Qt::Horizontal );
+    discreteSliderH->setSnap( true );
+    discreteSliderH->setStepSize( 10 );
+    discreteSliderH->setPageSize( 1 );
+
     auto sliderV = new Slider( Qt::Vertical );
+
+    auto discreteSliderV = new Slider( Qt::Vertical );
+    discreteSliderV->setSnap( true );
+    discreteSliderV->setStepSize( 10 );
+    discreteSliderV->setPageSize( 2 );
 
     auto inputBox = new InputBox();
 
     auto gridBox = new QskGridBox( this );
+    gridBox->setSpacing( 30 );
+    gridBox->setMargins( 30 );
 
     gridBox->addItem( sliderV, 0, 0, -1, 1 );
-    gridBox->addItem( sliderH, 0, 1, 1, -1 );
-    gridBox->addItem( inputBox, 1, 1, -1, -1 );
+    gridBox->addItem( discreteSliderV, 0, 1, -1, 1 );
+    gridBox->addItem( sliderH, 0, 2, 1, -1 );
+    gridBox->addItem( discreteSliderH, 1, 2, 1, -1 );
+    gridBox->addItem( inputBox, 2, 2, -1, -1 );
 
     auto inputs = findChildren< QskBoundedValueInput* >();
 
