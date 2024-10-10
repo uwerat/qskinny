@@ -219,6 +219,7 @@ list(APPEND HEADERS
     controls/QskGraphicLabelSkinlet.h
     controls/QskHintAnimator.h
     controls/QskItem.h
+    controls/QskItemAnchors.h
     controls/QskListView.h
     controls/QskListViewSkinlet.h
     controls/QskMenu.h
@@ -325,6 +326,7 @@ list(APPEND SOURCES
     controls/QskInputGrabber.cpp
     controls/QskItem.cpp
     controls/QskItemPrivate.cpp
+    controls/QskItemAnchors.cpp
     controls/QskListView.cpp
     controls/QskListViewSkinlet.cpp
     controls/QskMenuSkinlet.cpp
