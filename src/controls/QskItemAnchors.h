@@ -18,16 +18,16 @@ class QQuickItem;
     that has been designed to be used from QML.
 
     Qt/Quick anchoring is a simple concept, that adjusts the
-    edges of the anchoredItem whenever the geometry of a baseItem
-    has changed. A baseItem needs to be the parent or a sibling
-    of the anchoredItem.
+    geometry of the anchoredItem whenever the geometry of
+    a baseItem/controlItem has changed. A baseItem/controlItem
+    needs to be the parent or a sibling of the anchoredItem.
 
     Note that Qt/Quick anchoring is labeled as "positioner", what means
     that it is not capable of handling typical layout scenarios, like
-    distributing the space of a bounding rectangle to a chainn of
+    distributing the space of a bounding rectangle to a chain of
     anchored children.
 
-    For some reason the implementation allows to define conflicting definitions
+    For some reason Qt/Quick anchoring allows to define conflicting definitions
     and resolves them by applying only one of the definitions in
     the following precedence:
 
@@ -37,11 +37,12 @@ class QQuickItem;
 
     Limitations:
         - access to baseline settings are not implemented
+          ( for no other reason than Qt::AnchorPoint does not have it )
  */
 class QSK_EXPORT QskItemAnchors
 {
   public:
-    QskItemAnchors( QQuickItem* = nullptr );
+    QskItemAnchors( QQuickItem* anchoredItem = nullptr );
     ~QskItemAnchors();
 
     QQuickItem* anchoredItem() const;
