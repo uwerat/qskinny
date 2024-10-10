@@ -96,8 +96,8 @@ namespace
 }
 
 QskItemAnchors::QskItemAnchors( QQuickItem* anchoredItem )
+    : m_anchoredItem( anchoredItem )
 {
-    Q_UNUSED( anchoredItem );
 }
 
 QskItemAnchors::~QskItemAnchors()
