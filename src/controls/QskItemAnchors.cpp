@@ -95,8 +95,8 @@ namespace
     }
 }
 
-QskItemAnchors::QskItemAnchors( QQuickItem* anchoredItem )
-    : m_anchoredItem( anchoredItem )
+QskItemAnchors::QskItemAnchors( QQuickItem* attachedItem )
+    : m_attachedItem( attachedItem )
 {
 }
 
@@ -106,17 +106,17 @@ QskItemAnchors::~QskItemAnchors()
 
 bool QskItemAnchors::operator==( const QskItemAnchors& other ) const noexcept
 {
-    return m_anchoredItem.data() == other.m_anchoredItem.data();
+    return m_attachedItem.data() == other.m_attachedItem.data();
 }
 
-QQuickItem* QskItemAnchors::anchoredItem() const
+QQuickItem* QskItemAnchors::attachedItem() const
 {
-    return m_anchoredItem;
+    return m_attachedItem;
 }
 
 QMarginsF QskItemAnchors::margins() const
 {
-    if ( const auto anchors = qskGetAnchors( m_anchoredItem ) )
+    if ( const auto anchors = qskGetAnchors( m_attachedItem ) )
     {
         return QMarginsF( anchors->leftMargin(), anchors->topMargin(),
             anchors->rightMargin(), anchors->bottomMargin() );
@@ -127,7 +127,7 @@ QMarginsF QskItemAnchors::margins() const
 
 void QskItemAnchors::setMargins( const QMarginsF& margins )
 {
-    if ( const auto anchors = qskGetOrCreateAnchors( m_anchoredItem ) )
+    if ( const auto anchors = qskGetOrCreateAnchors( m_attachedItem ) )
     {
         anchors->setLeftMargin( margins.left() );
         anchors->setRightMargin( margins.right() );
@@ -138,7 +138,7 @@ void QskItemAnchors::setMargins( const QMarginsF& margins )
 
 void QskItemAnchors::setCenterOffset( Qt::Orientation orientation, qreal offset )
 {
-    if ( const auto anchors = qskGetOrCreateAnchors( m_anchoredItem ) )
+    if ( const auto anchors = qskGetOrCreateAnchors( m_attachedItem ) )
     {
         if ( orientation == Qt::Horizontal )
             anchors->setHorizontalCenterOffset( offset );
@@ -149,7 +149,7 @@ void QskItemAnchors::setCenterOffset( Qt::Orientation orientation, qreal offset 
 
 qreal QskItemAnchors::centerOffset( Qt::Orientation orientation )
 {
-    if ( const auto anchors = qskGetOrCreateAnchors( m_anchoredItem ) )
+    if ( const auto anchors = qskGetOrCreateAnchors( m_attachedItem ) )
     {
         if ( orientation == Qt::Horizontal )
             return anchors->horizontalCenterOffset();
@@ -197,7 +197,7 @@ void QskItemAnchors::addAnchors( QQuickItem* baseItem, Qt::Orientations orientat
 void QskItemAnchors::addAnchor( Qt::AnchorPoint edge, QQuickItem* baseItem,
     Qt::AnchorPoint baseEdge )
 {
-    if ( const auto anchors = qskGetOrCreateAnchors( m_anchoredItem ) )
+    if ( const auto anchors = qskGetOrCreateAnchors( m_attachedItem ) )
     {
         const auto& ops = operators( edge );
         ( anchors->*ops.setLine )( { baseItem, toQuickAnchor( baseEdge ) } );
@@ -206,7 +206,7 @@ void QskItemAnchors::addAnchor( Qt::AnchorPoint edge, QQuickItem* baseItem,
 
 void QskItemAnchors::removeAnchor( Qt::AnchorPoint edge )
 {
-    if ( const auto anchors = qskGetAnchors( m_anchoredItem ) )
+    if ( const auto anchors = qskGetAnchors( m_attachedItem ) )
     {
         const auto& ops = operators( edge );
         ( anchors->*ops.resetLine ) ();
@@ -216,7 +216,7 @@ void QskItemAnchors::removeAnchor( Qt::AnchorPoint edge )
 
 QQuickItem* QskItemAnchors::baseItem( Qt::AnchorPoint edge ) const
 {
-    if ( const auto anchors = qskGetAnchors( m_anchoredItem ) )
+    if ( const auto anchors = qskGetAnchors( m_attachedItem ) )
     {
         const auto& ops = operators( edge );
         return ( ( anchors->*ops.line ) () ).item;
@@ -227,10 +227,10 @@ QQuickItem* QskItemAnchors::baseItem( Qt::AnchorPoint edge ) const
 
 Qt::AnchorPoint QskItemAnchors::basePosition( Qt::AnchorPoint edge ) const
 {
-    if ( const auto anchors = qskGetAnchors( m_anchoredItem ) )
+    if ( const auto anchors = qskGetAnchors( m_attachedItem ) )
     {
         /*
-            Anchoring to the baseline of the anchoredItem might have been
+            Anchoring to the baseline of the attachedItem might have been
             done in QML code. As Qt::AnchorPoint does not have a corresponding
             value for it and QSkinny does not support the baseline concept at all
             we are lying and report Qt::AnchorTop instead. Hm ...
@@ -245,7 +245,7 @@ Qt::AnchorPoint QskItemAnchors::basePosition( Qt::AnchorPoint edge ) const
 
 void QskItemAnchors::setControlItem( QQuickItem* item, bool adjustSize )
 {
-    if ( const auto anchors = qskGetOrCreateAnchors( m_anchoredItem ) )
+    if ( const auto anchors = qskGetOrCreateAnchors( m_attachedItem ) )
     {
         if ( adjustSize )
             anchors->setFill( item );
@@ -256,7 +256,7 @@ void QskItemAnchors::setControlItem( QQuickItem* item, bool adjustSize )
 
 void QskItemAnchors::removeControlItem( bool adjustSize )
 {
-    if ( auto anchors = qskGetAnchors( m_anchoredItem ) )
+    if ( auto anchors = qskGetAnchors( m_attachedItem ) )
     {
         if ( adjustSize )
             anchors->resetFill();
@@ -267,7 +267,7 @@ void QskItemAnchors::removeControlItem( bool adjustSize )
 
 QQuickItem* QskItemAnchors::controlItem( bool adjustSize ) const
 {
-    if ( const auto anchors = qskGetAnchors( m_anchoredItem ) )
+    if ( const auto anchors = qskGetAnchors( m_attachedItem ) )
     {
         if ( adjustSize )
             return anchors->fill();

@@ -17,23 +17,34 @@ class QQuickItem;
     QskItemAnchors is a C++ API to access the Qt/Quick anchoring,
     that has been designed to be used from QML.
 
-    Qt/Quick anchoring is a simple concept, that adjusts the
-    geometry of the anchoredItem whenever the geometry of
-    a baseItem/controlItem has changed. A baseItem/controlItem
-    needs to be the parent or a sibling of the anchoredItem.
+    Qt/Quick anchoring is a simple concept, that allows to
 
-    Note that Qt/Quick anchoring is labeled as "positioner", what means
-    that it is not capable of handling typical layout scenarios, like
-    distributing the space of a bounding rectangle to a chain of
-    anchored children.
+    - attach a border ( Qt::AnchorPoint ) of attachedItem to a border of a baseItem
+    - center attachedItem to the center of a controlItem
 
-    For some reason Qt/Quick anchoring allows to define conflicting definitions
-    and resolves them by applying only one of the definitions in
+    The Qt/Quick implementation supports attaching/centering to the parent or
+    the siblings of attachedItem only ( conceptually this limitation
+    would not be necessary ).
+
+    While it is possible to have attachments for each border you can't
+    center and attach at the same time.
+
+    The expected logic would be, that defining an attachment disables
+    centering and v.v. - however the implementation tolerates conflicts.
+    Even worse is is possible to define centering ( = centerIn ) and
+    center-/resizing ( = fill ) to different items at the same time.
+
+    These conflicts are resolved by applying only one of the definitions in
     the following precedence:
 
         1) fill
         2) centerIn
         3) anchors
+
+    Note that Qt/Quick ( in opposite to Qt/GraphicsView ) anchoring
+    is not capable of handling typical layout scenarios, like distributing
+    the space of a bounding rectangle to a chain of anchored children. 
+    For those you can use QskAnchorLayout/QskAnchorBox.
 
     Limitations:
         - access to baseline settings are not implemented
@@ -42,10 +53,10 @@ class QQuickItem;
 class QSK_EXPORT QskItemAnchors
 {
   public:
-    QskItemAnchors( QQuickItem* anchoredItem = nullptr );
+    QskItemAnchors( QQuickItem* attachedItem = nullptr );
     ~QskItemAnchors();
 
-    QQuickItem* anchoredItem() const;
+    QQuickItem* attachedItem() const;
 
     QQuickItem* baseItem( Qt::AnchorPoint ) const;
     Qt::AnchorPoint basePosition( Qt::AnchorPoint ) const;
@@ -69,7 +80,7 @@ class QSK_EXPORT QskItemAnchors
         Qt/Quick anchoring knows the convenience modes "fill" and "centerIn".
         Internally these modes are not(!) mapped to anchor definitions.
 
-        Both modes are setting the center point of the anchoredItem to the center
+        Both modes are setting the center point of the attachedItem to the center
         of the controlItem. "fill" also adjusts the size.
      */
 
@@ -78,7 +89,7 @@ class QSK_EXPORT QskItemAnchors
     void removeControlItem( bool adjustSize );
 
   private:
-    QPointer< QQuickItem > m_anchoredItem;
+    QPointer< QQuickItem > m_attachedItem;
 };
 
 inline bool QskItemAnchors::operator!=(
