@@ -68,6 +68,12 @@ namespace
         }
     }
 
+    bool isCenterAnchorPoint( Qt::AnchorPoint edge )
+    {
+        return ( edge == Qt::AnchorHorizontalCenter )
+            || ( edge == Qt::AnchorVerticalCenter );
+    }
+
     struct AnchorOperators
     {
         QQuickAnchorLine ( QQuickAnchors::*line ) () const;
@@ -116,18 +122,27 @@ QQuickItem* QskItemAnchors::attachedItem() const
 
 QMarginsF QskItemAnchors::margins() const
 {
-    if ( const auto anchors = qskGetAnchors( m_attachedItem ) )
-    {
-        return QMarginsF( anchors->leftMargin(), anchors->topMargin(),
-            anchors->rightMargin(), anchors->bottomMargin() );
-    }
+    const auto anchors = qskGetAnchors( m_attachedItem );
+    if ( anchors == nullptr )
+        return QMarginsF();
 
-    return QMarginsF();
+    const auto d = QQuickAnchorsPrivate::get( anchors );
+
+    const auto left = d->leftMarginExplicit ? d->leftMargin : d->margins;
+    const auto right = d->rightMarginExplicit ? d->rightMargin : d->margins;
+    const auto top = d->rightMarginExplicit ? d->rightMargin : d->margins;
+    const auto bottom = d->bottomMarginExplicit ? d->bottomMargin : d->margins;
+
+    return QMarginsF( left, top, right, bottom );
 }
 
 void QskItemAnchors::setMargins( const QMarginsF& margins )
 {
-    if ( const auto anchors = qskGetOrCreateAnchors( m_attachedItem ) )
+    auto anchors = qskGetOrCreateAnchors( m_attachedItem );
+    if ( anchors == nullptr )
+        return;
+
+    if ( margins != this->margins() )
     {
         anchors->setLeftMargin( margins.left() );
         anchors->setRightMargin( margins.right() );
@@ -136,15 +151,26 @@ void QskItemAnchors::setMargins( const QMarginsF& margins )
     }
 }
 
+void QskItemAnchors::setCenterOffsets(
+    qreal horizontalOffset, qreal verticalOffset )
+{
+    if ( auto anchors = qskGetOrCreateAnchors( m_attachedItem ) )
+    {
+        anchors->setHorizontalCenterOffset( horizontalOffset );
+        anchors->setVerticalCenterOffset( verticalOffset );
+    }
+}
+
 void QskItemAnchors::setCenterOffset( Qt::Orientation orientation, qreal offset )
 {
-    if ( const auto anchors = qskGetOrCreateAnchors( m_attachedItem ) )
-    {
-        if ( orientation == Qt::Horizontal )
-            anchors->setHorizontalCenterOffset( offset );
-        else
-            anchors->setVerticalCenterOffset( offset );
-    }
+    auto anchors = qskGetOrCreateAnchors( m_attachedItem );
+    if ( anchors == nullptr )
+        return;
+
+    if ( orientation == Qt::Horizontal )
+        anchors->setHorizontalCenterOffset( offset );
+    else
+        anchors->setVerticalCenterOffset( offset );
 }
 
 qreal QskItemAnchors::centerOffset( Qt::Orientation orientation )
@@ -158,6 +184,22 @@ qreal QskItemAnchors::centerOffset( Qt::Orientation orientation )
     }
 
     return 0.0;
+}
+
+QQuickItem* QskItemAnchors::baseItem( Qt::AnchorPoint edge ) const
+{
+    const auto anchors = qskGetAnchors( m_attachedItem );
+    if ( anchors == nullptr )
+        return nullptr;
+
+    if ( auto fill = anchors->fill() )
+        return !isCenterAnchorPoint( edge ) ? fill : nullptr;
+
+    if ( auto centerIn = anchors->centerIn() )
+        return isCenterAnchorPoint( edge ) ? centerIn : nullptr;
+
+    const auto& ops = operators( edge );
+    return ( ( anchors->*ops.line ) () ).item;
 }
 
 void QskItemAnchors::addAnchors( Qt::Corner corner,
@@ -179,24 +221,12 @@ void QskItemAnchors::addAnchors( Qt::Corner corner,
         baseItem, anchorPoint( baseCorner, Qt::Vertical ) );
 }
 
-void QskItemAnchors::addAnchors( QQuickItem* baseItem, Qt::Orientations orientations )
-{
-    if ( orientations & Qt::Horizontal )
-    {
-        addAnchor( Qt::AnchorLeft, baseItem, Qt::AnchorLeft );
-        addAnchor( Qt::AnchorRight, baseItem, Qt::AnchorRight );
-    }
-
-    if ( orientations & Qt::Vertical )
-    {
-        addAnchor( Qt::AnchorTop, baseItem, Qt::AnchorTop );
-        addAnchor( Qt::AnchorBottom, baseItem, Qt::AnchorBottom );
-    }
-}
-
 void QskItemAnchors::addAnchor( Qt::AnchorPoint edge, QQuickItem* baseItem,
     Qt::AnchorPoint baseEdge )
 {
+    if ( baseItem == nullptr )
+        return;
+
     if ( const auto anchors = qskGetOrCreateAnchors( m_attachedItem ) )
     {
         const auto& ops = operators( edge );
@@ -206,23 +236,132 @@ void QskItemAnchors::addAnchor( Qt::AnchorPoint edge, QQuickItem* baseItem,
 
 void QskItemAnchors::removeAnchor( Qt::AnchorPoint edge )
 {
-    if ( const auto anchors = qskGetAnchors( m_attachedItem ) )
+    const auto anchors = qskGetAnchors( m_attachedItem );
+    if ( anchors == nullptr )
+        return;
+
+    if ( auto fill = anchors->fill() )
     {
-        const auto& ops = operators( edge );
-        ( anchors->*ops.resetLine ) ();
+        if ( !isCenterAnchorPoint( edge ) )
+        {
+            anchors->resetFill();
+
+            // setting the other borders as anchors
+            for ( auto anchorPoint : { Qt::AnchorLeft, Qt::AnchorRight,
+                Qt::AnchorTop, Qt::AnchorBottom } )
+            {
+                if ( edge != anchorPoint )
+                    addAnchor( anchorPoint, fill, anchorPoint );
+            }
+        }
+
+        return;
     }
+
+    if ( auto centerIn = anchors->centerIn() )
+    {
+        if ( isCenterAnchorPoint( edge ) )
+        {
+            anchors->resetCenterIn();
+
+            // setting the other direction as anchor
+            const auto otherEdge = ( edge == Qt::AnchorHorizontalCenter )
+                ? Qt::AnchorVerticalCenter : Qt::AnchorHorizontalCenter;
+
+            addAnchor( otherEdge, centerIn, otherEdge );
+        }
+
+        return;
+    }
+
+    const auto& ops = operators( edge );
+    ( anchors->*ops.resetLine ) ();
 }
 
-
-QQuickItem* QskItemAnchors::baseItem( Qt::AnchorPoint edge ) const
+void QskItemAnchors::clearAnchors()
 {
     if ( const auto anchors = qskGetAnchors( m_attachedItem ) )
     {
-        const auto& ops = operators( edge );
-        return ( ( anchors->*ops.line ) () ).item;
-    }
+        anchors->resetFill();
+        anchors->resetCenterIn();
 
-    return nullptr;
+        for ( int i = 0; i < 6; i++ )
+        {
+            const auto& ops = operators( static_cast< Qt::AnchorPoint >( i ) );
+            ( anchors->*ops.resetLine ) ();
+        }
+    }
+}
+
+void QskItemAnchors::setBorderAnchors( QQuickItem* baseItem, Qt::Orientations orientations )
+{
+    if ( baseItem == nullptr || m_attachedItem == nullptr )
+        return;
+
+    switch( orientations )
+    {
+        case Qt::Horizontal:
+        {
+            addAnchor( Qt::AnchorLeft, baseItem, Qt::AnchorLeft );
+            addAnchor( Qt::AnchorRight, baseItem, Qt::AnchorRight );
+            break;
+        }
+
+        case Qt::Vertical:
+        {
+            addAnchor( Qt::AnchorTop, baseItem, Qt::AnchorTop );
+            addAnchor( Qt::AnchorBottom, baseItem, Qt::AnchorBottom );
+            break;
+        }
+
+        case Qt::Horizontal | Qt::Vertical:
+        {
+            auto anchors = qskGetOrCreateAnchors( m_attachedItem );
+            for ( int i = 0; i < 6; i++ )
+            {
+                const auto& ops = operators( static_cast< Qt::AnchorPoint >( i ) );
+                ( anchors->*ops.resetLine ) ();
+            }
+
+            anchors->setFill( baseItem );
+            break;
+        }
+    }
+}
+
+void QskItemAnchors::setCenterAnchors( QQuickItem* baseItem, Qt::Orientations orientations )
+{
+    if ( baseItem == nullptr || m_attachedItem == nullptr )
+        return;
+
+    switch( orientations )
+    {
+        case Qt::Horizontal:
+        {
+            addAnchor( Qt::AnchorHorizontalCenter, baseItem, Qt::AnchorHorizontalCenter );
+            break;
+        }
+
+        case Qt::Vertical:
+        {
+            addAnchor( Qt::AnchorVerticalCenter, baseItem, Qt::AnchorVerticalCenter );
+            break;
+        }
+
+        case Qt::Horizontal | Qt::Vertical:
+        {
+            auto anchors = qskGetOrCreateAnchors( m_attachedItem );
+
+            for ( int i = 0; i < 6; i++ )
+            {
+                const auto& ops = operators( static_cast< Qt::AnchorPoint >( i ) );
+                ( anchors->*ops.resetLine ) ();
+            }
+
+            anchors->setCenterIn( baseItem );
+            break;
+        }
+    }
 }
 
 Qt::AnchorPoint QskItemAnchors::basePosition( Qt::AnchorPoint edge ) const
@@ -241,39 +380,4 @@ Qt::AnchorPoint QskItemAnchors::basePosition( Qt::AnchorPoint edge ) const
     }
 
     return Qt::AnchorLeft; // something
-}
-
-void QskItemAnchors::setControlItem( QQuickItem* item, bool adjustSize )
-{
-    if ( const auto anchors = qskGetOrCreateAnchors( m_attachedItem ) )
-    {
-        if ( adjustSize )
-            anchors->setFill( item );
-        else
-            anchors->setCenterIn( item );
-    }
-}
-
-void QskItemAnchors::removeControlItem( bool adjustSize )
-{
-    if ( auto anchors = qskGetAnchors( m_attachedItem ) )
-    {
-        if ( adjustSize )
-            anchors->resetFill();
-        else
-            anchors->resetCenterIn();
-    }
-}
-
-QQuickItem* QskItemAnchors::controlItem( bool adjustSize ) const
-{
-    if ( const auto anchors = qskGetAnchors( m_attachedItem ) )
-    {
-        if ( adjustSize )
-            return anchors->fill();
-        else
-            return anchors->centerIn();
-    }
-
-    return nullptr;
 }
