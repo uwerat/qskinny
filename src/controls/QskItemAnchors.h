@@ -18,7 +18,7 @@ class QQuickItem;
     that has been designed to be used from QML.
 
     Qt/Quick anchoring is a simple concept, that allows to attach
-    borders ( Qt::AnchorPoint ) of attachedItem to a borders of
+    borders ( Qt::AnchorPoint ) of attachedItem to a border of
     other items. It is up to the user to avoid cycles or conflicting
     anchor chains.
 

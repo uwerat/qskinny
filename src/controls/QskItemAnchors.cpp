@@ -175,7 +175,7 @@ void QskItemAnchors::setCenterOffset( Qt::Orientation orientation, qreal offset 
 
 qreal QskItemAnchors::centerOffset( Qt::Orientation orientation )
 {
-    if ( const auto anchors = qskGetOrCreateAnchors( m_attachedItem ) )
+    if ( const auto anchors = qskGetAnchors( m_attachedItem ) )
     {
         if ( orientation == Qt::Horizontal )
             return anchors->horizontalCenterOffset();
