@@ -14,22 +14,19 @@ class QMarginsF;
 class QQuickItem;
 
 /*
-    QskItemAnchors is a C++ API to access the Qt/Quick anchoring,
-    that has been designed to be used from QML.
+    QskItemAnchors is a C++ API to access the Qt/Quick anchoring.
 
     Qt/Quick anchoring is a simple concept, that allows to attach
-    borders ( Qt::AnchorPoint ) of attachedItem to a border of
-    other items. It is up to the user to avoid cycles or conflicting
-    anchor chains.
+    borders ( Qt::AnchorPoint ) of one item ( attachedItem ) to borders of
+    other items ( settledItem ).
 
-    Note that Qt/Quick ( in opposite to Qt/GraphicsView ) anchoring
-    is not capable of handling typical layout scenarios, like distributing
-    the space of a bounding rectangle to a chain of anchored children.
-    For those you can use QskAnchorLayout/QskAnchorBox.
+    In opposite to anchoring layouts ( f.e QGraphicsAnchorLayout, QskAnchorLayout )
+    the positions of the anchors are provided - not calculated. That makes
+    Qt/Quick anchoring unsuitable for scenarios, where the space of
+    a bounding rectangle has to be distributed.
 
-    The Qt/Quick implementation supports attaching to the parent or
-    the siblings of attachedItem only ( conceptually this limitation
-    would not be necessary ).
+    The implementation supports attaching to the parent or the siblings
+    of attachedItem only ( conceptually this limitation would not be necessary ).
 
     Note that what is known in QML as "fill" or "centerIn" can be done
     using setBorderAnchors or setCenterAnchors.
@@ -46,8 +43,8 @@ class QSK_EXPORT QskItemAnchors
 
     QQuickItem* attachedItem() const;
 
-    QQuickItem* baseItem( Qt::AnchorPoint ) const;
-    Qt::AnchorPoint basePosition( Qt::AnchorPoint ) const;
+    QQuickItem* settledItem( Qt::AnchorPoint ) const;
+    Qt::AnchorPoint settledItemAnchorPoint( Qt::AnchorPoint ) const;
 
     bool operator==( const QskItemAnchors& ) const noexcept;
     bool operator!=( const QskItemAnchors& ) const noexcept;

@@ -186,7 +186,7 @@ qreal QskItemAnchors::centerOffset( Qt::Orientation orientation )
     return 0.0;
 }
 
-QQuickItem* QskItemAnchors::baseItem( Qt::AnchorPoint edge ) const
+QQuickItem* QskItemAnchors::settledItem( Qt::AnchorPoint edge ) const
 {
     const auto anchors = qskGetAnchors( m_attachedItem );
     if ( anchors == nullptr )
@@ -364,7 +364,7 @@ void QskItemAnchors::setCenterAnchors( QQuickItem* baseItem, Qt::Orientations or
     }
 }
 
-Qt::AnchorPoint QskItemAnchors::basePosition( Qt::AnchorPoint edge ) const
+Qt::AnchorPoint QskItemAnchors::settledItemAnchorPoint( Qt::AnchorPoint edge ) const
 {
     if ( const auto anchors = qskGetAnchors( m_attachedItem ) )
     {
