@@ -29,7 +29,9 @@ class QQuickItem;
     of attachedItem only ( conceptually this limitation would not be necessary ).
 
     Note that what is known in QML as "fill" or "centerIn" can be done
-    using setBorderAnchors or setCenterAnchors.
+    using setBorderAnchors or setCenterAnchors. However the basic layout
+    functionality provided from QskControl::autoLayoutChildren usually
+    offers a more efficient implementation for most situations.
 
     Limitations:
         - access to baseline settings are not implemented

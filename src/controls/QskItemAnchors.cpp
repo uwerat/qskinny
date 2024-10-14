@@ -12,7 +12,44 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>
 QSK_QT_PRIVATE_END
 
-QQuickAnchors* qskGetOrCreateAnchors( QQuickItem* item )
+namespace
+{
+    struct AnchorLineOperators
+    {
+        QQuickAnchorLine ( QQuickAnchors::*line ) () const;
+        void ( QQuickAnchors::*setLine )( const QQuickAnchorLine& );
+        void ( QQuickAnchors::*resetLine )();
+    };
+
+    class UpdateBlocker
+    {
+      public:
+        UpdateBlocker( QQuickAnchors* anchors )
+            : m_anchors( anchors )
+        {
+            auto d = QQuickAnchorsPrivate::get( anchors );
+
+            m_wasComplete = d->componentComplete;
+            d->componentComplete = false;
+        }
+
+        ~UpdateBlocker()
+        {
+            reset();
+        }
+
+        void reset() const
+        {
+            auto d = QQuickAnchorsPrivate::get( m_anchors );
+            d->componentComplete = m_wasComplete;
+        }
+      private:
+        QQuickAnchors* m_anchors;
+        bool m_wasComplete;
+    };
+}
+
+static inline QQuickAnchors* qskGetOrCreateAnchors( QQuickItem* item )
 {
     if ( item == nullptr )
         return nullptr;
@@ -20,7 +57,7 @@ QQuickAnchors* qskGetOrCreateAnchors( QQuickItem* item )
     return QQuickItemPrivate::get( item )->anchors();
 }
 
-QQuickAnchors* qskGetAnchors( QQuickItem* item )
+static inline QQuickAnchors* qskGetAnchors( QQuickItem* item )
 {
     if ( item == nullptr )
         return nullptr;
@@ -28,77 +65,67 @@ QQuickAnchors* qskGetAnchors( QQuickItem* item )
     return QQuickItemPrivate::get( item )->_anchors;
 }
 
-const QQuickAnchors* qskGetAnchors( const QQuickItem* item )
+static inline const QQuickAnchors* qskGetAnchors( const QQuickItem* item )
 {
     return qskGetAnchors( const_cast< QQuickItem* >( item ) );
 }
 
-namespace
+static inline QQuickAnchors::Anchor qskToQuickAnchor( Qt::AnchorPoint edge )
 {
-    inline QQuickAnchors::Anchor toQuickAnchor( Qt::AnchorPoint edge )
-    {
-        using A = QQuickAnchors;
+    using A = QQuickAnchors;
 
-        switch( edge )
-        {
-            case Qt::AnchorLeft:             return A::LeftAnchor;
-            case Qt::AnchorHorizontalCenter: return A::HCenterAnchor;
-            case Qt::AnchorRight:            return A::RightAnchor;
-            case Qt::AnchorTop:              return A::TopAnchor;
-            case Qt::AnchorVerticalCenter:   return A::VCenterAnchor;
-            case Qt::AnchorBottom:           return A::BottomAnchor;
-            default:                         return A::InvalidAnchor;
-        }
+    switch( edge )
+    {
+        case Qt::AnchorLeft:             return A::LeftAnchor;
+        case Qt::AnchorHorizontalCenter: return A::HCenterAnchor;
+        case Qt::AnchorRight:            return A::RightAnchor;
+        case Qt::AnchorTop:              return A::TopAnchor;
+        case Qt::AnchorVerticalCenter:   return A::VCenterAnchor;
+        case Qt::AnchorBottom:           return A::BottomAnchor;
+        default:                         return A::InvalidAnchor;
     }
+}
 
-    inline Qt::AnchorPoint toAnchorPoint( QQuickAnchors::Anchor anchor )
+static inline Qt::AnchorPoint qskToAnchorPoint( QQuickAnchors::Anchor anchor )
+{
+    using A = QQuickAnchors;
+
+    switch( anchor )
     {
-        using A = QQuickAnchors;
-
-        switch( anchor )
-        {
-            case A::LeftAnchor:     return Qt::AnchorLeft;
-            case A::HCenterAnchor:  return Qt::AnchorHorizontalCenter;
-            case A::RightAnchor:    return Qt::AnchorRight;
-            case A::TopAnchor:      return Qt::AnchorTop;
-            case A::VCenterAnchor:  return Qt::AnchorVerticalCenter;
-            case A::BottomAnchor:   return Qt::AnchorBottom;
-            case A::BaselineAnchor: return Qt::AnchorTop; // not supported
-            default:                return Qt::AnchorLeft;
-        }
+        case A::LeftAnchor:     return Qt::AnchorLeft;
+        case A::HCenterAnchor:  return Qt::AnchorHorizontalCenter;
+        case A::RightAnchor:    return Qt::AnchorRight;
+        case A::TopAnchor:      return Qt::AnchorTop;
+        case A::VCenterAnchor:  return Qt::AnchorVerticalCenter;
+        case A::BottomAnchor:   return Qt::AnchorBottom;
+        case A::BaselineAnchor: return Qt::AnchorTop; // not supported
+        default:                return Qt::AnchorLeft;
     }
+}
 
-    bool isCenterAnchorPoint( Qt::AnchorPoint edge )
-    {
-        return ( edge == Qt::AnchorHorizontalCenter )
-            || ( edge == Qt::AnchorVerticalCenter );
-    }
+static inline bool qskIsCenterAnchorPoint( Qt::AnchorPoint edge )
+{
+    return ( edge == Qt::AnchorHorizontalCenter )
+        || ( edge == Qt::AnchorVerticalCenter );
+}
 
-    struct AnchorOperators
+static inline const AnchorLineOperators& qskAnchorLineOperators( Qt::AnchorPoint edge )
+{
+    using A = QQuickAnchors;
+
+    static constexpr AnchorLineOperators table[] =
     {
-        QQuickAnchorLine ( QQuickAnchors::*line ) () const;
-        void ( QQuickAnchors::*setLine )( const QQuickAnchorLine& );
-        void ( QQuickAnchors::*resetLine )();
+        // in order of Qt::AnchorPoint
+
+        { &A::left, &A::setLeft, &A::resetLeft },
+        { &A::horizontalCenter, &A::setHorizontalCenter, &A::resetHorizontalCenter },
+        { &A::right, &A::setRight, &A::resetRight },
+        { &A::top, &A::setTop, &A::resetTop },
+        { &A::verticalCenter, &A::setVerticalCenter, &A::resetVerticalCenter },
+        { &A::bottom, &A::setBottom, &A::resetBottom }
     };
 
-    const AnchorOperators& operators( Qt::AnchorPoint edge )
-    {
-        using A = QQuickAnchors;
-
-        static constexpr AnchorOperators table[] =
-        {
-            // in order of Qt::AnchorPoint
-
-            { &A::left, &A::setLeft, &A::resetLeft },
-            { &A::horizontalCenter, &A::setHorizontalCenter, &A::resetHorizontalCenter },
-            { &A::right, &A::setRight, &A::resetRight },
-            { &A::top, &A::setTop, &A::resetTop },
-            { &A::verticalCenter, &A::setVerticalCenter, &A::resetVerticalCenter },
-            { &A::bottom, &A::setBottom, &A::resetBottom }
-        };
-
-        return table[edge];
-    }
+    return table[edge];
 }
 
 QskItemAnchors::QskItemAnchors( QQuickItem* attachedItem )
@@ -142,12 +169,36 @@ void QskItemAnchors::setMargins( const QMarginsF& margins )
     if ( anchors == nullptr )
         return;
 
-    if ( margins != this->margins() )
+    const auto oldMargins = this->margins();
+
+    Qt::Orientations changes;
+
+    if ( margins.left() != oldMargins.left() )
+        changes |= Qt::Horizontal;
+
+    if ( margins.right() != oldMargins.right() )
+        changes |= Qt::Horizontal;
+
+    if ( margins.top() != oldMargins.top() )
+        changes |= Qt::Vertical;
+
+    if ( margins.bottom() != oldMargins.bottom() )
+        changes |= Qt::Vertical;
+
+    if ( changes )
     {
-        anchors->setLeftMargin( margins.left() );
+        const auto left = margins.left();
+
+        UpdateBlocker blocker( anchors );
+
+        anchors->setLeftMargin( left + 1.0 );
         anchors->setRightMargin( margins.right() );
         anchors->setTopMargin( margins.top() );
         anchors->setBottomMargin( margins.bottom() );
+
+        blocker.reset();
+
+        anchors->setLeftMargin( left ); // trigger final update
     }
 }
 
@@ -193,17 +244,17 @@ QQuickItem* QskItemAnchors::settledItem( Qt::AnchorPoint edge ) const
         return nullptr;
 
     if ( auto fill = anchors->fill() )
-        return !isCenterAnchorPoint( edge ) ? fill : nullptr;
+        return !qskIsCenterAnchorPoint( edge ) ? fill : nullptr;
 
     if ( auto centerIn = anchors->centerIn() )
-        return isCenterAnchorPoint( edge ) ? centerIn : nullptr;
+        return qskIsCenterAnchorPoint( edge ) ? centerIn : nullptr;
 
-    const auto& ops = operators( edge );
+    const auto& ops = qskAnchorLineOperators( edge );
     return ( ( anchors->*ops.line ) () ).item;
 }
 
 void QskItemAnchors::addAnchors( Qt::Corner corner,
-    QQuickItem* baseItem, Qt::Corner baseCorner )
+    QQuickItem* settledItem, Qt::Corner settledItemCorner )
 {
     auto anchorPoint =
         []( Qt::Corner corner, Qt::Orientation orientation )
@@ -215,22 +266,22 @@ void QskItemAnchors::addAnchors( Qt::Corner corner,
         };
 
     addAnchor( anchorPoint( corner, Qt::Horizontal ),
-        baseItem, anchorPoint( baseCorner, Qt::Horizontal ) );
+        settledItem, anchorPoint( settledItemCorner, Qt::Horizontal ) );
 
     addAnchor( anchorPoint( corner, Qt::Vertical ),
-        baseItem, anchorPoint( baseCorner, Qt::Vertical ) );
+        settledItem, anchorPoint( settledItemCorner, Qt::Vertical ) );
 }
 
-void QskItemAnchors::addAnchor( Qt::AnchorPoint edge, QQuickItem* baseItem,
-    Qt::AnchorPoint baseEdge )
+void QskItemAnchors::addAnchor( Qt::AnchorPoint edge, QQuickItem* settledItem,
+    Qt::AnchorPoint settledItemEdge )
 {
-    if ( baseItem == nullptr )
+    if ( settledItem == nullptr )
         return;
 
     if ( const auto anchors = qskGetOrCreateAnchors( m_attachedItem ) )
     {
-        const auto& ops = operators( edge );
-        ( anchors->*ops.setLine )( { baseItem, toQuickAnchor( baseEdge ) } );
+        const auto& ops = qskAnchorLineOperators( edge );
+        ( anchors->*ops.setLine )( { settledItem, qskToQuickAnchor( settledItemEdge ) } );
     }
 }
 
@@ -242,7 +293,7 @@ void QskItemAnchors::removeAnchor( Qt::AnchorPoint edge )
 
     if ( auto fill = anchors->fill() )
     {
-        if ( !isCenterAnchorPoint( edge ) )
+        if ( !qskIsCenterAnchorPoint( edge ) )
         {
             anchors->resetFill();
 
@@ -260,7 +311,7 @@ void QskItemAnchors::removeAnchor( Qt::AnchorPoint edge )
 
     if ( auto centerIn = anchors->centerIn() )
     {
-        if ( isCenterAnchorPoint( edge ) )
+        if ( qskIsCenterAnchorPoint( edge ) )
         {
             anchors->resetCenterIn();
 
@@ -274,77 +325,98 @@ void QskItemAnchors::removeAnchor( Qt::AnchorPoint edge )
         return;
     }
 
-    const auto& ops = operators( edge );
+    const auto& ops = qskAnchorLineOperators( edge );
     ( anchors->*ops.resetLine ) ();
 }
 
 void QskItemAnchors::clearAnchors()
 {
-    if ( const auto anchors = qskGetAnchors( m_attachedItem ) )
-    {
-        anchors->resetFill();
-        anchors->resetCenterIn();
+    const auto anchors = qskGetAnchors( m_attachedItem );
+    if ( anchors == nullptr )
+        return;
 
-        for ( int i = 0; i < 6; i++ )
+    const UpdateBlocker blocker( anchors );
+
+    anchors->resetFill();
+    anchors->resetCenterIn();
+
+    for ( int i = 0; i < 6; i++ )
+    {
+        const auto& ops = qskAnchorLineOperators( static_cast< Qt::AnchorPoint >( i ) );
+        ( anchors->*ops.resetLine ) ();
+    }
+}
+
+void QskItemAnchors::setBorderAnchors(
+    QQuickItem* settledItem, Qt::Orientations orientations )
+{
+    if ( settledItem == nullptr || m_attachedItem == nullptr )
+        return;
+
+    auto anchors = qskGetOrCreateAnchors( m_attachedItem );
+
+    switch( orientations )
+    {
+        case Qt::Horizontal:
         {
-            const auto& ops = operators( static_cast< Qt::AnchorPoint >( i ) );
-            ( anchors->*ops.resetLine ) ();
+            clearAnchors();
+
+            const UpdateBlocker blocker( anchors );
+            addAnchor( Qt::AnchorLeft, settledItem, Qt::AnchorLeft );
+            blocker.reset();
+
+            addAnchor( Qt::AnchorRight, settledItem, Qt::AnchorRight );
+
+
+            break;
+        }
+
+        case Qt::Vertical:
+        {
+            clearAnchors();
+
+            const UpdateBlocker blocker( anchors );
+            addAnchor( Qt::AnchorTop, settledItem, Qt::AnchorTop );
+            blocker.reset();
+
+            addAnchor( Qt::AnchorBottom, settledItem, Qt::AnchorBottom );
+
+            break;
+        }
+
+        case Qt::Horizontal | Qt::Vertical:
+        {
+            if ( settledItem != anchors->fill() )
+            {
+                clearAnchors();
+                anchors->setFill( settledItem );
+            }
+            break;
         }
     }
 }
 
-void QskItemAnchors::setBorderAnchors( QQuickItem* baseItem, Qt::Orientations orientations )
+void QskItemAnchors::setCenterAnchors(
+    QQuickItem* settledItem, Qt::Orientations orientations )
 {
-    if ( baseItem == nullptr || m_attachedItem == nullptr )
+    if ( settledItem == nullptr || m_attachedItem == nullptr )
         return;
 
     switch( orientations )
     {
         case Qt::Horizontal:
         {
-            addAnchor( Qt::AnchorLeft, baseItem, Qt::AnchorLeft );
-            addAnchor( Qt::AnchorRight, baseItem, Qt::AnchorRight );
+            clearAnchors();
+            addAnchor( Qt::AnchorHorizontalCenter,
+                settledItem, Qt::AnchorHorizontalCenter );
             break;
         }
 
         case Qt::Vertical:
         {
-            addAnchor( Qt::AnchorTop, baseItem, Qt::AnchorTop );
-            addAnchor( Qt::AnchorBottom, baseItem, Qt::AnchorBottom );
-            break;
-        }
-
-        case Qt::Horizontal | Qt::Vertical:
-        {
-            auto anchors = qskGetOrCreateAnchors( m_attachedItem );
-            for ( int i = 0; i < 6; i++ )
-            {
-                const auto& ops = operators( static_cast< Qt::AnchorPoint >( i ) );
-                ( anchors->*ops.resetLine ) ();
-            }
-
-            anchors->setFill( baseItem );
-            break;
-        }
-    }
-}
-
-void QskItemAnchors::setCenterAnchors( QQuickItem* baseItem, Qt::Orientations orientations )
-{
-    if ( baseItem == nullptr || m_attachedItem == nullptr )
-        return;
-
-    switch( orientations )
-    {
-        case Qt::Horizontal:
-        {
-            addAnchor( Qt::AnchorHorizontalCenter, baseItem, Qt::AnchorHorizontalCenter );
-            break;
-        }
-
-        case Qt::Vertical:
-        {
-            addAnchor( Qt::AnchorVerticalCenter, baseItem, Qt::AnchorVerticalCenter );
+            clearAnchors();
+            addAnchor( Qt::AnchorVerticalCenter,
+                settledItem, Qt::AnchorVerticalCenter );
             break;
         }
 
@@ -352,13 +424,11 @@ void QskItemAnchors::setCenterAnchors( QQuickItem* baseItem, Qt::Orientations or
         {
             auto anchors = qskGetOrCreateAnchors( m_attachedItem );
 
-            for ( int i = 0; i < 6; i++ )
+            if ( settledItem != anchors->centerIn() )
             {
-                const auto& ops = operators( static_cast< Qt::AnchorPoint >( i ) );
-                ( anchors->*ops.resetLine ) ();
+                clearAnchors();
+                anchors->setCenterIn( settledItem );
             }
-
-            anchors->setCenterIn( baseItem );
             break;
         }
     }
@@ -375,8 +445,8 @@ Qt::AnchorPoint QskItemAnchors::settledItemAnchorPoint( Qt::AnchorPoint edge ) c
             we are lying and report Qt::AnchorTop instead. Hm ...
          */
 
-        const auto& ops = operators( edge );
-        return toAnchorPoint( ( ( anchors->*ops.line ) () ).anchorLine );
+        const auto& ops = qskAnchorLineOperators( edge );
+        return qskToAnchorPoint( ( ( anchors->*ops.line ) () ).anchorLine );
     }
 
     return Qt::AnchorLeft; // something
