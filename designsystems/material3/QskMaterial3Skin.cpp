@@ -511,6 +511,7 @@ void Editor::setupTextInput()
     setGraphicRole( Q::LeadingIcon, M3::GraphicRoleOnSurface );
     setGraphicRole( Q::LeadingIcon | Q::Error, M3::GraphicRoleOnSurfaceVariant, allStates );
 
+    setGraphicRole( Q::LeadingIcon | Q::Disabled, M3::GraphicRoleOnSurface38, allStates );
 
     // LabelText
 
@@ -528,6 +529,8 @@ void Editor::setupTextInput()
     setColor( Q::LabelText | Q::Error, m_pal.error, allStates );
     setColor( Q::LabelText | Q::Error | Q::Hovered, m_pal.onErrorContainer, allStates );
 
+    setColor( Q::LabelText | Q::Disabled, m_pal.onSurface38, allStates );
+
     // LabelText - Outlined
 
     setMargin( Q::LabelText | M3::Outlined, { 4_dp, 0, 4_dp, 0 }, allStates );
@@ -542,7 +545,7 @@ void Editor::setupTextInput()
 
     setColor( Q::InputText | Q::Error, m_pal.onSurface, allStates ); // same as with Hovered and Focused
 
-    setColor( Q::InputText | Q::Disabled, m_pal.onSurface38 );
+    setColor( Q::InputText | Q::Disabled, m_pal.onSurface38, allStates );
 
     // InputText - Outlined
 
@@ -570,6 +573,7 @@ void Editor::setupTextInput()
     setGraphicRole( Q::TrailingIcon | Q::Error, M3::GraphicRoleError, allStates );
     setGraphicRole( Q::TrailingIcon | Q::Error | Q::Hovered, M3::GraphicRoleOnErrorContainer, allStates );
 
+    setGraphicRole( Q::TrailingIcon | Q::Disabled, M3::GraphicRoleOnSurface38, allStates );
 
     // TrailingIconRipple
 
@@ -586,6 +590,7 @@ void Editor::setupTextInput()
     setFontRole( Q::SupportingText, BodySmall );
     setAlignment( Q::SupportingText, Qt::AlignLeft | Qt::AlignVCenter );
 
+    setColor( Q::SupportingText | Q::Disabled, m_pal.onSurface38, allStates );
 
     // CharacterCount
 
@@ -593,6 +598,7 @@ void Editor::setupTextInput()
     setColor( Q::CharacterCount, color( Q::SupportingText ) );
     setFontRole( Q::CharacterCount, fontRole( Q::SupportingText ) );
     setAlignment( Q::CharacterCount, Qt::AlignRight | Qt::AlignVCenter );
+    setColor( Q::CharacterCount | Q::Disabled, color( Q::SupportingText | Q::Disabled ) );
 }
 
 void Editor::setupProgressBar()
@@ -1664,7 +1670,7 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
 
     onSurface8 = QskRgb::toTransparentF( onSurface, 0.08 );
     onSurface12 = QskRgb::toTransparentF( onSurface, 0.12 );
-    onSurface38 = QskRgb::toTransparentF( onSurface, 0.38 );
+    onSurface38 = QskRgb::toTransparentF( onSurface, 0.38 ); // ### rename to onSurfaceDisabled
 
     surfaceVariant12 = QskRgb::toTransparentF( surfaceVariant, 0.12 );
 
