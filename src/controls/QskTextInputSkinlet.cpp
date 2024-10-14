@@ -157,14 +157,25 @@ QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
         const auto panelRect = input->subControlRect( Q::Panel );
         auto rect = panelRect;
         rect.setLeft( leadingIconRect.right() );
-        rect.setRight( contentsRect.right() ); // ### space for trailing icon
+
+        const auto trailingIconRect = input->subControlRect( Q::TrailingIcon );
+
+        if( trailingIconRect.isValid() )
+        {
+            rect.setRight( trailingIconRect.left() );
+        }
+        else
+        {
+            rect.setRight( contentsRect.right() );
+        }
+
         rect = rect.marginsRemoved( margins );
 
         return rect;
     }
     else if ( subControl == Q::HintText )
     {
-        if( input->hasSkinState( Q::TextEmpty )
+        if( !input->hasSkinState( Q::TextPopulated )
             && ( input->hasSkinState( Q::Focused ) || input->hasSkinState( Q::Editing ) ) )
         {
             return input->subControlRect( Q::InputText );
@@ -272,7 +283,7 @@ QSGNode* QskTextInputSkinlet::updateSubNode(
                 return nullptr;
 
             if( input->emphasis() == Q::LowEmphasis
-                 && ( !input->hasSkinState( Q::TextEmpty )
+                 && ( input->hasSkinState( Q::TextPopulated )
                     || input->hasSkinState( Q::Focused )
                     || input->hasSkinState( Q::Editing ) ) )
             {

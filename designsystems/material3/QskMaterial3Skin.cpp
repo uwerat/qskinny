@@ -463,6 +463,8 @@ void Editor::setupTextInput()
 
     setGradient( Q::Panel, m_pal.surfaceVariant );
 
+    setColor( Q::Panel | Q::Selected, m_pal.primary12 );
+
     setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
 
     setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_dp } );
@@ -512,28 +514,23 @@ void Editor::setupTextInput()
 
     // LabelText
 
-    setAlignment( Q::LabelText, Qt::AlignLeft | Qt::AlignTop );
+    setAlignment( Q::LabelText, Qt::AlignLeft | Qt::AlignVCenter );
+    setFontRole( Q::LabelText, BodyLarge );
+    setColor( Q::LabelText, m_pal.onSurfaceVariant );
 
-    const QskStateCombination textEmptyStates( QskStateCombination::CombinationNoState,
-        Q::Hovered | Q::ReadOnly | Q::Disabled | Q::Error );
-
-    setAlignment( Q::LabelText | Q::TextEmpty, Qt::AlignLeft | Qt::AlignVCenter, textEmptyStates );
-    setFontRole( Q::LabelText | Q::TextEmpty, BodyLarge, textEmptyStates );
-    setColor( Q::LabelText | Q::TextEmpty, m_pal.onSurfaceVariant, textEmptyStates );
-
-    const QskStateCombination editingHoveredFocused( QskStateCombination::CombinationNoState,
-        Q::Editing | Q::Hovered | Q::Focused );
-
-    setMargin( Q::LabelText, { 16_dp, 8_dp, 16_dp, 16_dp }, editingHoveredFocused );
-    setColor( Q::LabelText, m_pal.primary, editingHoveredFocused );
-    setFontRole( Q::LabelText, BodySmall, editingHoveredFocused );
+    for( const auto s : { Q::Focused, Q::Editing, Q::TextPopulated } )
+    {
+        setFontRole( Q::LabelText | s, BodySmall, allStates );
+        setMargin( Q::LabelText | s, { 16_dp, 4_dp, 16_dp, 16_dp }, allStates );
+        setColor( Q::LabelText | s, m_pal.primary, allStates );
+    }
 
     setColor( Q::LabelText | Q::Error, m_pal.error, allStates );
     setColor( Q::LabelText | Q::Error | Q::Hovered, m_pal.onErrorContainer, allStates );
 
     // LabelText - Outlined
 
-    setMargin( Q::LabelText | M3::Outlined, { 4_dp, 0, 4_dp, 0 }, editingHoveredFocused );
+    setMargin( Q::LabelText | M3::Outlined, { 4_dp, 0, 4_dp, 0 }, allStates );
 
 
     // InputText
