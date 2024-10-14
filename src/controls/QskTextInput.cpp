@@ -7,6 +7,7 @@
 #include "QskEvent.h"
 #include "QskFontRole.h"
 #include "QskQuick.h"
+#include "QskTextInputSkinlet.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextinput_p.h>
@@ -567,19 +568,8 @@ QSizeF QskTextInput::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
         hint = hint.expandedTo( strutSizeHint( Panel ) );
     }
 
-    if( emphasis() == LowEmphasis )
-    {
-        const auto fontHeight = effectiveFontHeight( LabelText | Focused );
-        hint.rheight() += fontHeight / 2;
-    }
-
-    if( !supportingText().isEmpty() || maxLength() != 32767 ) // magic number hardcoded in qquicktextinput.cpp
-    {
-        const auto margins = marginHint( SupportingText );
-        hint.rheight() += margins.top() + effectiveFontHeight( SupportingText ) + margins.bottom();
-    }
-
-    return hint;
+    const auto textInputSkinlet = static_cast< const QskTextInputSkinlet* >( effectiveSkinlet() );
+    return textInputSkinlet->adjustSizeHint( this, which, hint );
 }
 
 void QskTextInput::updateLayout()

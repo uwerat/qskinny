@@ -96,7 +96,7 @@ namespace
                     auto input = new QskTextInput( this );
                     input->setEmphasis( emphasis );
                     input->setLeadingIcon( {} );
-                    input->setLabelText( "no hint text" );
+                    input->setHintText( "no label text" );
                 }
 
                 {

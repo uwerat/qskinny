@@ -10,6 +10,8 @@
 
 #include "QskMaterial3Skin.h"
 
+#include "QskMaterial3TextInputSkinlet.h"
+
 #include <QskSkinHintTableEditor.h>
 
 #include <QskBox.h>
@@ -1736,6 +1738,11 @@ static inline QFont createFont( qreal size, int lineHeight,
     return font;
 }
 
+void QskMaterial3Skin::setupSkinlets()
+{
+    declareSkinlet< QskTextInput, QskMaterial3TextInputSkinlet >();
+}
+
 void QskMaterial3Skin::setupFonts()
 {
     /*
@@ -1801,6 +1808,7 @@ void QskMaterial3Skin::initHints()
 {
     const QskMaterial3Theme theme( colorScheme() );
 
+    setupSkinlets();
     setupFonts();
     setupGraphicFilters( theme );
 

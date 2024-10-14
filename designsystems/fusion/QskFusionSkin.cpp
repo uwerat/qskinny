@@ -386,7 +386,7 @@ void Editor::setupTextInput()
     using A = QskAspect;
     using P = QPalette;
 
-    setAlignment( Q::InputText, Qt::AlignLeft | Qt::AlignTop );
+    setAlignment( Q::InputText, Qt::AlignLeft | Qt::AlignVCenter );
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
