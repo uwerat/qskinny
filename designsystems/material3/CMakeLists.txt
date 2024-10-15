@@ -6,6 +6,7 @@
 set(SOURCES
     QskMaterial3Global.h QskMaterial3Skin.h QskMaterial3Skin.cpp
     QskMaterial3SkinFactory.h QskMaterial3SkinFactory.cpp
+    QskMaterial3TextInputSkinlet.h QskMaterial3TextInputSkinlet.cpp
 )
 qt_add_resources(SOURCES QskMaterial3Icons.qrc)
 

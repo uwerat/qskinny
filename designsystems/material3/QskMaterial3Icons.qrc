@@ -15,5 +15,8 @@
         <file>icons/qvg/arrow_drop_up.qvg</file>
         <file>icons/qvg/check.qvg</file>
         <file>icons/qvg/remove.qvg</file>
+        <file>icons/qvg/text_field_search.qvg</file>
+        <file>icons/qvg/text_field_cancel.qvg</file>
+        <file>icons/qvg/text_field_error.qvg</file>
     </qresource>
 </RCC>
