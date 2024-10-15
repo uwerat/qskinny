@@ -139,6 +139,8 @@ QskSpinBox::QskSpinBox( qreal min, qreal max, qreal stepSize, QQuickItem* parent
     setBoundaries( min, max );
     setStepSize( stepSize );
 
+    setAcceptHoverEvents( true );
+
     setAcceptedMouseButtons( Qt::LeftButton );
     setFocusPolicy( Qt::StrongFocus );
 
@@ -300,6 +302,36 @@ void QskSpinBox::mouseUngrabEvent()
 {
     if ( m_data->isActivatedByMouse() )
         m_data->setAutoRepeat( this, 0.0 );
+}
+
+void QskSpinBox::hoverEnterEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( UpPanel | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+    setSkinHint( DownPanel | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+
+    update();
+}
+
+void QskSpinBox::hoverMoveEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( UpPanel | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+    setSkinHint( DownPanel | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+
+    update();
+}
+
+void QskSpinBox::hoverLeaveEvent( QHoverEvent* )
+{
+    using A = QskAspect;
+
+    setSkinHint( UpPanel | Hovered | A::Metric | A::Position, QPointF() );
+    setSkinHint( DownPanel | Hovered | A::Metric | A::Position, QPointF() );
+
+    update();
 }
 
 void QskSpinBox::keyPressEvent( QKeyEvent* event )

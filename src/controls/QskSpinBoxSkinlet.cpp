@@ -14,22 +14,39 @@ static inline QskAspect::States qskButtonStates(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl )
 {
     using Q = QskSpinBox;
+    using A = QskAspect;
 
     auto spinBox = static_cast< const QskSpinBox* >( skinnable );
 
     auto states = spinBox->skinStates();
 
-    if ( spinBox->isEnabled() && !spinBox->isWrapping() )
+    if ( spinBox->isEnabled() )
     {
         if ( subControl == Q::DownIndicator || subControl == Q::DownPanel )
         {
-            if ( spinBox->value() <= spinBox->minimum() )
+            if ( !spinBox->isWrapping() && spinBox->value() <= spinBox->minimum() )
                 states |= QskControl::Disabled;
+
+            const auto cursorPos = spinBox->effectiveSkinHint(
+                Q::DownPanel | Q::Hovered | A::Metric | A::Position ).toPointF();
+
+            if( !cursorPos.isNull() && spinBox->subControlRect( Q::DownPanel ).contains( cursorPos ) )
+            {
+                states |= Q::Hovered;
+            }
         }
         else if ( subControl == Q::UpIndicator || subControl == Q::UpPanel )
         {
-            if ( spinBox->value() >= spinBox->maximum() )
+            if ( !spinBox->isWrapping() && spinBox->value() >= spinBox->maximum() )
                 states |= QskControl::Disabled;
+
+            const auto cursorPos = spinBox->effectiveSkinHint(
+                Q::UpPanel | Q::Hovered | A::Metric | A::Position ).toPointF();
+
+            if( !cursorPos.isNull() && spinBox->subControlRect( Q::UpPanel ).contains( cursorPos ) )
+            {
+                states |= Q::Hovered;
+            }
         }
     }
 
@@ -46,9 +63,6 @@ QRectF QskSpinBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     using Q = QskSpinBox;
-
-    QskSkinStateChanger stateChanger( skinnable );
-    stateChanger.setStates( qskButtonStates( skinnable, subControl ) );
 
     if ( subControl == Q::Panel )
         return contentsRect;

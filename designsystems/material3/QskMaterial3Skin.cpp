@@ -898,6 +898,7 @@ void Editor::setupSpinBox()
 
     setHint( Q::Panel | QskAspect::Style, Q::ButtonsLeftAndRight );
 
+    setStrutSize( Q::Panel, -1.0, 48_dp );
     setBoxShape( Q::Panel, 4_dp );
     setBoxBorderMetrics( Q::Panel, 1_dp );
 
@@ -909,21 +910,25 @@ void Editor::setupSpinBox()
     setSpacing( Q::Panel, 4_dp );
 
     setStrutSize( Q::TextPanel, 80_dp, 40_dp );
-    setStrutSize( Q::UpPanel, 40_dp,40_dp );
+    setStrutSize( Q::UpPanel, 40_dp, 40_dp );
     setStrutSize( Q::DownPanel, 40_dp, 40_dp );
 
     setAlignment( Q::Text, Qt::AlignCenter );
 
     for( const auto subControl : { Q::DownPanel, Q::UpPanel, Q::TextPanel } )
     {
-        setBoxShape( subControl, 4_dp );
         setBoxBorderMetrics( subControl, 1_dp );
     }
+
+    setBoxShape( Q::TextPanel, 4_dp );
+
+    setBoxShape( Q::DownPanel, 100, Qt::RelativeSize );
+    setBoxShape( Q::UpPanel, 100, Qt::RelativeSize );
 
     for( const auto subControl : { Q::DownPanel, Q::UpPanel } )
     {
         setGradient( subControl | Q::Hovered, m_pal.primary8 );
-        setPadding( subControl, 10 );
+        setPadding( subControl, 11_dp );
     }
 
     {
