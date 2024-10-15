@@ -3,12 +3,13 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_MATERIAL3_INPUT_SKINLET_H
-#define QSK_MATERIAL3_INPUT_SKINLET_H
+#ifndef QSK_FLUENT2_INPUT_SKINLET_H
+#define QSK_FLUENT2_INPUT_SKINLET_H
 
+#include "QskFluent2Global.h"
 #include "QskTextInputSkinlet.h"
 
-class QSK_EXPORT QskFluent2TextInputSkinlet : public QskTextInputSkinlet
+class QSK_FLUENT2_EXPORT QskFluent2TextInputSkinlet : public QskTextInputSkinlet
 {
     Q_GADGET
 

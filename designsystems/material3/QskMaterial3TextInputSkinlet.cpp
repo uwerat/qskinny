@@ -36,12 +36,14 @@ namespace
         const auto iconMargins = input->marginHint( Q::LeadingIcon );
 
         const auto x1 = iconMargins.left() - margins.left();
-        const auto r1 = x1 / panelRect.width();
+        auto r1 = x1 / panelRect.width();
+        r1 = qBound( 0.0, r1, 1.0 );
 
         const auto w = qskHorizontalAdvance( input->effectiveFont( Q::LabelText ), input->labelText() );
 
         const auto x2 = x1 + w + margins.right();
-        const auto r2 = x2 / panelRect.width();
+        auto r2 = x2 / panelRect.width();
+        r2 = qBound( 0.0, r2, 1.0 );
 
         topGradient.setStops( {
             { 0.0, topGradient.startColor() },

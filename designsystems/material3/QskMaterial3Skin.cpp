@@ -502,6 +502,7 @@ void Editor::setupTextInput()
     setBoxBorderMetrics( Q::Panel | M3::Outlined | Q::Focused, 2_dp, allStates );
     setBoxBorderColors( Q::Panel | M3::Outlined | Q::Focused, m_pal.primary, allStates );
 
+    setBoxBorderColors( Q::Panel | M3::Outlined | Q::Error, m_pal.error, allStates );
 
     // LeadingIcon
 

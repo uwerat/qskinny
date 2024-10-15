@@ -6,9 +6,10 @@
 #ifndef QSK_MATERIAL3_INPUT_SKINLET_H
 #define QSK_MATERIAL3_INPUT_SKINLET_H
 
+#include "QskMaterial3Global.h"
 #include "QskTextInputSkinlet.h"
 
-class QSK_EXPORT QskMaterial3TextInputSkinlet : public QskTextInputSkinlet
+class QSK_MATERIAL3_EXPORT QskMaterial3TextInputSkinlet : public QskTextInputSkinlet
 {
     Q_GADGET
 

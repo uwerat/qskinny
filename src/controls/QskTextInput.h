@@ -17,9 +17,11 @@ class QSK_EXPORT QskTextInput : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( QString inputText READ inputText WRITE setInputText NOTIFY inputTextChanged USER true )
+    Q_PROPERTY( QString inputText READ inputText
+        WRITE setInputText NOTIFY inputTextChanged USER true )
 
-    Q_PROPERTY( QString labelText READ labelText WRITE setLabelText NOTIFY labelTextChanged )
+    Q_PROPERTY( QString labelText READ labelText
+        WRITE setLabelText NOTIFY labelTextChanged )
 
     Q_PROPERTY( QString hintText READ hintText
         WRITE setHintText NOTIFY hintTextChanged )
@@ -103,7 +105,7 @@ class QSK_EXPORT QskTextInput : public QskControl
     Q_ENUM( EchoMode )
 
     QskTextInput( QQuickItem* parent = nullptr );
-    QskTextInput( const QString&, QQuickItem* parent = nullptr ); // ### do we need this constructor?
+    QskTextInput( const QString&, QQuickItem* parent = nullptr );
 
     ~QskTextInput() override;
 
