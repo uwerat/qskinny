@@ -139,6 +139,8 @@ QskSpinBox::QskSpinBox( qreal min, qreal max, qreal stepSize, QQuickItem* parent
     setBoundaries( min, max );
     setStepSize( stepSize );
 
+    setAcceptHoverEvents( true );
+
     setAcceptedMouseButtons( Qt::LeftButton );
     setFocusPolicy( Qt::StrongFocus );
 
@@ -300,6 +302,12 @@ void QskSpinBox::mouseUngrabEvent()
 {
     if ( m_data->isActivatedByMouse() )
         m_data->setAutoRepeat( this, 0.0 );
+}
+
+void QskSpinBox::hoverMoveEvent( QHoverEvent* event )
+{
+    Inherited::hoverMoveEvent( event );
+    update(); // enter/leaving a subcontrol
 }
 
 void QskSpinBox::keyPressEvent( QKeyEvent* event )

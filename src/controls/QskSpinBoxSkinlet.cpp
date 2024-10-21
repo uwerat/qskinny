@@ -9,6 +9,27 @@
 #include "QskSkinStateChanger.h"
 
 #include <qfontmetrics.h>
+#include <qcursor.h>
+
+static bool qskIsButtonHovered(
+    const QskSpinBox* spinBox, QskAspect::Subcontrol subControl )
+{
+    if ( spinBox->hasSkinState( QskControl::Hovered ) )
+    {
+        // disable Hovered to avoid recursive calls
+        QskSkinStateChanger stateChanger( spinBox );
+        stateChanger.setStates( spinBox->skinStates() & ~QskControl::Hovered );
+
+        const auto r = spinBox->subControlRect( subControl );
+        if ( !r.isEmpty() )
+        {
+            const auto pos = spinBox->mapFromGlobal( QCursor::pos() );
+            return r.contains( pos );
+        }
+    }
+
+    return false;
+}
 
 static inline QskAspect::States qskButtonStates(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl )
@@ -19,17 +40,23 @@ static inline QskAspect::States qskButtonStates(
 
     auto states = spinBox->skinStates();
 
-    if ( spinBox->isEnabled() && !spinBox->isWrapping() )
+    if ( spinBox->isEnabled() )
     {
         if ( subControl == Q::DownIndicator || subControl == Q::DownPanel )
         {
-            if ( spinBox->value() <= spinBox->minimum() )
+            if ( !spinBox->isWrapping() && spinBox->value() <= spinBox->minimum() )
                 states |= QskControl::Disabled;
+
+            if ( !qskIsButtonHovered( spinBox, Q::DownPanel ) )
+                states &= ~Q::Hovered;
         }
         else if ( subControl == Q::UpIndicator || subControl == Q::UpPanel )
         {
-            if ( spinBox->value() >= spinBox->maximum() )
+            if ( !spinBox->isWrapping() && spinBox->value() >= spinBox->maximum() )
                 states |= QskControl::Disabled;
+
+            if ( !qskIsButtonHovered( spinBox, Q::UpPanel ) )
+                states &= ~Q::Hovered;
         }
     }
 
