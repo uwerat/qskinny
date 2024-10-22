@@ -839,33 +839,24 @@ void Editor::setupSlider()
     using A = QskAspect;
     using Q = QskSlider;
 
-    const qreal extent = 30_dp;
+    const QSizeF sliderSize( 48_dp, 44_dp );
+    setStrutSize( Q::Panel | A::Horizontal, sliderSize );
+    setStrutSize( Q::Panel | A::Vertical, sliderSize.transposed() );
 
-    // Panel
-
-    setMetric( Q::Panel | A::Size, extent );
-    setBoxShape( Q::Panel, 0 );
-    setBoxBorderMetrics( Q::Panel, 0 );
-    setGradient( Q::Panel, QskGradient() );
-
-    setPadding( Q::Panel | A::Horizontal, QskMargins( 0.5 * extent, 0 ) );
-    setPadding( Q::Panel | A::Vertical, QskMargins( 0, 0.5 * extent ) );
-
-    // Groove, Fill
-
-    for ( auto subControl : { Q::Groove, Q::Fill } )
-    {
-        setPadding( subControl, 0 );
-
-        setBoxShape( subControl, 0 );
-        setBoxBorderMetrics( subControl, 0 );
-    }
-
-    setMetric( Q::Groove | A::Size, 4_dp );
-    setMetric( Q::Fill | A::Size, 6_dp );
+    setBoxShape( Q::Groove | A::Horizontal, { 0, 100, 0, 100, Qt::RelativeSize } );
+    setBoxShape( Q::Groove | A::Vertical, { 100, 100, 0, 0, Qt::RelativeSize } );
+    setMetric( Q::Groove | A::Size, 16_dp );
+    setMargin( Q::Groove | A::Horizontal, { 6_dp, 0, 0, 0 } );
+    setMargin( Q::Groove | A::Vertical, {0, 0, 0, 6_dp } );
 
     setGradient( Q::Groove, m_pal.primaryContainer );
     setGradient( Q::Groove | Q::Disabled, m_pal.onSurface12 );
+
+    setBoxShape( Q::Fill | A::Horizontal, { 100, 0, 100, 0, Qt::RelativeSize } );
+    setBoxShape( Q::Fill | A::Vertical, { 0, 0, 100, 100, Qt::RelativeSize } );
+    setMetric( Q::Fill | A::Size, 16_dp );
+    setMargin( Q::Fill | A::Horizontal, { 0, 0, 6_dp, 0 } );
+    setMargin( Q::Fill | A::Vertical, {0, 6_dp, 0, 0 } );
 
     setGradient( Q::Fill, m_pal.primary );
     setGradient( Q::Fill | Q::Disabled, m_pal.onSurface38 );
@@ -873,7 +864,15 @@ void Editor::setupSlider()
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::Handle, 0 );
 
-    setStrutSize( Q::Handle, 20_dp, 20_dp );
+    const QSizeF handleSize( 4_dp, 44_dp );
+    const QSizeF handleSizeFocusedPressed( 2_dp, 44_dp );
+    setStrutSize( Q::Handle | A::Horizontal, handleSize );
+    setStrutSize( Q::Handle | A::Horizontal, handleSizeFocusedPressed,
+        { QskStateCombination::Combination, Q::Focused | Q::Pressed } );
+
+    setStrutSize( Q::Handle | A::Vertical, handleSize.transposed() );
+    setStrutSize( Q::Handle | A::Vertical, handleSizeFocusedPressed.transposed(),
+        { QskStateCombination::Combination, Q::Focused | Q::Pressed } );
 
     setGradient( Q::Handle, m_pal.primary );
     setGradient( Q::Handle | Q::Pressed, m_pal.primary );
@@ -881,13 +880,39 @@ void Editor::setupSlider()
     const auto disabledColor = flattenedColor( m_pal.onSurface, m_pal.background, 0.38 );
     setGradient( Q::Handle | Q::Disabled, disabledColor );
 
-    setStrutSize( Q::Ripple, 40_dp, 40_dp );
-    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
-    setGradient( Q::Ripple, Qt::transparent );
-    setGradient( Q::Ripple | Q::Hovered, m_pal.primary12 );
-    setGradient( Q::Ripple | Q::Pressed, m_pal.primary12 );
+    for( auto indicator : { Q::GrooveStopIndicators, Q::FillStopIndicators } )
+    {
+        setStrutSize( indicator, { 4_dp, 4_dp } );
+        setBoxShape( indicator, 100, Qt::RelativeSize );
+    }
 
-    // move the handle smoothly, when using keys
+    const auto p = 6_dp;
+    setPadding( Q::GrooveStopIndicators | A::Horizontal, { p, 0, p, 0 } );
+    setPadding( Q::GrooveStopIndicators | A::Vertical, { 0, p, 0, p } );
+    setPadding( Q::FillStopIndicators | A::Horizontal, { p, 0, p, 0 } );
+    setPadding( Q::FillStopIndicators | A::Vertical, { 0, p, 0, p } );
+
+    setGradient( Q::GrooveStopIndicators, m_pal.primary );
+    setGradient( Q::GrooveStopIndicators | Q::Disabled, m_pal.onSurface );
+    setGradient( Q::FillStopIndicators, m_pal.secondaryContainer );
+    setGradient( Q::FillStopIndicators | Q::Disabled, m_pal.inverseOnSurface );
+
+    for( const auto state : { Q::Focused, Q::Pressed } )
+    {
+        setStrutSize( Q::LabelContainer | state, 48_dp, 44_dp,
+            { QskStateCombination::CombinationNoState, Q::Hovered } );
+    }
+
+    setBoxShape( Q::LabelContainer, 100, Qt::RelativeSize );
+    setGradient( Q::LabelContainer, m_pal.inverseSurface );
+    setMargin( Q::LabelContainer | A::Horizontal, { 0, 0, 0, 4_dp } );
+    setMargin( Q::LabelContainer | A::Vertical, { 4_dp, 0, 0, 0 } );
+
+    setFontRole( Q::LabelText, LabelMedium );
+    setColor( Q::LabelText, m_pal.inverseOnSurface );
+    setAlignment( Q::LabelText, Qt::AlignCenter );
+
+    // move the handle smoothly when using keys
     setAnimation( Q::Handle | A::Metric | A::Position, 2 * qskDuration );
     setAnimation( Q::Handle | A::Metric | A::Position | Q::Pressed, 0 );
 }
@@ -1314,6 +1339,7 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
             onPrimary = color.toned( 100 ).rgb();
             primaryContainer = color.toned( 90 ).rgb();
             onPrimaryContainer = color.toned( 10 ).rgb();
+            inversePrimary = color.toned( 80 ).rgb();
         }
 
         {
@@ -1350,6 +1376,9 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
             onBackground = color.toned( 10 ).rgb();
             surface = color.toned( 99 ).rgb();
             onSurface = color.toned( 10 ).rgb();
+            inverseSurface = color.toned( 20 ).rgb();
+            inverseOnSurface = color.toned( 95 ).rgb();
+            scrim = color.toned( 0 ).rgb();
             shadow = color.toned( 0 ).rgb();
         }
 
@@ -1373,6 +1402,7 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
             onPrimary = color.toned( 20 ).rgb();
             primaryContainer = color.toned( 30 ).rgb();
             onPrimaryContainer = color.toned( 90 ).rgb();
+            inversePrimary = color.toned( 40 ).rgb();
         }
 
         {
@@ -1409,6 +1439,9 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
             onBackground = color.toned( 90 ).rgb();
             surface = color.toned( 10 ).rgb();
             onSurface = color.toned( 80 ).rgb();
+            inverseSurface = color.toned( 90 ).rgb();
+            inverseOnSurface = color.toned( 20 ).rgb();
+            scrim = color.toned( 0 ).rgb();
             shadow = color.toned( 0 ).rgb();
         }
 
@@ -1484,7 +1517,7 @@ static inline QFont createFont( int pointSize, int lineHeight,
         }
         checkFont = false;
     }
-    
+
     font.setPixelSize( pixelSize );
 
     if ( spacing > 0.0 )
