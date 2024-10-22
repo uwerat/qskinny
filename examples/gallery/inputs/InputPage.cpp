@@ -21,8 +21,8 @@ namespace
             setBoundaries( 0, 100 );
             setValue( 30 );
 
-            setPageSize( 10 );
             setStepSize( 1 );
+            setPageSteps( 10 );
             //setSnap( true );
 
 #if 0
@@ -63,7 +63,7 @@ namespace
             {
                 auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0, this );
                 spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
-                spinBox->setPageSize( 5 );
+                spinBox->setPageSteps( 5 );
                 spinBox->setValue( 35 );
             }
         }

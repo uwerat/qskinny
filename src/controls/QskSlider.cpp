@@ -131,7 +131,7 @@ void QskSlider::mousePressEvent( QMouseEvent* event )
         setSkinStateFlag( Pressed );
         Q_EMIT pressedChanged( true );
     }
-    else if ( !pageSize() )
+    else if ( pageSteps() == 0 )
     {
         // Case 2: pageSize is not used, we're done here
     }
