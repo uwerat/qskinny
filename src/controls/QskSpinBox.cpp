@@ -256,7 +256,7 @@ void QskSpinBox::mousePressEvent( QMouseEvent* event )
             {
                 auto offset = stepSize();
                 if ( event->modifiers() & ( Qt::ControlModifier | Qt::ShiftModifier ) )
-                    offset *= pageSize();
+                    offset *= pageSteps();
 
                 if ( subcontrol == QskSpinBox::DownPanel )
                     offset = -offset;

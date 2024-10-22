@@ -15,7 +15,7 @@ class QSK_EXPORT QskBoundedInput : public QskBoundedControl
     Q_OBJECT
 
     Q_PROPERTY( qreal stepSize READ stepSize WRITE setStepSize NOTIFY stepSizeChanged )
-    Q_PROPERTY( int pageSize READ pageSize WRITE setPageSize NOTIFY pageSizeChanged )
+    Q_PROPERTY( uint pageSteps READ pageSteps WRITE setPageSteps NOTIFY pageStepsChanged )
 
     Q_PROPERTY( bool snap READ snap WRITE setSnap NOTIFY snapChanged )
     Q_PROPERTY( bool readOnly READ isReadOnly WRITE setReadOnly NOTIFY readOnlyChanged )
@@ -29,7 +29,8 @@ class QSK_EXPORT QskBoundedInput : public QskBoundedControl
     ~QskBoundedInput() override;
 
     qreal stepSize() const;
-    int pageSize() const;
+    qreal pageSize() const; // pageSteps() * stepSize()
+    uint pageSteps() const; 
 
     void setSnap( bool );
     bool snap() const;
@@ -39,7 +40,7 @@ class QSK_EXPORT QskBoundedInput : public QskBoundedControl
 
   public Q_SLOTS:
     void setStepSize( qreal );
-    void setPageSize( int );
+    void setPageSteps( uint );
 
     void stepUp();
     void stepDown();
@@ -50,7 +51,7 @@ class QSK_EXPORT QskBoundedInput : public QskBoundedControl
 
   Q_SIGNALS:
     void stepSizeChanged( qreal );
-    void pageSizeChanged( qreal );
+    void pageStepsChanged( qreal );
     void snapChanged( bool );
 
     void readOnlyChanged( bool );
@@ -71,9 +72,8 @@ class QSK_EXPORT QskBoundedInput : public QskBoundedControl
     qreal incrementForKey( const QKeyEvent* ) const;
 
   private:
-    qreal m_stepSize = 0.1;
-    int m_pageSize = 1;
-    bool m_snap = false;
+    class PrivateData;
+    std::unique_ptr< PrivateData > m_data;
 };
 
 #endif
