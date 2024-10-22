@@ -15,15 +15,44 @@ namespace
     class Slider : public QskSlider
     {
       public:
-        Slider( Qt::Orientation orientation, QQuickItem* parent = nullptr )
+        enum Style
+        {
+            Continous,
+            Discrete,
+            Centered
+        };
+
+        Slider( Qt::Orientation orientation,
+                Style style, QQuickItem* parent = nullptr )
             : QskSlider( orientation, parent )
         {
             setBoundaries( 0, 100 );
             setValue( 30 );
 
-            setStepSize( 1 );
-            setPageSteps( 10 );
-            //setSnap( true );
+            switch( style )
+            {
+                case Discrete:
+                {
+                    setSnap( true );
+                    setStepSize( 5 );
+                    setPageSteps( 4 );
+
+                    break;
+                }
+                case Continous:
+                {
+                    setSnap( false );
+                    setStepSize( 1 );
+                    setPageSteps( 10 );
+
+                    break;
+                }
+                case Centered:
+                {
+                    // TODO
+                    break;
+                }
+            }
 
 #if 0
             connect( this, &QskSlider::valueChanged,
@@ -36,10 +65,9 @@ namespace
     {
       public:
         InputBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Horizontal, 3, parent )
+            : QskLinearBox( Qt::Horizontal, parent )
         {
             setSpacing( 20 );
-            setExtraSpacingAt( Qt::BottomEdge );
 
             {
                 new QskTextInput( "Edit Me", this );
@@ -59,13 +87,6 @@ namespace
                 input->setFixedWidth( 80 );
 #endif
             }
-
-            {
-                auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0, this );
-                spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
-                spinBox->setPageSteps( 5 );
-                spinBox->setValue( 35 );
-            }
         }
     };
 }
@@ -73,31 +94,40 @@ namespace
 InputPage::InputPage( QQuickItem* parent )
     : Page( Qt::Horizontal, parent )
 {
-    auto sliderH = new Slider( Qt::Horizontal );
+    struct
+    {
+        Slider* continous;
+        Slider* descrete;
+    } sliders[2];
 
-    auto discreteSliderH = new Slider( Qt::Horizontal );
-    discreteSliderH->setSnap( true );
-    discreteSliderH->setStepSize( 10 );
-    discreteSliderH->setPageSize( 1 );
+    for ( int i = 0; i < 2; i++ )
+    {
+        const auto orientation = static_cast< Qt::Orientation >( i + 1 );
 
-    auto sliderV = new Slider( Qt::Vertical );
+        sliders[i].continous = new Slider( orientation, Slider::Continous );
+        sliders[i].descrete = new Slider( orientation, Slider::Discrete );
+    }
 
-    auto discreteSliderV = new Slider( Qt::Vertical );
-    discreteSliderV->setSnap( true );
-    discreteSliderV->setStepSize( 10 );
-    discreteSliderV->setPageSize( 2 );
+    auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0 );
+    spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
 
     auto inputBox = new InputBox();
+    inputBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
 
-    auto gridBox = new QskGridBox( this );
-    gridBox->setSpacing( 30 );
-    gridBox->setMargins( 30 );
+    auto vBox = new QskLinearBox( Qt::Vertical );
+    vBox->setSpacing( 30 );
+    vBox->setExtraSpacingAt( Qt::RightEdge | Qt::BottomEdge );
 
-    gridBox->addItem( sliderV, 0, 0, -1, 1 );
-    gridBox->addItem( discreteSliderV, 0, 1, -1, 1 );
-    gridBox->addItem( sliderH, 0, 2, 1, -1 );
-    gridBox->addItem( discreteSliderH, 1, 2, 1, -1 );
-    gridBox->addItem( inputBox, 2, 2, -1, -1 );
+    vBox->addItem( sliders[0].continous );
+    vBox->addItem( sliders[0].descrete );
+    vBox->addItem( inputBox );
+    vBox->addItem( spinBox );
+
+    auto mainBox = new QskLinearBox( Qt::Horizontal, this );
+    mainBox->setSpacing( 30 );
+    mainBox->addItem( sliders[1].continous );
+    mainBox->addItem( sliders[1].descrete );
+    mainBox->addItem( vBox );
 
     auto inputs = findChildren< QskBoundedValueInput* >();
 
@@ -116,7 +146,7 @@ void InputPage::syncValues( qreal value )
         return;
 
     blockUpdates = true;
-    
+
     if ( qobject_cast< const QskSlider* >( sender() ) )
     {
         auto spinBoxes = findChildren< QskSpinBox* >();
