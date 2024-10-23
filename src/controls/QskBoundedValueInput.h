@@ -20,6 +20,9 @@ class QSK_EXPORT QskBoundedValueInput : public QskBoundedInput
 
     Q_PROPERTY( QString valueText READ valueText NOTIFY valueChanged )
 
+    Q_PROPERTY( int decimals READ decimals
+        WRITE setDecimals NOTIFY decimalsChanged )
+
     using Inherited = QskBoundedInput;
 
   public:
@@ -35,6 +38,9 @@ class QSK_EXPORT QskBoundedValueInput : public QskBoundedInput
     QString valueText() const;
     virtual QString textFromValue( qreal ) const;
 
+    void setDecimals( int );
+    int decimals() const;
+
   public Q_SLOTS:
     void setValue( qreal );
     void setValueAsRatio( qreal );
@@ -42,6 +48,7 @@ class QSK_EXPORT QskBoundedValueInput : public QskBoundedInput
 
   Q_SIGNALS:
     void valueChanged( qreal );
+    void decimalsChanged( int );
 
   protected:
     virtual qreal fixupValue( qreal ) const;
@@ -49,9 +56,9 @@ class QSK_EXPORT QskBoundedValueInput : public QskBoundedInput
 
   private:
     void setValueInternal( qreal );
-    void adjustValue();
 
-    qreal m_value = 0.0;
+    class PrivateData;
+    std::unique_ptr< PrivateData > m_data;
 };
 
 #endif
