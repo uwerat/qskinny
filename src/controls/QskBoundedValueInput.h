@@ -18,6 +18,8 @@ class QSK_EXPORT QskBoundedValueInput : public QskBoundedInput
     Q_PROPERTY( qreal valueAsRatio READ valueAsRatio
         WRITE setValueAsRatio NOTIFY valueChanged )
 
+    Q_PROPERTY( QString valueText READ valueText NOTIFY valueChanged )
+
     using Inherited = QskBoundedInput;
 
   public:
@@ -30,20 +32,23 @@ class QSK_EXPORT QskBoundedValueInput : public QskBoundedInput
     qreal valueAsRatio() const;
     using QskBoundedInput::valueAsRatio;
 
+    QString valueText() const;
+    virtual QString textFromValue( qreal ) const;
+
   public Q_SLOTS:
     void setValue( qreal );
     void setValueAsRatio( qreal );
-    void increment( qreal offset ) override;
+    void increment( qreal ) override;
 
   Q_SIGNALS:
     void valueChanged( qreal );
 
   protected:
-    virtual qreal fixupValue( qreal value ) const;
+    virtual qreal fixupValue( qreal ) const;
     void alignInput() override;
 
   private:
-    void setValueInternal( qreal value );
+    void setValueInternal( qreal );
     void adjustValue();
 
     qreal m_value = 0.0;

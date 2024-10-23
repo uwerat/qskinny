@@ -22,8 +22,6 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     Q_PROPERTY( int decimals READ decimals
         WRITE setDecimals NOTIFY decimalsChanged )
 
-    Q_PROPERTY( QString text READ text NOTIFY textChanged )
-
   public:
     QSK_SUBCONTROLS( Panel, TextPanel, Text,
         UpPanel, UpIndicator, DownPanel, DownIndicator )
@@ -56,8 +54,7 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     void setDecimals( int );
     int decimals() const;
 
-    QString text() const;
-    virtual QString textFromValue( qreal ) const;
+    virtual QString textFromValue( qreal ) const override;
 
     void increment( qreal ) override;
 

@@ -6,6 +6,8 @@
 #include "QskBoundedValueInput.h"
 #include "QskFunctions.h"
 
+#include <qlocale.h>
+
 QskBoundedValueInput::QskBoundedValueInput( QQuickItem* parent )
     : QskBoundedInput( parent )
 {
@@ -69,6 +71,16 @@ void QskBoundedValueInput::setValueInternal( qreal value )
 
         update();
     }
+}
+
+QString QskBoundedValueInput::valueText() const
+{   
+    return textFromValue( value() );
+}
+    
+QString QskBoundedValueInput::textFromValue( qreal value ) const
+{       
+    return locale().toString( value );
 }
 
 #include "moc_QskBoundedValueInput.cpp"
