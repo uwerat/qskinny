@@ -1445,12 +1445,11 @@ void Editor::setupSliderMetrics()
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::Handle, 1_px );
 
-    setStrutSize( Q::Ripple, { 12_px, 12_px } );
-    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
+    setStrutSize( Q::Halo, { 12_px, 12_px } );
+    setBoxShape( Q::Halo, 100, Qt::RelativeSize );
 
-    setStrutSize( Q::Ripple | Q::Hovered, { 14_px, 14_px } );
-
-    setStrutSize( Q::Ripple | Q::Pressed, { 10_px, 10_px } );
+    setStrutSize( Q::Halo | Q::Hovered, { 14_px, 14_px } );
+    setStrutSize( Q::Halo | Q::Pressed, { 10_px, 10_px } );
 }
 
 void Editor::setupSliderColors(
@@ -1470,32 +1469,32 @@ void Editor::setupSliderColors(
 
     for ( auto state : { A::NoState, Q::Pressed, Q::Disabled } )
     {
-        QRgb grooveColor, fillColor, rippleColor;
+        QRgb grooveColor, fillColor, haloColor;
 
         if ( state == A::NoState )
         {
             grooveColor = pal.fillColor.controlStrong.defaultColor;
             fillColor = pal.fillColor.accent.defaultColor;
-            rippleColor = fillColor;
+            haloColor = fillColor;
         }
         else if ( state == Q::Pressed )
         {
             grooveColor = pal.fillColor.controlStrong.defaultColor;
             fillColor = pal.fillColor.accent.defaultColor;
-            rippleColor = pal.fillColor.accent.tertiary;
+            haloColor = pal.fillColor.accent.tertiary;
         }
         else if ( state == Q::Disabled )
         {
             grooveColor = pal.fillColor.controlStrong.disabled;
             fillColor = pal.fillColor.accent.disabled;
-            rippleColor = grooveColor;
+            haloColor = grooveColor;
         }
 
         grooveColor = rgbSolid( grooveColor, pal.background.solid.base );
 
         setGradient( Q::Groove | section | state, grooveColor );
         setGradient( Q::Fill | section | state, fillColor );
-        setGradient( Q::Ripple | section | state, rippleColor );
+        setGradient( Q::Halo | section | state, haloColor );
     }
 }
 

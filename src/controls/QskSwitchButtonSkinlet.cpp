@@ -26,7 +26,7 @@ static inline qreal qskEffectivePosition( const QskSwitchButton* switchButton )
 QskSwitchButtonSkinlet::QskSwitchButtonSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { GrooveRole, HandleRole, RippleRole } );
+    setNodeRoles( { GrooveRole, HandleRole, HaloRole } );
 }
 
 QskSwitchButtonSkinlet::~QskSwitchButtonSkinlet()
@@ -48,9 +48,9 @@ QRectF QskSwitchButtonSkinlet::subControlRect( const QskSkinnable* skinnable,
         return grooveRect( skinnable, contentsRect );
     }
 
-    if ( subControl == Q::Ripple )
+    if ( subControl == Q::Halo )
     {
-        return rippleRect( skinnable, contentsRect );
+        return haloRect( skinnable, contentsRect );
     }
 
 
@@ -63,12 +63,12 @@ QSizeF QskSwitchButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    auto grooveHint = skinnable->strutSizeHint( QskSwitchButton::Groove );
-    auto handleHint = skinnable->strutSizeHint( QskSwitchButton::Handle );
-    auto rippleHint = skinnable->strutSizeHint( QskSwitchButton::Ripple );
+    const auto grooveHint = skinnable->strutSizeHint( QskSwitchButton::Groove );
+    const auto handleHint = skinnable->strutSizeHint( QskSwitchButton::Handle );
+    const auto haloHint = skinnable->strutSizeHint( QskSwitchButton::Halo );
 
     auto hint = grooveHint;
-    hint = hint.expandedTo( rippleHint );
+    hint = hint.expandedTo( haloHint );
     hint = hint.expandedTo( handleHint );
 
     return hint;
@@ -81,8 +81,8 @@ QSGNode* QskSwitchButtonSkinlet::updateSubNode( const QskSkinnable* skinnable,
 
     switch ( nodeRole )
     {
-        case RippleRole:
-            return updateBoxNode( skinnable, node, Q::Ripple );
+        case HaloRole:
+            return updateBoxNode( skinnable, node, Q::Halo );
 
         case HandleRole:
             return updateBoxNode( skinnable, node, Q::Handle );
@@ -166,7 +166,7 @@ QRectF QskSwitchButtonSkinlet::handleRect(
     return r;
 }
 
-QRectF QskSwitchButtonSkinlet::rippleRect(
+QRectF QskSwitchButtonSkinlet::haloRect(
     const QskSkinnable* skinnable, const QRectF& contentsRect ) const
 {
     using Q = QskSwitchButton;
@@ -176,7 +176,7 @@ QRectF QskSwitchButtonSkinlet::rippleRect(
     const auto grooveRect = subControlRect( skinnable, contentsRect, Q::Groove );
     const auto pos = qskEffectivePosition( switchButton );
     const auto sizeHandle = skinnable->strutSizeHint( Q::Handle );
-    const auto sizeRipple = skinnable->strutSizeHint( Q::Ripple );
+    const auto sizeHalo = skinnable->strutSizeHint( Q::Halo );
 
     qreal cx, cy;
 
@@ -198,7 +198,7 @@ QRectF QskSwitchButtonSkinlet::rippleRect(
     }
 
     QRectF r;
-    r.setSize( sizeRipple );
+    r.setSize( sizeHalo );
     r.moveCenter( QPointF( cx, cy ) );
 
     return r;

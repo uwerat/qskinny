@@ -14,7 +14,7 @@ QSK_SUBCONTROL( QskSlider, Groove )
 QSK_SUBCONTROL( QskSlider, Fill )
 QSK_SUBCONTROL( QskSlider, Scale )
 QSK_SUBCONTROL( QskSlider, Handle )
-QSK_SUBCONTROL( QskSlider, Ripple )
+QSK_SUBCONTROL( QskSlider, Halo )
 
 QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
 

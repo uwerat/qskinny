@@ -22,7 +22,7 @@ class QSK_EXPORT QskSwitchButton : public QskAbstractButton
         WRITE setInverted NOTIFY invertedChanged FINAL )
 
   public:
-    QSK_SUBCONTROLS( Groove, Handle, Ripple )
+    QSK_SUBCONTROLS( Groove, Handle, Halo )
 
     QskSwitchButton( Qt::Orientation, QQuickItem* parent = nullptr );
     QskSwitchButton( QQuickItem* parent = nullptr );

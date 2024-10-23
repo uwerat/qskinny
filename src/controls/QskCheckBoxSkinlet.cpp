@@ -11,7 +11,7 @@
 QskCheckBoxSkinlet::QskCheckBoxSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
 {
-    setNodeRoles( { BoxRole, IndicatorRole, TextRole, RippleRole } );
+    setNodeRoles( { BoxRole, IndicatorRole, TextRole, HaloRole } );
 }
 
 QskCheckBoxSkinlet::~QskCheckBoxSkinlet()
@@ -40,8 +40,8 @@ QRectF QskCheckBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
     if ( subControl == Q::Text )
         return textRect( checkBox, contentsRect );
 
-    if ( subControl == Q::Ripple )
-        return rippleRect( checkBox, contentsRect );
+    if ( subControl == Q::Halo )
+        return haloRect( checkBox, contentsRect );
 
     return contentsRect;
 }
@@ -83,14 +83,14 @@ QRectF QskCheckBoxSkinlet::boxRect(
     return r;
 }
 
-QRectF QskCheckBoxSkinlet::rippleRect(
+QRectF QskCheckBoxSkinlet::haloRect(
     const QskCheckBox* checkBox, const QRectF& rect ) const
 {
-    const auto rippleSize = checkBox->strutSizeHint( QskCheckBox::Ripple );
+    const auto haloSize = checkBox->strutSizeHint( QskCheckBox::Halo );
     const auto boxSize = checkBox->strutSizeHint( QskCheckBox::Box );
 
-    const auto w = ( rippleSize.width() - boxSize.width() ) / 2;
-    const auto h = ( rippleSize.height() - boxSize.height() ) / 2;
+    const auto w = ( haloSize.width() - boxSize.width() ) / 2;
+    const auto h = ( haloSize.height() - boxSize.height() ) / 2;
 
     auto r = boxRect( checkBox, rect );
     r = r.marginsAdded( { w, h, w, h } );
@@ -119,8 +119,8 @@ QSGNode* QskCheckBoxSkinlet::updateSubNode(
         case TextRole:
             return updateTextNode( checkBox, node );
 
-        case RippleRole:
-            return updateBoxNode( checkBox, node, Q::Ripple );
+        case HaloRole:
+            return updateBoxNode( checkBox, node, Q::Halo );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );

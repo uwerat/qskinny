@@ -489,7 +489,7 @@ void Editor::setupRadioBox()
 
     setStrutSize( Q::CheckIndicatorPanel, 20_dp, 20_dp );
 
-    for ( auto subControl : { Q::CheckIndicatorPanel, Q::CheckIndicator, Q::Ripple } )
+    for ( auto subControl : { Q::CheckIndicatorPanel, Q::CheckIndicator, Q::Halo } )
         setBoxShape( subControl, 100, Qt::RelativeSize ); // circular
 
     setBoxBorderMetrics( Q::CheckIndicatorPanel, 1_dp );

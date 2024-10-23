@@ -40,7 +40,7 @@ namespace
 QskRadioBoxSkinlet::QskRadioBoxSkinlet( QskSkin* )
 {
     setNodeRoles( { PanelRole, ButtonRole, CheckPanelRole,
-        CheckIndicatorRole, TextRole, RippleRole } );
+        CheckIndicatorRole, TextRole, HaloRole } );
 }
 
 QskRadioBoxSkinlet::~QskRadioBoxSkinlet()
@@ -54,8 +54,8 @@ QRectF QskRadioBoxSkinlet::subControlRect( const QskSkinnable* skinnable,
 
     auto radioBox = static_cast< const QskRadioBox* >( skinnable );
 
-    if( subcontrol == Q::Ripple )
-        return rippleRect( radioBox, contentsRect );
+    if( subcontrol == Q::Halo )
+        return haloRect( radioBox, contentsRect );
 
     return contentsRect;
 }
@@ -82,8 +82,8 @@ QSGNode* QskRadioBoxSkinlet::updateSubNode( const QskSkinnable* skinnable,
         case TextRole:
             return updateSeriesNode( skinnable, Q::Text, node );
 
-        case RippleRole:
-            return updateBoxNode( skinnable, node, Q::Ripple );
+        case HaloRole:
+            return updateBoxNode( skinnable, node, Q::Halo );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
@@ -96,17 +96,17 @@ int QskRadioBoxSkinlet::sampleCount(
     return radioBox->options().count();
 }
 
-QRectF QskRadioBoxSkinlet::rippleRect(
+QRectF QskRadioBoxSkinlet::haloRect(
     const QskRadioBox* radioBox, const QRectF& rect ) const
 {
     using Q = QskRadioBox;
 
-    const auto index = qFloor( radioBox->positionHint( Q::Ripple ) );
+    const auto index = qFloor( radioBox->positionHint( Q::Halo ) );
     if( index < 0 )
         return QRectF();
 
     QRectF r;
-    r.setSize( radioBox->strutSizeHint( Q::Ripple ) );
+    r.setSize( radioBox->strutSizeHint( Q::Halo ) );
 
     if ( !r.isEmpty() )
     {
@@ -219,12 +219,12 @@ QskAspect::States QskRadioBoxSkinlet::sampleStates(
         states |= Q::Pressed;
 
 #if 1
-    if( radioBox->positionHint( Q::Ripple | Q::Hovered ) == index )
+    if( radioBox->positionHint( Q::Halo | Q::Hovered ) == index )
         states |= Q::Hovered;
     else
         states &= ~Q::Hovered;
 
-    if( radioBox->positionHint( Q::Ripple ) == index )
+    if( radioBox->positionHint( Q::Halo ) == index )
         states |= Q::Focused;
     else
         states &= ~Q::Focused;

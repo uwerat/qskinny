@@ -232,9 +232,9 @@ void Editor::setupCheckBox()
         setSymbol( aspect | Q::Error, checkMark );
     }
 
-    setStrutSize( Q::Ripple, 40_dp, 40_dp );
-    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
-    setGradient( Q::Ripple, Qt::transparent );
+    setStrutSize( Q::Halo, 40_dp, 40_dp );
+    setBoxShape( Q::Halo, 100, Qt::RelativeSize );
+    setGradient( Q::Halo, Qt::transparent );
 
     setColor( Q::Text, m_pal.onBackground ); // not mentioned in the specs
 
@@ -252,25 +252,25 @@ void Editor::setupCheckBox()
 
     // 3. Hovered
 
-    setGradient( Q::Ripple | Q::Hovered | Q::Checked, m_pal.primary8 );
-    setGradient( Q::Ripple | Q::Hovered, m_pal.onSurface8 );
-    setGradient( Q::Ripple | Q::Error | Q::Hovered, m_pal.error8 );
-    setGradient( Q::Ripple | Q::Error | Q::Hovered | Q::Checked, m_pal.error8 );
+    setGradient( Q::Halo | Q::Hovered | Q::Checked, m_pal.primary8 );
+    setGradient( Q::Halo | Q::Hovered, m_pal.onSurface8 );
+    setGradient( Q::Halo | Q::Error | Q::Hovered, m_pal.error8 );
+    setGradient( Q::Halo | Q::Error | Q::Hovered | Q::Checked, m_pal.error8 );
 
     // 4. Focused
 
-    setGradient( Q::Ripple | Q::Focused | Q::Checked, m_pal.primary12 );
-    setGradient( Q::Ripple | Q::Focused, m_pal.onSurface12 );
-    setGradient( Q::Ripple | Q::Error | Q::Focused, m_pal.error12 );
-    setGradient( Q::Ripple | Q::Error | Q::Focused | Q::Checked, m_pal.error12 );
+    setGradient( Q::Halo | Q::Focused | Q::Checked, m_pal.primary12 );
+    setGradient( Q::Halo | Q::Focused, m_pal.onSurface12 );
+    setGradient( Q::Halo | Q::Error | Q::Focused, m_pal.error12 );
+    setGradient( Q::Halo | Q::Error | Q::Focused | Q::Checked, m_pal.error12 );
 
     // 5. Pressed
 
-    setGradient( Q::Ripple | Q::Pressed, m_pal.primary12 );
-    setGradient( Q::Ripple | Q::Pressed | Q::Checked, m_pal.primary12 );
-    setGradient( Q::Ripple | Q::Hovered | Q::Pressed, m_pal.primary12 );
-    setGradient( Q::Ripple | Q::Error | Q::Pressed, m_pal.error12 );
-    setGradient( Q::Ripple | Q::Error | Q::Pressed | Q::Checked, m_pal.error12 );
+    setGradient( Q::Halo | Q::Pressed, m_pal.primary12 );
+    setGradient( Q::Halo | Q::Pressed | Q::Checked, m_pal.primary12 );
+    setGradient( Q::Halo | Q::Hovered | Q::Pressed, m_pal.primary12 );
+    setGradient( Q::Halo | Q::Error | Q::Pressed, m_pal.error12 );
+    setGradient( Q::Halo | Q::Error | Q::Pressed | Q::Checked, m_pal.error12 );
 }
 
 void Editor::setupComboBox()
@@ -480,9 +480,9 @@ void Editor::setupRadioBox()
     setSpacing( Q::Button, 10_dp );
 
     setStrutSize( Q::CheckIndicatorPanel, 20_dp, 20_dp );
-    setStrutSize( Q::Ripple, 40_dp, 40_dp );
+    setStrutSize( Q::Halo, 40_dp, 40_dp );
 
-    for ( auto subControl : { Q::CheckIndicatorPanel, Q::CheckIndicator, Q::Ripple } )
+    for ( auto subControl : { Q::CheckIndicatorPanel, Q::CheckIndicator, Q::Halo } )
         setBoxShape( subControl, 100, Qt::RelativeSize ); // circular
 
     setBoxBorderMetrics( Q::CheckIndicatorPanel, 2_dp );
@@ -494,8 +494,8 @@ void Editor::setupRadioBox()
     setColor( Q::Text, m_pal.onBackground );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
-    setColor( Q::Ripple, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
-    setColor( Q::Ripple | Q::Selected,
+    setColor( Q::Halo, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
+    setColor( Q::Halo | Q::Selected,
         stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
 
     setColor( Q::CheckIndicator, Qt::transparent);
@@ -509,7 +509,7 @@ void Editor::setupRadioBox()
     setBoxBorderColors(
         Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, m_pal.onSurface38 );
 
-    setAnimation( Q::Ripple | A::Metric | A::Position, qskDuration );
+    setAnimation( Q::Halo | A::Metric | A::Position, qskDuration );
 }
 
 void Editor::setupFocusIndicator()
@@ -881,11 +881,11 @@ void Editor::setupSlider()
     const auto disabledColor = flattenedColor( m_pal.onSurface, m_pal.background, 0.38 );
     setGradient( Q::Handle | Q::Disabled, disabledColor );
 
-    setStrutSize( Q::Ripple, 40_dp, 40_dp );
-    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
-    setGradient( Q::Ripple, Qt::transparent );
-    setGradient( Q::Ripple | Q::Hovered, m_pal.primary12 );
-    setGradient( Q::Ripple | Q::Pressed, m_pal.primary12 );
+    setStrutSize( Q::Halo, 40_dp, 40_dp );
+    setBoxShape( Q::Halo, 100, Qt::RelativeSize );
+    setGradient( Q::Halo, Qt::transparent );
+    setGradient( Q::Halo | Q::Hovered, m_pal.primary12 );
+    setGradient( Q::Halo | Q::Pressed, m_pal.primary12 );
 
     // move the handle smoothly, when using keys
     setAnimation( Q::Handle | A::Metric | A::Position, 2 * qskDuration );
@@ -1003,13 +1003,13 @@ void Editor::setupSwitchButton()
     setGradient( Q::Handle | Q::Disabled | Q::Checked, m_pal.surface );
 
     // just to keep the strut size the same at all times:
-    setStrutSize( Q::Ripple, 40_dp, 40_dp );
-    setGradient( Q::Ripple, Qt::transparent );
+    setStrutSize( Q::Halo, 40_dp, 40_dp );
+    setGradient( Q::Halo, Qt::transparent );
 
-    setStrutSize( Q::Ripple | Q::Hovered, 40_dp, 40_dp );
-    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
-    setGradient( Q::Ripple | Q::Hovered, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
-    setGradient( Q::Ripple | Q::Hovered | Q::Checked,
+    setStrutSize( Q::Halo | Q::Hovered, 40_dp, 40_dp );
+    setBoxShape( Q::Halo, 100, Qt::RelativeSize );
+    setGradient( Q::Halo | Q::Hovered, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
+    setGradient( Q::Halo | Q::Hovered | Q::Checked,
         stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
 
     setBoxBorderColors( Q::Handle, m_pal.outline );
