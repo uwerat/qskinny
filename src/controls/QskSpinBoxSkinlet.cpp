@@ -144,7 +144,7 @@ QSGNode* QskSpinBoxSkinlet::updateSubNode(
         case TextRole:
         {
             auto spinBox = static_cast< const QskSpinBox* >( skinnable );
-            return updateTextNode( spinBox, node, spinBox->text(), Q::Text );
+            return updateTextNode( spinBox, node, spinBox->valueText(), Q::Text );
         }
     }
 

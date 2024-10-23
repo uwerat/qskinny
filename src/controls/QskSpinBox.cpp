@@ -8,7 +8,6 @@
 #include "QskFunctions.h"
 
 #include <qbasictimer.h>
-#include <qlocale.h>
 
 #include <cfloat>
 
@@ -143,8 +142,6 @@ QskSpinBox::QskSpinBox( qreal min, qreal max, qreal stepSize, QQuickItem* parent
 
     setAcceptedMouseButtons( Qt::LeftButton );
     setFocusPolicy( Qt::StrongFocus );
-
-    connect( this, &QskSpinBox::valueChanged, this, &QskSpinBox::textChanged );
 }
 
 QskSpinBox::QskSpinBox( QQuickItem* parent )
@@ -202,11 +199,6 @@ void QskSpinBox::setDecimals( int decimals )
 int QskSpinBox::decimals() const
 {
     return m_data->decimals;
-}
-
-QString QskSpinBox::text() const
-{
-    return textFromValue( value() );
 }
 
 QString QskSpinBox::textFromValue( qreal value ) const
