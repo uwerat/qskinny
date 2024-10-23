@@ -97,7 +97,7 @@ InputPage::InputPage( QQuickItem* parent )
     struct
     {
         Slider* continous;
-        Slider* descrete;
+        Slider* discrete;
     } sliders[2];
 
     for ( int i = 0; i < 2; i++ )
@@ -105,7 +105,7 @@ InputPage::InputPage( QQuickItem* parent )
         const auto orientation = static_cast< Qt::Orientation >( i + 1 );
 
         sliders[i].continous = new Slider( orientation, Slider::Continous );
-        sliders[i].descrete = new Slider( orientation, Slider::Discrete );
+        sliders[i].discrete = new Slider( orientation, Slider::Discrete );
     }
 
     auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0 );
@@ -119,14 +119,14 @@ InputPage::InputPage( QQuickItem* parent )
     vBox->setExtraSpacingAt( Qt::RightEdge | Qt::BottomEdge );
 
     vBox->addItem( sliders[0].continous );
-    vBox->addItem( sliders[0].descrete );
+    vBox->addItem( sliders[0].discrete );
     vBox->addItem( inputBox );
     vBox->addItem( spinBox );
 
     auto mainBox = new QskLinearBox( Qt::Horizontal, this );
     mainBox->setSpacing( 30 );
     mainBox->addItem( sliders[1].continous );
-    mainBox->addItem( sliders[1].descrete );
+    mainBox->addItem( sliders[1].discrete );
     mainBox->addItem( vBox );
 
     auto inputs = findChildren< QskBoundedValueInput* >();
@@ -136,6 +136,8 @@ InputPage::InputPage( QQuickItem* parent )
         connect( input, &QskBoundedValueInput::valueChanged,
             this, &InputPage::syncValues );
     }
+
+    spinBox->setValue( 30.0 );
 }
 
 void InputPage::syncValues( qreal value )
