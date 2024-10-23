@@ -20,6 +20,7 @@ namespace
     enum Role
     {
         ShadowRole,
+        ShadowFillRole,
         BoxRole,
         FillRole
     };
@@ -27,14 +28,15 @@ namespace
 
 static void qskUpdateChildren( QSGNode* parentNode, quint8 role, QSGNode* node )
 {
-    static const QVector< quint8 > roles = { ShadowRole, BoxRole, FillRole };
+    static const QVector< quint8 > roles =
+        { ShadowRole, ShadowFillRole, BoxRole, FillRole };
 
     auto oldNode = QskSGNode::findChildNode( parentNode, role );
     QskSGNode::replaceChildNode( roles, role, parentNode, oldNode, node );
 }
 
 template< typename Node >
-inline Node* qskNode( QSGNode* parentNode, quint8 role )
+static inline Node* qskNode( QSGNode* parentNode, quint8 role )
 {
     using namespace QskSGNode;
 
@@ -65,6 +67,7 @@ void QskBoxNode::updateNode( const QRectF& rect,
     using namespace QskSGNode;
 
     QskBoxShadowNode* shadowNode = nullptr;
+    QskBoxRectangleNode* shadowFillNode = nullptr;
     QskBoxRectangleNode* rectNode = nullptr;
     QskBoxRectangleNode* fillNode = nullptr;
 
@@ -78,9 +81,20 @@ void QskBoxNode::updateNode( const QRectF& rect,
 
         if ( hasShadow )
         {
-            shadowNode = qskNode< QskBoxShadowNode >( this, ShadowRole );
-            shadowNode->setShadowData( shadowMetrics.shadowRect( rect ),
-                shape, shadowMetrics.blurRadius(), shadowColor );
+            const auto shadowRect = shadowMetrics.shadowRect( rect );
+            const auto blurRadius = shadowMetrics.blurRadius();
+
+            if ( blurRadius <= 0.0 )
+            {
+                // QskBoxRectangleNode allows scene graph batching
+                shadowFillNode = qskNode< QskBoxRectangleNode >( this, ShadowFillRole );
+                shadowFillNode->updateFilling( shadowRect, shape, shadowColor );
+            }
+            else
+            {
+                shadowNode = qskNode< QskBoxShadowNode >( this, ShadowRole );
+                shadowNode->setShadowData( shadowRect, shape, blurRadius, shadowColor );
+            }
         }
 
         if ( hasBorder || hasFilling )
@@ -95,7 +109,7 @@ void QskBoxNode::updateNode( const QRectF& rect,
                 if ( !doCombine )
                     fillNode = qskNode< QskBoxRectangleNode >( this, FillRole );
             }
-                    
+
             if ( fillNode )
             {
                 rectNode->updateBorder( rect, shape, borderMetrics, borderColors );
@@ -109,6 +123,7 @@ void QskBoxNode::updateNode( const QRectF& rect,
     }
 
     qskUpdateChildren( this, ShadowRole, shadowNode );
+    qskUpdateChildren( this, ShadowFillRole, shadowFillNode );
     qskUpdateChildren( this, BoxRole, rectNode );
     qskUpdateChildren( this, FillRole, fillNode );
 }
