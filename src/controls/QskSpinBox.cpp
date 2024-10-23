@@ -9,8 +9,6 @@
 
 #include <qbasictimer.h>
 
-#include <cfloat>
-
 QSK_SUBCONTROL( QskSpinBox, Panel )
 
 QSK_SUBCONTROL( QskSpinBox, TextPanel )
@@ -109,8 +107,6 @@ class QskSpinBox::PrivateData
         this->repeatTimer.stop();
     }
 
-    int decimals = 2;
-
     int autoRepeatDelay = 300;
     int autoRepeatInterval = 100;
 
@@ -182,28 +178,6 @@ void QskSpinBox::setWrapping( bool on )
 bool QskSpinBox::isWrapping() const
 {
     return m_data->wrapping;
-}
-
-void QskSpinBox::setDecimals( int decimals )
-{
-    decimals = qBound( 0, decimals, DBL_MAX_10_EXP + DBL_DIG );
-    if ( decimals != m_data->decimals )
-    {
-        m_data->decimals = decimals;
-
-        update();
-        resetImplicitSize();
-    }
-}
-
-int QskSpinBox::decimals() const
-{
-    return m_data->decimals;
-}
-
-QString QskSpinBox::textFromValue( qreal value ) const
-{
-    return locale().toString( value, 'f', m_data->decimals );
 }
 
 void QskSpinBox::increment( qreal offset )
