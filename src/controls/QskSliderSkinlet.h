@@ -66,8 +66,6 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
     QRectF labelContainerRect( const QskSlider*, const QRectF& ) const;
 
     QRectF innerRect( const QskSlider*, const QRectF&, QskAspect::Subcontrol ) const;
-
-    QString labelValue( const QskSlider* ) const;
 };
 
 #endif

@@ -9,6 +9,8 @@
 #include "QskIntervalF.h"
 #include "QskEvent.h"
 
+#include <qlocale.h>
+
 QSK_SUBCONTROL( QskSlider, Panel )
 QSK_SUBCONTROL( QskSlider, Groove )
 QSK_SUBCONTROL( QskSlider, Fill )
@@ -259,6 +261,14 @@ void QskSlider::moveHandleTo( qreal value, const QskAnimationHint& hint )
     }
 
     update();
+}
+
+QString QskSlider::textFromValue( qreal value ) const
+{
+#if 1
+    // we could try to find the precision from the step size. TODO ...
+    return locale().toString( value, 'f', 1 );
+#endif
 }
 
 #include "moc_QskSlider.cpp"

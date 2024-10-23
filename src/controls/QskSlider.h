@@ -45,6 +45,7 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     qreal handlePosition() const; // [0,0, 1.0]
 
     QskAspect::Variation effectiveVariation() const override;
+    QString textFromValue( qreal ) const override;
 
   Q_SIGNALS:
     void pressedChanged( bool );

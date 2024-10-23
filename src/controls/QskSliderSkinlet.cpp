@@ -112,7 +112,8 @@ QRectF QskSliderSkinlet::subControlRect( const QskSkinnable* skinnable,
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-int QskSliderSkinlet::sampleCount( const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+int QskSliderSkinlet::sampleCount( const QskSkinnable* skinnable,
+    QskAspect::Subcontrol subControl ) const
 {
     const auto slider = static_cast< const QskSlider* >( skinnable );
 
@@ -127,7 +128,8 @@ int QskSliderSkinlet::sampleCount( const QskSkinnable* skinnable, QskAspect::Sub
     }
 }
 
-QRectF QskSliderSkinlet::sampleRect( const QskSkinnable* skinnable, const QRectF& contentsRect,
+QRectF QskSliderSkinlet::sampleRect(
+    const QskSkinnable* skinnable, const QRectF& contentsRect,
     QskAspect::Subcontrol subControl, int index ) const
 {
     const auto slider = static_cast< const QskSlider* >( skinnable );
@@ -223,8 +225,7 @@ QSGNode* QskSliderSkinlet::updateSubNode(
 
         case LabelTextRole:
         {
-            const auto text = labelValue( slider );
-            return updateTextNode( slider, node, text, Q::LabelText );
+            return updateTextNode( slider, node, slider->valueText(), Q::LabelText );
         }
     }
 
@@ -395,12 +396,10 @@ QRectF QskSliderSkinlet::labelContainerRect(
     auto size = slider->strutSizeHint( Q::LabelContainer );
 
     if( size.isEmpty() )
-    {
-        return {};
-    }
+        return QRectF();
 
-    QFontMetricsF fm( slider->effectiveFont( Q::LabelText ) );
-    const auto w = qskHorizontalAdvance( fm, labelValue( slider ) );
+    const QFontMetricsF fm( slider->effectiveFont( Q::LabelText ) );
+    const auto w = qskHorizontalAdvance( fm, slider->valueText() );
 
     const auto padding = slider->paddingHint( Q::LabelContainer );
     const auto h = fm.height() + padding.top() + padding.bottom();
@@ -423,9 +422,7 @@ QRectF QskSliderSkinlet::labelContainerRect(
         y = hr.center().y() - size.height() / 2;
     }
 
-    const QRectF r( x, y, size.width(), size.height() );
-
-    return r;
+    return QRectF( x, y, size.width(), size.height() );
 }
 
 QSizeF QskSliderSkinlet::sizeHint( const QskSkinnable* skinnable,
@@ -445,11 +442,6 @@ QSizeF QskSliderSkinlet::sizeHint( const QskSkinnable* skinnable,
     hint = hint.expandedTo( handleHint );
 
     return hint;
-}
-
-QString QskSliderSkinlet::labelValue( const QskSlider* slider ) const
-{
-    return QString::number( slider->value(), 'f', 1 );
 }
 
 #include "moc_QskSliderSkinlet.cpp"
