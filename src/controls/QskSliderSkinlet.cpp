@@ -54,7 +54,7 @@ QskSliderSkinlet::QskSliderSkinlet( QskSkin* skin )
         FillStopIndicatorsRole,
         GrooveStopIndicatorsRole,
         HandleRole,
-        RippleRole,
+        HaloRole,
         LabelContainerRole,
         LabelTextRole,
     } );
@@ -94,9 +94,9 @@ QRectF QskSliderSkinlet::subControlRect( const QskSkinnable* skinnable,
         return scaleRect( slider, contentsRect );
     }
 
-    if ( subControl == Q::Ripple )
+    if ( subControl == QskSlider::Halo )
     {
-        return rippleRect( slider, contentsRect );
+        return haloRect( slider, contentsRect );
     }
 
     if ( subControl == Q::LabelContainer )
@@ -213,9 +213,9 @@ QSGNode* QskSliderSkinlet::updateSubNode(
             return updateBoxNode( slider, node, Q::Handle );
         }
 
-        case RippleRole:
+        case HaloRole:
         {
-            return updateBoxNode( slider, node, Q::Ripple );
+            return updateBoxNode( slider, node, Q::Halo );
         }
 
         case LabelContainerRole:
@@ -375,14 +375,14 @@ QRectF QskSliderSkinlet::handleRect(
     return handleRect;
 }
 
-QRectF QskSliderSkinlet::rippleRect(
+QRectF QskSliderSkinlet::haloRect(
     const QskSlider* slider, const QRectF& rect ) const
 {
-    const auto rippleSize = slider->strutSizeHint( Q::Ripple );
+    const auto haloSize = slider->strutSizeHint( Q::Halo );
     const auto handleSize = slider->strutSizeHint( Q::Handle );
 
-    const auto w = ( rippleSize.width() - handleSize.width() ) / 2;
-    const auto h = ( rippleSize.height() - handleSize.height() ) / 2;
+    const auto w = ( haloSize.width() - handleSize.width() ) / 2;
+    const auto h = ( haloSize.height() - handleSize.height() ) / 2;
 
     auto r = handleRect( slider, rect );
     r = r.marginsAdded( { w, h, w, h } );

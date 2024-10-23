@@ -9,7 +9,7 @@ QSK_SUBCONTROL( QskCheckBox, Panel )
 QSK_SUBCONTROL( QskCheckBox, Box )
 QSK_SUBCONTROL( QskCheckBox, Indicator )
 QSK_SUBCONTROL( QskCheckBox, Text )
-QSK_SUBCONTROL( QskCheckBox, Ripple )
+QSK_SUBCONTROL( QskCheckBox, Halo )
 
 QSK_SYSTEM_STATE( QskCheckBox, Error, QskAspect::FirstSystemState << 1 )
 

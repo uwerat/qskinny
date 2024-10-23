@@ -25,7 +25,7 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     using Inherited = QskBoundedValueInput;
 
   public:
-    QSK_SUBCONTROLS( Panel, Groove, Fill, Scale, Handle, Ripple, GrooveStopIndicators, FillStopIndicators,
+    QSK_SUBCONTROLS( Panel, Groove, Fill, Scale, Handle, Halo, GrooveStopIndicators, FillStopIndicators,
         LabelContainer, LabelText )
     QSK_STATES( Pressed )
 
