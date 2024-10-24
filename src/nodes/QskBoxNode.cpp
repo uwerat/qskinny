@@ -13,6 +13,7 @@
 #include "QskShadowMetrics.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxBorderColors.h"
+#include "QskBoxShapeMetrics.h"
 #include "QskRgbValue.h"
 
 namespace
@@ -60,7 +61,7 @@ QskBoxNode::~QskBoxNode()
 }
 
 void QskBoxNode::updateNode( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
+    const QskBoxShapeMetrics& shapeMetrics, const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient,
     const QskShadowMetrics& shadowMetrics, const QColor& shadowColor )
 {
@@ -75,25 +76,24 @@ void QskBoxNode::updateNode( const QRectF& rect,
     {
         const auto hasFilling = gradient.isVisible();
         const auto hasBorder = !borderMetrics.isNull() && borderColors.isVisible();
-
-        const auto hasShadow = hasFilling && !shadowMetrics.isNull()
-            && QskRgb::isVisible( shadowColor );
+        const auto hasShadow = !shadowMetrics.isNull() && QskRgb::isVisible( shadowColor );
 
         if ( hasShadow )
         {
-            const auto shadowRect = shadowMetrics.shadowRect( rect );
-            const auto blurRadius = shadowMetrics.blurRadius();
+            const auto shadow = shadowMetrics.toAbsolute( rect.size() );
+            const auto shadowRect = shadow.shadowRect( rect );
 
-            if ( blurRadius <= 0.0 )
+            if ( shadow.blurRadius() <= 0.0 )
             {
                 // QskBoxRectangleNode allows scene graph batching
                 shadowFillNode = qskNode< QskBoxRectangleNode >( this, ShadowFillRole );
-                shadowFillNode->updateFilling( shadowRect, shape, shadowColor );
+                shadowFillNode->updateFilling( shadowRect, shapeMetrics, shadowColor );
             }
             else
             {
                 shadowNode = qskNode< QskBoxShadowNode >( this, ShadowRole );
-                shadowNode->setShadowData( shadowRect, shape, blurRadius, shadowColor );
+                shadowNode->setShadowData( shadowRect,
+                    shapeMetrics, shadow.blurRadius(), shadowColor );
             }
         }
 
@@ -112,12 +112,13 @@ void QskBoxNode::updateNode( const QRectF& rect,
 
             if ( fillNode )
             {
-                rectNode->updateBorder( rect, shape, borderMetrics, borderColors );
-                fillNode->updateFilling( rect, shape, borderMetrics, gradient );
+                rectNode->updateBorder( rect, shapeMetrics, borderMetrics, borderColors );
+                fillNode->updateFilling( rect, shapeMetrics, borderMetrics, gradient );
             }
             else
             {
-                rectNode->updateBox( rect, shape, borderMetrics, borderColors, gradient );
+                rectNode->updateBox( rect, shapeMetrics,
+                    borderMetrics, borderColors, gradient );
             }
         }
     }
