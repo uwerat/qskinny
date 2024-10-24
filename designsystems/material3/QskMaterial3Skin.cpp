@@ -480,9 +480,17 @@ void Editor::setupRadioBox()
     setSpacing( Q::Button, 10_dp );
 
     setStrutSize( Q::CheckIndicatorPanel, 20_dp, 20_dp );
-    setStrutSize( Q::Halo, 40_dp, 40_dp );
 
-    for ( auto subControl : { Q::CheckIndicatorPanel, Q::CheckIndicator, Q::Halo } )
+    for ( const auto state1 : { Q::Hovered, Q::Focused, Q::Pressed } )
+    {
+        for ( const auto state2 : { A::NoState, Q::Selected } )
+        {
+            const auto aspect = Q::CheckIndicatorPanel | state1 | state2;
+            setShadowMetrics( aspect, { 10_dp, 0 } );
+        }
+    }
+
+    for ( auto subControl : { Q::CheckIndicatorPanel, Q::CheckIndicator } )
         setBoxShape( subControl, 100, Qt::RelativeSize ); // circular
 
     setBoxBorderMetrics( Q::CheckIndicatorPanel, 2_dp );
@@ -494,11 +502,41 @@ void Editor::setupRadioBox()
     setColor( Q::Text, m_pal.onBackground );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
-    setColor( Q::Halo, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
-    setColor( Q::Halo | Q::Selected,
-        stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
+    for ( const auto state1 : { Q::Hovered, Q::Focused, Q::Pressed } )
+    {
+        for ( const auto state2 : { A::NoState, Q::Selected } )
+        {
+            const auto aspect = Q::CheckIndicatorPanel | state1 | state2;
 
-    setColor( Q::CheckIndicator, Qt::transparent);
+            QRgb rgb;
+
+            if ( state1 == Q::Hovered )
+            {
+                rgb = ( state2 == Q::Selected ) ? m_pal.primary8 : m_pal.onSurface8;
+                rgb = stateLayerColor( rgb, m_pal.hoverOpacity );
+
+                setShadowColor( aspect, rgb );
+            }
+            else if ( state1 == Q::Focused )
+            {
+                rgb = ( state2 == Q::Selected ) ? m_pal.primary12 : m_pal.onSurface12;
+                rgb = stateLayerColor( rgb, m_pal.focusOpacity );
+
+                setShadowColor( aspect, rgb );
+            }
+            else
+            {
+                rgb = ( state2 == Q::Selected ) ? m_pal.onSurface12 : m_pal.primary12;
+                rgb = stateLayerColor( rgb, m_pal.pressedOpacity );
+
+                setShadowColor( aspect, rgb );
+                setShadowColor( aspect | Q::Focused, rgb );
+            }
+
+        }
+    }
+
+    setColor( Q::CheckIndicator, Qt::transparent );
     setColor( Q::CheckIndicator | Q::Selected, m_pal.primary );
     setColor( Q::CheckIndicator | Q::Selected | Q::Disabled, m_pal.onSurface38 );
 
@@ -509,7 +547,7 @@ void Editor::setupRadioBox()
     setBoxBorderColors(
         Q::CheckIndicatorPanel | Q::Disabled | Q::Selected, m_pal.onSurface38 );
 
-    setAnimation( Q::Halo | A::Metric | A::Position, qskDuration );
+    setAnimation( Q::CheckIndicator | A::Metric | A::Position, qskDuration );
 }
 
 void Editor::setupFocusIndicator()
@@ -1484,7 +1522,7 @@ static inline QFont createFont( int pointSize, int lineHeight,
         }
         checkFont = false;
     }
-    
+
     font.setPixelSize( pixelSize );
 
     if ( spacing > 0.0 )

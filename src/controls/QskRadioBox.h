@@ -22,7 +22,7 @@ class QSK_EXPORT QskRadioBox : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Button, CheckIndicatorPanel, CheckIndicator, Text, Halo )
+    QSK_SUBCONTROLS( Panel, Button, CheckIndicatorPanel, CheckIndicator, Text )
     QSK_STATES( Selected, Pressed )
 
     QskRadioBox( QQuickItem* parent = nullptr );
