@@ -83,17 +83,30 @@ void QskBoxNode::updateNode( const QRectF& rect,
             const auto shadow = shadowMetrics.toAbsolute( rect.size() );
             const auto shadowRect = shadow.shadowRect( rect );
 
+            auto shadowShape = shapeMetrics;
+
+            switch( static_cast< int >( shadow.shapeMode() ) )
+            {
+                case QskShadowMetrics::Ellipse:
+                    shadowShape.setRadius( 100.0, Qt::RelativeSize );
+                    break;
+
+                case QskShadowMetrics::Rectangle:
+                    shadowShape.setRadius( 0.0, Qt::AbsoluteSize );
+                    break;
+            }
+
             if ( shadow.blurRadius() <= 0.0 )
             {
                 // QskBoxRectangleNode allows scene graph batching
                 shadowFillNode = qskNode< QskBoxRectangleNode >( this, ShadowFillRole );
-                shadowFillNode->updateFilling( shadowRect, shapeMetrics, shadowColor );
+                shadowFillNode->updateFilling( shadowRect, shadowShape, shadowColor );
             }
             else
             {
                 shadowNode = qskNode< QskBoxShadowNode >( this, ShadowRole );
                 shadowNode->setShadowData( shadowRect,
-                    shapeMetrics, shadow.blurRadius(), shadowColor );
+                    shadowShape, shadow.blurRadius(), shadowColor );
             }
         }
 

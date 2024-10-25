@@ -141,6 +141,12 @@ static inline QSGNode* qskUpdateGraphicNode(
     return graphicNode;
 }
 
+static inline bool qskIsShadowVisible( const QskShadowMetrics& shadowMetrics,
+    const QColor& shadowColor )
+{
+    return !shadowMetrics.isNull() && shadowColor.isValid() && ( shadowColor.alpha() > 0 );
+}
+
 static inline bool qskIsBoxVisible( const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient )
 {
@@ -196,8 +202,14 @@ static inline QSGNode* qskUpdateBoxNode(
     const QskBoxBorderColors& borderColors, const QskGradient& gradient,
     const QskShadowMetrics& shadowMetrics, const QColor& shadowColor )
 {
-    if ( rect.isEmpty() || !qskIsBoxVisible( borderMetrics, borderColors, gradient ) )
+    if ( rect.isEmpty() )
         return nullptr;
+
+    if ( !qskIsBoxVisible( borderMetrics, borderColors, gradient )
+        && !qskIsShadowVisible( shadowMetrics, shadowColor ) )
+    {
+        return nullptr;
+    }
 
     auto boxNode = QskSGNode::ensureNode< QskBoxNode >( node );
     boxNode->updateNode( rect, shape, borderMetrics,
