@@ -194,83 +194,95 @@ namespace
 
 void Editor::setupCheckBox()
 {
-    // skin hints are ordered according to
-    // https://m3.material.io/components/checkbox/specs
-
     using Q = QskCheckBox;
+    using A = QskAspect;
+
+    // == metrics
 
     setSpacing( Q::Panel, 40_dp );
 
-    setStrutSize( Q::Box, 18_dp, 18_dp );
-    setBoxShape( Q::Box, 2_dp );
-
-    setBoxBorderColors( Q::Box, m_pal.onSurface );
-#if 1
-    // hack: if border metrics == box shape, alpha value will be discarded
-    setBoxBorderMetrics( Q::Box, 1.99_dp );
-#endif
-
-    setGradient( Q::Box, m_pal.background ); // not mentioned in the specs, but needed for animation
-    setGradient( Q::Box | Q::Checked, m_pal.primary );
-    setBoxBorderMetrics( Q::Box | Q::Checked, 0 );
-
-    setPadding( Q::Box, 3_dp ); // "icon size"
-
-    setGraphicRole( Q::Indicator, QskMaterial3Skin::GraphicRoleOnPrimary );
-
-    setBoxBorderColors( Q::Box | Q::Error, m_pal.error );
-
-    setGradient( Q::Box | Q::Checked | Q::Error, m_pal.error );
-
-    setGraphicRole( Q::Indicator | Q::Error, QskMaterial3Skin::GraphicRoleOnError );
-
-    const auto checkMark = symbol( "check_small" );
-    for ( auto state : { QskAspect::NoState, Q::Disabled } )
     {
-        const auto aspect = Q::Indicator | Q::Checked | state;
-        setSymbol( aspect, checkMark );
-        setSymbol( aspect | Q::Error, checkMark );
+        setStrutSize( Q::Box, 18_dp, 18_dp );
+        setBoxBorderMetrics( Q::Box, 2_dp );
+        setBoxShape( Q::Box, 2_dp );
+        setPadding( Q::Box, 3_dp ); // "icon size"
+
+        QskShadowMetrics shadowMetrics( 12_dp, 0.0 );
+        shadowMetrics.setShapeMode( QskShadowMetrics::Ellipse );
+        setShadowMetrics( Q::Box, shadowMetrics );
     }
 
-    setStrutSize( Q::Halo, 40_dp, 40_dp );
-    setBoxShape( Q::Halo, 100, Qt::RelativeSize );
-    setGradient( Q::Halo, Qt::transparent );
+    {
+        setGraphicRole( Q::Indicator, QskMaterial3Skin::GraphicRoleOnPrimary );
+        setGraphicRole( Q::Indicator | Q::Error, QskMaterial3Skin::GraphicRoleOnError );
+        setGraphicRole( Q::Indicator | Q::Disabled | Q::Checked,
+            QskMaterial3Skin::GraphicRoleSurface );
+
+        const auto checkMark = symbol( "check_small" );
+        for ( auto state : { A::NoState, Q::Disabled } )
+        {
+            const auto aspect = Q::Indicator | Q::Checked | state;
+            setSymbol( aspect, checkMark );
+            setSymbol( aspect | Q::Error, checkMark );
+        }
+    }
+
+    // === colors
 
     setColor( Q::Text, m_pal.onBackground ); // not mentioned in the specs
 
-    // States
+    for ( auto state1 : { Q::Hovered, Q::Focused, Q::Pressed } )
+    {
+        const auto opacity = m_pal.stateOpacity( state1 );
 
-    // 2. Disabled
+        for ( auto state2 : { A::NoState, Q::Checked } )
+        {
+            const auto aspect = Q::Box | state1 | state2;
 
-    setBoxBorderColors( Q::Box | Q::Disabled, m_pal.onSurface38 );
-    setBoxShape( Q::Box | Q::Disabled, 2_dp );
+            const auto rgb = ( state2 == Q::Checked ) ? m_pal.primary : m_pal.onSurface;
+            setShadowColor( aspect, stateLayerColor( rgb, opacity ) );
 
-    setGradient( Q::Box | Q::Disabled | Q::Checked, m_pal.onSurface38 );
-    setGradient( Q::Box | Q::Disabled | Q::Checked | Q::Error, m_pal.onSurface38 );
+            setShadowColor( aspect | Q::Error, stateLayerColor( m_pal.error, opacity ) );
+        }
+    }
 
-    setGraphicRole( Q::Indicator | Q::Disabled | Q::Checked, QskMaterial3Skin::GraphicRoleSurface );
+    for ( auto state1 : { A::NoState, Q::Disabled, Q::Hovered, Q::Focused, Q::Pressed } )
+    {
+        for ( auto state2 : { A::NoState, Q::Checked } )
+        {
+            const auto aspect = Q::Box | state1 | state2;
 
-    // 3. Hovered
+            QRgb rgb, rgbError;
 
-    setGradient( Q::Halo | Q::Hovered | Q::Checked, m_pal.primary8 );
-    setGradient( Q::Halo | Q::Hovered, m_pal.onSurface8 );
-    setGradient( Q::Halo | Q::Error | Q::Hovered, m_pal.error8 );
-    setGradient( Q::Halo | Q::Error | Q::Hovered | Q::Checked, m_pal.error8 );
+            if ( state1 == A::NoState )
+            {
+                rgb = ( state2 == Q::Checked )
+                    ? m_pal.primary : m_pal.onSurfaceVariant;
 
-    // 4. Focused
+                rgbError = m_pal.error;
+            }
+            else if ( state1 == Q::Disabled )
+            {
+                rgb = rgbError = m_pal.onSurface38;
+            }
+            else
+            {
+                rgb = ( state2 == Q::Checked )
+                    ? m_pal.primary : m_pal.onSurfaceVariant;
 
-    setGradient( Q::Halo | Q::Focused | Q::Checked, m_pal.primary12 );
-    setGradient( Q::Halo | Q::Focused, m_pal.onSurface12 );
-    setGradient( Q::Halo | Q::Error | Q::Focused, m_pal.error12 );
-    setGradient( Q::Halo | Q::Error | Q::Focused | Q::Checked, m_pal.error12 );
+                rgbError = m_pal.error;
+            }
 
-    // 5. Pressed
+            setBoxBorderColors( aspect, rgb );
+            setBoxBorderColors( aspect | Q::Error, rgbError );
 
-    setGradient( Q::Halo | Q::Pressed, m_pal.primary12 );
-    setGradient( Q::Halo | Q::Pressed | Q::Checked, m_pal.primary12 );
-    setGradient( Q::Halo | Q::Hovered | Q::Pressed, m_pal.primary12 );
-    setGradient( Q::Halo | Q::Error | Q::Pressed, m_pal.error12 );
-    setGradient( Q::Halo | Q::Error | Q::Pressed | Q::Checked, m_pal.error12 );
+            if ( state2 == Q::Checked )
+            {
+                setGradient( aspect, rgb );
+                setGradient( aspect | Q::Error, rgbError );
+            }
+        }
+    }
 }
 
 void Editor::setupComboBox()
@@ -1044,7 +1056,6 @@ void Editor::setupSwitchButton()
             }
         }
     }
-
 
     setGradient( Q::Handle | Q::Disabled, m_pal.onSurface38 );
     setGradient( Q::Handle | Q::Disabled | Q::Checked, m_pal.surface );
