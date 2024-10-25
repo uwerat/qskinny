@@ -93,6 +93,8 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     const qreal pressedOpacity = 0.12;
     const qreal draggedOpacity = 0.16;
 
+    qreal stateOpacity( int state ) const;
+
     QskBoxShapeMetrics shapeExtraSmallTop;
 };
 

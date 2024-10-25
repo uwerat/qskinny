@@ -481,15 +481,6 @@ void Editor::setupRadioBox()
 
     setStrutSize( Q::CheckIndicatorPanel, 20_dp, 20_dp );
 
-    for ( const auto state1 : { Q::Hovered, Q::Focused, Q::Pressed } )
-    {
-        for ( const auto state2 : { A::NoState, Q::Selected } )
-        {
-            const auto aspect = Q::CheckIndicatorPanel | state1 | state2;
-            setShadowMetrics( aspect, { 10_dp, 0 } );
-        }
-    }
-
     for ( auto subControl : { Q::CheckIndicatorPanel, Q::CheckIndicator } )
         setBoxShape( subControl, 100, Qt::RelativeSize ); // circular
 
@@ -507,6 +498,8 @@ void Editor::setupRadioBox()
         for ( const auto state2 : { A::NoState, Q::Selected } )
         {
             const auto aspect = Q::CheckIndicatorPanel | state1 | state2;
+
+            setShadowMetrics( aspect, { 10_dp, 0 } );
 
             QRgb rgb;
 
@@ -1030,25 +1023,52 @@ void Editor::setupSwitchButton()
     setBoxBorderMetrics( Q::Groove | Q::Checked, 0 );
 
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
-    setStrutSize( Q::Handle, 16_dp, 16_dp );
-    setStrutSize( Q::Handle | Q::Checked, 24_dp, 24_dp,
-        { QskStateCombination::CombinationNoState, Q::Disabled } );
+    setStrutSize( Q::Handle, 30_dp, 30_dp );
+    setMargin( Q::Handle, 7_dp );
+    setShadowMetrics( Q::Handle, { 17_dp, 0 } );
+    setShadowColor( Q::Handle, QskRgb::Transparent );
 
     setGradient( Q::Handle, m_pal.outline );
-    setGradient( Q::Handle | Q::Checked, m_pal.primaryContainer );
+    setGradient( Q::Handle | Q::Checked, m_pal.onPrimary );
+
+    for ( auto state1 : { A::NoState, Q::Hovered, Q::Focused, Q::Pressed } )
+    {
+        const qreal opacity = m_pal.stateOpacity( state1 );
+
+        for ( const auto state2 : { A::NoState, Q::Checked } )
+        {
+            const auto aspect = Q::Handle | state1 | state2;
+
+            if ( state1 == Q::Pressed )
+            {
+                setShadowMetrics( aspect, { 10_dp, 0 } );
+                setMargin( aspect, 0.0 );
+            }
+            else if ( state2 == Q::Checked )
+            {
+                setShadowMetrics( aspect, { 13_dp, 0 } );
+                setMargin( aspect, 3_dp );
+            }
+
+            if ( state1 )
+            {
+                if ( state2 == Q::Checked )
+                {
+                    setGradient( aspect, m_pal.primaryContainer );
+                    setShadowColor( aspect, stateLayerColor( m_pal.primary, opacity ) );
+                }
+                else
+                {
+                    setGradient( aspect, m_pal.onSurfaceVariant );
+                    setShadowColor( aspect, stateLayerColor( m_pal.onSurface, opacity ) );
+                }
+            }
+        }
+    }
+
 
     setGradient( Q::Handle | Q::Disabled, m_pal.onSurface38 );
     setGradient( Q::Handle | Q::Disabled | Q::Checked, m_pal.surface );
-
-    // just to keep the strut size the same at all times:
-    setStrutSize( Q::Halo, 40_dp, 40_dp );
-    setGradient( Q::Halo, Qt::transparent );
-
-    setStrutSize( Q::Halo | Q::Hovered, 40_dp, 40_dp );
-    setBoxShape( Q::Halo, 100, Qt::RelativeSize );
-    setGradient( Q::Halo | Q::Hovered, stateLayerColor( m_pal.onSurface, m_pal.focusOpacity ) );
-    setGradient( Q::Halo | Q::Hovered | Q::Checked,
-        stateLayerColor( m_pal.primary, m_pal.focusOpacity ) );
 
     setBoxBorderColors( Q::Handle, m_pal.outline );
     setBoxBorderColors( Q::Handle | Q::Checked, m_pal.primary );
@@ -1488,6 +1508,17 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
     elevation3 = QskShadowMetrics( -1, 11, { 0, 2 } );
 
     shapeExtraSmallTop = QskBoxShapeMetrics( 4_dp, 4_dp, 0, 0 );
+}
+
+qreal QskMaterial3Theme::stateOpacity( int state ) const
+{
+    if ( state == QskControl::Hovered )
+        return hoverOpacity;
+
+    if ( state == QskControl::Focused )
+        return focusOpacity;
+
+    return state ? pressedOpacity : 0.0;
 }
 
 QskMaterial3Skin::QskMaterial3Skin( QObject* parent )
