@@ -92,6 +92,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     const qreal focusOpacity = 0.12;
     const qreal pressedOpacity = 0.12;
     const qreal draggedOpacity = 0.16;
+    const qreal disabledOpacity = 0.38;
 
     qreal stateOpacity( int state ) const;
 

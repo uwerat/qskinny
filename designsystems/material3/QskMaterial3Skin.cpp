@@ -501,31 +501,10 @@ void Editor::setupRadioBox()
 
             setShadowMetrics( aspect, { 10_dp, 0 } );
 
-            QRgb rgb;
+            auto rgb = ( state2 == Q::Selected ) ? m_pal.primary : m_pal.onSurface;
+            rgb = stateLayerColor( rgb, m_pal.stateOpacity( state1 ) );
 
-            if ( state1 == Q::Hovered )
-            {
-                rgb = ( state2 == Q::Selected ) ? m_pal.primary8 : m_pal.onSurface8;
-                rgb = stateLayerColor( rgb, m_pal.hoverOpacity );
-
-                setShadowColor( aspect, rgb );
-            }
-            else if ( state1 == Q::Focused )
-            {
-                rgb = ( state2 == Q::Selected ) ? m_pal.primary12 : m_pal.onSurface12;
-                rgb = stateLayerColor( rgb, m_pal.focusOpacity );
-
-                setShadowColor( aspect, rgb );
-            }
-            else
-            {
-                rgb = ( state2 == Q::Selected ) ? m_pal.onSurface12 : m_pal.primary12;
-                rgb = stateLayerColor( rgb, m_pal.pressedOpacity );
-
-                setShadowColor( aspect, rgb );
-                setShadowColor( aspect | Q::Focused, rgb );
-            }
-
+            setShadowColor( aspect, rgb );
         }
     }
 
@@ -1517,6 +1496,9 @@ qreal QskMaterial3Theme::stateOpacity( int state ) const
 
     if ( state == QskControl::Focused )
         return focusOpacity;
+
+    if ( state == QskControl::Disabled )
+        return disabledOpacity;
 
     return state ? pressedOpacity : 0.0;
 }
