@@ -15,6 +15,26 @@ using Q = QskProgressBar;
 
 namespace
 {
+    QRectF qskFullGrooveRect( const QskProgressBar* bar )
+    {
+        const auto grooveSize = bar->metric( Q::Groove | QskAspect::Size );
+
+        auto rect = bar->contentsRect();
+
+        if ( bar->orientation() == Qt::Horizontal )
+        {
+            rect.setY( rect.y() + 0.5 * ( rect.height() - grooveSize ) );
+            rect.setHeight( grooveSize );
+        }
+        else
+        {
+            rect.setX( rect.x() + 0.5 * ( rect.width() - grooveSize ) );
+            rect.setWidth( grooveSize );
+        }
+
+        return rect;
+    }
+
     QskIntervalF qskFillInterval( const QskProgressIndicator* indicator )
     {
         qreal pos1, pos2;
@@ -37,6 +57,7 @@ namespace
         }
 
         auto bar = static_cast< const QskProgressBar* >( indicator );
+
         if( bar->orientation() == Qt::Horizontal )
         {
             if ( bar->layoutMirroring() )
@@ -51,11 +72,17 @@ namespace
 
         return QskIntervalF( pos1, pos2 );
     }
+
+    inline bool qskIsContiguous( const QskProgressBar* bar )
+    {
+        return qFuzzyIsNull( bar->spacingHint( Q::Fill ) );
+    }
 }
 
 QskProgressBarSkinlet::QskProgressBarSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
+    setNodeRoles( { GrooveRole, FillRole, GrooveStopIndicatorRole } );
 }
 
 QskProgressBarSkinlet::~QskProgressBarSkinlet()
@@ -68,37 +95,46 @@ QRectF QskProgressBarSkinlet::subControlRect(
 {
     const auto bar = static_cast< const Q* >( skinnable );
 
-    if( subControl == Q::Groove )
-    {
-        const auto grooveSize = bar->metric( Q::Groove | QskAspect::Size );
-
-        auto rect = contentsRect;
-        if ( bar->orientation() == Qt::Horizontal )
-        {
-            rect.setY( rect.y() + 0.5 * ( rect.height() - grooveSize ) );
-            rect.setHeight( grooveSize );
-        }
-        else
-        {
-            rect.setX( rect.x() + 0.5 * ( rect.width() - grooveSize ) );
-            rect.setWidth( grooveSize );
-        }
-
-        return rect;
-    }
-
     if( subControl == Q::Fill )
     {
         return barRect( bar );
     }
 
+    if( subControl == Q::GrooveStopIndicator )
+    {
+        return grooveStopIndicatorRect( bar );
+    }
+
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
+}
+
+QSGNode* QskProgressBarSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
+{
+    const auto bar = static_cast< const Q* >( skinnable );
+
+    switch( nodeRole )
+    {
+        case GrooveStopIndicatorRole:
+        {
+            if( bar->isIndeterminate() || bar->hasOrigin() )
+            {
+                return nullptr;
+            }
+            else
+            {
+                return updateBoxNode( skinnable, node, Q::GrooveStopIndicator );
+            }
+        }
+    }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
 QSGNode* QskProgressBarSkinlet::updateGrooveNode(
     const QskProgressIndicator* indicator, QSGNode* node ) const
 {
-    return updateBoxNode( indicator, node, Q::Groove );
+    return updateSeriesNode( indicator, Q::Groove, node );
 }
 
 QSGNode* QskProgressBarSkinlet::updateFillNode(
@@ -146,12 +182,21 @@ QSGNode* QskProgressBarSkinlet::updateFillNode(
     return updateBoxNode( indicator, node, rect, gradient, subControl );
 }
 
+QSGNode* QskProgressBarSkinlet::updateSampleNode( const QskSkinnable* skinnable,
+    QskAspect::Subcontrol subControl, int index, QSGNode* node ) const
+{
+    const auto bar = static_cast< const QskProgressBar* >( skinnable );
+    const auto rect = sampleRect( bar, bar->contentsRect(), subControl, index );
+
+    return updateBoxNode( skinnable, node, rect, subControl );
+}
+
 QRectF QskProgressBarSkinlet::barRect( const Q* bar ) const
 {
     const auto subControl = Q::Groove;
 
     const auto barSize = bar->metric( Q::Fill | QskAspect::Size );
-    auto rect = bar->subControlRect( subControl );
+    auto rect = qskFullGrooveRect( bar );
 
     if ( bar->orientation() == Qt::Horizontal )
     {
@@ -205,6 +250,72 @@ QSizeF QskProgressBarSkinlet::sizeHint( const QskSkinnable* skinnable,
         return QSizeF( -1, extent );
     else
         return QSizeF( extent, -1 );
+}
+
+int QskProgressBarSkinlet::sampleCount( const QskSkinnable* skinnable, QskAspect::Subcontrol ) const
+{
+    const auto bar = static_cast< const Q* >( skinnable );
+    const auto samples = ( ( bar->isIndeterminate() || bar->hasOrigin() ) && !qskIsContiguous( bar ) ) ? 2 : 1;
+    return samples;
+}
+
+QRectF QskProgressBarSkinlet::sampleRect( const QskSkinnable* skinnable,
+    const QRectF&, QskAspect::Subcontrol, int index ) const
+{
+    const auto bar = static_cast< const Q* >( skinnable );
+    const auto br = barRect( bar );
+    QRectF rect = qskFullGrooveRect( bar );
+    const auto spacing = bar->spacingHint( Q::Fill );
+    const auto isContiguous = qskIsContiguous( bar );
+
+    if( isContiguous )
+    {
+        return rect;
+    }
+    else
+    {
+        if( bar->orientation() == Qt::Horizontal )
+        {
+            if( index == 0 )
+            {
+                rect.setLeft( br.right() + spacing );
+            }
+            else
+            {
+                rect.setRight( br.left() - spacing );
+            }
+        }
+        else
+        {
+            if( index == 0 )
+            {
+                rect.setBottom( br.top() - spacing );
+            }
+            else
+            {
+                rect.setTop( br.bottom() + spacing );
+            }
+        }
+    }
+
+    return rect;
+}
+
+QRectF QskProgressBarSkinlet::grooveStopIndicatorRect( const QskProgressBar* bar ) const
+{
+    auto rect = qskFullGrooveRect( bar );
+    const auto size = bar->strutSizeHint( Q::GrooveStopIndicator );
+
+    if( bar->orientation() == Qt::Horizontal )
+    {
+        rect.setLeft( rect.right() - size.width() );
+    }
+    else
+    {
+        rect.setBottom( rect.top() + size.height() );
+    }
+
+    return rect;
 }
 
 #include "moc_QskProgressBarSkinlet.cpp"

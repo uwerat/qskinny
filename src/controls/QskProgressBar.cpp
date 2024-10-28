@@ -9,6 +9,7 @@
 
 QSK_SUBCONTROL( QskProgressBar, Groove )
 QSK_SUBCONTROL( QskProgressBar, Fill )
+QSK_SUBCONTROL( QskProgressBar, GrooveStopIndicator )
 
 class QskProgressBar::PrivateData
 {

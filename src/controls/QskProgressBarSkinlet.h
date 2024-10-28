@@ -17,6 +17,11 @@ class QSK_EXPORT QskProgressBarSkinlet : public QskProgressIndicatorSkinlet
     using Inherited = QskProgressIndicatorSkinlet;
 
   public:
+    enum NodeRole
+    {
+        GrooveStopIndicatorRole = Inherited::RoleCount,
+    };
+
     Q_INVOKABLE QskProgressBarSkinlet( QskSkin* = nullptr );
     ~QskProgressBarSkinlet() override;
 
@@ -26,12 +31,23 @@ class QSK_EXPORT QskProgressBarSkinlet : public QskProgressIndicatorSkinlet
     QSizeF sizeHint( const QskSkinnable*,
         Qt::SizeHint, const QSizeF& ) const override;
 
+    int sampleCount( const QskSkinnable*, QskAspect::Subcontrol ) const override;
+
+    QRectF sampleRect( const QskSkinnable*,
+        const QRectF&, QskAspect::Subcontrol, int index ) const override;
+
   protected:
+    QSGNode* updateSubNode( const QskSkinnable*, quint8 nodeRole, QSGNode* ) const override;
+
     QSGNode* updateGrooveNode( const QskProgressIndicator*, QSGNode* ) const override;
     QSGNode* updateFillNode( const QskProgressIndicator*, QSGNode* ) const override;
 
+    QSGNode* updateSampleNode( const QskSkinnable*,
+        QskAspect::Subcontrol, int index, QSGNode* ) const override;
+
   private:
     QRectF barRect( const QskProgressBar* ) const;
+    QRectF grooveStopIndicatorRect( const QskProgressBar* ) const;
 };
 
 #endif

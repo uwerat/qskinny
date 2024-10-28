@@ -29,8 +29,6 @@ class QSK_EXPORT QskProgressRingSkinlet : public QskProgressIndicatorSkinlet
   protected:
     QSGNode* updateGrooveNode( const QskProgressIndicator*, QSGNode* ) const override;
     QSGNode* updateFillNode( const QskProgressIndicator*, QSGNode* ) const override;
-
-    QskIntervalF fillInterval( const QskProgressIndicator* ) const;
 };
 
 #endif

@@ -486,22 +486,21 @@ void Editor::setupProgressBar()
     using A = QskAspect;
     using Q = QskProgressBar;
 
-    auto size = 4_dp;
-
     for ( auto subControl : { Q::Groove, Q::Fill } )
     {
-        setMetric( subControl | A::Size, size );
-        setPadding( subControl, 0 );
-
-        setBoxShape( subControl, 0 );
-        setBoxBorderMetrics( subControl, 0 );
+        setBoxShape( subControl, { 100, Qt::RelativeSize } );
+        setMetric( subControl | A::Size, 4_dp );
     }
 
-    setMetric( Q::Groove | A::Size, size );
     setGradient( Q::Groove, m_pal.surfaceContainerHighest );
-
     setGradient( Q::Groove | Q::Disabled, m_pal.onSurface12 );
 
+    setStrutSize( Q::GrooveStopIndicator, { 4_dp, 4_dp } );
+    setBoxShape( Q::GrooveStopIndicator, { 100, Qt::RelativeSize } );
+    setGradient( Q::GrooveStopIndicator, m_pal.primary );
+    setGradient( Q::GrooveStopIndicator | Q::Disabled, m_pal.onSurface38 );
+
+    setSpacing( Q::Fill, 4_dp );
     setGradient( Q::Fill, m_pal.primary );
     setGradient( Q::Fill | Q::Disabled, m_pal.onSurface38 );
 }
@@ -510,9 +509,15 @@ void Editor::setupProgressRing()
 {
     using Q = QskProgressRing;
 
+    setArcMetrics( Q::Groove, 90, -360, 4_dp );
+    setGradient( Q::Groove, m_pal.surfaceContainerHighest );
+    setGradient( Q::Groove | Q::Disabled, m_pal.onSurface12 );
+
+    setSpacing( Q::Fill, 10 );
     setStrutSize( Q::Fill, { 48_dp, 48_dp } );
-    setGradient( Q::Fill, m_pal.primary );
     setArcMetrics( Q::Fill, 90, -360, 4_dp );
+    setGradient( Q::Fill, m_pal.primary );
+    setGradient( Q::Fill | Q::Disabled, m_pal.onSurface38 );
 }
 
 void Editor::setupRadioBox()

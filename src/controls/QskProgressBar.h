@@ -18,7 +18,7 @@ class QSK_EXPORT QskProgressBar : public QskProgressIndicator
     using Inherited = QskProgressIndicator;
 
   public:
-    QSK_SUBCONTROLS( Groove, Fill )
+    QSK_SUBCONTROLS( Groove, Fill, GrooveStopIndicator )
 
     QskProgressBar( Qt::Orientation, QQuickItem* parent = nullptr );
     QskProgressBar( Qt::Orientation, qreal min, qreal max, QQuickItem* parent = nullptr );
