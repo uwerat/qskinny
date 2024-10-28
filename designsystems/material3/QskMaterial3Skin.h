@@ -80,6 +80,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QRgb outlineVariant;
 
     QRgb surfaceContainerHighest;
+    QRgb surfaceContainerHighest38;
 
     QRgb shadow;
 
@@ -110,12 +111,15 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
     {
         GraphicRoleOnError,
         GraphicRoleOnPrimary,
+        GraphicRoleOnPrimaryContainer,
         GraphicRoleOnSecondaryContainer,
         GraphicRoleOnSurface,
         GraphicRoleOnSurface38,
         GraphicRoleOnSurfaceVariant,
         GraphicRolePrimary,
         GraphicRoleSurface,
+        GraphicRoleSurfaceContainerHighest,
+        GraphicRoleSurfaceContainerHighest38,
     };
 
     QskMaterial3Skin( QObject* parent = nullptr );

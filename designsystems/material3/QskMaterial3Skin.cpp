@@ -40,7 +40,6 @@
 #include <QskStandardSymbol.h>
 #include <QskSubWindow.h>
 #include <QskSwitchButton.h>
-#include <QskSwitchButtonSkinlet.h>
 #include <QskTabBar.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
@@ -998,6 +997,8 @@ void Editor::setupSwitchButton()
     using A = QskAspect;
     using Q = QskSwitchButton;
 
+    const QskStateCombination allStates ( QskStateCombination::CombinationNoState, QskAspect::AllStates );
+
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
     const QSizeF strutSize( 52_dp, 32_dp );
     setStrutSize( Q::Groove | A::Horizontal, strutSize );
@@ -1010,17 +1011,27 @@ void Editor::setupSwitchButton()
     setGradient( Q::Groove | Q::Checked | Q::Disabled, m_pal.onSurface12 );
     setBoxBorderMetrics( Q::Groove, 2_dp );
     setBoxBorderColors( Q::Groove, m_pal.outline );
+    setBoxBorderColors( Q::Groove | Q::Disabled, m_pal.onSurface12 );
 
-    setBoxBorderMetrics( Q::Groove | Q::Checked, 0 );
+    setBoxBorderMetrics( Q::Groove | Q::Checked, 0, allStates );
 
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
-    setStrutSize( Q::Handle, 30_dp, 30_dp );
+    setStrutSize( Q::Handle, { 30_dp, 30_dp } );
     setMargin( Q::Handle, 7_dp );
     setShadowMetrics( Q::Handle, { 17_dp, 0 } );
     setShadowColor( Q::Handle, QskRgb::Transparent );
 
     setGradient( Q::Handle, m_pal.outline );
     setGradient( Q::Handle | Q::Checked, m_pal.onPrimary );
+
+    setStrutSize( Q::Icon, { 16_dp, 16_dp } );
+    setPadding( Q::Icon, 6_dp );
+    setSymbol( Q::Icon, symbol( "switchbutton-unchecked" ) );
+    setSymbol( Q::Icon | Q::Checked, symbol( "switchbutton-checked" ), allStates );
+    setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleSurfaceContainerHighest );
+    setGraphicRole( Q::Icon | Q::Checked, QskMaterial3Skin::GraphicRoleOnPrimaryContainer, allStates );
+    setGraphicRole( Q::Icon | Q::Disabled, QskMaterial3Skin::GraphicRoleSurfaceContainerHighest38, allStates );
+    setGraphicRole( Q::Icon | Q::Checked | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38, allStates );
 
     for ( auto state1 : { A::NoState, Q::Hovered, Q::Focused, Q::Pressed } )
     {
@@ -1067,8 +1078,8 @@ void Editor::setupSwitchButton()
     {
         auto aspect = Q::Handle | state;
 
-        setPosition( aspect, 0.15 );
-        setPosition( aspect | Q::Checked, 0.85 );
+        setPosition( aspect, 0.10 );
+        setPosition( aspect | Q::Checked, 0.9 );
     }
 
     setAnimation( Q::Handle | A::Color, qskDuration );
@@ -1492,6 +1503,8 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
 
     surfaceVariant12 = QskRgb::toTransparentF( surfaceVariant, 0.12 );
 
+    surfaceContainerHighest38 = QskRgb::toTransparentF( surfaceContainerHighest, 0.38 );
+
     elevation0 = QskShadowMetrics( 0, 0 );
     elevation1 = QskShadowMetrics( -2, 9, { 0, 1 } );
     elevation2 = QskShadowMetrics( -2, 8, { 0, 2 } );
@@ -1597,6 +1610,7 @@ void QskMaterial3Skin::setGraphicColor( GraphicRole role, QRgb rgb )
 void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& theme )
 {
     setGraphicColor( GraphicRoleOnPrimary, theme.onPrimary );
+    setGraphicColor( GraphicRoleOnPrimaryContainer, theme.onPrimaryContainer );
     setGraphicColor( GraphicRoleOnSecondaryContainer, theme.onSecondaryContainer );
     setGraphicColor( GraphicRoleOnError, theme.onError );
     setGraphicColor( GraphicRoleOnSurface, theme.onSurface );
@@ -1604,6 +1618,8 @@ void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& theme )
     setGraphicColor( GraphicRoleOnSurfaceVariant, theme.onSurfaceVariant );
     setGraphicColor( GraphicRolePrimary, theme.primary );
     setGraphicColor( GraphicRoleSurface, theme.surface );
+    setGraphicColor( GraphicRoleSurfaceContainerHighest, theme.surfaceContainerHighest );
+    setGraphicColor( GraphicRoleSurfaceContainerHighest38, theme.surfaceContainerHighest38 );
 }
 
 void QskMaterial3Skin::initHints()
