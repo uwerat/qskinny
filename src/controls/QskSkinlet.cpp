@@ -141,6 +141,12 @@ static inline QSGNode* qskUpdateGraphicNode(
     return graphicNode;
 }
 
+static inline bool qskIsShadowVisible( const QskShadowMetrics& shadowMetrics,
+    const QColor& shadowColor )
+{
+    return !shadowMetrics.isNull() && shadowColor.isValid() && ( shadowColor.alpha() > 0 );
+}
+
 static inline bool qskIsBoxVisible( const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient )
 {
@@ -199,23 +205,17 @@ static inline QSGNode* qskUpdateBoxNode(
     if ( rect.isEmpty() )
         return nullptr;
 
-    const auto size = rect.size();
-
-    const auto absoluteMetrics = borderMetrics.toAbsolute( size );
-
-    if ( qskIsBoxVisible( absoluteMetrics, borderColors, gradient ) )
+    if ( !qskIsBoxVisible( borderMetrics, borderColors, gradient )
+        && !qskIsShadowVisible( shadowMetrics, shadowColor ) )
     {
-        const auto absoluteShape = shape.toAbsolute( size );
-        const auto absoluteShadowMetrics = shadowMetrics.toAbsolute( size );
-
-        auto boxNode = QskSGNode::ensureNode< QskBoxNode >( node );
-        boxNode->updateNode( rect, absoluteShape, absoluteMetrics,
-            borderColors, gradient, absoluteShadowMetrics, shadowColor );
-
-        return boxNode;
+        return nullptr;
     }
 
-    return nullptr;
+    auto boxNode = QskSGNode::ensureNode< QskBoxNode >( node );
+    boxNode->updateNode( rect, shape, borderMetrics,
+        borderColors, gradient, shadowMetrics, shadowColor );
+
+    return boxNode;
 }
 
 static inline QSGNode* qskUpdateArcNode(

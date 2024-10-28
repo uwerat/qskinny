@@ -12,7 +12,7 @@
 #include "QskGradientDirection.h"
 #include "QskFillNodePrivate.h"
 
-static inline bool qskHasBorder( 
+static inline bool qskHasBorder(
     const QskBoxBorderMetrics& metrics, const QskBoxBorderColors& colors )
 {
     return !metrics.isNull() && colors.isVisible();
@@ -142,7 +142,7 @@ void QskBoxRectangleNode::updateFilling( const QRectF& rect,
 }
 
 void QskBoxRectangleNode::updateBorder( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
+    const QskBoxShapeMetrics& shapeMetrics, const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors )
 {
     Q_D( QskBoxRectangleNode );
@@ -152,6 +152,8 @@ void QskBoxRectangleNode::updateBorder( const QRectF& rect,
         d->resetNode( this );
         return;
     }
+
+    const auto shape = shapeMetrics.toAbsolute( rect.size() );
 
     const bool coloredGeometry = hasHint( PreferColoredGeometry )
         || !borderColors.isMonochrome();
@@ -189,7 +191,7 @@ void QskBoxRectangleNode::updateBorder( const QRectF& rect,
 }
 
 void QskBoxRectangleNode::updateBox( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
+    const QskBoxShapeMetrics& shapeMetrics, const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient )
 {
     Q_D( QskBoxRectangleNode );
@@ -205,6 +207,8 @@ void QskBoxRectangleNode::updateBox( const QRectF& rect,
 
     if ( hasFill && hasBorder )
     {
+        const auto shape = shapeMetrics.toAbsolute( rect.size() );
+
         const bool isDirty = d->updateMetrics( rect, shape, borderMetrics )
             || d->updateColors( borderColors, gradient ) || !isGeometryColored();
 
@@ -232,11 +236,11 @@ void QskBoxRectangleNode::updateBox( const QRectF& rect,
     }
     else if ( hasFill )
     {
-        updateFilling( rect, shape, borderMetrics, gradient );
+        updateFilling( rect, shapeMetrics, borderMetrics, gradient );
     }
     else if ( hasBorder )
     {
-        updateBorder( rect, shape, borderMetrics, borderColors );
+        updateBorder( rect, shapeMetrics, borderMetrics, borderColors );
     }
     else
     {

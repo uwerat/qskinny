@@ -8,6 +8,8 @@
 
 #include "QskSkinlet.h"
 
+class QskSwitchButton;
+
 class QSK_EXPORT QskSwitchButtonSkinlet : public QskSkinlet
 {
     Q_GADGET
@@ -19,7 +21,7 @@ class QSK_EXPORT QskSwitchButtonSkinlet : public QskSkinlet
     {
         GrooveRole,
         HandleRole,
-        HaloRole,
+        IconRole,
 
         RoleCount
     };
@@ -38,9 +40,9 @@ class QSK_EXPORT QskSwitchButtonSkinlet : public QskSkinlet
         quint8 nodeRole, QSGNode* ) const override;
 
   private:
-    QRectF grooveRect( const QskSkinnable*, const QRectF& ) const;
-    QRectF handleRect( const QskSkinnable*, const QRectF& ) const;
-    QRectF haloRect( const QskSkinnable*, const QRectF& ) const;
+    QRectF grooveRect( const QskSwitchButton*, const QRectF& ) const;
+    QRectF handleRect( const QskSwitchButton*, const QRectF& ) const;
+    QRectF iconRect( const QskSwitchButton*, const QRectF& ) const;
 };
 
 #endif

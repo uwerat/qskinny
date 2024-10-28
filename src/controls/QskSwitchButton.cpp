@@ -5,9 +5,9 @@
 
 #include "QskSwitchButton.h"
 
-QSK_SUBCONTROL( QskSwitchButton, Handle )
 QSK_SUBCONTROL( QskSwitchButton, Groove )
-QSK_SUBCONTROL( QskSwitchButton, Halo )
+QSK_SUBCONTROL( QskSwitchButton, Handle )
+QSK_SUBCONTROL( QskSwitchButton, Icon )
 
 struct QskSwitchButton::PrivateData
 {
@@ -18,6 +18,7 @@ struct QskSwitchButton::PrivateData
 
     bool inverted = false;
     Qt::Orientation orientation;
+    IconMode iconMode = NoIcon;
 };
 
 QskSwitchButton::QskSwitchButton( QQuickItem* parent )
@@ -74,6 +75,20 @@ void QskSwitchButton::setInverted( bool on )
         update();
 
         Q_EMIT invertedChanged( on );
+    }
+}
+
+QskSwitchButton::IconMode QskSwitchButton::iconMode() const
+{
+    return m_data->iconMode;
+}
+
+void QskSwitchButton::setIconMode( IconMode iconMode )
+{
+    if( iconMode != m_data->iconMode )
+    {
+        m_data->iconMode = iconMode;
+        Q_EMIT iconModeChanged( m_data->iconMode );
     }
 }
 
