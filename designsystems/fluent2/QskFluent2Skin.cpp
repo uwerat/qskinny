@@ -1445,11 +1445,11 @@ void Editor::setupSliderMetrics()
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setBoxBorderMetrics( Q::Handle, 1_px );
 
-    setStrutSize( Q::Halo, { 12_px, 12_px } );
-    setBoxShape( Q::Halo, 100, Qt::RelativeSize );
-
-    setStrutSize( Q::Halo | Q::Hovered, { 14_px, 14_px } );
-    setStrutSize( Q::Halo | Q::Pressed, { 10_px, 10_px } );
+    // set size of the outer ring to be used in setupSliderColors():
+    setPadding( Q::Handle, 5_px );
+    setPadding( Q::Handle | Q::Hovered, 4_px );
+    setPadding( Q::Handle | Q::Pressed, 6_px );
+    setPadding( Q::Handle | Q::Disabled, 6_px );
 }
 
 void Editor::setupSliderColors(
@@ -1460,41 +1460,47 @@ void Editor::setupSliderColors(
 
     const auto& pal = theme.palette;
 
+    const auto outerHandleColor = pal.fillColor.controlSolid.defaultColor;
+    setBoxBorderGradient( Q::Handle, pal.elevation.circle.border, outerHandleColor );
+
+    for ( auto state : { A::NoState, Q::Hovered, Q::Pressed, Q::Disabled } )
     {
-        const auto handleColor = pal.fillColor.controlSolid.defaultColor;
+        QRgb grooveColor, fillColor, innerHandleColor;
 
-        setGradient( Q::Handle, handleColor );
-        setBoxBorderGradient( Q::Handle, pal.elevation.circle.border, handleColor );
-    }
-
-    for ( auto state : { A::NoState, Q::Pressed, Q::Disabled } )
-    {
-        QRgb grooveColor, fillColor, haloColor;
-
-        if ( state == A::NoState )
+        if ( state == A::NoState || state == Q::Hovered )
         {
             grooveColor = pal.fillColor.controlStrong.defaultColor;
             fillColor = pal.fillColor.accent.defaultColor;
-            haloColor = fillColor;
+            innerHandleColor = fillColor;
         }
         else if ( state == Q::Pressed )
         {
             grooveColor = pal.fillColor.controlStrong.defaultColor;
             fillColor = pal.fillColor.accent.defaultColor;
-            haloColor = pal.fillColor.accent.tertiary;
+            innerHandleColor = pal.fillColor.accent.tertiary;
         }
         else if ( state == Q::Disabled )
         {
             grooveColor = pal.fillColor.controlStrong.disabled;
             fillColor = pal.fillColor.accent.disabled;
-            haloColor = grooveColor;
+            innerHandleColor = grooveColor;
         }
 
         grooveColor = rgbSolid( grooveColor, pal.background.solid.base );
 
         setGradient( Q::Groove | section | state, grooveColor );
-        setGradient( Q::Fill | section | state, fillColor );
-        setGradient( Q::Halo | section | state, haloColor );
+
+        {
+            const auto handleWidth = strutSize( Q::Handle ).width();
+            const auto outerRingWidth = padding( Q::Handle | state ).left();
+            const auto stop = ( handleWidth - 2 * outerRingWidth ) / handleWidth;
+
+            QskGradient handleGradient( { { 0.0, innerHandleColor }, { stop, innerHandleColor },
+                { stop, outerHandleColor }, { 1.0, outerHandleColor } } );
+            handleGradient.setDirection( QskGradient::Radial );
+
+            setGradient( Q::Handle | section | state, handleGradient );
+        }
     }
 }
 
