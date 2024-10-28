@@ -59,6 +59,9 @@ static inline void qskBindSignals(
     QObject::connect( wrappedInput, &QQuickTextInput::maximumLengthChanged,
         input, &QskTextInput::maximumLengthChanged );
 
+    QObject::connect( wrappedInput, &QQuickTextInput::wrapModeChanged,
+        input, [ input ] { Q_EMIT input->wrapModeChanged( input->wrapMode() ); } );
+
     QObject::connect( wrappedInput, &QQuickTextInput::echoModeChanged,
         input, [ input ] { Q_EMIT input->echoModeChanged( input->echoMode() ); } );
 
@@ -613,6 +616,18 @@ void QskTextInput::resetAlignment()
 Qt::Alignment QskTextInput::alignment() const
 {
     return alignmentHint( Text, Qt::AlignLeft | Qt::AlignTop );
+}
+
+void QskTextInput::setWrapMode( QskTextOptions::WrapMode wrapMode ) 
+{
+    m_data->textInput->setWrapMode(
+        static_cast< QQuickTextInput::WrapMode >( wrapMode ) );
+}
+
+QskTextOptions::WrapMode QskTextInput::wrapMode() const
+{
+    return static_cast< QskTextOptions::WrapMode >(
+        m_data->textInput->wrapMode() );
 }
 
 QFont QskTextInput::font() const
