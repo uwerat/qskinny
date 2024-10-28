@@ -172,7 +172,6 @@ class QSK_EXPORT QskTextInput : public QskControl
     void textEdited( const QString& );
     void descriptionChanged( const QString& );
 
-    void textOptionsChanged();
     void fontRoleChanged();
     void alignmentChanged();
 
