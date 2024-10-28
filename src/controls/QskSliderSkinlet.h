@@ -25,7 +25,6 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
         GrooveStopIndicatorsRole,
         FillStopIndicatorsRole,
         HandleRole,
-        HaloRole,
         LabelContainerRole,
         LabelTextRole,
 
@@ -62,7 +61,6 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
     QRectF fillRect( const QskSlider*, const QRectF& ) const;
     QRectF handleRect( const QskSlider*, const QRectF& ) const;
     QRectF scaleRect( const QskSlider*, const QRectF& ) const;
-    QRectF haloRect( const QskSlider*, const QRectF& ) const;
     QRectF labelContainerRect( const QskSlider*, const QRectF& ) const;
 
     QRectF innerRect( const QskSlider*, const QRectF&, QskAspect::Subcontrol ) const;

@@ -54,7 +54,6 @@ QskSliderSkinlet::QskSliderSkinlet( QskSkin* skin )
         FillStopIndicatorsRole,
         GrooveStopIndicatorsRole,
         HandleRole,
-        HaloRole,
         LabelContainerRole,
         LabelTextRole,
     } );
@@ -92,11 +91,6 @@ QRectF QskSliderSkinlet::subControlRect( const QskSkinnable* skinnable,
     if ( subControl == Q::Scale )
     {
         return scaleRect( slider, contentsRect );
-    }
-
-    if ( subControl == QskSlider::Halo )
-    {
-        return haloRect( slider, contentsRect );
     }
 
     if ( subControl == Q::LabelContainer )
@@ -211,11 +205,6 @@ QSGNode* QskSliderSkinlet::updateSubNode(
         case HandleRole:
         {
             return updateBoxNode( slider, node, Q::Handle );
-        }
-
-        case HaloRole:
-        {
-            return updateBoxNode( slider, node, Q::Halo );
         }
 
         case LabelContainerRole:
@@ -373,21 +362,6 @@ QRectF QskSliderSkinlet::handleRect(
     handleRect = handleRect.marginsRemoved( slider->marginHint( Q::Handle ) );
 
     return handleRect;
-}
-
-QRectF QskSliderSkinlet::haloRect(
-    const QskSlider* slider, const QRectF& rect ) const
-{
-    const auto haloSize = slider->strutSizeHint( Q::Halo );
-    const auto handleSize = slider->strutSizeHint( Q::Handle );
-
-    const auto w = ( haloSize.width() - handleSize.width() ) / 2;
-    const auto h = ( haloSize.height() - handleSize.height() ) / 2;
-
-    auto r = handleRect( slider, rect );
-    r = r.marginsAdded( { w, h, w, h } );
-
-    return r;
 }
 
 QRectF QskSliderSkinlet::labelContainerRect(
