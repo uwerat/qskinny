@@ -11,14 +11,11 @@
 #include <QskTextLabel.h>
 #include <QskSkinHintTableEditor.h>
 #include <QskRgbValue.h>
-#include <QskPlatform.h>
 #include <QskFontRole.h>
 
 static inline QFont qskFont( qreal pointSize )
 {
-    QFont font( "Roboto" );
-    font.setPointSizeF( pointSize / qskDpToPixels( 1.0 ) );
-    return font;
+    return QFont( "Roboto", pointSize );
 }
 
 Skin::Skin()
@@ -31,9 +28,8 @@ void Skin::initHints()
 {
     using namespace QskRgb;
 
-    setFont( QskFontRole::Caption, qskFont( 8 ) );
-    setFont( QskFontRole::Body, qskFont( 13 ) );
-    setFont( QskFontRole::Title, qskFont( 20 ) );
+    setFont( QskFontRole::Caption, qskFont( 12 ) );
+    setFont( QskFontRole::Body, qskFont( 16 ) );
 
     const auto rgb1 = qRgb( 1, 16, 27 ); // Maastricht blue
     const auto rgb2 = qRgb( 255, 0, 22 ); // Ruddy
