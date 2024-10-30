@@ -193,12 +193,13 @@ void QskBoxRenderer::setColoredBorderAndFillLines( const QRectF& rect,
         const int fillCount = stroker.fillCount();
         const int borderCount = stroker.borderCount();
 
-        auto lines = qskAllocateColoredLines( geometry, borderCount + fillCount );
+        if ( auto lines = qskAllocateColoredLines( geometry, borderCount + fillCount ) )
+        {
+            auto fillLines = fillCount ? lines : nullptr;
+            auto borderLines = borderCount ? lines + fillCount : nullptr;
 
-        auto fillLines = fillCount ? lines : nullptr;
-        auto borderLines = borderCount ? lines + fillCount : nullptr;
-
-        stroker.setBoxLines( borderLines, fillLines );
+            stroker.setBoxLines( borderLines, fillLines );
+        }
     }
     else
     {
