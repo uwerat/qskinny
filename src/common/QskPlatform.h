@@ -12,6 +12,7 @@ class QScreen;
 class QPlatformIntegration;
 class QPlatformTheme;
 class QRect;
+class QQuickWindow;
 
 QSK_EXPORT qreal qskGlobalScaleFactor();
 
@@ -32,6 +33,9 @@ QSK_EXPORT const QPlatformTheme* qskPlatformTheme();
 
 QSK_EXPORT qreal qskDpToPixelsFactor();
 QSK_EXPORT qreal qskPxToPixelsFactor();
+
+QSK_EXPORT qreal qskInchesToPixels( const QQuickWindow*, qreal mm );
+QSK_EXPORT qreal qskMMToPixels( const QQuickWindow*, qreal mm );
 
 inline qreal qskDpToPixels( qreal value )
 {

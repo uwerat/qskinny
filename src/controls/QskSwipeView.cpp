@@ -74,7 +74,7 @@ void QskSwipeView::setSwipeDistance( int distance )
 
 void QskSwipeView::resetSwipeDistance()
 {
-    setSwipeDistance( qRound( qskDpToPixels( 40 ) ) );
+    setSwipeDistance( qRound( qskMMToPixels( window(), 8 ) ) );
 }
 
 int QskSwipeView::duration() const

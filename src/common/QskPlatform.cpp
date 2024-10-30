@@ -6,6 +6,7 @@
 #include "QskPlatform.h"
 
 #include <qguiapplication.h>
+#include <qquickwindow.h>
 #include <qscreen.h>
 
 QSK_QT_PRIVATE_BEGIN
@@ -87,4 +88,26 @@ qreal qskPxToPixelsFactor()
         return screen->physicalDotsPerInch() / 96.0;
 
     return 1.0;
+}
+
+static inline qreal qskWindowDpi( const QWindow* window )
+{
+    QScreen* screen = nullptr;
+    if ( window )
+        screen = window->screen();
+
+    if ( screen == nullptr )
+        screen = QGuiApplication::primaryScreen();
+
+    return QHighDpiScaling::logicalDpi( screen ).first;
+}
+
+qreal qskInchesToPixels( const QQuickWindow* window, qreal inches )
+{
+    return qskWindowDpi( window ) * inches;
+}
+
+qreal qskMMToPixels( const QQuickWindow* window, qreal mm )
+{
+    return qskWindowDpi( window ) * mm / 25.4;
 }
