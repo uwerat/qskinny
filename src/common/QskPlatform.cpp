@@ -52,44 +52,6 @@ QRect qskPlatformScreenGeometry( const QScreen* screen )
     return screen->handle()->geometry();
 }
 
-static inline qreal qskRoundedDpi( qreal dpi )
-{   
-    // see https://developer.android.com/training/multiscreen/screendensities
-    
-    if( dpi <= 140.0 )
-        return 120.0; // ldpi
-    
-    if( dpi <= 200.0 )
-        return 160.0; // mdpi
-    
-    if( dpi <= 280.0 )
-        return 240.0; // hdpi
-    
-    if( dpi <= 400.0 )
-        return 320.0; // xhdpi
-    
-    if( dpi <= 560.0 )
-        return 480.0; // xxhdpi
-    
-    return 640.0; // xxxhdpi
-}   
-
-qreal qskDpToPixelsFactor()
-{
-    if ( const auto screen = QGuiApplication::primaryScreen() )
-        return qskRoundedDpi( screen->physicalDotsPerInch() ) / 160.0;
-
-    return 1.0;
-}
-
-qreal qskPxToPixelsFactor()
-{
-    if ( const auto screen = QGuiApplication::primaryScreen() )
-        return screen->physicalDotsPerInch() / 96.0;
-
-    return 1.0;
-}
-
 static inline qreal qskWindowDpi( const QWindow* window )
 {
     QScreen* screen = nullptr;

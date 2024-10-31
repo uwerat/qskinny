@@ -101,14 +101,47 @@ namespace
 
 namespace
 {
-    Q_DECL_UNUSED inline double operator ""_dp( long double value )
+    inline constexpr qreal dpToPixels( qreal value )
     {
-        return qskDpToPixels( static_cast< qreal >( value ) );
+        /*
+            see: https://en.wikipedia.org/wiki/Device-independent_pixel
+                 https://developer.android.com/training/multiscreen/screendensities
+
+            One dp is a virtual pixel unit that's roughly equal to one pixel
+            on a medium-density screen ( 160 dpi ).
+
+            One logical pixel is equivalent to 1/96th of an inch.
+         */
+
+        /*
+           For non scalable resources the following density buckets
+           are recommended:
+
+                  ldpi: ( 0 -> 140 )  : 120
+                  mdpi: ( 140 -> 200 ): 160
+                  hdpi: ( 140 -> 280 ): 240
+                 xhdpi: ( 280 -> 400 ): 320
+                xxhdpi: ( 400 -> 560 ): 480
+               xxxhdpi: ( 560 -> ... ): 640
+
+           For some reason the metrics from the Figma model seem to be
+           too small on our deskop system. Until this has bee understood
+           we use the ldpi bucket as the density of the logical coordinate
+           system falls into it.
+
+           Need to find out why TODO ...
+         */
+        return value * 96.0 / 120.0;
     }
 
-    Q_DECL_UNUSED inline double operator ""_dp( unsigned long long value )
+    Q_DECL_UNUSED inline constexpr double operator ""_dp( long double value )
     {
-        return qskDpToPixels( value );
+        return dpToPixels( static_cast< qreal >( value ) );
+    }
+
+    Q_DECL_UNUSED inline constexpr double operator ""_dp( unsigned long long value )
+    {
+        return dpToPixels( value );
     }
 
     class Combination : public QskStateCombination
@@ -1536,15 +1569,10 @@ QskMaterial3Skin::~QskMaterial3Skin()
 {
 }
 
-static inline QFont createFont( int pointSize, int lineHeight,
+static inline QFont createFont( qreal size, int lineHeight,
     qreal spacing, QFont::Weight weight )
 {
     Q_UNUSED( lineHeight );
-
-    // convert to px according to https://www.w3.org/TR/css3-values/#absolute-lengths :
-    const double pxSize = pointSize / 72.0 * 96.0;
-
-    const int pixelSize = qRound( qskDpToPixels( pxSize ) );
 
     QFont font( QStringLiteral( "Roboto" ), -1, weight );
 
@@ -1560,7 +1588,8 @@ static inline QFont createFont( int pointSize, int lineHeight,
         checkFont = false;
     }
 
-    font.setPixelSize( pixelSize );
+    // px: 1/96 inch, pt: 1/72 inch
+    font.setPointSize( size * 72.0 / 96.0 );
 
     if ( spacing > 0.0 )
         font.setLetterSpacing( QFont::AbsoluteSpacing, spacing );
@@ -1570,30 +1599,35 @@ static inline QFont createFont( int pointSize, int lineHeight,
 
 void QskMaterial3Skin::setupFonts()
 {
-    setFont( LabelSmall, createFont( 11, 16, 0.5, QFont::Medium ) );
-    setFont( LabelMedium, createFont( 12, 16, 0.5, QFont::Medium ) );
-    setFont( LabelLarge, createFont( 14, 20, 0.1, QFont::Medium ) );
+    /*
+        Not sure what units are used for the font sizes in the specs.
+        From the results on our desktop system we guess they are in pt
+        - corresponding to the QFont point size.
+     */
+    setFont( LabelSmall, createFont( 11, 16_dp, 0.5, QFont::Medium ) );
+    setFont( LabelMedium, createFont( 12, 16_dp, 0.5, QFont::Medium ) );
+    setFont( LabelLarge, createFont( 14, 20_dp, 0.1, QFont::Medium ) );
 
-    setFont( BodySmall, createFont( 12, 16, 0.4, QFont::Normal ) );
-    setFont( BodyMedium, createFont( 14, 20, 0.25, QFont::Normal ) );
-    setFont( BodyLarge, createFont( 16, 24, 0.5, QFont::Normal ) );
+    setFont( BodySmall, createFont( 12, 16_dp, 0.4, QFont::Normal ) );
+    setFont( BodyMedium, createFont( 14, 20_dp, 0.25, QFont::Normal ) );
+    setFont( BodyLarge, createFont( 16, 24_dp, 0.5, QFont::Normal ) );
 
-    setFont( TitleSmall, createFont( 14, 20, 0.1, QFont::Medium ) );
-    setFont( TitleMedium, createFont( 16, 24, 0.15, QFont::Medium ) );
-    setFont( TitleLarge, createFont( 22, 28, 0.0, QFont::Normal ) );
+    setFont( TitleSmall, createFont( 14, 20_dp, 0.1, QFont::Medium ) );
+    setFont( TitleMedium, createFont( 16, 24_dp, 0.15, QFont::Medium ) );
+    setFont( TitleLarge, createFont( 22, 28_dp, 0.0, QFont::Normal ) );
 
-    setFont( HeadlineSmall, createFont( 24, 32, 0.0, QFont::Normal ) );
-    setFont( HeadlineMedium, createFont( 28, 36, 0.0, QFont::Medium ) );
-    setFont( HeadlineLarge, createFont( 32, 40, 0.0, QFont::Medium ) );
+    setFont( HeadlineSmall, createFont( 24, 32_dp, 0.0, QFont::Normal ) );
+    setFont( HeadlineMedium, createFont( 28, 36_dp, 0.0, QFont::Medium ) );
+    setFont( HeadlineLarge, createFont( 32, 40_dp, 0.0, QFont::Medium ) );
 
-    setFont( DisplaySmall, createFont( 36, 44, 0.0, QFont::Normal ) );
-    setFont( DisplayMedium, createFont( 45, 52, 0.0, QFont::Normal ) );
-    setFont( DisplayLarge, createFont( 57, 64, 0.0, QFont::Normal ) );
+    setFont( DisplaySmall, createFont( 36, 44_dp, 0.0, QFont::Normal ) );
+    setFont( DisplayMedium, createFont( 45, 52_dp, 0.0, QFont::Normal ) );
+    setFont( DisplayLarge, createFont( 57, 64_dp, 0.0, QFont::Normal ) );
 
     // to have something for the unused roles
 
     setFont( { QskFontRole::Subtitle, QskFontRole::Normal },
-        createFont( 16, 24, 0.0, QFont::Normal ) );
+        createFont( 16, 24_dp, 0.0, QFont::Normal ) );
 
     QskSkin::completeFontTable();
 }

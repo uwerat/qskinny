@@ -30,8 +30,6 @@
 
       - Indicator subcontrol might be better than using the border of the selection box
       - cell padding unclear
-
-    - using qskDpToPixels ?
  */
 
 /*
@@ -134,14 +132,17 @@ namespace Fluent2
 
 namespace
 {
-    Q_DECL_UNUSED inline double operator ""_px( long double value )
+    /*
+        mapping between px and logical coordinates
+     */
+    inline constexpr double operator ""_px( long double value )
     {
-        return qskPxToPixels( static_cast< qreal >( value ) );
+        return static_cast< double >( value );
     }
 
-    Q_DECL_UNUSED inline double operator ""_px( unsigned long long value )
+    inline constexpr double operator ""_px( unsigned long long value )
     {
-        return qskPxToPixels( value );
+        return static_cast< double >( value );
     }
 
     inline constexpr QRgb rgbGray( int value, qreal opacity = 1.0 )
@@ -2073,10 +2074,9 @@ void QskFluent2Skin::initHints()
     addTheme( QskAspect::Footer, themeHeader );
 }
 
-static inline QFont createFont( int size, int lineHeight, QFont::Weight weight )
+static inline QFont createFont( qreal size, int lineHeight, QFont::Weight weight )
 {
     Q_UNUSED( lineHeight ); // TODO ...
-    const int pixelSize = qRound( qskPxToPixels( size ) );
 
     QFont font( QStringLiteral( "Segoe UI" ), -1, weight );
 
@@ -2092,7 +2092,8 @@ static inline QFont createFont( int size, int lineHeight, QFont::Weight weight )
         checkFont = false;
     }
 
-    font.setPixelSize( pixelSize );
+    // px: 1/96 inch, pt: 1/72 inch
+    font.setPointSizeF( size * 72.0 / 96.0 );
 
     return font;
 }
@@ -2101,18 +2102,18 @@ void QskFluent2Skin::setupFonts()
 {
     // see: https://fluent2.microsoft.design/typography ( Windows )
 
-    setFont( Fluent2::Caption, createFont( 12, 16, QFont::Normal ) );
+    setFont( Fluent2::Caption, createFont( 12_px, 16_px, QFont::Normal ) );
 
-    setFont( Fluent2::Body, createFont( 14, 20, QFont::Normal ) );
-    setFont( Fluent2::BodyStrong, createFont( 14, 20, QFont::DemiBold ) );
-    setFont( Fluent2::BodyStronger, createFont( 18, 24, QFont::Normal ) );
+    setFont( Fluent2::Body, createFont( 14_px, 20_px, QFont::Normal ) );
+    setFont( Fluent2::BodyStrong, createFont( 14_px, 20_px, QFont::DemiBold ) );
+    setFont( Fluent2::BodyStronger, createFont( 18_px, 24_px, QFont::Normal ) );
 
-    setFont( Fluent2::Subtitle, createFont( 20, 28, QFont::DemiBold ) );
+    setFont( Fluent2::Subtitle, createFont( 20_px, 28_px, QFont::DemiBold ) );
 
-    setFont( Fluent2::Title, createFont( 28, 36, QFont::Normal ) );
-    setFont( Fluent2::LargeTitle, createFont( 40, 52, QFont::DemiBold ) );
+    setFont( Fluent2::Title, createFont( 28_px, 36_px, QFont::Normal ) );
+    setFont( Fluent2::LargeTitle, createFont( 40_px, 52_px, QFont::DemiBold ) );
 
-    setFont( Fluent2::Display, createFont( 68, 92, QFont::DemiBold ) );
+    setFont( Fluent2::Display, createFont( 68_px, 92_px, QFont::DemiBold ) );
 
     // to have something for the unused roles
     QskSkin::completeFontTable();

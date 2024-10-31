@@ -80,14 +80,17 @@ namespace
         }
     };
 
-    Q_DECL_UNUSED inline double operator ""_px( long double value )
+    /*
+        mapping between px and logical coordinates
+     */
+    inline double operator ""_px( long double value )
     {
-        return qskDpToPixels( static_cast< qreal >( value ) );
+        return static_cast< double >( value );
     }
 
-    Q_DECL_UNUSED inline double operator ""_px( unsigned long long value )
+    inline double operator ""_px( unsigned long long value )
     {
-        return qskDpToPixels( value );
+        return static_cast< double >( value );
     }
 
     class Editor : private QskSkinHintTableEditor
