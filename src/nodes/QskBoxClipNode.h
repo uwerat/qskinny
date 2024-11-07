@@ -12,13 +12,15 @@
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 
+class QQuickWindow;
+
 class QSK_EXPORT QskBoxClipNode : public QSGClipNode
 {
   public:
     QskBoxClipNode();
     ~QskBoxClipNode() override;
 
-    void setBox( const QRectF&,
+    void setBox( const QQuickWindow*, const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics& );
 
   private:

@@ -196,26 +196,37 @@ static inline QskTextColors qskTextColors(
     return c;
 }
 
+static inline QQuickWindow* qskWindowOfSkinnable( const QskSkinnable* skinnable )
+{
+    if ( auto item = skinnable->owningItem() )
+        return item->window();
+
+    return nullptr;
+}
+
 static inline QSGNode* qskUpdateBoxNode(
-    const QskSkinnable*, QSGNode* node, const QRectF& rect,
+    const QskSkinnable* skinnable, QSGNode* node, const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient,
     const QskShadowMetrics& shadowMetrics, const QColor& shadowColor )
 {
-    if ( rect.isEmpty() )
-        return nullptr;
-
-    if ( !qskIsBoxVisible( borderMetrics, borderColors, gradient )
-        && !qskIsShadowVisible( shadowMetrics, shadowColor ) )
+    if ( !rect.isEmpty() )
     {
-        return nullptr;
+        if ( qskIsBoxVisible( borderMetrics, borderColors, gradient )
+            || qskIsShadowVisible( shadowMetrics, shadowColor ) )
+        {
+            if ( auto window = qskWindowOfSkinnable( skinnable ) )
+            {
+                auto boxNode = QskSGNode::ensureNode< QskBoxNode >( node );
+                boxNode->updateNode( window, rect, shape, borderMetrics,
+                    borderColors, gradient, shadowMetrics, shadowColor );
+
+                return boxNode;
+            }
+        }
     }
 
-    auto boxNode = QskSGNode::ensureNode< QskBoxNode >( node );
-    boxNode->updateNode( rect, shape, borderMetrics,
-        borderColors, gradient, shadowMetrics, shadowColor );
-
-    return boxNode;
+    return nullptr;
 }
 
 static inline QSGNode* qskUpdateArcNode(
@@ -373,7 +384,7 @@ QSGNode* QskSkinlet::updateBackgroundNode(
         return nullptr;
 
     auto rectNode = QskSGNode::ensureNode< QskBoxRectangleNode >( node );
-    rectNode->updateFilling( rect, gradient );
+    rectNode->updateFilling( control->window(), rect, gradient );
 
     return rectNode;
 }
@@ -648,7 +659,8 @@ QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
         auto shape = skinnable->boxShapeHint( subControl );
         shape = shape.toAbsolute( clipRect.size() );
 
-        clipNode->setBox( clipRect, shape, borderMetrics );
+        const auto window = qskWindowOfSkinnable( skinnable );
+        clipNode->setBox( window, clipRect, shape, borderMetrics );
     }
 
     return clipNode;

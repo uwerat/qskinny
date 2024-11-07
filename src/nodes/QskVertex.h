@@ -11,7 +11,6 @@
 #include <qcolor.h>
 #include <qsggeometry.h>
 #include <qline.h>
-#include <qmath.h>
 
 namespace QskVertex
 {
@@ -214,126 +213,6 @@ namespace QskVertex
         geometry.allocate( 2 * lineCount ); // 2 points per line
         return reinterpret_cast< Line* >( geometry.vertexData() );
     }
-}
-
-namespace QskVertex
-{
-    class ArcIterator
-    {
-      public:
-        inline ArcIterator() = default;
-
-        inline ArcIterator( int stepCount, bool inverted = false )
-        {
-            reset( stepCount, inverted );
-        }
-
-        void reset( int stepCount, bool inverted = false )
-        {
-            m_inverted = inverted;
-
-            if ( inverted )
-            {
-                m_cos = 1.0;
-                m_sin = 0.0;
-            }
-            else
-            {
-                m_cos = 0.0;
-                m_sin = 1.0;
-            }
-
-            m_stepIndex = 0;
-            m_stepCount = stepCount;
-
-            const auto angleStep = M_PI_2 / stepCount;
-            m_cosStep = qFastCos( angleStep );
-            m_sinStep = qFastSin( angleStep );
-        }
-
-        inline bool isInverted() const { return m_inverted; }
-
-        inline qreal cos() const { return m_cos; }
-        inline qreal sin() const { return m_inverted ? -m_sin : m_sin; }
-
-        inline int step() const { return m_stepIndex; }
-        inline int stepCount() const { return m_stepCount; }
-        inline bool isDone() const { return m_stepIndex > m_stepCount; }
-
-        inline void increment()
-        {
-            if ( ++m_stepIndex >= m_stepCount )
-            {
-                if ( m_stepIndex == m_stepCount )
-                {
-                    /*
-                        Doubles are not numerical stable and the small errors,
-                        sum up when iterating in steps. To avoid having to deal with
-                        fuzzy compares we manually fix cos/sin at the end.
-                     */
-                    if ( m_inverted )
-                    {
-                        m_cos = 0.0;
-                        m_sin = -1.0;
-                    }
-                    else
-                    {
-                        m_cos = 1.0;
-                        m_sin = 0.0;
-                    }
-                }
-            }
-            else
-            {
-                const auto cos0 = m_cos;
-
-                m_cos = m_cos * m_cosStep + m_sin * m_sinStep;
-                m_sin = m_sin * m_cosStep - cos0 * m_sinStep;
-            }
-        }
-
-        inline void decrement()
-        {
-            revert();
-            increment();
-            revert();
-        }
-
-        inline void operator++() { increment(); }
-
-        static int segmentHint( qreal radius )
-        {
-            const auto arcLength = radius * M_PI_2;
-            return qBound( 3, qCeil( arcLength / 3.0 ), 18 ); // every 3 pixels
-        }
-
-        inline void revert()
-        {
-            m_inverted = !m_inverted;
-            m_stepIndex = m_stepCount - m_stepIndex;
-
-            m_sin = -m_sin;
-        }
-
-        ArcIterator reverted() const
-        {
-            ArcIterator it = *this;
-            it.revert();
-
-            return it;
-        }
-
-      private:
-        qreal m_cos;
-        qreal m_sin;
-
-        int m_stepIndex;
-        qreal m_cosStep;
-        qreal m_sinStep;
-
-        int m_stepCount;
-        bool m_inverted;
-    };
 }
 
 namespace QskVertex
