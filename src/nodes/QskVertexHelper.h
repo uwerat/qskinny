@@ -10,7 +10,7 @@
 #include "QskGradientDirection.h"
 #include "QskVertex.h"
 
-#include <cmath>
+#include <qmath.h>
 
 namespace QskVertex
 {
