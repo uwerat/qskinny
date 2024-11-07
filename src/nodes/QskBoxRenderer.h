@@ -13,11 +13,16 @@ class QskBoxBorderColors;
 class QskBoxShapeMetrics;
 class QskGradient;
 
+class QQuickWindow;
 class QSGGeometry;
 class QRectF;
 
-namespace QskBoxRenderer
+class QSK_EXPORT QskBoxRenderer
 {
+  public:
+    QskBoxRenderer( const QQuickWindow* );
+    ~QskBoxRenderer();
+
     /*
         Filling the geometry without any color information:
             see QSGGeometry::defaultAttributes_Point2D()
@@ -26,13 +31,13 @@ namespace QskBoxRenderer
         - using shaders setting the color information
      */
 
-    QSK_EXPORT void setBorderLines( const QRectF&,
+    void setBorderLines( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    QSK_EXPORT void setFillLines( const QRectF&,
+    void setFillLines( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    QSK_EXPORT void setFillLines( const QRectF&,
+    void setFillLines( const QRectF&,
         const QskBoxShapeMetrics&, QSGGeometry& );
 
     /*
@@ -41,21 +46,25 @@ namespace QskBoxRenderer
 
         Usually used in combination with QSGVertexColorMaterial
      */
-    QSK_EXPORT bool isGradientSupported( const QskGradient& );
 
-    QSK_EXPORT void setColoredBorderLines( const QRectF&,
+    void setColoredBorderLines( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, QSGGeometry& );
 
-    QSK_EXPORT void setColoredFillLines( const QRectF&,
+    void setColoredFillLines( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskGradient&, QSGGeometry& );
 
-    QSK_EXPORT void setColoredBorderAndFillLines( const QRectF&,
+    void setColoredBorderAndFillLines( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
 
-    QSK_EXPORT QskGradient effectiveGradient( const QskGradient& );
-}
+    static bool isGradientSupported( const QskGradient& );
+    static QskGradient effectiveGradient( const QskGradient& );
+
+  private:
+    // for adjustments to the target ( f.e devicePixelRatio )
+    const QQuickWindow* m_window;
+};
 
 #endif

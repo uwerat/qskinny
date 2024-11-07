@@ -5,7 +5,6 @@
 
 #include "QskSubWindow.h"
 #include "QskAspect.h"
-#include "QskPlatform.h"
 #include "QskGraphic.h"
 #include "QskGraphicProvider.h"
 #include "QskTextOptions.h"
@@ -222,10 +221,10 @@ QSizeF QskSubWindow::layoutSizeHint(
     {
         // should be Minimum Width/Height from the skin hints
         if ( hint.width() < 0.0 )
-            hint.setWidth( qskDpToPixels( 100 ) );
+            hint.setWidth( 100 );
 
         if ( hint.height() < 0.0 )
-            hint.setHeight( qskDpToPixels( 80 ) );
+            hint.setHeight( 80 );
     }
 
     return hint;

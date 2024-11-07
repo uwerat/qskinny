@@ -166,7 +166,7 @@ QSGNode* GradientView::updatePaintNode(
         {
             auto node = gradientNode< QskBoxRectangleNode >( oldNode );
             node->setHint( QskFillNode::PreferColoredGeometry, false );
-            node->updateFilling( rect, shape, m_gradient );
+            node->updateFilling( window(), rect, shape, m_gradient );
 
             return node;
         }
@@ -174,7 +174,7 @@ QSGNode* GradientView::updatePaintNode(
         {
             auto node = gradientNode< QskBoxRectangleNode >( oldNode );
             node->setHint( QskFillNode::PreferColoredGeometry, true );
-            node->updateFilling( rect, shape, m_gradient );
+            node->updateFilling( window(), rect, shape, m_gradient );
 
             return node;
         }

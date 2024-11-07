@@ -80,14 +80,17 @@ namespace
         }
     };
 
-    Q_DECL_UNUSED inline double operator ""_dp( long double value )
+    /*
+        mapping between px and logical coordinates
+     */
+    inline double operator ""_px( long double value )
     {
-        return qskDpToPixels( static_cast< qreal >( value ) );
+        return static_cast< double >( value );
     }
 
-    Q_DECL_UNUSED inline double operator ""_dp( unsigned long long value )
+    inline double operator ""_px( unsigned long long value )
     {
-        return qskDpToPixels( value );
+        return static_cast< double >( value );
     }
 
     class Editor : private QskSkinHintTableEditor
@@ -186,14 +189,14 @@ void Editor::setupCheckBox()
     using A = QskAspect;
     using P = QPalette;
 
-    setSpacing( Q::Panel, 6_dp );
+    setSpacing( Q::Panel, 6_px );
 
-    setStrutSize( Q::Box, 18_dp, 18_dp );
-    setBoxShape( Q::Box, 2_dp );
+    setStrutSize( Q::Box, 18_px, 18_px );
+    setBoxShape( Q::Box, 2_px );
 
     setBoxBorderColors( Q::Box, m_pal.outline );
     setBoxBorderColors( Q::Box | Q::Error, m_pal.error );
-    setBoxBorderMetrics( Q::Box, 1_dp );
+    setBoxBorderMetrics( Q::Box, 1_px );
 
 #ifdef SHOW_FOCUS
     setBoxBorderColors( Q::Box | Q::Focused, m_pal.highlightedOutline,
@@ -221,7 +224,7 @@ void Editor::setupCheckBox()
     setGraphicRole( Q::Indicator | Q::Disabled, QskFusionSkin::GraphicDisabled );
     setGraphicRole( Q::Indicator | Q::Error, QskFusionSkin::GraphicError );
 
-    setPadding( Q::Box, 3_dp );
+    setPadding( Q::Box, 3_px );
     const auto checkMark = symbol( "checkMark" );
 
     for ( auto state : { QskAspect::NoState, Q::Disabled } )
@@ -251,10 +254,10 @@ void Editor::setupComboBox()
     setColor( Q::Text, m_pal.active( P::ButtonText ) );
     setColor( Q::Text | Q::Disabled, m_pal.disabled( P::ButtonText ) );
 
-    setStrutSize( Q::Panel,  -1.0, 32_dp );
+    setStrutSize( Q::Panel,  -1.0, 32_px );
 
     setBoxShape( Q::Panel, 2 );
-    setBoxBorderMetrics( Q::Panel, 1_dp );
+    setBoxBorderMetrics( Q::Panel, 1_px );
     setBoxBorderColors( Q::Panel, m_pal.outline );
 
 #ifdef SHOW_FOCUS
@@ -262,8 +265,8 @@ void Editor::setupComboBox()
         Combination( { Q::Hovered, Q::Pressed } ) );
 #endif
 
-    setPadding( Q::Panel, 8_dp, 4_dp, 8_dp, 4_dp );
-    setSpacing( Q::Panel, 8_dp );
+    setPadding( Q::Panel, 8_px, 4_px, 8_px, 4_px );
+    setSpacing( Q::Panel, 8_px );
 
     // should be similar for QskPushButton
     auto rgbFill = m_pal.button;
@@ -274,10 +277,10 @@ void Editor::setupComboBox()
 
     setGradient( Q::Panel | Q::Pressed, QskRgb::darker( rgbFill, 110 ) );
 
-    setStrutSize( Q::Icon, 20_dp, 20_dp );
+    setStrutSize( Q::Icon, 20_px, 20_px );
     setGraphicRole( Q::Icon | Q::Disabled, QskFusionSkin::GraphicDisabled );
 
-    setStrutSize( Q::StatusIndicator, 10_dp, 10_dp );
+    setStrutSize( Q::StatusIndicator, 10_px, 10_px );
     setGraphicRole( Q::StatusIndicator, QskFusionSkin::GraphicIndicator );
     setGraphicRole( Q::StatusIndicator | Q::Disabled, QskFusionSkin::GraphicDisabled );
 
@@ -308,8 +311,8 @@ void Editor::setupMenu()
     setHint( Q::Overlay | A::Style, true );
     setGradient( Q::Overlay, QColor( 220, 220, 220, 100 ) );
 
-    setBoxShape( Q::Panel, 4_dp );
-    setBoxBorderMetrics( Q::Panel, 1_dp );
+    setBoxShape( Q::Panel, 4_px );
+    setBoxBorderMetrics( Q::Panel, 1_px );
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
@@ -322,8 +325,8 @@ void Editor::setupMenu()
     const bool isCascading = qskMaybeDesktopPlatform();
     setHint( Q::Panel | A::Style, isCascading );
 
-    setMetric( Q::Separator | A::Size, 1_dp );
-    setMargin( Q::Separator, QskMargins( 5_dp, 2_dp, 5_dp, 2_dp ) );
+    setMetric( Q::Separator | A::Size, 1_px );
+    setMargin( Q::Separator, QskMargins( 5_px, 2_px, 5_px, 2_px ) );
     setBoxShape( Q::Separator, 0 );
     setBoxBorderMetrics( Q::Separator, 0 );
 
@@ -344,7 +347,7 @@ void Editor::setupMenu()
             m_pal.color( colorGroup, P::HighlightedText ) );
     }
 
-    setPadding( Q::Icon, 8_dp );
+    setPadding( Q::Icon, 8_px );
 
     setGraphicRole( Q::Icon, QskFusionSkin::GraphicNormal );
     setGraphicRole( Q::Icon | Q::Disabled, QskFusionSkin::GraphicDisabled );
@@ -397,7 +400,7 @@ void Editor::setupTextInput()
 
     }
 
-    setBoxBorderMetrics( Q::Panel, 1_dp );
+    setBoxBorderMetrics( Q::Panel, 1_px );
 
     setBoxBorderColors( Q::Panel, m_pal.outline );
 #ifdef SHOW_FOCUS
@@ -405,7 +408,7 @@ void Editor::setupTextInput()
 #endif
 
     setBoxShape( Q::Panel, 2 );
-    setPadding( Q::Panel, 4_dp );
+    setPadding( Q::Panel, 4_px );
 }
 
 void Editor::setupProgressBar()
@@ -484,17 +487,17 @@ void Editor::setupRadioBox()
     using A = QskAspect;
     using P = QPalette;
 
-    setSpacing( Q::Panel, 10_dp );
-    setSpacing( Q::Button, 10_dp );
+    setSpacing( Q::Panel, 10_px );
+    setSpacing( Q::Button, 10_px );
 
-    setStrutSize( Q::CheckIndicatorPanel, 20_dp, 20_dp );
+    setStrutSize( Q::CheckIndicatorPanel, 20_px, 20_px );
 
     for ( auto subControl : { Q::CheckIndicatorPanel, Q::CheckIndicator } )
         setBoxShape( subControl, 100, Qt::RelativeSize ); // circular
 
-    setBoxBorderMetrics( Q::CheckIndicatorPanel, 1_dp );
+    setBoxBorderMetrics( Q::CheckIndicatorPanel, 1_px );
 
-    setPadding( Q::CheckIndicatorPanel, 6_dp );
+    setPadding( Q::CheckIndicatorPanel, 6_px );
 
     setGradient( Q::Button, QskGradient() );
 
@@ -577,15 +580,15 @@ void Editor::setupSegmentedBar()
         // Panel
 
         setPadding( Q::Panel, 0 );
-        setSpacing( Q::Panel, 5_dp );
+        setSpacing( Q::Panel, 5_px );
 
         setGradient( Q::Panel, m_pal.active( P::Base ) );
         setGradient( Q::Panel | Q::Disabled, m_pal.disabled( P::Base ) );
 
-        setBoxBorderMetrics( Q::Panel, 1_dp );
+        setBoxBorderMetrics( Q::Panel, 1_px );
         setBoxBorderColors( Q::Panel, m_pal.outline );
 
-        const QSizeF strutSize( 100_dp, 16_dp );
+        const QSizeF strutSize( 100_px, 16_px );
 
         setStrutSize( Q::Panel | A::Horizontal, strutSize );
         setStrutSize( Q::Panel | A::Vertical, strutSize.transposed() );
@@ -594,7 +597,7 @@ void Editor::setupSegmentedBar()
     {
         // Segment
 
-        setPadding( Q::Segment, QskMargins( 2_dp, 5_dp, 2_dp, 5_dp ) );
+        setPadding( Q::Segment, QskMargins( 2_px, 5_px, 2_px, 5_px ) );
         setGradient( Q::Segment, QskGradient() );
     }
 
@@ -633,7 +636,7 @@ void Editor::setupSegmentedBar()
         setGraphicRole( Q::Icon | Q::Disabled, QskFusionSkin::GraphicDisabled );
         setGraphicRole( Q::Icon | Q::Selected, QskFusionSkin::GraphicHighlighted );
 
-        setStrutSize( Q::Icon, -1, 24_dp );
+        setStrutSize( Q::Icon, -1, 24_px );
     }
 }
 
@@ -642,7 +645,7 @@ void Editor::setupSeparator()
     using Q = QskSeparator;
     using A = QskAspect;
 
-    setMetric( Q::Panel | A::Size, 2_dp );
+    setMetric( Q::Panel | A::Size, 2_px );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, QskRgb::lighter( m_pal.outline, 108 ) );
@@ -654,7 +657,7 @@ void Editor::setupPageIndicator()
     using A = QskAspect;
     using P = QPalette;
 
-    const auto extent = 8_dp;
+    const auto extent = 8_px;
     setStrutSize( Q::Bullet, extent, extent );
 
     // circles, without border
@@ -677,7 +680,7 @@ void Editor::setupPageIndicator()
 
     setAnimation( Q::Bullet | A::Color, 100 );
 
-    setSpacing( Q::Panel, 4_dp );
+    setSpacing( Q::Panel, 4_px );
     setGradient( Q::Panel, QskGradient() ); // invisible
 }
 
@@ -691,7 +694,7 @@ void Editor::setupPushButton()
     using A = QskAspect;
     using P = QPalette;
 
-    setStrutSize( Q::Panel, 40_dp, 8_dp );
+    setStrutSize( Q::Panel, 40_px, 8_px );
 
     setPadding( Q::Panel, 4 );
     setMetric( Q::Panel | A::Spacing, 4 );
@@ -723,7 +726,7 @@ void Editor::setupPushButton()
     setGraphicRole( Q::Icon, QskFusionSkin::GraphicNormal );
     setGraphicRole( Q::Icon | Q::Disabled, QskFusionSkin::GraphicDisabled );
 
-    setStrutSize( Q::Icon, 22_dp, 22_dp );
+    setStrutSize( Q::Icon, 22_px, 22_px );
 }
 
 void Editor::setupDialogButtonBox()
@@ -733,7 +736,7 @@ void Editor::setupDialogButtonBox()
 
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
-    setPadding( Q::Panel, 2_dp, 4_dp, 2_dp, 0_dp );
+    setPadding( Q::Panel, 2_px, 4_px, 2_px, 0_px );
 
     setGradient( Q::Panel, m_pal.active( P::Base ) );
     setGradient( Q::Panel | Q::Disabled, m_pal.disabled( P::Base ) );
@@ -772,7 +775,7 @@ void Editor::setupSlider()
     using Q = QskSlider;
     using P = QPalette;
 
-    const qreal extent = 30_dp;
+    const qreal extent = 30_px;
 
     // Panel
 
@@ -791,9 +794,9 @@ void Editor::setupSlider()
         setPadding( subControl, 0 );
 
         setBoxShape( subControl, 0 );
-        setBoxBorderMetrics( subControl, 1_dp );
+        setBoxBorderMetrics( subControl, 1_px );
 
-        setMetric( subControl | A::Size, 6_dp );
+        setMetric( subControl | A::Size, 6_px );
     }
 
     {
@@ -829,7 +832,7 @@ void Editor::setupSlider()
         Combination( { Q::Hovered, Q::Pressed } ) );
 #endif
 
-    setStrutSize( Q::Handle, 16_dp, 16_dp );
+    setStrutSize( Q::Handle, 16_px, 16_px );
 
     for ( auto state : { A::NoState, Q::Pressed } )
     {
@@ -854,16 +857,16 @@ void Editor::setupSpinBox()
     using P = QPalette;
 
     setHint( Q::Panel | A::Style, Q::UpDownControl );
-    setSpacing( Q::Panel, 0_dp );
-    setBoxShape( Q::Panel, 2_dp );
-    setBoxBorderMetrics( Q::Panel, 0_dp );
+    setSpacing( Q::Panel, 0_px );
+    setBoxShape( Q::Panel, 2_px );
+    setBoxBorderMetrics( Q::Panel, 0_px );
     //setBoxBorderColors( Q::Panel, m_pal.outline );
 
-    setPadding( Q::TextPanel, 5_dp );
+    setPadding( Q::TextPanel, 5_px );
     setBoxShape( Q::TextPanel, 2, 0, 2, 0 );
     setGradient( Q::TextPanel | Q::Disabled, m_pal.disabled( P::Base ) );
 
-    setBoxBorderMetrics( Q::TextPanel, 1_dp );
+    setBoxBorderMetrics( Q::TextPanel, 1_px );
     setBoxBorderColors( Q::TextPanel, m_pal.outline );
 
 #ifdef SHOW_FOCUS
@@ -875,11 +878,11 @@ void Editor::setupSpinBox()
     setColor( Q::Text, m_pal.active( P::Text ) );
     setAlignment( Q::Text, Qt::AlignCenter );
 
-    setBoxShape( Q::UpPanel, 0, 2_dp, 0, 0 );
-    setBoxBorderMetrics( Q::UpPanel, 0_dp, 1_dp, 1_dp, 0_dp );
+    setBoxShape( Q::UpPanel, 0, 2_px, 0, 0 );
+    setBoxBorderMetrics( Q::UpPanel, 0_px, 1_px, 1_px, 0_px );
 
-    setBoxShape( Q::DownPanel, 0, 0, 0, 2_dp );
-    setBoxBorderMetrics( Q::DownPanel, 0_dp, 0_dp, 1_dp, 1_dp );
+    setBoxShape( Q::DownPanel, 0, 0, 0, 2_px );
+    setBoxBorderMetrics( Q::DownPanel, 0_px, 0_px, 1_px, 1_px );
 
     for ( auto subControl : { Q::UpPanel, Q::DownPanel } )
     {
@@ -926,16 +929,16 @@ void Editor::setupSwitchButton()
     using Q = QskSwitchButton;
     using P = QPalette;
 
-    const qreal h = 22_dp;
+    const qreal h = 22_px;
     const qreal w = 1.25 * h;
 
-    setBoxShape( Q::Groove, 2_dp );
-    setBoxBorderMetrics( Q::Groove, 1_dp );
+    setBoxShape( Q::Groove, 2_px );
+    setBoxBorderMetrics( Q::Groove, 1_px );
     setStrutSize( Q::Groove | A::Horizontal, 2.0 * w, h );
     setStrutSize( Q::Groove | A::Vertical, h, 2.0 * w );
 
-    setBoxShape( Q::Handle, 2_dp );
-    setBoxBorderMetrics( Q::Handle, 1_dp );
+    setBoxShape( Q::Handle, 2_px );
+    setBoxBorderMetrics( Q::Handle, 1_px );
     setStrutSize( Q::Handle | A::Horizontal, w, h );
     setStrutSize( Q::Handle | A::Vertical, h, w );
 
@@ -982,7 +985,7 @@ void Editor::setupTabButton()
     using A = QskAspect;
     using P = QPalette;
 
-    setStrutSize( Q::Panel, 30_dp, 16_dp );
+    setStrutSize( Q::Panel, 30_px, 16_px );
 
     setColor( Q::Text, m_pal.active( P::Text ) );
     setColor( Q::Text | Q::Disabled, m_pal.disabled( P::Text ) );
@@ -1198,12 +1201,12 @@ void Editor::setupScrollView()
     {
         // The scrollbar is expanding, when being hovered/pressed
 
-        const auto extent = 8_dp;
+        const auto extent = 8_px;
 
         setMetric( subControl | A::Size, extent );
         setBoxShape( subControl, 100, Qt::RelativeSize );
 
-        const qreal padding = extent - 0_dp;
+        const qreal padding = extent - 0_px;
 
         if ( subControl == Q::HorizontalScrollBar )
             setPadding( subControl, 0, padding, 0, 0 );

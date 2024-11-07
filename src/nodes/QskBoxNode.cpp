@@ -60,7 +60,7 @@ QskBoxNode::~QskBoxNode()
 {
 }
 
-void QskBoxNode::updateNode( const QRectF& rect,
+void QskBoxNode::updateNode( const QQuickWindow* window, const QRectF& rect,
     const QskBoxShapeMetrics& shapeMetrics, const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient,
     const QskShadowMetrics& shadowMetrics, const QColor& shadowColor )
@@ -100,7 +100,8 @@ void QskBoxNode::updateNode( const QRectF& rect,
             {
                 // QskBoxRectangleNode allows scene graph batching
                 shadowFillNode = qskNode< QskBoxRectangleNode >( this, ShadowFillRole );
-                shadowFillNode->updateFilling( shadowRect, shadowShape, shadowColor );
+                shadowFillNode->updateFilling( window,
+                    shadowRect, shadowShape, shadowColor );
             }
             else
             {
@@ -125,13 +126,16 @@ void QskBoxNode::updateNode( const QRectF& rect,
 
             if ( fillNode )
             {
-                rectNode->updateBorder( rect, shapeMetrics, borderMetrics, borderColors );
-                fillNode->updateFilling( rect, shapeMetrics, borderMetrics, gradient );
+                rectNode->updateBorder( window, rect,
+                    shapeMetrics, borderMetrics, borderColors );
+
+                fillNode->updateFilling( window, rect,
+                    shapeMetrics, borderMetrics, gradient );
             }
             else
             {
-                rectNode->updateBox( rect, shapeMetrics,
-                    borderMetrics, borderColors, gradient );
+                rectNode->updateBox( window, rect,
+                    shapeMetrics, borderMetrics, borderColors, gradient );
             }
         }
     }

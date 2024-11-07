@@ -9,6 +9,8 @@
 #include "QskBoxShapeMetrics.h"
 #include "QskFunctions.h"
 
+#include <qquickitem.h>
+
 static inline QskHashValue qskMetricsHash(
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border )
 {
@@ -29,7 +31,7 @@ QskBoxClipNode::~QskBoxClipNode()
 {
 }
 
-void QskBoxClipNode::setBox( const QRectF& rect,
+void QskBoxClipNode::setBox( const QQuickWindow* window, const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border )
 {
     const auto hash = qskMetricsHash( shape, border );
@@ -67,7 +69,9 @@ void QskBoxClipNode::setBox( const QRectF& rect,
     else
     {
         setIsRectangular( false );
-        QskBoxRenderer::setFillLines( rect, shape, border, m_geometry );
+
+        QskBoxRenderer renderer( window );
+        renderer.setFillLines( rect, shape, border, m_geometry );
     }
 
     /*

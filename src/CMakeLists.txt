@@ -111,7 +111,6 @@ list(APPEND HEADERS
     nodes/QskBoxMetrics.h
     nodes/QskBoxBasicStroker.h
     nodes/QskBoxGradientStroker.h
-    nodes/QskBoxColorMap.h
     nodes/QskBoxShadowNode.h
     nodes/QskColorRamp.h
     nodes/QskFillNode.h
@@ -133,6 +132,7 @@ list(APPEND HEADERS
     nodes/QskTextRenderer.h
     nodes/QskTextureRenderer.h
     nodes/QskVertex.h
+    nodes/QskVertexHelper.h
 )
 
 list(APPEND PRIVATE_HEADERS
