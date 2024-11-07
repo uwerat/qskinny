@@ -1437,11 +1437,11 @@ void Editor::setupSliderMetrics()
     setPadding( Q::Panel | A::Horizontal, QskMargins( 0.5 * extent, 0 ) );
     setPadding( Q::Panel | A::Vertical, QskMargins( 0, 0.5 * extent ) );
 
-    setMetric( Q::Groove | A::Size, 4_px );
-    setBoxShape( Q::Groove, 100, Qt::RelativeSize );
-
-    setMetric( Q::Fill | A::Size, 4_px );
-    setBoxShape( Q::Fill, 100, Qt::RelativeSize );
+    for ( auto subControl : { Q::Groove, Q::Fill } )
+    {
+        setMetric( subControl | A::Size, 4_px );
+        setBoxShape( subControl, 100, Qt::RelativeSize );
+    }
 
     const auto shadowSpread = 1_px;
 
@@ -1503,8 +1503,9 @@ void Editor::setupSliderColors(
         }
 
         grooveColor = rgbSolid( grooveColor, pal.background.solid.base );
-        setGradient( Q::Groove | section | state, grooveColor );
 
+        setGradient( Q::Groove | section | state, grooveColor );
+        setGradient( Q::Fill | section | state, grooveColor );
         setGradient( Q::Handle | section | state, handleColor );
     }
 }
