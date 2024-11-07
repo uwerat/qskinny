@@ -1429,6 +1429,7 @@ void Editor::setupSliderMetrics()
     using A = QskAspect;
 
     const qreal extent = 22_px;
+
     setMetric( Q::Panel | A::Size, extent );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
@@ -1442,15 +1443,17 @@ void Editor::setupSliderMetrics()
     setMetric( Q::Fill | A::Size, 4_px );
     setBoxShape( Q::Fill, 100, Qt::RelativeSize );
 
-    setStrutSize( Q::Handle, { 22_px, 22_px } );
-    setBoxShape( Q::Handle, 100, Qt::RelativeSize );
-    setBoxBorderMetrics( Q::Handle, 1_px );
+    const auto shadowSpread = 1_px;
 
-    // set size of the outer ring to be used in setupSliderColors():
-    setPadding( Q::Handle, 5_px );
-    setPadding( Q::Handle | Q::Hovered, 4_px );
-    setPadding( Q::Handle | Q::Pressed, 6_px );
-    setPadding( Q::Handle | Q::Disabled, 6_px );
+    setStrutSize( Q::Handle, { extent - shadowSpread, extent - shadowSpread } );
+    setBoxShape( Q::Handle, 100, Qt::RelativeSize );
+
+    setShadowMetrics( Q::Handle, { shadowSpread, 0.0 } );
+
+    setBoxBorderMetrics( Q::Handle, 5 );
+    setBoxBorderMetrics( Q::Handle | Q::Hovered, 4 );
+    setBoxBorderMetrics( Q::Handle | Q::Pressed, 6 );
+    setBoxBorderMetrics( Q::Handle | Q::Disabled, 6 );
 }
 
 void Editor::setupSliderColors(
@@ -1461,47 +1464,48 @@ void Editor::setupSliderColors(
 
     const auto& pal = theme.palette;
 
-    const auto outerHandleColor = pal.fillColor.controlSolid.defaultColor;
-    setBoxBorderGradient( Q::Handle, pal.elevation.circle.border, outerHandleColor );
+    const auto borderColor = pal.fillColor.controlSolid.defaultColor;
+    setBoxBorderColors( Q::Handle, borderColor );
+
+    {
+        const auto gradient = pal.elevation.circle.border;
+
+#if 1
+        /*
+            we can't set gradients as shadows - using the color, that
+            lies in the center of the gradient instead. TODO ...
+         */
+        auto shadowColor = QskRgb::interpolated( gradient[0], gradient[1], 0.5 );
+        shadowColor = rgbFlattened( shadowColor, borderColor );
+#endif
+
+        setShadowColor( Q::Handle, rgbFlattened( shadowColor, borderColor ) );
+    }
 
     for ( auto state : { A::NoState, Q::Hovered, Q::Pressed, Q::Disabled } )
     {
-        QRgb grooveColor, fillColor, innerHandleColor;
+        QRgb grooveColor, handleColor;
 
         if ( state == A::NoState || state == Q::Hovered )
         {
             grooveColor = pal.fillColor.controlStrong.defaultColor;
-            fillColor = pal.fillColor.accent.defaultColor;
-            innerHandleColor = fillColor;
+            handleColor = pal.fillColor.accent.defaultColor;
         }
         else if ( state == Q::Pressed )
         {
             grooveColor = pal.fillColor.controlStrong.defaultColor;
-            fillColor = pal.fillColor.accent.defaultColor;
-            innerHandleColor = pal.fillColor.accent.tertiary;
+            handleColor = pal.fillColor.accent.tertiary;
         }
         else if ( state == Q::Disabled )
         {
             grooveColor = pal.fillColor.controlStrong.disabled;
-            fillColor = pal.fillColor.accent.disabled;
-            innerHandleColor = grooveColor;
+            handleColor = grooveColor;
         }
 
         grooveColor = rgbSolid( grooveColor, pal.background.solid.base );
-
         setGradient( Q::Groove | section | state, grooveColor );
 
-        {
-            const auto handleWidth = strutSize( Q::Handle ).width();
-            const auto outerRingWidth = padding( Q::Handle | state ).left();
-            const auto stop = ( handleWidth - 2 * outerRingWidth ) / handleWidth;
-
-            QskGradient handleGradient( { { 0.0, innerHandleColor }, { stop, innerHandleColor },
-                { stop, outerHandleColor }, { 1.0, outerHandleColor } } );
-            handleGradient.setDirection( QskGradient::Radial );
-
-            setGradient( Q::Handle | section | state, handleGradient );
-        }
+        setGradient( Q::Handle | section | state, handleColor );
     }
 }
 
