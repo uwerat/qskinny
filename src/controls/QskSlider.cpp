@@ -14,7 +14,8 @@ QSK_SUBCONTROL( QskSlider, Groove )
 QSK_SUBCONTROL( QskSlider, Fill )
 QSK_SUBCONTROL( QskSlider, Scale )
 QSK_SUBCONTROL( QskSlider, Handle )
-QSK_SUBCONTROL( QskSlider, Halo )
+QSK_SUBCONTROL( QskSlider, GrooveStopIndicators )
+QSK_SUBCONTROL( QskSlider, FillStopIndicators )
 
 QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
 
@@ -117,7 +118,15 @@ QSizeF QskSlider::handleSize() const
 
 QRectF QskSlider::handleRect() const
 {
-    return subControlRect( QskSlider::Handle );
+    auto rect = subControlRect( Handle );
+
+#if 1 // minimum handle strut size hardcoded here for now
+    const QSizeF strutSize( 60, 60 );
+    const auto w = qMax( ( strutSize.width() - rect.width() ) / 2, 0.0 );
+    const auto h = qMax( ( strutSize.height() - rect.height() ) / 2, 0.0 );
+#endif
+
+    return rect.marginsAdded( { w, h, w, h } );
 }
 
 void QskSlider::mousePressEvent( QMouseEvent* event )

@@ -82,6 +82,11 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QRgb surfaceContainerHighest;
     QRgb surfaceContainerHighest38;
 
+    QRgb inverseSurface;
+    QRgb inverseOnSurface;
+    QRgb inversePrimary;
+
+    QRgb scrim;
     QRgb shadow;
 
     QskShadowMetrics elevation0;
