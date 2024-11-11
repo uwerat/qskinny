@@ -28,6 +28,12 @@ namespace
     QskBoxBorderColors outlineColors( const QskTextInput* input )
     {
         auto borderColors = input->boxBorderColorsHint( Q::Panel );
+
+        if( input->labelText().isEmpty() )
+        {
+            return borderColors;
+        }
+
         auto topGradient = borderColors.gradientAt( Qt::TopEdge );
 
         const auto panelRect = input->subControlRect( Q::Panel );
