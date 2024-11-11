@@ -543,6 +543,7 @@ void Editor::setupTextInput()
 
     setMargin( Q::InputText, { 16_dp, 8_dp, 16_dp, 8_dp } );
     setColor( Q::InputText, m_pal.onSurface );
+    setColor( Q::Panel | Q::Selected, m_pal.surfaceVariant, allStates );
     setFontRole( Q::InputText, BodyLarge );
     setAlignment( Q::InputText, Qt::AlignLeft | Qt::AlignBottom );
 
@@ -552,6 +553,7 @@ void Editor::setupTextInput()
 
     // InputText - Outlined
 
+    setColor( Q::Panel | Q::Selected | M3::Outlined, m_pal.surfaceVariant, allStates );
     setAlignment( Q::InputText | M3::Outlined, Qt::AlignLeft | Qt::AlignVCenter );
 
 
