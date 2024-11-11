@@ -65,7 +65,7 @@ namespace
     {
       public:
         TextInputBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Horizontal, parent )
+            : QskLinearBox( Qt::Horizontal, 3, parent )
         {
             setSpacing( 25 );
             setDefaultAlignment( Qt::AlignHCenter | Qt::AlignTop );
@@ -150,21 +150,16 @@ InputPage::InputPage( QQuickItem* parent )
     spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
 
     auto textInputBox = new TextInputBox();
-    inputBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
+    textInputBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
 
     auto vBox = new QskLinearBox( Qt::Vertical );
     vBox->setSpacing( 30 );
     vBox->setExtraSpacingAt( Qt::RightEdge | Qt::BottomEdge );
     
-    auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0 );
-    spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
-    spinBox->setPageSize( 5 );
-    spinBox->setValue( 35 );
-
     vBox->addItem( sliders[0].continous );
     vBox->addItem( sliders[0].discrete );
-    vBox->addItem( inputBox );
     vBox->addItem( spinBox );
+    vBox->addItem( textInputBox );
 
     auto mainBox = new QskLinearBox( Qt::Horizontal, this );
     mainBox->setSpacing( 30 );
