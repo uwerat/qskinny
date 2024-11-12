@@ -1008,7 +1008,7 @@ void Editor::setupPushButtonColors(
         const auto text = Q::Text | section | variation;
         const auto icon = Q::Icon | section | variation;
 
-        for ( const auto state : { QskAspect::NoState, Q::Hovered, Q::Pressed, Q::Disabled } )
+        for ( const auto state : { QskAspect::NoState, Q::Hovered, Q::Pressed, Q::Checked, Q::Disabled } )
         {
             QRgb panelColor, borderColor1, borderColor2, textColor;
             int graphicRole;
@@ -1023,7 +1023,7 @@ void Editor::setupPushButtonColors(
                     textColor = pal.fillColor.textOnAccent.primary;
                     graphicRole = W::GraphicRoleFillColorTextOnAccentPrimary;
                 }
-                else if ( state == Q::Pressed )
+                else if ( state == Q::Pressed || state == Q::Checked )
                 {
                     panelColor = pal.fillColor.accent.tertiary;
                     borderColor1 = borderColor2 = pal.strokeColor.control.onAccentDefault;
@@ -1056,7 +1056,7 @@ void Editor::setupPushButtonColors(
                     textColor = pal.fillColor.text.primary;
                     graphicRole = W::GraphicRoleFillColorTextPrimary;
                 }
-                else if ( state == Q::Pressed )
+                else if ( state == Q::Pressed || state == Q::Checked )
                 {
                     panelColor = pal.fillColor.control.tertiary;
                     borderColor1 = borderColor2 = pal.strokeColor.control.defaultColor;

@@ -725,6 +725,7 @@ void Editor::setupPushButton()
     setBoxShape( Q::Splash, 40_dp );
     setAnimation( Q::Splash | QskAspect::Color, qskDuration );
 
+    const auto checkedOpacity = m_pal.focusOpacity + m_pal.pressedOpacity;
 
     // elevated buttons:
 
@@ -751,8 +752,11 @@ void Editor::setupPushButton()
     setGradient( Q::Panel | M3::Elevated | Q::Focused, elevatedPressedColor );
     setShadowMetrics( Q::Panel | M3::Elevated | Q::Focused, m_pal.elevation1 );
 
-    setGradient( Q::Panel | M3::Elevated | Q::Pressed, elevatedPressedColor );
-    setShadowMetrics( Q::Panel | M3::Elevated | Q::Pressed, m_pal.elevation1 );
+    for( const auto state: { Q::Pressed, Q::Checked } )
+    {
+        setGradient( Q::Panel | M3::Elevated | state, elevatedPressedColor );
+        setShadowMetrics( Q::Panel | M3::Elevated | state, m_pal.elevation1 );
+    }
 
 
     // normal buttons (i.e. Filled):
@@ -769,6 +773,8 @@ void Editor::setupPushButton()
     setGradient( Q::Panel | Q::Focused, focusColor );
 
     setGradient( Q::Panel | Q::Pressed, focusColor );
+    setGradient( Q::Panel | Q::Checked,
+        flattenedColor( m_pal.onPrimary, m_pal.primary, checkedOpacity ) );
 
     setGradient( Q::Splash, stateLayerColor( m_pal.onPrimary, m_pal.hoverOpacity ) );
 
@@ -806,6 +812,10 @@ void Editor::setupPushButton()
     setGradient( Q::Panel | M3::Tonal | Q::Pressed, tonalPressedColor );
     setShadowMetrics( Q::Panel | M3::Tonal | Q::Pressed, m_pal.elevation0 );
 
+    const auto tonalCheckedColor = flattenedColor( m_pal.onSecondaryContainer,
+        m_pal.secondaryContainer, checkedOpacity );
+    setGradient( Q::Panel | M3::Tonal | Q::Checked, tonalCheckedColor );
+
 
     // outlined buttons:
 
@@ -831,6 +841,7 @@ void Editor::setupPushButton()
 
     setGradient( Q::Panel | M3::Outlined | Q::Pressed, m_pal.primary12 );
 
+    setGradient( Q::Panel | M3::Outlined | Q::Checked, m_pal.primary12 );
 
     /*
         text buttons:
@@ -857,6 +868,8 @@ void Editor::setupPushButton()
     setGradient( Q::Panel | M3::Text | Q::Focused, m_pal.primary12 );
 
     setGradient( Q::Panel | M3::Text | Q::Pressed, m_pal.primary12 );
+
+    setGradient( Q::Panel | M3::Text | Q::Checked, m_pal.primary12 );
 }
 
 void Editor::setupDialogButtonBox()
