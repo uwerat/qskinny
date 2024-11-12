@@ -32,7 +32,7 @@ class QskSlider::PrivateData
     QPointF pressedPos;
     qreal pressedValue;
     bool tracking : 1;
-    Qt::Orientation orientation : 2;
+    Qt::Orientation orientation : 3;
 };
 
 QskSlider::QskSlider( QQuickItem* parent )
