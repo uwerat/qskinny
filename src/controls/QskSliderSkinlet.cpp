@@ -136,15 +136,17 @@ QRectF QskSliderSkinlet::sampleRect(
 
     if( slider->orientation() == Qt::Horizontal )
     {
-        r.setTop( r.center().y() - size.height() / 2 );
+        const auto y = r.center().y() - size.height() / 2;
+        r.setTop( qMax( 0.0, y ) );
         const auto x = r.left() + slider->valueAsRatio( pos ) * r.width() - size.width() / 2;
-        r.setLeft( x );
+        r.setLeft( qMax( 0.0, x ) );
     }
     else
     {
-        r.setLeft( r.center().x() - size.width() / 2 );
+        const auto x = r.center().x() - size.width() / 2;
+        r.setLeft( qMax( 0.0, x ) );
         const auto y = r.bottom() - slider->valueAsRatio( pos ) * r.height() - size.height() / 2;
-        r.setTop( y );
+        r.setTop( qMax( 0.0, y ) );
     }
 
     r.setHeight( size.height() );
