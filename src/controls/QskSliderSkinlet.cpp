@@ -337,8 +337,6 @@ QRectF QskSliderSkinlet::handleRect(
     QRectF handleRect( 0, 0, handleSize.width(), handleSize.height() );
     handleRect.moveCenter( center );
 
-    handleRect = handleRect.marginsRemoved( slider->marginHint( Q::Handle ) );
-
     return handleRect;
 }
 
