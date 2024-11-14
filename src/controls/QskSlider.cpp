@@ -32,7 +32,7 @@ class QskSlider::PrivateData
     QPointF pressedPos;
     qreal pressedValue;
     bool tracking : 1;
-    Qt::Orientation orientation : 2;
+    uint orientation : 2;
 };
 
 QskSlider::QskSlider( QQuickItem* parent )
@@ -77,13 +77,13 @@ void QskSlider::setOrientation( Qt::Orientation orientation )
         resetImplicitSize();
         update();
 
-        Q_EMIT orientationChanged( m_data->orientation );
+        Q_EMIT orientationChanged( this->orientation() );
     }
 }
 
 Qt::Orientation QskSlider::orientation() const
 {
-    return m_data->orientation;
+    return static_cast< Qt::Orientation >( m_data->orientation );
 }
 
 QskAspect::Variation QskSlider::effectiveVariation() const
