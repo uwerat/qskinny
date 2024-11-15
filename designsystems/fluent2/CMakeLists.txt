@@ -8,6 +8,7 @@ set(SOURCES
     QskFluent2Theme.h QskFluent2Theme.cpp
     QskFluent2Skin.h QskFluent2Skin.cpp
     QskFluent2SkinFactory.h QskFluent2SkinFactory.cpp
+    QskFluent2TextInputSkinlet.h QskFluent2TextInputSkinlet.cpp
 )
 qt_add_resources(SOURCES QskFluent2Icons.qrc)
 

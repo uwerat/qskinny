@@ -386,18 +386,17 @@ void Editor::setupTextInput()
     using A = QskAspect;
     using P = QPalette;
 
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignTop );
+    setAlignment( Q::InputText, Qt::AlignLeft | Qt::AlignVCenter );
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
         const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
         setGradient( Q::Panel | state, m_pal.color( colorGroup, P::Base ) );
-        setColor( Q::PanelSelected | state, m_pal.color( colorGroup, P::Highlight ) );
+        setColor( Q::Panel | Q::Selected | state, m_pal.color( colorGroup, P::Highlight ) );
 
-        setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
-        setColor( Q::TextSelected | state, m_pal.color( colorGroup, P::HighlightedText ) );
-
+        setColor( Q::InputText | state, m_pal.color( colorGroup, P::Text ) );
+        setColor( Q::InputText | Q::Selected | state, m_pal.color( colorGroup, P::HighlightedText ) );
     }
 
     setBoxBorderMetrics( Q::Panel, 1_px );

@@ -48,6 +48,8 @@
 #include "QskFluent2Skin.h"
 #include "QskFluent2Theme.h"
 
+#include "QskFluent2TextInputSkinlet.h"
+
 #include <QskSkinHintTableEditor.h>
 
 #include <QskBox.h>
@@ -1773,8 +1775,14 @@ void Editor::setupTextInputMetrics()
 
     setBoxShape( Q::Panel, 3_px );
 
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
-    setFontRole( Q::Text, Fluent2::Body );
+    setStrutSize( Q::LabelText, { -1, 30_px } );
+    setFontRole( Q::LabelText, Fluent2::Body );
+
+    setAlignment( Q::InputText, Qt::AlignLeft | Qt::AlignVCenter );
+    setFontRole( Q::InputText, Fluent2::Body );
+
+    setAlignment( Q::HintText, alignment( Q::InputText ) );
+    setFontRole( Q::HintText, fontRole( Q::InputText ) );
 }
 
 void Editor::setupTextInputColors(
@@ -1785,8 +1793,10 @@ void Editor::setupTextInputColors(
 
     const auto& pal = theme.palette;
 
-    setColor( Q::PanelSelected, pal.fillColor.accent.selectedTextBackground );
-    setColor( Q::TextSelected, pal.fillColor.textOnAccent.selectedText );
+    setColor( Q::Panel | Q::Selected, pal.fillColor.accent.selectedTextBackground );
+    setColor( Q::LabelText, pal.fillColor.text.primary );
+    setColor( Q::InputText | Q::Selected, pal.fillColor.textOnAccent.selectedText );
+    setColor( Q::HintText, pal.fillColor.text.secondary );
 
     for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
     {
@@ -1797,21 +1807,21 @@ void Editor::setupTextInputColors(
             panelColor = pal.fillColor.control.defaultColor;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.elevation.textControl.border[1];
-            textColor = pal.fillColor.text.secondary;
+            textColor = pal.fillColor.text.primary;
         }
         else if ( state == Q::Hovered )
         {
             panelColor = pal.fillColor.control.secondary;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.elevation.textControl.border[1];
-            textColor = pal.fillColor.text.secondary;
+            textColor = pal.fillColor.text.primary;
         }
         else if ( ( state == Q::Focused ) || ( state == Q::Editing ) )
         {
             panelColor = pal.fillColor.control.inputActive;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.fillColor.accent.defaultColor;
-            textColor = pal.fillColor.text.secondary;
+            textColor = pal.fillColor.text.primary;
         }
         else if ( state == Q::Disabled )
         {
@@ -1821,7 +1831,7 @@ void Editor::setupTextInputColors(
         }
 
         const auto panel = Q::Panel | section | state;
-        const auto text = Q::Text | section | state;
+        const auto text = Q::InputText | section | state;
 
         panelColor = rgbSolid( panelColor, pal.background.solid.base );
 
@@ -2016,6 +2026,7 @@ void Editor::setupVirtualKeyboardColors(
 QskFluent2Skin::QskFluent2Skin( QObject* parent )
     : Inherited( parent )
 {
+    setupSkinlets();
     setupFonts();
 
     Editor editor( &hintTable() );
@@ -2101,6 +2112,11 @@ static inline QFont createFont( qreal size, int lineHeight, QFont::Weight weight
     font.setPointSizeF( size * 72.0 / 96.0 );
 
     return font;
+}
+
+void QskFluent2Skin::setupSkinlets()
+{
+    declareSkinlet< QskTextInput, QskFluent2TextInputSkinlet >();
 }
 
 void QskFluent2Skin::setupFonts()

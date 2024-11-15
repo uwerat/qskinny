@@ -7,6 +7,7 @@
 #define QSK_TEXT_INPUT_H
 
 #include "QskControl.h"
+#include "QskGraphic.h"
 #include "QskTextOptions.h"
 
 class QValidator;
@@ -16,15 +17,22 @@ class QSK_EXPORT QskTextInput : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged USER true)
+    Q_PROPERTY( QString inputText READ inputText
+        WRITE setInputText NOTIFY inputTextChanged USER true )
 
-    Q_PROPERTY( QString description READ description
-        WRITE setDescription NOTIFY descriptionChanged )
+    Q_PROPERTY( QString labelText READ labelText
+        WRITE setLabelText NOTIFY labelTextChanged )
+
+    Q_PROPERTY( QString hintText READ hintText
+        WRITE setHintText NOTIFY hintTextChanged )
+
+    Q_PROPERTY( QString supportingText READ supportingText
+        WRITE setSupportingText NOTIFY supportingTextChanged )
 
     Q_PROPERTY( QskFontRole fontRole READ fontRole
         WRITE setFontRole RESET resetFontRole NOTIFY fontRoleChanged )
 
-    Q_PROPERTY( QFont font READ font )
+    Q_PROPERTY( QFont font READ font CONSTANT )
 
     Q_PROPERTY( Qt::Alignment alignment READ alignment
         WRITE setAlignment RESET resetAlignment NOTIFY alignmentChanged )
@@ -52,11 +60,24 @@ class QSK_EXPORT QskTextInput : public QskControl
     Q_PROPERTY( bool panel READ hasPanel
         WRITE setPanel NOTIFY panelChanged )
 
+    Q_PROPERTY( Emphasis emphasis READ emphasis
+        WRITE setEmphasis NOTIFY emphasisChanged )
+
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Text, PanelSelected, TextSelected )
-    QSK_STATES( ReadOnly, Editing )
+    QSK_SUBCONTROLS( Panel, LeadingIcon, LabelText, InputText,
+        TrailingIconRipple, TrailingIcon, HintText, SupportingText,
+        CharacterCount )
+
+    QSK_STATES( ReadOnly, Editing, Selected, Error, TextPopulated )
+
+    enum Emphasis
+    {
+        LowEmphasis      = -1,
+        NoEmphasis       = 0,
+    };
+    Q_ENUM( Emphasis )
 
     enum ActivationMode
     {
@@ -84,16 +105,27 @@ class QSK_EXPORT QskTextInput : public QskControl
     Q_ENUM( EchoMode )
 
     QskTextInput( QQuickItem* parent = nullptr );
-    QskTextInput( const QString& text, QQuickItem* parent = nullptr );
+    QskTextInput( const QString&, QQuickItem* parent = nullptr );
 
     ~QskTextInput() override;
 
     void setupFrom( const QQuickItem* );
 
-    QString text() const;
+    void setEmphasis( Emphasis );
+    Emphasis emphasis() const;
 
-    void setDescription( const QString& );
-    QString description() const;
+    QString inputText() const;
+
+    QString labelText() const;
+
+    QskGraphic leadingIcon() const;
+    void setLeadingIcon( const QskGraphic& );
+
+    void setHintText( const QString& );
+    QString hintText() const;
+
+    void setSupportingText( const QString& );
+    QString supportingText() const;
 
     void setPanel( bool );
     bool hasPanel() const;
@@ -162,22 +194,31 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     void ensureVisible( int position );
 
+    QskAspect::Variation effectiveVariation() const override;
+
   public Q_SLOTS:
-    void setText( const QString& );
+    void setInputText( const QString& );
+    void setLabelText( const QString& );
+
     void setEditing( bool );
 
   Q_SIGNALS:
+    void emphasisChanged( Emphasis );
+
     void editingChanged( bool );
 
     void activationModesChanged();
     void readOnlyChanged( bool );
     void panelChanged( bool );
 
-    void textChanged( const QString& );
+    void inputTextChanged( const QString& );
+    void labelTextChanged( const QString& );
+
     void displayTextChanged( const QString& );
 
     void textEdited( const QString& );
-    void descriptionChanged( const QString& );
+    void hintTextChanged( const QString& );
+    void supportingTextChanged( const QString& );
 
     void fontRoleChanged();
     void alignmentChanged();
@@ -200,6 +241,10 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     void focusInEvent( QFocusEvent* ) override;
     void focusOutEvent( QFocusEvent* ) override;
+
+    void hoverEnterEvent( QHoverEvent* ) override;
+    void hoverMoveEvent( QHoverEvent* ) override;
+    void hoverLeaveEvent( QHoverEvent* ) override;
 
     void mousePressEvent( QMouseEvent* ) override;
     void mouseMoveEvent( QMouseEvent* ) override;

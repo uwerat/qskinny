@@ -61,31 +61,69 @@ namespace
         }
     };
 
-    class InputBox : public QskLinearBox
+    class TextInputBox : public QskLinearBox
     {
       public:
-        InputBox( QQuickItem* parent = nullptr )
-            : QskLinearBox( Qt::Horizontal, parent )
+        TextInputBox( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Horizontal, 3, parent )
         {
-            setSpacing( 20 );
-
+            setSpacing( 25 );
+            setDefaultAlignment( Qt::AlignHCenter | Qt::AlignTop );
             {
-                new QskTextInput( "Edit Me", this );
             }
 
+            for( const auto& emphasis : { QskTextInput::NoEmphasis, QskTextInput::LowEmphasis } )
             {
-                auto input = new QskTextInput( "Only Read Me", this );
-                input->setReadOnly( true );
-                input->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
-            }
+                {
+                    auto input = new QskTextInput( this );
+                    input->setEmphasis( emphasis );
+                    const QString text = ( emphasis == QskTextInput::NoEmphasis ) ? "filled" : "outlined";
+                    input->setLabelText( text );
+                    input->setHintText( "hint text" );
+                    input->setSupportingText( "supporting text" );
+                    input->setMaxLength( 10 );
+                }
 
-            {
-                auto input = new QskTextInput( "12345", this );
-                input->setMaxLength( 5 );
-                input->setEchoMode( QskTextInput::PasswordEchoOnEdit );
-#if 1
-                input->setFixedWidth( 80 );
-#endif
+                {
+                    auto input = new QskTextInput( this );
+                    input->setEmphasis( emphasis );
+                    input->setLeadingIcon( {} );
+                    input->setLabelText( "no leading icon" );
+                    input->setHintText( "hint text" );
+                    input->setSupportingText( "supporting text" );
+                }
+                {
+                    auto input = new QskTextInput( this );
+                    input->setEmphasis( emphasis );
+                    input->setLeadingIcon( {} );
+                    input->setHintText( "no label text" );
+                }
+
+                {
+                    auto input = new QskTextInput( this );
+                    input->setEmphasis( emphasis );
+                    input->setSkinStateFlag( QskTextInput::Error );
+                    input->setLabelText( "error" );
+                    input->setHintText( "hint text" );
+                    input->setSupportingText( "error text" );
+                }
+
+                {
+                    auto input = new QskTextInput( this );
+                    input->setEmphasis( emphasis );
+                    input->setReadOnly( true );
+                    input->setLabelText( "read only" );
+                    input->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
+                }
+
+                {
+                    auto input = new QskTextInput( this );
+                    input->setEmphasis( emphasis );
+                    input->setMaxLength( 15 );
+                    input->setLabelText( "password" );
+                    input->setEchoMode( QskTextInput::Password );
+                    input->setHintText( "better be strong" );
+                }
             }
         }
     };
@@ -111,17 +149,17 @@ InputPage::InputPage( QQuickItem* parent )
     auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0 );
     spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
 
-    auto inputBox = new InputBox();
-    inputBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
+    auto textInputBox = new TextInputBox();
+    textInputBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
 
     auto vBox = new QskLinearBox( Qt::Vertical );
     vBox->setSpacing( 30 );
     vBox->setExtraSpacingAt( Qt::RightEdge | Qt::BottomEdge );
-
+    
     vBox->addItem( sliders[0].continous );
     vBox->addItem( sliders[0].discrete );
-    vBox->addItem( inputBox );
     vBox->addItem( spinBox );
+    vBox->addItem( textInputBox );
 
     auto mainBox = new QskLinearBox( Qt::Horizontal, this );
     mainBox->setSpacing( 30 );

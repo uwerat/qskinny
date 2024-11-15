@@ -10,6 +10,8 @@
 
 #include "QskMaterial3Skin.h"
 
+#include "QskMaterial3TextInputSkinlet.h"
+
 #include <QskSkinHintTableEditor.h>
 
 #include <QskBox.h>
@@ -451,34 +453,157 @@ void Editor::setupTextLabel()
 void Editor::setupTextInput()
 {
     using Q = QskTextInput;
+    using M3 = QskMaterial3Skin;
+
+    const QskStateCombination allStates( QskStateCombination::CombinationNoState, QskAspect::AllStates );
+
+    // Panel
 
     setStrutSize( Q::Panel,  -1.0, 56_dp );
-    setPadding( Q::Panel, { 12_dp, 8_dp, 12_dp, 8_dp } );
-    setGradient( Q::Panel, m_pal.surfaceVariant );
-    setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
-    setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_dp } );
-    setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );
-    setSpacing( Q::Panel, 8_dp );
 
-    const auto hoverColor = flattenedColor( m_pal.onSurfaceVariant,
+    // Panel - Filled
+
+    setGradient( Q::Panel, m_pal.surfaceVariant );
+
+    setColor( Q::Panel | Q::Selected, m_pal.primary12 );
+
+    setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
+
+    setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_dp } );
+    setBoxBorderMetrics( Q::Panel | Q::Focused, { 0, 0, 0, 2_dp }, allStates );
+
+    setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );
+    setBoxBorderColors( Q::Panel | Q::Error, m_pal.error, allStates );
+    setBoxBorderColors( Q::Panel | Q::Error | Q::Hovered, m_pal.onErrorContainer, allStates );
+
+    const auto normalHoverColor = flattenedColor( m_pal.onSurfaceVariant,
         m_pal.surfaceVariant, m_pal.hoverOpacity );
-    setGradient( Q::Panel | Q::Hovered, hoverColor );
+    setGradient( Q::Panel | Q::Hovered, normalHoverColor, allStates );
+
+    const auto errorHoverColor = flattenedColor( m_pal.onSurface,
+        m_pal.surfaceVariant, m_pal.hoverOpacity );
+    setGradient( Q::Panel | Q::Error | Q::Hovered, errorHoverColor, allStates );
 
     const auto focusColor = flattenedColor( m_pal.onSurfaceVariant,
         m_pal.surfaceVariant, m_pal.focusOpacity );
-    setGradient( Q::Panel | Q::Focused, focusColor );
-
-    // ### Also add a pressed state
-
-    setColor( Q::Text, m_pal.onSurface );
-    setFontRole( Q::Text, BodyMedium );
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+    setGradient( Q::Panel | Q::Focused, focusColor, allStates );
 
     const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
-    setGradient( Q::Panel | Q::Disabled, disabledPanelColor );
-    setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
+    setGradient( Q::Panel | Q::Disabled, disabledPanelColor, allStates );
+    setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38, allStates );
 
-    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+    // Panel - Outlined
+
+    setGradient( Q::Panel | M3::Outlined, Qt::transparent );
+    setBoxShape( Q::Panel | M3::Outlined, m_pal.shapeExtraSmall );
+    setBoxBorderMetrics( Q::Panel | M3::Outlined, 1_dp );
+    setBoxBorderColors( Q::Panel | M3::Outlined, m_pal.outline );
+
+    setBoxBorderMetrics( Q::Panel | M3::Outlined | Q::Focused, 2_dp, allStates );
+    setBoxBorderColors( Q::Panel | M3::Outlined | Q::Focused, m_pal.primary, allStates );
+
+    setBoxBorderColors( Q::Panel | M3::Outlined | Q::Error, m_pal.error, allStates );
+
+    // LeadingIcon
+
+    setStrutSize( Q::LeadingIcon, { 24_dp, 24_dp } );
+    setMargin( Q::LeadingIcon, { 12_dp, 0, 0, 0 } );
+    const auto leadingIcon = symbol( "text_field_search" );
+    setSymbol( Q::LeadingIcon, leadingIcon );
+
+    setGraphicRole( Q::LeadingIcon, M3::GraphicRoleOnSurface );
+    setGraphicRole( Q::LeadingIcon | Q::Error, M3::GraphicRoleOnSurfaceVariant, allStates );
+
+    setGraphicRole( Q::LeadingIcon | Q::Disabled, M3::GraphicRoleOnSurface38, allStates );
+
+    // LabelText
+
+    setAlignment( Q::LabelText, Qt::AlignLeft | Qt::AlignVCenter );
+    setFontRole( Q::LabelText, BodyLarge );
+    setColor( Q::LabelText, m_pal.onSurfaceVariant );
+
+    for( const auto s : { Q::Focused, Q::Editing, Q::TextPopulated } )
+    {
+        setFontRole( Q::LabelText | s, BodySmall, allStates );
+        setMargin( Q::LabelText | s, { 16_dp, 4_dp, 16_dp, 16_dp }, allStates );
+        setColor( Q::LabelText | s, m_pal.primary, allStates );
+    }
+
+    setColor( Q::LabelText | Q::Error, m_pal.error, allStates );
+    setColor( Q::LabelText | Q::Error | Q::Hovered, m_pal.onErrorContainer, allStates );
+
+    setColor( Q::LabelText | Q::Disabled, m_pal.onSurface38, allStates );
+
+    // LabelText - Outlined
+
+    setMargin( Q::LabelText | M3::Outlined, { 4_dp, 0, 4_dp, 0 }, allStates );
+
+
+    // InputText
+
+    setMargin( Q::InputText, { 16_dp, 8_dp, 16_dp, 8_dp } );
+    setColor( Q::InputText, m_pal.onSurface );
+    setColor( Q::Panel | Q::Selected, m_pal.surfaceVariant, allStates );
+    setFontRole( Q::InputText, BodyLarge );
+    setAlignment( Q::InputText, Qt::AlignLeft | Qt::AlignBottom );
+
+    setColor( Q::InputText | Q::Error, m_pal.onSurface, allStates ); // same as with Hovered and Focused
+
+    setColor( Q::InputText | Q::Disabled, m_pal.onSurface38, allStates );
+
+    // InputText - Outlined
+
+    setColor( Q::Panel | Q::Selected | M3::Outlined, m_pal.surfaceVariant, allStates );
+    setAlignment( Q::InputText | M3::Outlined, Qt::AlignLeft | Qt::AlignVCenter );
+
+
+    // HintText
+
+    setColor( Q::HintText, color( Q::InputText ) );
+    setFontRole( Q::HintText, fontRole( Q::InputText ) );
+    setAlignment( Q::HintText, alignment( Q::InputText ) );
+    setAlignment( Q::HintText | M3::Outlined, alignment( Q::InputText | M3::Outlined ) );
+
+
+    // TrailingIcon
+
+    setStrutSize( Q::TrailingIcon, { 24_dp, 24_dp } );
+    setMargin( Q::TrailingIcon, { 0, 0, 12_dp, 0 } );
+    setGraphicRole( Q::TrailingIcon, M3::GraphicRoleOnSurfaceVariant );
+    const auto trailingIcon = symbol( "text_field_cancel" );
+    setSymbol( Q::TrailingIcon, trailingIcon );
+
+    const auto errorIcon = symbol( "text_field_error" );
+    setSymbol( Q::TrailingIcon | Q::Error, errorIcon, allStates );
+    setGraphicRole( Q::TrailingIcon | Q::Error, M3::GraphicRoleError, allStates );
+    setGraphicRole( Q::TrailingIcon | Q::Error | Q::Hovered, M3::GraphicRoleOnErrorContainer, allStates );
+
+    setGraphicRole( Q::TrailingIcon | Q::Disabled, M3::GraphicRoleOnSurface38, allStates );
+
+    // TrailingIconRipple
+
+    setStrutSize( Q::TrailingIconRipple, { 45_dp, 45_dp } );
+    setGradient( Q::TrailingIconRipple | Q::Hovered, m_pal.onSurface8, allStates );
+    setBoxShape( Q::TrailingIconRipple, 100, Qt::RelativeSize );
+
+
+    // SupportingText
+
+    setMargin( Q::SupportingText, { 16_dp, 4_dp, 16_dp, 4_dp } );
+    setColor( Q::SupportingText, m_pal.onSurfaceVariant );
+    setColor( Q::SupportingText | Q::Error, m_pal.error, allStates );
+    setFontRole( Q::SupportingText, BodySmall );
+    setAlignment( Q::SupportingText, Qt::AlignLeft | Qt::AlignVCenter );
+
+    setColor( Q::SupportingText | Q::Disabled, m_pal.onSurface38, allStates );
+
+    // CharacterCount
+
+    setMargin( Q::CharacterCount, margin( Q::SupportingText ) );
+    setColor( Q::CharacterCount, color( Q::SupportingText ) );
+    setFontRole( Q::CharacterCount, fontRole( Q::SupportingText ) );
+    setAlignment( Q::CharacterCount, Qt::AlignRight | Qt::AlignVCenter );
+    setColor( Q::CharacterCount | Q::Disabled, color( Q::SupportingText | Q::Disabled ) );
 }
 
 void Editor::setupProgressBar()
@@ -1550,7 +1675,7 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
 
     onSurface8 = QskRgb::toTransparentF( onSurface, 0.08 );
     onSurface12 = QskRgb::toTransparentF( onSurface, 0.12 );
-    onSurface38 = QskRgb::toTransparentF( onSurface, 0.38 );
+    onSurface38 = QskRgb::toTransparentF( onSurface, 0.38 ); // ### rename to onSurfaceDisabled
 
     surfaceVariant12 = QskRgb::toTransparentF( surfaceVariant, 0.12 );
 
@@ -1561,6 +1686,7 @@ QskMaterial3Theme::QskMaterial3Theme( QskSkin::ColorScheme colorScheme,
     elevation2 = QskShadowMetrics( -2, 8, { 0, 2 } );
     elevation3 = QskShadowMetrics( -1, 11, { 0, 2 } );
 
+    shapeExtraSmall = QskBoxShapeMetrics( 4_dp, 4_dp, 4_dp, 4_dp );
     shapeExtraSmallTop = QskBoxShapeMetrics( 4_dp, 4_dp, 0, 0 );
 }
 
@@ -1615,6 +1741,11 @@ static inline QFont createFont( qreal size, int lineHeight,
     return font;
 }
 
+void QskMaterial3Skin::setupSkinlets()
+{
+    declareSkinlet< QskTextInput, QskMaterial3TextInputSkinlet >();
+}
+
 void QskMaterial3Skin::setupFonts()
 {
     /*
@@ -1661,10 +1792,12 @@ void QskMaterial3Skin::setGraphicColor( GraphicRole role, QRgb rgb )
 
 void QskMaterial3Skin::setupGraphicFilters( const QskMaterial3Theme& theme )
 {
+    setGraphicColor( GraphicRoleError, theme.error );
     setGraphicColor( GraphicRoleOnPrimary, theme.onPrimary );
     setGraphicColor( GraphicRoleOnPrimaryContainer, theme.onPrimaryContainer );
     setGraphicColor( GraphicRoleOnSecondaryContainer, theme.onSecondaryContainer );
     setGraphicColor( GraphicRoleOnError, theme.onError );
+    setGraphicColor( GraphicRoleOnErrorContainer, theme.onErrorContainer );
     setGraphicColor( GraphicRoleOnSurface, theme.onSurface );
     setGraphicColor( GraphicRoleOnSurface38, theme.onSurface38 );
     setGraphicColor( GraphicRoleOnSurfaceVariant, theme.onSurfaceVariant );
@@ -1678,6 +1811,7 @@ void QskMaterial3Skin::initHints()
 {
     const QskMaterial3Theme theme( colorScheme() );
 
+    setupSkinlets();
     setupFonts();
     setupGraphicFilters( theme );
 

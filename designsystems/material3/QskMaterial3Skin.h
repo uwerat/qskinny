@@ -102,6 +102,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
 
     qreal stateOpacity( int state ) const;
 
+    QskBoxShapeMetrics shapeExtraSmall;
     QskBoxShapeMetrics shapeExtraSmallTop;
 };
 
@@ -114,7 +115,9 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
   public:
     enum GraphicRole
     {
+        GraphicRoleError,
         GraphicRoleOnError,
+        GraphicRoleOnErrorContainer,
         GraphicRoleOnPrimary,
         GraphicRoleOnPrimaryContainer,
         GraphicRoleOnSecondaryContainer,
@@ -140,6 +143,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
     void initHints() override;
 
   private:
+    void setupSkinlets();
     void setupFonts();
     void setupGraphicFilters( const QskMaterial3Theme& );
     void setGraphicColor( GraphicRole, QRgb );

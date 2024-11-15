@@ -18,6 +18,8 @@ class QSK_EXPORT QskTextInputSkinlet : public QskSkinlet
     enum NodeRole
     {
         PanelRole,
+        LabelTextRole,
+        HintTextRole,
         RoleCount
     };
 
@@ -26,6 +28,9 @@ class QSK_EXPORT QskTextInputSkinlet : public QskSkinlet
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF& rect, QskAspect::Subcontrol ) const override;
+
+    virtual QSizeF adjustSizeHint( const QskSkinnable*,
+        Qt::SizeHint, const QSizeF& ) const;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
