@@ -9,6 +9,8 @@
 #include <QskVertex.h>
 #include <QskSGNode.h>
 
+#include <qmath.h>
+
 using Q = QskSlider;
 
 static inline bool qskHasOrigin( const QskSlider* )
