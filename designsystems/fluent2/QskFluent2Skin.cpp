@@ -1505,7 +1505,6 @@ void Editor::setupSliderColors(
         grooveColor = rgbSolid( grooveColor, pal.background.solid.base );
 
         setGradient( Q::Groove | section | state, grooveColor );
-        setGradient( Q::Fill | section | state, grooveColor );
         setGradient( Q::Handle | section | state, handleColor );
     }
 }

@@ -13,11 +13,11 @@ QSK_SUBCONTROL( QskSlider, Panel )
 QSK_SUBCONTROL( QskSlider, Groove )
 QSK_SUBCONTROL( QskSlider, Fill )
 QSK_SUBCONTROL( QskSlider, Scale )
+QSK_SUBCONTROL( QskSlider, Ticks )
 QSK_SUBCONTROL( QskSlider, Handle )
-QSK_SUBCONTROL( QskSlider, GrooveStopIndicators )
-QSK_SUBCONTROL( QskSlider, FillStopIndicators )
 
 QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskSlider, Filled, QskAspect::FirstSystemState << 3 )
 
 class QskSlider::PrivateData
 {

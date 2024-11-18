@@ -9,6 +9,7 @@
  */
 
 #include "QskMaterial3Skin.h"
+#include "QskMaterial3SliderSkinlet.h"
 
 #include <QskSkinHintTableEditor.h>
 
@@ -906,63 +907,62 @@ void Editor::setupSlider()
     using A = QskAspect;
     using Q = QskSlider;
 
-    const QSizeF sliderSize( 48_dp, 44_dp );
-    setStrutSize( Q::Panel | A::Horizontal, sliderSize );
-    setStrutSize( Q::Panel | A::Vertical, sliderSize.transposed() );
+    const auto extentGroove = 16_dp;
+    const auto extentPanel = 44_dp;
 
-    setBoxShape( Q::Groove | A::Horizontal, { 0, 100, 0, 100, Qt::RelativeSize } );
-    setBoxShape( Q::Groove | A::Vertical, { 100, 100, 0, 0, Qt::RelativeSize } );
-    setMetric( Q::Groove | A::Size, 16_dp );
-    setMargin( Q::Groove | A::Horizontal, { 6_dp, 0, 0, 0 } );
-    setMargin( Q::Groove | A::Vertical, {0, 0, 0, 6_dp } );
+    setStrutSize( Q::Panel | A::Horizontal, 3 * extentGroove, extentPanel );
+    setStrutSize( Q::Panel | A::Vertical, extentPanel, 3 * extentGroove );
+
+    setMetric( Q::Groove | A::Size, extentGroove );
+    setMetric( Q::Fill | A::Size, extentGroove );
 
     setGradient( Q::Groove, m_pal.primaryContainer );
     setGradient( Q::Groove | Q::Disabled, m_pal.onSurface12 );
-
-    setBoxShape( Q::Fill | A::Horizontal, { 100, 0, 100, 0, Qt::RelativeSize } );
-    setBoxShape( Q::Fill | A::Vertical, { 0, 0, 100, 100, Qt::RelativeSize } );
-    setMetric( Q::Fill | A::Size, 16_dp );
-    setMargin( Q::Fill | A::Horizontal, { 0, 0, 6_dp, 0 } );
-    setMargin( Q::Fill | A::Vertical, {0, 6_dp, 0, 0 } );
 
     setGradient( Q::Fill, m_pal.primary );
     setGradient( Q::Fill | Q::Disabled, m_pal.onSurface38 );
 
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
-    setBoxBorderMetrics( Q::Handle, 0 );
+    setBoxShape( Q::Groove, 100, Qt::RelativeSize );
+    setBoxShape( Q::Fill, 100, Qt::RelativeSize );
 
-    const QSizeF handleSize( 4_dp, 44_dp );
-    const QSizeF handleSizeFocusedPressed( 2_dp, 44_dp );
-    setStrutSize( Q::Handle | A::Horizontal, handleSize );
-    setStrutSize( Q::Handle | A::Horizontal, handleSizeFocusedPressed,
-        { QskStateCombination::Combination, Q::Focused | Q::Pressed } );
+    setStrutSize( Q::Ticks, { 4_dp, 4_dp } );
+    setBoxShape( Q::Ticks, 100, Qt::RelativeSize );
 
-    setStrutSize( Q::Handle | A::Vertical, handleSize.transposed() );
-    setStrutSize( Q::Handle | A::Vertical, handleSizeFocusedPressed.transposed(),
+    setGradient( Q::Ticks, m_pal.primary );
+    setGradient( Q::Ticks | Q::Disabled, m_pal.onSurface );
+
+    setGradient( Q::Ticks | Q::Filled, m_pal.secondaryContainer );
+    setGradient( Q::Ticks | Q::Filled, m_pal.secondaryContainer,
         { QskStateCombination::Combination, Q::Focused | Q::Pressed } );
+    setGradient( Q::Ticks | Q::Filled | Q::Disabled, m_pal.inverseOnSurface );
+
+    for ( const auto variation : { A::Horizontal, A::Vertical } )
+    {
+        QSizeF handleSize( extentGroove, extentPanel );
+        QskMargins margin1{ 6_dp, 0_dp };
+        QskMargins margin2{ 7_dp, 0_dp };
+
+        if ( variation == A::Vertical )
+        {
+            handleSize = handleSize.transposed();
+            margin1 = margin1.rotated();
+            margin2 = margin2.rotated();
+        }
+
+        const auto aspect = Q::Handle | variation;
+
+        setStrutSize( aspect, handleSize );
+        setMargin( aspect, margin1 );
+        setMargin( aspect, margin2,
+            { QskStateCombination::Combination, Q::Focused | Q::Pressed } );
+    }
 
     setGradient( Q::Handle, m_pal.primary );
     setGradient( Q::Handle | Q::Pressed, m_pal.primary );
 
     const auto disabledColor = flattenedColor( m_pal.onSurface, m_pal.background, 0.38 );
     setGradient( Q::Handle | Q::Disabled, disabledColor );
-
-    for( auto indicator : { Q::GrooveStopIndicators, Q::FillStopIndicators } )
-    {
-        setStrutSize( indicator, { 4_dp, 4_dp } );
-        setBoxShape( indicator, 100, Qt::RelativeSize );
-    }
-
-    const auto p = 6_dp;
-    setPadding( Q::GrooveStopIndicators | A::Horizontal, { p, 0, p, 0 } );
-    setPadding( Q::GrooveStopIndicators | A::Vertical, { 0, p, 0, p } );
-    setPadding( Q::FillStopIndicators | A::Horizontal, { p, 0, p, 0 } );
-    setPadding( Q::FillStopIndicators | A::Vertical, { 0, p, 0, p } );
-
-    setGradient( Q::GrooveStopIndicators, m_pal.primary );
-    setGradient( Q::GrooveStopIndicators | Q::Disabled, m_pal.onSurface );
-    setGradient( Q::FillStopIndicators, m_pal.secondaryContainer );
-    setGradient( Q::FillStopIndicators | Q::Disabled, m_pal.inverseOnSurface );
 
     // move the handle smoothly when using keys
     setAnimation( Q::Handle | A::Metric | A::Position, 2 * qskDuration );
@@ -1594,6 +1594,7 @@ qreal QskMaterial3Theme::stateOpacity( int state ) const
 QskMaterial3Skin::QskMaterial3Skin( QObject* parent )
     : Inherited( parent )
 {
+    declareSkinlet< QskSlider, QskMaterial3SliderSkinlet >();
 }
 
 QskMaterial3Skin::~QskMaterial3Skin()

@@ -22,8 +22,7 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
         PanelRole,
         GrooveRole,
         FillRole,
-        GrooveStopIndicatorsRole,
-        FillStopIndicatorsRole,
+        TicksRole,
         HandleRole,
 
         RoleCount
@@ -38,29 +37,14 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
     QSizeF sizeHint( const QskSkinnable*,
         Qt::SizeHint, const QSizeF& ) const override;
 
-    int sampleCount( const QskSkinnable*, QskAspect::Subcontrol ) const override;
-
-    QRectF sampleRect( const QskSkinnable*,
-        const QRectF&, QskAspect::Subcontrol, int index ) const override;
-
-    QskAspect::States sampleStates( const QskSkinnable*,
-        QskAspect::Subcontrol, int ) const override;
-
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-    QSGNode* updateSampleNode( const QskSkinnable*,
-        QskAspect::Subcontrol, int index, QSGNode* ) const override;
-
   private:
     QRectF panelRect( const QskSlider*, const QRectF& ) const;
-    QRectF grooveRect( const QskSlider*, const QRectF& ) const;
     QRectF fillRect( const QskSlider*, const QRectF& ) const;
     QRectF handleRect( const QskSlider*, const QRectF& ) const;
-    QRectF scaleRect( const QskSlider*, const QRectF& ) const;
-
-    QRectF innerRect( const QskSlider*, const QRectF&, QskAspect::Subcontrol ) const;
 };
 
 #endif

@@ -5,232 +5,14 @@
 
 #include "QskSliderSkinlet.h"
 #include "QskSlider.h"
-
-#include "QskAspect.h"
-#include "QskBoxBorderMetrics.h"
 #include "QskFunctions.h"
-
-#include <QFontMetricsF>
-#include <QtMath>
 
 using Q = QskSlider;
 
-namespace
+static QRectF qskInnerRect( const QskSlider* slider,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl )
 {
-    inline QRectF qskInnerPanelRect(
-        const QskSlider* slider, const QRectF& contentsRect )
-    {
-    #if 1
-        auto padding = slider->paddingHint( Q::Panel );
-        padding += slider->boxBorderMetricsHint( Q::Panel ).widths();
-
-        auto r = slider->subControlRect( contentsRect, Q::Panel );
-        r = r.marginsRemoved( padding );
-    #else
-        r = slider->subControlContentsRect( contentsRect, Q::Panel );
-    #endif
-
-        return r;
-    }
-
-    QRectF qskInnerValueRect( const QskSlider* slider, const QRectF& contentsRect )
-    {
-        // For M3 the stop indicators have some padding related to the groove (and fill),
-        // so we use the rect between first and last stop indicator as authoritative for
-        // indicators, handle etc.
-        const auto grooveIndicatorMargins = slider->paddingHint( Q::GrooveStopIndicators );
-        const auto r = qskInnerPanelRect( slider, contentsRect ).marginsRemoved( grooveIndicatorMargins );
-        return r;
-    }
-}
-
-QskSliderSkinlet::QskSliderSkinlet( QskSkin* skin )
-    : Inherited( skin )
-{
-    setNodeRoles( {
-        PanelRole,
-        GrooveRole,
-        FillRole,
-        FillStopIndicatorsRole,
-        GrooveStopIndicatorsRole,
-        HandleRole
-    } );
-}
-
-QskSliderSkinlet::~QskSliderSkinlet()
-{
-}
-
-QRectF QskSliderSkinlet::subControlRect( const QskSkinnable* skinnable,
-    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
-{
-    const auto slider = static_cast< const QskSlider* >( skinnable );
-
-    if ( subControl == Q::Panel )
-    {
-        return panelRect( slider, contentsRect );
-    }
-
-    if ( subControl == Q::Groove )
-    {
-        return grooveRect( slider, contentsRect );
-    }
-
-    if ( subControl == Q::Fill )
-    {
-        return fillRect( slider, contentsRect );
-    }
-
-    if ( subControl == Q::Handle )
-    {
-        return handleRect( slider, contentsRect );
-    }
-
-    if ( subControl == Q::Scale )
-    {
-        return scaleRect( slider, contentsRect );
-    }
-
-    return Inherited::subControlRect( skinnable, contentsRect, subControl );
-}
-
-int QskSliderSkinlet::sampleCount( const QskSkinnable* skinnable,
-    QskAspect::Subcontrol subControl ) const
-{
-    const auto slider = static_cast< const QskSlider* >( skinnable );
-
-    if( slider->snap() )
-    {
-        const auto num = qCeil( slider->boundaryLength() / slider->stepSize() ) + 1;
-        return num;
-    }
-    else
-    {
-        return ( subControl == Q::GrooveStopIndicators ) ? 1 : 0;
-    }
-}
-
-QRectF QskSliderSkinlet::sampleRect(
-    const QskSkinnable* skinnable, const QRectF& contentsRect,
-    QskAspect::Subcontrol subControl, int index ) const
-{
-    const auto slider = static_cast< const QskSlider* >( skinnable );
-
-    auto r = qskInnerValueRect( slider, contentsRect );
-
-    const auto size = slider->strutSizeHint( subControl );
-
-    const auto filledPoints = qFloor( ( slider->value() - slider->minimum() ) / slider->stepSize() );
-
-    if( slider->snap())
-    {
-        if( slider->snap()
-            && ( ( index >= filledPoints && subControl == Q::FillStopIndicators )
-                || ( index < filledPoints && subControl == Q::GrooveStopIndicators ) ) )
-        {
-            return {};
-        }
-    }
-
-    const auto pos = slider->snap() ? slider->minimum() + index * slider->stepSize() : slider->maximum();
-
-    if( slider->orientation() == Qt::Horizontal )
-    {
-        r.setTop( r.center().y() - size.height() / 2 );
-        const auto x = r.left() + slider->valueAsRatio( pos ) * r.width() - size.width() / 2;
-        r.setLeft( x );
-    }
-    else
-    {
-        r.setLeft( r.center().x() - size.width() / 2 );
-        const auto y = r.bottom() - slider->valueAsRatio( pos ) * r.height() - size.height() / 2;
-        r.setTop( y );
-    }
-
-    r.setHeight( size.height() );
-    r.setWidth( size.width() );
-
-    return r;
-}
-
-QskAspect::States QskSliderSkinlet::sampleStates( const QskSkinnable*, QskAspect::Subcontrol, int ) const
-{
-    return {};
-}
-
-QSGNode* QskSliderSkinlet::updateSubNode(
-    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
-{
-    const auto slider = static_cast< const QskSlider* >( skinnable );
-
-    switch ( nodeRole )
-    {
-        case PanelRole:
-        {
-            return updateBoxNode( slider, node, Q::Panel );
-        }
-
-        case GrooveRole:
-        {
-            return updateBoxNode( slider, node, Q::Groove );
-        }
-
-        case FillRole:
-        {
-            return updateBoxNode( slider, node, Q::Fill );
-        }
-
-        case GrooveStopIndicatorsRole:
-        {
-            return updateSeriesNode( slider, Q::GrooveStopIndicators, node );
-        }
-
-        case FillStopIndicatorsRole:
-        {
-            return updateSeriesNode( slider, Q::FillStopIndicators, node );
-        }
-
-        case HandleRole:
-        {
-            return updateBoxNode( slider, node, Q::Handle );
-        }
-    }
-
-    return Inherited::updateSubNode( skinnable, nodeRole, node );
-}
-
-QSGNode* QskSliderSkinlet::updateSampleNode( const QskSkinnable* skinnable,
-    QskAspect::Subcontrol subControl, int index, QSGNode* node ) const
-{
-    const auto slider = static_cast< const QskSlider* >( skinnable );
-    const auto rect = sampleRect( slider, slider->contentsRect(), subControl, index );
-
-    return updateBoxNode( skinnable, node, rect, subControl );
-}
-
-QRectF QskSliderSkinlet::panelRect(
-    const QskSlider* slider, const QRectF& contentsRect ) const
-{
-    auto r = contentsRect;
-
-    const qreal size = slider->metric( Q::Panel | QskAspect::Size ); // 0: no hint
-    if ( size > 0 && size < r.height() )
-    {
-        const auto alignment = slider->alignmentHint( Q::Panel );
-
-        if ( slider->orientation() == Qt::Horizontal )
-            r = qskAlignedRectF( r, r.width(), size, alignment & Qt::AlignVertical_Mask );
-        else
-            r = qskAlignedRectF( r, size, r.height(), alignment & Qt::AlignHorizontal_Mask );
-    }
-
-    return r;
-}
-
-QRectF QskSliderSkinlet::innerRect( const QskSlider* slider,
-    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
-{
-    auto r = qskInnerPanelRect( slider, contentsRect );
+    auto r = slider->subControlContentsRect( contentsRect, Q::Panel );
 
     QskSkinHintStatus status;
 
@@ -256,52 +38,96 @@ QRectF QskSliderSkinlet::innerRect( const QskSlider* slider,
     return r;
 }
 
-QRectF QskSliderSkinlet::grooveRect(
-    const QskSlider* slider, const QRectF& contentsRect ) const
+QskSliderSkinlet::QskSliderSkinlet( QskSkin* skin )
+    : Inherited( skin )
 {
-    const auto r = qskInnerPanelRect( slider, contentsRect );
-    auto grooveRect = innerRect( slider, contentsRect, Q::Groove );
-    const auto handleRect = slider->subControlRect( Q::Handle );
-
-    if ( slider->orientation() == Qt::Horizontal )
-    {
-        grooveRect.setLeft( handleRect.right() );
-        grooveRect.setRight( r.right() );
-    }
-    else
-    {
-        grooveRect.setBottom( handleRect.top() );
-        grooveRect.setTop( r.top() );
-    }
-
-    return grooveRect;
+    setNodeRoles( { PanelRole, GrooveRole, FillRole, TicksRole, HandleRole } );
 }
 
-QRectF QskSliderSkinlet::scaleRect(
-    const QskSlider* slider, const QRectF& rect ) const
+QskSliderSkinlet::~QskSliderSkinlet()
 {
-    return innerRect( slider, rect, Q::Groove );
+}
+
+QRectF QskSliderSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
+{
+    const auto slider = static_cast< const QskSlider* >( skinnable );
+
+    if ( subControl == Q::Panel )
+        return panelRect( slider, contentsRect );
+
+    if ( subControl == Q::Groove )
+        return qskInnerRect( slider, contentsRect, Q::Groove );
+
+    if ( subControl == Q::Fill )
+        return fillRect( slider, contentsRect );
+
+    if ( subControl == Q::Scale )
+        return subControlRect( skinnable, contentsRect, Q::Groove );
+
+    if ( subControl == Q::Handle )
+        return handleRect( slider, contentsRect );
+
+    return Inherited::subControlRect( skinnable, contentsRect, subControl );
+}
+
+QSGNode* QskSliderSkinlet::updateSubNode(
+    const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
+{
+    const auto slider = static_cast< const QskSlider* >( skinnable );
+
+    switch ( nodeRole )
+    {
+        case PanelRole:
+            return updateBoxNode( slider, node, Q::Panel );
+
+        case GrooveRole:
+            return updateBoxNode( slider, node, Q::Groove );
+
+        case FillRole:
+            return updateBoxNode( slider, node, Q::Fill );
+
+        case HandleRole:
+            return updateBoxNode( slider, node, Q::Handle );
+    }
+
+    return Inherited::updateSubNode( skinnable, nodeRole, node );
+}
+
+QRectF QskSliderSkinlet::panelRect(
+    const QskSlider* slider, const QRectF& contentsRect ) const
+{
+    auto r = contentsRect;
+
+    const qreal size = slider->metric( Q::Panel | QskAspect::Size ); // 0: no hint
+    if ( size > 0 && size < r.height() )
+    {
+        const auto alignment = slider->alignmentHint( Q::Panel );
+
+        if ( slider->orientation() == Qt::Horizontal )
+            r = qskAlignedRectF( r, r.width(), size, alignment & Qt::AlignVertical_Mask );
+        else
+            r = qskAlignedRectF( r, size, r.height(), alignment & Qt::AlignHorizontal_Mask );
+    }
+
+    return r;
 }
 
 QRectF QskSliderSkinlet::fillRect(
     const QskSlider* slider, const QRectF& contentsRect ) const
 {
-    const auto r = qskInnerPanelRect( slider, contentsRect );
-    const auto handleRect = slider->subControlRect( Q::Handle );
+    const auto pos = qBound( 0.0, slider->handlePosition(), 1.0 );
 
-    auto fillRect = innerRect( slider, contentsRect, Q::Fill );
+    auto r = qskInnerRect( slider, contentsRect, QskSlider::Fill );
+
+    auto scaleRect = subControlRect( slider, contentsRect, Q::Scale );
+
     if ( slider->orientation() == Qt::Horizontal )
-    {
-        fillRect.setLeft( r.left() );
-        fillRect.setRight( handleRect.left() );
-    }
+        r.setRight( scaleRect.left() + pos * scaleRect.width() );
     else
-    {
-        fillRect.setBottom( r.bottom() );
-        fillRect.setTop( handleRect.bottom() );
-    }
+        r.setTop( scaleRect.bottom() - pos * scaleRect.height() );
 
-    return fillRect;
+    return r;
 }
 
 QRectF QskSliderSkinlet::handleRect(
@@ -310,7 +136,7 @@ QRectF QskSliderSkinlet::handleRect(
     auto handleSize = slider->strutSizeHint( Q::Handle );
     const auto pos = qBound( 0.0, slider->handlePosition(), 1.0 );
 
-    const auto r = qskInnerValueRect( slider, contentsRect );
+    const auto r = subControlRect( slider, contentsRect, Q::Scale );
     auto center = r.center();
 
     if ( slider->orientation() == Qt::Horizontal )
@@ -346,15 +172,10 @@ QSizeF QskSliderSkinlet::sizeHint( const QskSkinnable* skinnable,
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    const auto panelHint = skinnable->strutSizeHint( Q::Panel );
-    const auto grooveHint = skinnable->strutSizeHint( Q::Groove );
-    const auto fillHint = skinnable->strutSizeHint( Q::Fill );
-    const auto handleHint = skinnable->strutSizeHint( Q::Handle );
-
-    auto hint = panelHint;
-    hint = hint.expandedTo( grooveHint );
-    hint = hint.expandedTo( fillHint );
-    hint = hint.expandedTo( handleHint );
+    auto hint = skinnable->strutSizeHint( Q::Panel );
+    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Groove ) );
+    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Fill ) );
+    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Handle ) );
 
     return hint;
 }
