@@ -19,6 +19,7 @@ Assuming the Emscripten SDK in `~/dev/emscripten` and Qt in `~/dev/qt6`, Qt can 
 ....
 cd ~/dev/qt6
 source "~/dev/emsdk/emsdk_env.sh"
+./configure -platform wasm-emscripten -qt-host-path ~/Qt/6.6.0/gcc_64/ -prefix $PWD/qtbase -submodules qtbase,qtdeclarative,qtshadertools,qtsvg
 cmake --build . -t qtbase -t qtdeclarative -t qtshadertools -t qtsvg
 ....
 
@@ -35,6 +36,7 @@ With the Qt version from above QSkinny can be built for WAsm, assuming it has be
 mkdir -p ~/dev/qskinny-wasm-build
 source "~/dev/emsdk/emsdk_env.sh"
 ~/dev/qt6/qtbase/bin/qt-cmake -S ~/dev/qskinny -B ~/dev/qskinny-wasm-build -DBUILD_QSKDLL=OFF
+make
 ....
 
 
