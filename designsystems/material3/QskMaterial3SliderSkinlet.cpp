@@ -6,7 +6,7 @@
 #include "QskMaterial3SliderSkinlet.h"
 
 #include <QskSlider.h>
-#include <QskVertex.h>
+#include <QskClipNode.h>
 #include <QskSGNode.h>
 
 #include <qmath.h>
@@ -41,45 +41,6 @@ static inline qreal qskTickValue( const QskSlider* slider, int index )
     }
 
     return slider->maximum();
-}
-
-namespace
-{
-    class ClipNode : public QSGClipNode
-    {
-      public:
-        ClipNode()
-            : m_geometry( QSGGeometry::defaultAttributes_Point2D(), 0 )
-        {
-            m_geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
-            setGeometry( &m_geometry );
-        }
-
-        void setRegion( const QRectF& boundingRect, const QRectF& rect )
-        {
-            if ( ( rect == clipRect() ) && ( m_boundingRect == boundingRect ) )
-                return;
-
-            setIsRectangular( false );
-            setClipRect( rect );
-
-            m_geometry.allocate( 2 * 5 ); // 2 points per line
-
-            const auto l = reinterpret_cast< QskVertex::Line* >( m_geometry.vertexData() );
-            l[0].setLine( boundingRect.topLeft(), rect.topLeft() );
-            l[1].setLine( boundingRect.topRight(), rect.topRight() );
-            l[2].setLine( boundingRect.bottomRight(), rect.bottomRight() );
-            l[3].setLine( boundingRect.bottomLeft(), rect.bottomLeft() );
-            l[4] = l[0];
-
-            m_geometry.markVertexDataDirty();
-            markDirty( QSGNode::DirtyGeometry );
-        }
-
-      private:
-        QRectF m_boundingRect;
-        QSGGeometry m_geometry;
-    };
 }
 
 QskMaterial3SliderSkinlet::QskMaterial3SliderSkinlet( QskSkin* skin )
@@ -128,12 +89,10 @@ QSGNode* QskMaterial3SliderSkinlet::updateSubNode(
             {
                 const auto slider = static_cast< const QskSlider* >( skinnable );
 
-                auto clipNode = QskSGNode::ensureNode< ClipNode >( node );
+                auto clipNode = QskSGNode::ensureNode< QskClipNode >( node );
 
-                clipNode->setRegion(
-                    slider->subControlRect( Q::Panel ),
-                    slider->subControlRect( Q::Handle )
-                );
+                clipNode->setRegion( slider->subControlRect( Q::Panel ),
+                    slider->subControlRect( Q::Handle ) );
 
                 QskSGNode::setNodeRole( clippedNode, nodeRole );
                 QskSGNode::setParentNode( clippedNode, clipNode );

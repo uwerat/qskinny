@@ -11,10 +11,10 @@
 #include "QskBoxBorderColors.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxNode.h"
-#include "QskBoxClipNode.h"
 #include "QskBoxRectangleNode.h"
 #include "QskBoxShapeMetrics.h"
 #include "QskBoxHints.h"
+#include "QskClipNode.h"
 #include "QskColorFilter.h"
 #include "QskControl.h"
 #include "QskFunctions.h"
@@ -641,15 +641,14 @@ QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
 QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
     QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl )
 {
-    auto clipNode = QskSGNode::ensureNode< QskBoxClipNode >( node );
+    auto clipNode = QskSGNode::ensureNode< QskClipNode >( node );
 
     const auto margins = skinnable->marginHint( subControl );
 
     const auto clipRect = rect.marginsRemoved( margins );
     if ( clipRect.isEmpty() )
     {
-        clipNode->setIsRectangular( true );
-        clipNode->setClipRect( clipRect );
+        clipNode->setRect( clipRect );
     }
     else
     {
