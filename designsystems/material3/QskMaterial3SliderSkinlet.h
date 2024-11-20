@@ -15,6 +15,8 @@ class QskMaterial3SliderSkinlet : QskSliderSkinlet
     using Inherited = QskSliderSkinlet;
 
   public:
+    QSK_STATES( Filled )
+
     Q_INVOKABLE QskMaterial3SliderSkinlet( QskSkin* = nullptr );
 
     QRectF subControlRect( const QskSkinnable*,

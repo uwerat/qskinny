@@ -11,6 +11,9 @@
 
 #include <qmath.h>
 
+// the color of stop indicators is different, when being on top of the filling
+QSK_SYSTEM_STATE( QskMaterial3SliderSkinlet, Filled, QskAspect::FirstUserState >> 1 )
+
 using Q = QskSlider;
 
 static inline bool qskHasOrigin( const QskSlider* )
@@ -18,7 +21,7 @@ static inline bool qskHasOrigin( const QskSlider* )
     return false; // TODO
 }
 
-qreal qskTickValue( const QskSlider* slider, int index )
+static inline qreal qskTickValue( const QskSlider* slider, int index )
 {
     if( slider->snap() )
         return slider->minimum() + index * slider->stepSize();
@@ -206,7 +209,7 @@ QskAspect::States QskMaterial3SliderSkinlet::sampleStates(
     {
         const auto slider = static_cast< const QskSlider* >( skinnable );
         if ( qskTickValue( slider, index ) <= slider->value() )
-            states |= Q::Filled;
+            states |= QskMaterial3SliderSkinlet::Filled;
     }
 
     return states;

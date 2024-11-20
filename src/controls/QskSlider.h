@@ -26,7 +26,7 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
 
   public:
     QSK_SUBCONTROLS( Panel, Groove, Fill, Scale, Ticks, Handle )
-    QSK_STATES( Pressed, Filled )
+    QSK_STATES( Pressed )
 
     explicit QskSlider( QQuickItem* parent = nullptr );
     explicit QskSlider( Qt::Orientation, QQuickItem* parent = nullptr );

@@ -17,7 +17,6 @@ QSK_SUBCONTROL( QskSlider, Ticks )
 QSK_SUBCONTROL( QskSlider, Handle )
 
 QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
-QSK_SYSTEM_STATE( QskSlider, Filled, QskAspect::FirstSystemState << 3 )
 
 class QskSlider::PrivateData
 {
