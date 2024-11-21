@@ -16,31 +16,9 @@ QSK_SYSTEM_STATE( QskMaterial3SliderSkinlet, Filled, QskAspect::FirstUserState >
 
 using Q = QskSlider;
 
-static inline bool qskHasOrigin( const QskSlider* )
+static inline bool qskHasBoundaryTicks( const QskSlider* slider )
 {
-    return false; // TODO
-}
-
-static inline qreal qskTickValue( const QskSlider* slider, int index )
-{
-    if( slider->isSnapping() && slider->stepSize() )
-        return slider->minimum() + index * slider->stepSize();
-
-    if ( qskHasOrigin( slider ) )
-    {
-        switch( index )
-        {
-            case 0:
-                return slider->minimum();
-
-#if 0
-            case 1:
-                return slider->origin();
-#endif
-        }
-    }
-
-    return slider->maximum();
+    return ( slider->graduationPolicy() == Qsk::Maybe ) && !slider->isSnapping();
 }
 
 QskMaterial3SliderSkinlet::QskMaterial3SliderSkinlet( QskSkin* skin )
@@ -82,7 +60,7 @@ QSGNode* QskMaterial3SliderSkinlet::updateSubNode(
         case GrooveRole:
         case FillRole:
         {
-            auto clippedNode = QskSGNode::findChildNode( node, nodeRole ); 
+            auto clippedNode = QskSGNode::findChildNode( node, nodeRole );
             clippedNode = Inherited::updateSubNode( skinnable, nodeRole, clippedNode );
 
             if ( clippedNode )
@@ -102,11 +80,6 @@ QSGNode* QskMaterial3SliderSkinlet::updateSubNode(
 
             return nullptr;
         }
-
-        case TicksRole:
-        {
-            return updateSeriesNode( skinnable, Q::Ticks, node );
-        }
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
@@ -115,48 +88,50 @@ QSGNode* QskMaterial3SliderSkinlet::updateSubNode(
 int QskMaterial3SliderSkinlet::sampleCount( const QskSkinnable* skinnable,
     QskAspect::Subcontrol subControl ) const
 {
-    if ( subControl == Q::Ticks )
+    if ( subControl == Q::Tick )
     {
         const auto slider = static_cast< const QskSlider* >( skinnable );
 
-        if( slider->isSnapping() && slider->stepSize() )
-            return qCeil( slider->boundaryLength() / slider->stepSize() ) + 1;
+        if ( qskHasBoundaryTicks( slider ) )
+        {
+            const bool hasOrigin = false;
 
-        // min/origin/max or max
-        return qskHasOrigin( slider ) ? 3 : 1;
+            // min/origin/max or max
+            return hasOrigin ? 3 : 1;
+        }
     }
 
     return Inherited::sampleCount( skinnable, subControl );
 }
 
-QRectF QskMaterial3SliderSkinlet::sampleRect(
-    const QskSkinnable* skinnable, const QRectF& contentsRect,
+QVariant QskMaterial3SliderSkinlet::sampleAt( const QskSkinnable* skinnable,
     QskAspect::Subcontrol subControl, int index ) const
 {
-    if ( subControl != Q::Ticks )
-        return Inherited::sampleRect( skinnable, contentsRect, subControl, index );
-
-    const auto slider = static_cast< const QskSlider* >( skinnable );
-
-    const auto tickPos = slider->valueAsRatio( qskTickValue( slider, index ) );
-
-    const auto size = skinnable->strutSizeHint( Q::Ticks );
-    const auto r = subControlRect( skinnable, contentsRect, Q::Scale );
-
-    qreal x, y;
-
-    if( slider->orientation() == Qt::Horizontal )
+    if ( subControl == Q::Tick )
     {
-        x = tickPos * r.width() - 0.5 * size.width();
-        y = 0.5 * ( r.height() - size.height() );
-    }
-    else
-    {
-        y = r.height() - ( tickPos * r.height() ) - 0.5 * size.height();
-        x = 0.5 * ( r.width() - size.width() );
+        const auto slider = static_cast< const QskSlider* >( skinnable );
+
+        if ( qskHasBoundaryTicks( slider ) )
+        {
+            switch( index )
+            {
+                case 1:
+                    return slider->minimum();
+
+        #if 0
+                case 2:
+                    return slider->origin();
+        #endif
+
+                default:
+                    return slider->maximum();
+            }
+
+            return QVariant();
+        }
     }
 
-    return QRectF( r.x() + x, r.y() + y, size.width(), size.height() );
+    return Inherited::sampleAt( skinnable, subControl, index );
 }
 
 QskAspect::States QskMaterial3SliderSkinlet::sampleStates(
@@ -164,28 +139,19 @@ QskAspect::States QskMaterial3SliderSkinlet::sampleStates(
 {
     auto states = Inherited::sampleStates( skinnable, subControl, index );
 
-    if ( subControl == Q::Ticks )
+    if ( subControl == Q::Tick )
     {
-        const auto slider = static_cast< const QskSlider* >( skinnable );
-        if ( qskTickValue( slider, index ) <= slider->value() )
-            states |= QskMaterial3SliderSkinlet::Filled;
+        const auto tickValue = sampleAt( skinnable, subControl, index );
+        if ( tickValue.canConvert< qreal >() )
+        {
+            const auto slider = static_cast< const QskSlider* >( skinnable );
+
+            if ( tickValue.value< qreal >() <= slider->value() )
+                states |= QskMaterial3SliderSkinlet::Filled;
+        }
     }
 
     return states;
-}
-
-QSGNode* QskMaterial3SliderSkinlet::updateSampleNode( const QskSkinnable* skinnable,
-    QskAspect::Subcontrol subControl, int index, QSGNode* node ) const
-{
-    if ( subControl == Q::Ticks )
-    {
-        const auto slider = static_cast< const QskSlider* >( skinnable );
-        const auto rect = sampleRect( slider, slider->contentsRect(), subControl, index );
-
-        return updateBoxNode( skinnable, node, rect, subControl );
-    }
-
-    return Inherited::updateSampleNode( skinnable, subControl, index, node );
 }
 
 #include "moc_QskMaterial3SliderSkinlet.cpp"

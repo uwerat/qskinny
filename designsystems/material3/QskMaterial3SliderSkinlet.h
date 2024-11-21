@@ -24,8 +24,8 @@ class QskMaterial3SliderSkinlet : QskSliderSkinlet
 
     int sampleCount( const QskSkinnable*, QskAspect::Subcontrol ) const override;
 
-    QRectF sampleRect( const QskSkinnable*,
-        const QRectF&, QskAspect::Subcontrol, int index ) const override;
+    QVariant sampleAt( const QskSkinnable*,
+        QskAspect::Subcontrol, int index ) const override;
 
     QskAspect::States sampleStates( const QskSkinnable*,
         QskAspect::Subcontrol, int ) const override;
@@ -33,9 +33,6 @@ class QskMaterial3SliderSkinlet : QskSliderSkinlet
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
-
-    QSGNode* updateSampleNode( const QskSkinnable*,
-        QskAspect::Subcontrol, int index, QSGNode* ) const override;
 };
 
 #endif

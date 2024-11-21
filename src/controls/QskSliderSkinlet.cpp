@@ -89,9 +89,63 @@ QSGNode* QskSliderSkinlet::updateSubNode(
 
         case HandleRole:
             return updateBoxNode( slider, node, Q::Handle );
+
+        case TicksRole:
+            return updateSeriesNode( slider, Q::Tick, node );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
+}
+
+int QskSliderSkinlet::sampleCount( const QskSkinnable* skinnable,
+    QskAspect::Subcontrol subControl ) const
+{
+    if ( subControl == Q::Tick )
+    {
+        const auto slider = static_cast< const QskSlider* >( skinnable );
+        return slider->visualGraduation().count();
+    }
+
+    return Inherited::sampleCount( skinnable, subControl );
+}
+
+QVariant QskSliderSkinlet::sampleAt( const QskSkinnable* skinnable,
+    QskAspect::Subcontrol subControl, int index ) const
+{
+    if ( subControl == Q::Tick )
+    {
+        const auto slider = static_cast< const QskSlider* >( skinnable );
+        return slider->visualGraduation().value( index );
+    }
+
+    return Inherited::sampleAt( skinnable, subControl, index );
+}
+
+QRectF QskSliderSkinlet::sampleRect(
+    const QskSkinnable* skinnable, const QRectF& contentsRect,
+    QskAspect::Subcontrol subControl, int index ) const
+{
+    if ( subControl == Q::Tick )
+    {
+        const auto slider = static_cast< const QskSlider* >( skinnable );
+        return tickRect( slider, contentsRect, index );
+    }
+
+    return Inherited::sampleRect( skinnable, contentsRect, subControl, index );
+}
+
+QSGNode* QskSliderSkinlet::updateSampleNode( const QskSkinnable* skinnable,
+    QskAspect::Subcontrol subControl, int index, QSGNode* node ) const
+{
+    if ( subControl == Q::Tick )
+    {
+        const auto slider = static_cast< const QskSlider* >( skinnable );
+        const auto rect = sampleRect( slider, slider->contentsRect(), subControl, index );
+
+        return updateBoxNode( skinnable, node, rect, subControl );
+    }
+
+    return Inherited::updateSampleNode( skinnable, subControl, index, node );
 }
 
 QRectF QskSliderSkinlet::panelRect(
@@ -164,6 +218,34 @@ QRectF QskSliderSkinlet::handleRect(
     handleRect.moveCenter( center );
 
     return handleRect;
+}
+
+QRectF QskSliderSkinlet::tickRect( const QskSlider* slider,
+    const QRectF& contentsRect, int index ) const
+{
+    const auto tickValue = sampleAt( slider, Q::Tick, index );
+    if ( !tickValue.canConvert< qreal >() )
+        return QRectF();
+
+    const auto tickPos = slider->valueAsRatio( tickValue.value< qreal >() );
+
+    const auto size = slider->strutSizeHint( Q::Tick );
+    const auto r = subControlRect( slider, contentsRect, Q::Scale );
+
+    qreal x, y;
+
+    if( slider->orientation() == Qt::Horizontal )
+    {
+        x = tickPos * r.width() - 0.5 * size.width();
+        y = 0.5 * ( r.height() - size.height() );
+    }
+    else
+    {
+        y = r.height() - ( tickPos * r.height() ) - 0.5 * size.height();
+        x = 0.5 * ( r.width() - size.width() );
+    }
+
+    return QRectF( r.x() + x, r.y() + y, size.width(), size.height() );
 }
 
 QSizeF QskSliderSkinlet::sizeHint( const QskSkinnable* skinnable,

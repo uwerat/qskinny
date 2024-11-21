@@ -9,14 +9,41 @@
 #include "QskIntervalF.h"
 #include "QskEvent.h"
 
+#include <qmath.h>
+
 QSK_SUBCONTROL( QskSlider, Panel )
 QSK_SUBCONTROL( QskSlider, Groove )
 QSK_SUBCONTROL( QskSlider, Fill )
 QSK_SUBCONTROL( QskSlider, Scale )
-QSK_SUBCONTROL( QskSlider, Ticks )
+QSK_SUBCONTROL( QskSlider, Tick )
 QSK_SUBCONTROL( QskSlider, Handle )
 
 QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
+
+static inline constexpr QskAspect qskAspectGraduationPolicy()
+{
+    return QskSlider::Tick | QskAspect::Option;
+}
+
+static inline bool qskHasGraduation( const QskSlider* slider )
+{
+    if ( slider->stepSize() )
+    {
+        switch( slider->graduationPolicy() )
+        {
+            case Qsk::Always:
+                return true;
+
+            case Qsk::Maybe:
+                return slider->isSnapping();
+
+            case Qsk::Never:
+                return false;
+        }
+    }
+
+    return false;
+}
 
 class QskSlider::PrivateData
 {
@@ -88,6 +115,42 @@ Qt::Orientation QskSlider::orientation() const
 QskAspect::Variation QskSlider::effectiveVariation() const
 {
     return static_cast< QskAspect::Variation >( m_data->orientation );
+}
+
+void QskSlider::setGraduationPolicy( Qsk::Policy policy )
+{
+    if ( setFlagHint( qskAspectGraduationPolicy(), policy ) )
+        Q_EMIT graduationPolicyChanged( graduationPolicy() );
+}
+
+void QskSlider::resetGraduationPolicy()
+{
+    if ( resetSkinHint( qskAspectGraduationPolicy() ) )
+        Q_EMIT graduationPolicyChanged( graduationPolicy() );
+}
+
+Qsk::Policy QskSlider::graduationPolicy() const
+{
+    return flagHint< Qsk::Policy >( qskAspectGraduationPolicy(), Qsk::Maybe );
+}
+
+QVector< qreal > QskSlider::visualGraduation() const
+{
+    QVector< qreal > graduation;
+
+    if ( qskHasGraduation( this ) )
+    {
+        const auto n = qCeil( boundaryLength() / stepSize() ) + 1;
+
+        graduation.reserve( n );
+
+        for ( int i = 0; i < n - 1; i++ )
+            graduation += minimum() + i * stepSize();
+
+        graduation += maximum();
+    }
+
+    return graduation;
 }
 
 void QskSlider::setTracking( bool on )

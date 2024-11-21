@@ -927,15 +927,15 @@ void Editor::setupSlider()
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
     setBoxShape( Q::Fill, 100, Qt::RelativeSize );
 
-    setStrutSize( Q::Ticks, { 4_dp, 4_dp } );
-    setBoxShape( Q::Ticks, 100, Qt::RelativeSize );
+    setStrutSize( Q::Tick, { 4_dp, 4_dp } );
+    setBoxShape( Q::Tick, 100, Qt::RelativeSize );
 
-    setGradient( Q::Ticks, m_pal.primary );
-    setGradient( Q::Ticks | Q::Disabled, m_pal.onSurface );
+    setGradient( Q::Tick, m_pal.primary );
+    setGradient( Q::Tick | Q::Disabled, m_pal.onSurface );
 
-    setGradient( Q::Ticks | SK::Filled, m_pal.secondaryContainer,
+    setGradient( Q::Tick | SK::Filled, m_pal.secondaryContainer,
         { QskStateCombination::CombinationNoState, Q::Focused | Q::Pressed } );
-    setGradient( Q::Ticks | SK::Filled | Q::Disabled, m_pal.inverseOnSurface );
+    setGradient( Q::Tick | SK::Filled | Q::Disabled, m_pal.inverseOnSurface );
 
     for ( const auto variation : { A::Horizontal, A::Vertical } )
     {

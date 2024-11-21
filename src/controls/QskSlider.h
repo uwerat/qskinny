@@ -7,12 +7,19 @@
 #define QSK_SLIDER_H
 
 #include "QskBoundedValueInput.h"
+#include "QskNamespace.h"
+
+#include <qvector.h>
 
 class QSK_EXPORT QskSlider : public QskBoundedValueInput
 {
     Q_OBJECT
 
     Q_PROPERTY( bool isPressed READ isPressed NOTIFY pressedChanged )
+
+    Q_PROPERTY( Qsk::Policy graduationPolicy READ graduationPolicy
+        WRITE setGraduationPolicy RESET resetGraduationPolicy
+        NOTIFY graduationPolicyChanged )
 
     Q_PROPERTY( Qt::Orientation orientation READ orientation
         WRITE setOrientation NOTIFY orientationChanged )
@@ -25,7 +32,7 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     using Inherited = QskBoundedValueInput;
 
   public:
-    QSK_SUBCONTROLS( Panel, Groove, Fill, Scale, Ticks, Handle )
+    QSK_SUBCONTROLS( Panel, Groove, Fill, Scale, Tick, Handle )
     QSK_STATES( Pressed )
 
     explicit QskSlider( QQuickItem* parent = nullptr );
@@ -38,6 +45,12 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
 
+    void setGraduationPolicy( Qsk::Policy );
+    void resetGraduationPolicy();
+    Qsk::Policy graduationPolicy() const;
+
+    virtual QVector< qreal > visualGraduation() const;
+
     void setTracking( bool );
     bool isTracking() const;
 
@@ -49,6 +62,7 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void pressedChanged( bool );
     void orientationChanged( Qt::Orientation );
     void trackingChanged( bool );
+    void graduationPolicyChanged( Qsk::Policy );
 
   protected:
     void mousePressEvent( QMouseEvent* ) override;
