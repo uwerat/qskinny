@@ -20,7 +20,7 @@ QSK_SUBCONTROL( QskSlider, Handle )
 
 QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
 
-static inline constexpr QskAspect qskAspectGraduationPolicy()
+static inline QskAspect qskAspectGraduationPolicy()
 {
     return QskSlider::Tick | QskAspect::Option;
 }
