@@ -17,7 +17,7 @@ namespace
       public:
         enum Style
         {
-            Continous,
+            Continuous,
             Discrete,
             Centered
         };
@@ -33,15 +33,15 @@ namespace
             {
                 case Discrete:
                 {
-                    setSnap( true );
+                    setSnapping( true );
                     setStepSize( 5 );
                     setPageSteps( 4 );
 
                     break;
                 }
-                case Continous:
+                case Continuous:
                 {
-                    setSnap( false );
+                    setSnapping( false );
                     setStepSize( 1 );
                     setPageSteps( 10 );
 
@@ -104,7 +104,7 @@ InputPage::InputPage( QQuickItem* parent )
     {
         const auto orientation = static_cast< Qt::Orientation >( i + 1 );
 
-        sliders[i].continous = new Slider( orientation, Slider::Continous );
+        sliders[i].continous = new Slider( orientation, Slider::Continuous );
         sliders[i].discrete = new Slider( orientation, Slider::Discrete );
     }
 

@@ -73,7 +73,6 @@ class QSK_EXPORT QskProgressIndicator : public QskBoundedControl
 
   private:
     void setValueInternal( qreal value );
-    void adjustBoundaries( bool increasing );
     void adjustValue();
 
     class PrivateData;

@@ -23,7 +23,7 @@ static inline bool qskHasOrigin( const QskSlider* )
 
 static inline qreal qskTickValue( const QskSlider* slider, int index )
 {
-    if( slider->snap() )
+    if( slider->isSnapping() && slider->stepSize() )
         return slider->minimum() + index * slider->stepSize();
 
     if ( qskHasOrigin( slider ) )
@@ -119,7 +119,7 @@ int QskMaterial3SliderSkinlet::sampleCount( const QskSkinnable* skinnable,
     {
         const auto slider = static_cast< const QskSlider* >( skinnable );
 
-        if( slider->snap() )
+        if( slider->isSnapping() && slider->stepSize() )
             return qCeil( slider->boundaryLength() / slider->stepSize() ) + 1;
 
         // min/origin/max or max
