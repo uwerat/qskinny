@@ -9,11 +9,6 @@
 #include <QskClipNode.h>
 #include <QskSGNode.h>
 
-#include <qmath.h>
-
-// the color of stop indicators is different, when being on top of the filling
-QSK_SYSTEM_STATE( QskMaterial3SliderSkinlet, Filled, QskAspect::FirstUserState >> 1 )
-
 using Q = QskSlider;
 
 static inline bool qskHasBoundaryTicks( const QskSlider* slider )
@@ -92,7 +87,7 @@ int QskMaterial3SliderSkinlet::sampleCount( const QskSkinnable* skinnable,
     {
         const auto slider = static_cast< const QskSlider* >( skinnable );
 
-        if ( qskHasBoundaryTicks( slider ) )
+        if ( ( slider->graduationPolicy() == Qsk::Maybe ) && !slider->isSnapping() )
         {
             const bool hasOrigin = false;
 
@@ -104,54 +99,42 @@ int QskMaterial3SliderSkinlet::sampleCount( const QskSkinnable* skinnable,
     return Inherited::sampleCount( skinnable, subControl );
 }
 
-QVariant QskMaterial3SliderSkinlet::sampleAt( const QskSkinnable* skinnable,
-    QskAspect::Subcontrol subControl, int index ) const
+QVector< qreal > QskMaterial3SliderSkinlet::graduation( const QskSlider* slider ) const
 {
-    if ( subControl == Q::Tick )
+    QVector< qreal > graduation;
+
+    if ( ( slider->graduationPolicy() == Qsk::Maybe ) && !slider->isSnapping() )
     {
-        const auto slider = static_cast< const QskSlider* >( skinnable );
+        const bool hasOrigin = false;
 
-        if ( qskHasBoundaryTicks( slider ) )
+        if ( hasOrigin )
         {
-            switch( index )
-            {
-                case 1:
-                    return slider->minimum();
-
-        #if 0
-                case 2:
-                    return slider->origin();
-        #endif
-
-                default:
-                    return slider->maximum();
-            }
-
-            return QVariant();
+            graduation.reserve( 3 );
+            graduation += slider->minimum();
+#if 1
+            graduation += slider->maximum(); // origin !!!
+#endif
+            graduation += slider->maximum();
+        }
+        else
+        {
+            graduation.reserve( 1 );
+            graduation += slider->maximum();
         }
     }
-
-    return Inherited::sampleAt( skinnable, subControl, index );
-}
-
-QskAspect::States QskMaterial3SliderSkinlet::sampleStates(
-    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl, int index ) const
-{
-    auto states = Inherited::sampleStates( skinnable, subControl, index );
-
-    if ( subControl == Q::Tick )
+    else
     {
-        const auto tickValue = sampleAt( skinnable, subControl, index );
-        if ( tickValue.canConvert< qreal >() )
-        {
-            const auto slider = static_cast< const QskSlider* >( skinnable );
+        const auto g = Inherited::graduation( slider );
 
-            if ( tickValue.value< qreal >() <= slider->value() )
-                states |= QskMaterial3SliderSkinlet::Filled;
-        }
+        // adding the boundaries
+
+        graduation.reserve( g.count() + 2 );
+        graduation += slider->minimum();
+        graduation += g;
+        graduation += slider->maximum();
     }
 
-    return states;
+    return graduation;
 }
 
 #include "moc_QskMaterial3SliderSkinlet.cpp"

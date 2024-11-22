@@ -17,6 +17,8 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
     using Inherited = QskSkinlet;
 
   public:
+    QSK_STATES( Filled )
+
     enum NodeRole
     {
         PanelRole,
@@ -45,12 +47,17 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
     QVariant sampleAt( const QskSkinnable*,
         QskAspect::Subcontrol, int index ) const override;
 
+    QskAspect::States sampleStates( const QskSkinnable*,
+        QskAspect::Subcontrol, int ) const override;
+
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
     QSGNode* updateSampleNode( const QskSkinnable*,
         QskAspect::Subcontrol, int index, QSGNode* ) const override;
+
+    virtual QVector< qreal > graduation( const QskSlider* ) const;
 
   private:
     QRectF panelRect( const QskSlider*, const QRectF& ) const;

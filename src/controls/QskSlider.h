@@ -9,8 +9,6 @@
 #include "QskBoundedValueInput.h"
 #include "QskNamespace.h"
 
-#include <qvector.h>
-
 class QSK_EXPORT QskSlider : public QskBoundedValueInput
 {
     Q_OBJECT
@@ -48,8 +46,6 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void setGraduationPolicy( Qsk::Policy );
     void resetGraduationPolicy();
     Qsk::Policy graduationPolicy() const;
-
-    virtual QVector< qreal > visualGraduation() const;
 
     void setTracking( bool );
     bool isTracking() const;

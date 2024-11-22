@@ -906,7 +906,7 @@ void Editor::setupSlider()
 {
     using A = QskAspect;
     using Q = QskSlider;
-    using SK = QskMaterial3SliderSkinlet;
+    using SK = QskSliderSkinlet;
 
     const auto extentGroove = 16_dp;
     const auto extentPanel = 44_dp;
@@ -936,6 +936,8 @@ void Editor::setupSlider()
     setGradient( Q::Tick | SK::Filled, m_pal.secondaryContainer,
         { QskStateCombination::CombinationNoState, Q::Focused | Q::Pressed } );
     setGradient( Q::Tick | SK::Filled | Q::Disabled, m_pal.inverseOnSurface );
+
+    setFlag( Q::Tick | A::Option, Qsk::Maybe );
 
     for ( const auto variation : { A::Horizontal, A::Vertical } )
     {

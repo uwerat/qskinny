@@ -6,6 +6,13 @@
 #include "QskSliderSkinlet.h"
 #include "QskSlider.h"
 #include "QskFunctions.h"
+#include "QskIntervalF.h"
+
+#include <qvector.h>
+#include <qmath.h>
+
+// the color of graduation ticks might different, when being on top of the filling
+QSK_SYSTEM_STATE( QskSliderSkinlet, Filled, QskAspect::FirstUserState >> 1 )
 
 using Q = QskSlider;
 
@@ -36,6 +43,26 @@ static QRectF qskInnerRect( const QskSlider* slider,
     }
 
     return r;
+}
+
+static inline bool qskHasGraduation( const QskSlider* slider )
+{
+    if ( slider->stepSize() )
+    {
+        switch( slider->graduationPolicy() )
+        {
+            case Qsk::Always:
+                return true;
+
+            case Qsk::Maybe:
+                return slider->isSnapping();
+
+            case Qsk::Never:
+                return false;
+        }
+    }
+
+    return false;
 }
 
 QskSliderSkinlet::QskSliderSkinlet( QskSkin* skin )
@@ -103,7 +130,7 @@ int QskSliderSkinlet::sampleCount( const QskSkinnable* skinnable,
     if ( subControl == Q::Tick )
     {
         const auto slider = static_cast< const QskSlider* >( skinnable );
-        return slider->visualGraduation().count();
+        return graduation( slider ).count();
     }
 
     return Inherited::sampleCount( skinnable, subControl );
@@ -115,10 +142,30 @@ QVariant QskSliderSkinlet::sampleAt( const QskSkinnable* skinnable,
     if ( subControl == Q::Tick )
     {
         const auto slider = static_cast< const QskSlider* >( skinnable );
-        return slider->visualGraduation().value( index );
+        return graduation( slider ).value( index );
     }
 
     return Inherited::sampleAt( skinnable, subControl, index );
+}
+
+QskAspect::States QskSliderSkinlet::sampleStates(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl, int index ) const
+{
+    auto states = Inherited::sampleStates( skinnable, subControl, index );
+
+    if ( subControl == Q::Tick )
+    {
+        const auto tickValue = sampleAt( skinnable, subControl, index );
+        if ( tickValue.canConvert< qreal >() )
+        {
+            const auto slider = static_cast< const QskSlider* >( skinnable );
+
+            if ( tickValue.value< qreal >() <= slider->value() )
+                states |= Filled;
+        }
+    }
+
+    return states;
 }
 
 QRectF QskSliderSkinlet::sampleRect(
@@ -229,23 +276,33 @@ QRectF QskSliderSkinlet::tickRect( const QskSlider* slider,
 
     const auto tickPos = slider->valueAsRatio( tickValue.value< qreal >() );
 
-    const auto size = slider->strutSizeHint( Q::Tick );
     const auto r = subControlRect( slider, contentsRect, Q::Scale );
 
-    qreal x, y;
+    const auto padding = slider->paddingHint( Q::Scale );
+    const auto size = slider->strutSizeHint( Q::Tick );
 
     if( slider->orientation() == Qt::Horizontal )
     {
-        x = tickPos * r.width() - 0.5 * size.width();
-        y = 0.5 * ( r.height() - size.height() );
+        const auto x = tickPos * r.width() - 0.5 * size.width();
+
+        QskIntervalF intv( padding.top(), r.height() - padding.bottom() );
+        if ( size.height() >= 0.0 )
+            intv.stretch( size.height() );
+
+        return QRectF( r.x() + x, r.y() + intv.lowerBound(),
+            size.width(), intv.length() );
     }
     else
     {
-        y = r.height() - ( tickPos * r.height() ) - 0.5 * size.height();
-        x = 0.5 * ( r.width() - size.width() );
-    }
+        const auto y = tickPos * r.height() + 0.5 * size.height();
 
-    return QRectF( r.x() + x, r.y() + y, size.width(), size.height() );
+        QskIntervalF intv( padding.left(), r.width() - padding.right() );
+        if ( size.width() >= 0.0 )
+            intv.stretch( size.width() );
+
+        return QRectF( r.x() + intv.lowerBound(), r.bottom() - y,
+            intv.length(), size.height() );
+    }
 }
 
 QSizeF QskSliderSkinlet::sizeHint( const QskSkinnable* skinnable,
@@ -260,6 +317,30 @@ QSizeF QskSliderSkinlet::sizeHint( const QskSkinnable* skinnable,
     hint = hint.expandedTo( skinnable->strutSizeHint( Q::Handle ) );
 
     return hint;
+}
+
+QVector< qreal > QskSliderSkinlet::graduation( const QskSlider* slider ) const
+{
+    QVector< qreal > graduation;
+
+    if ( qskHasGraduation( slider ) )
+    {
+        const auto from = slider->minimum();
+        const auto to = slider->maximum();
+
+        auto step = slider->stepSize();
+        if ( from > to )
+            step = -step;
+
+        const auto n = qCeil( ( to - from ) / step ) - 1;
+
+        graduation.reserve( n );
+
+        for ( int i = 1; i <= n; i++ )
+            graduation += from + i * step;
+    }
+
+    return graduation;
 }
 
 #include "moc_QskSliderSkinlet.cpp"

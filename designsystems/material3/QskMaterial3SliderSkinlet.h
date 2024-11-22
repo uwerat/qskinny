@@ -15,8 +15,6 @@ class QskMaterial3SliderSkinlet : QskSliderSkinlet
     using Inherited = QskSliderSkinlet;
 
   public:
-    QSK_STATES( Filled )
-
     Q_INVOKABLE QskMaterial3SliderSkinlet( QskSkin* = nullptr );
 
     QRectF subControlRect( const QskSkinnable*,
@@ -24,15 +22,11 @@ class QskMaterial3SliderSkinlet : QskSliderSkinlet
 
     int sampleCount( const QskSkinnable*, QskAspect::Subcontrol ) const override;
 
-    QVariant sampleAt( const QskSkinnable*,
-        QskAspect::Subcontrol, int index ) const override;
-
-    QskAspect::States sampleStates( const QskSkinnable*,
-        QskAspect::Subcontrol, int ) const override;
-
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
+
+    QVector< qreal > graduation( const QskSlider* ) const override;
 };
 
 #endif
