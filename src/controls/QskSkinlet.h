@@ -66,6 +66,9 @@ class QSK_EXPORT QskSkinlet
     virtual QVariant sampleAt( const QskSkinnable*,
         QskAspect::Subcontrol, int index ) const;
 
+    virtual QSizeF sampleSizeHint( const QskSkinnable*,
+        Qt::SizeHint, const QSizeF&, QskAspect::Subcontrol, int ) const;
+
     const QVector< quint8 >& nodeRoles() const;
 
     void setOwnedBySkinnable( bool on );
