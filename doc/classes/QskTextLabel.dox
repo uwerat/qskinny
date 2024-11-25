@@ -1,0 +1,7 @@
+/*!
+    \class QskTextLabel QskTextLabel.h
+
+    \embedWasm
+
+    \skinlet QskTextLabelSkinlet
+*/

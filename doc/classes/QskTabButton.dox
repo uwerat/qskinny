@@ -1,0 +1,7 @@
+/*!
+    \class QskTabButton QskTabButton.h
+
+    \embedWasm
+
+    \skinlet QskTabButtonSkinlet
+*/

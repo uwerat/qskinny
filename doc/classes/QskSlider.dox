@@ -1,0 +1,7 @@
+/*!
+    \class QskSlider QskSlider.h
+
+    \embedWasm
+
+    \skinlet QskSliderSkinlet
+*/

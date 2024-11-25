@@ -1,0 +1,7 @@
+/*!
+    \class QskDrawer QskDrawer.h
+
+    \embedWasm
+
+    \skinlet QskDrawerSkinlet
+*/

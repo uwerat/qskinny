@@ -1,0 +1,7 @@
+/*!
+    \class QskTextInput QskTextInput.h
+
+    \embedWasm
+
+    \skinlet QskTextInputSkinlet
+*/
