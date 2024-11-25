@@ -1,0 +1,7 @@
+/*!
+    \class QskProgressRing QskProgressRing.h
+
+    \embedWasm
+
+    \skinlet QskProgressRingSkinlet
+*/
