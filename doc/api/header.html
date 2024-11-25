@@ -36,33 +36,36 @@
                 }
 
                 try {
-                    showUi(spinner);
-                    status.innerHTML = 'Loading...';
+                    if(spinner)
+                    {
+                        showUi(spinner);
+                        status.innerHTML = 'Loading...';
 
-                    const instance = await qtLoad({
-                        qt: {
-                            onLoaded: () => showUi(screen),
-                            onExit: exitData =>
-                            {
-                                status.innerHTML = 'Application exit';
-                                status.innerHTML +=
-                                    exitData.code !== undefined ? ` with code ` : '';
-                                status.innerHTML +=
-                                    exitData.text !== undefined ? ` ()` : '';
-                                showUi(spinner);
-                            },
-                            entryFunction: window.createQtAppInstance,
-                            containerElements: [screen],
+                        const instance = await qtLoad({
+                            qt: {
+                                onLoaded: () => showUi(screen),
+                                onExit: exitData =>
+                                {
+                                    status.innerHTML = 'Application exit';
+                                    status.innerHTML +=
+                                        exitData.code !== undefined ? ` with code ` : '';
+                                    status.innerHTML +=
+                                        exitData.text !== undefined ? ` ()` : '';
+                                    showUi(spinner);
+                                },
+                                entryFunction: window.createQtAppInstance,
+                                containerElements: [screen],
 
-                        }
-                    });
+                            }
+                        });
+                    }
                 } catch (e) {
                     console.error(e);
                     console.error(e.stack);
                 }
             }
         </script>
-    <script src="apiDocumentationSamples.js"></script>
+    <script type="text/javascript" src="apiDocumentationSamples.js"></script>
     <script type="text/javascript" src="qtloader.js"></script>
 <!-- end QSkinny WASM code -->
 $treeview
@@ -72,7 +75,7 @@ $darkmode
 <link href="$relpath^$stylesheet" rel="stylesheet" type="text/css" />
 $extrastylesheet
 </head>
-<body>
+<body onLoad="docSampleInit()">
 <!--BEGIN DISABLE_INDEX-->
   <!--BEGIN FULL_SIDEBAR-->
 <div id="side-nav" class="ui-resizable side-nav-resizable"><!-- do not remove this div, it is closed by doxygen! -->
