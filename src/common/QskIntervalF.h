@@ -36,8 +36,6 @@ class QSK_EXPORT QskIntervalF
     constexpr qreal upperBound() const noexcept;
     void setUpperBound( qreal ) noexcept;
 
-    constexpr qreal center() const noexcept;
-
     void spanFromLowerBound( qreal ) noexcept;
     void spanFromUpperBound( qreal ) noexcept;
 
@@ -67,9 +65,6 @@ class QSK_EXPORT QskIntervalF
 
     void extend( qreal value ) noexcept;
     QskIntervalF extended( qreal value ) const noexcept;
-
-    void stretch( qreal length ) noexcept;
-    constexpr QskIntervalF stretched( qreal length ) const noexcept;
 
     QskIntervalF operator|( const QskIntervalF& ) const noexcept;
     QskIntervalF operator&( const QskIntervalF& ) const noexcept;
@@ -140,11 +135,6 @@ inline constexpr qreal QskIntervalF::upperBound() const noexcept
     return m_upperBound;
 }
 
-inline constexpr qreal QskIntervalF::center() const noexcept
-{
-    return m_lowerBound + 0.5 * ( m_upperBound - m_lowerBound );
-}
-
 inline constexpr qreal QskIntervalF::length() const noexcept
 {
     return ( m_upperBound > m_lowerBound ) ? ( m_upperBound - m_lowerBound ) : 0.0;
@@ -206,18 +196,6 @@ inline constexpr QskIntervalF QskIntervalF::translated( qreal offset ) const noe
 inline constexpr QskIntervalF QskIntervalF::normalized( qreal value1, qreal value2 ) noexcept
 {
     return ( value1 < value2 ) ? QskIntervalF( value1, value2 ) : QskIntervalF( value2, value1 );
-}
-
-inline void QskIntervalF::stretch( qreal length ) noexcept
-{
-    m_lowerBound = center() - 0.5 * length;
-    m_upperBound = m_lowerBound + length;
-}
-
-inline constexpr QskIntervalF QskIntervalF::stretched( qreal length ) const noexcept
-{
-    const auto lowerBound = center() - 0.5 * length;
-    return QskIntervalF( lowerBound, lowerBound + length );
 }
 
 inline QskIntervalF QskIntervalF::operator&( const QskIntervalF& other ) const noexcept

@@ -6,9 +6,9 @@
 #include "QskSliderSkinlet.h"
 #include "QskSlider.h"
 #include "QskFunctions.h"
-#include "QskIntervalF.h"
 
 #include <qvector.h>
+#include <qpair.h>
 #include <qmath.h>
 
 // the color of graduation ticks might different, when being on top of the filling
@@ -64,6 +64,19 @@ static inline bool qskHasGraduation( const QskSlider* slider )
 
     return false;
 }
+
+static inline QPair< qreal, qreal > qskTickSpan( qreal min, qreal max, qreal length )
+{
+    if ( length >= 0.0 )
+    {
+        // using the center of [min,max]
+        min += 0.5 * ( max - min - length );
+        max = min + length;
+    }
+
+    return { min, max };
+}
+
 
 QskSliderSkinlet::QskSliderSkinlet( QskSkin* skin )
     : Inherited( skin )
@@ -285,23 +298,21 @@ QRectF QskSliderSkinlet::tickRect( const QskSlider* slider,
     {
         const auto x = tickPos * r.width() - 0.5 * size.width();
 
-        QskIntervalF intv( padding.top(), r.height() - padding.bottom() );
-        if ( size.height() >= 0.0 )
-            intv.stretch( size.height() );
+        const auto span = qskTickSpan(
+            padding.top(), r.height() - padding.bottom(), size.height() );
 
-        return QRectF( r.x() + x, r.y() + intv.lowerBound(),
-            size.width(), intv.length() );
+        return QRectF( r.x() + x, r.y() + span.first,
+            size.width(), span.second - span.first );
     }
     else
     {
         const auto y = tickPos * r.height() + 0.5 * size.height();
 
-        QskIntervalF intv( padding.left(), r.width() - padding.right() );
-        if ( size.width() >= 0.0 )
-            intv.stretch( size.width() );
+        const auto span = qskTickSpan(
+            padding.left(), r.width() - padding.right(), size.width() );
 
-        return QRectF( r.x() + intv.lowerBound(), r.bottom() - y,
-            intv.length(), size.height() );
+        return QRectF( r.x() + span.first, r.bottom() - y,
+            span.second - span.first, size.height() );
     }
 }
 
