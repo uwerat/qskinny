@@ -278,7 +278,7 @@ ALIASES                = "accessors=\par Access functions:^^" \
                          "states=\par States:^^" \
                          "skinlet=\par Default Skinlet:^^" \
                          "aspect=\par Aspect^^" \
-                         "embedWasm=<div> <div id=\"qtspinner\"> <div id=\"qtstatus\"></div> </div> <div id=\"qt-wasm-screen\"> </div> </div> <a href=\"javascript:docSampleInit()\">Run the code!</a>"
+                         "embedWasm=<div> <div id=\"qtspinner\"> <div id=\"qtstatus\"></div> </div> <div id=\"qt-wasm-screen\"> </div> </div>"
 
 
 
