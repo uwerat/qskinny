@@ -6,7 +6,6 @@
 #include "QskSlider.h"
 #include "QskAnimationHint.h"
 #include "QskAspect.h"
-#include "QskIntervalF.h"
 #include "QskEvent.h"
 
 QSK_SUBCONTROL( QskSlider, Panel )
@@ -21,6 +20,20 @@ QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
 static inline QskAspect qskAspectGraduationPolicy()
 {
     return QskSlider::Tick | QskAspect::Option;
+}
+
+static QRectF qskHandleSelectionRect( const QskSlider* slider )
+{
+    auto rect = slider->subControlRect( QskSlider::Handle );
+
+#if 1
+    // minimum handle strut size TODO ...
+    const QSizeF strutSize( 60, 60 );
+    const auto w = qMax( ( strutSize.width() - rect.width() ) / 2, 0.0 );
+    const auto h = qMax( ( strutSize.height() - rect.height() ) / 2, 0.0 );
+#endif
+
+    return rect.marginsAdded( { w, h, w, h } );
 }
 
 class QskSlider::PrivateData
@@ -132,27 +145,9 @@ void QskSlider::aboutToShow()
     Inherited::aboutToShow();
 }
 
-QSizeF QskSlider::handleSize() const
-{
-    return handleRect().size();
-}
-
-QRectF QskSlider::handleRect() const
-{
-    auto rect = subControlRect( Handle );
-
-#if 1 // minimum handle strut size hardcoded here for now
-    const QSizeF strutSize( 60, 60 );
-    const auto w = qMax( ( strutSize.width() - rect.width() ) / 2, 0.0 );
-    const auto h = qMax( ( strutSize.height() - rect.height() ) / 2, 0.0 );
-#endif
-
-    return rect.marginsAdded( { w, h, w, h } );
-}
-
 void QskSlider::mousePressEvent( QMouseEvent* event )
 {
-    if ( handleRect().contains( event->pos() ) )
+    if ( qskHandleSelectionRect( this ).contains( event->pos() ) )
     {
         // Case 1: press started in the handle, start sliding
 
@@ -211,7 +206,7 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* event )
     {
         const auto mousePos = qskMousePosition( event );
 
-        const auto szHandle = handleSize();
+        const auto szHandle = qskHandleSelectionRect( this ).size();
         const auto rect = contentsRect();
 
         bool up;

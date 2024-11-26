@@ -775,7 +775,7 @@ void Editor::setupSlider()
     using Q = QskSlider;
     using P = QPalette;
 
-    const qreal extent = 30_px;
+    const qreal extent = 16_px;
 
     // Panel
 
@@ -784,6 +784,7 @@ void Editor::setupSlider()
     setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, QskGradient() );
 
+    // space for the handle
     setPadding( Q::Panel | A::Horizontal, QskMargins( 0.5 * extent, 0 ) );
     setPadding( Q::Panel | A::Vertical, QskMargins( 0, 0.5 * extent ) );
 
@@ -832,7 +833,7 @@ void Editor::setupSlider()
         Combination( { Q::Hovered, Q::Pressed } ) );
 #endif
 
-    setStrutSize( Q::Handle, 16_px, 16_px );
+    setStrutSize( Q::Handle, extent, extent );
 
     for ( auto state : { A::NoState, Q::Pressed } )
     {

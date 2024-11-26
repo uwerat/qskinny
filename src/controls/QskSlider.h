@@ -65,9 +65,6 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void mouseMoveEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;
 
-    QSizeF handleSize() const;
-    QRectF handleRect() const;
-
     void aboutToShow() override;
 
   private:

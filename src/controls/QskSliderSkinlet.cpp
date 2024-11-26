@@ -16,29 +16,36 @@ QSK_SYSTEM_STATE( QskSliderSkinlet, Filled, QskAspect::FirstUserState >> 1 )
 
 using Q = QskSlider;
 
+static inline qreal qskSubcontrolExtent(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl )
+{
+    return skinnable->metric( subControl | QskAspect::Size, -1.0 );
+}
+
 static QRectF qskInnerRect( const QskSlider* slider,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl )
 {
     auto r = slider->subControlContentsRect( contentsRect, Q::Panel );
 
-    QskSkinHintStatus status;
+    const qreal extent = qskSubcontrolExtent( slider, subControl );
 
-    const qreal extent = slider->metric( subControl | QskAspect::Size, &status );
-
-    if ( slider->orientation() == Qt::Horizontal )
+    if ( extent >= 0.0 )
     {
-        if ( status.isValid() && ( extent < r.height() ) )
+        if ( slider->orientation() == Qt::Horizontal )
         {
-            r.setTop( r.center().y() - 0.5 * extent );
-            r.setHeight( extent );
+            if ( extent < r.height() )
+            {
+                r.setTop( r.center().y() - 0.5 * extent );
+                r.setHeight( extent );
+            }
         }
-    }
-    else
-    {
-        if ( status.isValid() && ( extent < r.width() ) )
+        else
         {
-            r.setLeft( r.center().x() - 0.5 * extent );
-            r.setWidth( extent );
+            if ( extent < r.width() )
+            {
+                r.setLeft( r.center().x() - 0.5 * extent );
+                r.setWidth( extent );
+            }
         }
     }
 
@@ -213,15 +220,15 @@ QRectF QskSliderSkinlet::panelRect(
 {
     auto r = contentsRect;
 
-    const qreal size = slider->metric( Q::Panel | QskAspect::Size ); // 0: no hint
-    if ( size > 0 && size < r.height() )
+    const qreal extent = qskSubcontrolExtent( slider, Q::Panel );
+    if ( extent >= 0 && extent < r.height() )
     {
         const auto alignment = slider->alignmentHint( Q::Panel );
 
         if ( slider->orientation() == Qt::Horizontal )
-            r = qskAlignedRectF( r, r.width(), size, alignment & Qt::AlignVertical_Mask );
+            r = qskAlignedRectF( r, r.width(), extent, alignment & Qt::AlignVertical_Mask );
         else
-            r = qskAlignedRectF( r, size, r.height(), alignment & Qt::AlignHorizontal_Mask );
+            r = qskAlignedRectF( r, extent, r.height(), alignment & Qt::AlignHorizontal_Mask );
     }
 
     return r;
@@ -322,10 +329,18 @@ QSizeF QskSliderSkinlet::sizeHint( const QskSkinnable* skinnable,
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    auto hint = skinnable->strutSizeHint( Q::Panel );
-    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Groove ) );
-    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Fill ) );
-    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Handle ) );
+    auto extent = qskSubcontrolExtent( skinnable, Q::Panel );
+    extent = qMax( extent, qskSubcontrolExtent( skinnable, Q::Groove ) );
+    extent = qMax( extent, qskSubcontrolExtent( skinnable, Q::Fill ) );
+
+    const auto slider = static_cast< const QskSlider* >( skinnable );
+
+    auto hint = skinnable->strutSizeHint( Q::Handle );
+
+    if ( slider->orientation() == Qt::Horizontal )
+        hint.setHeight( qMax( hint.height(), extent ) );
+    else
+        hint.setWidth( qMax( hint.width(), extent ) );
 
     return hint;
 }
