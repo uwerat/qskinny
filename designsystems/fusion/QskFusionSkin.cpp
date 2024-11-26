@@ -846,9 +846,7 @@ void Editor::setupSlider()
             QskRgb::lighter( rgb, 102 ) );
     }
 
-    // move the handle smoothly, when using keys
     setAnimation( Q::Handle | A::Metric | A::Position, 2 * qskDuration );
-    setAnimation( Q::Handle | A::Metric | A::Position | Q::Pressed, 0 );
 }
 
 void Editor::setupSpinBox()

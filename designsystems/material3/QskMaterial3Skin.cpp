@@ -966,9 +966,7 @@ void Editor::setupSlider()
     const auto disabledColor = flattenedColor( m_pal.onSurface, m_pal.background, 0.38 );
     setGradient( Q::Handle | Q::Disabled, disabledColor );
 
-    // move the handle smoothly when using keys
     setAnimation( Q::Handle | A::Metric | A::Position, 2 * qskDuration );
-    setAnimation( Q::Handle | A::Metric | A::Position | Q::Pressed, 0 );
 }
 
 void Editor::setupSpinBox()

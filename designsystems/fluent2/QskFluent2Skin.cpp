@@ -1458,6 +1458,8 @@ void Editor::setupSliderMetrics()
     setFlag( Q::Tick | A::Option, Qsk::Maybe );
     setStrutSize( Q::Tick | A::Horizontal, 1_px, -1 );
     setStrutSize( Q::Tick | A::Vertical, -1, 1_px );
+
+    setAnimation( Q::Handle | A::Metric | A::Position, 100 );
 }
 
 void Editor::setupSliderColors(

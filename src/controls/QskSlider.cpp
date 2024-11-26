@@ -36,12 +36,39 @@ static QRectF qskHandleSelectionRect( const QskSlider* slider )
     return rect.marginsAdded( { w, h, w, h } );
 }
 
+static QRectF qskSliderSelectionRect( const QskSlider* slider )
+{
+    const qreal margin = 10.0;
+
+    const auto scaleRect = slider->subControlRect( QskSlider::Scale );
+    const auto handleRect = qskHandleSelectionRect( slider );
+
+    auto r = slider->subControlRect( QskSlider::Panel );
+    if ( slider->orientation() == Qt::Horizontal )
+    {
+        r.setTop( qMin( r.top(), handleRect.top() ) );
+        r.setBottom( qMax( r.bottom(), handleRect.bottom() ) );
+        r.setLeft( scaleRect.left() - margin );
+        r.setRight( scaleRect.right() + margin );
+    }
+    else
+    {
+        r.setLeft( qMin( r.left(), handleRect.left() ) );
+        r.setRight( qMax( r.right(), handleRect.right() ) );
+        r.setTop( scaleRect.top() - margin );
+        r.setBottom( scaleRect.bottom() + margin );
+    }
+
+    return r;
+}
+
 class QskSlider::PrivateData
 {
   public:
     PrivateData( Qt::Orientation orientation )
         : pressedValue( 0 )
         , tracking( true )
+        , moving( false )
         , orientation( orientation )
     {
     }
@@ -49,6 +76,7 @@ class QskSlider::PrivateData
     QPointF pressedPos;
     qreal pressedValue;
     bool tracking : 1;
+    bool moving : 1;
     uint orientation : 2;
 };
 
@@ -147,26 +175,32 @@ void QskSlider::aboutToShow()
 
 void QskSlider::mousePressEvent( QMouseEvent* event )
 {
-    if ( qskHandleSelectionRect( this ).contains( event->pos() ) )
+    const auto pos = qskMousePosition( event );
+    if ( !qskHandleSelectionRect( this ).contains( pos ) )
     {
-        // Case 1: press started in the handle, start sliding
+        const auto r = qskSliderSelectionRect( this );
+        if ( !r.contains( pos ) )
+        {
+            Inherited::mousePressEvent( event );
+            return;
+        }
 
-        m_data->pressedPos = event->pos();
-        m_data->pressedValue = value();
-        setSkinStateFlag( Pressed );
-        Q_EMIT pressedChanged( true );
+        qreal ratio;
+
+        const auto scaleRect = subControlRect( Scale );
+        if ( m_data->orientation == Qt::Horizontal )
+            ratio = ( pos.x() - scaleRect.left() ) / scaleRect.width();
+        else
+            ratio = ( scaleRect.bottom() - pos.y() ) / scaleRect.height();
+
+        setValue( valueFromRatio( ratio ) );
     }
-    else if ( pageSteps() == 0 )
-    {
-        // Case 2: pageSize is not used, we're done here
-    }
-    else
-    {
-        // Case 3: pressed outside of the handle, page the scroller in
-        // the direction of the press requires an auto-repeat behavior
-        // until the slider reaches the destination, or it simply jumps
-        // there (configurable)
-    }
+
+    setSkinStateFlag( Pressed );
+    Q_EMIT pressedChanged( true );
+
+    m_data->pressedPos = pos;
+    m_data->pressedValue = value();
 }
 
 void QskSlider::mouseMoveEvent( QMouseEvent* event )
@@ -192,52 +226,21 @@ void QskSlider::mouseMoveEvent( QMouseEvent* event )
 
     if ( m_data->tracking )
     {
+        m_data->moving = true;
         setValue( newValue );
+        m_data->moving = false;
     }
     else
     {
+        // moving the handle without changing the value
         moveHandleTo( newValue, QskAnimationHint() );
     }
 }
 
-void QskSlider::mouseReleaseEvent( QMouseEvent* event )
+void QskSlider::mouseReleaseEvent( QMouseEvent* )
 {
-    if ( !isPressed() ) // Page event
-    {
-        const auto mousePos = qskMousePosition( event );
-
-        const auto szHandle = qskHandleSelectionRect( this ).size();
-        const auto rect = contentsRect();
-
-        bool up;
-        if ( m_data->orientation == Qt::Horizontal )
-        {
-            const qreal w = szHandle.width();
-
-            const qreal x = ( mousePos.x() - rect.x() - w * 0.5 ) / ( rect.width() - w );
-            up = x > valueAsRatio();
-        }
-        else
-        {
-            const qreal h = szHandle.height();
-
-            const qreal y = ( mousePos.y() - rect.y() - h * 0.5 ) / ( rect.height() - h );
-            up = y < 1.0 - valueAsRatio();
-        }
-
-        if ( up )
-            pageUp();
-        else
-            pageDown();
-    }
-    else
-    {
-        if ( !m_data->tracking )
-        {
-            const auto pos = handlePosition();
-            setValue( valueFromRatio( pos ) );
-        }
-    }
+    if ( !m_data->tracking && ( m_data->pressedValue != value() ) )
+        Q_EMIT valueChanged( value() );
 
     setSkinStateFlag( Pressed, false );
     Q_EMIT pressedChanged( false );
@@ -250,8 +253,14 @@ qreal QskSlider::handlePosition() const
 
 void QskSlider::moveHandle()
 {
-    const auto aspect = Handle | QskAspect::Metric | QskAspect::Position;
-    moveHandleTo( value(), animationHint( aspect | skinStates() ) );
+    QskAnimationHint hint;
+    if ( !m_data->moving )
+    {
+        const auto aspect = Handle | QskAspect::Metric | QskAspect::Position;
+        hint = animationHint( aspect | skinStates() );
+    }
+
+    moveHandleTo( value(), hint );
 }
 
 void QskSlider::moveHandleTo( qreal value, const QskAnimationHint& hint )
