@@ -17,11 +17,6 @@ QSK_SUBCONTROL( QskSlider, Handle )
 
 QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
 
-static inline QskAspect qskAspectGraduationPolicy()
-{
-    return QskSlider::Tick | QskAspect::Option;
-}
-
 static QRectF qskHandleSelectionRect( const QskSlider* slider )
 {
     auto rect = slider->subControlRect( QskSlider::Handle );
@@ -134,23 +129,6 @@ Qt::Orientation QskSlider::orientation() const
 QskAspect::Variation QskSlider::effectiveVariation() const
 {
     return static_cast< QskAspect::Variation >( m_data->orientation );
-}
-
-void QskSlider::setGraduationPolicy( Qsk::Policy policy )
-{
-    if ( setFlagHint( qskAspectGraduationPolicy(), policy ) )
-        Q_EMIT graduationPolicyChanged( graduationPolicy() );
-}
-
-void QskSlider::resetGraduationPolicy()
-{
-    if ( resetSkinHint( qskAspectGraduationPolicy() ) )
-        Q_EMIT graduationPolicyChanged( graduationPolicy() );
-}
-
-Qsk::Policy QskSlider::graduationPolicy() const
-{
-    return flagHint< Qsk::Policy >( qskAspectGraduationPolicy(), Qsk::Never );
 }
 
 void QskSlider::setTracking( bool on )

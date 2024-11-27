@@ -11,11 +11,6 @@
 
 using Q = QskSlider;
 
-static inline bool qskHasBoundaryTicks( const QskSlider* slider )
-{
-    return ( slider->graduationPolicy() == Qsk::Maybe ) && !slider->isSnapping();
-}
-
 QskMaterial3SliderSkinlet::QskMaterial3SliderSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
@@ -80,49 +75,11 @@ QSGNode* QskMaterial3SliderSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-int QskMaterial3SliderSkinlet::sampleCount( const QskSkinnable* skinnable,
-    QskAspect::Subcontrol subControl ) const
-{
-    if ( subControl == Q::Tick )
-    {
-        const auto slider = static_cast< const QskSlider* >( skinnable );
-
-        if ( ( slider->graduationPolicy() == Qsk::Maybe ) && !slider->isSnapping() )
-        {
-            const bool hasOrigin = false;
-
-            // min/origin/max or max
-            return hasOrigin ? 3 : 1;
-        }
-    }
-
-    return Inherited::sampleCount( skinnable, subControl );
-}
-
 QVector< qreal > QskMaterial3SliderSkinlet::graduation( const QskSlider* slider ) const
 {
     QVector< qreal > graduation;
 
-    if ( ( slider->graduationPolicy() == Qsk::Maybe ) && !slider->isSnapping() )
-    {
-        const bool hasOrigin = false;
-
-        if ( hasOrigin )
-        {
-            graduation.reserve( 3 );
-            graduation += slider->minimum();
-#if 1
-            graduation += slider->maximum(); // origin !!!
-#endif
-            graduation += slider->maximum();
-        }
-        else
-        {
-            graduation.reserve( 1 );
-            graduation += slider->maximum();
-        }
-    }
-    else
+    if ( hasGraduation( slider ) )
     {
         const auto g = Inherited::graduation( slider );
 
@@ -132,6 +89,17 @@ QVector< qreal > QskMaterial3SliderSkinlet::graduation( const QskSlider* slider 
         graduation += slider->minimum();
         graduation += g;
         graduation += slider->maximum();
+    }
+    else
+    {
+        const auto policy = slider->flagHint< Qsk::Policy >(
+            Q::Tick | QskAspect::Option, Qsk::Maybe );
+
+        if ( policy != Qsk::Never )
+        {
+            graduation.reserve( 1 );
+            graduation += slider->maximum();
+        }
     }
 
     return graduation;

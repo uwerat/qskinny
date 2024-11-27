@@ -52,26 +52,6 @@ static QRectF qskInnerRect( const QskSlider* slider,
     return r;
 }
 
-static inline bool qskHasGraduation( const QskSlider* slider )
-{
-    if ( slider->stepSize() )
-    {
-        switch( slider->graduationPolicy() )
-        {
-            case Qsk::Always:
-                return true;
-
-            case Qsk::Maybe:
-                return slider->isSnapping();
-
-            case Qsk::Never:
-                return false;
-        }
-    }
-
-    return false;
-}
-
 static inline QPair< qreal, qreal > qskTickSpan( qreal min, qreal max, qreal length )
 {
     if ( length >= 0.0 )
@@ -345,11 +325,34 @@ QSizeF QskSliderSkinlet::sizeHint( const QskSkinnable* skinnable,
     return hint;
 }
 
+bool QskSliderSkinlet::hasGraduation( const QskSlider* slider ) const
+{
+    if ( slider->stepSize() )
+    {
+        const auto policy = slider->flagHint< Qsk::Policy >(
+            Q::Tick | QskAspect::Option, Qsk::Never );
+
+        switch( policy )
+        {
+            case Qsk::Always:
+                return true;
+
+            case Qsk::Maybe:
+                return slider->isSnapping();
+
+            case Qsk::Never:
+                return false;
+        }
+    }
+
+    return false;
+}
+
 QVector< qreal > QskSliderSkinlet::graduation( const QskSlider* slider ) const
 {
     QVector< qreal > graduation;
 
-    if ( qskHasGraduation( slider ) )
+    if ( hasGraduation( slider ) )
     {
         const auto from = slider->minimum();
         const auto to = slider->maximum();

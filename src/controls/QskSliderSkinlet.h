@@ -58,6 +58,7 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
         QskAspect::Subcontrol, int index, QSGNode* ) const override;
 
     virtual QVector< qreal > graduation( const QskSlider* ) const;
+    bool hasGraduation( const QskSlider* ) const;
 
   private:
     QRectF panelRect( const QskSlider*, const QRectF& ) const;

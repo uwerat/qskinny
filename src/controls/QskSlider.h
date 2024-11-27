@@ -15,10 +15,6 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
 
     Q_PROPERTY( bool isPressed READ isPressed NOTIFY pressedChanged )
 
-    Q_PROPERTY( Qsk::Policy graduationPolicy READ graduationPolicy
-        WRITE setGraduationPolicy RESET resetGraduationPolicy
-        NOTIFY graduationPolicyChanged )
-
     Q_PROPERTY( Qt::Orientation orientation READ orientation
         WRITE setOrientation NOTIFY orientationChanged )
 
@@ -43,10 +39,6 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
 
-    void setGraduationPolicy( Qsk::Policy );
-    void resetGraduationPolicy();
-    Qsk::Policy graduationPolicy() const;
-
     void setTracking( bool );
     bool isTracking() const;
 
@@ -58,7 +50,6 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void pressedChanged( bool );
     void orientationChanged( Qt::Orientation );
     void trackingChanged( bool );
-    void graduationPolicyChanged( Qsk::Policy );
 
   protected:
     void mousePressEvent( QMouseEvent* ) override;

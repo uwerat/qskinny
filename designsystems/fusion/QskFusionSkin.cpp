@@ -46,6 +46,8 @@
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
+#include <QskSliderSkinlet.h>
+
 #include <QskAnimationHint.h>
 #include <QskAspect.h>
 #include <QskBoxBorderColors.h>
@@ -773,6 +775,7 @@ void Editor::setupSlider()
 {
     using A = QskAspect;
     using Q = QskSlider;
+    using SK = QskSliderSkinlet;
     using P = QPalette;
 
     const qreal extent = 16_px;
@@ -823,6 +826,39 @@ void Editor::setupSlider()
             setBoxBorderColors( Q::Fill | state, rgbOutline );
         }
     }
+
+    {
+        /*
+            Tick
+
+            QSlider optionally allows to display ticks left/right or top/bottom
+            of the groove. However this not supported by the skinlets yet.
+            ( Qt/Quick slider does not support showing ticks at all )
+
+            For the moment we make something up. TODO ...
+         */
+
+        setFlag( Q::Tick | A::Option, Qsk::Maybe );
+        setStrutSize( Q::Tick, 2_px, 2_px );
+
+        const QskStateCombination combination(
+            QskStateCombination::CombinationNoState, Q::Focused | Q::Pressed );
+
+        const auto rgb = m_pal.active( P::Text );
+
+        setColor( Q::Tick,
+            QskRgb::interpolated( rgb, m_pal.groove, 0.2 ), combination );
+
+        setColor( Q::Tick | Q::Disabled,
+            QskRgb::interpolated( rgb, m_pal.groove, 0.5 ) );
+
+        setColor( Q::Tick | SK::Filled,
+            m_pal.active( P::HighlightedText ), combination );
+        setColor( Q::Tick | SK::Filled | Q::Disabled,
+            m_pal.disabled( P::HighlightedText ) );
+    }
+
+    // Handle
 
     setBoxShape( Q::Handle, 2 );
     setBoxBorderMetrics( Q::Handle, 1 );
