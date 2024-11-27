@@ -937,6 +937,7 @@ void Editor::setupSlider()
         { QskStateCombination::CombinationNoState, Q::Focused | Q::Pressed } );
     setGradient( Q::Tick | SK::Filled | Q::Disabled, m_pal.inverseOnSurface );
 
+    setFlag( Q::Fill | A::Option, Qsk::Maybe );
     setFlag( Q::Tick | A::Option, Qsk::Maybe );
 
     for ( const auto variation : { A::Horizontal, A::Vertical } )

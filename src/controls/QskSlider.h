@@ -21,6 +21,9 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     Q_PROPERTY( bool tracking READ isTracking
         WRITE setTracking NOTIFY trackingChanged )
 
+    Q_PROPERTY( qreal origin READ origin
+        WRITE setOrigin RESET resetOrigin NOTIFY originChanged )
+
     Q_PROPERTY( qreal handlePosition READ handlePosition )
 
     using Inherited = QskBoundedValueInput;
@@ -39,6 +42,9 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
 
+    void resetOrigin();
+    qreal origin() const;
+
     void setTracking( bool );
     bool isTracking() const;
 
@@ -46,10 +52,14 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
 
     QskAspect::Variation effectiveVariation() const override;
 
+  public Q_SLOTS:
+    void setOrigin( qreal );
+
   Q_SIGNALS:
     void pressedChanged( bool );
     void orientationChanged( Qt::Orientation );
     void trackingChanged( bool );
+    void originChanged( qreal );
 
   protected:
     void mousePressEvent( QMouseEvent* ) override;
@@ -57,6 +67,7 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void mouseReleaseEvent( QMouseEvent* ) override;
 
     void aboutToShow() override;
+    void componentComplete() override;
 
   private:
     void moveHandle();

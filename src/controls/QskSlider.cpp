@@ -7,6 +7,7 @@
 #include "QskAnimationHint.h"
 #include "QskAspect.h"
 #include "QskEvent.h"
+#include "QskFunctions.h"
 
 QSK_SUBCONTROL( QskSlider, Panel )
 QSK_SUBCONTROL( QskSlider, Groove )
@@ -62,6 +63,7 @@ class QskSlider::PrivateData
   public:
     PrivateData( Qt::Orientation orientation )
         : pressedValue( 0 )
+        , hasOrigin( false )
         , tracking( true )
         , moving( false )
         , orientation( orientation )
@@ -70,6 +72,10 @@ class QskSlider::PrivateData
 
     QPointF pressedPos;
     qreal pressedValue;
+
+    qreal origin = 0.0;
+
+    bool hasOrigin : 1;
     bool tracking : 1;
     bool moving : 1;
     uint orientation : 2;
@@ -126,6 +132,40 @@ Qt::Orientation QskSlider::orientation() const
     return static_cast< Qt::Orientation >( m_data->orientation );
 }
 
+void QskSlider::setOrigin( qreal origin )
+{           
+    if ( isComponentComplete() )
+        origin = boundedValue( origin );
+        
+    if( !m_data->hasOrigin || !qskFuzzyCompare( m_data->origin, origin ) )
+    {       
+        m_data->hasOrigin = true;
+        m_data->origin = origin;
+            
+        update();
+        Q_EMIT originChanged( origin );
+    }   
+}           
+                
+void QskSlider::resetOrigin()
+{   
+    if ( m_data->hasOrigin )
+    {
+        m_data->hasOrigin = false;
+    
+        update();
+        Q_EMIT originChanged( origin() );
+    }
+}   
+
+qreal QskSlider::origin() const
+{
+    if ( m_data->hasOrigin )
+        return boundedValue( m_data->origin );
+
+    return minimum();
+}
+
 QskAspect::Variation QskSlider::effectiveVariation() const
 {
     return static_cast< QskAspect::Variation >( m_data->orientation );
@@ -143,6 +183,13 @@ void QskSlider::setTracking( bool on )
 bool QskSlider::isTracking() const
 {
     return m_data->tracking;
+}
+
+void QskSlider::componentComplete()
+{
+    Inherited::componentComplete();
+    if ( m_data->hasOrigin )
+        m_data->origin = boundedValue( m_data->origin );
 }
 
 void QskSlider::aboutToShow()

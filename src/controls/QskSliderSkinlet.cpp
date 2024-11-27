@@ -6,6 +6,7 @@
 #include "QskSliderSkinlet.h"
 #include "QskSlider.h"
 #include "QskFunctions.h"
+#include "QskIntervalF.h"
 
 #include <qvector.h>
 #include <qpair.h>
@@ -20,6 +21,24 @@ static inline qreal qskSubcontrolExtent(
     const QskSkinnable* skinnable, QskAspect::Subcontrol subControl )
 {
     return skinnable->metric( subControl | QskAspect::Size, -1.0 );
+}
+
+static inline bool qskHasFilling( const QskSlider* slider )
+{
+    const auto policy = slider->flagHint< Qsk::Policy >(
+        Q::Fill | QskAspect::Option, Qsk::Always );
+
+    switch( policy )
+    {
+        case Qsk::Never:
+            return false;
+
+        case Qsk::Maybe:
+            return qskFuzzyCompare( slider->origin(), slider->minimum() );
+
+        default:
+            return true;
+    }
 }
 
 static QRectF qskInnerRect( const QskSlider* slider,
@@ -153,14 +172,17 @@ QskAspect::States QskSliderSkinlet::sampleStates(
 {
     auto states = Inherited::sampleStates( skinnable, subControl, index );
 
-    if ( subControl == Q::Tick )
+    const auto slider = static_cast< const QskSlider* >( skinnable );
+
+    if ( subControl == Q::Tick && qskHasFilling( slider ) )
     {
         const auto tickValue = sampleAt( skinnable, subControl, index );
         if ( tickValue.canConvert< qreal >() )
         {
-            const auto slider = static_cast< const QskSlider* >( skinnable );
+            const auto intv = QskIntervalF::normalized(
+                slider->origin(), slider->value() );
 
-            if ( tickValue.value< qreal >() <= slider->value() )
+            if ( intv.contains( tickValue.value< qreal >() ) )
                 states |= Filled;
         }
     }
@@ -206,9 +228,15 @@ QRectF QskSliderSkinlet::panelRect(
         const auto alignment = slider->alignmentHint( Q::Panel );
 
         if ( slider->orientation() == Qt::Horizontal )
-            r = qskAlignedRectF( r, r.width(), extent, alignment & Qt::AlignVertical_Mask );
+        {
+            r = qskAlignedRectF( r, r.width(),
+                extent, alignment & Qt::AlignVertical_Mask );
+        }
         else
-            r = qskAlignedRectF( r, extent, r.height(), alignment & Qt::AlignHorizontal_Mask );
+        {
+            r = qskAlignedRectF( r, extent, r.height(),
+                alignment & Qt::AlignHorizontal_Mask );
+        }
     }
 
     return r;
@@ -217,16 +245,33 @@ QRectF QskSliderSkinlet::panelRect(
 QRectF QskSliderSkinlet::fillRect(
     const QskSlider* slider, const QRectF& contentsRect ) const
 {
-    const auto pos = qBound( 0.0, slider->handlePosition(), 1.0 );
+    if ( !qskHasFilling( slider ) )
+        return QRectF();
+
+    auto pos1 = slider->valueAsRatio( slider->origin() );
+    auto pos2 = qBound( 0.0, slider->handlePosition(), 1.0 );
+
+    if ( pos1 > pos2 )
+        qSwap( pos1, pos2 );
 
     auto r = qskInnerRect( slider, contentsRect, QskSlider::Fill );
 
     auto scaleRect = subControlRect( slider, contentsRect, Q::Scale );
 
     if ( slider->orientation() == Qt::Horizontal )
-        r.setRight( scaleRect.left() + pos * scaleRect.width() );
+    {
+        if ( !qFuzzyIsNull( pos1 ) )
+            r.setLeft( scaleRect.left() + pos1 * scaleRect.width() );
+
+        r.setRight( scaleRect.left() + pos2 * scaleRect.width() );
+    }
     else
-        r.setTop( scaleRect.bottom() - pos * scaleRect.height() );
+    {
+        if ( !qFuzzyIsNull( pos1 ) )
+            r.setBottom( scaleRect.bottom() - pos1 * scaleRect.height() );
+
+        r.setTop( scaleRect.bottom() - pos2 * scaleRect.height() );
+    }
 
     return r;
 }

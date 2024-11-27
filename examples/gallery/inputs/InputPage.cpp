@@ -98,6 +98,7 @@ InputPage::InputPage( QQuickItem* parent )
     {
         Slider* continous;
         Slider* discrete;
+        Slider* centered;
     } sliders[2];
 
     for ( int i = 0; i < 2; i++ )
@@ -106,6 +107,11 @@ InputPage::InputPage( QQuickItem* parent )
 
         sliders[i].continous = new Slider( orientation, Slider::Continuous );
         sliders[i].discrete = new Slider( orientation, Slider::Discrete );
+
+        auto slider = new Slider( orientation, Slider::Continuous );
+        slider->setOrigin( slider->minimum()
+            + 0.5 * ( slider->maximum() - slider->minimum() ) );
+        sliders[i].centered = slider;
     }
 
     auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0 );
@@ -120,6 +126,7 @@ InputPage::InputPage( QQuickItem* parent )
 
     vBox->addItem( sliders[0].continous );
     vBox->addItem( sliders[0].discrete );
+    vBox->addItem( sliders[0].centered );
     vBox->addItem( inputBox );
     vBox->addItem( spinBox );
 
@@ -127,6 +134,7 @@ InputPage::InputPage( QQuickItem* parent )
     mainBox->setSpacing( 30 );
     mainBox->addItem( sliders[1].continous );
     mainBox->addItem( sliders[1].discrete );
+    mainBox->addItem( sliders[1].centered );
     mainBox->addItem( vBox );
 
     auto inputs = findChildren< QskBoundedValueInput* >();

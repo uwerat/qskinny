@@ -8,8 +8,14 @@
 #include <QskSlider.h>
 #include <QskClipNode.h>
 #include <QskSGNode.h>
+#include <QskFunctions.h>
 
 using Q = QskSlider;
+
+static inline bool qskHasOrigin( const QskSlider* slider )
+{
+    return !qskFuzzyCompare( slider->origin(), slider->minimum() );
+}
 
 QskMaterial3SliderSkinlet::QskMaterial3SliderSkinlet( QskSkin* skin )
     : Inherited( skin )
@@ -97,8 +103,18 @@ QVector< qreal > QskMaterial3SliderSkinlet::graduation( const QskSlider* slider 
 
         if ( policy != Qsk::Never )
         {
-            graduation.reserve( 1 );
-            graduation += slider->maximum();
+            if ( qskHasOrigin( slider ) )
+            {
+                graduation.reserve( 3 );
+                graduation += slider->minimum();
+                graduation += slider->origin();
+                graduation += slider->maximum();
+            }
+            else
+            {
+                graduation.reserve( 1 );
+                graduation += slider->maximum();
+            }
         }
     }
 
