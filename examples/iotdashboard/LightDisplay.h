@@ -12,9 +12,12 @@ class LightDisplay : public QskBoundedValueInput
 {
     Q_OBJECT
 
+    using Inherited = QskBoundedValueInput;
+
   public:
-    QSK_SUBCONTROLS( Panel, Groove, ColdAndWarmArc, Tickmarks, ValueText,
-        LeftLabel, RightLabel, Knob )              // ### rename knob to handle?
+    QSK_SUBCONTROLS( Panel, Groove, ColdAndWarmArc, Tickmarks,
+        ValueText, LeftLabel, RightLabel, Handle )
+
     QSK_STATES( Pressed )
 
     LightDisplay( QQuickItem* parent = nullptr );
@@ -22,9 +25,9 @@ class LightDisplay : public QskBoundedValueInput
     bool isPressed() const;
 
   protected:
-    void mousePressEvent( QMouseEvent* e ) override;
-    void mouseMoveEvent( QMouseEvent* e ) override;
-    void mouseReleaseEvent( QMouseEvent* e ) override;
+    void mousePressEvent( QMouseEvent* ) override;
+    void mouseMoveEvent( QMouseEvent* ) override;
+    void mouseReleaseEvent( QMouseEvent* ) override;
 
   private:
     qreal angleFromPoint( const QRectF&, const QPointF& ) const;
