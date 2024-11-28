@@ -13,8 +13,6 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
 {
     Q_OBJECT
 
-    Q_PROPERTY( bool isPressed READ isPressed NOTIFY pressedChanged )
-
     Q_PROPERTY( Qt::Orientation orientation READ orientation
         WRITE setOrientation NOTIFY orientationChanged )
 
@@ -23,8 +21,6 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
 
     Q_PROPERTY( qreal origin READ origin
         WRITE setOrigin RESET resetOrigin NOTIFY originChanged )
-
-    Q_PROPERTY( qreal handlePosition READ handlePosition )
 
     using Inherited = QskBoundedValueInput;
 
@@ -36,8 +32,6 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     explicit QskSlider( Qt::Orientation, QQuickItem* parent = nullptr );
 
     ~QskSlider() override;
-
-    bool isPressed() const;
 
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
@@ -56,7 +50,6 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void setOrigin( qreal );
 
   Q_SIGNALS:
-    void pressedChanged( bool );
     void orientationChanged( Qt::Orientation );
     void trackingChanged( bool );
     void originChanged( qreal );

@@ -56,7 +56,7 @@ class QskSlider::PrivateData
         : pressedValue( 0 )
         , hasOrigin( false )
         , tracking( true )
-        , moving( false )
+        , dragging( false )
         , orientation( orientation )
     {
     }
@@ -68,7 +68,7 @@ class QskSlider::PrivateData
 
     bool hasOrigin : 1;
     bool tracking : 1;
-    bool moving : 1;
+    bool dragging : 1;
     uint orientation : 2;
 };
 
@@ -97,11 +97,6 @@ QskSlider::~QskSlider()
 {
 }
 
-bool QskSlider::isPressed() const
-{
-    return hasSkinState( Pressed );
-}
-
 void QskSlider::setOrientation( Qt::Orientation orientation )
 {
     if ( orientation != m_data->orientation )
@@ -124,30 +119,30 @@ Qt::Orientation QskSlider::orientation() const
 }
 
 void QskSlider::setOrigin( qreal origin )
-{           
+{
     if ( isComponentComplete() )
         origin = boundedValue( origin );
-        
+
     if( !m_data->hasOrigin || !qskFuzzyCompare( m_data->origin, origin ) )
-    {       
+    {
         m_data->hasOrigin = true;
         m_data->origin = origin;
-            
+
         update();
         Q_EMIT originChanged( origin );
-    }   
-}           
-                
+    }
+}
+
 void QskSlider::resetOrigin()
-{   
+{
     if ( m_data->hasOrigin )
     {
         m_data->hasOrigin = false;
-    
+
         update();
         Q_EMIT originChanged( origin() );
     }
-}   
+}
 
 qreal QskSlider::origin() const
 {
@@ -213,7 +208,6 @@ void QskSlider::mousePressEvent( QMouseEvent* event )
     }
 
     setSkinStateFlag( Pressed );
-    Q_EMIT pressedChanged( true );
 
     m_data->pressedPos = pos;
     m_data->pressedValue = value();
@@ -221,7 +215,7 @@ void QskSlider::mousePressEvent( QMouseEvent* event )
 
 void QskSlider::mouseMoveEvent( QMouseEvent* event )
 {
-    if ( !isPressed() )
+    if ( !hasSkinState( Pressed ) )
         return;
 
     const auto mousePos = qskMousePosition( event );
@@ -242,9 +236,9 @@ void QskSlider::mouseMoveEvent( QMouseEvent* event )
 
     if ( m_data->tracking )
     {
-        m_data->moving = true;
+        m_data->dragging = true;
         setValue( newValue );
-        m_data->moving = false;
+        m_data->dragging = false;
     }
     else
     {
@@ -259,18 +253,12 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* )
         Q_EMIT valueChanged( value() );
 
     setSkinStateFlag( Pressed, false );
-    Q_EMIT pressedChanged( false );
-}
-
-qreal QskSlider::handlePosition() const
-{
-    return positionHint( Handle );
 }
 
 void QskSlider::moveHandle()
 {
     QskAnimationHint hint;
-    if ( !m_data->moving )
+    if ( !m_data->dragging )
     {
         const auto aspect = Handle | QskAspect::Metric | QskAspect::Position;
         hint = animationHint( aspect | skinStates() );

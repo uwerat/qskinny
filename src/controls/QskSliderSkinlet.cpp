@@ -249,12 +249,12 @@ QRectF QskSliderSkinlet::fillRect(
         return QRectF();
 
     auto pos1 = slider->valueAsRatio( slider->origin() );
-    auto pos2 = qBound( 0.0, slider->handlePosition(), 1.0 );
+    auto pos2 = qBound( 0.0, slider->positionHint( Q::Handle ), 1.0 );
 
     if ( pos1 > pos2 )
         qSwap( pos1, pos2 );
 
-    auto r = qskInnerRect( slider, contentsRect, QskSlider::Fill );
+    auto r = qskInnerRect( slider, contentsRect, Q::Fill );
 
     auto scaleRect = subControlRect( slider, contentsRect, Q::Scale );
 
@@ -280,7 +280,7 @@ QRectF QskSliderSkinlet::handleRect(
     const QskSlider* slider, const QRectF& contentsRect ) const
 {
     auto handleSize = slider->strutSizeHint( Q::Handle );
-    const auto pos = qBound( 0.0, slider->handlePosition(), 1.0 );
+    const auto pos = qBound( 0.0, slider->positionHint( Q::Handle ), 1.0 );
 
     const auto r = subControlRect( slider, contentsRect, Q::Scale );
     auto center = r.center();
