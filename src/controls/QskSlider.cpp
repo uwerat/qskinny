@@ -20,16 +20,7 @@ QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
 
 static QRectF qskHandleSelectionRect( const QskSlider* slider )
 {
-    auto rect = slider->subControlRect( QskSlider::Handle );
-
-#if 1
-    // minimum handle strut size TODO ...
-    const QSizeF strutSize( 60, 60 );
-    const auto w = qMax( ( strutSize.width() - rect.width() ) / 2, 0.0 );
-    const auto h = qMax( ( strutSize.height() - rect.height() ) / 2, 0.0 );
-#endif
-
-    return rect.marginsAdded( { w, h, w, h } );
+    return slider->subControlRect( QskSlider::Handle );
 }
 
 static QRectF qskSliderSelectionRect( const QskSlider* slider )
