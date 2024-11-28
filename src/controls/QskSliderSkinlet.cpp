@@ -251,6 +251,12 @@ QRectF QskSliderSkinlet::fillRect(
     auto pos1 = slider->valueAsRatio( slider->origin() );
     auto pos2 = qBound( 0.0, slider->positionHint( Q::Handle ), 1.0 );
 
+    if ( slider->isInverted() )
+    {
+        pos1 = 1.0 - pos1;
+        pos2 = 1.0 - pos2;
+    }
+
     if ( pos1 > pos2 )
         qSwap( pos1, pos2 );
 
@@ -293,7 +299,10 @@ QRectF QskSliderSkinlet::handleRect(
         if ( handleSize.width() < 0.0 )
             handleSize.setWidth( handleSize.height() );
 
-        center.setX( r.left() + pos * r.width() );
+        if ( slider->isInverted() )
+            center.setX( r.right() - pos * r.width() );
+        else
+            center.setX( r.left() + pos * r.width() );
     }
     else
     {
@@ -303,7 +312,10 @@ QRectF QskSliderSkinlet::handleRect(
         if ( handleSize.height() < 0.0 )
             handleSize.setHeight( handleSize.width() );
 
-        center.setY( r.bottom() - pos * r.height() );
+        if ( slider->isInverted() )
+            center.setY( r.top() + pos * r.height() );
+        else
+            center.setY( r.bottom() - pos * r.height() );
     }
 
     QRectF handleRect( 0, 0, handleSize.width(), handleSize.height() );
@@ -319,7 +331,9 @@ QRectF QskSliderSkinlet::tickRect( const QskSlider* slider,
     if ( !tickValue.canConvert< qreal >() )
         return QRectF();
 
-    const auto tickPos = slider->valueAsRatio( tickValue.value< qreal >() );
+    auto tickPos = slider->valueAsRatio( tickValue.value< qreal >() );
+    if ( slider->isInverted() )
+        tickPos = 1.0 - tickPos;
 
     const auto r = subControlRect( slider, contentsRect, Q::Scale );
 

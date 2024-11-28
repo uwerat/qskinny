@@ -77,6 +77,7 @@ class QskSlider::PrivateData
     PrivateData( Qt::Orientation orientation )
         : pressedValue( 0 )
         , hasOrigin( false )
+        , inverted( false )
         , tracking( true )
         , dragging( false )
         , orientation( orientation )
@@ -89,6 +90,7 @@ class QskSlider::PrivateData
     qreal origin = 0.0;
 
     bool hasOrigin : 1;
+    bool inverted : 1;
     bool tracking : 1;
     bool dragging : 1;
     uint orientation : 2;
@@ -138,6 +140,22 @@ void QskSlider::setOrientation( Qt::Orientation orientation )
 Qt::Orientation QskSlider::orientation() const
 {
     return static_cast< Qt::Orientation >( m_data->orientation );
+}
+
+void QskSlider::setInverted( bool on )
+{
+    if ( on != m_data->inverted )
+    {
+        m_data->inverted = on;
+        update();
+
+        Q_EMIT invertedChanged( on );
+    }
+}
+
+bool QskSlider::isInverted() const
+{
+    return m_data->inverted;
 }
 
 void QskSlider::setOrigin( qreal origin )
@@ -226,6 +244,9 @@ void QskSlider::mousePressEvent( QMouseEvent* event )
         else
             ratio = ( scaleRect.bottom() - pos.y() ) / scaleRect.height();
 
+        if ( m_data->inverted )
+            ratio = 1.0 - ratio;
+
         setValue( valueFromRatio( ratio ) );
     }
 
@@ -243,17 +264,21 @@ void QskSlider::mouseMoveEvent( QMouseEvent* event )
     const auto mousePos = qskMousePosition( event );
     const auto r = subControlRect( Scale );
 
+    auto length = boundaryLength();
+    if ( m_data->inverted )
+        length = -length;
+
     qreal newValue;
 
     if ( m_data->orientation == Qt::Horizontal )
     {
         const auto distance = mousePos.x() - m_data->pressedPos.x();
-        newValue = m_data->pressedValue + distance / r.width() * boundaryLength();
+        newValue = m_data->pressedValue + distance / r.width() * length;
     }
     else
     {
         const auto distance = mousePos.y() - m_data->pressedPos.y();
-        newValue = m_data->pressedValue - distance / r.height() * boundaryLength();
+        newValue = m_data->pressedValue - distance / r.height() * length;
     }
 
     if ( m_data->tracking )
@@ -279,8 +304,11 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* )
 
 void QskSlider::keyPressEvent( QKeyEvent* event )
 {
-    if ( const auto offset = qskKeyOffset( orientation(), event->key() ) )
+    if ( auto offset = qskKeyOffset( orientation(), event->key() ) )
     {
+        if ( m_data->inverted )
+            offset = -offset;
+
         increment( offset * stepSize() );
         return;
     }
