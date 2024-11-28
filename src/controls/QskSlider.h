@@ -59,6 +59,8 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void mouseMoveEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;
 
+    void keyPressEvent( QKeyEvent* ) override;
+
     void aboutToShow() override;
     void componentComplete() override;
 

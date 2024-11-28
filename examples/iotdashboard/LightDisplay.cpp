@@ -44,6 +44,8 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     setAlignmentHint( ValueText, Qt::AlignRight );
 
     setBoundaries( 0, 100 );
+    setStepSize( 1.0 );
+    setPageSteps( 10 );
 }
 
 bool LightDisplay::isPressed() const
@@ -104,6 +106,22 @@ void LightDisplay::mouseMoveEvent( QMouseEvent* event )
 void LightDisplay::mouseReleaseEvent( QMouseEvent* /*event*/ )
 {
     setSkinStateFlag( Pressed, false );
+}
+
+void LightDisplay::keyPressEvent( QKeyEvent* event )
+{
+    switch( event->key() )
+    {
+        case Qt::Key_Left:
+            increment( -stepSize() );
+            return;
+
+        case Qt::Key_Right:
+            increment( stepSize() );
+            return;
+    }
+
+    Inherited::keyPressEvent( event );
 }
 
 qreal LightDisplay::angleFromPoint( const QRectF& rect, const QPointF& point ) const

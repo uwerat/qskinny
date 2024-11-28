@@ -61,6 +61,22 @@ int QskBoundedValueInput::decimals() const
     return m_data->decimals;
 }
 
+void QskBoundedValueInput::keyPressEvent( QKeyEvent* event )
+{
+    switch( event->key() )
+    {
+        case Qt::Key_Home:
+            setValue( minimum() );
+            break;
+
+        case Qt::Key_End:
+            setValue( maximum() );
+            break;
+    }
+
+    Inherited::keyPressEvent( event );
+}
+
 void QskBoundedValueInput::alignInput()
 {
     auto value = qskAlignedValue( this, m_data->value );

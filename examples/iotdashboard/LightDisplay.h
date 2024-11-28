@@ -29,6 +29,8 @@ class LightDisplay : public QskBoundedValueInput
     void mouseMoveEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;
 
+    void keyPressEvent( QKeyEvent* ) override;
+
   private:
     qreal angleFromPoint( const QRectF&, const QPointF& ) const;
     bool arcContainsPoint( const QRectF&, const QPointF& ) const;

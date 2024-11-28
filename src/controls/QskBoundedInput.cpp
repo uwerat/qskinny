@@ -172,15 +172,6 @@ qreal QskBoundedInput::incrementForKey( const QKeyEvent* event ) const
 
         case Qt::Key_PageDown:
             return -pageSize();
-
-        default:
-        {
-            if ( qskIsStandardKeyInput( event, QKeySequence::MoveToNextChar ) )
-                return m_data->stepSize;
-
-            if ( qskIsStandardKeyInput( event, QKeySequence::MoveToPreviousChar ) )
-                return -m_data->stepSize;
-        }
     }
 
     return 0.0;

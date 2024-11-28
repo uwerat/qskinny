@@ -49,6 +49,28 @@ static QRectF qskSliderSelectionRect( const QskSlider* slider )
     return r;
 }
 
+static inline int qskKeyOffset( Qt::Orientation orientation, int key )
+{
+    if ( orientation == Qt::Horizontal )
+    {
+        if ( key == Qt::Key_Left )
+            return -1;
+
+        if ( key == Qt::Key_Right )
+            return 1;
+    }
+    else
+    {
+        if ( key == Qt::Key_Down )
+            return -1;
+
+        if ( key == Qt::Key_Up )
+            return 1;
+    }
+
+    return 0;
+}
+
 class QskSlider::PrivateData
 {
   public:
@@ -253,6 +275,35 @@ void QskSlider::mouseReleaseEvent( QMouseEvent* )
         Q_EMIT valueChanged( value() );
 
     setSkinStateFlag( Pressed, false );
+}
+
+void QskSlider::keyPressEvent( QKeyEvent* event )
+{
+    if ( const auto offset = qskKeyOffset( orientation(), event->key() ) )
+    {
+        increment( offset * stepSize() );
+        return;
+    }
+
+    if ( m_data->hasOrigin )
+    {
+        switch( event->key() )
+        {
+            case Qt::Key_Home:
+            {
+                setValue( origin() );
+                return;
+            }
+
+            case Qt::Key_End:
+            {
+                // we have 2 endpoints - better do nothing
+                return;
+            }
+        }
+    }
+
+    Inherited::keyPressEvent( event );
 }
 
 void QskSlider::moveHandle()
