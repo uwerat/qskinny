@@ -1,24 +1,18 @@
----
-title: 4. Layouts
-layout: docs
----
+# Tutorials {#tutorials}
 
-:doctitle: 4. Layouts
-:notitle:
-
-== Layouts
+## Layouts
 
 Layouts manage the position of UI elements on the screen, and how the
 elements react to size changes (e.g. window resize).
 
-=== Size hints
+### Size hints
 
 Size hints let the layouting code know how big UI elements are, and to
 which size they may shrink or grow.
 
 Size hints can be explicit or implicit. Explicit sizes are set by the
 user via an API call through `setExplicitSizeHint()` ("This element is
-of that size''), while implicit sizes are deduced from the elements
+of that size"), while implicit sizes are deduced from the elements
 themselves. Explicit size hints always take precedence over implicit
 ones.
 
@@ -26,8 +20,9 @@ For instance, the implicit size of a button is calculated from the
 text width (which itself depends on the font) and possibly padding and
 margins:
 
-.implicit horizontal size hint of a button
-image::/doc/tutorials/images/size-hints-calculation.png[implicit horizontal size hint of a button]
+**implicit horizontal size hint of a button**
+
+![implicit horizontal size hint of a button](/doc/tutorials/images/size-hints-calculation.png)
 
 The implicit width of a composited UI element containing a
 graphic on the left and a text on the right would be the sum of the elements’
@@ -40,14 +35,14 @@ its children. For instace a horizontal layout containing three buttons
 next to each other will calculate its implicit width by summing up the
 widths of the buttons (spacing and margins again come on top).
 
-There are three types of size hints: *Minimum*, *Preferred* and
-*Maximum*.
+There are three types of size hints: **Minimum**, **Preferred** and
+**Maximum**.
 
-* The *minimum size hint* of a UI element is used by layouting code to
+* The **minimum size hint** of a UI element is used by layouting code to
 determine how small an element can be.
-* The *preferred size hint* is the natural size of an element, and will
+* The **preferred size hint** is the natural size of an element, and will
 be used in an ideal case, meaning there is enough space available.
-* The *maximum size hint* is used by layouting code to determine how big
+* The **maximum size hint** is used by layouting code to determine how big
 an element can be.
 
 Minimum and maximum size hints of atomic controls like `QskPushButton`
@@ -59,7 +54,7 @@ Minimum and maximum sizes, i.e. the methods `minimumSize()` and
 So in total, a control can have up to 6 size hints: the three types
 described above, and each one can have an implicit and an explicit hint.
 
-==== Example
+#### Example
 
 Below is an image with an implicit size hint with a width of 91 pixels
 and a height of 39 pixels (91x39). The hint is determined by the size of
@@ -67,25 +62,26 @@ the text (71x19 pixels) plus margins (10 pixels each for top, right,
 bottom, left). We don’t need to set a size hint explicitly, the control
 will be rendered correctly with the implicit size hint:
 
-[source]
-....
+```
 auto* label1 = new QskTextLabel( "control 1" );
 label1->setMargins( 10 );
 label1->setBackgroundColor( Qt::magenta );
-....
+```
 
-.control without explicit size hint
-image::/doc/tutorials/images/size-hints-1.png[Image without explicit size hint]
+**control without explicit size hint**
+
+![Image without explicit size hint](/doc/tutorials/images/size-hints-1.png)
 
 If we set an explicit size hint of 150x60 pixels ourselves for the
 preferred size, the control will be rendered differently:
 
-....
+```
 label1->setExplicitSizeHint( Qt::PreferredSize, { 150, 60 } );
-....
+```
 
-.control with explicit size hint
-image::/doc/tutorials/images/size-hints-2.png[Image with explicit size hint]
+**control with explicit size hint**
+
+![Image with explicit size hint](/doc/tutorials/images/size-hints-2.png)
 
 When dealing with standard controls or layouts, the size hints don’t
 need to be specified explicitly, as it can be deduced from its standard
@@ -94,7 +90,7 @@ values, as seen in the example above.
 The actual size of a UI element also depends on its size policy, see the
 next topic.
 
-=== Size policies
+### Size policies
 
 Size policies define the way UI elements can change their size depending
 on the available space. Imagine a UI with a top bar and a main content
@@ -109,7 +105,6 @@ The size policies of QSkinny correspond to the
 *https://doc.qt.io/qt-5/qsizepolicy.html#Policy-enum[size policies from
 QtWidgets]*:
 
-[width="100%",cols="50%,50%",options="header",]
 |=======================================================================
 |`QskSizePolicy::Policy` |description
 |`Fixed` |The control has a fixed size and can neither grow nor shrink.
@@ -154,21 +149,20 @@ constraint, and it should get as much space as possible.
 |=======================================================================
 
 All the `Constrained*` policies correspond to Qt’s
-https://doc.qt.io/qt-5/qsizepolicy.html#hasHeightForWidth[QSizePolicy::hasHeightForWidth()]
+[QSizePolicy::hasHeightForWidth()](https://doc.qt.io/qt-5/qsizepolicy.html#hasHeightForWidth)
 or
-https://doc.qt.io/qt-5/qsizepolicy.html#hasWidthForHeight[QSizePolicy::hasWidthForHeight()]
+[QSizePolicy::hasWidthForHeight()](https://doc.qt.io/qt-5/qsizepolicy.html#hasWidthForHeight)
 flag. E.g. if a control has a horizontal size policy of `Constrained`
 and a vertical size policy of `Fixed`, it will call `widthForHeight()`
 to determine the width that corresponds to the height.
 
-==== Example
+#### Example
 
 Below is an example of two buttons with different size policies. In this
 case only the horizontal size policies are considered; the vertical size
 policies behave correspondingly.
 
-[source]
-....
+```
 auto horizontalBox = new QskLinearBox( Qt::Horizontal );
 
 auto* label1 = new QskTextLabel( "size policy: fixed" );
@@ -179,53 +173,56 @@ auto* label2 = new QskTextLabel( "size policy: minimum" );
 label2->setSizePolicy( Qt::Horizontal, QskSizePolicy::Minimum );
 horizontalBox->addItem( label2 );
 ...
-....
+```
 
 By default the width of the buttons is determined by its text plus its
 margins:
 
-.Size policies with preferred size
-image::/doc/tutorials/images/size-policies-horizontal-minimum-1.png[Fixed vs. Minimum size policy]
+**Size policies with preferred size**
+
+![Fixed vs. Minimum size policy](/doc/tutorials/images/size-policies-horizontal-minimum-1.png)
 
 After growing the window horizontally, the button with the Fixed
 horizontal size policy keeps its width, while the button with the
 Minimum policy will grow:
 
-.Size policies when increasing window width
-image::/doc/tutorials/images/size-policies-horizontal-minimum-2.png[Fixed vs. Minimum size policy]
+**Size policies when increasing window width**
+
+![Fixed vs. Minimum size policy](/doc/tutorials/images/size-policies-horizontal-minimum-2.png)
 
 When shrinking the window below its original size, both buttons stay
 with their width: The one on the left because of its `Fixed` size policy,
 and the one on the right because it won’t shrink below its original size
 due to the `Minimum` size policy.
 
-.Size policies when shrinking window width
-image::/doc/tutorials/images/size-policies-horizontal-minimum-3.png[Fixed vs. Minimum size policy]
+**Size policies when shrinking window width**
+
+![Fixed vs. Minimum size policy](/doc/tutorials/images/size-policies-horizontal-minimum-3.png)
 
 If we change the policy of the right button to `Preferred`, it will shrink
 below its original size (even though the text is too wide now):
 
-....
+```
 label2->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
 label2->setText( "size policy: preferred" );
-....
+```
 
-.Size policies when changing to preferred size policy
-image::/doc/tutorials/images/size-policies-horizontal-minimum-4.png[Fixed vs. Minimum size policy]
+**Size policies when changing to preferred size policy**
 
-=== Types of layouts
+![Fixed vs. Minimum size policy](/doc/tutorials/images/size-policies-horizontal-minimum-4.png)
+
+### Types of layouts
 
 There are different types of layouts that can group UI elements
 together. Internally, layouts use the `layoutRect()` method to determine
 the available space to place its children.
 
-==== Linear layouts (QskLinearBox)
+#### Linear layouts (QskLinearBox)
 
 A linear layout can group elements either horizontally or vertically, as
 in the images below.
 
-[source]
-....
+```
 auto horizontalBox = new QskLinearBox( Qt::Horizontal );
 
 auto* label1 = new QskTextLabel( "control 1" );
@@ -237,13 +234,13 @@ horizontalBox->addItem( label2 );
 auto* label3 = new QskTextLabel( "control 3" );
 horizontalBox->addItem( label3 );
 ...
-....
+```
 
-.Horizontal layout
-image::/doc/tutorials/images/layout-horizontal.png[Horizontal layout]
+**Horizontal layout**
 
-[source]
-....
+![Horizontal layout](/doc/tutorials/images/layout-horizontal.png)
+
+```
 auto verticalBox = new QskLinearBox( Qt::Vertical );
 
 auto* label1 = new QskTextLabel( "control 1" );
@@ -255,18 +252,18 @@ verticalBox->addItem( label2 );
 auto* label3 = new QskTextLabel( "control 3" );
 verticalBox->addItem( label3 );
 ...
-....
+```
 
-.Vertical layout
-image::/doc/tutorials/images/layout-vertical.png[Vertical layout]
+**Vertical layout**
 
-==== Grid layouts (QskGridBox)
+![Vertical layout](/doc/tutorials/images/layout-vertical.png)
+
+#### Grid layouts (QskGridBox)
 
 Grid layouts are like linear layouts, but 2 dimensional, and support
 laying out UI controls in a grid, including spanning columns and rows.
 
-[source]
-....
+```
 auto* gridBox = new QskGridBox;
 
 auto* label1 = new QskTextLabel( "control 1" );
@@ -289,19 +286,19 @@ gridBox->addItem( label6, 2, 0 );
 
 auto* label7 = new QskTextLabel( "control 7" );
 gridBox->addItem( label7, 2, 1, 1, 2 );
-....
+```
 
-.Grid layout
-image::/doc/tutorials/images/layout-grid.png[Grid layout]
+**Grid layout**
 
-==== Stack layouts (QskStackBox)
+![Grid layout](/doc/tutorials/images/layout-grid.png)
+
+#### Stack layouts (QskStackBox)
 
 Stack layouts allow for items to be arranged on top of each other.
 Usually there is one current (visible) item, while the rest of the items
 are hidden below the current one:
 
-[source]
-....
+```
 auto* stackBox = new QskStackBox;
 
 auto* label1 = new QskTextLabel( "control 1" );
@@ -318,25 +315,27 @@ stackBox->addItem( label3 );
 
 stackBox->setCurrentIndex( 2 );
 ...
-....
+```
 
-.Stack layout (symbolized)
-image::/doc/tutorials/images/layout-stack.png[Stack layout]
+**Stack layout (symbolized)**
+
+![Stack layout](/doc/tutorials/images/layout-stack.png)
 
 In this example, "control 3" is stacked on top of the blue and the
 cyan control. Controls in a stacked layout can be of different sizes.
 
-NOTE: The image above is just for illustrating purposes. In practice
+**📌 NOTE**\
+The image above is just for illustrating purposes. In practice
 the topmost control ("control 3" here) is completely covering the ones
 below it.
 
-==== QskControl::autoLayoutChildren()
+#### QskControl::autoLayoutChildren()
 
 When the `QskControl::autoLayoutChildren()` flag is set, the control will
 recalculate the geometry of its children whenever the item is updating
 its layout.
 
-=== Stretch factors
+### Stretch factors
 
 Stretch factors allow layouts to keep a size ratio for their elements.
 Let’s say a horizontal layout contains two elements, and when filling up
@@ -347,8 +346,7 @@ factor of 1 and the second element a factor of 2.
 Stretch factors are set on the layout rather than on the controls
 itself:
 
-[source]
-....
+```
 auto horizontalBox = new QskLinearBox( Qt::Horizontal );
 
 auto* label1 = new QskTextLabel( "stretch factor 1" );
@@ -360,45 +358,48 @@ horizontalBox->addItem( label2 );
 horizontalBox->setStretchFactor( label2, 2 );
 
 ...
-....
+```
 
 When the layout has all the space it needs (but not more), both elements
 are rendered with their preferred size:
 
-.Stretch factors with preferred size
-image::/doc/tutorials/images/stretch-factors-1.png[Stretch factors preferred size]
+**Stretch factors with preferred size**
+
+![Stretch factors preferred size](/doc/tutorials/images/stretch-factors-1.png)
 
 When the layout gets more width, the stretch factors come into play:
 
-.A stretch factor of 1:2
-image::/doc/tutorials/images/stretch-factors-2.png[Stretch factors increasing width]
+**A stretch factor of 1:2**
+
+![Stretch factors increasing width](/doc/tutorials/images/stretch-factors-2.png)
 
 No matter how wide the layout is, the aspect ratio of 1:2 will always be
 kept, meaning that the label on the left will get 33% of the space, and
 the label on the right 67%:
 
-.A stretch factor of 1:2 with different widths
-image::/doc/tutorials/images/stretch-factors-3.png[Stretch factors even more width]
+**A stretch factor of 1:2 with different widths**
+
+![Stretch factors even more width](/doc/tutorials/images/stretch-factors-3.png)
 
 Stretch factors in QSkinny are the same as in the Qt Graphics View
 Framework, see
 https://doc.qt.io/qt-5/qgraphicslinearlayout.html#stretch-factor-in-qgraphicslinearlayout[Stretch
 Factor in QGraphicsLinearLayout].
 
-=== Nesting layouts
+### Nesting layouts
 
 In a real-world application it is typical to nest several layouts in
 each other. The example below depicts a UI with a top bar and menu items
 on the left:
 
-.A UI with nested layouts
-image::/doc/tutorials/images/nesting-layouts.png[Nested layouts]
+**A UI with nested layouts**
+
+![Nested layouts](/doc/tutorials/images/nesting-layouts.png)
 
 The code to produce the above UI could look like this (setting colors
 etc. omitted for brevity):
 
-[source]
-....
+```
 auto* outerBox = new QskLinearBox( Qt::Vertical );
 
 auto* topBar = new QskLinearBox( Qt::Horizontal, outerBox );
@@ -417,7 +418,7 @@ auto* menuLabel3 = new QskTextLabel( "menu 3", menuBox );
 
 auto* mainText = new QskTextLabel( "here main area", mainBox );
 ...
-....
+```
 
 Here we have an outer vertical layout which divides the content into a
 top bar and a main box. The top bar itself consists of a horizontal
@@ -427,10 +428,10 @@ with the menu buttons is again a vertical layout.
 
 The following diagram makes the layouts visible:
 
-.The layout structure of the UI
-image::/doc/tutorials/images/nesting-layouts-architecture.png[Nested layouts architecture]
+**The layout structure of the UI**
 
-=== Anchoring in QSkinny
+![Nested layouts architecture](/doc/tutorials/images/nesting-layouts-architecture.png)
+
+### Anchoring in QSkinny
 
 TODO
-

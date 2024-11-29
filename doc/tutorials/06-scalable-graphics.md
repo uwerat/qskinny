@@ -1,12 +1,6 @@
----
-title: 6. (Scalable) graphics
-layout: docs
----
+# Tutorials {#tutorials}
 
-:doctitle: 6. (Scalable) graphics
-:notitle:
-
-== (Scalable) graphics
+## (Scalable) graphics
 
 QSkinny offers support for scalable graphics, i.e. rendering SVGs that
 adapt to a specific size. This means that when a graphic is embedded in
@@ -15,8 +9,7 @@ shrinking, while still maintaining a correct aspect ratio.
 
 Imagine the following code, which produces the image depicted below:
 
-[source]
-....
+```
 auto horizontalBox = new QskLinearBox( Qt::Horizontal );
 horizontalBox->setPreferredSize( { 200, 75 } );
 
@@ -30,19 +23,22 @@ QskGraphic graphic2 = QskGraphic::fromImage( image2 );
 auto* label2 = new QskGraphicLabel( graphic2, horizontalBox );
 label2->setSizePolicy( QskSizePolicy::ConstrainedPreferred, QskSizePolicy::Expanding );
 ...
-....
+```
 
-.graphics with preferred size
-image::/doc/tutorials/images/scalable-graphics-1.png[Scalable graphics default]
+**graphics with preferred size**
+
+![Scalable graphics default](/doc/tutorials/images/scalable-graphics-1.png)
 
 When resizing the window, the graphics will scale according to the size
 available in the layout:
 
-.graphics bounded by width
-image::/doc/tutorials/images/scalable-graphics-2.png[Scalable graphics bounded by width]
+**graphics bounded by width**
 
-.graphics bounded by height
-image::/doc/tutorials/images/scalable-graphics-3.png[Scalable graphics bounded by height]
+![Scalable graphics bounded by width](/doc/tutorials/images/scalable-graphics-2.png)
+
+**graphics bounded by height**
+
+![Scalable graphics bounded by height](/doc/tutorials/images/scalable-graphics-3.png)
 
 Since we set the horizontal size policy of the graphics to
 `ConstrainedPreferred`, the scaling is done through QskGraphic’s
@@ -53,10 +49,8 @@ one to e.g. `Expanding`, the layout would have queried the
 
 Of course non-scalable graphics like PNGs and JPGs are also supported:
 
-[source]
-....
+```
 QImage image( "background.jpg" );
 QskGraphic graphic = QskGraphic::fromImage( image );
 ...
-....
-
+```

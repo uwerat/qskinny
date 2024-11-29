@@ -1,12 +1,6 @@
----
-title: 8. Using QSkinny and QML
-layout: docs
----
+# Tutorials {#tutorials}
 
-:doctitle: 8. Using QSkinny and QML
-:notitle:
-
-== QSkinny - Using QSkinny and QML
+## QSkinny - Using QSkinny and QML
 
 Combining QSkinny and QML is possible: Since both QML elements and
 QSkinny controls derive from `QQuickItem`, they can be combined and
@@ -18,31 +12,29 @@ When using a QSkinny control, all the methods exposed as either properties,
 slots or invokables can be used in QML. For example, the QSkinny control
 `QskLinearBox` defines the following properties:
 
-.CMakeLists.txt
-[source,cmake]
-....
+**CMakeLists.txt**
+
+```cmake
 target_link_libraries(myapp PRIVATE 
     ...
     Qsk::QmlExport)
 ...
-....
+```
 
-[source,cpp]
-....
+```cpp
 class QSK_EXPORT QskLinearBox : public QskIndexedLayoutBox
 {
     Q_PROPERTY( Qt::Orientation orientation READ orientation WRITE setOrientation NOTIFY orientationChanged FINAL )
     Q_PROPERTY( qreal spacing READ spacing WRITE setSpacing RESET resetSpacing NOTIFY spacingChanged FINAL )
     ...
 };
-....
+```
 
 The `QskLinearBox` class is registered to QML as `Qsk.LinearBox` via
 Qt’s `qmlRegisterType`, so the exposed properties `orientation` and
 `spacing` can be used like this:
 
-[source]
-....
+```
 Qsk.LinearBox
 {
     orientation: Qt.Horizontal
@@ -51,12 +43,13 @@ Qsk.LinearBox
     // here define elements inside the box
     ...
 }
-....
+```
 
 The full Buttons example is depicted below.
 
-.The buttons example shows how to mix QSkinny and QML
-image::/doc/tutorials/images/buttons-example.png[Buttons example]
+**The buttons example shows how to mix QSkinny and QML**
+
+![Buttons example](/doc/tutorials/images/buttons-example.png)
 
 For more information on using C++ classes from QML, see the article about exposing attributes of {cpp} types to QML in the
-https://doc.qt.io/qt-5/qtqml-cppintegration-exposecppattributes.html[Qt documentation].
+[Qt documentation](https://doc.qt.io/qt-5/qtqml-cppintegration-exposecppattributes.html).
