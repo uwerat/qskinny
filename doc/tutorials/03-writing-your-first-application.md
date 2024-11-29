@@ -1,14 +1,8 @@
----
-title: 3. Writing your first application
-layout: docs
----
+# Tutorials {#tutorials}
 
-:doctitle: 3. Writing your first application
-:notitle:
+## Writing your first application
 
-== Writing your first application
-
-=== Building the QSkinny repository
+### Building the QSkinny repository
 
 In this chapter we will write a simple QSkinny application on Linux from scratch in C++ with Qt6.
 As a prerequisite, a supported Qt6 version should be available.
@@ -20,39 +14,35 @@ Optional packages for the virtual keyboard are `libhunspell-dev libimepinyin-dev
 
 Then we can build and install QSkinny to `/opt/qskinny` with the following commands:
 
-[source,shell]
-....
+```shell
 $ git clone https://github.com/uwerat/qskinny.git # clone
 $ cd qskinny
 $ mkdir build && cd build
 $ cmake ..
 $ cmake --build .
 $ sudo cmake --install . --prefix "/opt/qskinny"
-....
-
+```
 
 Considering that you want to use a specific Qt version that is installed below "/path/to/qt"
 you have 2 options:
 
-[source,shell]
-....
+```shell
 $ cmake .. -DCMAKE_PREFIX_PATH=/path/to/qt
-....
+```
 
 or
 
-[source,shell]
-....
+```shell
 $ /path/to/qt/bin/qt-cmake ..
-....
+```
 
-=== Compiling our first app
+### Compiling our first app
 
-As a next step, we need to write our app. Let's start with a simple `main.cpp` file in a directory `myapp`:
+As a next step, we need to write our app. Let’s start with a simple `main.cpp` file in a directory `myapp`:
 
-.main.cpp
-[source]
-....
+**main.cpp**
+
+```
 #include <QskWindow.h>
 #include <QGuiApplication>
 
@@ -65,14 +55,14 @@ int main( int argc, char* argv[] )
 
     return app.exec();
 }
-....
+```
 
 For now this will just create an empty window (the `QskWindow`) without any controls.
 Next, we need to create a `CMakeLists.txt` file in our `myapp` directory.
 
-.CMakeLists.txt
-[source,cmake]
-....
+**CMakeLists.txt**
+
+```cmake
 cmake_minimum_required(VERSION 3.27)
 
 project(myapp
@@ -95,36 +85,34 @@ add_executable(myapp
 target_link_libraries(myapp PRIVATE
     Qt6::Quick
     Qsk::QSkinny)
-....
+```
 
 Now we can compile our app:
 
-[source,shell]
-....
+```shell
 $ cd myapp
 $ mkdir build && cd build
 $ cmake ../ && make
-....
+```
 
 When running myapp it needs to find the skin plugins. Setting QT_PLUGIN_PATH is one
 option ( see https://doc.qt.io/qt/deployment-plugins.html ):
 
-[source,shell]
-....
+```shell
 $ QT_PLUGIN_PATH=/opt/qskinny/plugins ./myapp
-....
+```
 
 This should show just an empty window.
 
-=== Adding UI controls
+### Adding UI controls
 
 Now that we have our app running, we can add some UI controls to it by extending the `main.cpp` file we created earlier.
 We will add some additional include directives, and then create a horizontal layout containing two push buttons.
 The layout with the two buttons will be shown in the window. Below is the complete updated source file:
 
-.main.cpp
-[source, cpp]
-....
+**main.cpp**
+
+```cpp
 #include <QskWindow.h>
 #include <QskLinearBox.h>
 #include <QskPushButton.h>
@@ -153,12 +141,12 @@ int main( int argc, char* argv[] )
 
     return app.exec();
 }
-....
+```
 
 Now the app is displaying the two buttons:
 
-image::/doc/tutorials/images/writing-first-application.png[An app showing two buttons]
+![An app showing two buttons](/doc/tutorials/images/writing-first-application.png)
 
-That's it; you just created a QSkinny application from scratch.
+That’s it; you just created a QSkinny application from scratch.
 
 For information on how the controls and layouts above behave, see the next chapters.

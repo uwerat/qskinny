@@ -943,6 +943,7 @@ WARN_LOGFILE           = Doxygen.log
 INPUT                  = . \
                          classes \
                          ../src \
+                         tutorials \
                          ../README.md
 
 # This tag can be used to specify the character encoding of the source files

@@ -1,26 +1,19 @@
----
-title: 9. Writing own controls
-layout: docs
----
+# Tutorials {#tutorials}
 
-:doctitle: 9. Writing own controls
-:notitle:
-
-== Writing own controls
+## Writing own controls
 
 Writing own controls is either done by subclassing or compositing an
 existing displayable control like `QskTextLabel`, or by writing a
 completely new class including a skinlet, which is typically derived
 directly from `QskControl`.
 
-=== Subclassing existing controls
+### Subclassing existing controls
 
 Let’s say an app is displaying a text label with a specific style at
 several different places, then it makes sense to subclass `QskTextLabel`
 and set the needed properties like font size etc. in the derived class:
 
-[source]
-....
+```
 class TextLabel : public QskTextLabel
 {
 
@@ -33,15 +26,16 @@ public:
         setBackgroundColor( Qt::cyan );
     }
 };
-....
+```
 
-.A subclassed control with local skin hints
-image::/doc/tutorials/images/subclassing-existing-controls.png[Subclassing existing controls]
+**A subclassed control with local skin hints**
+
+![Subclassing existing controls](/doc/tutorials/images/subclassing-existing-controls.png)
 
 Then there is no need to set the margins and background color for every
 instance of the custom text label.
 
-=== Making custom classes skinnable
+### Making custom classes skinnable
 
 To make custom classes like the `TextLabel` class above skinnable, we
 need to define our own subcontrols and style them in our skin, in
@@ -51,8 +45,7 @@ generic `QskTextLabel`, we need to define our own subcontrols and
 substitute the generic subcontrols for them in an overriden method
 `effectiveSubcontrol()`:
 
-[source]
-....
+```
 class TextLabel : public QskTextLabel
 {
     QSK_SUBCONTROLS( Panel )
@@ -70,7 +63,7 @@ class TextLabel : public QskTextLabel
     }
     ...
 }
-....
+```
 
 When the skinlet is drawing a `TextLabel` instance, it queries it for
 its subcontrols through `effectiveSubcontrol()` in order to style them
@@ -79,8 +72,7 @@ properly. Now that we substitute the `QskTextLabel::Panel` for our
 need to set the local skin hints in the constructor of `TextLabel`
 anymore.
 
-[source]
-....
+```
 class MySkin : public QskSkin
 {
 
@@ -91,10 +83,11 @@ public:
         setMargins( TextLabel::Panel | QskAspect::Padding, 15 );
     }
 };
-....
+```
 
-.A subclassed control with skin hints defined in the skin
-image::/doc/tutorials/images/subclassing-existing-controls.png[Subclassing existing controls]
+**A subclassed control with skin hints defined in the skin**
+
+![Subclassing existing controls](/doc/tutorials/images/subclassing-existing-controls.png)
 
 The styling described above has the same effect as in the simpler
 example, but now the `TextLabel` control can be given a different style
@@ -104,14 +97,13 @@ In our class we only set a custom skin hint for the panel, but as
 `QskTextLabel` also has a `Text` subcontrol, we could of course also
 define our own one for the text.
 
-=== Compositing controls
+### Compositing controls
 
 Controls can also be composited; e.g. when writing a class with a text
 label on the left and a graphic on the right side, it could look like
 this:
 
-[source]
-....
+```
 class TextAndGraphic : public QskLinearBox
 {
 
@@ -139,34 +131,33 @@ private:
     QskTextLabel* m_textLabel;
     QskGraphicLabel* m_graphicLabel;
 };
-....
+```
 
 This allows for easy instantiation of the class with a text and a file
 name for the graphic:
 
-[source]
-....
+```
 auto* textAndGraphic = new TextAndGraphic( "Text", "cloud" );
-....
+```
 
-.A composited control
-image::/doc/tutorials/images/compositing-controls.png[Compositing controls]
+**A composited control**
 
-=== Writing controls with a skinlet
+![Compositing controls](/doc/tutorials/images/compositing-controls.png)
+
+### Writing controls with a skinlet
 
 QSkinny already comes with controls like text labels, list views,
 buttons etc. When there is a completely new control to be written that
 cannot be subclassed or composited, the skinlet for the class needs to
 be implemented as well.
 
-==== Writing the class
+#### Writing the class
 
 For demo purposes we create a class called `CustomShape` which shall
 display an outer circle and an inner circle, with minimal API. There are
 only 2 subcontrols that will be painted in the skinlet later:
 
-[source]
-....
+```
 class CustomShape : public QskControl
 {
     Q_OBJECT
@@ -178,9 +169,9 @@ public:
     {
     }
 };
-....
+```
 
-==== Writing the skinlet
+#### Writing the skinlet
 
 Writing the skinlet is the hard part of the work. We need the following
 things in our skinlet:
@@ -191,10 +182,10 @@ from the control, so since in our case we have a subcontrol `Panel` and
 `InnerShapeRole`. The node roles are often set in the constructor of the
 class.
 
-IMPORTANT: The constructor of the skinlet needs to be invokable!
+**❗ IMPORTANT**\
+The constructor of the skinlet needs to be invokable!
 
-[source]
-....
+```
 class CustomShapeSkinlet : public QskSkinlet
 {
     Q_GADGET
@@ -209,7 +200,7 @@ public:
     {
         setNodeRoles( { PanelRole, InnerShapeRole } );
     }
-....
+```
 
 * The enclosing rectangle for each subcontrol. This can be just the
 `contentsRect`, but we can define it more accurately if we want by
@@ -217,8 +208,7 @@ applying some metrics. If the code below is hard to understand, the
 important thing to take away from it is that different subcontrols can
 have different enclosing rectangles.
 
-[source]
-....
+```
     QRectF subControlRect( const QskSkinnable* skinnable, const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const override
     {
         const auto* customShape = static_cast< const CustomShape* >( skinnable );
@@ -234,7 +224,7 @@ have different enclosing rectangles.
         }
 
         return QskSkinlet::subControlRect( skinnable, contentsRect, subControl );
-....
+```
 
 * The code to actually draw the nodes. In our case of an outer circle
 and an inner circle, the code for each subcontrol / node role is quite
@@ -243,8 +233,7 @@ similar. The method `updateSubNode()`, which is reimplemented from
 might not be straight forward to understand, the gist of it is that for
 each node role we draw a circle by creating a `BoxNode`.
 
-[source]
-....
+```
 protected:
     QSGNode* updateSubNode( const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const override
     {
@@ -279,16 +268,15 @@ protected:
         return QskSkinlet::updateSubNode( skinnable, nodeRole, node );
     }
 };
-....
+```
 
-==== Connecting class and skinlet
+#### Connecting class and skinlet
 
 In our skin, we need to declare that the skinlet above will be
 responsible of drawing our control via `declareSkinlet`. Also, we can
 style our control with skin hints:
 
-[source]
-....
+```
 class MySkin : public QskSkin
 {
 
@@ -302,7 +290,7 @@ public:
        setGradient( CustomShape::InnerShape, Qt::magenta );
     }
 };
-....
+```
 
 SkinFactories etc. are again omitted here. Finally we can draw our
 control; the effort might seem excessive, but we wrote the control with
@@ -310,5 +298,6 @@ all capabilities of styling; in addition, the control will react to size
 changes properly. A simpler version with hardcoded values for margins,
 colors etc. can be written with less code.
 
-.A class with an own skinlet
-image::/doc/tutorials/images/control-with-skinlet.png[Control with skinlet]
+**A class with an own skinlet**
+
+![Control with skinlet](/doc/tutorials/images/control-with-skinlet.png)

@@ -1,33 +1,27 @@
----
-title: 5. Skins
-layout: docs
----
+# Tutorials {#tutorials}
 
-:doctitle: 5. Skins
-:notitle:
-
-== Skins, Skin hints and Skinlets
+## Skins, Skin hints and Skinlets
 
 Skins, Skin hints and Skinlets allow the user to define how specific
 controls looke like. Controls are drawn on the screen by the
 skinlet, and therefore it will read information from both the control
 itself as well as read the skin hints from the skin:
 
-.Skinlets query the control and the skin
-image::/doc/tutorials/images/skins-1.png[Styling controls]
+**Skinlets query the control and the skin**
+
+![Styling controls](/doc/tutorials/images/skins-1.png)
 
 For instance, a button skinlet will read the margins from the skin and
 the text to render from the button.
 
-=== Skins
+### Skins
 
 Skins are a way to define a look and feel for a whole set of UI
 controls, e.g. a night time vs. day time skin, skins for different
 brands or an Android Material skin. They contain all kinds of properties
 (i.e. skin hints) like colors, margins, fonts and more.
 
-[source]
-....
+```
 class MySkin : public QskSkin
 {
 
@@ -37,19 +31,21 @@ public:
         // here define the skin with skin hints
     }
 };
-....
+```
 
 The example below shows different implementations for a push button: One
 has a traditional desktop skin, the other is a flat button with a skin
 often found in mobile devices.
 
-.desktop style button
-image::/doc/tutorials/images/skinlets-button-1.png[desktop style button]
+**desktop style button**
 
-.flat button
-image::/doc/tutorials/images/skinlets-button-2.png[flat button]
+![desktop style button](/doc/tutorials/images/skinlets-button-1.png)
 
-=== Skin hints
+**flat button**
+
+![flat button](/doc/tutorials/images/skinlets-button-2.png)
+
+### Skin hints
 
 Each instance of a button will have unique properties like its text or
 icon file name, but all buttons will have common properties like the
@@ -69,8 +65,7 @@ Extending the `MySkin` example from above, here is an example of some
 skin hints for a push button, setting the padding to 10 pixels, the
 background color to magenta and the text color to black:
 
-[source]
-....
+```
 class MySkin : public QskSkin
 {
 
@@ -82,10 +77,11 @@ public:
         setColor( QskPushButton::Text, Qt::black );
     }
 };
-....
+```
 
-.A button styled with skin hints
-image::/doc/tutorials/images/skin-hints.png[Button with skin hints]
+**A button styled with skin hints**
+
+![Button with skin hints](/doc/tutorials/images/skin-hints.png)
 
 When writing a new skin, a developer needs to know which hints to set
 for which control. This usually depends on the control itself; however,
@@ -93,31 +89,30 @@ since usually controls are broken down into the three primitives box,
 text and graphic, the methods for rendering each of them will take the
 following skin hints into account:
 
-[cols=",",options="header",]
 |=======================================================================
 |Primitive |Skin hint from QskAspect
-|Text |`Alignment` +
-`Color` +
-`TextColor` +
-`StyleColor` +
-`LinkColor` +
-`Style` +
+|Text |`Alignment`\
+`Color`\
+`TextColor`\
+`StyleColor`\
+`LinkColor`\
+`Style`\
 `FontRole`
 
-|Graphic |`Alignment` +
+|Graphic |`Alignment`\
 `GraphicRole`
 
-|Box | `Margin` +
-`Metric` \| `Border` +
-`Color` \| `Border` +
-`Color` +
+|Box | `Margin`\
+`Metric` \| `Border`\
+`Color` \| `Border`\
+`Color`\
 `Metric` \| `Shape`
 |=======================================================================
 
 Some special cases exist where elements other than the primitives above
 are used.
 
-==== States and animations
+#### States and animations
 
 Skin hints can also depend on the state a control is in: Buttons for
 instance can be in a `Pressed` or `Hovered` state. For such cases, skin
@@ -135,8 +130,7 @@ button, there will be a smooth animation from magenta to cyan
 interpolating between the colors. Without the `setAnimation()` call, the
 button would just switch to magenta when hovered right away.
 
-[source]
-....
+```
 class MySkin : public QskSkin
 {
 
@@ -151,39 +145,41 @@ public:
         setAnimation( QskPushButton::Panel | QskAspect::Color, 1000 );
     }
 };
-....
+```
 
-.button in normal state
-image::/doc/tutorials/images/skin-hints-states-1.png[button in normal state]
+**button in normal state**
 
-.button in hovered state
-image::/doc/tutorials/images/skin-hints-states-2.png[button in hovered state]
+![button in normal state](/doc/tutorials/images/skin-hints-states-1.png)
 
-==== Local skin hints
+**button in hovered state**
+
+![button in hovered state](/doc/tutorials/images/skin-hints-states-2.png)
+
+#### Local skin hints
 
 It is possible to set local skin hints on specific controls to override
 skin-wide settings:
 
-[source]
-....
+```
 auto* label1 = new QskTextLabel( "control 1" );
 label1->setMargins( 20 );
 label1->setBackgroundColor( Qt::blue );
-....
+```
 
 In general it is recommended to set the skin hints in the skin rather
 than on the control locally, in order to separate the style from the
 implementation, and to allow switching between skins. How to write
 controls that are themable is explained in the section about
-link:Writing-own-controls.html[writing own controls].
+[writing own controls](Writing-own-controls.html).
 
 Taking animations and local skin hints into account, the architecture
 diagram now looks like this:
 
-.Skinlets can also read from local skinlets and animators
-image::/doc/tutorials/images/skins-2.png[Animators and local skin hints]
+**Skinlets can also read from local skinlets and animators**
 
-=== Skinlets
+![Animators and local skin hints](/doc/tutorials/images/skins-2.png)
+
+### Skinlets
 
 A skinlet is in charge of drawing a control on the screen, similar to a
 Delegate in QML. It will read all the hints it needs from either the
@@ -204,19 +200,20 @@ QSkinny already contains implementations of many common controls like
 text labels, buttons and so on. However, some custom controls might
 need to be written from scratch, including the skinlet; for an
 explanation on how to do this, see the example of
-link:Writing-own-controls.html[writing own controls].
+[writing own controls](Writing-own-controls.html).
 
 For a closer look at how the skinlet draws the controls in the scene
-graph, see link:scene-graph.html[scene graph representations of controls].
+graph, see [scene graph representations of controls](scene-graph.html).
 
 Of course each app has different controls and therefore there are also
 different skinlets, so a more complete version of the architecture
 diagram looks like this:
 
-.There is one skinlet for each atomic control
-image::/doc/tutorials/images/skins-3.png[Animators and local skin hints]
+**There is one skinlet for each atomic control**
 
-=== Skin factories and switching between skins
+![Animators and local skin hints](/doc/tutorials/images/skins-3.png)
+
+### Skin factories and switching between skins
 
 Skins are usually not created by the user directly, but by a skin
 factory. Such a factory keeps track of the skins registered in the
@@ -226,8 +223,7 @@ during application lifetime.
 When having two skins called `MySkin` and `OtherSkin` in an app, the
 corresponding skin factory might look like this:
 
-[source]
-....
+```
 class MySkinFactory : public QskSkinFactory
 {
 
@@ -250,13 +246,12 @@ public:
         return nullptr;
     }
 };
-....
+```
 
 That skin factory has to be registered during app start; it is also a
 good idea to set a default skin right away:
 
-[source]
-....
+```
 int main( int argc, char* argv[] )
 {
     auto* skinFactory = new MySkinFactory;
@@ -272,14 +267,13 @@ int main( int argc, char* argv[] )
 
     return app.exec();
 }
-....
+```
 
 Now we can define the `OtherSkin` and define different skin hints for
 e.g. push buttons. Here we define the background color and padding to be
 different; also we configure buttons to have a blue border:
 
-[source]
-....
+```
 class OtherSkin : public QskSkin
 {
 
@@ -292,14 +286,15 @@ public:
         setBoxBorderMetrics( QskPushButton::Panel, 1 );
     }
 };
-....
+```
 
 Switching between skins will change the look of `QskPushButton`
 instances:
 
-.button in `MySkin` (as above)
-image::/doc/tutorials/images/skin-hints-states-1.png[button in normal state]
+**button in `MySkin` (as above)**
 
-.button in `OtherSkin`
-image::/doc/tutorials/images/skin-factory.png[Styling controls]
+![button in normal state](/doc/tutorials/images/skin-hints-states-1.png)
 
+**button in `OtherSkin`**
+
+![Styling controls](/doc/tutorials/images/skin-factory.png)

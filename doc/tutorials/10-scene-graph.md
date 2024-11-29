@@ -1,12 +1,6 @@
----
-title: 9. Scene graph representations of controls
-layout: docs
----
+# Tutorials {#tutorials}
 
-:doctitle: 9. Scene graph representations of controls
-:notitle:
-
-== QSkinny - Scene graph representations of controls
+## Scene graph representations of controls
 
 Each control that is displayed on the screen consists of one or more
 scene graph nodes. Those nodes can be either basic shapes like
@@ -15,19 +9,19 @@ with transform nodes), opacity or clipping.
 
 The source code below shows a minimal example displaying a button:
 
-[source]
-....
+```
 auto* button = new QskPushButton( "button" );
 
 QskWindow window;
 window.addItem( button );
 window.show();
-....
+```
 
 For this example, the scene graph will contain the following nodes:
 
-.Scene graph representation of a button
-image::/doc/tutorials/images/skins-sg-1.png[Scene graph nodes for a button]
+**Scene graph representation of a button**
+
+![Scene graph nodes for a button](/doc/tutorials/images/skins-sg-1.png)
 
 The top two nodes (root and Quick root item) are created for every
 QtQuick application. The button itself consists of 5 nodes in our case:
@@ -38,7 +32,7 @@ another geometry node for displaying the text (`text node`).
 
 For an explanation of the different scene graph node types, see the Qt
 documentation of
-https://doc.qt.io/qt-5/qsgnode.html#NodeType-enum[QSGNode::NodeType].
+[QSGNode::NodeType](https://doc.qt.io/qt-5/qsgnode.html#NodeType-enum).
 
 The example above is the simplest form of a button, in practice there
 might be more nodes per control, for instance an opacity node or a clip
@@ -47,20 +41,20 @@ node.
 Now we add more elements to the UI by putting the button inside a layout
 (`QskBox`):
 
-[source]
-....
+```
 auto* box = new QskBox;
 auto* button = new QskPushButton( "button", box );
 
 QskWindow window;
 window.addItem( box );
 window.show();
-....
+```
 
 Then the scene graph has the following structure:
 
-.Scene graph representation of a button inside a box
-image::/doc/tutorials/images/skins-sg-2.png[Scene graph nodes for a button in a box]
+**Scene graph representation of a button inside a box**
+
+![Scene graph nodes for a button in a box](/doc/tutorials/images/skins-sg-2.png)
 
 Here we can see that since the box is a parent of the button, the `box
 node` is also a parent of the `button node` in the scene graph. Also, the
