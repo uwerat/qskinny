@@ -192,6 +192,11 @@ qreal QskSlider::origin() const
     return minimum();
 }
 
+bool QskSlider::hasOrigin() const
+{
+    return m_data->hasOrigin;
+}
+
 QskAspect::Variation QskSlider::effectiveVariation() const
 {
     return static_cast< QskAspect::Variation >( m_data->orientation );

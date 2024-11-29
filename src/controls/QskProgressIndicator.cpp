@@ -189,6 +189,11 @@ qreal QskProgressIndicator::origin() const
     return minimum();
 }
 
+bool QskProgressIndicator::hasOrigin() const
+{
+    return m_data->hasOrigin;
+}
+
 void QskProgressIndicator::setValue( qreal value )
 {
     if ( isComponentComplete() )

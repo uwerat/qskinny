@@ -44,6 +44,7 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
 
     void resetOrigin();
     qreal origin() const;
+    bool hasOrigin() const;
 
     void setTracking( bool );
     bool isTracking() const;
