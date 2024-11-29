@@ -511,9 +511,15 @@ void Editor::setupProgressRing()
 {
     using Q = QskProgressRing;
 
+    setArcMetrics( Q::Groove, 90, -360, 4_dp );
+    setGradient( Q::Groove, m_pal.surfaceContainerHighest );
+    setGradient( Q::Groove | Q::Disabled, m_pal.onSurface12 );
+
+    setSpacing( Q::Fill, 10 );
     setStrutSize( Q::Fill, { 48_dp, 48_dp } );
-    setGradient( Q::Fill, m_pal.primary );
     setArcMetrics( Q::Fill, 90, -360, 4_dp );
+    setGradient( Q::Fill, m_pal.primary );
+    setGradient( Q::Fill | Q::Disabled, m_pal.onSurface38 );
 }
 
 void Editor::setupRadioBox()
