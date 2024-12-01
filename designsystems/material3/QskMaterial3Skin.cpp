@@ -9,6 +9,7 @@
  */
 
 #include "QskMaterial3Skin.h"
+#include "QskMaterial3ProgressBarSkinlet.h"
 #include "QskMaterial3SliderSkinlet.h"
 
 #include <QskSkinHintTableEditor.h>
@@ -487,20 +488,13 @@ void Editor::setupProgressBar()
     using A = QskAspect;
     using Q = QskProgressBar;
 
-    auto size = 4_dp;
-
     for ( auto subControl : { Q::Groove, Q::Fill } )
     {
-        setMetric( subControl | A::Size, size );
-        setPadding( subControl, 0 );
-
-        setBoxShape( subControl, 0 );
-        setBoxBorderMetrics( subControl, 0 );
+        setBoxShape( subControl, { 100, Qt::RelativeSize } );
+        setMetric( subControl | A::Size, 4_dp );
     }
 
-    setMetric( Q::Groove | A::Size, size );
     setGradient( Q::Groove, m_pal.surfaceContainerHighest );
-
     setGradient( Q::Groove | Q::Disabled, m_pal.onSurface12 );
 
     setGradient( Q::Fill, m_pal.primary );
@@ -1601,6 +1595,7 @@ qreal QskMaterial3Theme::stateOpacity( int state ) const
 QskMaterial3Skin::QskMaterial3Skin( QObject* parent )
     : Inherited( parent )
 {
+    declareSkinlet< QskProgressBar, QskMaterial3ProgressBarSkinlet >();
     declareSkinlet< QskSlider, QskMaterial3SliderSkinlet >();
 }
 

@@ -8,12 +8,14 @@ list(APPEND HEADERS
 )
 
 list(APPEND PRIVATE_HEADERS
+    QskMaterial3ProgressBarSkinlet.h
     QskMaterial3SliderSkinlet.h
 )
 
 list(APPEND SOURCES
     QskMaterial3Skin.cpp
     QskMaterial3SkinFactory.cpp
+    QskMaterial3ProgressBarSkinlet.cpp
     QskMaterial3SliderSkinlet.cpp
 )
 
