@@ -3,50 +3,50 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskTextInputSkinlet.h"
-#include "QskTextInput.h"
+#include "QskTextFieldSkinlet.h"
+#include "QskTextField.h"
 
-QskTextInputSkinlet::QskTextInputSkinlet( QskSkin* skin )
+QskTextFieldSkinlet::QskTextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
     setNodeRoles( { PanelRole } );
 }
 
-QskTextInputSkinlet::~QskTextInputSkinlet()
+QskTextFieldSkinlet::~QskTextFieldSkinlet()
 {
 }
 
-QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
+QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    if ( subControl == QskTextInput::Panel )
+    if ( subControl == QskTextField::Panel )
     {
         return contentsRect;
     }
-    else if ( subControl == QskTextInput::Text )
+    else if ( subControl == QskTextField::Text )
     {
-        return skinnable->subControlContentsRect( contentsRect, QskTextInput::Panel );
+        return skinnable->subControlContentsRect( contentsRect, QskTextField::Panel );
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QSGNode* QskTextInputSkinlet::updateSubNode(
+QSGNode* QskTextFieldSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
     switch ( nodeRole )
     {
         case PanelRole:
         {
-            const auto input = static_cast< const QskTextInput* >( skinnable );
+            const auto input = static_cast< const QskTextField* >( skinnable );
             if ( !input->hasPanel() )
                 return nullptr;
 
-            return updateBoxNode( skinnable, node, QskTextInput::Panel );
+            return updateBoxNode( skinnable, node, QskTextField::Panel );
         }
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-#include "moc_QskTextInputSkinlet.cpp"
+#include "moc_QskTextFieldSkinlet.cpp"

@@ -78,7 +78,7 @@
 #include <QskTabBar.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
-#include <QskTextInput.h>
+#include <QskTextField.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -296,8 +296,8 @@ namespace
         void setupTabViewMetrics();
         void setupTabViewColors( QskAspect::Section, const QskFluent2Theme& );
 
-        void setupTextInputMetrics();
-        void setupTextInputColors( QskAspect::Section, const QskFluent2Theme& );
+        void setupTextFieldMetrics();
+        void setupTextFieldColors( QskAspect::Section, const QskFluent2Theme& );
 
         void setupTextLabelMetrics();
         void setupTextLabelColors( QskAspect::Section, const QskFluent2Theme& );
@@ -355,7 +355,7 @@ void Editor::setupMetrics()
     setupTabButtonMetrics();
     setupTabBarMetrics();
     setupTabViewMetrics();
-    setupTextInputMetrics();
+    setupTextFieldMetrics();
     setupTextLabelMetrics();
     setupVirtualKeyboardMetrics();
 }
@@ -394,7 +394,7 @@ void Editor::setupColors( QskAspect::Section section, const QskFluent2Theme& the
     setupTabButtonColors( section, theme );
     setupTabBarColors( section, theme );
     setupTabViewColors( section, theme );
-    setupTextInputColors( section, theme );
+    setupTextFieldColors( section, theme );
     setupTextLabelColors( section, theme );
     setupVirtualKeyboardColors( section, theme );
 };
@@ -1771,9 +1771,9 @@ void Editor::setupTextLabelColors(
     setColor( Q::Text | section, pal.fillColor.text.primary );
 }
 
-void Editor::setupTextInputMetrics()
+void Editor::setupTextFieldMetrics()
 {
-    using Q = QskTextInput;
+    using Q = QskTextField;
 
     setStrutSize( Q::Panel, { -1, 30_px } );
     setPadding( Q::Panel, { 11_px, 0, 11_px, 0 } );
@@ -1788,10 +1788,10 @@ void Editor::setupTextInputMetrics()
     setFontRole( Q::Text, Fluent2::Body );
 }
 
-void Editor::setupTextInputColors(
+void Editor::setupTextFieldColors(
     QskAspect::Section section, const QskFluent2Theme& theme )
 {
-    using Q = QskTextInput;
+    using Q = QskTextField;
     using A = QskAspect;
 
     const auto& pal = theme.palette;

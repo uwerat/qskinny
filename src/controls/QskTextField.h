@@ -3,8 +3,8 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_TEXT_INPUT_H
-#define QSK_TEXT_INPUT_H
+#ifndef QSK_TEXT_FIELD_H
+#define QSK_TEXT_FIELD_H
 
 #include "QskControl.h"
 #include "QskTextOptions.h"
@@ -12,7 +12,7 @@
 class QValidator;
 class QskFontRole;
 
-class QSK_EXPORT QskTextInput : public QskControl
+class QSK_EXPORT QskTextField : public QskControl
 {
     Q_OBJECT
 
@@ -83,10 +83,10 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     Q_ENUM( EchoMode )
 
-    QskTextInput( QQuickItem* parent = nullptr );
-    QskTextInput( const QString& text, QQuickItem* parent = nullptr );
+    QskTextField( QQuickItem* parent = nullptr );
+    QskTextField( const QString& text, QQuickItem* parent = nullptr );
 
-    ~QskTextInput() override;
+    ~QskTextField() override;
 
     void setupFrom( const QQuickItem* );
 
@@ -219,7 +219,7 @@ class QSK_EXPORT QskTextInput : public QskControl
     std::unique_ptr< PrivateData > m_data;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( QskTextInput::ActivationModes )
-Q_DECLARE_METATYPE( QskTextInput::ActivationModes )
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskTextField::ActivationModes )
+Q_DECLARE_METATYPE( QskTextField::ActivationModes )
 
 #endif

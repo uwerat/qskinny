@@ -42,7 +42,7 @@
 #include <QskTabBar.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
-#include <QskTextInput.h>
+#include <QskTextField.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -141,7 +141,7 @@ namespace
         Q_INVOKABLE void setupTabButton();
         Q_INVOKABLE void setupTabBar();
         Q_INVOKABLE void setupTabView();
-        Q_INVOKABLE void setupTextInput();
+        Q_INVOKABLE void setupTextField();
         Q_INVOKABLE void setupTextLabel();
 
         QskGraphic symbol( const char* name ) const
@@ -382,9 +382,9 @@ void Editor::setupTextLabel()
     setBoxBorderColors( Q::Panel, QskRgb::lighter( m_pal.outline, 108 ) );
 }
 
-void Editor::setupTextInput()
+void Editor::setupTextField()
 {
-    using Q = QskTextInput;
+    using Q = QskTextField;
     using A = QskAspect;
     using P = QPalette;
 

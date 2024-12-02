@@ -7,7 +7,7 @@
 
 #include <QskGridBox.h>
 #include <QskSlider.h>
-#include <QskTextInput.h>
+#include <QskTextField.h>
 #include <QskSpinBox.h>
 
 namespace
@@ -70,21 +70,21 @@ namespace
             setSpacing( 20 );
 
             {
-                new QskTextInput( "Edit Me", this );
+                new QskTextField( "Edit Me", this );
             }
 
             {
-                auto input = new QskTextInput( "Only Read Me", this );
-                input->setReadOnly( true );
-                input->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
+                auto textField = new QskTextField( "Only Read Me", this );
+                textField->setReadOnly( true );
+                textField->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
             }
 
             {
-                auto input = new QskTextInput( "12345", this );
-                input->setMaxLength( 5 );
-                input->setEchoMode( QskTextInput::PasswordEchoOnEdit );
+                auto textField = new QskTextField( "12345", this );
+                textField->setMaxLength( 5 );
+                textField->setEchoMode( QskTextField::PasswordEchoOnEdit );
 #if 1
-                input->setFixedWidth( 80 );
+                textField->setFixedWidth( 80 );
 #endif
             }
         }
