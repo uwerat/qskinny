@@ -7,6 +7,7 @@
 #define QSK_TEXT_INPUT_H
 
 #include "QskControl.h"
+#include "QskTextOptions.h"
 
 class QValidator;
 class QskFontRole;
@@ -26,7 +27,10 @@ class QSK_EXPORT QskTextInput : public QskControl
     Q_PROPERTY( QFont font READ font )
 
     Q_PROPERTY( Qt::Alignment alignment READ alignment
-        WRITE setAlignment NOTIFY alignmentChanged )
+        WRITE setAlignment RESET resetAlignment NOTIFY alignmentChanged )
+
+    Q_PROPERTY( QskTextOptions::WrapMode wrapMode READ wrapMode
+        WRITE setWrapMode NOTIFY wrapModeChanged )
 
     Q_PROPERTY( ActivationModes activationModes READ activationModes
         WRITE setActivationModes NOTIFY activationModesChanged )
@@ -102,6 +106,9 @@ class QSK_EXPORT QskTextInput : public QskControl
     void resetAlignment();
     Qt::Alignment alignment() const;
 
+    void setWrapMode( QskTextOptions::WrapMode );
+    QskTextOptions::WrapMode wrapMode() const;
+
     void setActivationModes( ActivationModes );
     ActivationModes activationModes() const;
 
@@ -172,9 +179,9 @@ class QSK_EXPORT QskTextInput : public QskControl
     void textEdited( const QString& );
     void descriptionChanged( const QString& );
 
-    void textOptionsChanged();
     void fontRoleChanged();
     void alignmentChanged();
+    void wrapModeChanged( QskTextOptions::WrapMode );
 
     void overwriteModeChanged( bool );
     void maximumLengthChanged( int );

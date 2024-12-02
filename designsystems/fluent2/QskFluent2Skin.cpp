@@ -30,8 +30,6 @@
 
       - Indicator subcontrol might be better than using the border of the selection box
       - cell padding unclear
-
-    - using qskDpToPixels ?
  */
 
 /*
@@ -134,14 +132,17 @@ namespace Fluent2
 
 namespace
 {
-    Q_DECL_UNUSED inline double operator ""_px( long double value )
+    /*
+        mapping between px and logical coordinates
+     */
+    inline constexpr double operator ""_px( long double value )
     {
-        return qskPxToPixels( static_cast< qreal >( value ) );
+        return static_cast< double >( value );
     }
 
-    Q_DECL_UNUSED inline double operator ""_px( unsigned long long value )
+    inline constexpr double operator ""_px( unsigned long long value )
     {
-        return qskPxToPixels( value );
+        return static_cast< double >( value );
     }
 
     inline constexpr QRgb rgbGray( int value, qreal opacity = 1.0 )
@@ -1007,7 +1008,7 @@ void Editor::setupPushButtonColors(
         const auto text = Q::Text | section | variation;
         const auto icon = Q::Icon | section | variation;
 
-        for ( const auto state : { QskAspect::NoState, Q::Hovered, Q::Pressed, Q::Disabled } )
+        for ( const auto state : { QskAspect::NoState, Q::Hovered, Q::Pressed, Q::Checked, Q::Disabled } )
         {
             QRgb panelColor, borderColor1, borderColor2, textColor;
             int graphicRole;
@@ -1022,7 +1023,7 @@ void Editor::setupPushButtonColors(
                     textColor = pal.fillColor.textOnAccent.primary;
                     graphicRole = W::GraphicRoleFillColorTextOnAccentPrimary;
                 }
-                else if ( state == Q::Pressed )
+                else if ( state == Q::Pressed || state == Q::Checked )
                 {
                     panelColor = pal.fillColor.accent.tertiary;
                     borderColor1 = borderColor2 = pal.strokeColor.control.onAccentDefault;
@@ -1055,7 +1056,7 @@ void Editor::setupPushButtonColors(
                     textColor = pal.fillColor.text.primary;
                     graphicRole = W::GraphicRoleFillColorTextPrimary;
                 }
-                else if ( state == Q::Pressed )
+                else if ( state == Q::Pressed || state == Q::Checked )
                 {
                     panelColor = pal.fillColor.control.tertiary;
                     borderColor1 = borderColor2 = pal.strokeColor.control.defaultColor;
@@ -1428,6 +1429,7 @@ void Editor::setupSliderMetrics()
     using A = QskAspect;
 
     const qreal extent = 22_px;
+
     setMetric( Q::Panel | A::Size, extent );
     setBoxShape( Q::Panel, 0 );
     setBoxBorderMetrics( Q::Panel, 0 );
@@ -1435,22 +1437,29 @@ void Editor::setupSliderMetrics()
     setPadding( Q::Panel | A::Horizontal, QskMargins( 0.5 * extent, 0 ) );
     setPadding( Q::Panel | A::Vertical, QskMargins( 0, 0.5 * extent ) );
 
-    setMetric( Q::Groove | A::Size, 4_px );
-    setBoxShape( Q::Groove, 100, Qt::RelativeSize );
+    for ( auto subControl : { Q::Groove, Q::Fill } )
+    {
+        setMetric( subControl | A::Size, 4_px );
+        setBoxShape( subControl, 100, Qt::RelativeSize );
+    }
 
-    setMetric( Q::Fill | A::Size, 4_px );
-    setBoxShape( Q::Fill, 100, Qt::RelativeSize );
+    const auto shadowSpread = 1_px;
 
-    setStrutSize( Q::Handle, { 22_px, 22_px } );
+    setStrutSize( Q::Handle, { extent - shadowSpread, extent - shadowSpread } );
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
-    setBoxBorderMetrics( Q::Handle, 1_px );
 
-    setStrutSize( Q::Ripple, { 12_px, 12_px } );
-    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
+    setShadowMetrics( Q::Handle, { shadowSpread, 0.0 } );
 
-    setStrutSize( Q::Ripple | Q::Hovered, { 14_px, 14_px } );
+    setBoxBorderMetrics( Q::Handle, 5_px );
+    setBoxBorderMetrics( Q::Handle | Q::Hovered, 4_px );
+    setBoxBorderMetrics( Q::Handle | Q::Pressed, 6_px );
+    setBoxBorderMetrics( Q::Handle | Q::Disabled, 6_px );
 
-    setStrutSize( Q::Ripple | Q::Pressed, { 10_px, 10_px } );
+    setFlag( Q::Tick | A::Option, Qsk::Maybe );
+    setStrutSize( Q::Tick | A::Horizontal, 1_px, -1 );
+    setStrutSize( Q::Tick | A::Vertical, -1, 1_px );
+
+    setAnimation( Q::Handle | A::Metric | A::Position, 100 );
 }
 
 void Editor::setupSliderColors(
@@ -1461,42 +1470,55 @@ void Editor::setupSliderColors(
 
     const auto& pal = theme.palette;
 
-    {
-        const auto handleColor = pal.fillColor.controlSolid.defaultColor;
+    const auto borderColor = pal.fillColor.controlSolid.defaultColor;
+    setBoxBorderColors( Q::Handle, borderColor );
 
-        setGradient( Q::Handle, handleColor );
-        setBoxBorderGradient( Q::Handle, pal.elevation.circle.border, handleColor );
+    {
+        const auto gradient = pal.elevation.circle.border;
+
+#if 1
+        /*
+            we can't set gradients as shadows - using the color, that
+            lies in the center of the gradient instead. TODO ...
+         */
+        auto shadowColor = QskRgb::interpolated( gradient[0], gradient[1], 0.5 );
+        shadowColor = rgbFlattened( shadowColor, borderColor );
+#endif
+
+        setShadowColor( Q::Handle, rgbFlattened( shadowColor, borderColor ) );
     }
 
-    for ( auto state : { A::NoState, Q::Pressed, Q::Disabled } )
+    for ( auto state : { A::NoState, Q::Hovered, Q::Pressed, Q::Disabled } )
     {
-        QRgb grooveColor, fillColor, rippleColor;
+        QRgb grooveColor, fillColor, handleColor;
 
-        if ( state == A::NoState )
+        if ( state == A::NoState || state == Q::Hovered )
         {
             grooveColor = pal.fillColor.controlStrong.defaultColor;
             fillColor = pal.fillColor.accent.defaultColor;
-            rippleColor = fillColor;
+            handleColor = pal.fillColor.accent.defaultColor;
         }
         else if ( state == Q::Pressed )
         {
             grooveColor = pal.fillColor.controlStrong.defaultColor;
+            handleColor = pal.fillColor.accent.tertiary;
             fillColor = pal.fillColor.accent.defaultColor;
-            rippleColor = pal.fillColor.accent.tertiary;
         }
         else if ( state == Q::Disabled )
         {
             grooveColor = pal.fillColor.controlStrong.disabled;
             fillColor = pal.fillColor.accent.disabled;
-            rippleColor = grooveColor;
+            handleColor = grooveColor;
         }
 
         grooveColor = rgbSolid( grooveColor, pal.background.solid.base );
 
         setGradient( Q::Groove | section | state, grooveColor );
         setGradient( Q::Fill | section | state, fillColor );
-        setGradient( Q::Ripple | section | state, rippleColor );
+        setGradient( Q::Handle | section | state, handleColor );
     }
+
+    setGradient( Q::Tick, pal.fillColor.controlSolid.defaultColor );
 }
 
 void Editor::setupSpinBoxMetrics()
@@ -2068,10 +2090,9 @@ void QskFluent2Skin::initHints()
     addTheme( QskAspect::Footer, themeHeader );
 }
 
-static inline QFont createFont( int size, int lineHeight, QFont::Weight weight )
+static inline QFont createFont( qreal size, int lineHeight, QFont::Weight weight )
 {
     Q_UNUSED( lineHeight ); // TODO ...
-    const int pixelSize = qRound( qskPxToPixels( size ) );
 
     QFont font( QStringLiteral( "Segoe UI" ), -1, weight );
 
@@ -2087,7 +2108,8 @@ static inline QFont createFont( int size, int lineHeight, QFont::Weight weight )
         checkFont = false;
     }
 
-    font.setPixelSize( pixelSize );
+    // px: 1/96 inch, pt: 1/72 inch
+    font.setPointSizeF( size * 72.0 / 96.0 );
 
     return font;
 }
@@ -2096,18 +2118,18 @@ void QskFluent2Skin::setupFonts()
 {
     // see: https://fluent2.microsoft.design/typography ( Windows )
 
-    setFont( Fluent2::Caption, createFont( 12, 16, QFont::Normal ) );
+    setFont( Fluent2::Caption, createFont( 12_px, 16_px, QFont::Normal ) );
 
-    setFont( Fluent2::Body, createFont( 14, 20, QFont::Normal ) );
-    setFont( Fluent2::BodyStrong, createFont( 14, 20, QFont::DemiBold ) );
-    setFont( Fluent2::BodyStronger, createFont( 18, 24, QFont::Normal ) );
+    setFont( Fluent2::Body, createFont( 14_px, 20_px, QFont::Normal ) );
+    setFont( Fluent2::BodyStrong, createFont( 14_px, 20_px, QFont::DemiBold ) );
+    setFont( Fluent2::BodyStronger, createFont( 18_px, 24_px, QFont::Normal ) );
 
-    setFont( Fluent2::Subtitle, createFont( 20, 28, QFont::DemiBold ) );
+    setFont( Fluent2::Subtitle, createFont( 20_px, 28_px, QFont::DemiBold ) );
 
-    setFont( Fluent2::Title, createFont( 28, 36, QFont::Normal ) );
-    setFont( Fluent2::LargeTitle, createFont( 40, 52, QFont::DemiBold ) );
+    setFont( Fluent2::Title, createFont( 28_px, 36_px, QFont::Normal ) );
+    setFont( Fluent2::LargeTitle, createFont( 40_px, 52_px, QFont::DemiBold ) );
 
-    setFont( Fluent2::Display, createFont( 68, 92, QFont::DemiBold ) );
+    setFont( Fluent2::Display, createFont( 68_px, 92_px, QFont::DemiBold ) );
 
     // to have something for the unused roles
     QskSkin::completeFontTable();

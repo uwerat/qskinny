@@ -88,13 +88,16 @@ void QskSGNode::setParentNode( QSGNode* node, QSGNode* parent )
 
 QSGNode* QskSGNode::findChildNode( QSGNode* parent, quint8 role )
 {
-    auto node = parent->firstChild();
-    while ( node )
+    if ( parent )
     {
-        if ( nodeRole( node ) == role )
-            return node;
+        auto node = parent->firstChild();
+        while ( node )
+        {
+            if ( nodeRole( node ) == role )
+                return node;
 
-        node = node->nextSibling();
+            node = node->nextSibling();
+        }
     }
 
     return nullptr;

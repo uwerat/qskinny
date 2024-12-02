@@ -209,6 +209,16 @@ namespace QskRgb
         return toTransparent( rgb, qRound( opacity * 255 ) );
     }
 
+    inline bool isVisible( QRgb rgb )
+    {
+        return qAlpha( rgb ) > 0;
+    }
+
+    inline bool isVisible( const QColor& color )
+    {
+        return color.isValid() && color.alpha() > 0;
+    }
+
     QSK_EXPORT QRgb lighter( QRgb, int factor = 150 ) noexcept;
     QSK_EXPORT QRgb darker( QRgb, int factor = 200 ) noexcept;
 }

@@ -3,8 +3,7 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_ARC_SHADOW_NODE_H
-#define QSK_ARC_SHADOW_NODE_H
+#pragma once
 
 #include "QskGlobal.h"
 #include <qsgnode.h>
@@ -12,13 +11,13 @@
 class QskArcMetrics;
 class QskShadowMetrics;
 
-class QskArcShadowNodePrivate;
+class ArcShadowNodePrivate;
 
-class QskArcShadowNode : public QSGGeometryNode
+class ArcShadowNode : public QSGGeometryNode
 {
   public:
-    QskArcShadowNode();
-    ~QskArcShadowNode() override;
+    ArcShadowNode();
+    ~ArcShadowNode() override;
 
     void setShadowData( const QRectF&, qreal spreadRadius, qreal blurRadius,
         qreal startAngle, qreal spanAngle, const QColor& );
@@ -26,7 +25,5 @@ class QskArcShadowNode : public QSGGeometryNode
   private:
     void setBoundingRectangle( const QRectF& );
 
-    Q_DECLARE_PRIVATE( QskArcShadowNode )
+    Q_DECLARE_PRIVATE( ArcShadowNode )
 };
-
-#endif

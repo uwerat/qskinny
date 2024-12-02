@@ -51,6 +51,7 @@ class QSK_EXPORT QskProgressIndicator : public QskBoundedControl
 
     void resetOrigin();
     qreal origin() const;
+    bool hasOrigin() const;
 
     qreal value() const;
     qreal valueAsRatio() const; // [0.0, 1.0]
@@ -73,7 +74,6 @@ class QSK_EXPORT QskProgressIndicator : public QskBoundedControl
 
   private:
     void setValueInternal( qreal value );
-    void adjustBoundaries( bool increasing );
     void adjustValue();
 
     class PrivateData;

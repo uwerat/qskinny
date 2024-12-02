@@ -103,17 +103,15 @@ list(APPEND HEADERS
     nodes/QskArcNode.h
     nodes/QskArcRenderer.h
     nodes/QskArcRenderNode.h
-    nodes/QskArcShadowNode.h
     nodes/QskBasicLinesNode.h
     nodes/QskBoxNode.h
-    nodes/QskBoxClipNode.h
     nodes/QskBoxRectangleNode.h
     nodes/QskBoxRenderer.h
     nodes/QskBoxMetrics.h
     nodes/QskBoxBasicStroker.h
     nodes/QskBoxGradientStroker.h
-    nodes/QskBoxColorMap.h
     nodes/QskBoxShadowNode.h
+    nodes/QskClipNode.h
     nodes/QskColorRamp.h
     nodes/QskFillNode.h
     nodes/QskGraduationNode.h
@@ -134,6 +132,7 @@ list(APPEND HEADERS
     nodes/QskTextRenderer.h
     nodes/QskTextureRenderer.h
     nodes/QskVertex.h
+    nodes/QskVertexHelper.h
 )
 
 list(APPEND PRIVATE_HEADERS
@@ -144,16 +143,15 @@ list(APPEND SOURCES
     nodes/QskArcNode.cpp
     nodes/QskArcRenderer.cpp
     nodes/QskArcRenderNode.cpp
-    nodes/QskArcShadowNode.cpp
     nodes/QskBasicLinesNode.cpp
     nodes/QskBoxNode.cpp
-    nodes/QskBoxClipNode.cpp
     nodes/QskBoxRectangleNode.cpp
     nodes/QskBoxRenderer.cpp
     nodes/QskBoxMetrics.cpp
     nodes/QskBoxBasicStroker.cpp
     nodes/QskBoxGradientStroker.cpp
     nodes/QskBoxShadowNode.cpp
+    nodes/QskClipNode.cpp
     nodes/QskColorRamp.cpp
     nodes/QskFillNode.cpp
     nodes/QskGraduationNode.cpp
@@ -180,8 +178,6 @@ if (QT_VERSION_MAJOR VERSION_LESS 6)
     qt_add_resources(SOURCES nodes/shaders.qrc)
 else()
     list(APPEND SHADERS
-        nodes/shaders/arcshadow-vulkan.vert
-        nodes/shaders/arcshadow-vulkan.frag
         nodes/shaders/boxshadow-vulkan.vert
         nodes/shaders/boxshadow-vulkan.frag
         nodes/shaders/crisplines-vulkan.vert
@@ -223,6 +219,7 @@ list(APPEND HEADERS
     controls/QskGraphicLabelSkinlet.h
     controls/QskHintAnimator.h
     controls/QskItem.h
+    controls/QskItemAnchors.h
     controls/QskListView.h
     controls/QskListViewSkinlet.h
     controls/QskMenu.h
@@ -330,6 +327,7 @@ list(APPEND SOURCES
     controls/QskInputGrabber.cpp
     controls/QskItem.cpp
     controls/QskItemPrivate.cpp
+    controls/QskItemAnchors.cpp
     controls/QskListView.cpp
     controls/QskListViewSkinlet.cpp
     controls/QskMenu.cpp

@@ -6,7 +6,7 @@
 #include "QskBoxMetrics.h"
 #include "QskBoxShapeMetrics.h"
 #include "QskBoxBorderMetrics.h"
-#include "QskVertex.h"
+#include "QskVertexHelper.h"
 #include "QskFunctions.h"
 
 QskBoxMetrics::QskBoxMetrics( const QRectF& rect,

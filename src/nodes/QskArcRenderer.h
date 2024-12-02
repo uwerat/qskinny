@@ -25,24 +25,32 @@ namespace QskArcRenderer
         - using shaders setting the colors
      */
 
-    QSK_EXPORT void renderBorderGeometry( const QRectF&,
+    QSK_EXPORT void setBorderLines( const QRectF&,
         const QskArcMetrics&, bool radial, qreal borderWidth, QSGGeometry& );
 
-    QSK_EXPORT void renderFillGeometry( const QRectF&,
+    QSK_EXPORT void setFillLines( const QRectF&,
         const QskArcMetrics&, bool radial, qreal borderWidth, QSGGeometry& );
 
     /*
         Filling the geometry with color information:
             see QSGGeometry::defaultAttributes_ColoredPoint2D()
+
+        Usually used in combination with QSGVertexColorMaterial
      */
     QSK_EXPORT bool isGradientSupported(
         const QRectF&, const QskArcMetrics&, const QskGradient& );
 
-    QSK_EXPORT void renderArc( const QRectF&, const QskArcMetrics&, bool radial,
-        qreal borderWidth, const QskGradient&, const QColor& borderColor, QSGGeometry& );
+    QSK_EXPORT void setColoredBorderLines( const QRectF&,
+        const QskArcMetrics&, bool radial, qreal borderWidth,
+        const QColor& borderColor, QSGGeometry& );
 
-    QSK_EXPORT void renderArc( const QRectF&, const QskArcMetrics&, bool radial,
+    QSK_EXPORT void setColoredFillLines( const QRectF&,
+        const QskArcMetrics&, bool radial, qreal borderWidth,
         const QskGradient&, QSGGeometry& );
+
+    QSK_EXPORT void setColoredBorderAndFillLines( const QRectF&,
+        const QskArcMetrics&, bool radial, qreal borderWidth,
+        const QColor& borderColor, const QskGradient&, QSGGeometry& );
 }
 
 #endif

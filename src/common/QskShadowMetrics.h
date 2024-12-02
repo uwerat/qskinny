@@ -23,8 +23,18 @@ class QSK_EXPORT QskShadowMetrics
     Q_PROPERTY( qreal blurRadius READ blurRadius WRITE setBlurRadius )
 
     Q_PROPERTY( Qt::SizeMode sizeMode READ sizeMode WRITE setSizeMode )
+    Q_PROPERTY( ShapeMode shapeMode READ shapeMode WRITE setShapeMode )
 
   public:
+    enum ShapeMode
+    {
+        Aligned = 0, // The shape is related to some external definition
+
+        Ellipse,
+        Rectangle
+    };
+    Q_ENUM( ShapeMode )
+
     constexpr QskShadowMetrics( const QPointF& offset = QPointF() ) noexcept;
 
     constexpr QskShadowMetrics( qreal spreadRadius, qreal blurRadius ) noexcept;
@@ -56,6 +66,9 @@ class QSK_EXPORT QskShadowMetrics
     void setSizeMode( Qt::SizeMode ) noexcept;
     constexpr Qt::SizeMode sizeMode() const noexcept;
 
+    void setShapeMode( ShapeMode ) noexcept;
+    constexpr ShapeMode shapeMode() const noexcept;
+
     QskShadowMetrics interpolated(
         const QskShadowMetrics&, qreal value ) const noexcept;
 
@@ -72,7 +85,8 @@ class QSK_EXPORT QskShadowMetrics
     QPointF m_offset;
     qreal m_spreadRadius = 0.0;
     qreal m_blurRadius = 0.0;
-    Qt::SizeMode m_sizeMode = Qt::AbsoluteSize;
+    quint8 m_sizeMode = Qt::AbsoluteSize;
+    quint8 m_shapeMode = QskShadowMetrics::Aligned;
 };
 
 inline constexpr QskShadowMetrics::QskShadowMetrics( const QPointF& offset ) noexcept
@@ -101,6 +115,7 @@ inline constexpr bool QskShadowMetrics::operator==(
     const QskShadowMetrics& other ) const noexcept
 {
     return ( m_sizeMode == other.m_sizeMode )
+        && ( m_shapeMode == other.m_shapeMode )
         && ( m_offset == other.m_offset )
         && ( m_spreadRadius == other.m_spreadRadius )
         && ( m_blurRadius == other.m_blurRadius )
@@ -145,7 +160,17 @@ inline void QskShadowMetrics::setSizeMode( Qt::SizeMode sizeMode ) noexcept
 
 inline constexpr Qt::SizeMode QskShadowMetrics::sizeMode() const noexcept
 {
-    return m_sizeMode;
+    return static_cast< Qt::SizeMode >( m_sizeMode );
+}
+
+inline void QskShadowMetrics::setShapeMode( ShapeMode shapeMode ) noexcept
+{   
+    m_shapeMode = shapeMode;
+}       
+    
+inline constexpr QskShadowMetrics::ShapeMode QskShadowMetrics::shapeMode() const noexcept
+{   
+    return static_cast< ShapeMode >( m_shapeMode );
 }
 
 inline void QskShadowMetrics::setOffsetX( qreal dx ) noexcept

@@ -3,7 +3,7 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskArcShadowNode.h"
+#include "ArcShadowNode.h"
 
 #include <qcolor.h>
 #include <qsgmaterial.h>
@@ -252,10 +252,10 @@ namespace
     }
 }
 
-class QskArcShadowNodePrivate final : public QSGGeometryNodePrivate
+class ArcShadowNodePrivate final : public QSGGeometryNodePrivate
 {
   public:
-    QskArcShadowNodePrivate()
+    ArcShadowNodePrivate()
         : geometry( QSGGeometry::defaultAttributes_TexturedPoint2D(), 4 )
     {
     }
@@ -265,10 +265,10 @@ class QskArcShadowNodePrivate final : public QSGGeometryNodePrivate
     QRectF rect;
 };
 
-QskArcShadowNode::QskArcShadowNode()
-    : QSGGeometryNode( *new QskArcShadowNodePrivate )
+ArcShadowNode::ArcShadowNode()
+    : QSGGeometryNode( *new ArcShadowNodePrivate )
 {
-    Q_D( QskArcShadowNode );
+    Q_D( ArcShadowNode );
 
     setGeometry( &d->geometry );
     setMaterial( &d->material );
@@ -277,9 +277,9 @@ QskArcShadowNode::QskArcShadowNode()
     d->material.setFlag( QSGMaterial::Blending );
 }
 
-QskArcShadowNode::~QskArcShadowNode() = default;
+ArcShadowNode::~ArcShadowNode() = default;
 
-void QskArcShadowNode::setShadowData(
+void ArcShadowNode::setShadowData(
     const QRectF& rect, qreal spreadRadius, qreal blurRadius,
     qreal startAngle, qreal spanAngle, const QColor& color )
 {
@@ -289,7 +289,7 @@ void QskArcShadowNode::setShadowData(
         return;
     }
 
-    Q_D( QskArcShadowNode );
+    Q_D( ArcShadowNode );
 
     if ( d->rect != rect )
     {
@@ -351,9 +351,9 @@ void QskArcShadowNode::setShadowData(
     }
 }
 
-void QskArcShadowNode::setBoundingRectangle( const QRectF& rect )
+void ArcShadowNode::setBoundingRectangle( const QRectF& rect )
 {
-    Q_D( QskArcShadowNode );
+    Q_D( ArcShadowNode );
 
     if ( d->rect == rect )
         return;
