@@ -88,7 +88,9 @@ void QskBoundedRangeInput::setRange( const QskIntervalF& range )
 
     if ( isComponentComplete() )
     {
-        newRange = alignedInterval( newRange );
+        if ( isSnapping() && stepSize() )
+            newRange = newRange.fuzzyAligned( stepSize() );
+
         newRange = fixupRange( newRange );
     }
 
@@ -128,7 +130,11 @@ QskIntervalF QskBoundedRangeInput::range() const
 
 void QskBoundedRangeInput::alignInput()
 {
-    setRangeInternal( alignedInterval( m_range ) );
+    auto newRange = m_range;
+    if ( isSnapping() && stepSize() )
+        newRange = newRange.fuzzyAligned( stepSize() );
+
+    setRangeInternal( newRange );
 }
 
 QskIntervalF QskBoundedRangeInput::fixupRange( const QskIntervalF& range ) const

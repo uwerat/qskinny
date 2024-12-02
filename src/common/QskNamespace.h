@@ -13,6 +13,14 @@ namespace Qsk
 {
     Q_NAMESPACE_EXPORT( QSK_EXPORT )
 
+    enum Policy
+    {
+        Maybe,
+        Always,
+        Never
+    };
+    Q_ENUM_NS( Policy )
+
     enum Direction
     {
         LeftToRight,

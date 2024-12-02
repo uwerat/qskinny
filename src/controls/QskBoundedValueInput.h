@@ -51,6 +51,8 @@ class QSK_EXPORT QskBoundedValueInput : public QskBoundedInput
     void decimalsChanged( int );
 
   protected:
+    void keyPressEvent( QKeyEvent* ) override;
+
     virtual qreal fixupValue( qreal ) const;
     void alignInput() override;
 

@@ -9,6 +9,24 @@
 #include <qlocale.h>
 #include <cfloat>
 
+static qreal qskAlignedValue( const QskBoundedValueInput* input, qreal value )
+{
+    value = input->boundedValue( value );
+
+    if ( value > input->minimum() && value < input->maximum() )
+    {
+        if ( input->isSnapping() && input->stepSize() )
+        {
+            const auto step = input->stepSize();
+
+            value = qRound( value / step ) * step;
+            value = input->boundedValue( value );
+        }
+    }
+
+    return value;
+}
+
 class QskBoundedValueInput::PrivateData
 {
   public:
@@ -43,9 +61,25 @@ int QskBoundedValueInput::decimals() const
     return m_data->decimals;
 }
 
+void QskBoundedValueInput::keyPressEvent( QKeyEvent* event )
+{
+    switch( event->key() )
+    {
+        case Qt::Key_Home:
+            setValue( minimum() );
+            break;
+
+        case Qt::Key_End:
+            setValue( maximum() );
+            break;
+    }
+
+    Inherited::keyPressEvent( event );
+}
+
 void QskBoundedValueInput::alignInput()
 {
-    auto value = alignedValue( m_data->value );
+    auto value = qskAlignedValue( this, m_data->value );
     value = fixupValue( value );
 
     setValueInternal( value );
@@ -71,7 +105,7 @@ void QskBoundedValueInput::setValue( qreal value )
 {
     if ( isComponentComplete() )
     {
-        value = alignedValue( value );
+        value = qskAlignedValue( this, value );
         value = fixupValue( value );
     }
 

@@ -18,7 +18,7 @@ class QskBoundedInput::PrivateData
     qreal stepSize = 0.1;
     uint pageSteps = 1;
 
-    bool snap = false;
+    bool snapping = false;
 };
 
 QskBoundedInput::QskBoundedInput( QQuickItem* parent )
@@ -53,7 +53,7 @@ void QskBoundedInput::setStepSize( qreal stepSize )
 
     if ( isComponentComplete() )
     {
-        if ( m_data->snap && stepSize )
+        if ( m_data->snapping && stepSize )
             alignInput();
     }
 }
@@ -102,21 +102,21 @@ void QskBoundedInput::pageDown()
     increment( -pageSize() );
 }
 
-void QskBoundedInput::setSnap( bool snap )
+void QskBoundedInput::setSnapping( bool on )
 {
-    if ( m_data->snap == snap )
+    if ( m_data->snapping == on )
         return;
 
-    m_data->snap = snap;
-    Q_EMIT snapChanged( snap );
+    m_data->snapping = on;
+    Q_EMIT snappingChanged( on );
 
-    if ( isComponentComplete() && snap )
+    if ( isComponentComplete() && m_data->snapping )
         alignInput();
 }
 
-bool QskBoundedInput::snap() const
+bool QskBoundedInput::isSnapping() const
 {
-    return m_data->snap;
+    return m_data->snapping;
 }
 
 void QskBoundedInput::componentComplete()
@@ -132,38 +132,6 @@ void QskBoundedInput::componentComplete()
 
 void QskBoundedInput::alignInput()
 {
-}
-
-qreal QskBoundedInput::alignedValue( qreal value ) const
-{
-    value = boundedValue( value );
-
-    if ( value > minimum() && value < maximum() )
-    {
-        if ( m_data->snap && m_data->stepSize )
-        {
-            value = qRound( value / m_data->stepSize ) * m_data->stepSize;
-            value = boundedValue( value );
-        }
-    }
-
-    return value;
-}
-
-QskIntervalF QskBoundedInput::alignedInterval( const QskIntervalF& interval ) const
-{
-    if ( m_data->snap )
-    {
-        if ( const auto step = m_data->stepSize )
-        {
-            const qreal lower = std::floor( interval.lowerBound() / step ) * step;
-            const qreal upper = std::ceil( interval.upperBound() / step ) * step;
-
-            return QskIntervalF( lower, upper );
-        }
-    }
-
-    return interval;
 }
 
 void QskBoundedInput::setReadOnly( bool readOnly )
@@ -204,15 +172,6 @@ qreal QskBoundedInput::incrementForKey( const QKeyEvent* event ) const
 
         case Qt::Key_PageDown:
             return -pageSize();
-
-        default:
-        {
-            if ( qskIsStandardKeyInput( event, QKeySequence::MoveToNextChar ) )
-                return m_data->stepSize;
-
-            if ( qskIsStandardKeyInput( event, QKeySequence::MoveToPreviousChar ) )
-                return -m_data->stepSize;
-        }
     }
 
     return 0.0;

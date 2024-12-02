@@ -1008,7 +1008,7 @@ void Editor::setupPushButtonColors(
         const auto text = Q::Text | section | variation;
         const auto icon = Q::Icon | section | variation;
 
-        for ( const auto state : { QskAspect::NoState, Q::Hovered, Q::Pressed, Q::Disabled } )
+        for ( const auto state : { QskAspect::NoState, Q::Hovered, Q::Pressed, Q::Checked, Q::Disabled } )
         {
             QRgb panelColor, borderColor1, borderColor2, textColor;
             int graphicRole;
@@ -1023,7 +1023,7 @@ void Editor::setupPushButtonColors(
                     textColor = pal.fillColor.textOnAccent.primary;
                     graphicRole = W::GraphicRoleFillColorTextOnAccentPrimary;
                 }
-                else if ( state == Q::Pressed )
+                else if ( state == Q::Pressed || state == Q::Checked )
                 {
                     panelColor = pal.fillColor.accent.tertiary;
                     borderColor1 = borderColor2 = pal.strokeColor.control.onAccentDefault;
@@ -1056,7 +1056,7 @@ void Editor::setupPushButtonColors(
                     textColor = pal.fillColor.text.primary;
                     graphicRole = W::GraphicRoleFillColorTextPrimary;
                 }
-                else if ( state == Q::Pressed )
+                else if ( state == Q::Pressed || state == Q::Checked )
                 {
                     panelColor = pal.fillColor.control.tertiary;
                     borderColor1 = borderColor2 = pal.strokeColor.control.defaultColor;
@@ -1450,10 +1450,16 @@ void Editor::setupSliderMetrics()
 
     setShadowMetrics( Q::Handle, { shadowSpread, 0.0 } );
 
-    setBoxBorderMetrics( Q::Handle, 5 );
-    setBoxBorderMetrics( Q::Handle | Q::Hovered, 4 );
-    setBoxBorderMetrics( Q::Handle | Q::Pressed, 6 );
-    setBoxBorderMetrics( Q::Handle | Q::Disabled, 6 );
+    setBoxBorderMetrics( Q::Handle, 5_px );
+    setBoxBorderMetrics( Q::Handle | Q::Hovered, 4_px );
+    setBoxBorderMetrics( Q::Handle | Q::Pressed, 6_px );
+    setBoxBorderMetrics( Q::Handle | Q::Disabled, 6_px );
+
+    setFlag( Q::Tick | A::Option, Qsk::Maybe );
+    setStrutSize( Q::Tick | A::Horizontal, 1_px, -1 );
+    setStrutSize( Q::Tick | A::Vertical, -1, 1_px );
+
+    setAnimation( Q::Handle | A::Metric | A::Position, 100 );
 }
 
 void Editor::setupSliderColors(
@@ -1484,30 +1490,35 @@ void Editor::setupSliderColors(
 
     for ( auto state : { A::NoState, Q::Hovered, Q::Pressed, Q::Disabled } )
     {
-        QRgb grooveColor, handleColor;
+        QRgb grooveColor, fillColor, handleColor;
 
         if ( state == A::NoState || state == Q::Hovered )
         {
             grooveColor = pal.fillColor.controlStrong.defaultColor;
+            fillColor = pal.fillColor.accent.defaultColor;
             handleColor = pal.fillColor.accent.defaultColor;
         }
         else if ( state == Q::Pressed )
         {
             grooveColor = pal.fillColor.controlStrong.defaultColor;
             handleColor = pal.fillColor.accent.tertiary;
+            fillColor = pal.fillColor.accent.defaultColor;
         }
         else if ( state == Q::Disabled )
         {
             grooveColor = pal.fillColor.controlStrong.disabled;
+            fillColor = pal.fillColor.accent.disabled;
             handleColor = grooveColor;
         }
 
         grooveColor = rgbSolid( grooveColor, pal.background.solid.base );
 
         setGradient( Q::Groove | section | state, grooveColor );
-        setGradient( Q::Fill | section | state, grooveColor );
+        setGradient( Q::Fill | section | state, fillColor );
         setGradient( Q::Handle | section | state, handleColor );
     }
+
+    setGradient( Q::Tick, pal.fillColor.controlSolid.defaultColor );
 }
 
 void Editor::setupSpinBoxMetrics()

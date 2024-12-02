@@ -20,7 +20,7 @@ Slider::Slider( const QString& text, qreal min, qreal max,
     m_slider = new QskSlider( this );
     m_slider->setBoundaries( min, max );
     m_slider->setStepSize( step );
-    m_slider->setSnap( true );
+    m_slider->setSnapping( true );
     m_slider->setValue( value );
 
     m_valueLabel = new QskTextLabel( this );

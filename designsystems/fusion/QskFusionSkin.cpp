@@ -46,6 +46,8 @@
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
+#include <QskSliderSkinlet.h>
+
 #include <QskAnimationHint.h>
 #include <QskAspect.h>
 #include <QskBoxBorderColors.h>
@@ -773,9 +775,10 @@ void Editor::setupSlider()
 {
     using A = QskAspect;
     using Q = QskSlider;
+    using SK = QskSliderSkinlet;
     using P = QPalette;
 
-    const qreal extent = 30_px;
+    const qreal extent = 16_px;
 
     // Panel
 
@@ -784,6 +787,7 @@ void Editor::setupSlider()
     setBoxBorderMetrics( Q::Panel, 0 );
     setGradient( Q::Panel, QskGradient() );
 
+    // space for the handle
     setPadding( Q::Panel | A::Horizontal, QskMargins( 0.5 * extent, 0 ) );
     setPadding( Q::Panel | A::Vertical, QskMargins( 0, 0.5 * extent ) );
 
@@ -823,6 +827,39 @@ void Editor::setupSlider()
         }
     }
 
+    {
+        /*
+            Tick
+
+            QSlider optionally allows to display ticks left/right or top/bottom
+            of the groove. However this not supported by the skinlets yet.
+            ( Qt/Quick slider does not support showing ticks at all )
+
+            For the moment we make something up. TODO ...
+         */
+
+        setFlag( Q::Tick | A::Option, Qsk::Maybe );
+        setStrutSize( Q::Tick, 2_px, 2_px );
+
+        const QskStateCombination combination(
+            QskStateCombination::CombinationNoState, Q::Focused | Q::Pressed );
+
+        const auto rgb = m_pal.active( P::Text );
+
+        setColor( Q::Tick,
+            QskRgb::interpolated( rgb, m_pal.groove, 0.2 ), combination );
+
+        setColor( Q::Tick | Q::Disabled,
+            QskRgb::interpolated( rgb, m_pal.groove, 0.5 ) );
+
+        setColor( Q::Tick | SK::Filled,
+            m_pal.active( P::HighlightedText ), combination );
+        setColor( Q::Tick | SK::Filled | Q::Disabled,
+            m_pal.disabled( P::HighlightedText ) );
+    }
+
+    // Handle
+
     setBoxShape( Q::Handle, 2 );
     setBoxBorderMetrics( Q::Handle, 1 );
     setBoxBorderColors( Q::Handle, m_pal.outline );
@@ -832,7 +869,7 @@ void Editor::setupSlider()
         Combination( { Q::Hovered, Q::Pressed } ) );
 #endif
 
-    setStrutSize( Q::Handle, 16_px, 16_px );
+    setStrutSize( Q::Handle, extent, extent );
 
     for ( auto state : { A::NoState, Q::Pressed } )
     {
@@ -845,9 +882,7 @@ void Editor::setupSlider()
             QskRgb::lighter( rgb, 102 ) );
     }
 
-    // move the handle smoothly, when using keys
     setAnimation( Q::Handle | A::Metric | A::Position, 2 * qskDuration );
-    setAnimation( Q::Handle | A::Metric | A::Position | Q::Pressed, 0 );
 }
 
 void Editor::setupSpinBox()

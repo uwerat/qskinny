@@ -248,8 +248,7 @@ static inline void qskCreateFill(
     using namespace QskVertex;
     using namespace Qt;
 
-    const auto cn = m_metrics.corners;
-    const bool isHorizontal = m_metrics.preferredOrientation == Qt::Horizontal;
+    const bool isHorizontal = ( m_metrics.preferredOrientation == Qt::Horizontal );
 
     if ( !m_metrics.isInsideRounded )
     {
@@ -258,7 +257,7 @@ static inline void qskCreateFill(
     }
     else if ( m_metrics.isOutsideSymmetric )
     {
-        const int stepCount = cn[ 0 ].stepCount;
+        const int stepCount = m_metrics.corners[ 0 ].innerStepCount();
 
         if ( isHorizontal )
         {

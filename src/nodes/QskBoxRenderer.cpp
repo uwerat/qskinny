@@ -168,7 +168,8 @@ void QskBoxRenderer::setColoredBorderLines( const QRectF& rect,
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
     geometry.markVertexDataDirty();
 
-    const QskBoxBasicStroker stroker( QskBoxMetrics( rect, shape, border ), borderColors );
+    const QskBoxMetrics metrics( rect, shape, border );
+    const QskBoxBasicStroker stroker( metrics, borderColors );
 
     if ( auto lines = qskAllocateColoredLines( geometry, stroker.borderCount() ) )
         stroker.setBoxLines( lines, nullptr );

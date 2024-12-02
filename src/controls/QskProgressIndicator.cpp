@@ -148,9 +148,7 @@ void QskProgressIndicator::resetExtent()
 
 qreal QskProgressIndicator::extent() const
 {
-    auto grooveSize = metric( Groove | QskAspect::Size );
-    auto fillSize = metric( Fill | QskAspect::Size );
-    return qMax( grooveSize, fillSize );
+    return metric( Groove | QskAspect::Size );
 }
 
 void QskProgressIndicator::setOrigin( qreal origin )
@@ -187,6 +185,11 @@ qreal QskProgressIndicator::origin() const
     }
 
     return minimum();
+}
+
+bool QskProgressIndicator::hasOrigin() const
+{
+    return m_data->hasOrigin;
 }
 
 void QskProgressIndicator::setValue( qreal value )
