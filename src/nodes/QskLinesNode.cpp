@@ -8,6 +8,7 @@
 #include "QskStippleMetrics.h"
 #include "QskStippledLineRenderer.h"
 #include "QskSGNode.h"
+#include "QskRgbValue.h"
 
 #include <qtransform.h>
 #include <qline.h>
@@ -163,8 +164,7 @@ void QskLinesNode::updateLines( const QColor& color,
     qreal lineWidth, const QskStippleMetrics& stippleMetrics,
     const QTransform& transform, int count, const QLineF* lines )
 {
-    if ( !stippleMetrics.isValid() || !color.isValid()
-        || color.alpha() == 0 || count == 0 )
+    if ( !stippleMetrics.isValid() || !QskRgb::isVisible( color ) || count == 0 )
     {
         QskSGNode::resetGeometry( this );
         return;
@@ -195,7 +195,7 @@ void QskLinesNode::updateGrid( const QColor& color,
     const QTransform& transform, const QRectF& rect,
     const QVector< qreal >& xValues, const QVector< qreal >& yValues )
 {
-    if ( !stippleMetrics.isValid() || !color.isValid() || color.alpha() == 0 )
+    if ( !stippleMetrics.isValid() || !QskRgb::isVisible( color ) )
     {
         QskSGNode::resetGeometry( this );
         return;
@@ -409,7 +409,7 @@ QSGGeometry::Point2D* QskLinesNode::setSolidLines(
 void QskLinesNode::updatePolygon( const QColor& color, qreal lineWidth,
     const QTransform& transform, const QPolygonF& polygon )
 {
-    if ( polygon.isEmpty() || !color.isValid() || ( color.alpha() == 0 ) )
+    if ( polygon.isEmpty() || !QskRgb::isVisible( color ) )
     {
         QskSGNode::resetGeometry( this );
         return;

@@ -10,10 +10,6 @@
 #include "QskLinearBox.h"
 #include "QskQuick.h"
 #include "QskEvent.h"
-#if 1
-#include "QskSkin.h"
-#include <QskPlatform.h>
-#endif
 
 #include <qquickwindow.h>
 #include <qpointer.h>
@@ -394,7 +390,7 @@ QSizeF QskDialogSubWindow::layoutSizeHint(
 
     if ( which == Qt::MinimumSize )
     {
-        const auto w = qMax( qskDpToPixels( 300.0 ), size.width() );
+        const auto w = qMax( 300.0, size.width() );
         size.setWidth( w );
     }
 

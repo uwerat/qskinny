@@ -1,0 +1,9 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/qskinny/">
+
+        <file>shaders/arcshadow.vert</file>
+        <file>shaders/arcshadow.frag</file>
+
+    </qresource>
+</RCC>

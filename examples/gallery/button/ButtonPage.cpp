@@ -133,13 +133,18 @@ namespace
         SwitchButtonBox( QQuickItem* parent = nullptr )
             : ButtonBox( Qt::Horizontal, parent )
         {
+            setDimension( 2 );
+            setSpacing( 20 );
+            setDefaultAlignment( Qt::AlignCenter );
+
             for ( auto orientation : { Qt::Vertical, Qt::Horizontal } )
             {
-                (void) new QskSwitchButton( orientation, this );
-
                 auto button = new QskSwitchButton( orientation, this );
-                button->setInverted( true );
-                button->setChecked( true );
+                button->setIconMode( QskSwitchButton::ShowIconAlways );
+
+                auto invertedButton = new QskSwitchButton( orientation, this );
+                invertedButton->setInverted( true );
+                invertedButton->setChecked( true );
             }
         }
     };

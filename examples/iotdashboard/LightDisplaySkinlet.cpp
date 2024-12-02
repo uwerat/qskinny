@@ -105,12 +105,12 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
 
         return rect;
     }
-    else if( subControl == LightDisplay::Knob )
+    else if( subControl == LightDisplay::Handle )
     {
         const auto arcRect = subControlRect( skinnable,
             contentsRect, LightDisplay::ColdAndWarmArc );
         const auto arcMetrics = display->arcMetricsHint( LightDisplay::ColdAndWarmArc );
-        const auto knobSize = display->strutSizeHint( LightDisplay::Knob );
+        const auto knobSize = display->strutSizeHint( LightDisplay::Handle );
 
         const qreal radius = ( arcRect.width() - arcMetrics.thickness() ) / 2;
         const qreal angle = display->valueAsRatio() * 180;
@@ -183,7 +183,7 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
         }
         case KnobRole:
         {
-            return updateBoxNode( skinnable, node, LightDisplay::Knob );
+            return updateBoxNode( skinnable, node, LightDisplay::Handle );
         }
     }
 

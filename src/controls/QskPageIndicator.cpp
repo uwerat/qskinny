@@ -59,7 +59,7 @@ class QskPageIndicator::PrivateData
     int pressedIndex = -1;
 
     int count;
-    Qt::Orientation orientation : 2;
+    Qt::Orientation orientation;
 };
 
 QskPageIndicator::QskPageIndicator( int count, QQuickItem* parent )

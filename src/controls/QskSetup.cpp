@@ -5,31 +5,19 @@
 
 #include "QskSetup.h"
 
+extern bool qskHasEnvironment( const char* );
 extern void qskUpdateItemFlags();
 
 namespace
 {
-    inline bool hasEnvironment( const char* env )
-    {
-        bool ok;
-
-        const int value = qEnvironmentVariableIntValue( env, &ok );
-        if ( ok )
-            return value != 0;
-
-        // All other strings are true, apart from "false"
-        auto result = qgetenv( env );
-        return !result.isEmpty() && result != "false";
-    }
-
     inline const QskItem::UpdateFlags environmentUpdateFlags()
     {
         QskItem::UpdateFlags flags;
 
-        if ( !hasEnvironment( "QSK_PREFER_FBO_PAINTING" ) )
+        if ( !qskHasEnvironment( "QSK_PREFER_FBO_PAINTING" ) )
             flags |= QskItem::PreferRasterForTextures;
 
-        if ( hasEnvironment( "QSK_FORCE_BACKGROUND" ) )
+        if ( qskHasEnvironment( "QSK_FORCE_BACKGROUND" ) )
             flags |= QskItem::DebugForceBackground;
 
         return flags;

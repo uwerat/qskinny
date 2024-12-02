@@ -175,6 +175,7 @@ class QSK_EXPORT QskSkinnable
     bool moveMetric( QskAspect, qreal );
     bool resetMetric( QskAspect );
     qreal metric( QskAspect, QskSkinHintStatus* = nullptr ) const;
+    qreal metric( QskAspect, qreal defaultValue ) const;
 
     bool setFlagHint( QskAspect, int flag );
     template< typename T > T flagHint( QskAspect, T = T() ) const;

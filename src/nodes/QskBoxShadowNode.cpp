@@ -269,7 +269,7 @@ QskBoxShadowNode::~QskBoxShadowNode()
 }
 
 void QskBoxShadowNode::setShadowData(
-    const QRectF& rect, const QskBoxShapeMetrics& shape,
+    const QRectF& rect, const QskBoxShapeMetrics& shapeMetrics,
     qreal blurRadius, const QColor& color )
 {
     Q_D( QskBoxShadowNode );
@@ -299,6 +299,8 @@ void QskBoxShadowNode::setShadowData(
     }
 
     {
+        const auto shape = shapeMetrics.toAbsolute( rect.size() );
+
         const float t = std::min( d->rect.width(), d->rect.height() );
 
         const float r1 = shape.radius( Qt::BottomRightCorner ).width();

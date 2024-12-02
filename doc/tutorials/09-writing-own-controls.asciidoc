@@ -36,7 +36,7 @@ public:
 ....
 
 .A subclassed control with local skin hints
-image::../images/subclassing-existing-controls.png[Subclassing existing controls]
+image::/doc/tutorials/images/subclassing-existing-controls.png[Subclassing existing controls]
 
 Then there is no need to set the margins and background color for every
 instance of the custom text label.
@@ -94,7 +94,7 @@ public:
 ....
 
 .A subclassed control with skin hints defined in the skin
-image::../images/subclassing-existing-controls.png[Subclassing existing controls]
+image::/doc/tutorials/images/subclassing-existing-controls.png[Subclassing existing controls]
 
 The styling described above has the same effect as in the simpler
 example, but now the `TextLabel` control can be given a different style
@@ -150,7 +150,7 @@ auto* textAndGraphic = new TextAndGraphic( "Text", "cloud" );
 ....
 
 .A composited control
-image::../images/compositing-controls.png[Compositing controls]
+image::/doc/tutorials/images/compositing-controls.png[Compositing controls]
 
 === Writing controls with a skinlet
 
@@ -311,4 +311,4 @@ changes properly. A simpler version with hardcoded values for margins,
 colors etc. can be written with less code.
 
 .A class with an own skinlet
-image::../images/control-with-skinlet.png[Control with skinlet]
+image::/doc/tutorials/images/control-with-skinlet.png[Control with skinlet]

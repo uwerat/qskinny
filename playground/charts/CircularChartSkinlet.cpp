@@ -199,7 +199,7 @@ QSGNode* CircularChartSkinlet::updateArcSegmentNode( const QskSkinnable*,
     if ( arcNode == nullptr )
         arcNode = new QskArcRenderNode();
 
-    arcNode->updateNode( m_data->closedArcRect, metrics, true,
+    arcNode->updateArc( m_data->closedArcRect, metrics, true,
         borderWidth, borderColor, gradient );
 
     return arcNode;

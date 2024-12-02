@@ -24,9 +24,10 @@ static void qskUpdateEventFilter( QskSubWindowArea* area )
     }
 }
 
-static Qt::Edges qskSelectedEdges( const QRectF& rect, const QPointF& pos )
+static Qt::Edges qskSelectedEdges( const QskSubWindowArea* area,
+     const QRectF& rect, const QPointF& pos )
 {
-    const qreal tolerance = qskDpToPixels( 10.0 );
+    const qreal tolerance = qskMMToPixels( area->window(), 3 );
 
     Qt::Edges edges;
     if ( pos.x() <= rect.left() + tolerance )
@@ -222,7 +223,7 @@ bool QskSubWindowArea::mouseEventFilter( QskSubWindow* window, const QMouseEvent
             if ( doDrag )
             {
                 m_data->isDragging = true;
-                m_data->draggedEdges = qskSelectedEdges( cr, mousePos );
+                m_data->draggedEdges = qskSelectedEdges( this,  cr, mousePos );
                 m_data->mousePos = qskMouseScenePosition( event );
 
                 setDragging( window, true );
