@@ -3,8 +3,8 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskMaterial3TextInputSkinlet.h"
-#include "QskTextInput.h"
+#include "QskMaterial3TextFieldSkinlet.h"
+#include "QskTextField.h"
 
 #include "QskBoxBorderColors.h"
 #include "QskBoxBorderMetrics.h"
@@ -13,39 +13,39 @@
 
 #include <QFontMetricsF>
 
-using Q = QskTextInput;
+using Q = QskTextField;
 
 namespace
 {
-    QString maxLengthString( const QskTextInput* input )
+    QString maxLengthString( const QskTextField* field )
     {
-        QString s = QString::number( input->inputText().length() )
-                    + " / " + QString::number( input->maxLength() );
+        QString s = QString::number( field->text().length() )
+                    + " / " + QString::number( field->maxLength() );
         return s;
     }
 
     // We need to "cut a hole" in the upper gradient for the label text:
-    QskBoxBorderColors outlineColors( const QskTextInput* input )
+    QskBoxBorderColors outlineColors( const QskTextField* field )
     {
-        auto borderColors = input->boxBorderColorsHint( Q::Panel );
+        auto borderColors = field->boxBorderColorsHint( Q::Panel );
 
-        if( input->labelText().isEmpty() )
+        if( field->labelText().isEmpty() )
         {
             return borderColors;
         }
 
         auto topGradient = borderColors.gradientAt( Qt::TopEdge );
 
-        const auto panelRect = input->subControlRect( Q::Panel );
+        const auto panelRect = field->subControlRect( Q::Panel );
 
-        const auto margins = input->marginHint( Q::LabelText );
-        const auto iconMargins = input->marginHint( Q::LeadingIcon );
+        const auto margins = field->marginHint( Q::LabelText );
+        const auto iconMargins = field->marginHint( Q::LeadingIcon );
 
         const auto x1 = iconMargins.left() - margins.left();
         auto r1 = x1 / panelRect.width();
         r1 = qBound( 0.0, r1, 1.0 );
 
-        const auto w = qskHorizontalAdvance( input->effectiveFont( Q::LabelText ), input->labelText() );
+        const auto w = qskHorizontalAdvance( field->effectiveFont( Q::LabelText ), field->labelText() );
 
         const auto x2 = x1 + w + margins.right();
         auto r2 = x2 / panelRect.width();
@@ -66,7 +66,7 @@ namespace
     }
 }
 
-QskMaterial3TextInputSkinlet::QskMaterial3TextInputSkinlet( QskSkin* skin )
+QskMaterial3TextFieldSkinlet::QskMaterial3TextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
     setNodeRoles( {
@@ -81,11 +81,11 @@ QskMaterial3TextInputSkinlet::QskMaterial3TextInputSkinlet( QskSkin* skin )
     } );
 }
 
-QskMaterial3TextInputSkinlet::~QskMaterial3TextInputSkinlet()
+QskMaterial3TextFieldSkinlet::~QskMaterial3TextFieldSkinlet()
 {
 }
 
-QRectF QskMaterial3TextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
+QRectF QskMaterial3TextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto input = static_cast< const Q* >( skinnable );
@@ -107,9 +107,9 @@ QRectF QskMaterial3TextInputSkinlet::subControlRect( const QskSkinnable* skinnab
     }
     else if ( subControl == Q::LabelText )
     {
-        const auto inputRect = input->subControlRect( Q::InputText );
+        const auto inputRect = input->subControlRect( Q::Text );
 
-        if( !input->inputText().isEmpty()
+        if( !input->text().isEmpty()
              || input->hasSkinState( Q::Focused )
              || input->hasSkinState( Q::Editing ) )
         {
@@ -161,7 +161,7 @@ QRectF QskMaterial3TextInputSkinlet::subControlRect( const QskSkinnable* skinnab
         if( !input->hasSkinState( Q::TextPopulated )
             && ( input->hasSkinState( Q::Focused ) || input->hasSkinState( Q::Editing ) ) )
         {
-            return input->subControlRect( Q::InputText );
+            return input->subControlRect( Q::Text );
         }
         else
         {
@@ -253,7 +253,7 @@ QRectF QskMaterial3TextInputSkinlet::subControlRect( const QskSkinnable* skinnab
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QSizeF QskMaterial3TextInputSkinlet::adjustSizeHint( const QskSkinnable* skinnable, Qt::SizeHint which, const QSizeF& oldHint ) const
+QSizeF QskMaterial3TextFieldSkinlet::adjustSizeHint( const QskSkinnable* skinnable, Qt::SizeHint which, const QSizeF& oldHint ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
@@ -277,7 +277,7 @@ QSizeF QskMaterial3TextInputSkinlet::adjustSizeHint( const QskSkinnable* skinnab
     return hint;
 }
 
-QSGNode* QskMaterial3TextInputSkinlet::updateSubNode(
+QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
     const auto input = static_cast< const Q* >( skinnable );
@@ -337,4 +337,4 @@ QSGNode* QskMaterial3TextInputSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-#include "moc_QskMaterial3TextInputSkinlet.cpp"
+#include "moc_QskMaterial3TextFieldSkinlet.cpp"

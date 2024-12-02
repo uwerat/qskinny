@@ -3,34 +3,35 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskTextInput.h"
+#include "QskTextField.h"
 #include "QskEvent.h"
 #include "QskFontRole.h"
 #include "QskQuick.h"
-#include "QskTextInputSkinlet.h"
+#include "QskTextFieldSkinlet.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextinput_p.h>
 #include <private/qquicktextinput_p_p.h>
 QSK_QT_PRIVATE_END
 
-QSK_SUBCONTROL( QskTextInput, Panel )
-QSK_SUBCONTROL( QskTextInput, LeadingIcon )
-QSK_SUBCONTROL( QskTextInput, LabelText )
-QSK_SUBCONTROL( QskTextInput, InputText )
-QSK_SUBCONTROL( QskTextInput, TrailingIconRipple )
-QSK_SUBCONTROL( QskTextInput, TrailingIcon )
-QSK_SUBCONTROL( QskTextInput, HintText )
-QSK_SUBCONTROL( QskTextInput, SupportingText )
-QSK_SUBCONTROL( QskTextInput, CharacterCount )
+QSK_SUBCONTROL( QskTextField, Panel )
+QSK_SUBCONTROL( QskTextField, Text )
 
-QSK_SYSTEM_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
-QSK_SYSTEM_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
-QSK_SYSTEM_STATE( QskTextInput, Selected, QskAspect::FirstSystemState << 3 )
-QSK_SYSTEM_STATE( QskTextInput, Error, QskAspect::FirstSystemState << 4 )
-QSK_SYSTEM_STATE( QskTextInput, TextPopulated, QskAspect::LastUserState << 1 )
+QSK_SUBCONTROL( QskTextField, LeadingIcon )
+QSK_SUBCONTROL( QskTextField, LabelText )
+QSK_SUBCONTROL( QskTextField, TrailingIconRipple )
+QSK_SUBCONTROL( QskTextField, TrailingIcon )
+QSK_SUBCONTROL( QskTextField, HintText )
+QSK_SUBCONTROL( QskTextField, SupportingText )
+QSK_SUBCONTROL( QskTextField, CharacterCount )
 
-static inline void qskPropagateReadOnly( QskTextInput* input )
+QSK_SYSTEM_STATE( QskTextField, ReadOnly, QskAspect::FirstSystemState << 1 )
+QSK_SYSTEM_STATE( QskTextField, Editing, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskTextField, Selected, QskAspect::FirstSystemState << 3 )
+QSK_SYSTEM_STATE( QskTextField, Error, QskAspect::FirstSystemState << 4 )
+QSK_SYSTEM_STATE( QskTextField, TextPopulated, QskAspect::LastUserState << 1 )
+
+static inline void qskPropagateReadOnly( QskTextField* input )
 {
     Q_EMIT input->readOnlyChanged( input->isReadOnly() );
 
@@ -39,31 +40,31 @@ static inline void qskPropagateReadOnly( QskTextInput* input )
 }
 
 static inline void qskBindSignals(
-    const QQuickTextInput* wrappedInput, QskTextInput* input )
+    const QQuickTextInput* wrappedInput, QskTextField* input )
 {
     QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
-        input, [ input ] { Q_EMIT input->inputTextChanged( input->inputText() ); } );
+        input, [ input ] { Q_EMIT input->textChanged( input->text() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::displayTextChanged,
         input, [ input ] { Q_EMIT input->displayTextChanged( input->displayText() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::textEdited,
-        input, [ input ] { Q_EMIT input->textEdited( input->inputText() ); } );
+        input, [ input ] { Q_EMIT input->textEdited( input->text() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::validatorChanged,
-        input, &QskTextInput::validatorChanged );
+        input, &QskTextField::validatorChanged );
 
     QObject::connect( wrappedInput, &QQuickTextInput::inputMaskChanged,
-        input, &QskTextInput::inputMaskChanged );
+        input, &QskTextField::inputMaskChanged );
 
     QObject::connect( wrappedInput, &QQuickTextInput::readOnlyChanged,
         input, [ input ] { qskPropagateReadOnly( input ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::overwriteModeChanged,
-        input, &QskTextInput::overwriteModeChanged );
+        input, &QskTextField::overwriteModeChanged );
 
     QObject::connect( wrappedInput, &QQuickTextInput::maximumLengthChanged,
-        input, &QskTextInput::maximumLengthChanged );
+        input, &QskTextField::maximumLengthChanged );
 
     QObject::connect( wrappedInput, &QQuickTextInput::wrapModeChanged,
         input, [ input ] { Q_EMIT input->wrapModeChanged( input->wrapMode() ); } );
@@ -72,10 +73,10 @@ static inline void qskBindSignals(
         input, [ input ] { Q_EMIT input->echoModeChanged( input->echoMode() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::passwordCharacterChanged,
-        input, &QskTextInput::passwordCharacterChanged );
+        input, &QskTextField::passwordCharacterChanged );
 
     QObject::connect( wrappedInput, &QQuickTextInput::passwordMaskDelayChanged,
-        input, &QskTextInput::passwordMaskDelayChanged );
+        input, &QskTextField::passwordMaskDelayChanged );
 
     QObject::connect( wrappedInput, &QQuickItem::implicitWidthChanged,
         input, &QskControl::resetImplicitSize );
@@ -91,7 +92,7 @@ namespace
         using Inherited = QQuickTextInput;
 
       public:
-        TextInput( QskTextInput* );
+        TextInput( QskTextField* );
 
         void setEditing( bool on );
 
@@ -206,7 +207,7 @@ namespace
         }
     };
 
-    TextInput::TextInput( QskTextInput* textInput )
+    TextInput::TextInput( QskTextField* textInput )
         : QQuickTextInput( textInput )
     {
         classBegin();
@@ -243,7 +244,7 @@ namespace
 
     void TextInput::updateMetrics()
     {
-        auto input = static_cast< const QskTextInput* >( parentItem() );
+        auto input = static_cast< const QskTextField* >( parentItem() );
 
         setAlignment( input->alignment() );
         setFont( input->font() );
@@ -251,14 +252,14 @@ namespace
 
     void TextInput::updateColors()
     {
-        auto input = static_cast< const QskTextInput* >( parentItem() );
+        auto input = static_cast< const QskTextField* >( parentItem() );
         auto d = QQuickTextInputPrivate::get( this );
 
         bool isDirty = false;
 
         QColor color;
 
-        color = input->color( QskTextInput::InputText );
+        color = input->color( QskTextField::Text );
         if ( d->color != color )
         {
             d->color = color;
@@ -267,14 +268,14 @@ namespace
 
         if ( d->hasSelectedText() )
         {
-            color = input->color( QskTextInput::Panel | QskTextInput::Selected );
+            color = input->color( QskTextField::Panel | QskTextField::Selected );
             if ( d->selectionColor != color )
             {
                 d->selectionColor = color;
                 isDirty = true;
             }
 
-            color = input->color( QskTextInput::InputText | QskTextInput::Selected );
+            color = input->color( QskTextField::Text | QskTextField::Selected );
             if ( d->selectedTextColor != color )
             {
                 d->selectedTextColor = color;
@@ -291,7 +292,7 @@ namespace
     }
 }
 
-class QskTextInput::PrivateData
+class QskTextField::PrivateData
 {
   public:
     PrivateData()
@@ -309,7 +310,7 @@ class QskTextInput::PrivateData
     int emphasis : 4;
 };
 
-QskTextInput::QskTextInput( QQuickItem* parent )
+QskTextField::QskTextField( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
@@ -345,17 +346,17 @@ QskTextInput::QskTextInput( QQuickItem* parent )
     } );
 }
 
-QskTextInput::QskTextInput( const QString& text, QQuickItem* parent )
-    : QskTextInput( parent )
+QskTextField::QskTextField( const QString& text, QQuickItem* parent )
+    : QskTextField( parent )
 {
-    setInputText( text );
+    setText( text );
 }
 
-QskTextInput::~QskTextInput()
+QskTextField::~QskTextField()
 {
 }
 
-void QskTextInput::setPanel( bool on )
+void QskTextField::setPanel( bool on )
 {
     if ( on != m_data->hasPanel )
     {
@@ -367,12 +368,12 @@ void QskTextInput::setPanel( bool on )
     }
 }
 
-bool QskTextInput::hasPanel() const
+bool QskTextField::hasPanel() const
 {
     return m_data->hasPanel;
 }
 
-bool QskTextInput::event( QEvent* event )
+bool QskTextField::event( QEvent* event )
 {
     if ( event->type() == QEvent::ShortcutOverride )
     {
@@ -386,7 +387,7 @@ bool QskTextInput::event( QEvent* event )
     return Inherited::event( event );
 }
 
-void QskTextInput::keyPressEvent( QKeyEvent* event )
+void QskTextField::keyPressEvent( QKeyEvent* event )
 {
     if ( isEditing() )
     {
@@ -438,16 +439,16 @@ void QskTextInput::keyPressEvent( QKeyEvent* event )
     Inherited::keyPressEvent( event );
 }
 
-void QskTextInput::keyReleaseEvent( QKeyEvent* event )
+void QskTextField::keyReleaseEvent( QKeyEvent* event )
 {
     Inherited::keyReleaseEvent( event );
 }
 
-void QskTextInput::mousePressEvent( QMouseEvent* event )
+void QskTextField::mousePressEvent( QMouseEvent* event )
 {
     if( !isReadOnly() && subControlContentsRect( TrailingIcon ).contains( event->pos() ) )
     {
-        setInputText( {} );
+        setText( {} );
     }
     else
     {
@@ -458,12 +459,12 @@ void QskTextInput::mousePressEvent( QMouseEvent* event )
         setEditing( true );
 }
 
-void QskTextInput::mouseMoveEvent( QMouseEvent* event )
+void QskTextField::mouseMoveEvent( QMouseEvent* event )
 {
     m_data->textInput->handleEvent( event );
 }
 
-void QskTextInput::mouseReleaseEvent( QMouseEvent* event )
+void QskTextField::mouseReleaseEvent( QMouseEvent* event )
 {
     m_data->textInput->handleEvent( event );
 
@@ -471,17 +472,17 @@ void QskTextInput::mouseReleaseEvent( QMouseEvent* event )
         setEditing( true );
 }
 
-void QskTextInput::mouseDoubleClickEvent( QMouseEvent* event )
+void QskTextField::mouseDoubleClickEvent( QMouseEvent* event )
 {
     m_data->textInput->handleEvent( event );
 }
 
-void QskTextInput::inputMethodEvent( QInputMethodEvent* event )
+void QskTextField::inputMethodEvent( QInputMethodEvent* event )
 {
     m_data->textInput->handleEvent( event );
 }
 
-void QskTextInput::focusInEvent( QFocusEvent* event )
+void QskTextField::focusInEvent( QFocusEvent* event )
 {
     if ( m_data->activationModes & ActivationOnFocus )
     {
@@ -502,7 +503,7 @@ void QskTextInput::focusInEvent( QFocusEvent* event )
     Inherited::focusInEvent( event );
 }
 
-void QskTextInput::focusOutEvent( QFocusEvent* event )
+void QskTextField::focusOutEvent( QFocusEvent* event )
 {
     switch ( event->reason() )
     {
@@ -521,7 +522,7 @@ void QskTextInput::focusOutEvent( QFocusEvent* event )
     Inherited::focusOutEvent( event );
 }
 
-void QskTextInput::hoverEnterEvent( QHoverEvent* event )
+void QskTextField::hoverEnterEvent( QHoverEvent* event )
 {
     using A = QskAspect;
 
@@ -531,7 +532,7 @@ void QskTextInput::hoverEnterEvent( QHoverEvent* event )
     Inherited::hoverEnterEvent( event );
 }
 
-void QskTextInput::hoverMoveEvent( QHoverEvent* event )
+void QskTextField::hoverMoveEvent( QHoverEvent* event )
 {
     using A = QskAspect;
 
@@ -541,7 +542,7 @@ void QskTextInput::hoverMoveEvent( QHoverEvent* event )
     Inherited::hoverMoveEvent( event );
 }
 
-void QskTextInput::hoverLeaveEvent( QHoverEvent* event )
+void QskTextField::hoverLeaveEvent( QHoverEvent* event )
 {
     using A = QskAspect;
 
@@ -551,7 +552,7 @@ void QskTextInput::hoverLeaveEvent( QHoverEvent* event )
     Inherited::hoverLeaveEvent( event );
 }
 
-QSizeF QskTextInput::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
+QSizeF QskTextField::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
@@ -568,26 +569,26 @@ QSizeF QskTextInput::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
         hint = hint.expandedTo( strutSizeHint( Panel ) );
     }
 
-    const auto textInputSkinlet = static_cast< const QskTextInputSkinlet* >( effectiveSkinlet() );
+    const auto textInputSkinlet = static_cast< const QskTextFieldSkinlet* >( effectiveSkinlet() );
     return textInputSkinlet->adjustSizeHint( this, which, hint );
 }
 
-void QskTextInput::updateLayout()
+void QskTextField::updateLayout()
 {
     auto input = m_data->textInput;
 
     input->updateMetrics();
-    qskSetItemGeometry( input, subControlRect( InputText ) );
+    qskSetItemGeometry( input, subControlRect( Text ) );
 }
 
-void QskTextInput::updateNode( QSGNode* node )
+void QskTextField::updateNode( QSGNode* node )
 {
     m_data->textInput->updateColors();
     m_data->textInput->updateMetrics();
     Inherited::updateNode( node );
 }
 
-void QskTextInput::setEmphasis( Emphasis emphasis )
+void QskTextField::setEmphasis( Emphasis emphasis )
 {
     if ( emphasis != m_data->emphasis )
     {
@@ -600,27 +601,27 @@ void QskTextInput::setEmphasis( Emphasis emphasis )
     }
 }
 
-QskTextInput::Emphasis QskTextInput::emphasis() const
+QskTextField::Emphasis QskTextField::emphasis() const
 {
     return static_cast< Emphasis >( m_data->emphasis );
 }
 
-QString QskTextInput::inputText() const
+QString QskTextField::text() const
 {
     return m_data->textInput->text();
 }
 
-void QskTextInput::setInputText( const QString& text )
+void QskTextField::setText( const QString& text )
 {
     m_data->textInput->setText( text );
 }
 
-QString QskTextInput::labelText() const
+QString QskTextField::labelText() const
 {
     return m_data->labelText;
 }
 
-void QskTextInput::setLabelText( const QString& text )
+void QskTextField::setLabelText( const QString& text )
 {
     if ( m_data->labelText != text )
     {
@@ -629,17 +630,17 @@ void QskTextInput::setLabelText( const QString& text )
     }
 }
 
-QskGraphic QskTextInput::leadingIcon() const
+QskGraphic QskTextField::leadingIcon() const
 {
     return symbolHint( LeadingIcon );
 }
 
-void QskTextInput::setLeadingIcon( const QskGraphic& icon )
+void QskTextField::setLeadingIcon( const QskGraphic& icon )
 {
     setSymbolHint( LeadingIcon, icon );
 }
 
-void QskTextInput::setHintText( const QString& text )
+void QskTextField::setHintText( const QString& text )
 {
     if ( m_data->hintText != text )
     {
@@ -648,12 +649,12 @@ void QskTextInput::setHintText( const QString& text )
     }
 }
 
-QString QskTextInput::hintText() const
+QString QskTextField::hintText() const
 {
     return m_data->hintText;
 }
 
-void QskTextInput::setSupportingText( const QString& text )
+void QskTextField::setSupportingText( const QString& text )
 {
     if ( m_data->supportingText != text )
     {
@@ -662,17 +663,17 @@ void QskTextInput::setSupportingText( const QString& text )
     }
 }
 
-QString QskTextInput::supportingText() const
+QString QskTextField::supportingText() const
 {
     return m_data->supportingText;
 }
 
-QskTextInput::ActivationModes QskTextInput::activationModes() const
+QskTextField::ActivationModes QskTextField::activationModes() const
 {
-    return static_cast< QskTextInput::ActivationModes >( m_data->activationModes );
+    return static_cast< QskTextField::ActivationModes >( m_data->activationModes );
 }
 
-void QskTextInput::setActivationModes( ActivationModes modes )
+void QskTextField::setActivationModes( ActivationModes modes )
 {
     if ( static_cast< ActivationModes >( m_data->activationModes ) != modes )
     {
@@ -681,81 +682,81 @@ void QskTextInput::setActivationModes( ActivationModes modes )
     }
 }
 
-static inline void qskUpdateInputMethodFont( const QskTextInput* input )
+static inline void qskUpdateInputMethodFont( const QskTextField* input )
 {
     const auto queries = Qt::ImCursorRectangle | Qt::ImFont | Qt::ImAnchorRectangle;
     qskUpdateInputMethod( input, queries );
 }
 
-void QskTextInput::setFontRole( const QskFontRole& role )
+void QskTextField::setFontRole( const QskFontRole& role )
 {
-    if ( setFontRoleHint( InputText, role ) )
+    if ( setFontRoleHint( Text, role ) )
     {
         qskUpdateInputMethodFont( this );
         Q_EMIT fontRoleChanged();
     }
 }
 
-void QskTextInput::resetFontRole()
+void QskTextField::resetFontRole()
 {
-    if ( resetFontRoleHint( InputText ) )
+    if ( resetFontRoleHint( Text ) )
     {
         qskUpdateInputMethodFont( this );
         Q_EMIT fontRoleChanged();
     }
 }
 
-QskFontRole QskTextInput::fontRole() const
+QskFontRole QskTextField::fontRole() const
 {
-    return fontRoleHint( InputText );
+    return fontRoleHint( Text );
 }
 
-void QskTextInput::setAlignment( Qt::Alignment alignment )
+void QskTextField::setAlignment( Qt::Alignment alignment )
 {
-    if ( setAlignmentHint( InputText, alignment ) )
+    if ( setAlignmentHint( Text, alignment ) )
     {
         m_data->textInput->setAlignment( alignment );
         Q_EMIT alignmentChanged();
     }
 }
 
-void QskTextInput::resetAlignment()
+void QskTextField::resetAlignment()
 {
-    if ( resetAlignmentHint( InputText ) )
+    if ( resetAlignmentHint( Text ) )
     {
         m_data->textInput->setAlignment( alignment() );
         Q_EMIT alignmentChanged();
     }
 }
 
-Qt::Alignment QskTextInput::alignment() const
+Qt::Alignment QskTextField::alignment() const
 {
-    return alignmentHint( InputText, Qt::AlignLeft | Qt::AlignTop );
+    return alignmentHint( Text, Qt::AlignLeft | Qt::AlignTop );
 }
 
-void QskTextInput::setWrapMode( QskTextOptions::WrapMode wrapMode ) 
+void QskTextField::setWrapMode( QskTextOptions::WrapMode wrapMode ) 
 {
     m_data->textInput->setWrapMode(
         static_cast< QQuickTextInput::WrapMode >( wrapMode ) );
 }
 
-QskTextOptions::WrapMode QskTextInput::wrapMode() const
+QskTextOptions::WrapMode QskTextField::wrapMode() const
 {
     return static_cast< QskTextOptions::WrapMode >(
         m_data->textInput->wrapMode() );
 }
 
-QFont QskTextInput::font() const
+QFont QskTextField::font() const
 {
-    return effectiveFont( QskTextInput::InputText );
+    return effectiveFont( QskTextField::Text );
 }
 
-bool QskTextInput::isReadOnly() const
+bool QskTextField::isReadOnly() const
 {
     return m_data->textInput->isReadOnly();
 }
 
-void QskTextInput::setReadOnly( bool on )
+void QskTextField::setReadOnly( bool on )
 {
     auto input = m_data->textInput;
 
@@ -776,7 +777,7 @@ void QskTextInput::setReadOnly( bool on )
     setSkinStateFlag( ReadOnly, on );
 }
 
-void QskTextInput::setEditing( bool on )
+void QskTextField::setEditing( bool on )
 {
     if ( isReadOnly() || on == isEditing() )
         return;
@@ -806,17 +807,17 @@ void QskTextInput::setEditing( bool on )
     Q_EMIT editingChanged( on );
 }
 
-bool QskTextInput::isEditing() const
+bool QskTextField::isEditing() const
 {
     return hasSkinState( Editing );
 }
 
-void QskTextInput::ensureVisible( int position )
+void QskTextField::ensureVisible( int position )
 {
     m_data->textInput->ensureVisible( position );
 }
 
-QskAspect::Variation QskTextInput::effectiveVariation() const
+QskAspect::Variation QskTextField::effectiveVariation() const
 {
     switch( m_data->emphasis )
     {
@@ -828,53 +829,53 @@ QskAspect::Variation QskTextInput::effectiveVariation() const
     }
 }
 
-int QskTextInput::cursorPosition() const
+int QskTextField::cursorPosition() const
 {
     return m_data->textInput->cursorPosition();
 }
 
-void QskTextInput::setCursorPosition( int pos )
+void QskTextField::setCursorPosition( int pos )
 {
     m_data->textInput->setCursorPosition( pos );
 }
 
-int QskTextInput::maxLength() const
+int QskTextField::maxLength() const
 {
     return m_data->textInput->maxLength();
 }
 
-void QskTextInput::setMaxLength( int length )
+void QskTextField::setMaxLength( int length )
 {
     m_data->textInput->setMaxLength( length );
 }
 
-QValidator* QskTextInput::validator() const
+QValidator* QskTextField::validator() const
 {
     return m_data->textInput->validator();
 }
 
-void QskTextInput::setValidator( QValidator* validator )
+void QskTextField::setValidator( QValidator* validator )
 {
     m_data->textInput->setValidator( validator );
 }
 
-QString QskTextInput::inputMask() const
+QString QskTextField::inputMask() const
 {
     return m_data->textInput->inputMask();
 }
 
-void QskTextInput::setInputMask( const QString& mask )
+void QskTextField::setInputMask( const QString& mask )
 {
     m_data->textInput->setInputMask( mask );
 }
 
-QskTextInput::EchoMode QskTextInput::echoMode() const
+QskTextField::EchoMode QskTextField::echoMode() const
 {
     const auto mode = m_data->textInput->echoMode();
-    return static_cast< QskTextInput::EchoMode >( mode );
+    return static_cast< QskTextField::EchoMode >( mode );
 }
 
-void QskTextInput::setEchoMode( EchoMode mode )
+void QskTextField::setEchoMode( EchoMode mode )
 {
     if ( mode != echoMode() )
     {
@@ -885,75 +886,75 @@ void QskTextInput::setEchoMode( EchoMode mode )
     }
 }
 
-QString QskTextInput::passwordCharacter() const
+QString QskTextField::passwordCharacter() const
 {
     return m_data->textInput->passwordCharacter();
 }
 
-void QskTextInput::setPasswordCharacter( const QString& text )
+void QskTextField::setPasswordCharacter( const QString& text )
 {
     m_data->textInput->setPasswordCharacter( text );
 }
 
-void QskTextInput::resetPasswordCharacter()
+void QskTextField::resetPasswordCharacter()
 {
     m_data->textInput->setPasswordCharacter(
         QGuiApplication::styleHints()->passwordMaskCharacter() );
 }
 
-int QskTextInput::passwordMaskDelay() const
+int QskTextField::passwordMaskDelay() const
 {
     return m_data->textInput->passwordMaskDelay();
 }
 
-void QskTextInput::setPasswordMaskDelay( int ms )
+void QskTextField::setPasswordMaskDelay( int ms )
 {
     m_data->textInput->setPasswordMaskDelay( ms );
 }
 
-void QskTextInput::resetPasswordMaskDelay()
+void QskTextField::resetPasswordMaskDelay()
 {
     m_data->textInput->resetPasswordMaskDelay();
 }
 
-QString QskTextInput::displayText() const
+QString QskTextField::displayText() const
 {
     return m_data->textInput->displayText();
 }
 
-QString QskTextInput::preeditText() const
+QString QskTextField::preeditText() const
 {
     const auto d = QQuickTextInputPrivate::get( m_data->textInput );
     return d->m_textLayout.preeditAreaText();
 }
 
-bool QskTextInput::overwriteMode() const
+bool QskTextField::overwriteMode() const
 {
     return m_data->textInput->overwriteMode();
 }
 
-void QskTextInput::setOverwriteMode( bool overwrite )
+void QskTextField::setOverwriteMode( bool overwrite )
 {
     m_data->textInput->setOverwriteMode( overwrite );
 }
 
-bool QskTextInput::hasAcceptableInput() const
+bool QskTextField::hasAcceptableInput() const
 {
     return m_data->textInput->hasAcceptableInput();
 }
 
-bool QskTextInput::fixup()
+bool QskTextField::fixup()
 {
     return m_data->textInput->fixup();
 }
 
-QVariant QskTextInput::inputMethodQuery(
+QVariant QskTextField::inputMethodQuery(
     Qt::InputMethodQuery property ) const
 {
     return inputMethodQuery( property, QVariant() );
 }
 
-QVariant QskTextInput::inputMethodQuery(
+QVariant QskTextField::inputMethodQuery(
     Qt::InputMethodQuery query, const QVariant& argument ) const
 {
     switch ( query )
@@ -987,22 +988,22 @@ QVariant QskTextInput::inputMethodQuery(
     }
 }
 
-bool QskTextInput::canUndo() const
+bool QskTextField::canUndo() const
 {
     return m_data->textInput->canUndo();
 }
 
-bool QskTextInput::canRedo() const
+bool QskTextField::canRedo() const
 {
     return m_data->textInput->canRedo();
 }
 
-Qt::InputMethodHints QskTextInput::inputMethodHints() const
+Qt::InputMethodHints QskTextField::inputMethodHints() const
 {
     return m_data->textInput->inputMethodHints();
 }
 
-void QskTextInput::setInputMethodHints( Qt::InputMethodHints hints )
+void QskTextField::setInputMethodHints( Qt::InputMethodHints hints )
 {
     if ( m_data->textInput->inputMethodHints() != hints )
     {
@@ -1011,7 +1012,7 @@ void QskTextInput::setInputMethodHints( Qt::InputMethodHints hints )
     }
 }
 
-void QskTextInput::setupFrom( const QQuickItem* item )
+void QskTextField::setupFrom( const QQuickItem* item )
 {
     if ( item == nullptr )
         return;
@@ -1019,7 +1020,7 @@ void QskTextInput::setupFrom( const QQuickItem* item )
     // finding attributes from the input hints of item
 
     int maxCharacters = 32767;
-    QskTextInput::EchoMode echoMode = QskTextInput::Normal;
+    QskTextField::EchoMode echoMode = QskTextField::Normal;
 
     Qt::InputMethodQueries queries = Qt::ImQueryAll;
     queries &= ~Qt::ImEnabled;
@@ -1033,7 +1034,7 @@ void QskTextInput::setupFrom( const QQuickItem* item )
             event.value( Qt::ImHints ).toInt() );
 
         if ( hints & Qt::ImhHiddenText )
-            echoMode = QskTextInput::NoEcho;
+            echoMode = QskTextField::NoEcho;
     }
 
     if ( event.queries() & Qt::ImMaximumTextLength )
@@ -1049,7 +1050,7 @@ void QskTextInput::setupFrom( const QQuickItem* item )
     if ( event.queries() & Qt::ImSurroundingText )
     {
         const auto text = event.value( Qt::ImSurroundingText ).toString();
-        setInputText( text );
+        setText( text );
     }
 
     if ( event.queries() & Qt::ImCursorPosition )
@@ -1071,7 +1072,7 @@ void QskTextInput::setupFrom( const QQuickItem* item )
     int passwordMaskDelay = -1;
     QString passwordCharacter;
 
-    if ( echoMode == QskTextInput::NoEcho )
+    if ( echoMode == QskTextField::NoEcho )
     {
         /*
              Qt::ImhHiddenText does not provide information
@@ -1094,8 +1095,8 @@ void QskTextInput::setupFrom( const QQuickItem* item )
         if ( value.canConvert< int >() )
         {
             const auto mode = value.toInt();
-            if ( mode == QskTextInput::Password )
-                echoMode = QskTextInput::Password;
+            if ( mode == QskTextField::Password )
+                echoMode = QskTextField::Password;
         }
     }
 
@@ -1112,4 +1113,4 @@ void QskTextInput::setupFrom( const QQuickItem* item )
     setEchoMode( echoMode );
 }
 
-#include "moc_QskTextInput.cpp"
+#include "moc_QskTextField.cpp"

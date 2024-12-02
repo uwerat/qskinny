@@ -7,7 +7,7 @@
 
 #include <QskGridBox.h>
 #include <QskSlider.h>
-#include <QskTextInput.h>
+#include <QskTextField.h>
 #include <QskSpinBox.h>
 
 namespace
@@ -72,57 +72,57 @@ namespace
             {
             }
 
-            for( const auto& emphasis : { QskTextInput::NoEmphasis, QskTextInput::LowEmphasis } )
+            for( const auto& emphasis : { QskTextField::NoEmphasis, QskTextField::LowEmphasis } )
             {
                 {
-                    auto input = new QskTextInput( this );
-                    input->setEmphasis( emphasis );
-                    const QString text = ( emphasis == QskTextInput::NoEmphasis ) ? "filled" : "outlined";
-                    input->setLabelText( text );
-                    input->setHintText( "hint text" );
-                    input->setSupportingText( "supporting text" );
-                    input->setMaxLength( 10 );
+                    auto textField = new QskTextField( this );
+                    textField->setEmphasis( emphasis );
+                    const QString text = ( emphasis == QskTextField::NoEmphasis ) ? "filled" : "outlined";
+                    textField->setLabelText( text );
+                    textField->setHintText( "hint text" );
+                    textField->setSupportingText( "supporting text" );
+                    textField->setMaxLength( 10 );
                 }
 
                 {
-                    auto input = new QskTextInput( this );
-                    input->setEmphasis( emphasis );
-                    input->setLeadingIcon( {} );
-                    input->setLabelText( "no leading icon" );
-                    input->setHintText( "hint text" );
-                    input->setSupportingText( "supporting text" );
+                    auto textField = new QskTextField( this );
+                    textField->setEmphasis( emphasis );
+                    textField->setLeadingIcon( {} );
+                    textField->setLabelText( "no leading icon" );
+                    textField->setHintText( "hint text" );
+                    textField->setSupportingText( "supporting text" );
                 }
                 {
-                    auto input = new QskTextInput( this );
-                    input->setEmphasis( emphasis );
-                    input->setLeadingIcon( {} );
-                    input->setHintText( "no label text" );
-                }
-
-                {
-                    auto input = new QskTextInput( this );
-                    input->setEmphasis( emphasis );
-                    input->setSkinStateFlag( QskTextInput::Error );
-                    input->setLabelText( "error" );
-                    input->setHintText( "hint text" );
-                    input->setSupportingText( "error text" );
+                    auto textField = new QskTextField( this );
+                    textField->setEmphasis( emphasis );
+                    textField->setLeadingIcon( {} );
+                    textField->setHintText( "no label text" );
                 }
 
                 {
-                    auto input = new QskTextInput( this );
-                    input->setEmphasis( emphasis );
-                    input->setReadOnly( true );
-                    input->setLabelText( "read only" );
-                    input->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
+                    auto textField = new QskTextField( this );
+                    textField->setEmphasis( emphasis );
+                    textField->setSkinStateFlag( QskTextField::Error );
+                    textField->setLabelText( "error" );
+                    textField->setHintText( "hint text" );
+                    textField->setSupportingText( "error text" );
                 }
 
                 {
-                    auto input = new QskTextInput( this );
-                    input->setEmphasis( emphasis );
-                    input->setMaxLength( 15 );
-                    input->setLabelText( "password" );
-                    input->setEchoMode( QskTextInput::Password );
-                    input->setHintText( "better be strong" );
+                    auto textField = new QskTextField( this );
+                    textField->setEmphasis( emphasis );
+                    textField->setReadOnly( true );
+                    textField->setLabelText( "read only" );
+                    textField->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
+                }
+
+                {
+                    auto textField = new QskTextField( this );
+                    textField->setEmphasis( emphasis );
+                    textField->setMaxLength( 15 );
+                    textField->setLabelText( "password" );
+                    textField->setEchoMode( QskTextField::Password );
+                    textField->setHintText( "better be strong" );
                 }
             }
         }

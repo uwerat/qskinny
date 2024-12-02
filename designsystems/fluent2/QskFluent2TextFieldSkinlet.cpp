@@ -3,21 +3,21 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskFluent2TextInputSkinlet.h"
-#include "QskTextInput.h"
+#include "QskFluent2TextFieldSkinlet.h"
+#include "QskTextField.h"
 
-using Q = QskTextInput;
+using Q = QskTextField;
 
-QskFluent2TextInputSkinlet::QskFluent2TextInputSkinlet( QskSkin* skin )
+QskFluent2TextFieldSkinlet::QskFluent2TextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
 }
 
-QskFluent2TextInputSkinlet::~QskFluent2TextInputSkinlet()
+QskFluent2TextFieldSkinlet::~QskFluent2TextFieldSkinlet()
 {
 }
 
-QRectF QskFluent2TextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
+QRectF QskFluent2TextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto input = static_cast< const Q* >( skinnable );
@@ -48,14 +48,14 @@ QRectF QskFluent2TextInputSkinlet::subControlRect( const QskSkinnable* skinnable
         }
         else
         {
-            return input->subControlRect( Q::InputText );
+            return input->subControlRect( Q::Text );
         }
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QSizeF QskFluent2TextInputSkinlet::adjustSizeHint( const QskSkinnable* skinnable, Qt::SizeHint which, const QSizeF& oldHint ) const
+QSizeF QskFluent2TextFieldSkinlet::adjustSizeHint( const QskSkinnable* skinnable, Qt::SizeHint which, const QSizeF& oldHint ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
@@ -72,4 +72,4 @@ QSizeF QskFluent2TextInputSkinlet::adjustSizeHint( const QskSkinnable* skinnable
     return hint;
 }
 
-#include "moc_QskFluent2TextInputSkinlet.cpp"
+#include "moc_QskFluent2TextFieldSkinlet.cpp"

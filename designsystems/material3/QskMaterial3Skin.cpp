@@ -11,8 +11,7 @@
 #include "QskMaterial3Skin.h"
 #include "QskMaterial3ProgressBarSkinlet.h"
 #include "QskMaterial3SliderSkinlet.h"
-
-#include "QskMaterial3TextInputSkinlet.h"
+#include "QskMaterial3TextFieldSkinlet.h"
 
 #include <QskSkinHintTableEditor.h>
 
@@ -47,7 +46,7 @@
 #include <QskTabBar.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
-#include <QskTextInput.h>
+#include <QskTextField.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -202,7 +201,7 @@ namespace
         Q_INVOKABLE void setupTabButton();
         Q_INVOKABLE void setupTabBar();
         Q_INVOKABLE void setupTabView();
-        Q_INVOKABLE void setupTextInput();
+        Q_INVOKABLE void setupTextField();
         Q_INVOKABLE void setupTextLabel();
 
         QskGraphic symbol( const char* name ) const
@@ -452,9 +451,9 @@ void Editor::setupTextLabel()
 }
 
 
-void Editor::setupTextInput()
+void Editor::setupTextField()
 {
-    using Q = QskTextInput;
+    using Q = QskTextField;
     using M3 = QskMaterial3Skin;
 
     const QskStateCombination allStates( QskStateCombination::CombinationNoState, QskAspect::AllStates );
@@ -543,28 +542,28 @@ void Editor::setupTextInput()
 
     // InputText
 
-    setMargin( Q::InputText, { 16_dp, 8_dp, 16_dp, 8_dp } );
-    setColor( Q::InputText, m_pal.onSurface );
+    setMargin( Q::Text, { 16_dp, 8_dp, 16_dp, 8_dp } );
+    setColor( Q::Text, m_pal.onSurface );
     setColor( Q::Panel | Q::Selected, m_pal.surfaceVariant, allStates );
-    setFontRole( Q::InputText, BodyLarge );
-    setAlignment( Q::InputText, Qt::AlignLeft | Qt::AlignBottom );
+    setFontRole( Q::Text, BodyLarge );
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignBottom );
 
-    setColor( Q::InputText | Q::Error, m_pal.onSurface, allStates ); // same as with Hovered and Focused
+    setColor( Q::Text | Q::Error, m_pal.onSurface, allStates ); // same as with Hovered and Focused
 
-    setColor( Q::InputText | Q::Disabled, m_pal.onSurface38, allStates );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38, allStates );
 
     // InputText - Outlined
 
     setColor( Q::Panel | Q::Selected | M3::Outlined, m_pal.surfaceVariant, allStates );
-    setAlignment( Q::InputText | M3::Outlined, Qt::AlignLeft | Qt::AlignVCenter );
+    setAlignment( Q::Text | M3::Outlined, Qt::AlignLeft | Qt::AlignVCenter );
 
 
     // HintText
 
-    setColor( Q::HintText, color( Q::InputText ) );
-    setFontRole( Q::HintText, fontRole( Q::InputText ) );
-    setAlignment( Q::HintText, alignment( Q::InputText ) );
-    setAlignment( Q::HintText | M3::Outlined, alignment( Q::InputText | M3::Outlined ) );
+    setColor( Q::HintText, color( Q::Text ) );
+    setFontRole( Q::HintText, fontRole( Q::Text ) );
+    setAlignment( Q::HintText, alignment( Q::Text ) );
+    setAlignment( Q::HintText | M3::Outlined, alignment( Q::Text | M3::Outlined ) );
 
 
     // TrailingIcon
@@ -1723,6 +1722,7 @@ QskMaterial3Skin::QskMaterial3Skin( QObject* parent )
 {
     declareSkinlet< QskProgressBar, QskMaterial3ProgressBarSkinlet >();
     declareSkinlet< QskSlider, QskMaterial3SliderSkinlet >();
+    declareSkinlet< QskTextField, QskMaterial3TextFieldSkinlet >();
 }
 
 QskMaterial3Skin::~QskMaterial3Skin()
@@ -1755,11 +1755,6 @@ static inline QFont createFont( qreal size, int lineHeight,
         font.setLetterSpacing( QFont::AbsoluteSpacing, spacing );
 
     return font;
-}
-
-void QskMaterial3Skin::setupSkinlets()
-{
-    declareSkinlet< QskTextInput, QskMaterial3TextInputSkinlet >();
 }
 
 void QskMaterial3Skin::setupFonts()
@@ -1827,7 +1822,6 @@ void QskMaterial3Skin::initHints()
 {
     const QskMaterial3Theme theme( colorScheme() );
 
-    setupSkinlets();
     setupFonts();
     setupGraphicFilters( theme );
 

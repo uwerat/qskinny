@@ -100,8 +100,8 @@
 #include "QskTextLabel.h"
 #include "QskTextLabelSkinlet.h"
 
-#include "QskTextInput.h"
-#include "QskTextInputSkinlet.h"
+#include "QskTextField.h"
+#include "QskTextFieldSkinlet.h"
 
 #include "QskStatusIndicator.h"
 #include "QskStatusIndicatorSkinlet.h"
@@ -205,7 +205,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskTabButton, QskTabButtonSkinlet >();
     declareSkinlet< QskTabView, QskTabViewSkinlet >();
     declareSkinlet< QskTextLabel, QskTextLabelSkinlet >();
-    declareSkinlet< QskTextInput, QskTextInputSkinlet >();
+    declareSkinlet< QskTextField, QskTextFieldSkinlet >();
     declareSkinlet< QskProgressBar, QskProgressBarSkinlet >();
     declareSkinlet< QskProgressRing, QskProgressRingSkinlet >();
     declareSkinlet< QskRadioBox, QskRadioBoxSkinlet >();

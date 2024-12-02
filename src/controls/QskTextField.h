@@ -3,8 +3,8 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_TEXT_INPUT_H
-#define QSK_TEXT_INPUT_H
+#ifndef QSK_TEXT_FIELD_H
+#define QSK_TEXT_FIELD_H
 
 #include "QskControl.h"
 #include "QskGraphic.h"
@@ -13,12 +13,12 @@
 class QValidator;
 class QskFontRole;
 
-class QSK_EXPORT QskTextInput : public QskControl
+class QSK_EXPORT QskTextField : public QskControl
 {
     Q_OBJECT
 
-    Q_PROPERTY( QString inputText READ inputText
-        WRITE setInputText NOTIFY inputTextChanged USER true )
+    Q_PROPERTY( QString text READ text
+        WRITE setText NOTIFY textChanged USER true )
 
     Q_PROPERTY( QString labelText READ labelText
         WRITE setLabelText NOTIFY labelTextChanged )
@@ -66,7 +66,7 @@ class QSK_EXPORT QskTextInput : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, LeadingIcon, LabelText, InputText,
+    QSK_SUBCONTROLS( Panel, LeadingIcon, LabelText, Text,
         TrailingIconRipple, TrailingIcon, HintText, SupportingText,
         CharacterCount )
 
@@ -104,17 +104,17 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     Q_ENUM( EchoMode )
 
-    QskTextInput( QQuickItem* parent = nullptr );
-    QskTextInput( const QString&, QQuickItem* parent = nullptr );
+    QskTextField( QQuickItem* parent = nullptr );
+    QskTextField( const QString& text, QQuickItem* parent = nullptr );
 
-    ~QskTextInput() override;
+    ~QskTextField() override;
 
     void setupFrom( const QQuickItem* );
 
     void setEmphasis( Emphasis );
     Emphasis emphasis() const;
 
-    QString inputText() const;
+    QString text() const;
 
     QString labelText() const;
 
@@ -197,7 +197,7 @@ class QSK_EXPORT QskTextInput : public QskControl
     QskAspect::Variation effectiveVariation() const override;
 
   public Q_SLOTS:
-    void setInputText( const QString& );
+    void setText( const QString& );
     void setLabelText( const QString& );
 
     void setEditing( bool );
@@ -211,7 +211,7 @@ class QSK_EXPORT QskTextInput : public QskControl
     void readOnlyChanged( bool );
     void panelChanged( bool );
 
-    void inputTextChanged( const QString& );
+    void textChanged( const QString& );
     void labelTextChanged( const QString& );
 
     void displayTextChanged( const QString& );
@@ -264,7 +264,7 @@ class QSK_EXPORT QskTextInput : public QskControl
     std::unique_ptr< PrivateData > m_data;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( QskTextInput::ActivationModes )
-Q_DECLARE_METATYPE( QskTextInput::ActivationModes )
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskTextField::ActivationModes )
+Q_DECLARE_METATYPE( QskTextField::ActivationModes )
 
 #endif

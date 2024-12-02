@@ -3,8 +3,8 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskTextInputSkinlet.h"
-#include "QskTextInput.h"
+#include "QskTextFieldSkinlet.h"
+#include "QskTextField.h"
 
 #include "QskBoxBorderColors.h"
 #include "QskBoxBorderMetrics.h"
@@ -13,9 +13,9 @@
 
 #include <QFontMetricsF>
 
-using Q = QskTextInput;
+using Q = QskTextField;
 
-QskTextInputSkinlet::QskTextInputSkinlet( QskSkin* skin )
+QskTextFieldSkinlet::QskTextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
     setNodeRoles( {
@@ -25,39 +25,34 @@ QskTextInputSkinlet::QskTextInputSkinlet( QskSkin* skin )
     } );
 }
 
-QskTextInputSkinlet::~QskTextInputSkinlet()
+QskTextFieldSkinlet::~QskTextFieldSkinlet()
 {
 }
 
-QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
+QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    const auto input = static_cast< const Q* >( skinnable );
-
     if ( subControl == Q::Panel )
     {
         return contentsRect;
     }
-    else if ( subControl == Q::InputText )
+    else if ( subControl == Q::Text )
     {
-        const auto margins = input->marginHint( subControl );
+        const auto textField = static_cast< const Q* >( skinnable );
 
-        const auto leadingIconRect = input->subControlRect( Q::LeadingIcon );
-        const auto panelRect = input->subControlRect( Q::Panel );
-        auto rect = panelRect;
+        auto rect = textField->subControlRect( Q::Panel );
+
+        const auto leadingIconRect = textField->subControlRect( Q::LeadingIcon );
         rect.setLeft( leadingIconRect.right() );
 
-        const auto trailingIconRect = input->subControlRect( Q::TrailingIcon );
+        const auto trailingIconRect = textField->subControlRect( Q::TrailingIcon );
 
         if( trailingIconRect.isValid() )
-        {
             rect.setRight( trailingIconRect.left() );
-        }
         else
-        {
             rect.setRight( contentsRect.right() );
-        }
 
+        const auto margins = skinnable->marginHint( subControl );
         rect = rect.marginsRemoved( margins );
 
         return rect;
@@ -66,21 +61,22 @@ QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QSizeF QskTextInputSkinlet::adjustSizeHint( const QskSkinnable*, Qt::SizeHint, const QSizeF& hint ) const
+QSizeF QskTextFieldSkinlet::adjustSizeHint(
+    const QskSkinnable*, Qt::SizeHint, const QSizeF& hint ) const
 {
     return hint;
 }
 
-QSGNode* QskTextInputSkinlet::updateSubNode(
+QSGNode* QskTextFieldSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    const auto input = static_cast< const Q* >( skinnable );
+    const auto textField = static_cast< const Q* >( skinnable );
 
     switch ( nodeRole )
     {
         case PanelRole:
         {
-            if ( !input->hasPanel() )
+            if ( !textField->hasPanel() )
                 return nullptr;
 
             return updateBoxNode( skinnable, node, Q::Panel );
@@ -88,16 +84,16 @@ QSGNode* QskTextInputSkinlet::updateSubNode(
 
         case LabelTextRole:
         {
-            return updateTextNode( skinnable, node, input->labelText(), Q::LabelText );
+            return updateTextNode( skinnable, node, textField->labelText(), Q::LabelText );
         }
 
         case HintTextRole:
         {
-            return updateTextNode( skinnable, node, input->hintText(), Q::HintText );
+            return updateTextNode( skinnable, node, textField->hintText(), Q::HintText );
         }
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-#include "moc_QskTextInputSkinlet.cpp"
+#include "moc_QskTextFieldSkinlet.cpp"

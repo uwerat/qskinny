@@ -7,17 +7,17 @@
 #define QSK_FLUENT2_INPUT_SKINLET_H
 
 #include "QskFluent2Global.h"
-#include "QskTextInputSkinlet.h"
+#include "QskTextFieldSkinlet.h"
 
-class QSK_FLUENT2_EXPORT QskFluent2TextInputSkinlet : public QskTextInputSkinlet
+class QSK_FLUENT2_EXPORT QskFluent2TextFieldSkinlet : public QskTextFieldSkinlet
 {
     Q_GADGET
 
-    using Inherited = QskTextInputSkinlet;
+    using Inherited = QskTextFieldSkinlet;
 
   public:
-    Q_INVOKABLE QskFluent2TextInputSkinlet( QskSkin* = nullptr );
-    ~QskFluent2TextInputSkinlet() override;
+    Q_INVOKABLE QskFluent2TextFieldSkinlet( QskSkin* = nullptr );
+    ~QskFluent2TextFieldSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF& rect, QskAspect::Subcontrol ) const override;
