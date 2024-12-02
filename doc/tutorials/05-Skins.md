@@ -9,7 +9,7 @@ itself as well as read the skin hints from the skin:
 
 **Skinlets query the control and the skin**
 
-![Styling controls](/doc/tutorials/images/skins-1.png)
+![Styling controls](/doc/images/tutorials/skins-1.png)
 
 For instance, a button skinlet will read the margins from the skin and
 the text to render from the button.
@@ -39,11 +39,11 @@ often found in mobile devices.
 
 **desktop style button**
 
-![desktop style button](/doc/tutorials/images/skinlets-button-1.png)
+![desktop style button](/doc/images/tutorials/skinlets-button-1.png)
 
 **flat button**
 
-![flat button](/doc/tutorials/images/skinlets-button-2.png)
+![flat button](/doc/images/tutorials/skinlets-button-2.png)
 
 ### Skin hints
 
@@ -81,7 +81,7 @@ public:
 
 **A button styled with skin hints**
 
-![Button with skin hints](/doc/tutorials/images/skin-hints.png)
+![Button with skin hints](/doc/images/tutorials/skin-hints.png)
 
 When writing a new skin, a developer needs to know which hints to set
 for which control. This usually depends on the control itself; however,
@@ -149,11 +149,11 @@ public:
 
 **button in normal state**
 
-![button in normal state](/doc/tutorials/images/skin-hints-states-1.png)
+![button in normal state](/doc/images/tutorials/skin-hints-states-1.png)
 
 **button in hovered state**
 
-![button in hovered state](/doc/tutorials/images/skin-hints-states-2.png)
+![button in hovered state](/doc/images/tutorials/skin-hints-states-2.png)
 
 #### Local skin hints
 
@@ -177,7 +177,7 @@ diagram now looks like this:
 
 **Skinlets can also read from local skinlets and animators**
 
-![Animators and local skin hints](/doc/tutorials/images/skins-2.png)
+![Animators and local skin hints](/doc/images/tutorials/skins-2.png)
 
 ### Skinlets
 
@@ -211,7 +211,7 @@ diagram looks like this:
 
 **There is one skinlet for each atomic control**
 
-![Animators and local skin hints](/doc/tutorials/images/skins-3.png)
+![Animators and local skin hints](/doc/images/tutorials/skins-3.png)
 
 ### Skin factories and switching between skins
 
@@ -293,8 +293,8 @@ instances:
 
 **button in `MySkin` (as above)**
 
-![button in normal state](/doc/tutorials/images/skin-hints-states-1.png)
+![button in normal state](/doc/images/tutorials/skin-hints-states-1.png)
 
 **button in `OtherSkin`**
 
-![Styling controls](/doc/tutorials/images/skin-factory.png)
+![Styling controls](/doc/images/tutorials/skin-factory.png)

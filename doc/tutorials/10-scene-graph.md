@@ -21,7 +21,7 @@ For this example, the scene graph will contain the following nodes:
 
 **Scene graph representation of a button**
 
-![Scene graph nodes for a button](/doc/tutorials/images/skins-sg-1.png)
+![Scene graph nodes for a button](/doc/images/tutorials/skins-sg-1.png)
 
 The top two nodes (root and Quick root item) are created for every
 QtQuick application. The button itself consists of 5 nodes in our case:
@@ -54,7 +54,7 @@ Then the scene graph has the following structure:
 
 **Scene graph representation of a button inside a box**
 
-![Scene graph nodes for a button in a box](/doc/tutorials/images/skins-sg-2.png)
+![Scene graph nodes for a button in a box](/doc/images/tutorials/skins-sg-2.png)
 
 Here we can see that since the box is a parent of the button, the `box
 node` is also a parent of the `button node` in the scene graph. Also, the

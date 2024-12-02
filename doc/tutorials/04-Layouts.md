@@ -22,7 +22,7 @@ margins:
 
 **implicit horizontal size hint of a button**
 
-![implicit horizontal size hint of a button](/doc/tutorials/images/size-hints-calculation.png)
+![implicit horizontal size hint of a button](/doc/images/tutorials/size-hints-calculation.png)
 
 The implicit width of a composited UI element containing a
 graphic on the left and a text on the right would be the sum of the elements’
@@ -70,7 +70,7 @@ label1->setBackgroundColor( Qt::magenta );
 
 **control without explicit size hint**
 
-![Image without explicit size hint](/doc/tutorials/images/size-hints-1.png)
+![Image without explicit size hint](/doc/images/tutorials/size-hints-1.png)
 
 If we set an explicit size hint of 150x60 pixels ourselves for the
 preferred size, the control will be rendered differently:
@@ -81,7 +81,7 @@ label1->setExplicitSizeHint( Qt::PreferredSize, { 150, 60 } );
 
 **control with explicit size hint**
 
-![Image with explicit size hint](/doc/tutorials/images/size-hints-2.png)
+![Image with explicit size hint](/doc/images/tutorials/size-hints-2.png)
 
 When dealing with standard controls or layouts, the size hints don’t
 need to be specified explicitly, as it can be deduced from its standard
@@ -105,48 +105,21 @@ The size policies of QSkinny correspond to the
 *https://doc.qt.io/qt-5/qsizepolicy.html#Policy-enum[size policies from
 QtWidgets]*:
 
-|=======================================================================
-|`QskSizePolicy::Policy` |description
-|`Fixed` |The control has a fixed size and can neither grow nor shrink.
-
-|`Minimum` |The control cannot shrink beyond its minimum size, but it
-can grow if needed.
-
-|`Maximum` |The control cannot grow beyond its maximum size, but it can
-shrink if needed.
-
-|`Preferred` |The control can grow and shrink, but it should be of the
-size given by `sizeHint()`.
-
-|`MinimumExpanding` |The control cannot shrink beyond its minimum size,
-but it can grow and should get as much space as possible.
-
-|`Expanding` |The control can shrink and grow, and it should get as much
-space as possible.
-
-|`Ignored` |The `sizeHint()` is ignored, and the control will get as
-much space as possible.
-
-|`Constrained` |The size of the control depends on a constraint,
-i.e. the width is depending on the height or vice versa. For this policy
-and the other `Constrained*` ones below, `QskControl::widthForHeight()`
-or `QskControl::heightForWidth()` will be queried.
-
-|`ConstrainedMinimum` |The size of the control depends on a constraint,
-but it can grow if needed.
-
-|`ConstrainedMaximum` |The size of the control depends on a constraint,
-but it can shrink if needed.
-
-|`ConstrainedPreferred` |The size of the control depends on a
-constraint, but it can grow and srhink if needed.
-
-|`ConstrainedMinimumExpanding` |The size of the control depends on a
-constraint, but it can grow and should get as much space as possible.
-
-|`ConstrainedExpanding` |The size of the control depends on a
-constraint, and it should get as much space as possible.
-|=======================================================================
+|`QskSizePolicy::Policy` | description |
+| ---------------------- | ----------- |
+|`Fixed` |The control has a fixed size and can neither grow nor shrink. |
+|`Minimum` |The control cannot shrink beyond its minimum size, but it can grow if needed. |
+|`Maximum` |The control cannot grow beyond its maximum size, but it can shrink if needed. |
+|`Preferred` |The control can grow and shrink, but it should be of the size given by `sizeHint()`. |
+|`MinimumExpanding` |The control cannot shrink beyond its minimum size, but it can grow and should get as much space as possible. |
+|`Expanding` |The control can shrink and grow, and it should get as much space as possible. |
+|`Ignored` |The `sizeHint()` is ignored, and the control will get as much space as possible. |
+|`Constrained` |The size of the control depends on a constraint, i.e. the width is depending on the height or vice versa. For this policy and the other `Constrained*` ones below, `QskControl::widthForHeight()` or `QskControl::heightForWidth()` will be queried. |
+|`ConstrainedMinimum` |The size of the control depends on a constraint, but it can grow if needed. |
+|`ConstrainedMaximum` |The size of the control depends on a constraint, but it can shrink if needed. |
+|`ConstrainedPreferred` |The size of the control depends on a constraint, but it can grow and srhink if needed. |
+|`ConstrainedMinimumExpanding` |The size of the control depends on a constraint, but it can grow and should get as much space as possible. |
+|`ConstrainedExpanding` |The size of the control depends on a constraint, and it should get as much space as possible. |
 
 All the `Constrained*` policies correspond to Qt’s
 [QSizePolicy::hasHeightForWidth()](https://doc.qt.io/qt-5/qsizepolicy.html#hasHeightForWidth)
@@ -180,7 +153,7 @@ margins:
 
 **Size policies with preferred size**
 
-![Fixed vs. Minimum size policy](/doc/tutorials/images/size-policies-horizontal-minimum-1.png)
+![Fixed vs. Minimum size policy](/doc/images/tutorials/size-policies-horizontal-minimum-1.png)
 
 After growing the window horizontally, the button with the Fixed
 horizontal size policy keeps its width, while the button with the
@@ -188,7 +161,7 @@ Minimum policy will grow:
 
 **Size policies when increasing window width**
 
-![Fixed vs. Minimum size policy](/doc/tutorials/images/size-policies-horizontal-minimum-2.png)
+![Fixed vs. Minimum size policy](/doc/images/tutorials/size-policies-horizontal-minimum-2.png)
 
 When shrinking the window below its original size, both buttons stay
 with their width: The one on the left because of its `Fixed` size policy,
@@ -197,7 +170,7 @@ due to the `Minimum` size policy.
 
 **Size policies when shrinking window width**
 
-![Fixed vs. Minimum size policy](/doc/tutorials/images/size-policies-horizontal-minimum-3.png)
+![Fixed vs. Minimum size policy](/doc/images/tutorials/size-policies-horizontal-minimum-3.png)
 
 If we change the policy of the right button to `Preferred`, it will shrink
 below its original size (even though the text is too wide now):
@@ -209,7 +182,7 @@ label2->setText( "size policy: preferred" );
 
 **Size policies when changing to preferred size policy**
 
-![Fixed vs. Minimum size policy](/doc/tutorials/images/size-policies-horizontal-minimum-4.png)
+![Fixed vs. Minimum size policy](/doc/images/tutorials/size-policies-horizontal-minimum-4.png)
 
 ### Types of layouts
 
@@ -238,7 +211,7 @@ horizontalBox->addItem( label3 );
 
 **Horizontal layout**
 
-![Horizontal layout](/doc/tutorials/images/layout-horizontal.png)
+![Horizontal layout](/doc/images/tutorials/layout-horizontal.png)
 
 ```
 auto verticalBox = new QskLinearBox( Qt::Vertical );
@@ -256,7 +229,7 @@ verticalBox->addItem( label3 );
 
 **Vertical layout**
 
-![Vertical layout](/doc/tutorials/images/layout-vertical.png)
+![Vertical layout](/doc/images/tutorials/layout-vertical.png)
 
 #### Grid layouts (QskGridBox)
 
@@ -290,7 +263,7 @@ gridBox->addItem( label7, 2, 1, 1, 2 );
 
 **Grid layout**
 
-![Grid layout](/doc/tutorials/images/layout-grid.png)
+![Grid layout](/doc/images/tutorials/layout-grid.png)
 
 #### Stack layouts (QskStackBox)
 
@@ -319,12 +292,12 @@ stackBox->setCurrentIndex( 2 );
 
 **Stack layout (symbolized)**
 
-![Stack layout](/doc/tutorials/images/layout-stack.png)
+![Stack layout](/doc/images/tutorials/layout-stack.png)
 
 In this example, "control 3" is stacked on top of the blue and the
 cyan control. Controls in a stacked layout can be of different sizes.
 
-**📌 NOTE**\
+**NOTE**:
 The image above is just for illustrating purposes. In practice
 the topmost control ("control 3" here) is completely covering the ones
 below it.
@@ -365,13 +338,13 @@ are rendered with their preferred size:
 
 **Stretch factors with preferred size**
 
-![Stretch factors preferred size](/doc/tutorials/images/stretch-factors-1.png)
+![Stretch factors preferred size](/doc/images/tutorials/stretch-factors-1.png)
 
 When the layout gets more width, the stretch factors come into play:
 
 **A stretch factor of 1:2**
 
-![Stretch factors increasing width](/doc/tutorials/images/stretch-factors-2.png)
+![Stretch factors increasing width](/doc/images/tutorials/stretch-factors-2.png)
 
 No matter how wide the layout is, the aspect ratio of 1:2 will always be
 kept, meaning that the label on the left will get 33% of the space, and
@@ -379,7 +352,7 @@ the label on the right 67%:
 
 **A stretch factor of 1:2 with different widths**
 
-![Stretch factors even more width](/doc/tutorials/images/stretch-factors-3.png)
+![Stretch factors even more width](/doc/images/tutorials/stretch-factors-3.png)
 
 Stretch factors in QSkinny are the same as in the Qt Graphics View
 Framework, see
@@ -394,7 +367,7 @@ on the left:
 
 **A UI with nested layouts**
 
-![Nested layouts](/doc/tutorials/images/nesting-layouts.png)
+![Nested layouts](/doc/images/tutorials/nesting-layouts.png)
 
 The code to produce the above UI could look like this (setting colors
 etc. omitted for brevity):
@@ -430,7 +403,7 @@ The following diagram makes the layouts visible:
 
 **The layout structure of the UI**
 
-![Nested layouts architecture](/doc/tutorials/images/nesting-layouts-architecture.png)
+![Nested layouts architecture](/doc/images/tutorials/nesting-layouts-architecture.png)
 
 ### Anchoring in QSkinny
 
