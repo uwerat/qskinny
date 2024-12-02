@@ -16,4 +16,4 @@ into the Qt architecture is depicted below:
 
 **QSkinny sits on top of QtQuick, while QML is optional**
 
-![QSkinny architecture](/doc/tutorials/images/architecture-simple.png)
+![QSkinny architecture](/doc/images/tutorials/architecture-simple.png)

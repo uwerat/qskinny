@@ -39,4 +39,4 @@ Qt creates the HTML wrappers automatically, so there is not much to do except le
 
 **The IOT dashboard example in a browser**
 
-![The IOT dashboard example in a browser](/doc/tutorials/images/iotdashboard-wasm.png)
+![The IOT dashboard example in a browser](/doc/images/tutorials/iotdashboard-wasm.png)

@@ -49,7 +49,7 @@ The full Buttons example is depicted below.
 
 **The buttons example shows how to mix QSkinny and QML**
 
-![Buttons example](/doc/tutorials/images/buttons-example.png)
+![Buttons example](/doc/images/tutorials/buttons-example.png)
 
 For more information on using C++ classes from QML, see the article about exposing attributes of {cpp} types to QML in the
 [Qt documentation](https://doc.qt.io/qt-5/qtqml-cppintegration-exposecppattributes.html).

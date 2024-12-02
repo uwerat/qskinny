@@ -75,7 +75,8 @@ cp doxygen-awesome.css ~/dev/qskinny/doc/
 First copy the generated files from above to the website repo:
 
 ```
-cp -r api ~/dev/qskinny-website/docs/
+cp -r html ~/dev/qskinny-website/docs/
+cp -r images ~/dev/qskinny-website/docs/
 ```
 
 Then test the website locally:

@@ -145,7 +145,7 @@ int main( int argc, char* argv[] )
 
 Now the app is displaying the two buttons:
 
-![An app showing two buttons](/doc/tutorials/images/writing-first-application.png)
+![An app showing two buttons](/doc/images/tutorials/writing-first-application.png)
 
 That’s it; you just created a QSkinny application from scratch.
 
