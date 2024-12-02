@@ -40,7 +40,7 @@ QRectF QskFluent2TextFieldSkinlet::subControlRect( const QskSkinnable* skinnable
 
         return rect;
     }
-    else if ( subControl == Q::HintText )
+    else if ( subControl == Q::PlaceholderText )
     {
         if( input->hasSkinState( Q::TextPopulated ) )
         {

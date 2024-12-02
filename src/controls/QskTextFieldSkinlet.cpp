@@ -84,12 +84,14 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
 
         case LabelTextRole:
         {
-            return updateTextNode( skinnable, node, textField->labelText(), Q::LabelText );
+            return updateTextNode( skinnable, node,
+                textField->labelText(), Q::LabelText );
         }
 
         case HintTextRole:
         {
-            return updateTextNode( skinnable, node, textField->hintText(), Q::HintText );
+            return updateTextNode( skinnable, node,
+                textField->placeholderText(), Q::PlaceholderText );
         }
     }
 

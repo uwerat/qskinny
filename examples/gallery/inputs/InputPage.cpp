@@ -79,7 +79,7 @@ namespace
                     textField->setEmphasis( emphasis );
                     const QString text = ( emphasis == QskTextField::NoEmphasis ) ? "filled" : "outlined";
                     textField->setLabelText( text );
-                    textField->setHintText( "hint text" );
+                    textField->setPlaceholderText( "text" );
                     textField->setSupportingText( "supporting text" );
                     textField->setMaxLength( 10 );
                 }
@@ -89,14 +89,14 @@ namespace
                     textField->setEmphasis( emphasis );
                     textField->setLeadingIcon( {} );
                     textField->setLabelText( "no leading icon" );
-                    textField->setHintText( "hint text" );
+                    textField->setPlaceholderText( "text" );
                     textField->setSupportingText( "supporting text" );
                 }
                 {
                     auto textField = new QskTextField( this );
                     textField->setEmphasis( emphasis );
                     textField->setLeadingIcon( {} );
-                    textField->setHintText( "no label text" );
+                    textField->setPlaceholderText( "no label text" );
                 }
 
                 {
@@ -104,7 +104,7 @@ namespace
                     textField->setEmphasis( emphasis );
                     textField->setSkinStateFlag( QskTextField::Error );
                     textField->setLabelText( "error" );
-                    textField->setHintText( "hint text" );
+                    textField->setPlaceholderText( "text" );
                     textField->setSupportingText( "error text" );
                 }
 
@@ -122,7 +122,7 @@ namespace
                     textField->setMaxLength( 15 );
                     textField->setLabelText( "password" );
                     textField->setEchoMode( QskTextField::Password );
-                    textField->setHintText( "better be strong" );
+                    textField->setPlaceholderText( "better be strong" );
                 }
             }
         }

@@ -1792,8 +1792,8 @@ void Editor::setupTextFieldMetrics()
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setFontRole( Q::Text, Fluent2::Body );
 
-    setAlignment( Q::HintText, alignment( Q::Text ) );
-    setFontRole( Q::HintText, fontRole( Q::Text ) );
+    setAlignment( Q::PlaceholderText, alignment( Q::Text ) );
+    setFontRole( Q::PlaceholderText, fontRole( Q::Text ) );
 }
 
 void Editor::setupTextFieldColors(
@@ -1807,7 +1807,7 @@ void Editor::setupTextFieldColors(
     setColor( Q::Panel | Q::Selected, pal.fillColor.accent.selectedTextBackground );
     setColor( Q::LabelText, pal.fillColor.text.primary );
     setColor( Q::Text | Q::Selected, pal.fillColor.textOnAccent.selectedText );
-    setColor( Q::HintText, pal.fillColor.text.secondary );
+    setColor( Q::PlaceholderText, pal.fillColor.text.secondary );
 
     for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
     {

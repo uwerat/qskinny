@@ -21,7 +21,7 @@ QSK_SUBCONTROL( QskTextField, LeadingIcon )
 QSK_SUBCONTROL( QskTextField, LabelText )
 QSK_SUBCONTROL( QskTextField, TrailingIconRipple )
 QSK_SUBCONTROL( QskTextField, TrailingIcon )
-QSK_SUBCONTROL( QskTextField, HintText )
+QSK_SUBCONTROL( QskTextField, PlaceholderText )
 QSK_SUBCONTROL( QskTextField, SupportingText )
 QSK_SUBCONTROL( QskTextField, CharacterCount )
 
@@ -301,8 +301,9 @@ class QskTextField::PrivateData
     }
 
     TextInput* textInput;
+
     QString labelText;
-    QString hintText;
+    QString placeholderText;
     QString supportingText;
 
     unsigned int activationModes : 3;
@@ -640,18 +641,18 @@ void QskTextField::setLeadingIcon( const QskGraphic& icon )
     setSymbolHint( LeadingIcon, icon );
 }
 
-void QskTextField::setHintText( const QString& text )
+void QskTextField::setPlaceholderText( const QString& text )
 {
-    if ( m_data->hintText != text )
+    if ( m_data->placeholderText != text )
     {
-        m_data->hintText = text;
-        Q_EMIT hintTextChanged( text );
+        m_data->placeholderText = text;
+        Q_EMIT placeholderTextChanged( text );
     }
 }
 
-QString QskTextField::hintText() const
+QString QskTextField::placeholderText() const
 {
-    return m_data->hintText;
+    return m_data->placeholderText;
 }
 
 void QskTextField::setSupportingText( const QString& text )

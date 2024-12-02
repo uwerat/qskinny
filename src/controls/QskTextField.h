@@ -23,8 +23,8 @@ class QSK_EXPORT QskTextField : public QskControl
     Q_PROPERTY( QString labelText READ labelText
         WRITE setLabelText NOTIFY labelTextChanged )
 
-    Q_PROPERTY( QString hintText READ hintText
-        WRITE setHintText NOTIFY hintTextChanged )
+    Q_PROPERTY( QString placeholderText READ placeholderText
+        WRITE setPlaceholderText NOTIFY placeholderTextChanged )
 
     Q_PROPERTY( QString supportingText READ supportingText
         WRITE setSupportingText NOTIFY supportingTextChanged )
@@ -67,7 +67,7 @@ class QSK_EXPORT QskTextField : public QskControl
 
   public:
     QSK_SUBCONTROLS( Panel, LeadingIcon, LabelText, Text,
-        TrailingIconRipple, TrailingIcon, HintText, SupportingText,
+        TrailingIconRipple, TrailingIcon, PlaceholderText, SupportingText,
         CharacterCount )
 
     QSK_STATES( ReadOnly, Editing, Selected, Error, TextPopulated )
@@ -121,8 +121,8 @@ class QSK_EXPORT QskTextField : public QskControl
     QskGraphic leadingIcon() const;
     void setLeadingIcon( const QskGraphic& );
 
-    void setHintText( const QString& );
-    QString hintText() const;
+    void setPlaceholderText( const QString& );
+    QString placeholderText() const;
 
     void setSupportingText( const QString& );
     QString supportingText() const;
@@ -217,7 +217,7 @@ class QSK_EXPORT QskTextField : public QskControl
     void displayTextChanged( const QString& );
 
     void textEdited( const QString& );
-    void hintTextChanged( const QString& );
+    void placeholderTextChanged( const QString& );
     void supportingTextChanged( const QString& );
 
     void fontRoleChanged();

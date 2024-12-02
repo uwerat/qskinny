@@ -156,7 +156,7 @@ QRectF QskMaterial3TextFieldSkinlet::subControlRect( const QskSkinnable* skinnab
             return rect;
         }
     }
-    else if ( subControl == Q::HintText )
+    else if ( subControl == Q::PlaceholderText )
     {
         if( !input->hasSkinState( Q::TextPopulated )
             && ( input->hasSkinState( Q::Focused ) || input->hasSkinState( Q::Editing ) ) )

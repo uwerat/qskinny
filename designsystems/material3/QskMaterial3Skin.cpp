@@ -558,12 +558,12 @@ void Editor::setupTextField()
     setAlignment( Q::Text | M3::Outlined, Qt::AlignLeft | Qt::AlignVCenter );
 
 
-    // HintText
+    // PlaceholderText
 
-    setColor( Q::HintText, color( Q::Text ) );
-    setFontRole( Q::HintText, fontRole( Q::Text ) );
-    setAlignment( Q::HintText, alignment( Q::Text ) );
-    setAlignment( Q::HintText | M3::Outlined, alignment( Q::Text | M3::Outlined ) );
+    setColor( Q::PlaceholderText, color( Q::Text ) );
+    setFontRole( Q::PlaceholderText, fontRole( Q::Text ) );
+    setAlignment( Q::PlaceholderText, alignment( Q::Text ) );
+    setAlignment( Q::PlaceholderText | M3::Outlined, alignment( Q::Text | M3::Outlined ) );
 
 
     // TrailingIcon
