@@ -53,9 +53,9 @@ class QSK_EXPORT QskBoundedControl : public QskControl
 
     void componentComplete() override;
 
+  private:
     void adjustBoundaries( bool increasing );
 
-  private:
     qreal m_minimum;
     qreal m_maximum;
 };

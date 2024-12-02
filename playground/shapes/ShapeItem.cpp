@@ -146,7 +146,6 @@ void ShapeItem::updateNode( QSGNode* parentNode )
     };
 
     const auto rect = contentsRect();
-    const auto pathRect = m_data->path.controlPointRect();
 
     auto fillNode = static_cast< QskShapeNode* >(
         QskSGNode::findChildNode( parentNode, FillRole ) );
@@ -154,13 +153,15 @@ void ShapeItem::updateNode( QSGNode* parentNode )
     auto borderNode = static_cast< QskStrokeNode* >(
         QskSGNode::findChildNode( parentNode, BorderRole ) );
 
-    if ( rect.isEmpty() || pathRect.isEmpty() )
+    if ( rect.isEmpty() || m_data->path.isEmpty() )
     {
         delete fillNode;
         delete borderNode;
 
         return;
     }
+
+    const auto pathRect = m_data->path.controlPointRect();
 
     if ( m_data->gradient.isVisible() )
     {
@@ -185,7 +186,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
 #endif
 
         const auto transform = ::transformForRects( pathRect, fillRect );
-        fillNode->updateNode( m_data->path, transform, fillRect, m_data->gradient );
+        fillNode->updatePath( m_data->path, transform, fillRect, m_data->gradient );
     }
     else
     {
@@ -221,7 +222,7 @@ void ShapeItem::updateNode( QSGNode* parentNode )
         }
 
         const auto transform = ::transformForRects( pathRect, rect );
-        borderNode->updateNode( m_data->path, transform, pen );
+        borderNode->updatePath( m_data->path, transform, pen );
     }
     else
     {

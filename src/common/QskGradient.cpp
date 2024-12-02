@@ -615,10 +615,11 @@ void QskGradient::setLinearDirection( const QskLinearDirection& direction )
 
 QskLinearDirection QskGradient::linearDirection() const
 {
-    Q_ASSERT( m_type == Linear );
-
     if ( m_type != Linear )
+    {
+        qWarning() << "Requesting linear attributes from a non linear gradient.";
         return QskLinearDirection( 0.0, 0.0, 0.0, 0.0 );
+    }
 
     return QskLinearDirection( m_values[0], m_values[1], m_values[2], m_values[3] );
 }
@@ -644,10 +645,11 @@ void QskGradient::setRadialDirection( const QskRadialDirection& direction )
 
 QskRadialDirection QskGradient::radialDirection() const
 {
-    Q_ASSERT( m_type == Radial );
-
     if ( m_type != Radial )
+    {
+        qWarning() << "Requesting radial attributes from a non radial gradient.";
         return QskRadialDirection( 0.5, 0.5, 0.0 );
+    }
 
     return QskRadialDirection( m_values[0], m_values[1], m_values[2], m_values[3] );
 }
@@ -683,10 +685,11 @@ void QskGradient::setConicDirection( const QskConicDirection& direction )
 
 QskConicDirection QskGradient::conicDirection() const
 {
-    Q_ASSERT( m_type == Conic );
-
     if ( m_type != Conic )
+    {
+        qWarning() << "Requesting conic attributes from a non conic gradient.";
         return QskConicDirection( 0.5, 0.5, 0.0, 0.0 );
+    }
 
     QskConicDirection dir( m_values[0], m_values[1], m_values[2], m_values[3] );
     dir.setAspectRatio( m_values[4] );
@@ -720,21 +723,6 @@ void QskGradient::resetDirection()
 {
     m_type = Stops;
     m_values[0] = m_values[1] = m_values[2] = m_values[3] = m_values[4] = 0.0;
-}
-
-QskGradient QskGradient::effectiveGradient() const
-{
-    if ( ( m_type == QskGradient::Stops ) || isMonochrome() )
-    {
-        // the shader for linear gradients is the fastest
-
-        QskGradient g = *this;
-        g.setDirection( QskGradient::Linear );
-
-        return g;
-    }
-
-    return *this;
 }
 
 QGradient QskGradient::toQGradient() const

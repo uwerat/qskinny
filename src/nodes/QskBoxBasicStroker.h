@@ -8,7 +8,7 @@
 
 #include "QskBoxMetrics.h"
 #include "QskBoxBorderColors.h"
-#include "QskBoxColorMap.h"
+#include "QskVertexHelper.h"
 
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
@@ -25,7 +25,7 @@ class QskBoxBasicStroker
     QskBoxBasicStroker( const QskBoxMetrics& );
     QskBoxBasicStroker( const QskBoxMetrics&, const QskBoxBorderColors& );
     QskBoxBasicStroker( const QskBoxMetrics&,
-        const QskBoxBorderColors&, const QskBoxRenderer::ColorMap& );
+        const QskBoxBorderColors&, const QskVertex::ColorMap& );
 
     int fillCount() const;
     int borderCount() const;
@@ -78,7 +78,7 @@ class QskBoxBasicStroker
 
     const QskBoxMetrics& m_metrics;
     const QskBoxBorderColors m_borderColors;
-    const QskBoxRenderer::ColorMap m_colorMap;
+    const QskVertex::ColorMap m_colorMap;
     const GeometryLayout m_geometryLayout;
 
     const bool m_isColored;

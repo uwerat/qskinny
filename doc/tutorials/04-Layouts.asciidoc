@@ -27,7 +27,7 @@ text width (which itself depends on the font) and possibly padding and
 margins:
 
 .implicit horizontal size hint of a button
-image::../images/size-hints-calculation.png[implicit horizontal size hint of a button]
+image::/doc/tutorials/images/size-hints-calculation.png[implicit horizontal size hint of a button]
 
 The implicit width of a composited UI element containing a
 graphic on the left and a text on the right would be the sum of the elements’
@@ -75,7 +75,7 @@ label1->setBackgroundColor( Qt::magenta );
 ....
 
 .control without explicit size hint
-image::../images/size-hints-1.png[Image without explicit size hint]
+image::/doc/tutorials/images/size-hints-1.png[Image without explicit size hint]
 
 If we set an explicit size hint of 150x60 pixels ourselves for the
 preferred size, the control will be rendered differently:
@@ -85,7 +85,7 @@ label1->setExplicitSizeHint( Qt::PreferredSize, { 150, 60 } );
 ....
 
 .control with explicit size hint
-image::../images/size-hints-2.png[Image with explicit size hint]
+image::/doc/tutorials/images/size-hints-2.png[Image with explicit size hint]
 
 When dealing with standard controls or layouts, the size hints don’t
 need to be specified explicitly, as it can be deduced from its standard
@@ -185,14 +185,14 @@ By default the width of the buttons is determined by its text plus its
 margins:
 
 .Size policies with preferred size
-image::../images/size-policies-horizontal-minimum-1.png[Fixed vs. Minimum size policy]
+image::/doc/tutorials/images/size-policies-horizontal-minimum-1.png[Fixed vs. Minimum size policy]
 
 After growing the window horizontally, the button with the Fixed
 horizontal size policy keeps its width, while the button with the
 Minimum policy will grow:
 
 .Size policies when increasing window width
-image::../images/size-policies-horizontal-minimum-2.png[Fixed vs. Minimum size policy]
+image::/doc/tutorials/images/size-policies-horizontal-minimum-2.png[Fixed vs. Minimum size policy]
 
 When shrinking the window below its original size, both buttons stay
 with their width: The one on the left because of its `Fixed` size policy,
@@ -200,7 +200,7 @@ and the one on the right because it won’t shrink below its original size
 due to the `Minimum` size policy.
 
 .Size policies when shrinking window width
-image::../images/size-policies-horizontal-minimum-3.png[Fixed vs. Minimum size policy]
+image::/doc/tutorials/images/size-policies-horizontal-minimum-3.png[Fixed vs. Minimum size policy]
 
 If we change the policy of the right button to `Preferred`, it will shrink
 below its original size (even though the text is too wide now):
@@ -211,7 +211,7 @@ label2->setText( "size policy: preferred" );
 ....
 
 .Size policies when changing to preferred size policy
-image::../images/size-policies-horizontal-minimum-4.png[Fixed vs. Minimum size policy]
+image::/doc/tutorials/images/size-policies-horizontal-minimum-4.png[Fixed vs. Minimum size policy]
 
 === Types of layouts
 
@@ -240,7 +240,7 @@ horizontalBox->addItem( label3 );
 ....
 
 .Horizontal layout
-image::../images/layout-horizontal.png[Horizontal layout]
+image::/doc/tutorials/images/layout-horizontal.png[Horizontal layout]
 
 [source]
 ....
@@ -258,7 +258,7 @@ verticalBox->addItem( label3 );
 ....
 
 .Vertical layout
-image::../images/layout-vertical.png[Vertical layout]
+image::/doc/tutorials/images/layout-vertical.png[Vertical layout]
 
 ==== Grid layouts (QskGridBox)
 
@@ -292,7 +292,7 @@ gridBox->addItem( label7, 2, 1, 1, 2 );
 ....
 
 .Grid layout
-image::../images/layout-grid.png[Grid layout]
+image::/doc/tutorials/images/layout-grid.png[Grid layout]
 
 ==== Stack layouts (QskStackBox)
 
@@ -321,7 +321,7 @@ stackBox->setCurrentIndex( 2 );
 ....
 
 .Stack layout (symbolized)
-image::../images/layout-stack.png[Stack layout]
+image::/doc/tutorials/images/layout-stack.png[Stack layout]
 
 In this example, "control 3" is stacked on top of the blue and the
 cyan control. Controls in a stacked layout can be of different sizes.
@@ -366,19 +366,19 @@ When the layout has all the space it needs (but not more), both elements
 are rendered with their preferred size:
 
 .Stretch factors with preferred size
-image::../images/stretch-factors-1.png[Stretch factors preferred size]
+image::/doc/tutorials/images/stretch-factors-1.png[Stretch factors preferred size]
 
 When the layout gets more width, the stretch factors come into play:
 
 .A stretch factor of 1:2
-image::../images/stretch-factors-2.png[Stretch factors increasing width]
+image::/doc/tutorials/images/stretch-factors-2.png[Stretch factors increasing width]
 
 No matter how wide the layout is, the aspect ratio of 1:2 will always be
 kept, meaning that the label on the left will get 33% of the space, and
 the label on the right 67%:
 
 .A stretch factor of 1:2 with different widths
-image::../images/stretch-factors-3.png[Stretch factors even more width]
+image::/doc/tutorials/images/stretch-factors-3.png[Stretch factors even more width]
 
 Stretch factors in QSkinny are the same as in the Qt Graphics View
 Framework, see
@@ -392,7 +392,7 @@ each other. The example below depicts a UI with a top bar and menu items
 on the left:
 
 .A UI with nested layouts
-image::../images/nesting-layouts.png[Nested layouts]
+image::/doc/tutorials/images/nesting-layouts.png[Nested layouts]
 
 The code to produce the above UI could look like this (setting colors
 etc. omitted for brevity):
@@ -428,7 +428,7 @@ with the menu buttons is again a vertical layout.
 The following diagram makes the layouts visible:
 
 .The layout structure of the UI
-image::../images/nesting-layouts-architecture.png[Nested layouts architecture]
+image::/doc/tutorials/images/nesting-layouts-architecture.png[Nested layouts architecture]
 
 === Anchoring in QSkinny
 

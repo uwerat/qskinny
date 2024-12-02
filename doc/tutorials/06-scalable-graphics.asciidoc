@@ -33,16 +33,16 @@ label2->setSizePolicy( QskSizePolicy::ConstrainedPreferred, QskSizePolicy::Expan
 ....
 
 .graphics with preferred size
-image::../images/scalable-graphics-1.png[Scalable graphics default]
+image::/doc/tutorials/images/scalable-graphics-1.png[Scalable graphics default]
 
 When resizing the window, the graphics will scale according to the size
 available in the layout:
 
 .graphics bounded by width
-image::../images/scalable-graphics-2.png[Scalable graphics bounded by width]
+image::/doc/tutorials/images/scalable-graphics-2.png[Scalable graphics bounded by width]
 
 .graphics bounded by height
-image::../images/scalable-graphics-3.png[Scalable graphics bounded by height]
+image::/doc/tutorials/images/scalable-graphics-3.png[Scalable graphics bounded by height]
 
 Since we set the horizontal size policy of the graphics to
 `ConstrainedPreferred`, the scaling is done through QskGraphic’s

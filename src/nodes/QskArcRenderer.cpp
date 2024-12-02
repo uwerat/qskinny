@@ -7,11 +7,10 @@
 #include "QskArcMetrics.h"
 #include "QskGradient.h"
 #include "QskVertex.h"
-#include "QskBoxColorMap.h"
+#include "QskVertexHelper.h"
 #include "QskRgbValue.h"
 
 #include <qsggeometry.h>
-#include <qdebug.h>
 
 static inline QskVertex::Line* qskAllocateLines(
     QSGGeometry& geometry, int lineCount )
@@ -360,7 +359,7 @@ namespace
     void Renderer::renderLines( const LineStroker& lineStroker,
         Line* fillLines, Line* borderLines ) const
     {
-        QskBoxRenderer::GradientIterator it;
+        QskVertex::GradientIterator it;
 
         if ( fillLines )
         {
@@ -459,6 +458,7 @@ bool QskArcRenderer::isGradientSupported( const QRectF& rect,
         }
         case QskGradient::Conic:
         {
+#if 0
             const auto direction = gradient.conicDirection();
             if ( direction.center() == rect.center() )
             {
@@ -466,11 +466,12 @@ bool QskArcRenderer::isGradientSupported( const QRectF& rect,
                 if ( qskFuzzyCompare( direction.aspectRatio(), aspectRatio ) )
                 {
                     /*
-                      we should be able to create a list of stops from
-                      this gradient that works for the renderer. TODO ...
+                       we should be able to create a list of stops from
+                       this gradient that works for the renderer. TODO ...
                      */
                 }
             }
+#endif
 
             return false;
         }
@@ -483,17 +484,55 @@ bool QskArcRenderer::isGradientSupported( const QRectF& rect,
     return false;
 }
 
-void QskArcRenderer::renderArc( const QRectF& rect, const QskArcMetrics& metrics,
-    bool radial, const QskGradient& gradient, QSGGeometry& geometry )
-{
-    renderArc( rect, metrics, radial, 0, gradient, QColor(), geometry );
-}
-
-void QskArcRenderer::renderArc( const QRectF& rect, const QskArcMetrics& metrics,
-    bool radial, qreal borderWidth, const QskGradient& gradient,
+void QskArcRenderer::setColoredBorderLines( const QRectF& rect,
+    const QskArcMetrics& metrics, bool radial, qreal borderWidth,
     const QColor& borderColor, QSGGeometry& geometry )
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+    geometry.markVertexDataDirty();
+
+    if ( borderWidth <= 0.0 || !QskRgb::isVisible( borderColor ) )
+    {
+        qskAllocateColoredLines( geometry, 0 );
+        return;
+    }
+
+    const Renderer renderer( rect, metrics, radial, QskGradient(), borderColor );
+
+    if ( const auto lines = qskAllocateColoredLines( geometry, renderer.borderCount() ) )
+    {
+        renderer.renderArc( metrics.thickness(), borderWidth,
+            static_cast< QskVertex::ColoredLine* >( nullptr ), lines );
+    }
+}
+
+void QskArcRenderer::setColoredFillLines( const QRectF& rect, const QskArcMetrics& metrics,
+    bool radial, qreal borderWidth, const QskGradient& gradient, QSGGeometry& geometry )
+{
+    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+    geometry.markVertexDataDirty();
+
+    if ( !gradient.isVisible() )
+    {
+        qskAllocateColoredLines( geometry, 0 );
+        return;
+    }
+
+    const Renderer renderer( rect, metrics, radial, gradient, QColor( 0, 0, 0, 0 ) );
+
+    if ( const auto lines = qskAllocateColoredLines( geometry, renderer.fillCount() ) )
+    {
+        renderer.renderArc( metrics.thickness(), borderWidth, lines,
+            static_cast< QskVertex::ColoredLine* >( nullptr ) );
+    }
+}
+
+void QskArcRenderer::setColoredBorderAndFillLines( const QRectF& rect,
+    const QskArcMetrics& metrics, bool radial, qreal borderWidth,
+    const QColor& borderColor,  const QskGradient& gradient, QSGGeometry& geometry )
+{
+    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+    geometry.markVertexDataDirty();
 
     const Renderer renderer( rect, metrics, radial, gradient,
         borderColor.isValid() ? borderColor : QColor( 0, 0, 0, 0 ) );
@@ -523,13 +562,20 @@ void QskArcRenderer::renderArc( const QRectF& rect, const QskArcMetrics& metrics
     }
 }
 
-void QskArcRenderer::renderBorderGeometry( const QRectF& rect,
+void QskArcRenderer::setBorderLines( const QRectF& rect,
     const QskArcMetrics& metrics, bool radial, qreal borderWidth, QSGGeometry& geometry )
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
-            
-    const Renderer renderer( rect, metrics, radial, QskGradient(), 0 );
-                
+    geometry.markVertexDataDirty();
+
+    if ( borderWidth <= 0.0 )
+    {
+        qskAllocateLines( geometry, 0 );
+        return;
+    }
+
+    const Renderer renderer( rect, metrics, radial, QskGradient(), QskRgb::Black );
+
     const auto lines = qskAllocateLines( geometry, renderer.borderCount() );
     if ( lines )
     {
@@ -538,10 +584,11 @@ void QskArcRenderer::renderBorderGeometry( const QRectF& rect,
     }
 }
 
-void QskArcRenderer::renderFillGeometry( const QRectF& rect,
+void QskArcRenderer::setFillLines( const QRectF& rect,
     const QskArcMetrics& metrics, bool radial, qreal borderWidth, QSGGeometry& geometry )
 {
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+    geometry.markVertexDataDirty();
 
     const Renderer renderer( rect, metrics, radial, QskRgb::Black, 0 );
 

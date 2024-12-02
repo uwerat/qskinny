@@ -80,7 +80,13 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     QRgb outlineVariant;
 
     QRgb surfaceContainerHighest;
+    QRgb surfaceContainerHighest38;
 
+    QRgb inverseSurface;
+    QRgb inverseOnSurface;
+    QRgb inversePrimary;
+
+    QRgb scrim;
     QRgb shadow;
 
     QskShadowMetrics elevation0;
@@ -92,6 +98,9 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     const qreal focusOpacity = 0.12;
     const qreal pressedOpacity = 0.12;
     const qreal draggedOpacity = 0.16;
+    const qreal disabledOpacity = 0.38;
+
+    qreal stateOpacity( int state ) const;
 
     QskBoxShapeMetrics shapeExtraSmallTop;
 };
@@ -107,12 +116,15 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
     {
         GraphicRoleOnError,
         GraphicRoleOnPrimary,
+        GraphicRoleOnPrimaryContainer,
         GraphicRoleOnSecondaryContainer,
         GraphicRoleOnSurface,
         GraphicRoleOnSurface38,
         GraphicRoleOnSurfaceVariant,
         GraphicRolePrimary,
         GraphicRoleSurface,
+        GraphicRoleSurfaceContainerHighest,
+        GraphicRoleSurfaceContainerHighest38,
     };
 
     QskMaterial3Skin( QObject* parent = nullptr );

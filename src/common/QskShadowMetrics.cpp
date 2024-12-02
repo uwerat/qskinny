@@ -95,7 +95,8 @@ QskHashValue QskShadowMetrics::hash( QskHashValue seed ) const noexcept
     hash = qHash( m_offset.y(), seed );
     hash = qHash( m_spreadRadius, hash );
     hash = qHash( m_blurRadius, hash );
-    hash = qHash( static_cast< int >( m_sizeMode ), hash );
+    hash = qHash( m_sizeMode, hash );
+    hash = qHash( m_shapeMode, hash );
 
     return hash;
 }

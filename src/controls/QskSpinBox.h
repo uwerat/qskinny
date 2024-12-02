@@ -19,11 +19,6 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     Q_PROPERTY( Decoration decoration READ decoration
         WRITE setDecoration RESET resetDecoration NOTIFY decorationChanged )
 
-    Q_PROPERTY( int decimals READ decimals
-        WRITE setDecimals NOTIFY decimalsChanged )
-
-    Q_PROPERTY( QString text READ text NOTIFY textChanged )
-
   public:
     QSK_SUBCONTROLS( Panel, TextPanel, Text,
         UpPanel, UpIndicator, DownPanel, DownIndicator )
@@ -53,19 +48,11 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     void setWrapping( bool );
     bool isWrapping() const;
 
-    void setDecimals( int );
-    int decimals() const;
-
-    QString text() const;
-    virtual QString textFromValue( qreal ) const;
-
     void increment( qreal ) override;
 
   Q_SIGNALS:
     void decorationChanged( Decoration );
     void wrappingChanged( bool );
-    void decimalsChanged( int );
-    void textChanged();
 
   protected:
     void timerEvent( QTimerEvent* ) override;
@@ -74,6 +61,8 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
     void mouseMoveEvent( QMouseEvent* ) override;
     void mousePressEvent( QMouseEvent* ) override;
     void mouseUngrabEvent() override;
+
+    void hoverMoveEvent( QHoverEvent* ) override;
 
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;

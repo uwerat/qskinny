@@ -11,7 +11,6 @@
 
 class QskArcMetrics;
 class QskGradient;
-class QskShadowMetrics;
 
 class QSK_EXPORT QskArcNode : public QSGNode
 {
@@ -23,10 +22,6 @@ class QSK_EXPORT QskArcNode : public QSGNode
 
     void setArcData( const QRectF&, const QskArcMetrics&,
         qreal borderWidth, const QColor& borderColor, const QskGradient& );
-
-    void setArcData( const QRectF&, const QskArcMetrics&,
-        qreal borderWidth, const QColor& borderColor, const QskGradient&,
-        const QColor& shadowColor, const QskShadowMetrics&);
 };
 
 #endif

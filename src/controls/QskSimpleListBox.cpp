@@ -173,10 +173,8 @@ void QskSimpleListBox::removeAt( int index )
         if ( w >= m_data->maxTextWidth )
             m_data->maxTextWidth = qskMaxWidth( effectiveFont( Text ), entries );
     }
-    else
-    {
-        entries.removeAt( index );
-    }
+
+    entries.removeAt( index );
 
     propagateEntries();
 
