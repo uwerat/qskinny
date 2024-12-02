@@ -49,6 +49,19 @@ startup:
 <body onLoad="docSampleInit()">
 ```
 
+### Generating a doxygen layout page
+
+*This needs to be done only when the doxygen version changes.*
+
+```
+doxygen -l
+```
+
+Make sure that the tag labeled `<detaileddescription>` comes before
+the tag `<inheritancegraph>`, because the former contains the WASM
+code, which should be displayed near the top of the page.
+
+
 ### Using a different stylesheet for doxygen
 ```
 git clone git clone git@github.com:jothepro/doxygen-awesome-css.git
