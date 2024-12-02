@@ -11,7 +11,7 @@
 #include <QskSkinlet.h>
 
 #include <QskQuick.h>
-#include <QskBoxClipNode.h>
+#include <QskClipNode.h>
 #include <QskBoxBorderMetrics.h>
 
 #include <qsgnode.h>
@@ -315,7 +315,7 @@ void QskPlotView::updateNode( QSGNode* node )
     if ( m_data->needsClipping() )
     {
         if ( itemsNode == nullptr || itemsNode->type() != QSGNode::ClipNodeType )
-            itemsNode = new QskBoxClipNode();
+            itemsNode = new QskClipNode();
     }
     else
     {

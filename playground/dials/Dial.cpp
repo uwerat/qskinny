@@ -16,6 +16,7 @@ QSK_SUBCONTROL( Dial, Needle )
 Dial::Dial( QQuickItem* parent )
     : QskBoundedValueInput( parent )
 {
+    setReadOnly( true );
 }
 
 QVector< QString > Dial::tickLabels() const

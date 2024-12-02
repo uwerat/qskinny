@@ -18,7 +18,7 @@ QSK_SUBCONTROL( LightDisplay, Tickmarks )
 QSK_SUBCONTROL( LightDisplay, ValueText )
 QSK_SUBCONTROL( LightDisplay, LeftLabel )
 QSK_SUBCONTROL( LightDisplay, RightLabel )
-QSK_SUBCONTROL( LightDisplay, Knob )
+QSK_SUBCONTROL( LightDisplay, Handle )
 
 QSK_STATE( LightDisplay, Pressed, ( QskAspect::FirstUserState << 1 ) )
 
@@ -44,6 +44,8 @@ LightDisplay::LightDisplay( QQuickItem* parent )
     setAlignmentHint( ValueText, Qt::AlignRight );
 
     setBoundaries( 0, 100 );
+    setStepSize( 1.0 );
+    setPageSteps( 10 );
 }
 
 bool LightDisplay::isPressed() const
@@ -53,16 +55,14 @@ bool LightDisplay::isPressed() const
 
 void LightDisplay::mousePressEvent( QMouseEvent* event )
 {
-    QRectF handleRect = subControlRect( LightDisplay::Knob );
-
+    const auto handleRect = subControlRect( LightDisplay::Handle );
     if ( handleRect.contains( event->pos() ) )
     {
         setSkinStateFlag( Pressed );
+        return;
     }
-    else
-    {
-        QskBoundedValueInput::mousePressEvent( event );
-    }
+
+    Inherited::mousePressEvent( event );
 }
 
 void LightDisplay::mouseMoveEvent( QMouseEvent* event )
@@ -73,19 +73,17 @@ void LightDisplay::mouseMoveEvent( QMouseEvent* event )
     const auto mousePos = qskMousePosition( event );
     const auto rect = subControlRect( ColdAndWarmArc );
 
-    bool arcContainsMousePos = arcContainsPoint( rect, mousePos );
-
-    if( !arcContainsMousePos )
+    if( !arcContainsPoint( rect, mousePos ) )
     {
         setSkinStateFlag( Pressed, false );
         return;
     }
 
     const auto metrics = arcMetricsHint( ColdAndWarmArc );
-    qreal angle = angleFromPoint( rect, mousePos );
 
     const int tolerance = 20;
 
+    auto angle = angleFromPoint( rect, mousePos );
     if( !angleInRange( metrics, angle ) )
     {
         // we're slightly outside the range, but don't want to give up
@@ -101,7 +99,7 @@ void LightDisplay::mouseMoveEvent( QMouseEvent* event )
         }
     }
 
-    qreal ratio = ( metrics.spanAngle() - angle ) / metrics.spanAngle();
+    const auto ratio = ( metrics.spanAngle() - angle ) / metrics.spanAngle();
     setValueAsRatio( ratio );
 }
 
@@ -110,14 +108,29 @@ void LightDisplay::mouseReleaseEvent( QMouseEvent* /*event*/ )
     setSkinStateFlag( Pressed, false );
 }
 
+void LightDisplay::keyPressEvent( QKeyEvent* event )
+{
+    switch( event->key() )
+    {
+        case Qt::Key_Left:
+            increment( -stepSize() );
+            return;
+
+        case Qt::Key_Right:
+            increment( stepSize() );
+            return;
+    }
+
+    Inherited::keyPressEvent( event );
+}
+
 qreal LightDisplay::angleFromPoint( const QRectF& rect, const QPointF& point ) const
 {
-    QPointF circlePos( point.x() - rect.center().x(),
+    const QPointF circlePos( point.x() - rect.center().x(),
         rect.center().y() - point.y() );
 
-    const qreal atan = qAtan2( circlePos.y(), circlePos.x() );
-    const qreal angle = qRadiansToDegrees( atan );
-    return angle;
+    const qreal angle = qAtan2( circlePos.y(), circlePos.x() );
+    return qRadiansToDegrees( angle );
 }
 
 bool LightDisplay::arcContainsPoint( const QRectF& rect, const QPointF& point ) const
@@ -148,9 +161,7 @@ bool LightDisplay::arcContainsPoint( const QRectF& rect, const QPointF& point ) 
     const bool pointOnArc = ( polarRadius + tolerance ) > radiusMin
         && ( polarRadius - tolerance ) < radiusMax;
 
-    bool ret = angleWithinRange && pointOnArc;
-
-    return ret;
+    return angleWithinRange && pointOnArc;
 }
 
 #include "moc_LightDisplay.cpp"

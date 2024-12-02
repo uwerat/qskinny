@@ -31,7 +31,8 @@ class QSK_EXPORT QskProgressBarSkinlet : public QskProgressIndicatorSkinlet
     QSGNode* updateFillNode( const QskProgressIndicator*, QSGNode* ) const override;
 
   private:
-    QRectF barRect( const QskProgressBar* ) const;
+    QRectF fillRect( const QskProgressBar* ) const;
+    QRectF grooveRect( const QskProgressBar*, const QRectF& ) const;
 };
 
 #endif

@@ -4,66 +4,65 @@
 
 You will need:
 
-1. The `documentation-xml-website` branch of the Edelhirsch QSkinny repository
-    at https://github.com/edelhirsch/qskinny/tree/documentation-xml-website .
-1. A recent version of doxygen; The currently used version is 1.9.1 built from
-    github sources. The `doxygen` binary needs to be in the $PATH.
-1. A recent version of doxybook2 with some custom patches. The script
-    `generate-website.sh` should download and build the right version, however
-    the script might need some adaptation of paths.
-    For reference, the required version can be found at
-    https://github.com/edelhirsch/doxybook2/tree/jekyll .
+1. A recent version of doxygen; The currently used version is 1.9.8.
+    The `doxygen` binary needs to be in the $PATH.
+1. The `m4` command, which can be installed with `sudo apt install m4`.
 1. A recent version of Jekyll (see https://jekyllrb.com/), which will generate
-    the static html pages. This and other required packages can be installed via
+    the static html pages. The currently used jekyll version is 4.2.2.
+    Also a recent version of bundler is required; this can be installed with:
     ```
-    gem install jekyll:3.9.0
+    gem install jekyll:4.2.2
     gem install bundler:2.1.4
     ```
-    There might be some packages missing from the list above; in this case the
-    Gemfile in the qskinny-website repository might help.
-1. Checkout the current website repository via
+1. Checkout the repo to generate the website via
+    `git clone git@github.com:peter-ha/qskinny-website.git`
+1. Checkout the live website repository via
     `git clone git@github.com:qskinny/qskinny.github.io.git`
+
 
 ## Generating the website
 
-Generating the static HTML sites is done with the `generate-website.sh` script
-in the `qskinny/doc` directory. The script has some hardcoded paths and probably
-needs some adaptation to run correctly.
+### Generating the API documentation with doxygen
+```
+cd ~/dev/qskinny/doc
+export PATH=.:$PATH
+doxygen
+```
+This will generate the documentation into the `api` folder.
 
-It will do the following:
+### Testing and building the website locally
 
-1. Generate HTML from doxygen. This step is needed because for some reason when
-    generating XML from doxygen there are no images with dependency graphs.
-    *Note*: This step is only executed if the `html` folder doesn't exist,
-    because otherwise it would take too long.
-1. Generate XML from doxygen. The generated XML is used with doxybook2 in the
-    next step.
-    *Note*: This step is only executed if the `xml` folder doesn't exist,
-    because otherwise it would take too long.
-1. Generate markdown from XML with doxybook2. This markdown will be used by
-    Jekyll to either server the website content locally or generate static
-    HTML from it, see below.
+First copy the generated files from above to the website repo:
 
-### Generating the website locally
+```
+cp -r api ~/dev/qskinny-website/docs/
+```
 
-When the command line switch `-local` is used with the `generate-website.sh`
-script, it will generate the content to a local folder `doxybook-out`. This is
-meant to be able to copy selected files to the website directory at
-`~/dev/qskinny-website`.
-Otherwise, the script will copy the content to the website repository for
-uploading (again, paths are hardcoded as of now). So when generating content
-for the first time, just run the script without any switches, which should
-generate the website to `~/dev/qskinny-website`.
+Then test the website locally:
 
-### Testing the website locally
+```
+cd ~/dev/qskinny-website
+bundle exec jekyll serve --livereload
+```
 
-After having generated the website as described above, go to
-`~/dev/qskinny-website` and run `jekyll serve --livereload`. This should start
-a browser at http://127.0.0.1:4000/, which will display the website.
+Then direct your browser to `http://127.0.0.1:4000/`.
 
-### Generating the website publicly
+If all looks good, generate the static HTML website:
 
-When the command line switch `-publish` is used, the script will automatically
-generate a new version of the homepage and publish it at
-https://qskinny.github.io . This wil only work with the proper user rights of
-course.
+```
+bundle exec jekyll build
+```
+
+### Publishing the website
+
+Just copy over the generated HTML files to the public website repo and push a
+new version of the homepage:
+
+```
+cp -r _site/* ~/dev/qskinny.github.io/
+cd ~/dev/qskinny.github.io/
+git commit -a -m "new version"  # you might want to add new files
+gith push
+```
+
+That's it, the new website is now published at https://qskinny.github.io/ .

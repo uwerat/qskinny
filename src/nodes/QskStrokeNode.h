@@ -21,12 +21,8 @@ class QSK_EXPORT QskStrokeNode : public QskFillNode
     QskStrokeNode();
     ~QskStrokeNode() override;
 
-    void updateNode( const QPainterPath&, const QPen& );
-    void updateNode( const QPainterPath&, const QTransform&, const QPen& );
-
-    void updateNode0( const QPolygonF&, qreal lineWidth, const QColor& );
-    void updateNode0( const QPolygonF&, const QTransform&,
-        qreal lineWidth, const QColor& );
+    void updatePath( const QPainterPath&, const QPen& );
+    void updatePath( const QPainterPath&, const QTransform&, const QPen& );
 };
 
 #endif

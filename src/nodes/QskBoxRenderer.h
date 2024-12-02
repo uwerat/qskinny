@@ -13,11 +13,16 @@ class QskBoxBorderColors;
 class QskBoxShapeMetrics;
 class QskGradient;
 
+class QQuickWindow;
 class QSGGeometry;
 class QRectF;
 
-namespace QskBoxRenderer
+class QSK_EXPORT QskBoxRenderer
 {
+  public:
+    QskBoxRenderer( const QQuickWindow* );
+    ~QskBoxRenderer();
+
     /*
         Filling the geometry without any color information:
             see QSGGeometry::defaultAttributes_Point2D()
@@ -26,27 +31,40 @@ namespace QskBoxRenderer
         - using shaders setting the color information
      */
 
-    QSK_EXPORT void renderBorderGeometry( const QRectF&,
+    void setBorderLines( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    QSK_EXPORT void renderFillGeometry( const QRectF&,
+    void setFillLines( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, QSGGeometry& );
 
-    QSK_EXPORT void renderFillGeometry( const QRectF&,
+    void setFillLines( const QRectF&,
         const QskBoxShapeMetrics&, QSGGeometry& );
 
     /*
-        Filling the geometry usually with color information:
+        Filling the geometry with color information:
             see QSGGeometry::defaultAttributes_ColoredPoint2D()
-     */
-    QSK_EXPORT bool isGradientSupported( const QskGradient& );
 
-    QSK_EXPORT void renderBox( const QRectF&,
+        Usually used in combination with QSGVertexColorMaterial
+     */
+
+    void setColoredBorderLines( const QRectF&,
+        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
+        const QskBoxBorderColors&, QSGGeometry& );
+
+    void setColoredFillLines( const QRectF&,
+        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
+        const QskGradient&, QSGGeometry& );
+
+    void setColoredBorderAndFillLines( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient&, QSGGeometry& );
 
-    QSK_EXPORT void renderBox( const QRectF&,
-        const QskBoxShapeMetrics&, const QskGradient&, QSGGeometry& );
-}
+    static bool isGradientSupported( const QskGradient& );
+    static QskGradient effectiveGradient( const QskGradient& );
+
+  private:
+    // for adjustments to the target ( f.e devicePixelRatio )
+    const QQuickWindow* m_window;
+};
 
 #endif

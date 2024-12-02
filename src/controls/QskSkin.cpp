@@ -306,30 +306,24 @@ void QskSkin::declareSkinlet( const QMetaObject* metaObject,
 }
 
 static inline void qskSetFont( QskSkin* skin,
-    QskFontRole::Category category, QskFontRole::Emphasis emphasis,  
-    QFont font, QFont::Weight weight )
+    QskFontRole::Category category, QFont font, qreal pointSize )
 {
-    font.setWeight( weight );
-    skin->setFont( { category, emphasis }, font );
-}
-
-static inline void qskSetNormalFont( QskSkin* skin,
-    QskFontRole::Category category, QFont font, int pixelSize )
-{
-    font.setPixelSize( qRound( qskDpToPixels( pixelSize ) ) );
-    qskSetFont( skin, category, QskFontRole::Normal, font, QFont::Normal );
+    font.setPointSize( pointSize );
+    skin->setFont( { category, QskFontRole::Normal }, font );
 }
 
 void QskSkin::setupFontTable( const QString& family, bool italic )
 {
-    const QFont font( family, -1, -1, italic );
+    QFont font( family );
+    font.setItalic( italic );
+    font.setWeight( QFont::Normal );
 
-    qskSetNormalFont( this, QskFontRole::Caption, font, 10 );
-    qskSetNormalFont( this, QskFontRole::Subtitle, font, 15 );
-    qskSetNormalFont( this, QskFontRole::Body, font, 20 );
-    qskSetNormalFont( this, QskFontRole::Title, font, 24 );
-    qskSetNormalFont( this, QskFontRole::Headline, font, 32 );
-    qskSetNormalFont( this, QskFontRole::Display, font, 66 );
+    qskSetFont( this, QskFontRole::Caption, font, 8 );
+    qskSetFont( this, QskFontRole::Subtitle, font, 10 );
+    qskSetFont( this, QskFontRole::Body, font, 12 );
+    qskSetFont( this, QskFontRole::Title, font, 20 );
+    qskSetFont( this, QskFontRole::Headline, font, 30 );
+    qskSetFont( this, QskFontRole::Display, font, 48 );
 
     completeFontTable();
 }

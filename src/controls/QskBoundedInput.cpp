@@ -12,11 +12,18 @@
 
 QSK_SYSTEM_STATE( QskBoundedInput, ReadOnly, ( QskAspect::FirstSystemState << 1 ) )
 
+class QskBoundedInput::PrivateData
+{
+  public:
+    qreal stepSize = 0.1;
+    uint pageSteps = 1;
+
+    bool snapping = false;
+};
+
 QskBoundedInput::QskBoundedInput( QQuickItem* parent )
     : Inherited( parent )
-    , m_stepSize( 0.1 )
-    , m_pageSize( 1 )
-    , m_snap( false )
+    , m_data( new PrivateData )
 {
     setFocusPolicy( Qt::StrongFocus );
     setAcceptedMouseButtons( Qt::LeftButton );
@@ -38,73 +45,78 @@ void QskBoundedInput::setStepSize( qreal stepSize )
     if ( qFuzzyIsNull( stepSize ) )
         stepSize = 0.0;
 
-    if ( qFuzzyCompare( m_stepSize, stepSize ) )
+    if ( qFuzzyCompare( m_data->stepSize, stepSize ) )
         return;
 
-    m_stepSize = stepSize;
+    m_data->stepSize = stepSize;
     Q_EMIT stepSizeChanged( stepSize );
 
     if ( isComponentComplete() )
     {
-        if ( m_snap && stepSize )
+        if ( m_data->snapping && stepSize )
             alignInput();
     }
 }
 
 qreal QskBoundedInput::stepSize() const
 {
-    return m_stepSize;
+    return m_data->stepSize;
 }
 
-void QskBoundedInput::setPageSize( int pageSize )
+void QskBoundedInput::setPageSteps( uint pageSteps )
 {
-    if ( m_pageSize == pageSize )
+    if ( m_data->pageSteps == pageSteps )
         return;
 
-    m_pageSize = pageSize;
-    Q_EMIT pageSizeChanged( pageSize );
+    m_data->pageSteps = pageSteps;
+    Q_EMIT pageStepsChanged( pageSteps );
 }
 
-int QskBoundedInput::pageSize() const
+uint QskBoundedInput::pageSteps() const
 {
-    return m_pageSize;
+    return m_data->pageSteps;
+}
+
+qreal QskBoundedInput::pageSize() const
+{
+    return m_data->pageSteps * m_data->stepSize;
 }
 
 void QskBoundedInput::stepUp()
 {
-    increment( m_stepSize );
+    increment( m_data->stepSize );
 }
 
 void QskBoundedInput::stepDown()
 {
-    increment( -m_stepSize );
+    increment( -m_data->stepSize );
 }
 
 void QskBoundedInput::pageUp()
 {
-    increment( m_pageSize * m_stepSize );
+    increment( pageSize() );
 }
 
 void QskBoundedInput::pageDown()
 {
-    increment( -m_pageSize * m_stepSize );
+    increment( -pageSize() );
 }
 
-void QskBoundedInput::setSnap( bool snap )
+void QskBoundedInput::setSnapping( bool on )
 {
-    if ( m_snap == snap )
+    if ( m_data->snapping == on )
         return;
 
-    m_snap = snap;
-    Q_EMIT snapChanged( snap );
+    m_data->snapping = on;
+    Q_EMIT snappingChanged( on );
 
-    if ( isComponentComplete() && snap )
+    if ( isComponentComplete() && m_data->snapping )
         alignInput();
 }
 
-bool QskBoundedInput::snap() const
+bool QskBoundedInput::isSnapping() const
 {
-    return m_snap;
+    return m_data->snapping;
 }
 
 void QskBoundedInput::componentComplete()
@@ -120,38 +132,6 @@ void QskBoundedInput::componentComplete()
 
 void QskBoundedInput::alignInput()
 {
-}
-
-qreal QskBoundedInput::alignedValue( qreal value ) const
-{
-    value = boundedValue( value );
-
-    if ( value > minimum() && value < maximum() )
-    {
-        if ( m_snap && m_stepSize )
-        {
-            value = qRound( value / m_stepSize ) * m_stepSize;
-            value = boundedValue( value );
-        }
-    }
-
-    return value;
-}
-
-QskIntervalF QskBoundedInput::alignedInterval( const QskIntervalF& interval ) const
-{
-    if ( m_snap )
-    {
-        if ( const auto step = m_stepSize )
-        {
-            const qreal lower = std::floor( interval.lowerBound() / step ) * step;
-            const qreal upper = std::ceil( interval.upperBound() / step ) * step;
-
-            return QskIntervalF( lower, upper );
-        }
-    }
-
-    return interval;
 }
 
 void QskBoundedInput::setReadOnly( bool readOnly )
@@ -182,25 +162,16 @@ qreal QskBoundedInput::incrementForKey( const QKeyEvent* event ) const
     switch( event->key() )
     {
         case Qt::Key_Up:
-            return m_stepSize;
+            return m_data->stepSize;
 
         case Qt::Key_Down:
-            return -m_stepSize;
+            return -m_data->stepSize;
 
         case Qt::Key_PageUp:
-            return m_pageSize;
+            return pageSize();
 
         case Qt::Key_PageDown:
-            return -m_pageSize;
-
-        default:
-        {
-            if ( qskIsStandardKeyInput( event, QKeySequence::MoveToNextChar ) )
-                return m_stepSize;
-
-            if ( qskIsStandardKeyInput( event, QKeySequence::MoveToPreviousChar ) )
-                return -m_stepSize;
-        }
+            return -pageSize();
     }
 
     return 0.0;
@@ -230,9 +201,9 @@ void QskBoundedInput::wheelEvent( QWheelEvent* event )
         return;
     }
 
-    auto offset = qskWheelIncrement( event ) * m_stepSize;
+    auto offset = qskWheelIncrement( event ) * m_data->stepSize;
     if ( event->modifiers() & ( Qt::ControlModifier | Qt::ShiftModifier ) )
-        offset *= m_pageSize;
+        offset *= m_data->pageSteps;
 
     increment( offset );
 }

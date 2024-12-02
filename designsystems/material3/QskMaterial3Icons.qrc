@@ -7,6 +7,8 @@
         <file>icons/qvg/combo-box-arrow-closed.qvg</file>
         <file>icons/qvg/combo-box-arrow-open.qvg</file>
         <file>icons/qvg/segmented-button-check.qvg</file>
+        <file>icons/qvg/switchbutton-checked.qvg</file>
+        <file>icons/qvg/switchbutton-unchecked.qvg</file>
 
 		<!-- https://github.com/marella/material-design-icons/tree/main/svg/round -->
 

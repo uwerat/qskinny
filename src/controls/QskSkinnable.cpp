@@ -437,6 +437,14 @@ qreal QskSkinnable::metric( const QskAspect aspect, QskSkinHintStatus* status ) 
     return qskMetric< qreal >( this, aspect, status );
 }
 
+qreal QskSkinnable::metric( QskAspect aspect, qreal defaultValue ) const
+{
+    QskSkinHintStatus status;
+
+    const auto value = qskMetric< qreal >( this, aspect, &status );
+    return status.isValid() ? value : defaultValue;
+}
+
 bool QskSkinnable::setPositionHint( QskAspect aspect, qreal position )
 {
     return qskSetMetric( this, aspect | QskAspect::Position, position );

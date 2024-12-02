@@ -13,7 +13,6 @@ QSK_SUBCONTROL( QskRadioBox, Button )
 QSK_SUBCONTROL( QskRadioBox, CheckIndicatorPanel )
 QSK_SUBCONTROL( QskRadioBox, CheckIndicator )
 QSK_SUBCONTROL( QskRadioBox, Text )
-QSK_SUBCONTROL( QskRadioBox, Ripple )
 
 QSK_STATE( QskRadioBox, Selected, QskAspect::FirstUserState << 1 )
 QSK_STATE( QskRadioBox, Pressed, QskAspect::FirstUserState << 2 )
@@ -38,7 +37,7 @@ QskRadioBox::QskRadioBox( QQuickItem* parent )
     setFocusPolicy( Qt::StrongFocus );
     setAcceptedMouseButtons( Qt::LeftButton );
 
-    setPositionHint( Ripple, -1 );
+    setPositionHint( CheckIndicator, -1 );
 
     setAcceptHoverEvents( true );
 }
@@ -182,7 +181,7 @@ void QskRadioBox::keyPressEvent( QKeyEvent* event )
     {
         setFocusedIndex( nextTabIndex );
 
-        const auto aspect = Ripple | QskAspect::Metric | QskAspect::Position;
+        const auto aspect = CheckIndicator | QskAspect::Metric | QskAspect::Position;
         const auto hint = animationHint( aspect | skinStates() );
 
         if( hint.isValid() )
@@ -277,7 +276,7 @@ void QskRadioBox::setHoveredIndex( int index )
         return;
 
     m_data->hoveredIndex = index;
-    setPositionHint( Ripple | Hovered, index );
+    setPositionHint( CheckIndicator | Hovered, index );
 
     update();
 }
@@ -288,7 +287,7 @@ void QskRadioBox::setFocusedIndex( int index )
         return;
 
     m_data->focusedIndex = index;
-    setPositionHint( Ripple, index );
+    setPositionHint( CheckIndicator, index );
 
     update();
 

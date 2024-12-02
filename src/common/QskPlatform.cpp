@@ -6,6 +6,7 @@
 #include "QskPlatform.h"
 
 #include <qguiapplication.h>
+#include <qquickwindow.h>
 #include <qscreen.h>
 
 QSK_QT_PRIVATE_BEGIN
@@ -51,40 +52,24 @@ QRect qskPlatformScreenGeometry( const QScreen* screen )
     return screen->handle()->geometry();
 }
 
-static inline qreal qskRoundedDpi( qreal dpi )
-{   
-    // see https://developer.android.com/training/multiscreen/screendensities
-    
-    if( dpi <= 140.0 )
-        return 120.0; // ldpi
-    
-    if( dpi <= 200.0 )
-        return 160.0; // mdpi
-    
-    if( dpi <= 280.0 )
-        return 240.0; // hdpi
-    
-    if( dpi <= 400.0 )
-        return 320.0; // xhdpi
-    
-    if( dpi <= 560.0 )
-        return 480.0; // xxhdpi
-    
-    return 640.0; // xxxhdpi
-}   
-
-qreal qskDpToPixelsFactor()
+static inline qreal qskWindowDpi( const QWindow* window )
 {
-    if ( const auto screen = QGuiApplication::primaryScreen() )
-        return qskRoundedDpi( screen->physicalDotsPerInch() ) / 160.0;
+    QScreen* screen = nullptr;
+    if ( window )
+        screen = window->screen();
 
-    return 1.0;
+    if ( screen == nullptr )
+        screen = QGuiApplication::primaryScreen();
+
+    return QHighDpiScaling::logicalDpi( screen ).first;
 }
 
-qreal qskPxToPixelsFactor()
+qreal qskInchesToPixels( const QQuickWindow* window, qreal inches )
 {
-    if ( const auto screen = QGuiApplication::primaryScreen() )
-        return screen->physicalDotsPerInch() / 96.0;
+    return qskWindowDpi( window ) * inches;
+}
 
-    return 1.0;
+qreal qskMMToPixels( const QQuickWindow* window, qreal mm )
+{
+    return qskWindowDpi( window ) * mm / 25.4;
 }

@@ -70,6 +70,15 @@ static inline bool qskMaybeSpreading( const QskGradient& gradient )
     return true;
 }
 
+QskBoxRenderer::QskBoxRenderer( const QQuickWindow* window )
+    : m_window( window )
+{
+}
+
+QskBoxRenderer::~QskBoxRenderer()
+{
+}
+
 bool QskBoxRenderer::isGradientSupported( const QskGradient& gradient )
 {
     if ( !gradient.isVisible() || gradient.isMonochrome() )
@@ -109,7 +118,7 @@ bool QskBoxRenderer::isGradientSupported( const QskGradient& gradient )
     return false;
 }
 
-void QskBoxRenderer::renderBorderGeometry(
+void QskBoxRenderer::setBorderLines(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
@@ -124,13 +133,13 @@ void QskBoxRenderer::renderBorderGeometry(
         stroker.setBorderLines( lines );
 }
 
-void QskBoxRenderer::renderFillGeometry(
+void QskBoxRenderer::setFillLines(
     const QRectF& rect, const QskBoxShapeMetrics& shape, QSGGeometry& geometry )
 {
-    renderFillGeometry( rect, shape, QskBoxBorderMetrics(), geometry );
+    setFillLines( rect, shape, QskBoxBorderMetrics(), geometry );
 }
 
-void QskBoxRenderer::renderFillGeometry(
+void QskBoxRenderer::setFillLines(
     const QRectF& rect, const QskBoxShapeMetrics& shape,
     const QskBoxBorderMetrics& border, QSGGeometry& geometry )
 {
@@ -144,15 +153,29 @@ void QskBoxRenderer::renderFillGeometry(
         stroker.setFillLines( lines );
 }
 
-void QskBoxRenderer::renderBox( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, const QskGradient& gradient,
-    QSGGeometry& geometry )
+void QskBoxRenderer::setColoredFillLines( const QRectF& rect,
+    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
+    const QskGradient& gradient, QSGGeometry& geometry )
 {
-    renderBox( rect, shape, QskBoxBorderMetrics(),
+    setColoredBorderAndFillLines( rect, shape, border,
         QskBoxBorderColors(), gradient, geometry );
 }
 
-void QskBoxRenderer::renderBox( const QRectF& rect,
+void QskBoxRenderer::setColoredBorderLines( const QRectF& rect,
+    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
+    const QskBoxBorderColors& borderColors, QSGGeometry& geometry )
+{
+    geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
+    geometry.markVertexDataDirty();
+
+    const QskBoxMetrics metrics( rect, shape, border );
+    const QskBoxBasicStroker stroker( metrics, borderColors );
+
+    if ( auto lines = qskAllocateColoredLines( geometry, stroker.borderCount() ) )
+        stroker.setBoxLines( lines, nullptr );
+}
+
+void QskBoxRenderer::setColoredBorderAndFillLines( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient,
     QSGGeometry& geometry )
@@ -164,7 +187,7 @@ void QskBoxRenderer::renderBox( const QRectF& rect,
     const auto effectiveGradient = qskEffectiveGradient( metrics.innerRect, gradient );
 
     if ( metrics.innerRect.isEmpty() ||
-        QskBoxRenderer::ColorMap::isGradientSupported( effectiveGradient, metrics.innerRect ) )
+        QskVertex::ColorMap::isGradientSupported( effectiveGradient, metrics.innerRect ) )
     {
         /*
             The gradient can be translated to a QskBoxRenderer::ColorMap and we can do all
@@ -180,12 +203,13 @@ void QskBoxRenderer::renderBox( const QRectF& rect,
         const int fillCount = stroker.fillCount();
         const int borderCount = stroker.borderCount();
 
-        auto lines = qskAllocateColoredLines( geometry, borderCount + fillCount );
+        if ( auto lines = qskAllocateColoredLines( geometry, borderCount + fillCount ) )
+        {
+            auto fillLines = fillCount ? lines : nullptr;
+            auto borderLines = borderCount ? lines + fillCount : nullptr;
 
-        auto fillLines = fillCount ? lines : nullptr;
-        auto borderLines = borderCount ? lines + fillCount : nullptr;
-
-        stroker.setBoxLines( borderLines, fillLines );
+            stroker.setBoxLines( borderLines, fillLines );
+        }
     }
     else
     {
@@ -217,4 +241,19 @@ void QskBoxRenderer::renderBox( const QRectF& rect,
             l[0].p2 = l[+1].p1;
         }
     }
+}
+
+QskGradient QskBoxRenderer::effectiveGradient( const QskGradient& gradient )
+{
+    if ( ( gradient.type() == QskGradient::Stops ) || gradient.isMonochrome() )
+    {
+        // the shader for linear gradients is the fastest
+
+        auto g = gradient;
+        g.setDirection( QskGradient::Linear );
+
+        return g;
+    }
+
+    return gradient;
 }
