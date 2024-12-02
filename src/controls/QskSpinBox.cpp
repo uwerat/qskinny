@@ -8,9 +8,6 @@
 #include "QskFunctions.h"
 
 #include <qbasictimer.h>
-#include <qlocale.h>
-
-#include <cfloat>
 
 QSK_SUBCONTROL( QskSpinBox, Panel )
 
@@ -110,8 +107,6 @@ class QskSpinBox::PrivateData
         this->repeatTimer.stop();
     }
 
-    int decimals = 2;
-
     int autoRepeatDelay = 300;
     int autoRepeatInterval = 100;
 
@@ -139,10 +134,10 @@ QskSpinBox::QskSpinBox( qreal min, qreal max, qreal stepSize, QQuickItem* parent
     setBoundaries( min, max );
     setStepSize( stepSize );
 
+    setAcceptHoverEvents( true );
+
     setAcceptedMouseButtons( Qt::LeftButton );
     setFocusPolicy( Qt::StrongFocus );
-
-    connect( this, &QskSpinBox::valueChanged, this, &QskSpinBox::textChanged );
 }
 
 QskSpinBox::QskSpinBox( QQuickItem* parent )
@@ -183,33 +178,6 @@ void QskSpinBox::setWrapping( bool on )
 bool QskSpinBox::isWrapping() const
 {
     return m_data->wrapping;
-}
-
-void QskSpinBox::setDecimals( int decimals )
-{
-    decimals = qBound( 0, decimals, DBL_MAX_10_EXP + DBL_DIG );
-    if ( decimals != m_data->decimals )
-    {
-        m_data->decimals = decimals;
-
-        update();
-        resetImplicitSize();
-    }
-}
-
-int QskSpinBox::decimals() const
-{
-    return m_data->decimals;
-}
-
-QString QskSpinBox::text() const
-{
-    return textFromValue( value() );
-}
-
-QString QskSpinBox::textFromValue( qreal value ) const
-{
-    return locale().toString( value, 'f', m_data->decimals );
 }
 
 void QskSpinBox::increment( qreal offset )
@@ -254,7 +222,7 @@ void QskSpinBox::mousePressEvent( QMouseEvent* event )
             {
                 auto offset = stepSize();
                 if ( event->modifiers() & ( Qt::ControlModifier | Qt::ShiftModifier ) )
-                    offset *= pageSize();
+                    offset *= pageSteps();
 
                 if ( subcontrol == QskSpinBox::DownPanel )
                     offset = -offset;
@@ -300,6 +268,12 @@ void QskSpinBox::mouseUngrabEvent()
 {
     if ( m_data->isActivatedByMouse() )
         m_data->setAutoRepeat( this, 0.0 );
+}
+
+void QskSpinBox::hoverMoveEvent( QHoverEvent* event )
+{
+    Inherited::hoverMoveEvent( event );
+    update(); // enter/leaving a subcontrol
 }
 
 void QskSpinBox::keyPressEvent( QKeyEvent* event )

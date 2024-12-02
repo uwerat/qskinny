@@ -23,7 +23,7 @@ class QSK_EXPORT QskShapeNode : public QskFillNode
     QskShapeNode();
     ~QskShapeNode() override;
 
-    void updateNode( const QPainterPath&, const QTransform&,
+    void updatePath( const QPainterPath&, const QTransform&,
         const QRectF&, const QskGradient& );
 
   private:

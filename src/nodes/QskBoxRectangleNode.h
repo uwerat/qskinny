@@ -13,8 +13,9 @@ class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 class QskBoxBorderColors;
 class QskGradient;
-
 class QskBoxRectangleNodePrivate;
+
+class QQuickWindow;
 
 class QSK_EXPORT QskBoxRectangleNode : public QskFillNode
 {
@@ -24,21 +25,21 @@ class QSK_EXPORT QskBoxRectangleNode : public QskFillNode
     QskBoxRectangleNode();
     ~QskBoxRectangleNode() override;
 
-    void updateBox( const QRectF&,
+    void updateBox( const QQuickWindow*, const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient& );
 
-    void updateBorder( const QRectF&,
+    void updateBorder( const QQuickWindow*, const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors& );
 
-    void updateFilling( const QRectF& rect, const QskGradient& );
+    void updateFilling( const QQuickWindow*, const QRectF&, const QskGradient& );
 
-    void updateFilling( const QRectF& rect,
+    void updateFilling( const QQuickWindow*, const QRectF&,
         const QskBoxShapeMetrics&, const QskGradient& );
 
-    void updateFilling( const QRectF& rect, const QskBoxShapeMetrics&,
-        const QskBoxBorderMetrics&, const QskGradient& );
+    void updateFilling( const QQuickWindow*, const QRectF&,
+        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, const QskGradient& );
 
     /*
         If true border/filling can be rendered together into the same geometry.

@@ -4,14 +4,14 @@
  *****************************************************************************/
 
 #include "ShadowedArc.h"
+#include "ArcShadowNode.h"
 
 #include <QskSkinlet.h>
 #include <QskArcNode.h>
 #include <QskArcMetrics.h>
 #include <QskShadowMetrics.h>
-
-#include <QskArcNode.h>
 #include <QskSGNode.h>
+#include <QskRgbValue.h>
 
 QSK_SUBCONTROL( ShadowedArc, Arc )
 
@@ -22,7 +22,7 @@ namespace
         using Inherited = QskSkinlet;
 
       public:
-        enum NodeRoles { ArcRole };
+        enum NodeRoles { ShadowRole, ArcRole };
 
         Skinlet( QskSkin* skin = nullptr );
 
@@ -34,12 +34,13 @@ namespace
 
       private:
         QSGNode* updateArcNode( const ShadowedArc*, QSGNode* node ) const;
+        QSGNode* updateShadowNode( const ShadowedArc*, QSGNode* node ) const;
     };
 
     Skinlet::Skinlet( QskSkin* skin )
         : QskSkinlet( skin )
     {
-        setNodeRoles( { ArcRole } );
+        setNodeRoles( { ShadowRole, ArcRole } );
     }
 
     QRectF Skinlet::subControlRect( const QskSkinnable* skinnable,
@@ -54,13 +55,47 @@ namespace
     QSGNode* Skinlet::updateSubNode(
         const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
     {
-        if ( nodeRole == ArcRole )
+        auto arc = static_cast< const ShadowedArc* >( skinnable );
+
+        switch( nodeRole )
         {
-            auto arc = static_cast< const ShadowedArc* >( skinnable );
-            return updateArcNode( arc, node );
+            case ShadowRole:
+                return updateShadowNode( arc, node );
+                break;
+
+            case ArcRole:
+                return updateArcNode( arc, node );
         }
 
         return Inherited::updateSubNode( skinnable, nodeRole, node );
+    }
+
+    QSGNode* Skinlet::updateShadowNode( const ShadowedArc* arc, QSGNode* node ) const
+    {
+        using Q = ShadowedArc;
+
+        const auto rect = arc->subControlRect( Q::Arc );
+        if ( rect.isEmpty() )
+            return nullptr;
+
+        const auto color = arc->shadowColorHint( Q::Arc );
+        if ( !QskRgb::isVisible( color ) )
+            return nullptr;
+
+        auto metricsArc = arc->arcMetricsHint( Q::Arc );
+        metricsArc = metricsArc.toAbsolute( rect.size() );
+
+        auto metrics = arc->shadowMetricsHint( Q::Arc );
+        metrics = metrics.toAbsolute( rect.size() );
+
+        const auto shadowRect = metrics.shadowRect( rect );
+        const auto spreadRadius = metrics.spreadRadius() + 0.5 * metricsArc.thickness();
+
+        auto shadowNode = QskSGNode::ensureNode< ArcShadowNode >( node );
+        shadowNode->setShadowData( shadowRect, spreadRadius, metrics.blurRadius(),
+            metricsArc.startAngle(), metricsArc.spanAngle(), color );
+
+        return shadowNode;;
     }
 
     QSGNode* Skinlet::updateArcNode( const ShadowedArc* arc, QSGNode* node ) const
@@ -79,11 +114,7 @@ namespace
         const auto borderColor = arc->color( Q::Arc | QskAspect::Border );
         const auto borderWidth = arc->metric( Q::Arc | QskAspect::Border );
 
-        const auto shadowColor = arc->shadowColorHint( Q::Arc );
-        const auto shadowMetrics = arc->shadowMetricsHint( Q::Arc );
-
-        arcNode->setArcData( rect, metrics, borderWidth, borderColor,
-            fillGradient, shadowColor, shadowMetrics);
+        arcNode->setArcData( rect, metrics, borderWidth, borderColor, fillGradient );
 
         return arcNode;
     }

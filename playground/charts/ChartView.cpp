@@ -98,7 +98,7 @@ namespace
             slider->setBoundaries( min, max );
             slider->setValue( value );
             slider->setStepSize( 1.0 );
-            slider->setPageSize( 10.0 );
+            slider->setPageSteps( 10 );
 
             connect( slider, &QskSlider::valueChanged,
                 this, &SliderBox::valueChanged );

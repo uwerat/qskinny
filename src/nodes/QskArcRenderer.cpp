@@ -7,7 +7,7 @@
 #include "QskArcMetrics.h"
 #include "QskGradient.h"
 #include "QskVertex.h"
-#include "QskBoxColorMap.h"
+#include "QskVertexHelper.h"
 #include "QskRgbValue.h"
 
 #include <qsggeometry.h>
@@ -359,7 +359,7 @@ namespace
     void Renderer::renderLines( const LineStroker& lineStroker,
         Line* fillLines, Line* borderLines ) const
     {
-        QskBoxRenderer::GradientIterator it;
+        QskVertex::GradientIterator it;
 
         if ( fillLines )
         {

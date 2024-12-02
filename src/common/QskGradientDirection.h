@@ -12,8 +12,6 @@
 #include <qpoint.h>
 #include <qline.h>
 
-class QLineF;
-
 class QSK_EXPORT QskLinearDirection
 {
     Q_GADGET

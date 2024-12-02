@@ -70,6 +70,15 @@ static inline bool qskMaybeSpreading( const QskGradient& gradient )
     return true;
 }
 
+QskBoxRenderer::QskBoxRenderer( const QQuickWindow* window )
+    : m_window( window )
+{
+}
+
+QskBoxRenderer::~QskBoxRenderer()
+{
+}
+
 bool QskBoxRenderer::isGradientSupported( const QskGradient& gradient )
 {
     if ( !gradient.isVisible() || gradient.isMonochrome() )
@@ -159,7 +168,8 @@ void QskBoxRenderer::setColoredBorderLines( const QRectF& rect,
     geometry.setDrawingMode( QSGGeometry::DrawTriangleStrip );
     geometry.markVertexDataDirty();
 
-    const QskBoxBasicStroker stroker( QskBoxMetrics( rect, shape, border ), borderColors );
+    const QskBoxMetrics metrics( rect, shape, border );
+    const QskBoxBasicStroker stroker( metrics, borderColors );
 
     if ( auto lines = qskAllocateColoredLines( geometry, stroker.borderCount() ) )
         stroker.setBoxLines( lines, nullptr );
@@ -177,7 +187,7 @@ void QskBoxRenderer::setColoredBorderAndFillLines( const QRectF& rect,
     const auto effectiveGradient = qskEffectiveGradient( metrics.innerRect, gradient );
 
     if ( metrics.innerRect.isEmpty() ||
-        QskBoxRenderer::ColorMap::isGradientSupported( effectiveGradient, metrics.innerRect ) )
+        QskVertex::ColorMap::isGradientSupported( effectiveGradient, metrics.innerRect ) )
     {
         /*
             The gradient can be translated to a QskBoxRenderer::ColorMap and we can do all
@@ -193,12 +203,13 @@ void QskBoxRenderer::setColoredBorderAndFillLines( const QRectF& rect,
         const int fillCount = stroker.fillCount();
         const int borderCount = stroker.borderCount();
 
-        auto lines = qskAllocateColoredLines( geometry, borderCount + fillCount );
+        if ( auto lines = qskAllocateColoredLines( geometry, borderCount + fillCount ) )
+        {
+            auto fillLines = fillCount ? lines : nullptr;
+            auto borderLines = borderCount ? lines + fillCount : nullptr;
 
-        auto fillLines = fillCount ? lines : nullptr;
-        auto borderLines = borderCount ? lines + fillCount : nullptr;
-
-        stroker.setBoxLines( borderLines, fillLines );
+            stroker.setBoxLines( borderLines, fillLines );
+        }
     }
     else
     {
@@ -235,14 +246,14 @@ void QskBoxRenderer::setColoredBorderAndFillLines( const QRectF& rect,
 QskGradient QskBoxRenderer::effectiveGradient( const QskGradient& gradient )
 {
     if ( ( gradient.type() == QskGradient::Stops ) || gradient.isMonochrome() )
-    {   
+    {
         // the shader for linear gradients is the fastest
-    
+
         auto g = gradient;
         g.setDirection( QskGradient::Linear );
-    
+
         return g;
     }
-    
+
     return gradient;
 }

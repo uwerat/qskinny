@@ -5,8 +5,7 @@
 
 #include "QskBoxGradientStroker.h"
 #include "QskBoxBasicStroker.h"
-#include "QskVertex.h"
-#include "QskBoxColorMap.h"
+#include "QskVertexHelper.h"
 #include "QskBoxMetrics.h"
 
 static inline bool qskCanUseHVFiller(
@@ -172,7 +171,7 @@ namespace
         qreal m_t0, m_dt;
 
         const QskBoxMetrics::Corner* m_c1, * m_c2, * m_c3;
-        QskBoxRenderer::GradientIterator m_gradientIterator;
+        QskVertex::GradientIterator m_gradientIterator;
     };
 }
 
@@ -528,7 +527,7 @@ namespace
         int setLines( const QskGradient& gradient, ColoredLine* lines )
         {
             ContourIterator it( m_metrics, gradient.linearDirection() );
-            QskBoxRenderer::GradientIterator gradientIt( gradient.stops() );
+            QskVertex::GradientIterator gradientIt( gradient.stops() );
 
             ColoredLine* l = lines;
 
@@ -584,7 +583,7 @@ namespace
             const qreal y1 = m_metrics.innerRect.top();
             const qreal y2 = m_metrics.innerRect.bottom();
 
-            QskBoxRenderer::GradientIterator it( gradient.stops() );
+            QskVertex::GradientIterator it( gradient.stops() );
             ColoredLine* l = lines;
 
             const auto dir = gradient.linearDirection();

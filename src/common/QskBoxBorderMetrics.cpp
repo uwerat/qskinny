@@ -29,7 +29,7 @@ static void qskRegisterBoxBorderMetrics()
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterBoxBorderMetrics )
 
-static inline qreal qskAbsoluted( qreal length, qreal percentage )
+static inline qreal qskToAbsolute( qreal length, qreal percentage )
 {
     // 100% means -> 0.5 of length
     percentage = qBound( 0.0, percentage, 100.0 );
@@ -69,10 +69,10 @@ QskBoxBorderMetrics QskBoxBorderMetrics::toAbsolute( const QSizeF& size ) const 
     }
     else
     {
-        w.setLeft( qskAbsoluted( size.width(), w.left() ) );
-        w.setTop( qskAbsoluted( size.height(), w.top() ) );
-        w.setRight( qskAbsoluted( size.width(), w.right() ) );
-        w.setBottom( qskAbsoluted( size.height(), w.bottom() ) );
+        w.setLeft( qskToAbsolute( size.width(), w.left() ) );
+        w.setTop( qskToAbsolute( size.height(), w.top() ) );
+        w.setRight( qskToAbsolute( size.width(), w.right() ) );
+        w.setBottom( qskToAbsolute( size.height(), w.bottom() ) );
     }
 
     absoluted.m_sizeMode = Qt::AbsoluteSize;

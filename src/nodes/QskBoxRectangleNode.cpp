@@ -12,7 +12,7 @@
 #include "QskGradientDirection.h"
 #include "QskFillNodePrivate.h"
 
-static inline bool qskHasBorder( 
+static inline bool qskHasBorder(
     const QskBoxBorderMetrics& metrics, const QskBoxBorderColors& colors )
 {
     return !metrics.isNull() && colors.isVisible();
@@ -79,21 +79,22 @@ QskBoxRectangleNode::~QskBoxRectangleNode()
 {
 }
 
-void QskBoxRectangleNode::updateFilling(
+void QskBoxRectangleNode::updateFilling( const QQuickWindow* window,
     const QRectF& rect, const QskGradient& gradient )
 {
-    updateFilling( rect, QskBoxShapeMetrics(), QskBoxBorderMetrics(), gradient );
+    updateFilling( window, rect,
+        QskBoxShapeMetrics(), QskBoxBorderMetrics(), gradient );
 }
 
-void QskBoxRectangleNode::updateFilling( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, const QskGradient& gradient )
+void QskBoxRectangleNode::updateFilling( const QQuickWindow* window,
+    const QRectF& rect, const QskBoxShapeMetrics& shape, const QskGradient& gradient )
 {
-    updateFilling( rect, shape, QskBoxBorderMetrics(), gradient );
+    updateFilling( window, rect, shape, QskBoxBorderMetrics(), gradient );
 }
 
-void QskBoxRectangleNode::updateFilling( const QRectF& rect,
-    const QskBoxShapeMetrics& shapeMetrics, const QskBoxBorderMetrics& borderMetrics,
-    const QskGradient& gradient )
+void QskBoxRectangleNode::updateFilling( const QQuickWindow* window,
+    const QRectF& rect, const QskBoxShapeMetrics& shapeMetrics,
+    const QskBoxBorderMetrics& borderMetrics, const QskGradient& gradient )
 {
     Q_D( QskBoxRectangleNode );
 
@@ -117,11 +118,13 @@ void QskBoxRectangleNode::updateFilling( const QRectF& rect,
 
     if ( dirtyGeometry || dirtyMaterial )
     {
+        QskBoxRenderer renderer( window );
+
         if ( coloredGeometry )
         {
             setColoring( QskFillNode::Polychrome );
 
-            QskBoxRenderer::setColoredFillLines( rect, shape,
+            renderer.setColoredFillLines( rect, shape,
                 borderMetrics, fillGradient, *geometry() );
 
             markDirty( QSGNode::DirtyGeometry );
@@ -132,18 +135,16 @@ void QskBoxRectangleNode::updateFilling( const QRectF& rect,
 
             if ( dirtyGeometry )
             {
-                QskBoxRenderer::setFillLines(
-                    rect, shape, borderMetrics, *geometry() );
-
+                renderer.setFillLines( rect, shape, borderMetrics, *geometry() );
                 markDirty( QSGNode::DirtyGeometry );
             }
         }
     }
 }
 
-void QskBoxRectangleNode::updateBorder( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
-    const QskBoxBorderColors& borderColors )
+void QskBoxRectangleNode::updateBorder( const QQuickWindow* window,
+    const QRectF& rect, const QskBoxShapeMetrics& shapeMetrics,
+    const QskBoxBorderMetrics& borderMetrics, const QskBoxBorderColors& borderColors )
 {
     Q_D( QskBoxRectangleNode );
 
@@ -152,6 +153,8 @@ void QskBoxRectangleNode::updateBorder( const QRectF& rect,
         d->resetNode( this );
         return;
     }
+
+    const auto shape = shapeMetrics.toAbsolute( rect.size() );
 
     const bool coloredGeometry = hasHint( PreferColoredGeometry )
         || !borderColors.isMonochrome();
@@ -164,11 +167,13 @@ void QskBoxRectangleNode::updateBorder( const QRectF& rect,
 
     if ( dirtyGeometry || dirtyMaterial )
     {
+        QskBoxRenderer renderer( window );
+
         if ( coloredGeometry )
         {
             setColoring( QskFillNode::Polychrome );
 
-            QskBoxRenderer::setColoredBorderLines( rect, shape,
+            renderer.setColoredBorderLines( rect, shape,
                 borderMetrics, borderColors, *geometry() );
 
             markDirty( QSGNode::DirtyGeometry );
@@ -179,7 +184,7 @@ void QskBoxRectangleNode::updateBorder( const QRectF& rect,
 
             if ( dirtyGeometry )
             {
-                QskBoxRenderer::setBorderLines( rect, shape,
+                renderer.setBorderLines( rect, shape,
                     borderMetrics, *geometry() );
 
                 markDirty( QSGNode::DirtyGeometry );
@@ -188,8 +193,8 @@ void QskBoxRectangleNode::updateBorder( const QRectF& rect,
     }
 }
 
-void QskBoxRectangleNode::updateBox( const QRectF& rect,
-    const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& borderMetrics,
+void QskBoxRectangleNode::updateBox( const QQuickWindow* window, const QRectF& rect,
+    const QskBoxShapeMetrics& shapeMetrics, const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient )
 {
     Q_D( QskBoxRectangleNode );
@@ -205,6 +210,8 @@ void QskBoxRectangleNode::updateBox( const QRectF& rect,
 
     if ( hasFill && hasBorder )
     {
+        const auto shape = shapeMetrics.toAbsolute( rect.size() );
+
         const bool isDirty = d->updateMetrics( rect, shape, borderMetrics )
             || d->updateColors( borderColors, gradient ) || !isGeometryColored();
 
@@ -224,7 +231,8 @@ void QskBoxRectangleNode::updateBox( const QRectF& rect,
                 fillGradient.setDirection( QskGradient::Linear );
             }
 
-            QskBoxRenderer::setColoredBorderAndFillLines( rect, shape, borderMetrics,
+            QskBoxRenderer renderer( window );
+            renderer.setColoredBorderAndFillLines( rect, shape, borderMetrics,
                 borderColors, fillGradient, *geometry() );
 
             markDirty( QSGNode::DirtyGeometry );
@@ -232,11 +240,11 @@ void QskBoxRectangleNode::updateBox( const QRectF& rect,
     }
     else if ( hasFill )
     {
-        updateFilling( rect, shape, borderMetrics, gradient );
+        updateFilling( window, rect, shapeMetrics, borderMetrics, gradient );
     }
     else if ( hasBorder )
     {
-        updateBorder( rect, shape, borderMetrics, borderColors );
+        updateBorder( window, rect, shapeMetrics, borderMetrics, borderColors );
     }
     else
     {

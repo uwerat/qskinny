@@ -24,7 +24,6 @@ class QSK_EXPORT QskRadioBoxSkinlet : public QskSkinlet
         CheckPanelRole,
         CheckIndicatorRole,
         TextRole,
-        RippleRole,
 
         RoleCount
     };
@@ -57,8 +56,6 @@ class QSK_EXPORT QskRadioBoxSkinlet : public QskSkinlet
     QRectF textRect( const QskRadioBox*, const QRectF&, int ) const;
     QRectF checkPanelRect( const QskRadioBox*, const QRectF&, int index ) const;
     QRectF buttonRect( const QskRadioBox*, const QRectF&, int index ) const;
-
-    QRectF rippleRect( const QskRadioBox*, const QRectF& ) const;
 };
 
 #endif

@@ -7,25 +7,28 @@
 #define QSK_SLIDER_H
 
 #include "QskBoundedValueInput.h"
+#include "QskNamespace.h"
 
 class QSK_EXPORT QskSlider : public QskBoundedValueInput
 {
     Q_OBJECT
 
-    Q_PROPERTY( bool isPressed READ isPressed NOTIFY pressedChanged )
-
     Q_PROPERTY( Qt::Orientation orientation READ orientation
         WRITE setOrientation NOTIFY orientationChanged )
+
+    Q_PROPERTY( bool inverted READ isInverted
+        WRITE setInverted NOTIFY invertedChanged )
 
     Q_PROPERTY( bool tracking READ isTracking
         WRITE setTracking NOTIFY trackingChanged )
 
-    Q_PROPERTY( qreal handlePosition READ handlePosition )
+    Q_PROPERTY( qreal origin READ origin
+        WRITE setOrigin RESET resetOrigin NOTIFY originChanged )
 
     using Inherited = QskBoundedValueInput;
 
   public:
-    QSK_SUBCONTROLS( Panel, Groove, Fill, Scale, Handle, Ripple )
+    QSK_SUBCONTROLS( Panel, Groove, Fill, Scale, Tick, Handle )
     QSK_STATES( Pressed )
 
     explicit QskSlider( QQuickItem* parent = nullptr );
@@ -33,10 +36,15 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
 
     ~QskSlider() override;
 
-    bool isPressed() const;
-
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
+
+    void setInverted( bool );
+    bool isInverted() const;
+
+    void resetOrigin();
+    qreal origin() const;
+    bool hasOrigin() const;
 
     void setTracking( bool );
     bool isTracking() const;
@@ -45,20 +53,24 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
 
     QskAspect::Variation effectiveVariation() const override;
 
+  public Q_SLOTS:
+    void setOrigin( qreal );
+
   Q_SIGNALS:
-    void pressedChanged( bool );
     void orientationChanged( Qt::Orientation );
+    void invertedChanged( bool );
     void trackingChanged( bool );
+    void originChanged( qreal );
 
   protected:
     void mousePressEvent( QMouseEvent* ) override;
     void mouseMoveEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;
 
-    QSizeF handleSize() const;
-    QRectF handleRect() const;
+    void keyPressEvent( QKeyEvent* ) override;
 
     void aboutToShow() override;
+    void componentComplete() override;
 
   private:
     void moveHandle();

@@ -241,9 +241,9 @@ void Skin::initHints()
     ed.setFontRole( LightDisplay::ValueText, QskFontRole::Headline );
     ed.setColor( LightDisplay::ValueText, 0xff929cb2 );
 
-    ed.setStrutSize( LightDisplay::Knob, { 20, 20 } );
-    ed.setBoxBorderMetrics( LightDisplay::Knob, 1 );
-    ed.setBoxShape( LightDisplay::Knob, 100, Qt::RelativeSize );
+    ed.setStrutSize( LightDisplay::Handle, { 20, 20 } );
+    ed.setBoxBorderMetrics( LightDisplay::Handle, 1 );
+    ed.setBoxShape( LightDisplay::Handle, 100, Qt::RelativeSize );
 
     // palette dependent skin hints:
     ed.setGradient( MenuBar::Panel, palette.menuBar );
@@ -265,9 +265,9 @@ void Skin::initHints()
     ed.setShadowColor( UsageDiagramBox::Panel, palette.shadow );
 
     ed.setGradient( LightDisplay::Panel, palette.box );
-    ed.setGradient( LightDisplay::Knob, palette.box );
+    ed.setGradient( LightDisplay::Handle, palette.box );
     ed.setGradient( LightDisplay::ColdAndWarmArc, palette.lightDisplayColdAndWarmArc );
-    ed.setBoxBorderColors( LightDisplay::Knob, palette.lightDisplayKnobBorder );
+    ed.setBoxBorderColors( LightDisplay::Handle, palette.lightDisplayKnobBorder );
     ed.setShadowMetrics( LightDisplay::Groove, { 0, 20 } );
     ed.setShadowColor( LightDisplay::Groove, palette.shadow );
     ed.setGradient( LightDisplay::Groove, palette.box );

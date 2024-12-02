@@ -18,7 +18,7 @@ QSK_QT_PRIVATE_END
 
 // keeping the index list
 static void qskUpdateGeometry( const QPainterPath& path,
-    const QTransform& transform, QSGGeometry& geometry )
+    const QTransform& transform, const QColor&, QSGGeometry& geometry )
 {
     const auto ts = qTriangulate( path, transform, 1, false );
 
@@ -27,14 +27,14 @@ static void qskUpdateGeometry( const QPainterPath& path,
     auto vertexData = reinterpret_cast< float* >( geometry.vertexData() );
     const auto points = ts.vertices.constData();
 
-    for ( int i = 0; i < ts.vertices.size(); i++ )
+    for ( int i = 0; i < ts.vertices.count(); i++ )
         vertexData[i] = points[i];
 
     memcpy( geometry.indexData(), ts.indices.data(),
         ts.indices.size() * sizeof( quint16 ) );
 }
 
-#endif
+#else
 
 static void qskUpdateGeometry( const QPainterPath& path,
     const QTransform& transform, const QColor& color, QSGGeometry& geometry )
@@ -83,6 +83,8 @@ static void qskUpdateGeometry( const QPainterPath& path,
     }
 }
 
+#endif
+
 class QskShapeNodePrivate final : public QskFillNodePrivate
 {
   public:
@@ -97,6 +99,15 @@ class QskShapeNodePrivate final : public QskFillNodePrivate
 QskShapeNode::QskShapeNode()
     : QskFillNode( *new QskShapeNodePrivate )
 {
+#if 1
+    /*
+        for some reason we have a broken geometry for some of
+        contours of shapes example, when not setting Monochrome.
+        Does not make any sense and needs to be understood: TODO
+     */
+    setColoring( Monochrome );
+#endif
+
     geometry()->setDrawingMode( QSGGeometry::DrawTriangles );
 }
 
@@ -104,7 +115,7 @@ QskShapeNode::~QskShapeNode()
 {
 }
 
-void QskShapeNode::updateNode( const QPainterPath& path,
+void QskShapeNode::updatePath( const QPainterPath& path,
     const QTransform& transform, const QRectF& rect, const QskGradient& gradient )
 {
     Q_D( QskShapeNode );
