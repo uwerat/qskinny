@@ -4,8 +4,10 @@
  *****************************************************************************/
 
 #include "QskTextInput.h"
+#include "QskEvent.h"
 #include "QskFontRole.h"
 #include "QskQuick.h"
+#include "QskTextInputSkinlet.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextinput_p.h>
@@ -13,16 +15,20 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextInput, Panel )
-QSK_SUBCONTROL( QskTextInput, Text )
-
-#if 1
-// shouldn't this be a Selected state, TODO ...
-QSK_SUBCONTROL( QskTextInput, PanelSelected )
-QSK_SUBCONTROL( QskTextInput, TextSelected )
-#endif
+QSK_SUBCONTROL( QskTextInput, LeadingIcon )
+QSK_SUBCONTROL( QskTextInput, LabelText )
+QSK_SUBCONTROL( QskTextInput, InputText )
+QSK_SUBCONTROL( QskTextInput, TrailingIconRipple )
+QSK_SUBCONTROL( QskTextInput, TrailingIcon )
+QSK_SUBCONTROL( QskTextInput, HintText )
+QSK_SUBCONTROL( QskTextInput, SupportingText )
+QSK_SUBCONTROL( QskTextInput, CharacterCount )
 
 QSK_SYSTEM_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskTextInput, Selected, QskAspect::FirstSystemState << 3 )
+QSK_SYSTEM_STATE( QskTextInput, Error, QskAspect::FirstSystemState << 4 )
+QSK_SYSTEM_STATE( QskTextInput, TextPopulated, QskAspect::LastUserState << 1 )
 
 static inline void qskPropagateReadOnly( QskTextInput* input )
 {
@@ -36,13 +42,13 @@ static inline void qskBindSignals(
     const QQuickTextInput* wrappedInput, QskTextInput* input )
 {
     QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
-        input, [ input ] { Q_EMIT input->textChanged( input->text() ); } );
+        input, [ input ] { Q_EMIT input->inputTextChanged( input->inputText() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::displayTextChanged,
         input, [ input ] { Q_EMIT input->displayTextChanged( input->displayText() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::textEdited,
-        input, [ input ] { Q_EMIT input->textEdited( input->text() ); } );
+        input, [ input ] { Q_EMIT input->textEdited( input->inputText() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::validatorChanged,
         input, &QskTextInput::validatorChanged );
@@ -252,7 +258,7 @@ namespace
 
         QColor color;
 
-        color = input->color( QskTextInput::Text );
+        color = input->color( QskTextInput::InputText );
         if ( d->color != color )
         {
             d->color = color;
@@ -261,14 +267,14 @@ namespace
 
         if ( d->hasSelectedText() )
         {
-            color = input->color( QskTextInput::PanelSelected );
+            color = input->color( QskTextInput::Panel | QskTextInput::Selected );
             if ( d->selectionColor != color )
             {
                 d->selectionColor = color;
                 isDirty = true;
             }
 
-            color = input->color( QskTextInput::TextSelected );
+            color = input->color( QskTextInput::InputText | QskTextInput::Selected );
             if ( d->selectedTextColor != color )
             {
                 d->selectedTextColor = color;
@@ -288,11 +294,19 @@ namespace
 class QskTextInput::PrivateData
 {
   public:
+    PrivateData()
+        : emphasis( NoEmphasis )
+    {
+    }
+
     TextInput* textInput;
-    QString description; // f.e. used as prompt in QskInputPanel
+    QString labelText;
+    QString hintText;
+    QString supportingText;
 
     unsigned int activationModes : 3;
     bool hasPanel : 1;
+    int emphasis : 4;
 };
 
 QskTextInput::QskTextInput( QQuickItem* parent )
@@ -323,12 +337,18 @@ QskTextInput::QskTextInput( QQuickItem* parent )
     m_data->textInput->setAcceptedMouseButtons( Qt::NoButton );
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
+
+    connect( m_data->textInput, &QQuickTextInput::textChanged, this, [this]()
+    {
+        setSkinStateFlag( TextPopulated, !m_data->textInput->text().isEmpty() );
+        update(); // character count might have changed
+    } );
 }
 
 QskTextInput::QskTextInput( const QString& text, QQuickItem* parent )
     : QskTextInput( parent )
 {
-    m_data->textInput->setText( text );
+    setInputText( text );
 }
 
 QskTextInput::~QskTextInput()
@@ -425,7 +445,14 @@ void QskTextInput::keyReleaseEvent( QKeyEvent* event )
 
 void QskTextInput::mousePressEvent( QMouseEvent* event )
 {
-    m_data->textInput->handleEvent( event );
+    if( !isReadOnly() && subControlContentsRect( TrailingIcon ).contains( event->pos() ) )
+    {
+        setInputText( {} );
+    }
+    else
+    {
+        m_data->textInput->handleEvent( event );
+    }
 
     if ( !isReadOnly() && !qGuiApp->styleHints()->setFocusOnTouchRelease() )
         setEditing( true );
@@ -494,6 +521,36 @@ void QskTextInput::focusOutEvent( QFocusEvent* event )
     Inherited::focusOutEvent( event );
 }
 
+void QskTextInput::hoverEnterEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( TrailingIconRipple | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+    update();
+
+    Inherited::hoverEnterEvent( event );
+}
+
+void QskTextInput::hoverMoveEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( TrailingIconRipple | Hovered | A::Metric | A::Position, qskHoverPosition( event ) );
+    update();
+
+    Inherited::hoverMoveEvent( event );
+}
+
+void QskTextInput::hoverLeaveEvent( QHoverEvent* event )
+{
+    using A = QskAspect;
+
+    setSkinHint( TrailingIconRipple | Hovered | A::Metric | A::Position, QPointF() );
+    update();
+
+    Inherited::hoverLeaveEvent( event );
+}
+
 QSizeF QskTextInput::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
 {
     if ( which != Qt::PreferredSize )
@@ -511,7 +568,8 @@ QSizeF QskTextInput::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
         hint = hint.expandedTo( strutSizeHint( Panel ) );
     }
 
-    return hint;
+    const auto textInputSkinlet = static_cast< const QskTextInputSkinlet* >( effectiveSkinlet() );
+    return textInputSkinlet->adjustSizeHint( this, which, hint );
 }
 
 void QskTextInput::updateLayout()
@@ -519,37 +577,94 @@ void QskTextInput::updateLayout()
     auto input = m_data->textInput;
 
     input->updateMetrics();
-    qskSetItemGeometry( input, subControlRect( Text ) );
+    qskSetItemGeometry( input, subControlRect( InputText ) );
 }
 
 void QskTextInput::updateNode( QSGNode* node )
 {
     m_data->textInput->updateColors();
+    m_data->textInput->updateMetrics();
     Inherited::updateNode( node );
 }
 
-QString QskTextInput::text() const
+void QskTextInput::setEmphasis( Emphasis emphasis )
+{
+    if ( emphasis != m_data->emphasis )
+    {
+        m_data->emphasis = emphasis;
+
+        resetImplicitSize();
+        update();
+
+        Q_EMIT emphasisChanged( emphasis );
+    }
+}
+
+QskTextInput::Emphasis QskTextInput::emphasis() const
+{
+    return static_cast< Emphasis >( m_data->emphasis );
+}
+
+QString QskTextInput::inputText() const
 {
     return m_data->textInput->text();
 }
 
-void QskTextInput::setText( const QString& text )
+void QskTextInput::setInputText( const QString& text )
 {
     m_data->textInput->setText( text );
 }
 
-void QskTextInput::setDescription( const QString& text )
+QString QskTextInput::labelText() const
 {
-    if ( m_data->description != text )
+    return m_data->labelText;
+}
+
+void QskTextInput::setLabelText( const QString& text )
+{
+    if ( m_data->labelText != text )
     {
-        m_data->description = text;
-        Q_EMIT descriptionChanged( text );
+        m_data->labelText = text;
+        Q_EMIT labelTextChanged( text );
     }
 }
 
-QString QskTextInput::description() const
+QskGraphic QskTextInput::leadingIcon() const
 {
-    return m_data->description;
+    return symbolHint( LeadingIcon );
+}
+
+void QskTextInput::setLeadingIcon( const QskGraphic& icon )
+{
+    setSymbolHint( LeadingIcon, icon );
+}
+
+void QskTextInput::setHintText( const QString& text )
+{
+    if ( m_data->hintText != text )
+    {
+        m_data->hintText = text;
+        Q_EMIT hintTextChanged( text );
+    }
+}
+
+QString QskTextInput::hintText() const
+{
+    return m_data->hintText;
+}
+
+void QskTextInput::setSupportingText( const QString& text )
+{
+    if ( m_data->supportingText != text )
+    {
+        m_data->supportingText = text;
+        Q_EMIT supportingTextChanged( text );
+    }
+}
+
+QString QskTextInput::supportingText() const
+{
+    return m_data->supportingText;
 }
 
 QskTextInput::ActivationModes QskTextInput::activationModes() const
@@ -574,7 +689,7 @@ static inline void qskUpdateInputMethodFont( const QskTextInput* input )
 
 void QskTextInput::setFontRole( const QskFontRole& role )
 {
-    if ( setFontRoleHint( Text, role ) )
+    if ( setFontRoleHint( InputText, role ) )
     {
         qskUpdateInputMethodFont( this );
         Q_EMIT fontRoleChanged();
@@ -583,7 +698,7 @@ void QskTextInput::setFontRole( const QskFontRole& role )
 
 void QskTextInput::resetFontRole()
 {
-    if ( resetFontRoleHint( Text ) )
+    if ( resetFontRoleHint( InputText ) )
     {
         qskUpdateInputMethodFont( this );
         Q_EMIT fontRoleChanged();
@@ -592,12 +707,12 @@ void QskTextInput::resetFontRole()
 
 QskFontRole QskTextInput::fontRole() const
 {
-    return fontRoleHint( Text );
+    return fontRoleHint( InputText );
 }
 
 void QskTextInput::setAlignment( Qt::Alignment alignment )
 {
-    if ( setAlignmentHint( Text, alignment ) )
+    if ( setAlignmentHint( InputText, alignment ) )
     {
         m_data->textInput->setAlignment( alignment );
         Q_EMIT alignmentChanged();
@@ -606,7 +721,7 @@ void QskTextInput::setAlignment( Qt::Alignment alignment )
 
 void QskTextInput::resetAlignment()
 {
-    if ( resetAlignmentHint( Text ) )
+    if ( resetAlignmentHint( InputText ) )
     {
         m_data->textInput->setAlignment( alignment() );
         Q_EMIT alignmentChanged();
@@ -615,7 +730,7 @@ void QskTextInput::resetAlignment()
 
 Qt::Alignment QskTextInput::alignment() const
 {
-    return alignmentHint( Text, Qt::AlignLeft | Qt::AlignTop );
+    return alignmentHint( InputText, Qt::AlignLeft | Qt::AlignTop );
 }
 
 void QskTextInput::setWrapMode( QskTextOptions::WrapMode wrapMode ) 
@@ -632,7 +747,7 @@ QskTextOptions::WrapMode QskTextInput::wrapMode() const
 
 QFont QskTextInput::font() const
 {
-    return effectiveFont( QskTextInput::Text );
+    return effectiveFont( QskTextInput::InputText );
 }
 
 bool QskTextInput::isReadOnly() const
@@ -699,6 +814,18 @@ bool QskTextInput::isEditing() const
 void QskTextInput::ensureVisible( int position )
 {
     m_data->textInput->ensureVisible( position );
+}
+
+QskAspect::Variation QskTextInput::effectiveVariation() const
+{
+    switch( m_data->emphasis )
+    {
+        case LowEmphasis:
+            return QskAspect::Small;
+
+        default:
+            return QskAspect::NoVariation;
+    }
 }
 
 int QskTextInput::cursorPosition() const
@@ -922,7 +1049,7 @@ void QskTextInput::setupFrom( const QQuickItem* item )
     if ( event.queries() & Qt::ImSurroundingText )
     {
         const auto text = event.value( Qt::ImSurroundingText ).toString();
-        setText( text );
+        setInputText( text );
     }
 
     if ( event.queries() & Qt::ImCursorPosition )

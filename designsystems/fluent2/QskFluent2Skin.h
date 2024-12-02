@@ -40,6 +40,7 @@ class QSK_FLUENT2_EXPORT QskFluent2Skin : public QskSkin
   private:
     void addTheme( QskAspect::Section, const QskFluent2Theme& );
 
+    void setupSkinlets();
     void setupFonts();
     void setupGraphicFilters( const QskFluent2Theme& );
     void setGraphicColor( GraphicRole, QRgb );
