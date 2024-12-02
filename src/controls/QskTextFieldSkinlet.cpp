@@ -18,11 +18,7 @@ using Q = QskTextField;
 QskTextFieldSkinlet::QskTextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( {
-        PanelRole,
-        LabelTextRole,
-        HintTextRole,
-    } );
+    setNodeRoles( { PanelRole, LabelTextRole, PlaceholderTextRole, } );
 }
 
 QskTextFieldSkinlet::~QskTextFieldSkinlet()
@@ -38,17 +34,15 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     }
     else if ( subControl == Q::Text )
     {
-        const auto textField = static_cast< const Q* >( skinnable );
+        auto rect = subControlRect( skinnable, contentsRect, Q::Panel );
 
-        auto rect = textField->subControlRect( Q::Panel );
+        const auto r1 = subControlRect( skinnable, contentsRect, Q::LeadingIcon );
+        rect.setLeft( r1.right() );
 
-        const auto leadingIconRect = textField->subControlRect( Q::LeadingIcon );
-        rect.setLeft( leadingIconRect.right() );
+        const auto r2 = subControlRect( skinnable, contentsRect, Q::TrailingIcon );
 
-        const auto trailingIconRect = textField->subControlRect( Q::TrailingIcon );
-
-        if( trailingIconRect.isValid() )
-            rect.setRight( trailingIconRect.left() );
+        if( r2.isValid() )
+            rect.setRight( r2.left() );
         else
             rect.setRight( contentsRect.right() );
 
@@ -56,6 +50,13 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
         rect = rect.marginsRemoved( margins );
 
         return rect;
+    }
+    else if ( subControl == Q::PlaceholderText )
+    {
+        if( !skinnable->hasSkinState( Q::TextPopulated ) )
+            return subControlRect( skinnable, contentsRect, Q::Text );
+
+        return QRectF();
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
@@ -88,7 +89,7 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
                 textField->labelText(), Q::LabelText );
         }
 
-        case HintTextRole:
+        case PlaceholderTextRole:
         {
             return updateTextNode( skinnable, node,
                 textField->placeholderText(), Q::PlaceholderText );

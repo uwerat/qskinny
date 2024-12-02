@@ -19,7 +19,7 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
     {
         PanelRole,
         LabelTextRole,
-        HintTextRole,
+        PlaceholderTextRole,
         RoleCount
     };
 

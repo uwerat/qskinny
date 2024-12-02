@@ -20,23 +20,17 @@ QskFluent2TextFieldSkinlet::~QskFluent2TextFieldSkinlet()
 QRectF QskFluent2TextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    const auto input = static_cast< const Q* >( skinnable );
-
     if ( subControl == Q::Panel )
     {
         auto rect = contentsRect;
-
-        const auto h = input->strutSizeHint( subControl ).height();
-        rect.setY( rect.bottom() - h );
+        rect.setY( rect.bottom() - skinnable->strutSizeHint( subControl ).height() );
 
         return rect;
     }
     else if ( subControl == Q::LabelText )
     {
         auto rect = contentsRect;
-
-        const auto h = input->strutSizeHint( subControl ).height();
-        rect.setHeight( h );
+        rect.setHeight( skinnable->strutSizeHint( subControl ).height() );
 
         return rect;
     }
@@ -55,21 +49,19 @@ QRectF QskFluent2TextFieldSkinlet::subControlRect( const QskSkinnable* skinnable
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QSizeF QskFluent2TextFieldSkinlet::adjustSizeHint( const QskSkinnable* skinnable, Qt::SizeHint which, const QSizeF& oldHint ) const
+QSizeF QskFluent2TextFieldSkinlet::adjustSizeHint(
+    const QskSkinnable* skinnable, Qt::SizeHint which, const QSizeF& oldHint ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
+    qreal h = skinnable->strutSizeHint( Q::Panel ).height();
+
     const auto input = static_cast< const Q* >( skinnable );
+    if ( !input->labelText().isEmpty() )
+        h += input->strutSizeHint( Q::LabelText ).height();
 
-    const auto labelHeight = input->labelText().isEmpty() ? 0 : input->strutSizeHint( Q::LabelText ).height();
-    const auto panelHeight = input->strutSizeHint( Q::Panel ).height();
-
-    const auto h = labelHeight + panelHeight;
-
-    QSizeF hint( oldHint.width(), h );
-
-    return hint;
+    return QSizeF( oldHint.width(), h );
 }
 
 #include "moc_QskFluent2TextFieldSkinlet.cpp"

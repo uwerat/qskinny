@@ -735,7 +735,7 @@ Qt::Alignment QskTextField::alignment() const
     return alignmentHint( Text, Qt::AlignLeft | Qt::AlignTop );
 }
 
-void QskTextField::setWrapMode( QskTextOptions::WrapMode wrapMode ) 
+void QskTextField::setWrapMode( QskTextOptions::WrapMode wrapMode )
 {
     m_data->textInput->setWrapMode(
         static_cast< QQuickTextInput::WrapMode >( wrapMode ) );

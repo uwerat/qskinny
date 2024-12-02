@@ -17,35 +17,42 @@ using Q = QskTextField;
 
 namespace
 {
-    QString maxLengthString( const QskTextField* field )
+    inline bool hasCharacterCount( const QskTextField* textField )
     {
-        QString s = QString::number( field->text().length() )
-                    + " / " + QString::number( field->maxLength() );
+        // magic number hardcoded in qquicktextinput.cpp
+        return textField->maxLength() < 32767;
+    }
+
+    QString maxLengthString( const QskTextField* textField )
+    {
+        QString s = QString::number( textField->text().length() )
+            + " / " + QString::number( textField->maxLength() );
         return s;
     }
 
     // We need to "cut a hole" in the upper gradient for the label text:
-    QskBoxBorderColors outlineColors( const QskTextField* field )
+    QskBoxBorderColors outlineColors( const QskTextField* textField )
     {
-        auto borderColors = field->boxBorderColorsHint( Q::Panel );
+        auto borderColors = textField->boxBorderColorsHint( Q::Panel );
 
-        if( field->labelText().isEmpty() )
+        if( textField->labelText().isEmpty() )
         {
             return borderColors;
         }
 
         auto topGradient = borderColors.gradientAt( Qt::TopEdge );
 
-        const auto panelRect = field->subControlRect( Q::Panel );
+        const auto panelRect = textField->subControlRect( Q::Panel );
 
-        const auto margins = field->marginHint( Q::LabelText );
-        const auto iconMargins = field->marginHint( Q::LeadingIcon );
+        const auto margins = textField->marginHint( Q::LabelText );
+        const auto iconMargins = textField->marginHint( Q::LeadingIcon );
 
         const auto x1 = iconMargins.left() - margins.left();
         auto r1 = x1 / panelRect.width();
         r1 = qBound( 0.0, r1, 1.0 );
 
-        const auto w = qskHorizontalAdvance( field->effectiveFont( Q::LabelText ), field->labelText() );
+        const auto w = qskHorizontalAdvance(
+            textField->effectiveFont( Q::LabelText ), textField->labelText() );
 
         const auto x2 = x1 + w + margins.right();
         auto r2 = x2 / panelRect.width();
@@ -69,11 +76,8 @@ namespace
 QskMaterial3TextFieldSkinlet::QskMaterial3TextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( {
-        PanelRole,
+    appendNodeRoles( {
         LeadingIconRole,
-        LabelTextRole,
-        HintTextRole,
         SupportingTextRole,
         CharacterCountRole,
         TrailingIconRippleRole,
@@ -88,190 +92,179 @@ QskMaterial3TextFieldSkinlet::~QskMaterial3TextFieldSkinlet()
 QRectF QskMaterial3TextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    const auto input = static_cast< const Q* >( skinnable );
+    const auto textField = static_cast< const Q* >( skinnable );
 
     if ( subControl == Q::Panel )
     {
         auto rect = contentsRect;
 
-        if( input->emphasis() == Q::LowEmphasis )
+        if( textField->emphasis() == Q::LowEmphasis )
         {
-            const auto fontHeight = input->effectiveFontHeight( Q::LabelText | Q::Focused );
-            rect.setY( fontHeight / 2 );
+            const auto h = textField->effectiveFontHeight( Q::LabelText | Q::Focused );
+            rect.setY( h / 2 );
         }
 
-        const auto h = input->strutSizeHint( subControl ).height();
-        rect.setHeight( h );
+        rect.setHeight( textField->strutSizeHint( subControl ).height() );
 
         return rect;
     }
     else if ( subControl == Q::LabelText )
     {
-        const auto inputRect = input->subControlRect( Q::Text );
-
-        if( !input->text().isEmpty()
-             || input->hasSkinState( Q::Focused )
-             || input->hasSkinState( Q::Editing ) )
+        if( !textField->text().isEmpty()
+             || textField->hasSkinState( Q::Focused )
+             || textField->hasSkinState( Q::Editing ) )
         {
-            const auto margins = input->marginHint( subControl );
-            auto rect = inputRect;
-            const QFontMetricsF fm( input->effectiveFont( subControl ) );
+            auto rect = textField->subControlRect( Q::Text );
 
-            if( input->emphasis() == Q::LowEmphasis )
+            if( textField->emphasis() == Q::LowEmphasis )
             {
-                const auto iconMargins = input->marginHint( Q::LeadingIcon );
+                const auto iconMargins = textField->marginHint( Q::LeadingIcon );
                 rect.setX( iconMargins.left() );
                 rect.setY( 0 );
             }
             else
             {
+                const auto margins = textField->marginHint( subControl );
                 rect.setY( contentsRect.y() + margins.top() );
             }
 
-            rect.setHeight( fm.height() );
+            rect.setHeight( textField->effectiveFontHeight( subControl ) );
 
             return rect;
         }
-        else
-        {
-            return inputRect;
-        }
+
+        return textField->subControlRect( Q::Text );
     }
     else if ( subControl == Q::LeadingIcon )
     {
-        if( input->symbolHint( subControl ).isEmpty() )
+        if( !textField->symbolHint( subControl ).isEmpty() )
         {
-            return {};
-        }
-        else
-        {
-            const auto margins = input->marginHint( subControl );
-            const auto panelRect = input->subControlRect( Q::Panel );
+            const auto margins = textField->marginHint( subControl );
+            const auto panelRect = textField->subControlRect( Q::Panel );
             auto rect = panelRect.marginsRemoved( margins );
 
-            const auto size = input->strutSizeHint( subControl );
+            const auto size = textField->strutSizeHint( subControl );
             rect.setSize( size );
             rect.moveCenter( { rect.center().x(), panelRect.center().y() } );
 
             return rect;
         }
+
+        return QRectF();
     }
     else if ( subControl == Q::PlaceholderText )
     {
-        if( !input->hasSkinState( Q::TextPopulated )
-            && ( input->hasSkinState( Q::Focused ) || input->hasSkinState( Q::Editing ) ) )
+        if ( skinnable->skinStates() & ( Q::Focused | Q::Editing ) )
         {
-            return input->subControlRect( Q::Text );
+            return Inherited::subControlRect( skinnable,
+                contentsRect, subControl );
         }
-        else
-        {
-            return {};
-        }
+
+        return QRectF();
     }
     else if ( subControl == Q::SupportingText )
     {
-        if( input->supportingText().isEmpty() )
-        {
-            return {};
-        }
-        else
+        if( !textField->supportingText().isEmpty() )
         {
             auto rect = contentsRect;
 
-            const auto margins = input->marginHint( subControl );
-            const auto h = margins.top() + input->effectiveFontHeight( subControl ) + margins.bottom();
-            rect.setTop( rect.bottom() - h );
+            const auto margins = textField->marginHint( subControl );
+            const auto h = textField->effectiveFontHeight( subControl )
+                + margins.top() + margins.bottom();
 
+            rect.setTop( rect.bottom() - h );
             rect.setLeft( rect.left() + margins.left() );
 
             return rect;
         }
+
+        return QRectF();
     }
     else if ( subControl == Q::CharacterCount )
     {
-        if( input->maxLength() == 32767 ) // magic number hardcoded in qquicktextinput.cpp
-        {
-            return {};
-        }
-        else
+        if( hasCharacterCount( textField ) )
         {
             auto rect = contentsRect;
 
-            const auto margins = input->marginHint( subControl );
-            const auto h = margins.top() + input->effectiveFontHeight( subControl ) + margins.bottom();
+            const auto margins = textField->marginHint( subControl );
+            const auto h = textField->effectiveFontHeight( subControl )
+                + margins.top() + margins.bottom();
+
             rect.setTop( rect.bottom() - h );
 
-            const QFontMetricsF fm( input->effectiveFont( subControl ) );
-            const auto w = qskHorizontalAdvance( fm, maxLengthString( input ) );
+            const QFontMetricsF fm( textField->effectiveFont( subControl ) );
+            const auto w = qskHorizontalAdvance( fm, maxLengthString( textField ) );
             rect.setRight( rect.right() - margins.right() );
             rect.setLeft( rect.right() - ( margins.left() + w + margins.right() ) );
 
             return rect;
         }
+
+        return QRectF();
     }
     else if ( subControl == Q::TrailingIconRipple )
     {
-        const auto cursorPos = input->effectiveSkinHint(
+        const auto cursorPos = textField->effectiveSkinHint(
             Q::TrailingIconRipple | Q::Hovered | QskAspect::Metric | QskAspect::Position ).toPointF();
-        const auto trailingIconRect = input->subControlRect( Q::TrailingIcon );
 
-        if( !cursorPos.isNull() && trailingIconRect.contains( cursorPos ) )
+        if ( !cursorPos.isNull() )
         {
-            const auto size = input->strutSizeHint( subControl );
-            QRectF rect( { 0, 0 }, size );
+            const auto r = textField->subControlRect( Q::TrailingIcon );
 
-            rect.moveCenter( trailingIconRect.center() );
+            if( !cursorPos.isNull() && r.contains( cursorPos ) )
+            {
+                QRectF rect( QPointF(), textField->strutSizeHint( subControl ) );
+                rect.moveCenter( r.center() );
 
-            return rect;
+                return rect;
+            }
         }
-        else
-        {
-            return {};
-        }
+
+        return QRectF();
     }
     else if ( subControl == Q::TrailingIcon )
     {
-        if( input->symbolHint( subControl ).isEmpty() )
+        if( !textField->symbolHint( subControl ).isEmpty() )
         {
-            return {};
-        }
-        else
-        {
-            const auto margins = input->marginHint( subControl );
-            const auto panelRect = input->subControlRect( Q::Panel );
+            const auto margins = textField->marginHint( subControl );
+            const auto panelRect = textField->subControlRect( Q::Panel );
             auto rect = panelRect.marginsRemoved( margins );
 
-            const auto size = input->strutSizeHint( subControl );
+            const auto size = textField->strutSizeHint( subControl );
             rect.setHeight( size.height() );
             rect.moveCenter( { rect.center().x(), panelRect.center().y() } );
             rect.setLeft( rect.right() - size.width() );
 
             return rect;
         }
+
+        return QRectF();
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QSizeF QskMaterial3TextFieldSkinlet::adjustSizeHint( const QskSkinnable* skinnable, Qt::SizeHint which, const QSizeF& oldHint ) const
+QSizeF QskMaterial3TextFieldSkinlet::adjustSizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& oldHint ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
     auto hint = oldHint;
 
-    const auto input = static_cast< const Q* >( skinnable );
+    const auto textField = static_cast< const Q* >( skinnable );
 
-    if( input->emphasis() == Q::LowEmphasis )
+    if( textField->emphasis() == Q::LowEmphasis )
     {
-        const auto fontHeight = input->effectiveFontHeight( Q::LabelText | Q::Focused );
+        const auto fontHeight = textField->effectiveFontHeight( Q::LabelText | Q::Focused );
         hint.rheight() += fontHeight / 2;
     }
 
-    if( !input->supportingText().isEmpty() || input->maxLength() != 32767 ) // magic number hardcoded in qquicktextinput.cpp
+    if( !textField->supportingText().isEmpty() || hasCharacterCount( textField ) )
     {
-        const auto margins = input->marginHint( Q::SupportingText );
-        hint.rheight() += margins.top() + input->effectiveFontHeight( Q::SupportingText ) + margins.bottom();
+        const auto margins = textField->marginHint( Q::SupportingText );
+        hint.rheight() += textField->effectiveFontHeight( Q::SupportingText )
+            + margins.top() + margins.bottom();
     }
 
     return hint;
@@ -280,26 +273,26 @@ QSizeF QskMaterial3TextFieldSkinlet::adjustSizeHint( const QskSkinnable* skinnab
 QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    const auto input = static_cast< const Q* >( skinnable );
+    const auto textField = static_cast< const Q* >( skinnable );
 
     switch ( nodeRole )
     {
         case PanelRole:
         {
-            if ( !input->hasPanel() )
+            if ( !textField->hasPanel() )
                 return nullptr;
 
-            if( input->emphasis() == Q::LowEmphasis
-                 && ( input->hasSkinState( Q::TextPopulated )
-                    || input->hasSkinState( Q::Focused )
-                    || input->hasSkinState( Q::Editing ) ) )
+            if( textField->emphasis() == Q::LowEmphasis
+                 && ( textField->hasSkinState( Q::TextPopulated )
+                    || textField->hasSkinState( Q::Focused )
+                    || textField->hasSkinState( Q::Editing ) ) )
             {
                 const auto shape = skinnable->boxShapeHint( Q::Panel );
                 const auto borderMetrics = skinnable->boxBorderMetricsHint( Q::Panel );
-                const auto borderColors = outlineColors( input );
-                const auto gradient = input->gradientHint( Q::Panel );
+                const auto borderColors = outlineColors( textField );
+                const auto gradient = textField->gradientHint( Q::Panel );
 
-                return updateBoxNode( skinnable, node, input->subControlRect( Q::Panel ),
+                return updateBoxNode( skinnable, node, textField->subControlRect( Q::Panel ),
                     shape, borderMetrics, borderColors, gradient );
             }
             else
@@ -315,12 +308,14 @@ QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
 
         case SupportingTextRole:
         {
-            return updateTextNode( skinnable, node, input->supportingText(), Q::SupportingText );
+            return updateTextNode( skinnable, node,
+                textField->supportingText(), Q::SupportingText );
         }
 
         case CharacterCountRole:
         {
-            return updateTextNode( skinnable, node, maxLengthString( input ), Q::CharacterCount );
+            return updateTextNode( skinnable, node,
+                maxLengthString( textField ), Q::CharacterCount );
         }
 
         case TrailingIconRippleRole:
