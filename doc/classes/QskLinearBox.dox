@@ -1,6 +1,8 @@
 /*!
     \class QskLinearBox QskLinearBox.h
 
+    \embedWasm
+
     \brief Layout stringing items in rows and columns
 
     QskLinearBox organizes layout items in vertical or horizontal order

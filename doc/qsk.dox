@@ -1,6 +1,4 @@
 /*!
-  \mainpage Introduction
-
 The (Q)Skinny library contains a set of lightweight Qt Quick Controls.
 It is implemented to be 100% usable in C++, but can be used from C++ and/or QML
 application code. Being "skinny", the framework is intended to be both lightweight
