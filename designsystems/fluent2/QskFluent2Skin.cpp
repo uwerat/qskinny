@@ -47,6 +47,7 @@
  */
 #include "QskFluent2Skin.h"
 #include "QskFluent2Theme.h"
+#include "QskFluent2TextFieldSkinlet.h"
 
 #include <QskSkinHintTableEditor.h>
 
@@ -79,7 +80,6 @@
 #include <QskTabButton.h>
 #include <QskTabView.h>
 #include <QskTextField.h>
-#include <QskTextFieldSkinlet.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -1787,6 +1787,9 @@ void Editor::setupTextFieldMetrics()
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setFontRole( Q::Text, Fluent2::Body );
+
+    setAlignment( Q::PlaceholderText, alignment( Q::Text ) );
+    setFontRole( Q::PlaceholderText, fontRole( Q::Text ) );
 }
 
 void Editor::setupTextFieldColors(
@@ -1800,6 +1803,7 @@ void Editor::setupTextFieldColors(
 
     setColor( Q::Panel | SK::Selected, pal.fillColor.accent.selectedTextBackground );
     setColor( Q::Text | SK::Selected, pal.fillColor.textOnAccent.selectedText );
+    setColor( Q::PlaceholderText, pal.fillColor.text.secondary );
 
     for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
     {
@@ -1810,21 +1814,21 @@ void Editor::setupTextFieldColors(
             panelColor = pal.fillColor.control.defaultColor;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.elevation.textControl.border[1];
-            textColor = pal.fillColor.text.secondary;
+            textColor = pal.fillColor.text.primary;
         }
         else if ( state == Q::Hovered )
         {
             panelColor = pal.fillColor.control.secondary;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.elevation.textControl.border[1];
-            textColor = pal.fillColor.text.secondary;
+            textColor = pal.fillColor.text.primary;
         }
         else if ( ( state == Q::Focused ) || ( state == Q::Editing ) )
         {
             panelColor = pal.fillColor.control.inputActive;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.fillColor.accent.defaultColor;
-            textColor = pal.fillColor.text.secondary;
+            textColor = pal.fillColor.text.primary;
         }
         else if ( state == Q::Disabled )
         {
@@ -2029,6 +2033,8 @@ void Editor::setupVirtualKeyboardColors(
 QskFluent2Skin::QskFluent2Skin( QObject* parent )
     : Inherited( parent )
 {
+    declareSkinlet< QskTextField, QskFluent2TextFieldSkinlet >();
+
     setupFonts();
 
     Editor editor( &hintTable() );

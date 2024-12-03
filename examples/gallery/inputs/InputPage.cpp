@@ -70,7 +70,8 @@ namespace
             setSpacing( 20 );
 
             {
-                new QskTextField( "Edit Me", this );
+                auto textField = new QskTextField( "Joe", this );
+                textField->setPlaceholderText( "<Name>" );
             }
 
             {
@@ -81,10 +82,11 @@ namespace
 
             {
                 auto textField = new QskTextField( "12345", this );
+                textField->setPlaceholderText( "<Password>" );
                 textField->setMaxLength( 5 );
                 textField->setEchoMode( QskTextField::PasswordEchoOnEdit );
 #if 1
-                textField->setFixedWidth( 80 );
+                textField->setFixedWidth( 100 );
 #endif
             }
         }

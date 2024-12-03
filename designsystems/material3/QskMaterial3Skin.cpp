@@ -11,6 +11,7 @@
 #include "QskMaterial3Skin.h"
 #include "QskMaterial3ProgressBarSkinlet.h"
 #include "QskMaterial3SliderSkinlet.h"
+#include "QskMaterial3TextFieldSkinlet.h"
 
 #include <QskSkinHintTableEditor.h>
 
@@ -46,7 +47,6 @@
 #include <QskTabButton.h>
 #include <QskTabView.h>
 #include <QskTextField.h>
-#include <QskTextFieldSkinlet.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -479,11 +479,19 @@ void Editor::setupTextField()
     setFontRole( Q::Text, BodyMedium );
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
 
+    setAlignment( Q::PlaceholderText, Qt::AlignLeft | Qt::AlignVCenter );
+
     const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
     setGradient( Q::Panel | Q::Disabled, disabledPanelColor );
     setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
 
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+
+    // PlaceholderText
+
+    setColor( Q::PlaceholderText, color( Q::Text ) );
+    setFontRole( Q::PlaceholderText, fontRole( Q::Text ) );
+    setAlignment( Q::PlaceholderText, alignment( Q::Text ) );
 }
 
 void Editor::setupProgressBar()
@@ -1601,6 +1609,7 @@ QskMaterial3Skin::QskMaterial3Skin( QObject* parent )
 {
     declareSkinlet< QskProgressBar, QskMaterial3ProgressBarSkinlet >();
     declareSkinlet< QskSlider, QskMaterial3SliderSkinlet >();
+    declareSkinlet< QskTextField, QskMaterial3TextFieldSkinlet >();
 }
 
 QskMaterial3Skin::~QskMaterial3Skin()
