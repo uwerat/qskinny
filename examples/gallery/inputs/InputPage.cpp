@@ -61,10 +61,10 @@ namespace
         }
     };
 
-    class InputBox : public QskLinearBox
+    class TextInputBox : public QskLinearBox
     {
       public:
-        InputBox( QQuickItem* parent = nullptr )
+        TextInputBox( QQuickItem* parent = nullptr )
             : QskLinearBox( Qt::Horizontal, parent )
         {
             setSpacing( 20 );
@@ -117,8 +117,8 @@ InputPage::InputPage( QQuickItem* parent )
     auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0 );
     spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
 
-    auto inputBox = new InputBox();
-    inputBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
+    auto textInputBox = new TextInputBox();
+    textInputBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
 
     auto vBox = new QskLinearBox( Qt::Vertical );
     vBox->setSpacing( 30 );
@@ -127,7 +127,7 @@ InputPage::InputPage( QQuickItem* parent )
     vBox->addItem( sliders[0].continous );
     vBox->addItem( sliders[0].discrete );
     vBox->addItem( sliders[0].centered );
-    vBox->addItem( inputBox );
+    vBox->addItem( textInputBox );
     vBox->addItem( spinBox );
 
     auto mainBox = new QskLinearBox( Qt::Horizontal, this );
