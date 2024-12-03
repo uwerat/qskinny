@@ -18,6 +18,7 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
     enum NodeRole
     {
         PanelRole,
+        PlaceholderTextRole,
         RoleCount
     };
 

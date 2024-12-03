@@ -18,8 +18,8 @@ class QSK_EXPORT QskTextField : public QskControl
 
     Q_PROPERTY( QString text READ text WRITE setText NOTIFY textChanged USER true)
 
-    Q_PROPERTY( QString description READ description
-        WRITE setDescription NOTIFY descriptionChanged )
+    Q_PROPERTY( QString placeholderText READ placeholderText
+        WRITE setPlaceholderText NOTIFY placeholderTextChanged )
 
     Q_PROPERTY( QskFontRole fontRole READ fontRole
         WRITE setFontRole RESET resetFontRole NOTIFY fontRoleChanged )
@@ -55,7 +55,7 @@ class QSK_EXPORT QskTextField : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Text, PanelSelected, TextSelected )
+    QSK_SUBCONTROLS( Panel, Text, PlaceholderText, PanelSelected, TextSelected )
     QSK_STATES( ReadOnly, Editing )
 
     enum ActivationMode
@@ -92,8 +92,8 @@ class QSK_EXPORT QskTextField : public QskControl
 
     QString text() const;
 
-    void setDescription( const QString& );
-    QString description() const;
+    void setPlaceholderText( const QString& );
+    QString placeholderText() const;
 
     void setPanel( bool );
     bool hasPanel() const;
@@ -177,7 +177,7 @@ class QSK_EXPORT QskTextField : public QskControl
     void displayTextChanged( const QString& );
 
     void textEdited( const QString& );
-    void descriptionChanged( const QString& );
+    void placeholderTextChanged( const QString& );
 
     void fontRoleChanged();
     void alignmentChanged();

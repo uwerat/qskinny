@@ -14,6 +14,7 @@ QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextField, Panel )
 QSK_SUBCONTROL( QskTextField, Text )
+QSK_SUBCONTROL( QskTextField, PlaceholderText )
 
 #if 1
 // shouldn't this be a Selected state, TODO ...
@@ -289,7 +290,7 @@ class QskTextField::PrivateData
 {
   public:
     TextInput* textInput;
-    QString description; // f.e. used as prompt in QskInputPanel
+    QString placeholderText;
 
     unsigned int activationModes : 3;
     bool hasPanel : 1;
@@ -538,18 +539,18 @@ void QskTextField::setText( const QString& text )
     m_data->textInput->setText( text );
 }
 
-void QskTextField::setDescription( const QString& text )
+void QskTextField::setPlaceholderText( const QString& text )
 {
-    if ( m_data->description != text )
+    if ( m_data->placeholderText != text )
     {
-        m_data->description = text;
-        Q_EMIT descriptionChanged( text );
+        m_data->placeholderText = text;
+        Q_EMIT placeholderTextChanged( text );
     }
 }
 
-QString QskTextField::description() const
+QString QskTextField::placeholderText() const
 {
-    return m_data->description;
+    return m_data->placeholderText;
 }
 
 QskTextField::ActivationModes QskTextField::activationModes() const
@@ -618,7 +619,7 @@ Qt::Alignment QskTextField::alignment() const
     return alignmentHint( Text, Qt::AlignLeft | Qt::AlignTop );
 }
 
-void QskTextField::setWrapMode( QskTextOptions::WrapMode wrapMode ) 
+void QskTextField::setWrapMode( QskTextOptions::WrapMode wrapMode )
 {
     m_data->textInput->setWrapMode(
         static_cast< QQuickTextInput::WrapMode >( wrapMode ) );
