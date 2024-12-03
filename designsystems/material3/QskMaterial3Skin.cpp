@@ -1054,7 +1054,6 @@ void Editor::setupSwitchButton()
     using A = QskAspect;
     using Q = QskSwitchButton;
 
-    const QskStateCombination allStates ( QskStateCombination::CombinationNoState, QskAspect::AllStates );
 
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
     const QSizeF strutSize( 52_dp, 32_dp );
@@ -1070,7 +1069,7 @@ void Editor::setupSwitchButton()
     setBoxBorderColors( Q::Groove, m_pal.outline );
     setBoxBorderColors( Q::Groove | Q::Disabled, m_pal.onSurface12 );
 
-    setBoxBorderMetrics( Q::Groove | Q::Checked, 0, allStates );
+    setBoxBorderMetrics( Q::Groove | Q::Checked, 0 );
 
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setStrutSize( Q::Handle, { 30_dp, 30_dp } );
@@ -1084,11 +1083,13 @@ void Editor::setupSwitchButton()
     setStrutSize( Q::Icon, { 16_dp, 16_dp } );
     setPadding( Q::Icon, 6_dp );
     setSymbol( Q::Icon, symbol( "switchbutton-unchecked" ) );
-    setSymbol( Q::Icon | Q::Checked, symbol( "switchbutton-checked" ), allStates );
+    setSymbol( Q::Icon | Q::Checked, symbol( "switchbutton-checked" ) );
+
     setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleSurfaceContainerHighest );
-    setGraphicRole( Q::Icon | Q::Checked, QskMaterial3Skin::GraphicRoleOnPrimaryContainer, allStates );
-    setGraphicRole( Q::Icon | Q::Disabled, QskMaterial3Skin::GraphicRoleSurfaceContainerHighest38, allStates );
-    setGraphicRole( Q::Icon | Q::Checked | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38, allStates );
+
+    setGraphicRole( Q::Icon | Q::Checked, QskMaterial3Skin::GraphicRoleOnPrimaryContainer );
+    setGraphicRole( Q::Icon | Q::Disabled, QskMaterial3Skin::GraphicRoleSurfaceContainerHighest38 );
+    setGraphicRole( Q::Icon | Q::Checked | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
 
     for ( auto state1 : { A::NoState, Q::Hovered, Q::Focused, Q::Pressed } )
     {
