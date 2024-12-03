@@ -8,6 +8,8 @@
 
 using Q = QskTextField;
 
+QSK_SYSTEM_STATE( QskTextFieldSkinlet, Selected, QskAspect::FirstUserState >> 1 )
+
 QskTextFieldSkinlet::QskTextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {

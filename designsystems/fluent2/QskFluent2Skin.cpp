@@ -79,6 +79,7 @@
 #include <QskTabButton.h>
 #include <QskTabView.h>
 #include <QskTextField.h>
+#include <QskTextFieldSkinlet.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -1792,12 +1793,13 @@ void Editor::setupTextFieldColors(
     QskAspect::Section section, const QskFluent2Theme& theme )
 {
     using Q = QskTextField;
+    using SK = QskTextFieldSkinlet;
     using A = QskAspect;
 
     const auto& pal = theme.palette;
 
-    setColor( Q::PanelSelected, pal.fillColor.accent.selectedTextBackground );
-    setColor( Q::TextSelected, pal.fillColor.textOnAccent.selectedText );
+    setColor( Q::Panel | SK::Selected, pal.fillColor.accent.selectedTextBackground );
+    setColor( Q::Text | SK::Selected, pal.fillColor.textOnAccent.selectedText );
 
     for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
     {

@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskTextField.h"
+#include "QskTextFieldSkinlet.h"
 #include "QskFontRole.h"
 #include "QskQuick.h"
 
@@ -15,12 +16,6 @@ QSK_QT_PRIVATE_END
 QSK_SUBCONTROL( QskTextField, Panel )
 QSK_SUBCONTROL( QskTextField, Text )
 QSK_SUBCONTROL( QskTextField, PlaceholderText )
-
-#if 1
-// shouldn't this be a Selected state, TODO ...
-QSK_SUBCONTROL( QskTextField, PanelSelected )
-QSK_SUBCONTROL( QskTextField, TextSelected )
-#endif
 
 QSK_SYSTEM_STATE( QskTextField, ReadOnly, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskTextField, Editing, QskAspect::FirstSystemState << 2 )
@@ -262,14 +257,14 @@ namespace
 
         if ( d->hasSelectedText() )
         {
-            color = textField->color( QskTextField::PanelSelected );
+            color = textField->color( QskTextField::Panel | QskTextFieldSkinlet::Selected );
             if ( d->selectionColor != color )
             {
                 d->selectionColor = color;
                 isDirty = true;
             }
 
-            color = textField->color( QskTextField::TextSelected );
+            color = textField->color( QskTextField::Text | QskTextFieldSkinlet::Selected );
             if ( d->selectedTextColor != color )
             {
                 d->selectedTextColor = color;

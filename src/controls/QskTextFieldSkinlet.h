@@ -15,6 +15,8 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
     using Inherited = QskSkinlet;
 
   public:
+    QSK_STATES( Selected )
+
     enum NodeRole
     {
         PanelRole,

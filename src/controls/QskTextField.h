@@ -55,7 +55,7 @@ class QSK_EXPORT QskTextField : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, Text, PlaceholderText, PanelSelected, TextSelected )
+    QSK_SUBCONTROLS( Panel, Text, PlaceholderText )
     QSK_STATES( ReadOnly, Editing )
 
     enum ActivationMode

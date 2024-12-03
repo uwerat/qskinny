@@ -46,6 +46,7 @@
 #include <QskTabButton.h>
 #include <QskTabView.h>
 #include <QskTextField.h>
+#include <QskTextFieldSkinlet.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -453,10 +454,12 @@ void Editor::setupTextLabel()
 void Editor::setupTextField()
 {
     using Q = QskTextField;
+    using SK = QskTextFieldSkinlet;
 
     setStrutSize( Q::Panel,  -1.0, 56_dp );
     setPadding( Q::Panel, { 12_dp, 8_dp, 12_dp, 8_dp } );
     setGradient( Q::Panel, m_pal.surfaceVariant );
+    setColor( Q::Panel | SK::Selected, m_pal.primary12 );
     setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
     setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_dp } );
     setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );

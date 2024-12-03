@@ -43,6 +43,7 @@
 #include <QskTabButton.h>
 #include <QskTabView.h>
 #include <QskTextField.h>
+#include <QskTextFieldSkinlet.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -385,6 +386,7 @@ void Editor::setupTextLabel()
 void Editor::setupTextField()
 {
     using Q = QskTextField;
+    using SK = QskTextFieldSkinlet;
     using A = QskAspect;
     using P = QPalette;
 
@@ -395,11 +397,13 @@ void Editor::setupTextField()
         const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
         setGradient( Q::Panel | state, m_pal.color( colorGroup, P::Base ) );
-        setColor( Q::PanelSelected | state, m_pal.color( colorGroup, P::Highlight ) );
-
         setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
-        setColor( Q::TextSelected | state, m_pal.color( colorGroup, P::HighlightedText ) );
 
+        setColor( Q::Panel | SK::Selected | state,
+            m_pal.color( colorGroup, P::Highlight ) );
+
+        setColor( Q::Text | SK::Selected | state,
+            m_pal.color( colorGroup, P::HighlightedText ) );
     }
 
     setBoxBorderMetrics( Q::Panel, 1_px );
