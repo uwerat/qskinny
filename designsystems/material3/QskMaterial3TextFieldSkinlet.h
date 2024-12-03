@@ -18,10 +18,8 @@ class QSK_MATERIAL3_EXPORT QskMaterial3TextFieldSkinlet : public QskTextFieldSki
   public:
     enum NodeRole
     {
-        LeadingIconRole = Inherited::RoleCount,
-        SupportingTextRole,
+        SupportingTextRole = Inherited::RoleCount,
         TrailingIconRippleRole,
-        TrailingIconRole,
         CharacterCountRole
     };
 

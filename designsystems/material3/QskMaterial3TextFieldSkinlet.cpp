@@ -17,6 +17,21 @@ using Q = QskTextField;
 
 namespace
 {
+    QString effectivePlaceholderText( const QskTextField* textField )
+    {               
+        if ( textField->text().isEmpty() &&
+            !( textField->isReadOnly() || textField->isEditing() ) )
+        {
+            auto text = textField->placeholderText();
+            if ( text.isEmpty() )
+                text = textField->labelText();
+
+            return text;
+        }
+        
+        return QString();
+    }
+
     inline bool hasCharacterCount( const QskTextField* textField )
     {
         // magic number hardcoded in qquicktextinput.cpp
@@ -110,9 +125,7 @@ QRectF QskMaterial3TextFieldSkinlet::subControlRect( const QskSkinnable* skinnab
     }
     else if ( subControl == Q::LabelText )
     {
-        if( !textField->text().isEmpty()
-             || textField->hasSkinState( Q::Focused )
-             || textField->hasSkinState( Q::Editing ) )
+        if( effectivePlaceholderText( textField ).isEmpty() )
         {
             auto rect = textField->subControlRect( Q::Text );
 
@@ -131,33 +144,6 @@ QRectF QskMaterial3TextFieldSkinlet::subControlRect( const QskSkinnable* skinnab
             rect.setHeight( textField->effectiveFontHeight( subControl ) );
 
             return rect;
-        }
-
-        return textField->subControlRect( Q::Text );
-    }
-    else if ( subControl == Q::LeadingIcon )
-    {
-        if( !textField->symbolHint( subControl ).isEmpty() )
-        {
-            const auto margins = textField->marginHint( subControl );
-            const auto panelRect = textField->subControlRect( Q::Panel );
-            auto rect = panelRect.marginsRemoved( margins );
-
-            const auto size = textField->strutSizeHint( subControl );
-            rect.setSize( size );
-            rect.moveCenter( { rect.center().x(), panelRect.center().y() } );
-
-            return rect;
-        }
-
-        return QRectF();
-    }
-    else if ( subControl == Q::PlaceholderText )
-    {
-        if ( skinnable->skinStates() & ( Q::Focused | Q::Editing ) )
-        {
-            return Inherited::subControlRect( skinnable,
-                contentsRect, subControl );
         }
 
         return QRectF();
@@ -222,24 +208,6 @@ QRectF QskMaterial3TextFieldSkinlet::subControlRect( const QskSkinnable* skinnab
 
         return QRectF();
     }
-    else if ( subControl == Q::TrailingIcon )
-    {
-        if( !textField->symbolHint( subControl ).isEmpty() )
-        {
-            const auto margins = textField->marginHint( subControl );
-            const auto panelRect = textField->subControlRect( Q::Panel );
-            auto rect = panelRect.marginsRemoved( margins );
-
-            const auto size = textField->strutSizeHint( subControl );
-            rect.setHeight( size.height() );
-            rect.moveCenter( { rect.center().x(), panelRect.center().y() } );
-            rect.setLeft( rect.right() - size.width() );
-
-            return rect;
-        }
-
-        return QRectF();
-    }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
@@ -283,7 +251,7 @@ QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
                 return nullptr;
 
             if( textField->emphasis() == Q::LowEmphasis
-                 && ( textField->hasSkinState( Q::TextPopulated )
+                 && ( !textField->text().isEmpty()
                     || textField->hasSkinState( Q::Focused )
                     || textField->hasSkinState( Q::Editing ) ) )
             {
@@ -299,11 +267,6 @@ QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
             {
                 return updateBoxNode( skinnable, node, Q::Panel );
             }
-        }
-
-        case LeadingIconRole:
-        {
-            return updateSymbolNode( skinnable, node, Q::LeadingIcon );
         }
 
         case SupportingTextRole:
@@ -323,9 +286,20 @@ QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
             return updateBoxNode( skinnable, node, Q::TrailingIconRipple );
         }
 
-        case TrailingIconRole:
+        case LabelTextRole:
         {
-            return updateSymbolNode( skinnable, node, Q::TrailingIcon );
+            if ( !effectivePlaceholderText( textField ).isEmpty() )
+                return nullptr;
+
+            return updateTextNode( skinnable, node,
+                textField->labelText(), Q::LabelText );
+        }
+
+        case PlaceholderTextRole:
+        {
+            const auto text = effectivePlaceholderText( textField );
+            return updateTextNode( skinnable, node,
+                text, Q::PlaceholderText );
         }
     }
 

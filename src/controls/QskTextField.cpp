@@ -4,10 +4,10 @@
  *****************************************************************************/
 
 #include "QskTextField.h"
+#include "QskTextFieldSkinlet.h"
 #include "QskEvent.h"
 #include "QskFontRole.h"
 #include "QskQuick.h"
-#include "QskTextFieldSkinlet.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextinput_p.h>
@@ -27,9 +27,7 @@ QSK_SUBCONTROL( QskTextField, CharacterCount )
 
 QSK_SYSTEM_STATE( QskTextField, ReadOnly, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskTextField, Editing, QskAspect::FirstSystemState << 2 )
-QSK_SYSTEM_STATE( QskTextField, Selected, QskAspect::FirstSystemState << 3 )
 QSK_SYSTEM_STATE( QskTextField, Error, QskAspect::FirstSystemState << 4 )
-QSK_SYSTEM_STATE( QskTextField, TextPopulated, QskAspect::LastUserState << 1 )
 
 static inline void qskPropagateReadOnly( QskTextField* input )
 {
@@ -268,14 +266,14 @@ namespace
 
         if ( d->hasSelectedText() )
         {
-            color = textField->color( QskTextField::Panel | QskTextField::Selected );
+            color = textField->color( QskTextField::Panel | QskTextFieldSkinlet::Selected );
             if ( d->selectionColor != color )
             {
                 d->selectionColor = color;
                 isDirty = true;
             }
 
-            color = textField->color( QskTextField::Text | QskTextField::Selected );
+            color = textField->color( QskTextField::Text | QskTextFieldSkinlet::Selected );
             if ( d->selectedTextColor != color )
             {
                 d->selectedTextColor = color;
@@ -340,11 +338,11 @@ QskTextField::QskTextField( QQuickItem* parent )
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
 
-    connect( m_data->textInput, &QQuickTextInput::textChanged, this, [this]()
-    {
-        setSkinStateFlag( TextPopulated, !m_data->textInput->text().isEmpty() );
-        update(); // character count might have changed
-    } );
+#if 1
+    // character count might have changed
+    connect( m_data->textInput, &QQuickTextInput::textChanged,
+        this, &QQuickItem::update );
+#endif
 }
 
 QskTextField::QskTextField( const QString& text, QQuickItem* parent )

@@ -454,9 +454,11 @@ void Editor::setupTextLabel()
 void Editor::setupTextField()
 {
     using Q = QskTextField;
+    using SK = QskTextFieldSkinlet;
     using M3 = QskMaterial3Skin;
 
-    const QskStateCombination allStates( QskStateCombination::CombinationNoState, QskAspect::AllStates );
+    const QskStateCombination allStates(
+        QskStateCombination::CombinationNoState, QskAspect::AllStates );
 
     // Panel
 
@@ -466,7 +468,7 @@ void Editor::setupTextField()
 
     setGradient( Q::Panel, m_pal.surfaceVariant );
 
-    setColor( Q::Panel | Q::Selected, m_pal.primary12 );
+    setColor( Q::Panel | SK::Selected, m_pal.primary12 );
 
     setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
 
@@ -520,15 +522,8 @@ void Editor::setupTextField()
     // LabelText
 
     setAlignment( Q::LabelText, Qt::AlignLeft | Qt::AlignVCenter );
-    setFontRole( Q::LabelText, BodyLarge );
+    setFontRole( Q::LabelText, BodySmall );
     setColor( Q::LabelText, m_pal.onSurfaceVariant );
-
-    for( const auto s : { Q::Focused, Q::Editing, Q::TextPopulated } )
-    {
-        setFontRole( Q::LabelText | s, BodySmall, allStates );
-        setMargin( Q::LabelText | s, { 16_dp, 4_dp, 16_dp, 16_dp }, allStates );
-        setColor( Q::LabelText | s, m_pal.primary, allStates );
-    }
 
     setColor( Q::LabelText | Q::Error, m_pal.error, allStates );
     setColor( Q::LabelText | Q::Error | Q::Hovered, m_pal.onErrorContainer, allStates );
@@ -540,11 +535,11 @@ void Editor::setupTextField()
     setMargin( Q::LabelText | M3::Outlined, { 4_dp, 0, 4_dp, 0 }, allStates );
 
 
-    // InputText
+    // Text
 
     setMargin( Q::Text, { 16_dp, 8_dp, 16_dp, 8_dp } );
     setColor( Q::Text, m_pal.onSurface );
-    setColor( Q::Panel | Q::Selected, m_pal.surfaceVariant, allStates );
+    setColor( Q::Panel | SK::Selected, m_pal.surfaceVariant, allStates );
     setFontRole( Q::Text, BodyLarge );
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignBottom );
 
@@ -554,7 +549,7 @@ void Editor::setupTextField()
 
     // InputText - Outlined
 
-    setColor( Q::Panel | Q::Selected | M3::Outlined, m_pal.surfaceVariant, allStates );
+    setColor( Q::Panel | SK::Selected | M3::Outlined, m_pal.surfaceVariant, allStates );
     setAlignment( Q::Text | M3::Outlined, Qt::AlignLeft | Qt::AlignVCenter );
 
 

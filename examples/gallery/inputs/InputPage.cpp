@@ -79,7 +79,7 @@ namespace
                     textField->setEmphasis( emphasis );
                     const QString text = ( emphasis == QskTextField::NoEmphasis ) ? "filled" : "outlined";
                     textField->setLabelText( text );
-                    textField->setPlaceholderText( "text" );
+                    textField->setPlaceholderText( "<text>" );
                     textField->setSupportingText( "supporting text" );
                     textField->setMaxLength( 10 );
                 }
@@ -89,22 +89,23 @@ namespace
                     textField->setEmphasis( emphasis );
                     textField->setLeadingIcon( {} );
                     textField->setLabelText( "no leading icon" );
-                    textField->setPlaceholderText( "text" );
+                    textField->setPlaceholderText( "<text>" );
                     textField->setSupportingText( "supporting text" );
                 }
                 {
                     auto textField = new QskTextField( this );
                     textField->setEmphasis( emphasis );
                     textField->setLeadingIcon( {} );
-                    textField->setPlaceholderText( "no label text" );
+                    textField->setPlaceholderText( "<no label text>" );
                 }
 
                 {
                     auto textField = new QskTextField( this );
                     textField->setEmphasis( emphasis );
                     textField->setSkinStateFlag( QskTextField::Error );
+                    textField->setText( "Error Text" );
                     textField->setLabelText( "error" );
-                    textField->setPlaceholderText( "text" );
+                    textField->setPlaceholderText( "<text>" );
                     textField->setSupportingText( "error text" );
                 }
 
@@ -112,6 +113,7 @@ namespace
                     auto textField = new QskTextField( this );
                     textField->setEmphasis( emphasis );
                     textField->setReadOnly( true );
+                    textField->setText( "Read Only" );
                     textField->setLabelText( "read only" );
                     textField->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
                 }
@@ -122,7 +124,7 @@ namespace
                     textField->setMaxLength( 15 );
                     textField->setLabelText( "password" );
                     textField->setEchoMode( QskTextField::Password );
-                    textField->setPlaceholderText( "better be strong" );
+                    textField->setPlaceholderText( "<password>" );
                 }
             }
         }

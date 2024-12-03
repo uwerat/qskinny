@@ -1800,13 +1800,14 @@ void Editor::setupTextFieldColors(
     QskAspect::Section section, const QskFluent2Theme& theme )
 {
     using Q = QskTextField;
+    using SK = QskTextFieldSkinlet;
     using A = QskAspect;
 
     const auto& pal = theme.palette;
 
-    setColor( Q::Panel | Q::Selected, pal.fillColor.accent.selectedTextBackground );
+    setColor( Q::Panel | SK::Selected, pal.fillColor.accent.selectedTextBackground );
     setColor( Q::LabelText, pal.fillColor.text.primary );
-    setColor( Q::Text | Q::Selected, pal.fillColor.textOnAccent.selectedText );
+    setColor( Q::Text | SK::Selected, pal.fillColor.textOnAccent.selectedText );
     setColor( Q::PlaceholderText, pal.fillColor.text.secondary );
 
     for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )

@@ -70,7 +70,7 @@ class QSK_EXPORT QskTextField : public QskControl
         TrailingIconRipple, TrailingIcon, PlaceholderText, SupportingText,
         CharacterCount )
 
-    QSK_STATES( ReadOnly, Editing, Selected, Error, TextPopulated )
+    QSK_STATES( ReadOnly, Editing, Error )
 
     enum Emphasis
     {
