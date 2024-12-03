@@ -29,7 +29,7 @@
 #include <QskTabBar.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
-#include <QskTextInput.h>
+#include <QskTextField.h>
 #include <QskTextLabel.h>
 #include <QskWindow.h>
 
@@ -249,9 +249,9 @@ namespace
             t->addTab( "tab 3 ", new QskTextLabel( "tab content 3" ) );
             return t;
         }
-        if( name == "TextInput" )
+        if( name == "TextField" )
         {
-            auto t = new QskTextInput;
+            auto t = new QskTextField;
             t->setPreferredWidth( 100 );
             return t;
         }
