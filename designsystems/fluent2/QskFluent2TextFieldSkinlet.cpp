@@ -34,17 +34,6 @@ QRectF QskFluent2TextFieldSkinlet::subControlRect( const QskSkinnable* skinnable
 
         return rect;
     }
-    else if ( subControl == Q::PlaceholderText )
-    {
-        if( input->hasSkinState( Q::TextPopulated ) )
-        {
-            return {};
-        }
-        else
-        {
-            return input->subControlRect( Q::Text );
-        }
-    }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
@@ -57,9 +46,9 @@ QSizeF QskFluent2TextFieldSkinlet::adjustSizeHint(
 
     qreal h = skinnable->strutSizeHint( Q::Panel ).height();
 
-    const auto input = static_cast< const Q* >( skinnable );
-    if ( !input->labelText().isEmpty() )
-        h += input->strutSizeHint( Q::LabelText ).height();
+    const auto textField = static_cast< const Q* >( skinnable );
+    if ( !textField->labelText().isEmpty() )
+        h += textField->strutSizeHint( Q::LabelText ).height();
 
     return QSizeF( oldHint.width(), h );
 }

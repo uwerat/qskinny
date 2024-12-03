@@ -40,49 +40,49 @@ static inline void qskPropagateReadOnly( QskTextField* input )
 }
 
 static inline void qskBindSignals(
-    const QQuickTextInput* wrappedInput, QskTextField* input )
+    const QQuickTextInput* input, QskTextField* field )
 {
-    QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
-        input, [ input ] { Q_EMIT input->textChanged( input->text() ); } );
+    QObject::connect( input, &QQuickTextInput::textChanged,
+        field, [ field ] { Q_EMIT field->textChanged( field->text() ); } );
 
-    QObject::connect( wrappedInput, &QQuickTextInput::displayTextChanged,
-        input, [ input ] { Q_EMIT input->displayTextChanged( input->displayText() ); } );
+    QObject::connect( input, &QQuickTextInput::displayTextChanged,
+        field, [ field ] { Q_EMIT field->displayTextChanged( field->displayText() ); } );
 
-    QObject::connect( wrappedInput, &QQuickTextInput::textEdited,
-        input, [ input ] { Q_EMIT input->textEdited( input->text() ); } );
+    QObject::connect( input, &QQuickTextInput::textEdited,
+        field, [ field ] { Q_EMIT field->textEdited( field->text() ); } );
 
-    QObject::connect( wrappedInput, &QQuickTextInput::validatorChanged,
-        input, &QskTextField::validatorChanged );
+    QObject::connect( input, &QQuickTextInput::validatorChanged,
+        field, &QskTextField::validatorChanged );
 
-    QObject::connect( wrappedInput, &QQuickTextInput::inputMaskChanged,
-        input, &QskTextField::inputMaskChanged );
+    QObject::connect( input, &QQuickTextInput::inputMaskChanged,
+        field, &QskTextField::inputMaskChanged );
 
-    QObject::connect( wrappedInput, &QQuickTextInput::readOnlyChanged,
-        input, [ input ] { qskPropagateReadOnly( input ); } );
+    QObject::connect( input, &QQuickTextInput::readOnlyChanged,
+        field, [ field ] { qskPropagateReadOnly( field ); } );
 
-    QObject::connect( wrappedInput, &QQuickTextInput::overwriteModeChanged,
-        input, &QskTextField::overwriteModeChanged );
+    QObject::connect( input, &QQuickTextInput::overwriteModeChanged,
+        field, &QskTextField::overwriteModeChanged );
 
-    QObject::connect( wrappedInput, &QQuickTextInput::maximumLengthChanged,
-        input, &QskTextField::maximumLengthChanged );
+    QObject::connect( input, &QQuickTextInput::maximumLengthChanged,
+        field, &QskTextField::maximumLengthChanged );
 
-    QObject::connect( wrappedInput, &QQuickTextInput::wrapModeChanged,
-        input, [ input ] { Q_EMIT input->wrapModeChanged( input->wrapMode() ); } );
+    QObject::connect( input, &QQuickTextInput::wrapModeChanged,
+        field, [ field ] { Q_EMIT field->wrapModeChanged( field->wrapMode() ); } );
 
-    QObject::connect( wrappedInput, &QQuickTextInput::echoModeChanged,
-        input, [ input ] { Q_EMIT input->echoModeChanged( input->echoMode() ); } );
+    QObject::connect( input, &QQuickTextInput::echoModeChanged,
+        field, [ field ] { Q_EMIT field->echoModeChanged( field->echoMode() ); } );
 
-    QObject::connect( wrappedInput, &QQuickTextInput::passwordCharacterChanged,
-        input, &QskTextField::passwordCharacterChanged );
+    QObject::connect( input, &QQuickTextInput::passwordCharacterChanged,
+        field, &QskTextField::passwordCharacterChanged );
 
-    QObject::connect( wrappedInput, &QQuickTextInput::passwordMaskDelayChanged,
-        input, &QskTextField::passwordMaskDelayChanged );
+    QObject::connect( input, &QQuickTextInput::passwordMaskDelayChanged,
+        field, &QskTextField::passwordMaskDelayChanged );
 
-    QObject::connect( wrappedInput, &QQuickItem::implicitWidthChanged,
-        input, &QskControl::resetImplicitSize );
+    QObject::connect( input, &QQuickItem::implicitWidthChanged,
+        field, &QskControl::resetImplicitSize );
 
-    QObject::connect( wrappedInput, &QQuickItem::implicitHeightChanged,
-        input, &QskControl::resetImplicitSize );
+    QObject::connect( input, &QQuickItem::implicitHeightChanged,
+        field, &QskControl::resetImplicitSize );
 }
 
 namespace
@@ -207,8 +207,8 @@ namespace
         }
     };
 
-    TextInput::TextInput( QskTextField* textInput )
-        : QQuickTextInput( textInput )
+    TextInput::TextInput( QskTextField* textField )
+        : QQuickTextInput( textField )
     {
         classBegin();
 
@@ -252,14 +252,14 @@ namespace
 
     void TextInput::updateColors()
     {
-        auto input = static_cast< const QskTextField* >( parentItem() );
+        auto textField = static_cast< const QskTextField* >( parentItem() );
         auto d = QQuickTextInputPrivate::get( this );
 
         bool isDirty = false;
 
         QColor color;
 
-        color = input->color( QskTextField::Text );
+        color = textField->color( QskTextField::Text );
         if ( d->color != color )
         {
             d->color = color;
@@ -268,14 +268,14 @@ namespace
 
         if ( d->hasSelectedText() )
         {
-            color = input->color( QskTextField::Panel | QskTextField::Selected );
+            color = textField->color( QskTextField::Panel | QskTextField::Selected );
             if ( d->selectionColor != color )
             {
                 d->selectionColor = color;
                 isDirty = true;
             }
 
-            color = input->color( QskTextField::Text | QskTextField::Selected );
+            color = textField->color( QskTextField::Text | QskTextField::Selected );
             if ( d->selectedTextColor != color )
             {
                 d->selectedTextColor = color;
