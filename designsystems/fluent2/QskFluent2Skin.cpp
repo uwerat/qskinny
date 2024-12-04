@@ -47,7 +47,6 @@
  */
 #include "QskFluent2Skin.h"
 #include "QskFluent2Theme.h"
-
 #include "QskFluent2TextFieldSkinlet.h"
 
 #include <QskSkinHintTableEditor.h>
@@ -2038,7 +2037,8 @@ void Editor::setupVirtualKeyboardColors(
 QskFluent2Skin::QskFluent2Skin( QObject* parent )
     : Inherited( parent )
 {
-    setupSkinlets();
+    declareSkinlet< QskTextField, QskFluent2TextFieldSkinlet >();
+
     setupFonts();
 
     Editor editor( &hintTable() );
@@ -2124,11 +2124,6 @@ static inline QFont createFont( qreal size, int lineHeight, QFont::Weight weight
     font.setPointSizeF( size * 72.0 / 96.0 );
 
     return font;
-}
-
-void QskFluent2Skin::setupSkinlets()
-{
-    declareSkinlet< QskTextField, QskFluent2TextFieldSkinlet >();
 }
 
 void QskFluent2Skin::setupFonts()

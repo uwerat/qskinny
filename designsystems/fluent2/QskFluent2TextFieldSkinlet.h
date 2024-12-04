@@ -3,8 +3,8 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_FLUENT2_INPUT_SKINLET_H
-#define QSK_FLUENT2_INPUT_SKINLET_H
+#ifndef QSK_FLUENT2_TEXTFIELD_SKINLET_H
+#define QSK_FLUENT2_TEXTFIELD_SKINLET_H
 
 #include "QskFluent2Global.h"
 #include "QskTextFieldSkinlet.h"
