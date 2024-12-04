@@ -233,10 +233,10 @@ namespace
 
     void TextInput::updateMetrics()
     {
-        auto input = static_cast< const QskTextField* >( parentItem() );
+        auto textField = static_cast< const QskTextField* >( parentItem() );
 
-        setAlignment( input->alignment() );
-        setFont( input->font() );
+        setAlignment( textField->alignment() );
+        setFont( textField->font() );
     }
 
     void TextInput::updateColors()
@@ -490,32 +490,10 @@ void QskTextField::focusOutEvent( QFocusEvent* event )
     Inherited::focusOutEvent( event );
 }
 
-QSizeF QskTextField::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    auto input = m_data->textInput;
-
-    input->updateMetrics();
-
-    QSizeF hint( input->implicitWidth(), input->implicitHeight() );
-
-    if ( m_data->hasPanel )
-    {
-        hint = outerBoxSize( Panel, hint );
-        hint = hint.expandedTo( strutSizeHint( Panel ) );
-    }
-
-    return hint;
-}
-
 void QskTextField::updateLayout()
 {
-    auto input = m_data->textInput;
-
-    input->updateMetrics();
-    qskSetItemGeometry( input, subControlRect( Text ) );
+    m_data->textInput->updateMetrics();
+    qskSetItemGeometry( m_data->textInput, subControlRect( Text ) );
 }
 
 void QskTextField::updateNode( QSGNode* node )

@@ -209,8 +209,6 @@ class QSK_EXPORT QskTextField : public QskControl
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
 
-    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
-
     void updateLayout() override;
     void updateNode( QSGNode* ) override;
 

@@ -6,6 +6,8 @@
 #include "QskTextFieldSkinlet.h"
 #include "QskTextField.h"
 
+#include <qfontmetrics.h>
+
 using Q = QskTextField;
 
 QSK_SYSTEM_STATE( QskTextFieldSkinlet, Selected, QskAspect::FirstUserState >> 1 )
@@ -65,6 +67,27 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );
+}
+
+QSizeF QskTextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& ) const
+{
+    if ( which != Qt::PreferredSize )
+        return QSizeF();
+
+    const auto textField = static_cast< const QskTextField* >( skinnable );
+
+    const QFontMetricsF fm( textField->effectiveFont( Q::Text ) );
+
+    auto hint = fm.size( Qt::TextSingleLine | Qt::TextExpandTabs, textField->text() );
+
+    if ( textField->hasPanel() )
+    {
+        hint = textField->outerBoxSize( Q::Panel, hint );
+        hint = hint.expandedTo( textField->strutSizeHint( Q::Panel ) );
+    }
+
+    return hint;
 }
 
 #include "moc_QskTextFieldSkinlet.cpp"
