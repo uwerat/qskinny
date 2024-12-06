@@ -42,6 +42,8 @@
 #include <QskTabBar.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
+#include <QskTextArea.h>
+#include <QskTextAreaSkinlet.h>
 #include <QskTextField.h>
 #include <QskTextFieldSkinlet.h>
 #include <QskTextLabel.h>
@@ -142,6 +144,10 @@ namespace
         Q_INVOKABLE void setupTabButton();
         Q_INVOKABLE void setupTabBar();
         Q_INVOKABLE void setupTabView();
+
+        template< typename Q, typename SK >
+        void setupTextControl();
+        Q_INVOKABLE void setupTextArea();
         Q_INVOKABLE void setupTextField();
         Q_INVOKABLE void setupTextLabel();
 
@@ -383,15 +389,11 @@ void Editor::setupTextLabel()
     setBoxBorderColors( Q::Panel, QskRgb::lighter( m_pal.outline, 108 ) );
 }
 
-void Editor::setupTextField()
+template< typename Q, typename SK >
+void Editor::setupTextControl()
 {
-    using Q = QskTextField;
-    using SK = QskTextFieldSkinlet;
     using A = QskAspect;
     using P = QPalette;
-
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
-    setAlignment( Q::PlaceholderText, Qt::AlignLeft | Qt::AlignVCenter );
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
@@ -416,6 +418,28 @@ void Editor::setupTextField()
 
     setBoxShape( Q::TextPanel, 2_px );
     setPadding( Q::TextPanel, 4_px );
+}
+
+void Editor::setupTextArea()
+{
+    using Q = QskTextArea;
+    using SK = QskTextAreaSkinlet;
+
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignTop );
+    setAlignment( Q::PlaceholderText, Qt::AlignLeft | Qt::AlignTop );
+
+    setupTextControl< Q, SK >();
+}
+
+void Editor::setupTextField()
+{
+    using Q = QskTextField;
+    using SK = QskTextFieldSkinlet;
+
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+    setAlignment( Q::PlaceholderText, Qt::AlignLeft | Qt::AlignVCenter );
+
+    setupTextControl< Q, SK >();
 }
 
 void Editor::setupProgressBar()

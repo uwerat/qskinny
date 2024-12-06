@@ -8,6 +8,7 @@ list(APPEND HEADERS
 )
 
 list(APPEND PRIVATE_HEADERS
+    QskFluent2TextAreaSkinlet.h
     QskFluent2TextFieldSkinlet.h
 )
 
@@ -15,6 +16,7 @@ list(APPEND SOURCES
     QskFluent2Theme.cpp
     QskFluent2Skin.cpp
     QskFluent2SkinFactory.cpp
+    QskFluent2TextAreaSkinlet.cpp
     QskFluent2TextFieldSkinlet.cpp
 )
 

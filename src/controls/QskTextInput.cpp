@@ -236,7 +236,7 @@ namespace
         const auto state = QskTextInputSkinlet::Selected;
 
         setSelectionColor( input->color( Q::TextPanel | state ) );
-        setSelectedTextColor( input->color( QskTextInput::Text | state ) );
+        setSelectedTextColor( input->color( Q::Text | state ) );
     }
 }
 

@@ -47,6 +47,7 @@
  */
 #include "QskFluent2Skin.h"
 #include "QskFluent2Theme.h"
+#include "QskFluent2TextAreaSkinlet.h"
 #include "QskFluent2TextFieldSkinlet.h"
 
 #include <QskSkinHintTableEditor.h>
@@ -80,6 +81,7 @@
 #include <QskTabButton.h>
 #include <QskTabView.h>
 #include <QskTextField.h>
+#include <QskTextArea.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -297,6 +299,15 @@ namespace
         void setupTabViewMetrics();
         void setupTabViewColors( QskAspect::Section, const QskFluent2Theme& );
 
+        template< typename Q >
+        void setupTextControlMetrics();
+
+        template< typename Q, typename SK >
+        void setupTextControlColors( QskAspect::Section section, const QskFluent2Theme& theme );
+
+        void setupTextAreaMetrics();
+        void setupTextAreaColors( QskAspect::Section, const QskFluent2Theme& );
+
         void setupTextFieldMetrics();
         void setupTextFieldColors( QskAspect::Section, const QskFluent2Theme& );
 
@@ -356,6 +367,7 @@ void Editor::setupMetrics()
     setupTabButtonMetrics();
     setupTabBarMetrics();
     setupTabViewMetrics();
+    setupTextAreaMetrics();
     setupTextFieldMetrics();
     setupTextLabelMetrics();
     setupVirtualKeyboardMetrics();
@@ -395,6 +407,7 @@ void Editor::setupColors( QskAspect::Section section, const QskFluent2Theme& the
     setupTabButtonColors( section, theme );
     setupTabBarColors( section, theme );
     setupTabViewColors( section, theme );
+    setupTextAreaColors( section, theme );
     setupTextFieldColors( section, theme );
     setupTextLabelColors( section, theme );
     setupVirtualKeyboardColors( section, theme );
@@ -1781,10 +1794,8 @@ void Editor::setupTextLabelColors(
     setColor( Q::Text | section, pal.fillColor.text.primary );
 }
 
-void Editor::setupTextFieldMetrics()
+template< typename Q > void Editor::setupTextControlMetrics()
 {
-    using Q = QskTextField;
-
     setStrutSize( Q::TextPanel, { -1, 30_px } );
     setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
 
@@ -1794,18 +1805,15 @@ void Editor::setupTextFieldMetrics()
 
     setBoxShape( Q::TextPanel, 3_px );
 
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setFontRole( Q::Text, Fluent2::Body );
 
     setAlignment( Q::PlaceholderText, alignment( Q::Text ) );
     setFontRole( Q::PlaceholderText, fontRole( Q::Text ) );
 }
 
-void Editor::setupTextFieldColors(
-    QskAspect::Section section, const QskFluent2Theme& theme )
+template< typename Q, typename SK > void Editor::setupTextControlColors(
+    QskAspect::Section section, const QskFluent2Theme& theme)
 {
-    using Q = QskTextField;
-    using SK = QskTextFieldSkinlet;
     using A = QskAspect;
 
     const auto& pal = theme.palette;
@@ -1856,6 +1864,36 @@ void Editor::setupTextFieldColors(
 
         setColor( text, textColor );
     }
+}
+
+void Editor::setupTextAreaMetrics()
+{
+    using Q = QskTextArea;
+
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignTop );
+
+    setupTextControlMetrics< Q >();
+}
+
+void Editor::setupTextAreaColors(
+    QskAspect::Section section, const QskFluent2Theme& theme )
+{
+    setupTextControlColors< QskTextArea, QskTextAreaSkinlet >( section, theme );
+}
+
+void Editor::setupTextFieldMetrics()
+{
+    using Q = QskTextField;
+
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+
+    setupTextControlMetrics< Q >();
+}
+
+void Editor::setupTextFieldColors(
+    QskAspect::Section section, const QskFluent2Theme& theme )
+{
+    setupTextControlColors< QskTextField, QskTextFieldSkinlet >( section, theme );
 }
 
 void Editor::setupSwitchButtonMetrics()
@@ -2042,6 +2080,7 @@ void Editor::setupVirtualKeyboardColors(
 QskFluent2Skin::QskFluent2Skin( QObject* parent )
     : Inherited( parent )
 {
+    declareSkinlet< QskTextArea, QskFluent2TextAreaSkinlet >();
     declareSkinlet< QskTextField, QskFluent2TextFieldSkinlet >();
 
     setupFonts();
