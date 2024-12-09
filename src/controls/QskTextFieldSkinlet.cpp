@@ -61,8 +61,13 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
         }
         case PlaceholderTextRole:
         {
-            return updateTextNode( skinnable, node,
-                textField->placeholderText(), Q::PlaceholderText );
+            if ( textField->text().isEmpty() )
+            {
+                return updateTextNode( skinnable, node,
+                    textField->placeholderText(), Q::PlaceholderText );
+            }
+
+            return nullptr;
         }
     }
 
