@@ -183,17 +183,15 @@ static inline QskTextColors qskTextColors(
 
     QskSkinHintStatus status;
 
-    QskTextColors c;
-    c.textColor = skinnable->color( subControl, &status );
+    auto textColor = skinnable->color( subControl, &status );
 #if 1
     if ( !status.isValid() )
-        c.textColor = skinnable->color( subControl | QskAspect::TextColor );
+        textColor = skinnable->color( subControl | QskAspect::TextColor );
 #endif
 
-    c.styleColor = skinnable->color( subControl | QskAspect::StyleColor );
-    c.linkColor = skinnable->color( subControl | QskAspect::LinkColor );
-
-    return c;
+    return QskTextColors( textColor,
+        skinnable->color( subControl | QskAspect::StyleColor ),
+        skinnable->color( subControl | QskAspect::LinkColor ) );
 }
 
 static inline QQuickWindow* qskWindowOfSkinnable( const QskSkinnable* skinnable )
@@ -686,7 +684,7 @@ QSGNode* QskSkinlet::updateTextNode(
     const auto textOptions = skinnable->textOptionsHint( subControl );
 
     auto textStyle = Qsk::Normal;
-    if ( textColors.styleColor.alpha() == 0 )
+    if ( textColors.styleColor().alpha() == 0 )
     {
         textStyle = skinnable->flagHint< Qsk::TextStyle >(
             subControl | QskAspect::Style, Qsk::Normal );
