@@ -119,7 +119,8 @@ constexpr inline Qt::TextElideMode QskTextOptions::elideMode() const noexcept
 
 constexpr inline Qt::TextElideMode QskTextOptions::effectiveElideMode() const noexcept
 {
-    return ( wrapMode() != QskTextOptions::NoWrap ) ? Qt::ElideNone : m_elideMode;
+    return ( wrapMode() != QskTextOptions::NoWrap ) ?
+        Qt::ElideNone : static_cast< Qt::TextElideMode >( m_elideMode );
 }
 
 inline void QskTextOptions::setWrapMode( WrapMode wrapMode ) noexcept
