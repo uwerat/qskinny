@@ -13,7 +13,7 @@ namespace Qsk
 {
     Q_NAMESPACE_EXPORT( QSK_EXPORT )
 
-    enum Policy
+    enum Policy : quint8
     {
         Maybe,
         Always,
@@ -21,7 +21,7 @@ namespace Qsk
     };
     Q_ENUM_NS( Policy )
 
-    enum Direction
+    enum Direction : quint8
     {
         LeftToRight,
         RightToLeft,
@@ -30,7 +30,7 @@ namespace Qsk
     };
     Q_ENUM_NS( Direction )
 
-    enum TextStyle
+    enum TextStyle : quint8
     {
         Normal,
         Outline,
@@ -39,7 +39,7 @@ namespace Qsk
     };
     Q_ENUM_NS( TextStyle )
 
-    enum Visibility
+    enum Visibility : quint8
     {
         Visible = 1 << 0,
         Hidden  = 1 << 1
