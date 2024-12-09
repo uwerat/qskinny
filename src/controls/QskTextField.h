@@ -58,7 +58,7 @@ class QSK_EXPORT QskTextField : public QskControl
     QSK_SUBCONTROLS( Panel, Text, PlaceholderText )
     QSK_STATES( ReadOnly, Editing )
 
-    enum ActivationMode
+    enum ActivationMode : quint8
     {
         NoActivation,
 
@@ -73,7 +73,7 @@ class QSK_EXPORT QskTextField : public QskControl
     Q_ENUM( ActivationMode )
     Q_DECLARE_FLAGS( ActivationModes, ActivationMode )
 
-    enum EchoMode
+    enum EchoMode : quint8
     {
         Normal,
         NoEcho,
