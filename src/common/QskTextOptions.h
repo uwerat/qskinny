@@ -24,7 +24,7 @@ class QSK_EXPORT QskTextOptions
     Q_PROPERTY( int maximumLineCount READ maximumLineCount WRITE setMaximumLineCount )
 
   public:
-    enum FontSizeMode
+    enum FontSizeMode : quint8
     {
         FixedSize,
         HorizontalFit,
@@ -33,7 +33,7 @@ class QSK_EXPORT QskTextOptions
     };
     Q_ENUM( FontSizeMode )
 
-    enum WrapMode
+    enum WrapMode : quint8
     {
         NoWrap = QTextOption::NoWrap,
         WordWrap = QTextOption::WordWrap,
@@ -42,7 +42,7 @@ class QSK_EXPORT QskTextOptions
     };
     Q_ENUM( WrapMode )
 
-    enum TextFormat
+    enum TextFormat : quint8
     {
         PlainText = Qt::PlainText,
         RichText = Qt::RichText,
