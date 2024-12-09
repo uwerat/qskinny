@@ -14,7 +14,7 @@
 
 namespace
 {
-    enum NodeRole
+    enum NodeRole : quint8
     {
         /*
             If possible border + filling will be displayed by ArcRole

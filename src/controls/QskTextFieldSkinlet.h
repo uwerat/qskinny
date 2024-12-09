@@ -17,7 +17,7 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
   public:
     QSK_STATES( Selected )
 
-    enum NodeRole
+    enum NodeRole : quint8
     {
         PanelRole,
         PlaceholderTextRole,
