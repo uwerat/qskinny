@@ -47,6 +47,7 @@ class QSK_EXPORT QskTextOptions
         PlainText = Qt::PlainText,
         RichText = Qt::RichText,
         AutoText = Qt::AutoText,
+        MarkdownText = Qt::MarkdownText,
         StyledText = 4 // taken from QQuickText::StyledText
     };
     Q_ENUM( TextFormat )
@@ -81,10 +82,10 @@ class QSK_EXPORT QskTextOptions
 
   private:
     int m_maximumLineCount;
-    FontSizeMode m_fontSizeMode : 2;
-    WrapMode m_wrapMode : 4;
-    TextFormat m_format : 3;
-    Qt::TextElideMode m_elideMode : 2;
+    unsigned int m_fontSizeMode : 2;
+    unsigned int m_wrapMode : 4;
+    unsigned int m_format : 3;
+    unsigned int m_elideMode : 2;
 };
 
 inline constexpr QskTextOptions::QskTextOptions() noexcept
@@ -103,7 +104,7 @@ inline void QskTextOptions::setFormat( TextFormat format ) noexcept
 
 constexpr inline QskTextOptions::TextFormat QskTextOptions::format() const noexcept
 {
-    return m_format;
+    return static_cast< QskTextOptions::TextFormat >( m_format );
 }
 
 inline void QskTextOptions::setElideMode( Qt::TextElideMode elideMode ) noexcept
@@ -113,12 +114,12 @@ inline void QskTextOptions::setElideMode( Qt::TextElideMode elideMode ) noexcept
 
 constexpr inline Qt::TextElideMode QskTextOptions::elideMode() const noexcept
 {
-    return m_elideMode;
+    return static_cast< Qt::TextElideMode >( m_elideMode );
 }
 
 constexpr inline Qt::TextElideMode QskTextOptions::effectiveElideMode() const noexcept
 {
-    return ( m_wrapMode != QskTextOptions::NoWrap ) ? Qt::ElideNone : m_elideMode;
+    return ( wrapMode() != QskTextOptions::NoWrap ) ? Qt::ElideNone : m_elideMode;
 }
 
 inline void QskTextOptions::setWrapMode( WrapMode wrapMode ) noexcept
@@ -128,7 +129,7 @@ inline void QskTextOptions::setWrapMode( WrapMode wrapMode ) noexcept
 
 constexpr inline QskTextOptions::WrapMode QskTextOptions::wrapMode() const noexcept
 {
-    return m_wrapMode;
+    return static_cast< QskTextOptions::WrapMode >( m_wrapMode );
 }
 
 inline void QskTextOptions::setFontSizeMode( FontSizeMode fontSizeMode ) noexcept
@@ -138,7 +139,7 @@ inline void QskTextOptions::setFontSizeMode( FontSizeMode fontSizeMode ) noexcep
 
 constexpr inline QskTextOptions::FontSizeMode QskTextOptions::fontSizeMode() const noexcept
 {
-    return m_fontSizeMode;
+    return static_cast< QskTextOptions::FontSizeMode >( m_fontSizeMode );
 }
 
 inline void QskTextOptions::setMaximumLineCount( int lineCount ) noexcept
