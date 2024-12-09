@@ -32,7 +32,7 @@ class QKeyEvent;
 class QSK_EXPORT QskEvent : public QEvent
 {
   public:
-    enum Type
+    enum Type : int
     {
         NoEvent = 53800,
 
@@ -161,7 +161,7 @@ class QSK_EXPORT QskGestureEvent : public QskEvent
 class QSK_EXPORT QskAnimatorEvent : public QskEvent
 {
   public:
-    enum State
+    enum State : quint8
     {
         Started,
         Terminated
