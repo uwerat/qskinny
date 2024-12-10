@@ -18,7 +18,7 @@ class QSK_EXPORT QskMenuSkinlet : public QskPopupSkinlet
     using Inherited = QskPopupSkinlet;
 
   public:
-    enum NodeRole
+    enum NodeRole : quint8
     {
         ContentsRole = Inherited::RoleCount,
         PanelRole,

@@ -52,7 +52,7 @@ class QSK_EXPORT QskBoxShapeMetrics
         The default setting is Symmetric.
      */
 
-    enum ScalingMode
+    enum ScalingMode : quint8
     {
         Symmetric,
         SymmetricByMaximum,
@@ -144,7 +144,7 @@ class QSK_EXPORT QskBoxShapeMetrics
     }
 
     QSizeF m_radii[ 4 ];
-    Qt::SizeMode m_sizeMode : 2;
+    unsigned int m_sizeMode : 2;
     ScalingMode m_scalingMode : 2;
 };
 
@@ -278,7 +278,7 @@ inline void QskBoxShapeMetrics::setSizeMode( Qt::SizeMode sizeMode ) noexcept
 
 inline constexpr Qt::SizeMode QskBoxShapeMetrics::sizeMode() const noexcept
 {
-    return m_sizeMode;
+    return static_cast< Qt::SizeMode >( m_sizeMode );
 }
 
 inline void QskBoxShapeMetrics::setScalingMode( ScalingMode scalingMode ) noexcept
@@ -312,7 +312,7 @@ inline constexpr QskBoxShapeMetrics QskBoxShapeMetrics::transposed() const noexc
     return QskBoxShapeMetrics(
         m_radii[ 0 ].transposed(), m_radii[ 1 ].transposed(),
         m_radii[ 2 ].transposed(), m_radii[ 3 ].transposed(),
-        m_sizeMode, m_scalingMode );
+        sizeMode(), m_scalingMode );
 }
 
 #ifndef QT_NO_DEBUG_STREAM

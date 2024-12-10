@@ -42,7 +42,8 @@
 #include <QskTabBar.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
-#include <QskTextInput.h>
+#include <QskTextField.h>
+#include <QskTextFieldSkinlet.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -141,7 +142,7 @@ namespace
         Q_INVOKABLE void setupTabButton();
         Q_INVOKABLE void setupTabBar();
         Q_INVOKABLE void setupTabView();
-        Q_INVOKABLE void setupTextInput();
+        Q_INVOKABLE void setupTextField();
         Q_INVOKABLE void setupTextLabel();
 
         QskGraphic symbol( const char* name ) const
@@ -382,25 +383,29 @@ void Editor::setupTextLabel()
     setBoxBorderColors( Q::Panel, QskRgb::lighter( m_pal.outline, 108 ) );
 }
 
-void Editor::setupTextInput()
+void Editor::setupTextField()
 {
-    using Q = QskTextInput;
+    using Q = QskTextField;
+    using SK = QskTextFieldSkinlet;
     using A = QskAspect;
     using P = QPalette;
 
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignTop );
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+    setAlignment( Q::PlaceholderText, Qt::AlignLeft | Qt::AlignVCenter );
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
         const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-        setGradient( Q::Panel | state, m_pal.color( colorGroup, P::Base ) );
-        setColor( Q::PanelSelected | state, m_pal.color( colorGroup, P::Highlight ) );
+        setColor( Q::Panel | state, m_pal.color( colorGroup, P::Base ) );
+        setColor( Q::Panel | SK::Selected | state, m_pal.color( colorGroup, P::Highlight ) );
 
         setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
-        setColor( Q::TextSelected | state, m_pal.color( colorGroup, P::HighlightedText ) );
-
+        setColor( Q::Text | SK::Selected | state, m_pal.color( colorGroup, P::HighlightedText ) );
+        setColor( Q::PlaceholderText, m_pal.color( colorGroup, P::PlaceholderText ) );
     }
+
+    setColor( Q::Panel | Q::ReadOnly, m_pal.disabled( P::Base ) );
 
     setBoxBorderMetrics( Q::Panel, 1_px );
 
@@ -409,7 +414,7 @@ void Editor::setupTextInput()
     setBoxBorderColors( Q::Panel | Q::Focused, m_pal.highlightedOutline );
 #endif
 
-    setBoxShape( Q::Panel, 2 );
+    setBoxShape( Q::Panel, 2_px );
     setPadding( Q::Panel, 4_px );
 }
 

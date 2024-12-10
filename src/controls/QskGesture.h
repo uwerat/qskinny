@@ -16,7 +16,7 @@ class QSK_EXPORT QskGesture
     Q_GADGET
 
   public:
-    enum Type
+    enum Type : qint16
     {
         NoType = -1,
 
@@ -33,7 +33,7 @@ class QSK_EXPORT QskGesture
     };
     Q_ENUM( Type )
 
-    enum State
+    enum State : quint8
     {
         NoGesture,
 

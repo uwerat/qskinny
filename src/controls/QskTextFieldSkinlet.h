@@ -3,35 +3,32 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_CHECK_BOX_SKINLET_H
-#define QSK_CHECK_BOX_SKINLET_H
+#ifndef QSK_TEXT_FIELD_SKINLET_H
+#define QSK_TEXT_FIELD_SKINLET_H
 
 #include "QskSkinlet.h"
 
-class QskCheckBox;
-
-class QSK_EXPORT QskCheckBoxSkinlet : public QskSkinlet
+class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
 {
     Q_GADGET
 
     using Inherited = QskSkinlet;
 
   public:
+    QSK_STATES( Selected )
+
     enum NodeRole : quint8
     {
         PanelRole,
-        BoxRole,
-        IndicatorRole,
-        TextRole,
-
+        PlaceholderTextRole,
         RoleCount
     };
 
-    Q_INVOKABLE QskCheckBoxSkinlet( QskSkin* = nullptr );
-    ~QskCheckBoxSkinlet() override;
+    Q_INVOKABLE QskTextFieldSkinlet( QskSkin* = nullptr );
+    ~QskTextFieldSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
-        const QRectF&, QskAspect::Subcontrol ) const override;
+        const QRectF& rect, QskAspect::Subcontrol ) const override;
 
     QSizeF sizeHint( const QskSkinnable*,
         Qt::SizeHint, const QSizeF& ) const override;
@@ -39,12 +36,6 @@ class QSK_EXPORT QskCheckBoxSkinlet : public QskSkinlet
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
-
-  private:
-    QRectF textRect( const QskCheckBox*, const QRectF& ) const;
-    QRectF boxRect( const QskCheckBox*, const QRectF& ) const;
-
-    QSGNode* updateTextNode( const QskCheckBox*, QSGNode* ) const;
 };
 
 #endif

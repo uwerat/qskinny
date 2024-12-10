@@ -21,7 +21,7 @@ class QByteArray;
 class QSK_EXPORT QskMetaInvokable
 {
   public:
-    enum Type
+    enum Type : quint8
     {
         Invalid = 0,
 
@@ -93,7 +93,7 @@ class QSK_EXPORT QskMetaInvokable
         MetaData m_metaData;
     };
 
-    int m_type : 3;
+    Type m_type;
 };
 
 inline QskMetaInvokable::QskMetaInvokable()
