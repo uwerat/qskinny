@@ -70,7 +70,7 @@ class QSK_EXPORT QskBoxBorderColors
     bool isValid() const;
 
   private:
-    enum
+    enum : quint8
     {
         // in order of Qt::Edge
         Top    = 0,

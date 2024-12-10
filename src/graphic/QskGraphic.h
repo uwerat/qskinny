@@ -38,14 +38,14 @@ class QSK_EXPORT QskGraphic : public QPaintDevice
     using Inherited = QPaintDevice;
 
   public:
-    enum RenderHint
+    enum RenderHint : quint8
     {
-        RenderPensUnscaled = 0x1
+        RenderPensUnscaled = 1 << 0
     };
 
     typedef QFlags< RenderHint > RenderHints;
 
-    enum CommandType
+    enum CommandType : quint8
     {
         VectorData     = 1 << 0,
         RasterData     = 1 << 1,

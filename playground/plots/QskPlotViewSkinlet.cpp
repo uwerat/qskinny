@@ -22,19 +22,17 @@ static inline QskTextColors qskTextColors(
 
     QskSkinHintStatus status;
 
-    QskTextColors c;
-    c.textColor = skinnable->color( aspect | A::TextColor, &status );
+    auto textColor = skinnable->color( aspect | A::TextColor, &status );
 
     if ( status.aspect.subControl() != aspect.subControl() )
     {
         // using the same color as the one for the ticks
-        c.textColor = skinnable->color( aspect );
+        textColor = skinnable->color( aspect );
     }
 
-    c.styleColor = skinnable->color( aspect | A::StyleColor );
-    c.linkColor = skinnable->color( aspect | A::LinkColor );
-
-    return c;
+    return QskTextColors( textColor,
+        skinnable->color( aspect | A::StyleColor ),
+        skinnable->color( aspect | A::LinkColor ) );
 }
 
 static inline QskAspect qskAxisAspect( QskPlot::Axis axis )

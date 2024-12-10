@@ -24,7 +24,7 @@ class QSK_EXPORT QskTextOptions
     Q_PROPERTY( int maximumLineCount READ maximumLineCount WRITE setMaximumLineCount )
 
   public:
-    enum FontSizeMode
+    enum FontSizeMode : quint8
     {
         FixedSize,
         HorizontalFit,
@@ -33,7 +33,7 @@ class QSK_EXPORT QskTextOptions
     };
     Q_ENUM( FontSizeMode )
 
-    enum WrapMode
+    enum WrapMode : quint8
     {
         NoWrap = QTextOption::NoWrap,
         WordWrap = QTextOption::WordWrap,
@@ -42,11 +42,12 @@ class QSK_EXPORT QskTextOptions
     };
     Q_ENUM( WrapMode )
 
-    enum TextFormat
+    enum TextFormat : quint8
     {
         PlainText = Qt::PlainText,
         RichText = Qt::RichText,
         AutoText = Qt::AutoText,
+        MarkdownText = Qt::MarkdownText,
         StyledText = 4 // taken from QQuickText::StyledText
     };
     Q_ENUM( TextFormat )
@@ -84,7 +85,7 @@ class QSK_EXPORT QskTextOptions
     FontSizeMode m_fontSizeMode : 2;
     WrapMode m_wrapMode : 4;
     TextFormat m_format : 3;
-    Qt::TextElideMode m_elideMode : 2;
+    unsigned int m_elideMode : 2;
 };
 
 inline constexpr QskTextOptions::QskTextOptions() noexcept
@@ -113,12 +114,13 @@ inline void QskTextOptions::setElideMode( Qt::TextElideMode elideMode ) noexcept
 
 constexpr inline Qt::TextElideMode QskTextOptions::elideMode() const noexcept
 {
-    return m_elideMode;
+    return static_cast< Qt::TextElideMode >( m_elideMode );
 }
 
 constexpr inline Qt::TextElideMode QskTextOptions::effectiveElideMode() const noexcept
 {
-    return ( m_wrapMode != QskTextOptions::NoWrap ) ? Qt::ElideNone : m_elideMode;
+    return ( wrapMode() != QskTextOptions::NoWrap ) ?
+        Qt::ElideNone : static_cast< Qt::TextElideMode >( m_elideMode );
 }
 
 inline void QskTextOptions::setWrapMode( WrapMode wrapMode ) noexcept

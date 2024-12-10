@@ -25,7 +25,7 @@ class QSK_EXPORT QskSpinBox : public QskBoundedValueInput
 
     QSK_STATES( Decreasing, Increasing )
 
-    enum Decoration
+    enum Decoration : quint8
     {
         NoDecoration,
 

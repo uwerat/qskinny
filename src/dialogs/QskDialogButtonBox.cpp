@@ -390,7 +390,7 @@ void QskDialogButtonBox::setActions( QskDialog::Actions actions )
         m_data->buttons[ i ].clear();
     }
 
-    for ( int i = QskDialog::Ok; i <= QskDialog::RestoreDefaults; i <<= 1 )
+    for ( uint i = QskDialog::Ok; i <= QskDialog::RestoreDefaults; i <<= 1 )
     {
         const auto action = static_cast< QskDialog::Action >( i );
         if ( action & actions )

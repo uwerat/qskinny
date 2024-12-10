@@ -44,7 +44,7 @@ class QSK_EXPORT QskItem : public QQuickItem
     using Inherited = QQuickItem;
 
   public:
-    enum UpdateFlag
+    enum UpdateFlag : quint16
     {
         DeferredUpdate          =  1 << 0,
         DeferredPolish          =  1 << 1,

@@ -7,7 +7,7 @@
 
 #include <QskGridBox.h>
 #include <QskSlider.h>
-#include <QskTextInput.h>
+#include <QskTextField.h>
 #include <QskSpinBox.h>
 
 namespace
@@ -61,30 +61,32 @@ namespace
         }
     };
 
-    class InputBox : public QskLinearBox
+    class TextInputBox : public QskLinearBox
     {
       public:
-        InputBox( QQuickItem* parent = nullptr )
+        TextInputBox( QQuickItem* parent = nullptr )
             : QskLinearBox( Qt::Horizontal, parent )
         {
             setSpacing( 20 );
 
             {
-                new QskTextInput( "Edit Me", this );
+                auto textField = new QskTextField( "Joe", this );
+                textField->setPlaceholderText( "<Name>" );
             }
 
             {
-                auto input = new QskTextInput( "Only Read Me", this );
-                input->setReadOnly( true );
-                input->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
+                auto textField = new QskTextField( "Only Read Me", this );
+                textField->setReadOnly( true );
+                textField->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
             }
 
             {
-                auto input = new QskTextInput( "12345", this );
-                input->setMaxLength( 5 );
-                input->setEchoMode( QskTextInput::PasswordEchoOnEdit );
+                auto textField = new QskTextField( "12345", this );
+                textField->setPlaceholderText( "<Password>" );
+                textField->setMaxLength( 5 );
+                textField->setEchoMode( QskTextField::PasswordEchoOnEdit );
 #if 1
-                input->setFixedWidth( 80 );
+                textField->setFixedWidth( 100 );
 #endif
             }
         }
@@ -117,8 +119,8 @@ InputPage::InputPage( QQuickItem* parent )
     auto spinBox = new QskSpinBox( 0.0, 100.0, 1.0 );
     spinBox->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
 
-    auto inputBox = new InputBox();
-    inputBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
+    auto textInputBox = new TextInputBox();
+    textInputBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
 
     auto vBox = new QskLinearBox( Qt::Vertical );
     vBox->setSpacing( 30 );
@@ -127,7 +129,7 @@ InputPage::InputPage( QQuickItem* parent )
     vBox->addItem( sliders[0].continous );
     vBox->addItem( sliders[0].discrete );
     vBox->addItem( sliders[0].centered );
-    vBox->addItem( inputBox );
+    vBox->addItem( textInputBox );
     vBox->addItem( spinBox );
 
     auto mainBox = new QskLinearBox( Qt::Horizontal, this );

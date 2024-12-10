@@ -338,7 +338,7 @@ void QskStackBoxAnimator2::setOrientation( Qt::Orientation orientation )
 
 Qt::Orientation QskStackBoxAnimator2::orientation() const
 {
-    return m_orientation;
+    return static_cast< Qt::Orientation >( m_orientation );
 }
 
 void QskStackBoxAnimator2::setInverted( bool on )

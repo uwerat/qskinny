@@ -11,7 +11,7 @@
 #include <QskInputPanel.h>
 #include <QskLinearBox.h>
 #include <QskListView.h>
-#include <QskTextInput.h>
+#include <QskTextField.h>
 
 #include <QskAspect.h>
 #include <QskFunctions.h>
@@ -201,26 +201,26 @@ class InputBox : public QskLinearBox
         setMargins( 10 );
         setSpacing( 10 );
 
-        auto* textInput1 = new QskTextInput( this );
-        textInput1->setText( "Press and edit Me." );
-        textInput1->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
+        auto* textField1 = new QskTextField( this );
+        textField1->setText( "Press and edit Me." );
+        textField1->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
 
-        auto* textInput2 = new QskTextInput( this );
-        textInput2->setText( "Press and edit Me." );
-        textInput2->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
-        textInput2->setActivationModes( QskTextInput::ActivationOnAll );
+        auto* textField2 = new QskTextField( this );
+        textField2->setText( "Press and edit Me." );
+        textField2->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
+        textField2->setActivationModes( QskTextField::ActivationOnAll );
 
-        auto* textInput3 = new QskTextInput( this );
-        textInput3->setReadOnly( true );
-        textInput3->setText( "Read Only information." );
-        textInput3->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
+        auto* textField3 = new QskTextField( this );
+        textField3->setReadOnly( true );
+        textField3->setText( "Read Only information." );
+        textField3->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
 
-        auto* textInput4 = new QskTextInput( this );
-        textInput4->setEchoMode( QskTextInput::Password );
-        textInput4->setPasswordMaskDelay( 1000 );
-        textInput4->setMaxLength( 8 );
-        textInput4->setText( "12345678" );
-        textInput4->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
+        auto* textField4 = new QskTextField( this );
+        textField4->setEchoMode( QskTextField::Password );
+        textField4->setPasswordMaskDelay( 1000 );
+        textField4->setMaxLength( 8 );
+        textField4->setText( "12345678" );
+        textField4->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
     }
 };
 
