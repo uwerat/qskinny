@@ -10,7 +10,18 @@
 
 using Q = QskTextField;
 
-QSK_SYSTEM_STATE( QskTextFieldSkinlet, Selected, QskAspect::FirstUserState >> 1 )
+QSK_SYSTEM_STATE( QskTextFieldSkinlet, Selected, QskAspect::FirstSystemState << 3 )
+
+static QString qskEffectivePlaceholderText( const QskTextField* textField )
+{
+    if ( textField->text().isEmpty() && 
+        !( textField->isReadOnly() || textField->isEditing() ) )
+    {
+        return textField->placeholderText();
+    }
+
+    return QString();
+}
 
 QskTextFieldSkinlet::QskTextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
@@ -61,24 +72,22 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
         }
         case PlaceholderTextRole:
         {
-            if ( textField->text().isEmpty()
-                && !textField->placeholderText().isEmpty() )
-            {
-                const auto subControl = Q::PlaceholderText;
+            const auto text = qskEffectivePlaceholderText( textField );
+            if ( text.isEmpty() )
+                return nullptr;
 
-                QskSkinHintStatus status;
+            const auto subControl = Q::PlaceholderText;
 
-                auto options = skinnable->textOptionsHint( subControl, &status );
-                if ( !status.isValid() )
-                    options.setElideMode( Qt::ElideRight );
+            QskSkinHintStatus status;
 
-                return updateTextNode( skinnable, node,
-                    textField->subControlRect( subControl ),
-                    textField->alignmentHint( subControl, Qt::AlignLeft ),
-                    options, textField->placeholderText(), subControl );
-            }
+            auto options = skinnable->textOptionsHint( subControl, &status );
+            if ( !status.isValid() )
+                options.setElideMode( Qt::ElideRight );
 
-            return nullptr;
+            return updateTextNode( skinnable, node,
+                textField->subControlRect( subControl ),
+                textField->alignmentHint( subControl, Qt::AlignLeft ),
+                options, text, subControl );
         }
     }
 

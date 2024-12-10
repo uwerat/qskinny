@@ -70,24 +70,25 @@ namespace
             setSpacing( 20 );
 
             {
-                auto textField = new QskTextField( "Joe", this );
-                textField->setPlaceholderText( "<Name>" );
-            }
+                {
+                    auto field = new QskTextField( this );
+                    field->setText( "John Doe" );
+                    field->setPlaceholderText( "<Name>" );
+                }
 
-            {
-                auto textField = new QskTextField( "Only Read Me", this );
-                textField->setReadOnly( true );
-                textField->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
-            }
+                {
+                    auto field = new QskTextField( this );
+                    field->setReadOnly( true );
+                    field->setText( "Read Only" );
+                    field->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
+                }
 
-            {
-                auto textField = new QskTextField( "12345", this );
-                textField->setPlaceholderText( "<Password>" );
-                textField->setMaxLength( 5 );
-                textField->setEchoMode( QskTextField::PasswordEchoOnEdit );
-#if 1
-                textField->setFixedWidth( 100 );
-#endif
+                {
+                    auto field = new QskTextField( this );
+                    field->setMaxLength( 5 );
+                    field->setEchoMode( QskTextField::Password );
+                    field->setPlaceholderText( "<password>" );
+                }
             }
         }
     };
