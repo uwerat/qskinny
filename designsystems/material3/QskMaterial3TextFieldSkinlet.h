@@ -3,26 +3,21 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_TEXT_INPUT_SKINLET_H
-#define QSK_TEXT_INPUT_SKINLET_H
+#ifndef QSK_MATERIAL3_TEXTFIELD_SKINLET_H
+#define QSK_MATERIAL3_TEXTFIELD_SKINLET_H
 
-#include "QskSkinlet.h"
+#include "QskMaterial3Global.h"
+#include "QskTextFieldSkinlet.h"
 
-class QSK_EXPORT QskTextInputSkinlet : public QskSkinlet
+class QSK_MATERIAL3_EXPORT QskMaterial3TextFieldSkinlet : public QskTextFieldSkinlet
 {
     Q_GADGET
 
-    using Inherited = QskSkinlet;
+    using Inherited = QskTextFieldSkinlet;
 
   public:
-    enum NodeRole
-    {
-        PanelRole,
-        RoleCount
-    };
-
-    Q_INVOKABLE QskTextInputSkinlet( QskSkin* = nullptr );
-    ~QskTextInputSkinlet() override;
+    Q_INVOKABLE QskMaterial3TextFieldSkinlet( QskSkin* = nullptr );
+    ~QskMaterial3TextFieldSkinlet() override;
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF& rect, QskAspect::Subcontrol ) const override;

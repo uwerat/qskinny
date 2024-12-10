@@ -16,7 +16,7 @@ class QSK_EXPORT QskSpinBoxSkinlet : public QskSkinlet
   public:
     Q_INVOKABLE QskSpinBoxSkinlet( QskSkin* = nullptr );
 
-    enum NodeRole
+    enum NodeRole : quint8
     {
         PanelRole,
         TextPanelRole,

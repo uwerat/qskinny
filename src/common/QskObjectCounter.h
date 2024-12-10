@@ -14,7 +14,7 @@ class QObject;
 class QSK_EXPORT QskObjectCounter
 {
   public:
-    enum ObjectType
+    enum ObjectType : quint8
     {
         Objects,
         Items

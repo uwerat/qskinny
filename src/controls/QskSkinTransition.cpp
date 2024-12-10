@@ -116,7 +116,7 @@ namespace
     class UpdateInfo
     {
       public:
-        enum UpdateMode
+        enum UpdateMode : quint8
         {
             Polish = 1,
             Update = 2
@@ -128,7 +128,7 @@ namespace
         }
 
         QPointer< QskControl > control;
-        int updateModes;
+        quint8 updateModes = 0;
     };
 
     class HintAnimator : public QskHintAnimator

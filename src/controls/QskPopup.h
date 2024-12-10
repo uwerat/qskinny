@@ -27,7 +27,7 @@ class QSK_EXPORT QskPopup : public QskControl
     QSK_SUBCONTROLS( Overlay )
     QSK_STATES( Closed )
 
-    enum PopupFlag
+    enum PopupFlag : quint8
     {
         DeleteOnClose       = 1 << 0,
         CloseOnPressOutside = 1 << 1
