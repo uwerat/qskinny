@@ -1,0 +1,7 @@
+/*!
+    \class QskProgressBar QskProgressBar.h
+
+    \embedWasm
+
+    \skinlet QskProgressBarSkinlet
+*/

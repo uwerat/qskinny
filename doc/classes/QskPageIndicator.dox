@@ -1,0 +1,7 @@
+/*!
+    \class QskPageIndicator QskPageIndicator.h
+
+    \embedWasm
+
+    \skinlet QskPageIndicatorSkinlet
+*/
