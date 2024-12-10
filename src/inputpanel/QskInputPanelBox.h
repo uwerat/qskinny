@@ -29,7 +29,7 @@ class QSK_EXPORT QskInputPanelBox : public QskBox
   public:
     QSK_SUBCONTROLS( Panel, ProxyPanel, ProxyText )
 
-    enum PanelHint
+    enum PanelHint : quint8
     {
         InputProxy = 1 << 0,
         Prediction = 1 << 1

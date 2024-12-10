@@ -27,7 +27,7 @@ class QSK_EXPORT QskPaintedNode : public QSGNode
         OpenGL might be ignored depending on the backend used by the
         application.
      */
-    enum RenderHint
+    enum RenderHint : quint8
     {
         Raster,
         OpenGL

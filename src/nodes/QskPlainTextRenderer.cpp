@@ -240,8 +240,8 @@ void QskPlainTextRenderer::updateNode( const QString& text,
 
     qskRenderText(
         const_cast< QQuickItem* >( item ), node, layout, yBaseline,
-        colors.textColor, static_cast< QQuickText::TextStyle >( style ),
-        colors.styleColor );
+        colors.textColor(), static_cast< QQuickText::TextStyle >( style ),
+        colors.styleColor() );
 }
 
 void QskPlainTextRenderer::updateNodeColor(

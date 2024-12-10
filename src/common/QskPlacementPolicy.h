@@ -19,7 +19,7 @@ class QSK_EXPORT QskPlacementPolicy
 
   public:
 
-    enum Policy
+    enum Policy : quint8
     {
         Ignore,
         Reserve,

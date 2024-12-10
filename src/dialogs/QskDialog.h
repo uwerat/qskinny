@@ -31,7 +31,7 @@ class QSK_EXPORT QskDialog : public QObject
         WRITE setTransientParent NOTIFY transientParentChanged )
 
   public:
-    enum Policy
+    enum Policy : quint8
     {
         EmbeddedBox,
         EmbeddedWindow, // not yet implemented, do we need it ?
@@ -41,7 +41,7 @@ class QSK_EXPORT QskDialog : public QObject
     Q_ENUM( Policy )
 
     // a.k.a QMessageBox::StandardButton or QPlatformDialogHelper::StandardButton
-    enum Action
+    enum Action : quint32
     {
         NoAction           = 0,
         Ok                 = 1 << 10,
@@ -68,7 +68,7 @@ class QSK_EXPORT QskDialog : public QObject
     Q_DECLARE_FLAGS( Actions, Action )
 
     // a.k.a QMessageBox::ButtonRole
-    enum ActionRole
+    enum ActionRole : qint8
     {
         InvalidRole = -1,
 
@@ -88,7 +88,7 @@ class QSK_EXPORT QskDialog : public QObject
     Q_ENUM( ActionRole )
 
     // for building the mask in QskSkin::dialogButtonLayout
-    enum ButtonLayoutFlag
+    enum ButtonLayoutFlag : quint32
     {
         // from QPlatformDialogHelper::ButtonRole
         ActionMask      = 0x0FFFFFFF,
@@ -98,7 +98,7 @@ class QSK_EXPORT QskDialog : public QObject
         Reverse         = 1 << 30
     };
 
-    enum DialogCode
+    enum DialogCode : quint8
     {
         Rejected = 0,
         Accepted

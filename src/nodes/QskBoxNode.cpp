@@ -18,7 +18,7 @@
 
 namespace
 {
-    enum Role
+    enum NodeRole : quint8
     {
         ShadowRole,
         ShadowFillRole,

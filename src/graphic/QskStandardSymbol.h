@@ -15,7 +15,7 @@ namespace QskStandardSymbol
 {
     Q_NAMESPACE_EXPORT( QSK_EXPORT )
 
-    enum Type
+    enum Type : qint16
     {
         NoSymbol = -1,
 

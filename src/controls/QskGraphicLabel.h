@@ -40,7 +40,7 @@ class QSK_EXPORT QskGraphicLabel : public QskControl
   public:
     QSK_SUBCONTROLS( Panel, Graphic )
 
-    enum FillMode
+    enum FillMode : quint8
     {
         Stretch,
         PreserveAspectFit,

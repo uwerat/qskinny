@@ -20,7 +20,7 @@ class QSK_EXPORT QskFillNode : public QSGGeometryNode
     using Inherited = QSGGeometryNode;
 
   public:
-    enum Coloring
+    enum Coloring : quint8
     {
         Monochrome,
         Polychrome,
@@ -30,7 +30,7 @@ class QSK_EXPORT QskFillNode : public QSGGeometryNode
         Conic
     };
 
-    enum Hint
+    enum Hint : quint8
     {
         /*
             Colors might be defined in the material ( QskGradientMaterial,
@@ -46,7 +46,7 @@ class QSK_EXPORT QskFillNode : public QSGGeometryNode
             The default setting is to use colored points where possible. Note, that
             this is what is also done in the Qt/Quick classes.
          */
-        PreferColoredGeometry = 1
+        PreferColoredGeometry = 1 << 0
     };
 
     Q_ENUM( Hint )

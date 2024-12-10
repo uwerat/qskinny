@@ -29,7 +29,7 @@ class QSK_EXPORT QskWindow : public QQuickWindow
     using Inherited = QQuickWindow;
 
   public:
-    enum EventAcceptance
+    enum EventAcceptance : quint8
     {
         EventProcessed = 0,
         EventPropagationStopped = 1

@@ -32,7 +32,7 @@ class QSK_EXPORT QskTextField : public QskControl
     Q_PROPERTY( QskFontRole fontRole READ fontRole
         WRITE setFontRole RESET resetFontRole NOTIFY fontRoleChanged )
 
-    Q_PROPERTY( QFont font READ font CONSTANT )
+    Q_PROPERTY( QFont font READ font )
 
     Q_PROPERTY( Qt::Alignment alignment READ alignment
         WRITE setAlignment RESET resetAlignment NOTIFY alignmentChanged )
@@ -79,7 +79,7 @@ class QSK_EXPORT QskTextField : public QskControl
     };
     Q_ENUM( Emphasis )
 
-    enum ActivationMode
+    enum ActivationMode : quint8
     {
         NoActivation,
 
@@ -94,7 +94,7 @@ class QSK_EXPORT QskTextField : public QskControl
     Q_ENUM( ActivationMode )
     Q_DECLARE_FLAGS( ActivationModes, ActivationMode )
 
-    enum EchoMode
+    enum EchoMode : quint8
     {
         Normal,
         NoEcho,

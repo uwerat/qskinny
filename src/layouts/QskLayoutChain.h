@@ -47,7 +47,7 @@ class QskLayoutChain
         QskLayoutMetrics metrics;
     };
 
-    enum FillMode
+    enum FillMode : quint8
     {
         Leading = 1 << 0,
         Trailing = 1 << 1

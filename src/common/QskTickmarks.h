@@ -18,7 +18,7 @@ class QSK_EXPORT QskTickmarks
     Q_PROPERTY( QVector< qreal > minorTicks READ minorTicks WRITE setMinorTicks )
 
   public:
-    enum TickType
+    enum TickType : quint8
     {
         MinorTick,
         MediumTick,

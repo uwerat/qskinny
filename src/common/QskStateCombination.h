@@ -11,7 +11,7 @@
 class QSK_EXPORT QskStateCombination
 {
   public:
-    enum Type
+    enum Type : quint8
     {
         Combination,
         CombinationNoState

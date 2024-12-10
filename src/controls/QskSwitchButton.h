@@ -27,7 +27,7 @@ class QSK_EXPORT QskSwitchButton : public QskAbstractButton
   public:
     QSK_SUBCONTROLS( Groove, Handle, Icon )
 
-    enum IconMode
+    enum IconMode : quint8
     {
         NoIcon,
         ShowIconWhenSelected,

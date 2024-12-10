@@ -14,7 +14,7 @@
 class QSK_EXPORT QskAnimationHint
 {
   public:
-    enum UpdateFlag
+    enum UpdateFlag : quint8
     {
         UpdateAuto = 0, // depending on the animated aspect
 

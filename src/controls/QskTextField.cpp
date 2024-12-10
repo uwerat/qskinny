@@ -242,10 +242,10 @@ namespace
 
     void TextInput::updateMetrics()
     {
-        auto input = static_cast< const QskTextField* >( parentItem() );
+        auto textField = static_cast< const QskTextField* >( parentItem() );
 
-        setAlignment( input->alignment() );
-        setFont( input->font() );
+        setAlignment( textField->alignment() );
+        setFont( textField->font() );
     }
 
     void TextInput::updateColors()
@@ -266,14 +266,19 @@ namespace
 
         if ( d->hasSelectedText() )
         {
-            color = textField->color( QskTextField::Panel | QskTextFieldSkinlet::Selected );
+            QskAspect::States states = QskTextFieldSkinlet::Selected;
+#if 0
+            states |= textField->skinStates();
+#endif
+
+            color = textField->color( QskTextField::Panel | states );
             if ( d->selectionColor != color )
             {
                 d->selectionColor = color;
                 isDirty = true;
             }
 
-            color = textField->color( QskTextField::Text | QskTextFieldSkinlet::Selected );
+            color = textField->color( QskTextField::Text | states );
             if ( d->selectedTextColor != color )
             {
                 d->selectedTextColor = color;
@@ -574,10 +579,8 @@ QSizeF QskTextField::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
 
 void QskTextField::updateLayout()
 {
-    auto input = m_data->textInput;
-
-    input->updateMetrics();
-    qskSetItemGeometry( input, subControlRect( Text ) );
+    m_data->textInput->updateMetrics();
+    qskSetItemGeometry( m_data->textInput, subControlRect( Text ) );
 }
 
 void QskTextField::updateNode( QSGNode* node )

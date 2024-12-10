@@ -15,7 +15,7 @@ class QSK_EXPORT QskPageIndicatorSkinlet : public QskSkinlet
     using Inherited = QskSkinlet;
 
   public:
-    enum NodeRole
+    enum NodeRole : quint8
     {
         PanelRole,
         BulletsRole,

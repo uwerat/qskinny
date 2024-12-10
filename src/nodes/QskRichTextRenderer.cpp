@@ -257,10 +257,10 @@ void QskRichTextRenderer::updateNode(
     textItem.setOptions( options );
     textItem.setAlignment( alignment );
 
-    textItem.setColor( colors.textColor );
+    textItem.setColor( colors.textColor() );
     textItem.setStyle( static_cast< QQuickText::TextStyle >( style ) );
-    textItem.setStyleColor( colors.styleColor );
-    textItem.setLinkColor( colors.linkColor );
+    textItem.setStyleColor( colors.styleColor() );
+    textItem.setLinkColor( colors.linkColor() );
 
     textItem.setText( text );
 

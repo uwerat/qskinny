@@ -34,7 +34,7 @@ class QSK_EXPORT QskSubWindow : public QskPopup
     using Inherited = QskPopup;
 
   public:
-    enum Decoration
+    enum Decoration : quint16
     {
         NoDecoration   = 0,
 

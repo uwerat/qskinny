@@ -22,7 +22,7 @@ template< typename Key, typename T > class QHash;
 class QSK_EXPORT QskSkinTransition
 {
   public:
-    enum Type
+    enum Type : quint8
     {
         Color = 1,
         Metric = 2,

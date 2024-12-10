@@ -26,7 +26,7 @@ class QSK_EXPORT QskShadowMetrics
     Q_PROPERTY( ShapeMode shapeMode READ shapeMode WRITE setShapeMode )
 
   public:
-    enum ShapeMode
+    enum ShapeMode : quint8
     {
         Aligned = 0, // The shape is related to some external definition
 
@@ -86,7 +86,7 @@ class QSK_EXPORT QskShadowMetrics
     qreal m_spreadRadius = 0.0;
     qreal m_blurRadius = 0.0;
     quint8 m_sizeMode = Qt::AbsoluteSize;
-    quint8 m_shapeMode = QskShadowMetrics::Aligned;
+    ShapeMode m_shapeMode = QskShadowMetrics::Aligned;
 };
 
 inline constexpr QskShadowMetrics::QskShadowMetrics( const QPointF& offset ) noexcept
@@ -170,7 +170,7 @@ inline void QskShadowMetrics::setShapeMode( ShapeMode shapeMode ) noexcept
     
 inline constexpr QskShadowMetrics::ShapeMode QskShadowMetrics::shapeMode() const noexcept
 {   
-    return static_cast< ShapeMode >( m_shapeMode );
+    return m_shapeMode;
 }
 
 inline void QskShadowMetrics::setOffsetX( qreal dx ) noexcept

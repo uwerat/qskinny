@@ -51,17 +51,19 @@ class QSK_EXPORT QskVirtualKeyboard : public QskBox
   public:
     QSK_SUBCONTROLS( Panel, ButtonPanel, ButtonText )
 
-    enum Mode
+    enum Mode : qint8
     {
         CurrentMode = -1,
+
         LowercaseMode,
         UppercaseMode,
         SpecialCharacterMode,
+
         ModeCount
     };
     Q_ENUM( Mode )
 
-    enum KeyType
+    enum KeyType : quint8
     {
         NormalType,
         EnterType,

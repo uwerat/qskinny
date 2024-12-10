@@ -40,7 +40,7 @@ class QSK_EXPORT QskGradient
     Q_CLASSINFO( "DefaultProperty", "stops" )
 
   public:
-    enum Type
+    enum Type : quint8
     {
         Stops,
 
@@ -50,7 +50,7 @@ class QSK_EXPORT QskGradient
     };
     Q_ENUM( Type )
 
-    enum SpreadMode
+    enum SpreadMode : quint8
     {
         PadSpread,
         ReflectSpread,
@@ -58,7 +58,7 @@ class QSK_EXPORT QskGradient
     };
     Q_ENUM( SpreadMode )
 
-    enum StretchMode
+    enum StretchMode : quint8
     {
         NoStretch,
         StretchToSize
@@ -181,8 +181,8 @@ class QSK_EXPORT QskGradient
     qreal m_values[5] = {};
 
     unsigned int m_type : 3;
-    unsigned int m_spreadMode : 3;
-    unsigned int m_stretchMode : 3;
+    SpreadMode m_spreadMode : 3;
+    StretchMode m_stretchMode : 3;
 
     mutable bool m_isDirty : 1;
     mutable bool m_isValid : 1;

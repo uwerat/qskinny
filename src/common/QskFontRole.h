@@ -17,7 +17,7 @@ class QSK_EXPORT QskFontRole
     Q_PROPERTY( Emphasis emphasis READ emphasis WRITE setEmphasis )
 
   public:
-    enum Category
+    enum Category : quint8
     {
         Caption,
         Body,
@@ -28,7 +28,7 @@ class QSK_EXPORT QskFontRole
     };
     Q_ENUM( Category );
 
-    enum Emphasis
+    enum Emphasis : quint8
     {
         VeryLow,
         Low,
@@ -54,8 +54,8 @@ class QSK_EXPORT QskFontRole
     QskHashValue hash( QskHashValue seed = 0 ) const noexcept;
 
   private:
-    unsigned char m_category;
-    unsigned char m_emphasis;
+    Category m_category;
+    Emphasis m_emphasis;
 };
 
 inline constexpr QskFontRole::QskFontRole( Category category, Emphasis emphasis ) noexcept
@@ -81,7 +81,7 @@ inline void QskFontRole::setCategory( Category category ) noexcept
 
 inline constexpr QskFontRole::Category QskFontRole::category() const noexcept
 {
-    return static_cast< Category >( m_category );
+    return m_category;
 }
 
 inline void QskFontRole::setEmphasis( Emphasis emphasis ) noexcept
@@ -91,7 +91,7 @@ inline void QskFontRole::setEmphasis( Emphasis emphasis ) noexcept
 
 inline constexpr QskFontRole::Emphasis QskFontRole::emphasis() const noexcept
 {
-    return static_cast< Emphasis >( m_emphasis );
+    return m_emphasis;
 }
 
 inline QskHashValue qHash( const QskFontRole fontRole, QskHashValue seed = 0 ) noexcept

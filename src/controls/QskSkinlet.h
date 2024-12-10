@@ -110,7 +110,7 @@ class QSK_EXPORT QskSkinlet
     static QSGNode* updateLineNode( const QskSkinnable*, QSGNode*,
         const QLineF&, QskAspect::Subcontrol );
 
-    static QSGNode* updateLinesNode( const QskSkinnable*, 
+    static QSGNode* updateLinesNode( const QskSkinnable*,
         QSGNode*, const QVector< QLineF >&, QskAspect::Subcontrol );
 
     static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
@@ -119,6 +119,10 @@ class QSK_EXPORT QskSkinlet
     static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
         const QRectF&, Qt::Alignment, const QString&, const QFont&,
         const QskTextOptions&, const QskTextColors&, Qsk::TextStyle );
+
+    static QSGNode* updateTextNode( const QskSkinnable*, QSGNode*,
+        const QRectF&, Qt::Alignment, const QskTextOptions&,
+        const QString&, QskAspect::Subcontrol );
 
     // keeping the aspect ratio
     static QSGNode* updateGraphicNode( const QskSkinnable*, QSGNode*,

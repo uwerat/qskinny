@@ -96,7 +96,7 @@ class QSK_EXPORT QskStackBoxAnimator2 : public QskStackBoxAnimator
     void done() override;
 
   private:
-    Qt::Orientation m_orientation : 2;
+    unsigned int m_orientation : 2;
     bool m_inverted : 1;
 };
 

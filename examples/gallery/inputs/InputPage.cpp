@@ -69,62 +69,58 @@ namespace
         {
             setSpacing( 25 );
             setDefaultAlignment( Qt::AlignHCenter | Qt::AlignTop );
-            {
-            }
 
             for( const auto& emphasis : { QskTextField::NoEmphasis, QskTextField::LowEmphasis } )
             {
                 {
-                    auto textField = new QskTextField( this );
-                    textField->setEmphasis( emphasis );
-                    const QString text = ( emphasis == QskTextField::NoEmphasis ) ? "filled" : "outlined";
-                    textField->setLabelText( text );
-                    textField->setPlaceholderText( "<text>" );
-                    textField->setSupportingText( "supporting text" );
-                    textField->setMaxLength( 10 );
+                    auto field = new QskTextField( this );
+                    field->setEmphasis( emphasis );
+                    field->setLabelText( "Name" );
+                    field->setText( "John Doe" );
+                    field->setPlaceholderText( "<Name>" );
+                    field->setSupportingText( "Required *" );
                 }
 
                 {
-                    auto textField = new QskTextField( this );
-                    textField->setEmphasis( emphasis );
-                    textField->setLeadingIcon( {} );
-                    textField->setLabelText( "no leading icon" );
-                    textField->setPlaceholderText( "<text>" );
-                    textField->setSupportingText( "supporting text" );
+                    auto field = new QskTextField( this );
+                    field->setEmphasis( emphasis );
+                    field->setLabelText( "Nickname" );
+                    field->setPlaceholderText( "<Nickname>" );
+                    field->setSupportingText( "Optional" );
                 }
                 {
-                    auto textField = new QskTextField( this );
-                    textField->setEmphasis( emphasis );
-                    textField->setLeadingIcon( {} );
-                    textField->setPlaceholderText( "<no label text>" );
-                }
-
-                {
-                    auto textField = new QskTextField( this );
-                    textField->setEmphasis( emphasis );
-                    textField->setSkinStateFlag( QskTextField::Error );
-                    textField->setText( "Error Text" );
-                    textField->setLabelText( "error" );
-                    textField->setPlaceholderText( "<text>" );
-                    textField->setSupportingText( "error text" );
+                    auto field = new QskTextField( this );
+                    field->setEmphasis( emphasis );
+                    field->setLeadingIcon( {} );
+                    field->setPlaceholderText( "<no label text>" );
                 }
 
                 {
-                    auto textField = new QskTextField( this );
-                    textField->setEmphasis( emphasis );
-                    textField->setReadOnly( true );
-                    textField->setText( "Read Only" );
-                    textField->setLabelText( "read only" );
-                    textField->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
+                    auto field = new QskTextField( this );
+                    field->setEmphasis( emphasis );
+                    field->setSkinStateFlag( QskTextField::Error );
+                    field->setText( "Error Text" );
+                    field->setLabelText( "error" );
+                    field->setPlaceholderText( "<text>" );
+                    field->setSupportingText( "error text" );
                 }
 
                 {
-                    auto textField = new QskTextField( this );
-                    textField->setEmphasis( emphasis );
-                    textField->setMaxLength( 15 );
-                    textField->setLabelText( "password" );
-                    textField->setEchoMode( QskTextField::Password );
-                    textField->setPlaceholderText( "<password>" );
+                    auto field = new QskTextField( this );
+                    field->setEmphasis( emphasis );
+                    field->setReadOnly( true );
+                    field->setText( "Read Only" );
+                    field->setLabelText( "read only" );
+                    field->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
+                }
+
+                {
+                    auto field = new QskTextField( this );
+                    field->setEmphasis( emphasis );
+                    field->setMaxLength( 15 );
+                    field->setLabelText( "password" );
+                    field->setEchoMode( QskTextField::Password );
+                    field->setPlaceholderText( "<password>" );
                 }
             }
         }

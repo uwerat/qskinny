@@ -20,7 +20,7 @@ class QSK_EXPORT QskProgressRing : public QskProgressIndicator
   public:
     QSK_SUBCONTROLS( Groove, Fill )
 
-    enum Size
+    enum Size : qint8
     {
         SmallSize  = -1,
         NormalSize = 0,

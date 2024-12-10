@@ -32,7 +32,7 @@ class QSK_EXPORT QskListView : public QskScrollView
     QSK_SUBCONTROLS( Cell, Text, Graphic )
     QSK_STATES( Selected )
 
-    enum SelectionMode
+    enum SelectionMode : quint8
     {
         NoSelection,
         SingleSelection,

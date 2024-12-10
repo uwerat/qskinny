@@ -36,7 +36,7 @@ class QSK_EXPORT QskSkin : public QObject
   public:
 #if 1
     // Use Qt::ColorScheme once minimum version is Qt 6.5
-    enum ColorScheme
+    enum ColorScheme : quint8
     {
         UnknownScheme,
 

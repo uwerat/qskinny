@@ -60,7 +60,11 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     }
     else if ( subControl == Q::PlaceholderText )
     {
-        return subControlRect( skinnable, contentsRect, Q::Text );
+        const auto textField = static_cast< const QskTextField* >( skinnable );
+        if( textField->text().isEmpty() )
+            return subControlRect( skinnable, contentsRect, Q::Text );
+
+        return QRectF();
     }
     else if ( subControl == Q::LeadingIcon )
     {           
@@ -111,7 +115,7 @@ QSizeF QskTextFieldSkinlet::adjustSizeHint(
 QSGNode* QskTextFieldSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    const auto textField = static_cast< const Q* >( skinnable );
+    const auto textField = static_cast< const QskTextField* >( skinnable );
 
     switch ( nodeRole )
     {
@@ -122,13 +126,11 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
 
             return updateBoxNode( skinnable, node, Q::Panel );
         }
-
         case LabelTextRole:
         {
             return updateTextNode( skinnable, node,
                 textField->labelText(), Q::LabelText );
         }
-
         case LeadingIconRole:
         {
             return updateSymbolNode( skinnable, node, Q::LeadingIcon );

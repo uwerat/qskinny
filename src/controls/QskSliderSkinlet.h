@@ -19,7 +19,7 @@ class QSK_EXPORT QskSliderSkinlet : public QskSkinlet
   public:
     QSK_STATES( Filled )
 
-    enum NodeRole
+    enum NodeRole : quint8
     {
         PanelRole,
         GrooveRole,

@@ -46,7 +46,7 @@ class QskSkinStateChanger;
 class QSK_EXPORT QskSkinHintStatus
 {
   public:
-    enum Source
+    enum Source : quint8
     {
         NoSource = 0,
 

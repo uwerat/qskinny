@@ -21,7 +21,7 @@ class QSK_EXPORT QskGraduationNode : public QskBasicLinesNode
     using Inherited = QskBasicLinesNode;
 
   public:
-    enum Alignment
+    enum Alignment : quint8
     {
         Leading,
         Centered,
