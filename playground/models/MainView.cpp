@@ -8,7 +8,7 @@
 #include <QskLinearBox.h>
 #include <QskPushButton.h>
 #include <QskTextLabel.h>
-#include <QskTextInput.h>
+#include <QskTextField.h>
 #include <QskSpinBox.h>
 #include <QskSeparator.h>
 #include <QskFontRole.h>
@@ -101,7 +101,7 @@ namespace
             initSizePolicy( QskSizePolicy::MinimumExpanding, QskSizePolicy::Fixed );
 
             addItem( new SpinBox() );
-            addItem( new QskTextInput() );
+            addItem( new QskTextField() );
         }
     };
 
@@ -130,8 +130,8 @@ namespace
                     }
                     else
                     {
-                        auto textInput = new QskTextInput( this );
-                        connect( textInput, &QskTextInput::textChanged,
+                        auto textField = new QskTextField( this );
+                        connect( textField, &QskTextField::textChanged,
                             this, &ModelBox::updateModel );
                     }
                 }
