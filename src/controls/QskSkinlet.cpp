@@ -677,23 +677,33 @@ QSGNode* QskSkinlet::updateTextNode(
     const QRectF& rect, Qt::Alignment alignment,
     const QString& text, QskAspect::Subcontrol subControl )
 {
+    const auto textOptions = skinnable->textOptionsHint( subControl );
+
+    return updateTextNode( skinnable, node, rect, alignment,
+        textOptions, text, subControl );
+}
+
+QSGNode* QskSkinlet::updateTextNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QRectF& rect,
+    Qt::Alignment alignment, const QskTextOptions& textOptions,
+    const QString& text, QskAspect::Subcontrol subControl )
+{
     if ( text.isEmpty() || rect.isEmpty() )
         return nullptr;
 
-    const auto textColors = qskTextColors( skinnable, subControl );
-    const auto textOptions = skinnable->textOptionsHint( subControl );
+    const auto colors = qskTextColors( skinnable, subControl );
 
-    auto textStyle = Qsk::Normal;
-    if ( textColors.styleColor().alpha() == 0 )
+    auto style = Qsk::Normal;
+    if ( colors.styleColor().isValid() )
     {
-        textStyle = skinnable->flagHint< Qsk::TextStyle >(
+        style = skinnable->flagHint< Qsk::TextStyle >(
             subControl | QskAspect::Style, Qsk::Normal );
     }
 
     const auto font = skinnable->effectiveFont( subControl );
 
     return qskUpdateTextNode( skinnable, node, rect, alignment,
-        text, font, textOptions, textColors, textStyle );
+        text, font, textOptions, colors, style );
 }
 
 QSGNode* QskSkinlet::updateTextNode(

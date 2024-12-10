@@ -61,10 +61,21 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
         }
         case PlaceholderTextRole:
         {
-            if ( textField->text().isEmpty() )
+            if ( textField->text().isEmpty()
+                && !textField->placeholderText().isEmpty() )
             {
+                const auto subControl = Q::PlaceholderText;
+
+                QskSkinHintStatus status;
+
+                auto options = skinnable->textOptionsHint( subControl, &status );
+                if ( !status.isValid() )
+                    options.setElideMode( Qt::ElideRight );
+
                 return updateTextNode( skinnable, node,
-                    textField->placeholderText(), Q::PlaceholderText );
+                    textField->subControlRect( subControl ),
+                    textField->alignmentHint( subControl, Qt::AlignLeft ),
+                    options, textField->placeholderText(), subControl );
             }
 
             return nullptr;
