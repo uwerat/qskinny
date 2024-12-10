@@ -154,7 +154,7 @@ QskBoxShapeMetrics QskBoxShapeMetrics::interpolated(
         qskInterpolatedSize( m_radii[ 1 ], to.m_radii[ 1 ], ratio ),
         qskInterpolatedSize( m_radii[ 2 ], to.m_radii[ 2 ], ratio ),
         qskInterpolatedSize( m_radii[ 3 ], to.m_radii[ 3 ], ratio ),
-        to.m_sizeMode, to.m_scalingMode );
+        to.sizeMode(), to.m_scalingMode );
 }
 
 QVariant QskBoxShapeMetrics::interpolate(

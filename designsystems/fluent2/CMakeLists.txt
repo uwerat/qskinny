@@ -3,13 +3,27 @@
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
-set(SOURCES
-    QskFluent2Global.h
-    QskFluent2Theme.h QskFluent2Theme.cpp
-    QskFluent2Skin.h QskFluent2Skin.cpp
-    QskFluent2SkinFactory.h QskFluent2SkinFactory.cpp
+list(APPEND HEADERS
+    QskFluent2Global.h QskFluent2Theme.h QskFluent2SkinFactory.h
 )
+
+list(APPEND PRIVATE_HEADERS
+    QskFluent2TextFieldSkinlet.h
+)
+
+list(APPEND SOURCES
+    QskFluent2Theme.cpp
+    QskFluent2Skin.cpp
+    QskFluent2SkinFactory.cpp
+    QskFluent2TextFieldSkinlet.cpp
+)
+
 qt_add_resources(SOURCES QskFluent2Icons.qrc)
 
-qsk_add_plugin(fluent2skin skins QskFluent2SkinFactory ${SOURCES})
-set_target_properties(fluent2skin PROPERTIES DEFINE_SYMBOL QSK_FLUENT2_MAKEDLL )
+qsk_add_plugin(fluent2skin skins QskFluent2SkinFactory
+    ${SOURCES} ${HEADERS} ${PRIVATE_HEADERS}
+)
+
+set_target_properties(fluent2skin PROPERTIES
+    DEFINE_SYMBOL QSK_FLUENT2_MAKEDLL
+)

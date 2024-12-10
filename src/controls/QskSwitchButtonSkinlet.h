@@ -17,7 +17,7 @@ class QSK_EXPORT QskSwitchButtonSkinlet : public QskSkinlet
     using Inherited = QskSkinlet;
 
   public:
-    enum NodeRole
+    enum NodeRole : quint8
     {
         GrooveRole,
         HandleRole,
