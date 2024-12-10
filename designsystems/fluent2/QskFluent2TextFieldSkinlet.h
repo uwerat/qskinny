@@ -21,6 +21,9 @@ class QSK_FLUENT2_EXPORT QskFluent2TextFieldSkinlet : public QskTextFieldSkinlet
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF& rect, QskAspect::Subcontrol ) const override;
+
+    QSizeF sizeHint( const QskSkinnable*,
+        Qt::SizeHint, const QSizeF& ) const override;
 };
 
 #endif

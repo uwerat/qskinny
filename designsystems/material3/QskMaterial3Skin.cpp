@@ -332,21 +332,17 @@ void Editor::setupComboBox()
     setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );
     setSpacing( Q::Panel, 8_dp );
 
-    const auto hoverColor = flattenedColor( m_pal.onSurfaceVariant,
-        m_pal.surfaceVariant, m_pal.hoverOpacity );
-    setGradient( Q::Panel | Q::Hovered, hoverColor );
+    setGradient( Q::Panel | Q::Hovered,
+        m_pal.hoverColor( m_pal.onSurfaceVariant, m_pal.surfaceVariant ) );
 
-    const auto focusColor = flattenedColor( m_pal.onSurfaceVariant,
-        m_pal.surfaceVariant, m_pal.focusOpacity );
-    setGradient( Q::Panel | Q::Focused, focusColor );
+    setGradient( Q::Panel | Q::Focused,
+        m_pal.focusColor( m_pal.onSurfaceVariant, m_pal.surfaceVariant ) );
 
-    const auto pressedColor = flattenedColor( m_pal.onSurfaceVariant,
-        m_pal.surfaceVariant, m_pal.pressedOpacity );
-    setGradient( Q::Panel | Q::Pressed, pressedColor );
+    setGradient( Q::Panel | Q::Pressed,
+        m_pal.pressedColor( m_pal.onSurfaceVariant, m_pal.surfaceVariant ) );
 
-    const auto activeColor = flattenedColor( m_pal.onSurfaceVariant,
-        m_pal.surfaceVariant, m_pal.pressedOpacity );
-    setGradient( Q::Panel | Q::PopupOpen, activeColor );
+    setGradient( Q::Panel | Q::PopupOpen,
+        m_pal.pressedColor( m_pal.onSurfaceVariant, m_pal.surfaceVariant ) );
 
     setStrutSize( Q::Icon, 24_dp, 24_dp );
     setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnSurface );
@@ -358,9 +354,9 @@ void Editor::setupComboBox()
     setGraphicRole( Q::StatusIndicator, QskMaterial3Skin::GraphicRoleOnSurface );
     setAlignment( Q::StatusIndicator, Qt::AlignRight | Qt::AlignVCenter );
 
+    setGradient( Q::Panel | Q::Disabled,
+        QskRgb::toTransparentF( m_pal.onSurface, 0.04 ) );
 
-    const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
-    setGradient( Q::Panel | Q::Disabled, disabledPanelColor );
     setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
 
     setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnSurface38 );
@@ -421,14 +417,14 @@ void Editor::setupMenu()
     setSpacing( Q::Segment, 5_dp );
     setGradient( Q::Segment, Qt::transparent );
 
-    const auto hoverColor = flattenedColor( m_pal.onSurface, panelColor, m_pal.hoverOpacity );
-    setGradient( Q::Segment | Q::Hovered, hoverColor );
+    setGradient( Q::Segment | Q::Hovered,
+        m_pal.hoverColor( m_pal.onSurface, panelColor ) );
 
     setGradient( Q::Segment | Q::Selected, m_pal.primary12 );
-    const auto hoverSelectedColor = flattenedColor( m_pal.onSurface, m_pal.primary12, m_pal.hoverOpacity );
-    setGradient( Q::Segment | Q::Selected | Q::Hovered, hoverSelectedColor );
-    const auto pressedSelectedColor = flattenedColor( m_pal.onSurface, m_pal.primary12, m_pal.pressedOpacity );
-    setGradient( Q::Segment | Q::Pressed | Q::Selected, pressedSelectedColor );
+    setGradient( Q::Segment | Q::Selected | Q::Hovered,
+        m_pal.hoverColor( m_pal.onSurface, m_pal.primary12 ) );
+    setGradient( Q::Segment | Q::Pressed | Q::Selected,
+        m_pal.pressedColor( m_pal.onSurface, m_pal.primary12 ) );
 
     setPadding( Q::Icon, 7_dp );
     setStrutSize( Q::Icon, 24_dp, 24_dp );
@@ -449,7 +445,6 @@ void Editor::setupTextLabel()
     setColor( Q::Text, m_pal.onSurface );
     setPadding( Q::Panel, 5_dp );
 }
-
 
 void Editor::setupTextField()
 {
@@ -623,10 +618,10 @@ void Editor::setupSegmentedBar()
         setGradient( Q::Segment | Q::Selected, m_pal.secondaryContainer );
 
         setGradient( Q::Segment | Q::Selected | Q::Hovered,
-            flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.hoverOpacity ) );
+            m_pal.hoverColor( m_pal.onSurface, m_pal.secondaryContainer ) );
 
         setGradient( Q::Segment | Q::Selected | Q::Focused,
-            flattenedColor( m_pal.onSurface, m_pal.secondaryContainer, m_pal.focusOpacity ) );
+            m_pal.focusColor( m_pal.onSurface, m_pal.secondaryContainer ) );
 
         setGradient( Q::Segment | Q::Selected | Q::Disabled, m_pal.onSurface12 );
 
@@ -718,7 +713,11 @@ void Editor::setupPageIndicator()
 void Editor::setupPushButton()
 {
     using Q = QskPushButton;
-    using M3 = QskMaterial3Skin;
+
+    constexpr auto Tonal = QskAspect::Huge;
+    constexpr auto Elevated = QskAspect::Large;
+    constexpr auto Outlined = QskAspect::Small;
+    constexpr auto Text = QskAspect::Tiny;
 
     setHint( Q::Panel | QskAspect::Direction, Qsk::LeftToRight );
     setStrutSize( Q::Panel, -1, 40_dp );
@@ -741,33 +740,33 @@ void Editor::setupPushButton()
 
     // elevated buttons:
 
-    setGradient( Q::Panel | M3::Elevated, m_pal.surface1 );
-    setShadowMetrics( Q::Panel | M3::Elevated, m_pal.elevation1 );
-    setColor( Q::Text | M3::Elevated, m_pal.primary );
-    setGraphicRole( Q::Icon | M3::Elevated, QskMaterial3Skin::GraphicRolePrimary );
-    setGradient( Q::Splash | M3::Elevated,
+    setGradient( Q::Panel | Elevated, m_pal.surface1 );
+    setShadowMetrics( Q::Panel | Elevated, m_pal.elevation1 );
+    setColor( Q::Text | Elevated, m_pal.primary );
+    setGraphicRole( Q::Icon | Elevated, QskMaterial3Skin::GraphicRolePrimary );
+    setGradient( Q::Splash | Elevated,
         stateLayerColor( m_pal.primary, m_pal.pressedOpacity ) );
 
-    setGradient( Q::Panel | M3::Elevated | Q::Disabled, m_pal.onSurface12 );
-    setShadowMetrics( Q::Panel | M3::Elevated | Q::Disabled, m_pal.elevation0 );
-    setColor( Q::Text | M3::Elevated | Q::Disabled, m_pal.onSurface38 );
-    setGraphicRole( Q::Icon | M3::Elevated | Q::Disabled,
+    setGradient( Q::Panel | Elevated | Q::Disabled, m_pal.onSurface12 );
+    setShadowMetrics( Q::Panel | Elevated | Q::Disabled, m_pal.elevation0 );
+    setColor( Q::Text | Elevated | Q::Disabled, m_pal.onSurface38 );
+    setGraphicRole( Q::Icon | Elevated | Q::Disabled,
         QskMaterial3Skin::GraphicRoleOnSurface38 );
 
-    const auto elevatedHoverColor =
-        flattenedColor( m_pal.primary, m_pal.surface, m_pal.hoverOpacity );
-    setGradient( Q::Panel | M3::Elevated | Q::Hovered, elevatedHoverColor );
-    setShadowMetrics( Q::Panel | M3::Elevated | Q::Hovered, m_pal.elevation2 );
+    const auto elevatedHoverColor = m_pal.hoverColor( m_pal.primary, m_pal.surface );
+    setGradient( Q::Panel | Elevated | Q::Hovered, elevatedHoverColor );
+    setShadowMetrics( Q::Panel | Elevated | Q::Hovered, m_pal.elevation2 );
 
     const auto elevatedPressedColor =
-        flattenedColor( m_pal.primary, m_pal.surface, m_pal.pressedOpacity );
-    setGradient( Q::Panel | M3::Elevated | Q::Focused, elevatedPressedColor );
-    setShadowMetrics( Q::Panel | M3::Elevated | Q::Focused, m_pal.elevation1 );
+        m_pal.pressedColor( m_pal.primary, m_pal.surface );
 
-    for( const auto state: { Q::Pressed, Q::Checked } )
+    setGradient( Q::Panel | Elevated | Q::Focused, elevatedPressedColor );
+    setShadowMetrics( Q::Panel | Elevated | Q::Focused, m_pal.elevation1 );
+
+    for( const auto state : { Q::Pressed, Q::Checked } )
     {
-        setGradient( Q::Panel | M3::Elevated | state, elevatedPressedColor );
-        setShadowMetrics( Q::Panel | M3::Elevated | state, m_pal.elevation1 );
+        setGradient( Q::Panel | Elevated | state, elevatedPressedColor );
+        setShadowMetrics( Q::Panel | Elevated | state, m_pal.elevation1 );
     }
 
 
@@ -776,12 +775,12 @@ void Editor::setupPushButton()
     setGradient( Q::Panel, m_pal.primary );
     setGradient( Q::Panel | Q::Disabled, m_pal.onSurface12 );
 
-    const auto hoverColor = flattenedColor( m_pal.onPrimary, m_pal.primary, m_pal.hoverOpacity );
+    const auto hoverColor = m_pal.hoverColor( m_pal.onPrimary, m_pal.primary );
 
     setGradient( Q::Panel | Q::Hovered, hoverColor );
     setShadowMetrics( Q::Panel | Q::Hovered, m_pal.elevation1 );
 
-    const auto focusColor = flattenedColor( m_pal.onPrimary, m_pal.primary, m_pal.focusOpacity );
+    const auto focusColor = m_pal.focusColor( m_pal.onPrimary, m_pal.primary );
     setGradient( Q::Panel | Q::Focused, focusColor );
 
     setGradient( Q::Panel | Q::Pressed, focusColor );
@@ -799,61 +798,62 @@ void Editor::setupPushButton()
 
     // filled tonal buttons:
 
-    setGradient( Q::Panel | M3::Tonal, m_pal.secondaryContainer );
-    setShadowMetrics( Q::Panel | M3::Tonal, m_pal.elevation0 );
-    setColor( Q::Text | M3::Tonal, m_pal.onSecondaryContainer );
-    setGraphicRole( Q::Icon | M3::Tonal, QskMaterial3Skin::GraphicRoleOnSecondaryContainer );
-    setGradient( Q::Splash | M3::Tonal,
+    setGradient( Q::Panel | Tonal, m_pal.secondaryContainer );
+    setShadowMetrics( Q::Panel | Tonal, m_pal.elevation0 );
+    setColor( Q::Text | Tonal, m_pal.onSecondaryContainer );
+    setGraphicRole( Q::Icon | Tonal, QskMaterial3Skin::GraphicRoleOnSecondaryContainer );
+    setGradient( Q::Splash | Tonal,
         stateLayerColor( m_pal.onSecondaryContainer, m_pal.pressedOpacity ) );
 
-    setGradient( Q::Panel | M3::Tonal | Q::Disabled, m_pal.onSurface12 );
-    setColor( Q::Text | M3::Tonal | Q::Disabled, m_pal.onSurface38 );
-    setGraphicRole( Q::Icon | M3::Tonal | Q::Disabled,
+    setGradient( Q::Panel | Tonal | Q::Disabled, m_pal.onSurface12 );
+    setColor( Q::Text | Tonal | Q::Disabled, m_pal.onSurface38 );
+    setGraphicRole( Q::Icon | Tonal | Q::Disabled,
         QskMaterial3Skin::GraphicRoleOnSurface38 );
 
-    const auto tonalHoverColor = flattenedColor( m_pal.onSecondaryContainer,
-        m_pal.secondaryContainer, m_pal.hoverOpacity );
-    setGradient( Q::Panel | M3::Tonal | Q::Hovered, tonalHoverColor );
-    setShadowMetrics( Q::Panel | M3::Tonal | Q::Hovered, m_pal.elevation1 );
+    const auto tonalHoverColor = m_pal.hoverColor(
+        m_pal.onSecondaryContainer, m_pal.secondaryContainer );
+    setGradient( Q::Panel | Tonal | Q::Hovered, tonalHoverColor );
+    setShadowMetrics( Q::Panel | Tonal | Q::Hovered, m_pal.elevation1 );
 
-    const auto tonalPressedColor = flattenedColor( m_pal.onSecondaryContainer,
-        m_pal.secondaryContainer, m_pal.pressedOpacity );
-    setGradient( Q::Panel | M3::Tonal | Q::Focused, tonalPressedColor );
-    setShadowMetrics( Q::Panel | M3::Tonal | Q::Focused, m_pal.elevation0 );
+    const auto tonalPressedColor = m_pal.pressedColor(
+        m_pal.onSecondaryContainer, m_pal.secondaryContainer );
 
-    setGradient( Q::Panel | M3::Tonal | Q::Pressed, tonalPressedColor );
-    setShadowMetrics( Q::Panel | M3::Tonal | Q::Pressed, m_pal.elevation0 );
+    setGradient( Q::Panel | Tonal | Q::Focused, tonalPressedColor );
+    setShadowMetrics( Q::Panel | Tonal | Q::Focused, m_pal.elevation0 );
+
+    setGradient( Q::Panel | Tonal | Q::Pressed, tonalPressedColor );
+    setShadowMetrics( Q::Panel | Tonal | Q::Pressed, m_pal.elevation0 );
 
     const auto tonalCheckedColor = flattenedColor( m_pal.onSecondaryContainer,
         m_pal.secondaryContainer, checkedOpacity );
-    setGradient( Q::Panel | M3::Tonal | Q::Checked, tonalCheckedColor );
+    setGradient( Q::Panel | Tonal | Q::Checked, tonalCheckedColor );
 
 
     // outlined buttons:
 
-    setGradient( Q::Panel | M3::Outlined, m_pal.surface );
-    setBoxBorderColors( Q::Panel | M3::Outlined, m_pal.outline );
-    setBoxBorderMetrics( Q::Panel | M3::Outlined, 1_dp );
-    setShadowMetrics( Q::Panel | M3::Outlined, m_pal.elevation0 );
+    setGradient( Q::Panel | Outlined, m_pal.surface );
+    setBoxBorderColors( Q::Panel | Outlined, m_pal.outline );
+    setBoxBorderMetrics( Q::Panel | Outlined, 1_dp );
+    setShadowMetrics( Q::Panel | Outlined, m_pal.elevation0 );
 
-    setColor( Q::Text | M3::Outlined, m_pal.primary );
-    setGraphicRole( Q::Icon | M3::Outlined, QskMaterial3Skin::GraphicRolePrimary );
-    setGradient( Q::Splash | M3::Outlined,
+    setColor( Q::Text | Outlined, m_pal.primary );
+    setGraphicRole( Q::Icon | Outlined, QskMaterial3Skin::GraphicRolePrimary );
+    setGradient( Q::Splash | Outlined,
         stateLayerColor( m_pal.outline, m_pal.pressedOpacity ) );
 
-    setBoxBorderColors( Q::Panel | M3::Outlined | Q::Disabled, m_pal.onSurface12 );
-    setColor( Q::Text | M3::Outlined | Q::Disabled, m_pal.onSurface38 );
-    setGraphicRole( Q::Icon | M3::Outlined | Q::Disabled,
+    setBoxBorderColors( Q::Panel | Outlined | Q::Disabled, m_pal.onSurface12 );
+    setColor( Q::Text | Outlined | Q::Disabled, m_pal.onSurface38 );
+    setGraphicRole( Q::Icon | Outlined | Q::Disabled,
         QskMaterial3Skin::GraphicRoleOnSurface38 );
 
-    setBoxBorderColors( Q::Panel | M3::Outlined | Q::Hovered, m_pal.outline );
-    setGradient( Q::Panel | M3::Outlined | Q::Hovered, m_pal.primary8 );
+    setBoxBorderColors( Q::Panel | Outlined | Q::Hovered, m_pal.outline );
+    setGradient( Q::Panel | Outlined | Q::Hovered, m_pal.primary8 );
 
-    setGradient( Q::Panel | M3::Outlined | Q::Focused, m_pal.primary12 );
+    setGradient( Q::Panel | Outlined | Q::Focused, m_pal.primary12 );
 
-    setGradient( Q::Panel | M3::Outlined | Q::Pressed, m_pal.primary12 );
+    setGradient( Q::Panel | Outlined | Q::Pressed, m_pal.primary12 );
 
-    setGradient( Q::Panel | M3::Outlined | Q::Checked, m_pal.primary12 );
+    setGradient( Q::Panel | Outlined | Q::Checked, m_pal.primary12 );
 
     /*
         text buttons:
@@ -864,24 +864,24 @@ void Editor::setupPushButton()
      */
     QColor c( m_pal.background );
     c.setAlpha( 255 );
-    setGradient( Q::Panel | M3::Text, c );
+    setGradient( Q::Panel | Text, c );
 
-    setShadowMetrics( Q::Panel | M3::Text, m_pal.elevation0 );
-    setColor( Q::Text | M3::Text, m_pal.primary );
-    setGraphicRole( Q::Icon | M3::Text, QskMaterial3Skin::GraphicRolePrimary );
-    setGradient( Q::Splash | M3::Text,
+    setShadowMetrics( Q::Panel | Text, m_pal.elevation0 );
+    setColor( Q::Text | Text, m_pal.primary );
+    setGraphicRole( Q::Icon | Text, QskMaterial3Skin::GraphicRolePrimary );
+    setGradient( Q::Splash | Text,
         stateLayerColor( m_pal.primary, m_pal.pressedOpacity ) );
 
-    setColor( Q::Text | M3::Text | Q::Disabled, m_pal.onSurface38 );
-    setGraphicRole( Q::Icon | M3::Text | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
+    setColor( Q::Text | Text | Q::Disabled, m_pal.onSurface38 );
+    setGraphicRole( Q::Icon | Text | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
 
-    setGradient( Q::Panel | M3::Text | Q::Hovered, m_pal.primary8 );
+    setGradient( Q::Panel | Text | Q::Hovered, m_pal.primary8 );
 
-    setGradient( Q::Panel | M3::Text | Q::Focused, m_pal.primary12 );
+    setGradient( Q::Panel | Text | Q::Focused, m_pal.primary12 );
 
-    setGradient( Q::Panel | M3::Text | Q::Pressed, m_pal.primary12 );
+    setGradient( Q::Panel | Text | Q::Pressed, m_pal.primary12 );
 
-    setGradient( Q::Panel | M3::Text | Q::Checked, m_pal.primary12 );
+    setGradient( Q::Panel | Text | Q::Checked, m_pal.primary12 );
 }
 
 void Editor::setupDialogButtonBox()
@@ -1064,7 +1064,6 @@ void Editor::setupSwitchButton()
 {
     using A = QskAspect;
     using Q = QskSwitchButton;
-
 
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
     const QSizeF strutSize( 52_dp, 32_dp );
@@ -1340,13 +1339,11 @@ void Editor::setupListView()
             {
                 if ( state1 == Q::Hovered )
                 {
-                    cellColor = flattenedColor( m_pal.onSurface,
-                        m_pal.surface, m_pal.hoverOpacity );
+                    cellColor = m_pal.hoverColor( m_pal.onSurface, m_pal.surface );
                 }
                 else if ( state1 == Q::Pressed )
                 {
-                    cellColor = flattenedColor( m_pal.onSurface,
-                        m_pal.primary12, m_pal.pressedOpacity );
+                    cellColor = m_pal.pressedColor( m_pal.onSurface, m_pal.primary12 );
                 }
                 else
                 {
@@ -1357,13 +1354,13 @@ void Editor::setupListView()
             {
                 if ( state1 == Q::Hovered )
                 {
-                    cellColor = flattenedColor( m_pal.onSurface,
-                        m_pal.primary12, m_pal.focusOpacity );
+#if 1
+                    cellColor = m_pal.focusColor( m_pal.onSurface, m_pal.primary12 );
+#endif
                 }
                 else if ( state1 == Q::Focused )
                 {
-                    cellColor = flattenedColor( m_pal.onSurface,
-                        m_pal.primary12, m_pal.focusOpacity );
+                    cellColor = m_pal.focusColor( m_pal.onSurface, m_pal.primary12 );
                 }
                 else if ( state1 == Q::Disabled )
                 {
@@ -1602,6 +1599,26 @@ qreal QskMaterial3Theme::stateOpacity( int state ) const
         return disabledOpacity;
 
     return state ? pressedOpacity : 0.0;
+}
+
+QRgb QskMaterial3Theme::hoverColor( QRgb foreground, QRgb background ) const
+{
+    return flattenedColor( foreground, background, hoverOpacity );
+}
+
+QRgb QskMaterial3Theme::focusColor( QRgb foreground, QRgb background ) const
+{
+    return flattenedColor( foreground, background, focusOpacity );
+}
+
+QRgb QskMaterial3Theme::pressedColor( QRgb foreground, QRgb background ) const
+{
+    return flattenedColor( foreground, background, pressedOpacity );
+}
+
+QRgb QskMaterial3Theme::disabledColor( QRgb foreground, QRgb background ) const
+{
+    return flattenedColor( foreground, background, disabledOpacity );
 }
 
 QskMaterial3Skin::QskMaterial3Skin( QObject* parent )

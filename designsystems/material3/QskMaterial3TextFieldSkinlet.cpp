@@ -27,4 +27,10 @@ QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
+QSizeF QskMaterial3TextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    return Inherited::sizeHint( skinnable, which, constraint );
+}
+
 #include "moc_QskMaterial3TextFieldSkinlet.cpp"
