@@ -58,7 +58,7 @@ QskTextOptions::TextFormat QskTextOptions::effectiveFormat( const QString& text 
     if ( m_format == QskTextOptions::AutoText )
         return Qt::mightBeRichText( text ) ? StyledText : PlainText;
 
-    return static_cast< QskTextOptions::TextFormat >( m_format );
+    return m_format;
 }
 
 QskHashValue QskTextOptions::hash( QskHashValue seed ) const noexcept
