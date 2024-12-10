@@ -6,7 +6,7 @@
 #include "QskInputPanelBox.h"
 #include "QskInputPredictionBar.h"
 #include "QskLinearBox.h"
-#include "QskTextInput.h"
+#include "QskTextField.h"
 #include "QskTextLabel.h"
 #include "QskVirtualKeyboard.h"
 
@@ -15,11 +15,11 @@
 
 namespace
 {
-    class TextInputProxy final : public QskTextInput
+    class TextFieldProxy final : public QskTextField
     {
       public:
-        TextInputProxy( QskInputPanelBox* panelBox, QQuickItem* parentItem = nullptr )
-            : QskTextInput( parentItem )
+        TextFieldProxy( QskInputPanelBox* panelBox, QQuickItem* parentItem = nullptr )
+            : QskTextField( parentItem )
             , m_panelBox( panelBox )
         {
             setObjectName( QStringLiteral( "InputBoxProxy" ) );
@@ -32,10 +32,10 @@ namespace
         QskAspect::Subcontrol substitutedSubcontrol(
             QskAspect::Subcontrol subControl ) const override
         {
-            if ( subControl == QskTextInput::Panel )
+            if ( subControl == QskTextField::Panel )
                 return m_panelBox->effectiveSubcontrol( QskInputPanelBox::ProxyPanel );
 
-            if ( subControl == QskTextInput::Text )
+            if ( subControl == QskTextField::Text )
                 return m_panelBox->effectiveSubcontrol( QskInputPanelBox::ProxyText );
 
             return subControl;
@@ -65,7 +65,7 @@ class QskInputPanelBox::PrivateData
 
     QskLinearBox* layout;
     QskTextLabel* prompt;
-    TextInputProxy* inputProxy;
+    TextFieldProxy* inputProxy;
     QskInputPredictionBar* predictionBar;
     QskVirtualKeyboard* keyboard;
 
@@ -81,7 +81,7 @@ QskInputPanelBox::QskInputPanelBox( QQuickItem* parent )
     m_data->prompt = new QskTextLabel();
     m_data->prompt->setVisible( false );
 
-    m_data->inputProxy = new TextInputProxy( this, nullptr );
+    m_data->inputProxy = new TextFieldProxy( this, nullptr );
     m_data->inputProxy->setVisible(
         m_data->panelHints & QskInputPanelBox::InputProxy );
 
@@ -184,10 +184,10 @@ QskAspect::Subcontrol QskInputPanelBox::substitutedSubcontrol(
 #if 1
     // TODO ...
     if ( subControl == QskInputPanelBox::ProxyPanel )
-        return QskTextInput::Panel;
+        return QskTextField::Panel;
 
     if ( subControl == QskInputPanelBox::ProxyText )
-        return QskTextInput::Text;
+        return QskTextField::Text;
 #endif
 
     return subControl;

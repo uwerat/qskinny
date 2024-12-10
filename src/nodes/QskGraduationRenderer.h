@@ -33,7 +33,7 @@ class QSK_EXPORT QskGraduationRenderer
     Q_GADGET
 
   public:
-    enum Flag
+    enum Flag : quint8
     {
         Backbone          = 1 << 0,
         CenteredTickmarks = 1 << 1,

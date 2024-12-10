@@ -22,7 +22,7 @@ class QSK_EXPORT QskListViewSkinlet : public QskScrollViewSkinlet
     using Inherited = QskScrollViewSkinlet;
 
   public:
-    enum NodeRole
+    enum NodeRole : quint8
     {
         TextRole = Inherited::RoleCount,
         GraphicRole,

@@ -17,7 +17,7 @@ class QSK_EXPORT QskPainterCommand
 {
   public:
     //! Type of the paint command
-    enum Type
+    enum Type : qint8
     {
         //! Invalid command
         Invalid = -1,

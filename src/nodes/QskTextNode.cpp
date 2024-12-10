@@ -43,6 +43,9 @@ void QskTextNode::setTextData(
     const QFont& font, const QskTextOptions& options, const QskTextColors& colors,
     Qt::Alignment alignment, Qsk::TextStyle textStyle )
 {
+    if ( !colors.styleColor().isValid() )
+        textStyle = Qsk::Normal;
+
     QMatrix4x4 matrix;
     matrix.translate( rect.left(), rect.top() );
 

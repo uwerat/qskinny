@@ -11,6 +11,7 @@
 #include "QskMaterial3Skin.h"
 #include "QskMaterial3ProgressBarSkinlet.h"
 #include "QskMaterial3SliderSkinlet.h"
+#include "QskMaterial3TextFieldSkinlet.h"
 
 #include <QskSkinHintTableEditor.h>
 
@@ -45,7 +46,7 @@
 #include <QskTabBar.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
-#include <QskTextInput.h>
+#include <QskTextField.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -200,7 +201,7 @@ namespace
         Q_INVOKABLE void setupTabButton();
         Q_INVOKABLE void setupTabBar();
         Q_INVOKABLE void setupTabView();
-        Q_INVOKABLE void setupTextInput();
+        Q_INVOKABLE void setupTextField();
         Q_INVOKABLE void setupTextLabel();
 
         QskGraphic symbol( const char* name ) const
@@ -450,13 +451,15 @@ void Editor::setupTextLabel()
 }
 
 
-void Editor::setupTextInput()
+void Editor::setupTextField()
 {
-    using Q = QskTextInput;
+    using Q = QskTextField;
+    using SK = QskTextFieldSkinlet;
 
     setStrutSize( Q::Panel,  -1.0, 56_dp );
     setPadding( Q::Panel, { 12_dp, 8_dp, 12_dp, 8_dp } );
     setGradient( Q::Panel, m_pal.surfaceVariant );
+    setColor( Q::Panel | SK::Selected, m_pal.primary12 );
     setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
     setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_dp } );
     setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );
@@ -476,11 +479,19 @@ void Editor::setupTextInput()
     setFontRole( Q::Text, BodyMedium );
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
 
+    setAlignment( Q::PlaceholderText, Qt::AlignLeft | Qt::AlignVCenter );
+
     const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
     setGradient( Q::Panel | Q::Disabled, disabledPanelColor );
     setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
 
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+
+    // PlaceholderText
+
+    setColor( Q::PlaceholderText, color( Q::Text ) );
+    setFontRole( Q::PlaceholderText, fontRole( Q::Text ) );
+    setAlignment( Q::PlaceholderText, alignment( Q::Text ) );
 }
 
 void Editor::setupProgressBar()
@@ -1069,7 +1080,6 @@ void Editor::setupSwitchButton()
     using A = QskAspect;
     using Q = QskSwitchButton;
 
-    const QskStateCombination allStates ( QskStateCombination::CombinationNoState, QskAspect::AllStates );
 
     setBoxShape( Q::Groove, 100, Qt::RelativeSize );
     const QSizeF strutSize( 52_dp, 32_dp );
@@ -1085,7 +1095,7 @@ void Editor::setupSwitchButton()
     setBoxBorderColors( Q::Groove, m_pal.outline );
     setBoxBorderColors( Q::Groove | Q::Disabled, m_pal.onSurface12 );
 
-    setBoxBorderMetrics( Q::Groove | Q::Checked, 0, allStates );
+    setBoxBorderMetrics( Q::Groove | Q::Checked, 0 );
 
     setBoxShape( Q::Handle, 100, Qt::RelativeSize );
     setStrutSize( Q::Handle, { 30_dp, 30_dp } );
@@ -1099,11 +1109,13 @@ void Editor::setupSwitchButton()
     setStrutSize( Q::Icon, { 16_dp, 16_dp } );
     setPadding( Q::Icon, 6_dp );
     setSymbol( Q::Icon, symbol( "switchbutton-unchecked" ) );
-    setSymbol( Q::Icon | Q::Checked, symbol( "switchbutton-checked" ), allStates );
+    setSymbol( Q::Icon | Q::Checked, symbol( "switchbutton-checked" ) );
+
     setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleSurfaceContainerHighest );
-    setGraphicRole( Q::Icon | Q::Checked, QskMaterial3Skin::GraphicRoleOnPrimaryContainer, allStates );
-    setGraphicRole( Q::Icon | Q::Disabled, QskMaterial3Skin::GraphicRoleSurfaceContainerHighest38, allStates );
-    setGraphicRole( Q::Icon | Q::Checked | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38, allStates );
+
+    setGraphicRole( Q::Icon | Q::Checked, QskMaterial3Skin::GraphicRoleOnPrimaryContainer );
+    setGraphicRole( Q::Icon | Q::Disabled, QskMaterial3Skin::GraphicRoleSurfaceContainerHighest38 );
+    setGraphicRole( Q::Icon | Q::Checked | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
 
     for ( auto state1 : { A::NoState, Q::Hovered, Q::Focused, Q::Pressed } )
     {
@@ -1612,6 +1624,7 @@ QskMaterial3Skin::QskMaterial3Skin( QObject* parent )
 {
     declareSkinlet< QskProgressBar, QskMaterial3ProgressBarSkinlet >();
     declareSkinlet< QskSlider, QskMaterial3SliderSkinlet >();
+    declareSkinlet< QskTextField, QskMaterial3TextFieldSkinlet >();
 }
 
 QskMaterial3Skin::~QskMaterial3Skin()
