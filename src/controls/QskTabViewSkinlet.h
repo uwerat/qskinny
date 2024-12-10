@@ -17,7 +17,7 @@ class QSK_EXPORT QskTabViewSkinlet : public QskSkinlet
     using Inherited = QskSkinlet;
 
   public:
-    enum NodeRole
+    enum NodeRole : quint8
     {
         PageRole,
         RoleCount

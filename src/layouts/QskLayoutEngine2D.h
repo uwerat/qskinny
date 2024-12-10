@@ -52,7 +52,7 @@ class QSK_EXPORT QskLayoutEngine2D
   protected:
     QRectF geometryAt( const QskLayoutElement*, const QRect& grid ) const;
 
-    enum
+    enum : quint8
     {
         ElementCache = 1 << 0,
         LayoutCache  = 1 << 1

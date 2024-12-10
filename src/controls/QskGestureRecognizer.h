@@ -32,7 +32,7 @@ class QSK_EXPORT QskGestureRecognizer : public QObject
     using Inherited = QObject;
 
   public:
-    enum State
+    enum State : quint8
     {
         Idle,
         Pending,

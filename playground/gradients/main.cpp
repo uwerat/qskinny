@@ -11,7 +11,7 @@
 #include <QskGradient.h>
 #include <QskGradientDirection.h>
 #include <QskLinearBox.h>
-#include <QskTextInput.h>
+#include <QskTextField.h>
 #include <QskTextLabel.h>
 #include <QskWindow.h>
 #include <QskRgbValue.h>
@@ -50,14 +50,14 @@ namespace
         {
             new QskTextLabel( label, this );
 
-            m_input = new QskTextInput( this );
-            m_input->setValidator( new InputValidator( m_input ) );
-            m_input->setText( QString::number( value ) );
+            m_textField = new QskTextField( this );
+            m_textField->setValidator( new InputValidator( m_textField ) );
+            m_textField->setText( QString::number( value ) );
 
-            const QFontMetricsF fm( m_input->font() );
-            m_input->setFixedWidth( fm.horizontalAdvance( "-0.000" ) );
+            const QFontMetricsF fm( m_textField->font() );
+            m_textField->setFixedWidth( fm.horizontalAdvance( "-0.000" ) );
 
-            connect( m_input, &QskTextInput::editingChanged,
+            connect( m_textField, &QskTextField::editingChanged,
                 this, [ this ]( bool on ) { if ( !on ) Q_EMIT valueChanged(); } );
 
             setSizePolicy( QskSizePolicy::Fixed, QskSizePolicy::Fixed );
@@ -65,14 +65,14 @@ namespace
 
         qreal value() const
         {
-            return m_input->text().toDouble();
+            return m_textField->text().toDouble();
         }
 
       Q_SIGNALS:
         void valueChanged();
 
       private:
-        QskTextInput* m_input;
+        QskTextField* m_textField;
     };
 
     class VectorBox : public QskLinearBox
