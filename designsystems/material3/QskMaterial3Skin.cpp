@@ -107,23 +107,23 @@ namespace
     /*
         mapping between px/pt and Qt's logical coordinates
      */
-    inline constexpr double operator ""_px( long double value ) Q_DECL_UNUSED
+    Q_DECL_UNUSED inline constexpr double operator ""_px( long double value )
     {
         return static_cast< double >( value );
     }
 
-    inline constexpr double operator ""_px( unsigned long long value ) Q_DECL_UNUSED
+    Q_DECL_UNUSED inline constexpr double operator ""_px( unsigned long long value )
     {
         return static_cast< double >( value );
     }
 
-    inline constexpr double operator ""_pt( long double value ) Q_DECL_UNUSED
+    Q_DECL_UNUSED inline constexpr double operator ""_pt( long double value )
     {
         // px: 1/96 inch, pt: 1/72 inch
         return value * 72.0 / 96.0;
     }
 
-    inline constexpr double operator ""_pt( unsigned long long value ) Q_DECL_UNUSED
+    Q_DECL_UNUSED inline constexpr double operator ""_pt( unsigned long long value )
     {
         return value * 72.0 / 96.0;
     }
