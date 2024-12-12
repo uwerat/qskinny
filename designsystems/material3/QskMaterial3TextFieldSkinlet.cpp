@@ -21,22 +21,10 @@ namespace
 
     QString effectiveLabelText( const QskTextField* textField )
     {
-        QString text;
+        if ( !textField->isEditing() && textField->text().isEmpty() )
+            return QString();
 
-        if ( textField->text().isEmpty() &&
-            !( textField->isReadOnly() || textField->isEditing() ) )
-        {
-            auto text = textField->placeholderText();
-            if ( text.isEmpty() )
-                text = textField->labelText();
-
-            return text;
-        }
-
-        if ( text.isEmpty() )
-            return textField->labelText();
-
-        return QString();
+        return textField->labelText();
     }
 
     inline bool hasCharacterCount( const QskTextField* textField )
