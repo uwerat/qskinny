@@ -29,28 +29,31 @@ QRectF QskFluent2TextFieldSkinlet::subControlRect( const QskSkinnable* skinnable
     }
     else if ( subControl == Q::LabelText )
     {
-        auto rect = contentsRect;
-        rect.setHeight( skinnable->strutSizeHint( subControl ).height() );
+        const auto rect = subControlRect( skinnable, contentsRect, Q::Panel );
+        const auto h = skinnable->effectiveFontHeight( Q::LabelText );
 
-        return rect;
+        return QRectF( rect.x(), rect.y() - h, rect.width(), h );
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QSizeF QskFluent2TextFieldSkinlet::adjustSizeHint(
-    const QskSkinnable* skinnable, Qt::SizeHint which, const QSizeF& oldHint ) const
+QSizeF QskFluent2TextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    qreal h = skinnable->strutSizeHint( Q::Panel ).height();
+    auto hint = Inherited::sizeHint( skinnable, which, constraint );
 
-    const auto textField = static_cast< const Q* >( skinnable );
+    const auto textField = static_cast< const QskTextField* >( skinnable );
     if ( !textField->labelText().isEmpty() )
-        h += textField->strutSizeHint( Q::LabelText ).height();
+    {
+        // spacing ???
+        hint.rheight() += textField->strutSizeHint( Q::LabelText ).height();
+    }
 
-    return QSizeF( oldHint.width(), h );
+    return hint;
 }
 
 #include "moc_QskFluent2TextFieldSkinlet.cpp"

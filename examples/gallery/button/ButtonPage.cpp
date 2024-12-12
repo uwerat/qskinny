@@ -38,7 +38,7 @@ namespace
             : ButtonBox( Qt::Horizontal, 3, parent )
         {
             setDefaultAlignment( Qt::AlignCenter );
-            setSpacing( 25 );
+            setSpacing( 10 );
             populate();
         }
 

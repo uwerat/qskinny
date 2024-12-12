@@ -299,7 +299,7 @@ class QskTextField::PrivateData
 {
   public:
     PrivateData()
-        : emphasis( NoEmphasis )
+        : style( PlainStyle )
     {
     }
 
@@ -310,8 +310,7 @@ class QskTextField::PrivateData
     QString supportingText;
 
     unsigned int activationModes : 3;
-    bool hasPanel : 1;
-    int emphasis : 4;
+    Style style : 2;
 };
 
 QskTextField::QskTextField( QQuickItem* parent )
@@ -319,7 +318,6 @@ QskTextField::QskTextField( QQuickItem* parent )
     , m_data( new PrivateData() )
 {
     m_data->activationModes = ActivationOnMouse | ActivationOnKey;
-    m_data->hasPanel = true;
 
     setPolishOnResize( true );
 
@@ -358,23 +356,6 @@ QskTextField::QskTextField( const QString& text, QQuickItem* parent )
 
 QskTextField::~QskTextField()
 {
-}
-
-void QskTextField::setPanel( bool on )
-{
-    if ( on != m_data->hasPanel )
-    {
-        m_data->hasPanel = on;
-
-        resetImplicitSize();
-        polish();
-        update();
-    }
-}
-
-bool QskTextField::hasPanel() const
-{
-    return m_data->hasPanel;
 }
 
 bool QskTextField::event( QEvent* event )
@@ -556,27 +537,6 @@ void QskTextField::hoverLeaveEvent( QHoverEvent* event )
     Inherited::hoverLeaveEvent( event );
 }
 
-QSizeF QskTextField::layoutSizeHint( Qt::SizeHint which, const QSizeF& ) const
-{
-    if ( which != Qt::PreferredSize )
-        return QSizeF();
-
-    auto input = m_data->textInput;
-
-    input->updateMetrics();
-
-    QSizeF hint( input->implicitWidth(), input->implicitHeight() );
-
-    if ( m_data->hasPanel )
-    {
-        hint = outerBoxSize( Panel, hint );
-        hint = hint.expandedTo( strutSizeHint( Panel ) );
-    }
-
-    const auto textInputSkinlet = static_cast< const QskTextFieldSkinlet* >( effectiveSkinlet() );
-    return textInputSkinlet->adjustSizeHint( this, which, hint );
-}
-
 void QskTextField::updateLayout()
 {
     m_data->textInput->updateMetrics();
@@ -590,22 +550,22 @@ void QskTextField::updateNode( QSGNode* node )
     Inherited::updateNode( node );
 }
 
-void QskTextField::setEmphasis( Emphasis emphasis )
+void QskTextField::setStyle( Style style )
 {
-    if ( emphasis != m_data->emphasis )
+    if ( style != m_data->style )
     {
-        m_data->emphasis = emphasis;
+        m_data->style = style;
 
         resetImplicitSize();
         update();
 
-        Q_EMIT emphasisChanged( emphasis );
+        Q_EMIT styleChanged( style );
     }
 }
 
-QskTextField::Emphasis QskTextField::emphasis() const
+QskTextField::Style QskTextField::style() const
 {
-    return static_cast< Emphasis >( m_data->emphasis );
+    return static_cast< Style >( m_data->style );
 }
 
 QString QskTextField::text() const
@@ -821,14 +781,7 @@ void QskTextField::ensureVisible( int position )
 
 QskAspect::Variation QskTextField::effectiveVariation() const
 {
-    switch( m_data->emphasis )
-    {
-        case LowEmphasis:
-            return QskAspect::Small;
-
-        default:
-            return QskAspect::NoVariation;
-    }
+    return static_cast< QskAspect::Variation >( m_data->style );
 }
 
 int QskTextField::cursorPosition() const

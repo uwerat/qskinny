@@ -57,11 +57,8 @@ class QSK_EXPORT QskTextField : public QskControl
         WRITE setPasswordMaskDelay RESET resetPasswordMaskDelay
         NOTIFY passwordMaskDelayChanged )
 
-    Q_PROPERTY( bool panel READ hasPanel
-        WRITE setPanel NOTIFY panelChanged )
-
-    Q_PROPERTY( Emphasis emphasis READ emphasis
-        WRITE setEmphasis NOTIFY emphasisChanged )
+    Q_PROPERTY( Style style READ style
+        WRITE setStyle NOTIFY styleChanged )
 
     using Inherited = QskControl;
 
@@ -72,12 +69,14 @@ class QSK_EXPORT QskTextField : public QskControl
 
     QSK_STATES( ReadOnly, Editing, Error )
 
-    enum Emphasis
+    enum Style : quint8
     {
-        LowEmphasis      = -1,
-        NoEmphasis       = 0,
+        PlainStyle,
+
+        OutlinedStyle,
+        FilledStyle
     };
-    Q_ENUM( Emphasis )
+    Q_ENUM( Style )
 
     enum ActivationMode : quint8
     {
@@ -111,8 +110,8 @@ class QSK_EXPORT QskTextField : public QskControl
 
     void setupFrom( const QQuickItem* );
 
-    void setEmphasis( Emphasis );
-    Emphasis emphasis() const;
+    void setStyle( Style );
+    Style style() const;
 
     QString text() const;
 
@@ -126,9 +125,6 @@ class QSK_EXPORT QskTextField : public QskControl
 
     void setSupportingText( const QString& );
     QString supportingText() const;
-
-    void setPanel( bool );
-    bool hasPanel() const;
 
     void setFontRole( const QskFontRole& role );
     void resetFontRole();
@@ -203,13 +199,10 @@ class QSK_EXPORT QskTextField : public QskControl
     void setEditing( bool );
 
   Q_SIGNALS:
-    void emphasisChanged( Emphasis );
-
     void editingChanged( bool );
 
     void activationModesChanged();
     void readOnlyChanged( bool );
-    void panelChanged( bool );
 
     void textChanged( const QString& );
     void labelTextChanged( const QString& );
@@ -223,6 +216,7 @@ class QSK_EXPORT QskTextField : public QskControl
     void fontRoleChanged();
     void alignmentChanged();
     void wrapModeChanged( QskTextOptions::WrapMode );
+    void styleChanged( Style );
 
     void overwriteModeChanged( bool );
     void maximumLengthChanged( int );
@@ -253,8 +247,6 @@ class QSK_EXPORT QskTextField : public QskControl
 
     void keyPressEvent( QKeyEvent* ) override;
     void keyReleaseEvent( QKeyEvent* ) override;
-
-    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
     void updateLayout() override;
     void updateNode( QSGNode* ) override;

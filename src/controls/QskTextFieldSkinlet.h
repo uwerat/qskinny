@@ -8,6 +8,8 @@
 
 #include "QskSkinlet.h"
 
+class QskTextField;
+
 class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
 {
     Q_GADGET
@@ -34,12 +36,14 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
     QRectF subControlRect( const QskSkinnable*,
         const QRectF& rect, QskAspect::Subcontrol ) const override;
 
-    virtual QSizeF adjustSizeHint( const QskSkinnable*,
-        Qt::SizeHint, const QSizeF& ) const;
+    QSizeF sizeHint( const QskSkinnable*,
+        Qt::SizeHint, const QSizeF& ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
+
+    virtual QString effectivePlaceholderText( const QskTextField* ) const;
 };
 
 #endif

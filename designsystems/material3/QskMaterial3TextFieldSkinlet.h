@@ -16,7 +16,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3TextFieldSkinlet : public QskTextFieldSki
     using Inherited = QskTextFieldSkinlet;
 
   public:
-    enum NodeRole
+    enum NodeRole : quint8
     {
         SupportingTextRole = Inherited::RoleCount,
         TrailingIconRippleRole,
@@ -29,12 +29,14 @@ class QSK_MATERIAL3_EXPORT QskMaterial3TextFieldSkinlet : public QskTextFieldSki
     QRectF subControlRect( const QskSkinnable*,
         const QRectF& rect, QskAspect::Subcontrol ) const override;
 
-    QSizeF adjustSizeHint( const QskSkinnable*,
+    QSizeF sizeHint( const QskSkinnable*,
         Qt::SizeHint, const QSizeF& ) const override;
 
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
+
+    QString effectivePlaceholderText( const QskTextField* ) const override;
 };
 
 #endif

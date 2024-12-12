@@ -67,14 +67,15 @@ namespace
         TextInputBox( QQuickItem* parent = nullptr )
             : QskLinearBox( Qt::Horizontal, 3, parent )
         {
-            setSpacing( 25 );
+            setSpacing( 20 );
             setDefaultAlignment( Qt::AlignHCenter | Qt::AlignTop );
 
-            for( const auto& emphasis : { QskTextField::NoEmphasis, QskTextField::LowEmphasis } )
+            for( const auto style :
+                { QskTextField::FilledStyle, QskTextField::OutlinedStyle } )
             {
                 {
                     auto field = new QskTextField( this );
-                    field->setEmphasis( emphasis );
+                    field->setStyle( style );
                     field->setLabelText( "Name" );
                     field->setText( "John Doe" );
                     field->setPlaceholderText( "<Name>" );
@@ -83,21 +84,21 @@ namespace
 
                 {
                     auto field = new QskTextField( this );
-                    field->setEmphasis( emphasis );
+                    field->setStyle( style );
                     field->setLabelText( "Nickname" );
                     field->setPlaceholderText( "<Nickname>" );
                     field->setSupportingText( "Optional" );
                 }
                 {
                     auto field = new QskTextField( this );
-                    field->setEmphasis( emphasis );
+                    field->setStyle( style );
                     field->setLeadingIcon( {} );
                     field->setPlaceholderText( "<no label text>" );
                 }
 
                 {
                     auto field = new QskTextField( this );
-                    field->setEmphasis( emphasis );
+                    field->setStyle( style );
                     field->setSkinStateFlag( QskTextField::Error );
                     field->setText( "Error Text" );
                     field->setLabelText( "error" );
@@ -107,7 +108,7 @@ namespace
 
                 {
                     auto field = new QskTextField( this );
-                    field->setEmphasis( emphasis );
+                    field->setStyle( style );
                     field->setReadOnly( true );
                     field->setText( "Read Only" );
                     field->setLabelText( "read only" );
@@ -116,7 +117,7 @@ namespace
 
                 {
                     auto field = new QskTextField( this );
-                    field->setEmphasis( emphasis );
+                    field->setStyle( style );
                     field->setMaxLength( 15 );
                     field->setLabelText( "password" );
                     field->setEchoMode( QskTextField::Password );
