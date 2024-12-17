@@ -929,7 +929,7 @@ void Editor::setupSpinBox()
         setBoxBorderColors( subControl, m_pal.outline );
 
         setPadding( subControl, 4 );
-        setStrutSize( subControl, 16, 8 );
+        setStrutSize( subControl, 16, -1 );
 
         // Qt/Fusion uses a linear gradient, TODO ...
 
