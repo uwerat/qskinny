@@ -397,25 +397,25 @@ void Editor::setupTextField()
     {
         const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-        setColor( Q::Panel | state, m_pal.color( colorGroup, P::Base ) );
-        setColor( Q::Panel | SK::Selected | state, m_pal.color( colorGroup, P::Highlight ) );
+        setColor( Q::TextPanel | state, m_pal.color( colorGroup, P::Base ) );
+        setColor( Q::TextPanel | SK::Selected | state, m_pal.color( colorGroup, P::Highlight ) );
 
         setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
         setColor( Q::Text | SK::Selected | state, m_pal.color( colorGroup, P::HighlightedText ) );
         setColor( Q::PlaceholderText, m_pal.color( colorGroup, P::PlaceholderText ) );
     }
 
-    setColor( Q::Panel | Q::ReadOnly, m_pal.disabled( P::Base ) );
+    setColor( Q::TextPanel | Q::ReadOnly, m_pal.disabled( P::Base ) );
 
-    setBoxBorderMetrics( Q::Panel, 1_px );
+    setBoxBorderMetrics( Q::TextPanel, 1_px );
 
-    setBoxBorderColors( Q::Panel, m_pal.outline );
+    setBoxBorderColors( Q::TextPanel, m_pal.outline );
 #ifdef SHOW_FOCUS
-    setBoxBorderColors( Q::Panel | Q::Focused, m_pal.highlightedOutline );
+    setBoxBorderColors( Q::TextPanel | Q::Focused, m_pal.highlightedOutline );
 #endif
 
-    setBoxShape( Q::Panel, 2_px );
-    setPadding( Q::Panel, 4_px );
+    setBoxShape( Q::TextPanel, 2_px );
+    setPadding( Q::TextPanel, 4_px );
 }
 
 void Editor::setupProgressBar()

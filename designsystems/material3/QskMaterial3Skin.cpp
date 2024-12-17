@@ -446,8 +446,8 @@ void Editor::setupTextField()
     {
         // Text
 
-        setAnimation( Q::Panel | A::Color, qskDuration );
-        setAnimation( Q::Panel | A::Metric, qskDuration );
+        setAnimation( Q::TextPanel | A::Color, qskDuration );
+        setAnimation( Q::TextPanel | A::Metric, qskDuration );
     }
 
     for ( const auto variation : { A::NoVariation, Filled, Outlined } )
@@ -486,8 +486,8 @@ void Editor::setupTextField()
 
         if ( variation != A::NoVariation )
         {
-            setStrutSize( Q::Panel,  -1.0, 56_px );
-            setPadding( Q::Panel, 16_px, 8_px, 16_px, 8_px );
+            setStrutSize( Panel,  -1.0, 56_px );
+            setPadding( Panel, 16_px, 8_px, 16_px, 8_px );
         }
 
         setBoxBorderMetrics( Panel, borderMetrics[0] );
@@ -502,7 +502,7 @@ void Editor::setupTextField()
         setBoxBorderColors( Panel | Q::Error, m_pal.error,
             { QskStateCombination::CombinationNoState, activeStates | Q::Hovered } );
 
-        setColor( Panel | SK::Selected, m_pal.primary12 );
+        setColor( Q::TextPanel | variation | SK::Selected, m_pal.primary12 );
     }
 
     // LeadingIcon

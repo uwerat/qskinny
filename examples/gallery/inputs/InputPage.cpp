@@ -137,8 +137,8 @@ namespace
             : QskComboBox( parent )
         {
             addOption( QString(), "Plain" );
-            addOption( QString(), "Filled" );
             addOption( QString(), "Outlined" );
+            addOption( QString(), "Filled" );
         }
     };
 }
@@ -216,7 +216,7 @@ InputPage::InputPage( QQuickItem* parent )
     connect( styleBox, &QskComboBox::currentIndexChanged,
         textInputBox, &TextInputBox::setStyle );
 
-    styleBox->setCurrentIndex( QskTextField::FilledStyle );
+    styleBox->setCurrentIndex( QskTextField::OutlinedStyle );
 }
 
 void InputPage::syncValues( qreal value )

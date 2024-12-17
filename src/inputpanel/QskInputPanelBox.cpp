@@ -32,7 +32,7 @@ namespace
         QskAspect::Subcontrol substitutedSubcontrol(
             QskAspect::Subcontrol subControl ) const override
         {
-            if ( subControl == QskTextField::Panel )
+            if ( subControl == QskTextField::TextPanel )
                 return m_panelBox->effectiveSubcontrol( QskInputPanelBox::ProxyPanel );
 
             if ( subControl == QskTextField::Text )
@@ -184,7 +184,7 @@ QskAspect::Subcontrol QskInputPanelBox::substitutedSubcontrol(
 #if 1
     // TODO ...
     if ( subControl == QskInputPanelBox::ProxyPanel )
-        return QskTextField::Panel;
+        return QskTextField::TextPanel;
 
     if ( subControl == QskInputPanelBox::ProxyText )
         return QskTextField::Text;

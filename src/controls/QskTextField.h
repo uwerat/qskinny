@@ -63,7 +63,7 @@ class QSK_EXPORT QskTextField : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Panel, LeadingIcon, LabelText, Text,
+    QSK_SUBCONTROLS( Panel, LeadingIcon, LabelText, TextPanel, Text,
         TrailingIconRipple, TrailingIcon, PlaceholderText, SupportingText,
         CharacterCount )
 

@@ -16,6 +16,7 @@ QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextField, Panel )
 QSK_SUBCONTROL( QskTextField, Text )
+QSK_SUBCONTROL( QskTextField, TextPanel )
 
 QSK_SUBCONTROL( QskTextField, LeadingIcon )
 QSK_SUBCONTROL( QskTextField, LabelText )
@@ -271,7 +272,7 @@ namespace
             states |= textField->skinStates();
 #endif
 
-            color = textField->color( QskTextField::Panel | states );
+            color = textField->color( QskTextField::TextPanel | states );
             if ( d->selectionColor != color )
             {
                 d->selectionColor = color;

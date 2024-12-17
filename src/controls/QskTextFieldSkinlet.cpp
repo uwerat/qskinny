@@ -15,7 +15,7 @@ QSK_SYSTEM_STATE( QskTextFieldSkinlet, Selected, QskAspect::FirstSystemState << 
 QskTextFieldSkinlet::QskTextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, LabelTextRole, PlaceholderTextRole, } );
+    setNodeRoles( { PanelRole, TextPanelRole, LabelTextRole, PlaceholderTextRole, } );
 }
 
 QskTextFieldSkinlet::~QskTextFieldSkinlet()
@@ -26,12 +26,14 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == Q::Panel )
-    {
         return contentsRect;
-    }
-    else if ( subControl == Q::Text )
+
+    if ( subControl == Q::TextPanel )
+        return skinnable->subControlContentsRect( contentsRect, Q::Panel );
+
+    if ( subControl == Q::Text )
     {
-        auto rect = skinnable->subControlContentsRect( contentsRect, Q::Panel );
+        auto rect = skinnable->subControlContentsRect( contentsRect, Q::TextPanel );
 
         if( !skinnable->symbolHint( Q::LeadingIcon ).isEmpty() )
         {
@@ -67,7 +69,7 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
         if( !skinnable->symbolHint( subControl ).isEmpty() )
         {
             const auto panelRect = skinnable->subControlContentsRect(
-                contentsRect, Q::Panel );
+                contentsRect, Q::TextPanel );
 
             auto rect = panelRect;
 
@@ -84,7 +86,7 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
         if( !skinnable->symbolHint( subControl ).isEmpty() )
         {
             const auto panelRect = skinnable->subControlContentsRect(
-                contentsRect, Q::Panel );
+                contentsRect, Q::TextPanel );
 
             auto rect = panelRect;
 
@@ -111,7 +113,7 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
     {
         case PanelRole:
         {
-            return updateBoxNode( skinnable, node, Q::Panel );
+            return updateBoxNode( skinnable, node, Q::TextPanel );
         }
         case PlaceholderTextRole:
         {
@@ -162,6 +164,9 @@ QSizeF QskTextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
     const QFontMetricsF fm( textField->effectiveFont( Q::Text ) );
 
     auto hint = fm.size( Qt::TextSingleLine | Qt::TextExpandTabs, textField->text() );
+
+    hint = textField->outerBoxSize( Q::TextPanel, hint );
+    hint = hint.expandedTo( textField->strutSizeHint( Q::TextPanel ) );
 
     hint = textField->outerBoxSize( Q::Panel, hint );
     hint = hint.expandedTo( textField->strutSizeHint( Q::Panel ) );

@@ -243,17 +243,19 @@ QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
                 auto clipRect = textField->subControlRect( Q::LabelText );
                 if ( !clipRect.isEmpty() )
                 {
-                    const auto panelRect = textField->subControlRect( Q::Panel );
+                    const auto subControl = Q::Panel;
 
-                    auto borderColors = textField->boxBorderColorsHint( Q::Panel );
+                    const auto panelRect = textField->subControlRect( subControl );
+
+                    auto borderColors = textField->boxBorderColorsHint( subControl );
                     borderColors = outlineColors( borderColors, panelRect, clipRect );
 
                     return updateBoxNode( skinnable, node,
                         panelRect,
-                        skinnable->boxShapeHint( Q::Panel ),
-                        skinnable->boxBorderMetricsHint( Q::Panel ),
+                        skinnable->boxShapeHint( subControl ),
+                        skinnable->boxBorderMetricsHint( subControl ),
                         borderColors,
-                        skinnable->gradientHint( Q::Panel ) );
+                        skinnable->gradientHint( subControl ) );
                 }
             }
 
@@ -288,21 +290,17 @@ QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
 }
 
 QSizeF QskMaterial3TextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
-    Qt::SizeHint which, const QSizeF& ) const
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
+    auto hint = Inherited::sizeHint( skinnable, which, constraint );
+    
     const auto textField = static_cast< const QskTextField* >( skinnable );
 
-    const QFontMetricsF fm( textField->effectiveFont( Q::Text ) );
-
-    auto hint = fm.size( Qt::TextSingleLine | Qt::TextExpandTabs, textField->text() );
     if( textField->style() != QskTextField::PlainStyle )
         hint.rheight() += textField->effectiveFontHeight( Q::LabelText ) + spacingV;
-
-    hint = textField->outerBoxSize( Q::Panel, hint );
-    hint = hint.expandedTo( textField->strutSizeHint( Q::Panel ) );
 
     if( hasBottomText( textField ) )
     {

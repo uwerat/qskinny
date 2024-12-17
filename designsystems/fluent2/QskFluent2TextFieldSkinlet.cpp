@@ -20,16 +20,16 @@ QskFluent2TextFieldSkinlet::~QskFluent2TextFieldSkinlet()
 QRectF QskFluent2TextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
-    if ( subControl == Q::Panel )
+    if ( subControl == Q::TextPanel )
     {
-        auto rect = contentsRect;
+        auto rect = subControlRect( skinnable, contentsRect, Q::Panel );
         rect.setY( rect.bottom() - skinnable->strutSizeHint( subControl ).height() );
 
         return rect;
     }
     else if ( subControl == Q::LabelText )
     {
-        const auto rect = subControlRect( skinnable, contentsRect, Q::Panel );
+        const auto rect = subControlRect( skinnable, contentsRect, Q::TextPanel );
         const auto h = skinnable->effectiveFontHeight( Q::LabelText );
 
         return QRectF( rect.x(), rect.y() - h, rect.width(), h );
