@@ -5,8 +5,6 @@
 
 #include "QskTextInput.h"
 #include "QskTextInputSkinlet.h"
-
-#include "QskEvent.h"
 #include "QskFontRole.h"
 #include "QskQuick.h"
 
@@ -323,12 +321,6 @@ QskTextInput::QskTextInput( QQuickItem* parent )
     m_data->wrappedInput->setAcceptedMouseButtons( Qt::NoButton );
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
-}
-
-QskTextInput::QskTextInput( const QString& text, QQuickItem* parent )
-    : QskTextInput( parent )
-{
-    setText( text );
 }
 
 QskTextInput::~QskTextInput()

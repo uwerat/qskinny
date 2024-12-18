@@ -177,7 +177,6 @@ class QSK_EXPORT QskTextInput : public QskControl
 
   protected:
     QskTextInput( QQuickItem* parent = nullptr );
-    QskTextInput( const QString& text, QQuickItem* parent = nullptr );
 
     bool event( QEvent* ) override;
 

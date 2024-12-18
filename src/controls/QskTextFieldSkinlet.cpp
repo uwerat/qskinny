@@ -24,14 +24,10 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == Q::Panel )
-    {
         return contentsRect;
-    }
 
     if ( subControl == Q::TextPanel )
-    {
         return skinnable->subControlContentsRect( contentsRect, Q::Panel );
-    }
 
     if ( subControl == Q::Text )
     {
@@ -58,7 +54,8 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
 
         return rect;
     }
-    else if ( subControl == Q::PlaceholderText )
+
+    if ( subControl == Q::PlaceholderText )
     {
         const auto textField = static_cast< const QskTextField* >( skinnable );
         if( textField->text().isEmpty() )
@@ -66,7 +63,8 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
 
         return QRectF();
     }
-    else if ( subControl == Q::LeadingIcon )
+
+    if ( subControl == Q::LeadingIcon )
     {
         if( !skinnable->symbolHint( subControl ).isEmpty() )
         {
@@ -83,7 +81,8 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
 
         return QRectF();
     }
-    else if ( subControl == Q::TrailingIcon )
+
+    if ( subControl == Q::TrailingIcon )
     {
         if( !skinnable->symbolHint( subControl ).isEmpty() )
         {

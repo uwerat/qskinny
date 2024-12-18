@@ -434,7 +434,7 @@ void Editor::setupTextLabel()
 void Editor::setupTextField()
 {
     using Q = QskTextField;
-    using SK = QskTextFieldSkinlet;
+    using SK = QskTextInputSkinlet;
     using M3 = QskMaterial3Skin;
     using A = QskAspect;
 
