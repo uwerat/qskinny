@@ -566,9 +566,9 @@ void Editor::setupTextField()
 
     // TrailingIconRipple
 
-    setStrutSize( Q::TrailingIconRipple, { 45_px, 45_px } );
-    setGradient( Q::TrailingIconRipple | Q::Hovered, m_pal.onSurface8 );
-    setBoxShape( Q::TrailingIconRipple, 100, Qt::RelativeSize );
+    setStrutSize( Q::Ripple, { 45_px, 45_px } );
+    setGradient( Q::Ripple | Q::Hovered, m_pal.onSurface8 );
+    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
 
 
     // SupportingText

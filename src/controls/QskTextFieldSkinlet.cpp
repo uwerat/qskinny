@@ -10,8 +10,6 @@
 
 using Q = QskTextField;
 
-QSK_SYSTEM_STATE( QskTextFieldSkinlet, Selected, QskAspect::FirstSystemState << 3 )
-
 QskTextFieldSkinlet::QskTextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
@@ -26,10 +24,14 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == Q::Panel )
+    {
         return contentsRect;
+    }
 
     if ( subControl == Q::TextPanel )
+    {
         return skinnable->subControlContentsRect( contentsRect, Q::Panel );
+    }
 
     if ( subControl == Q::Text )
     {
@@ -113,8 +115,9 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
     {
         case PanelRole:
         {
-            return updateBoxNode( skinnable, node, Q::TextPanel );
+            return updateBoxNode( skinnable, node, Q::Panel );
         }
+
         case PlaceholderTextRole:
         {
             const auto text = effectivePlaceholderText( textField );
@@ -139,6 +142,7 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
             return updateTextNode( skinnable, node,
                 textField->labelText(), Q::LabelText );
         }
+
         case LeadingIconRole:
         {
             return updateSymbolNode( skinnable, node, Q::LeadingIcon );
@@ -154,22 +158,14 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
 }
 
 QSizeF QskTextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
-    Qt::SizeHint which, const QSizeF& ) const
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    const auto textField = static_cast< const QskTextField* >( skinnable );
-
-    const QFontMetricsF fm( textField->effectiveFont( Q::Text ) );
-
-    auto hint = fm.size( Qt::TextSingleLine | Qt::TextExpandTabs, textField->text() );
-
-    hint = textField->outerBoxSize( Q::TextPanel, hint );
-    hint = hint.expandedTo( textField->strutSizeHint( Q::TextPanel ) );
-
-    hint = textField->outerBoxSize( Q::Panel, hint );
-    hint = hint.expandedTo( textField->strutSizeHint( Q::Panel ) );
+    auto hint = Inherited::sizeHint( skinnable, which, constraint );
+    hint = skinnable->outerBoxSize( Q::Panel, hint );
+    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Panel ) );
 
     return hint;
 }

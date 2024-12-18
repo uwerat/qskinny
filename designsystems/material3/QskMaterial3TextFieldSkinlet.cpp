@@ -82,10 +82,10 @@ QskMaterial3TextFieldSkinlet::QskMaterial3TextFieldSkinlet( QskSkin* skin )
 {
     appendNodeRoles( {
         LeadingIconRole,
+        TrailingIconRole,
+        RippleRole,
         SupportingTextRole,
         CharacterCountRole,
-        TrailingIconRippleRole,
-        TrailingIconRole,
     } );
 }
 
@@ -204,16 +204,16 @@ QRectF QskMaterial3TextFieldSkinlet::subControlRect( const QskSkinnable* skinnab
 
         return QRectF();
     }
-    else if ( subControl == Q::TrailingIconRipple )
+    else if ( subControl == Q::Ripple )
     {
         const auto cursorPos = textField->effectiveSkinHint(
-            Q::TrailingIconRipple | Q::Hovered | QskAspect::Metric | QskAspect::Position ).toPointF();
+            Q::Ripple | Q::Hovered | QskAspect::Metric | QskAspect::Position ).toPointF();
 
         if ( !cursorPos.isNull() )
         {
             const auto r = textField->subControlRect( Q::TrailingIcon );
 
-            if( !cursorPos.isNull() && r.contains( cursorPos ) )
+            if( r.contains( cursorPos ) )
             {
                 QRectF rect( QPointF(), textField->strutSizeHint( subControl ) );
                 rect.moveCenter( r.center() );
@@ -274,9 +274,9 @@ QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
                 maxLengthString( textField ), Q::CharacterCount );
         }
 
-        case TrailingIconRippleRole:
+        case RippleRole:
         {
-            return updateBoxNode( skinnable, node, Q::TrailingIconRipple );
+            return updateBoxNode( skinnable, node, Q::Ripple );
         }
 
         case LabelTextRole:
