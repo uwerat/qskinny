@@ -52,7 +52,7 @@ class QSK_EXPORT QskTextInput : public QskControl
   public:
     QSK_SUBCONTROLS( TextPanel, Text )
 
-    QSK_STATES( ReadOnly, Editing )
+    QSK_STATES( ReadOnly, Editing, Error )
 
     enum ActivationMode : quint8
     {

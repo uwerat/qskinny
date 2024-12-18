@@ -19,8 +19,6 @@ QSK_SUBCONTROL( QskTextField, PlaceholderText )
 QSK_SUBCONTROL( QskTextField, SupportingText )
 QSK_SUBCONTROL( QskTextField, CharacterCount )
 
-QSK_SYSTEM_STATE( QskTextField, Error, QskAspect::FirstSystemState << 4 )
-
 static constexpr QskAspect qskAspectRipple()
 {
     using Q = QskTextField;

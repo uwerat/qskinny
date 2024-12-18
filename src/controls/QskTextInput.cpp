@@ -20,6 +20,7 @@ QSK_SUBCONTROL( QskTextInput, TextPanel )
 
 QSK_SYSTEM_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
+QSK_SYSTEM_STATE( QskTextInput, Error, QskAspect::FirstSystemState << 4 )
 
 static inline void qskPropagateReadOnly( QskTextInput* input )
 {

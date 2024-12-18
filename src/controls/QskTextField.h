@@ -31,8 +31,6 @@ class QSK_EXPORT QskTextField : public QskTextInput
     QSK_SUBCONTROLS( Panel, LabelText, PlaceholderText,
         LeadingIcon, TrailingIcon, Ripple, SupportingText, CharacterCount )
 
-    QSK_STATES( Error )
-
     enum Style : quint8
     {
         PlainStyle,
