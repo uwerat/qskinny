@@ -6,27 +6,12 @@
 #include "QskTextFieldSkinlet.h"
 #include "QskTextField.h"
 
-#include <qfontmetrics.h>
-
 using Q = QskTextField;
-
-QSK_SYSTEM_STATE( QskTextFieldSkinlet, Selected, QskAspect::FirstSystemState << 3 )
-
-static QString qskEffectivePlaceholderText( const QskTextField* textField )
-{
-    if ( textField->text().isEmpty() && 
-        !( textField->isReadOnly() || textField->isEditing() ) )
-    {
-        return textField->placeholderText();
-    }
-
-    return QString();
-}
 
 QskTextFieldSkinlet::QskTextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, PlaceholderTextRole, } );
+    setNodeRoles( { PanelRole, TextPanelRole, PlaceholderTextRole } );
 }
 
 QskTextFieldSkinlet::~QskTextFieldSkinlet()
@@ -37,14 +22,12 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == Q::Panel )
-    {
         return contentsRect;
-    }
-    else if ( subControl == Q::Text )
-    {
+
+    if ( subControl == Q::TextPanel )
         return skinnable->subControlContentsRect( contentsRect, Q::Panel );
-    }
-    else if ( subControl == Q::PlaceholderText )
+
+    if ( subControl == Q::PlaceholderText )
     {
         const auto textField = static_cast< const QskTextField* >( skinnable );
         if( textField->text().isEmpty() )
@@ -65,14 +48,12 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
     {
         case PanelRole:
         {
-            if ( !textField->hasPanel() )
-                return nullptr;
-
             return updateBoxNode( skinnable, node, Q::Panel );
         }
+
         case PlaceholderTextRole:
         {
-            const auto text = qskEffectivePlaceholderText( textField );
+            const auto text = effectivePlaceholderText( textField );
             if ( text.isEmpty() )
                 return nullptr;
 
@@ -95,24 +76,28 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
 }
 
 QSizeF QskTextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
-    Qt::SizeHint which, const QSizeF& ) const
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    const auto textField = static_cast< const QskTextField* >( skinnable );
-
-    const QFontMetricsF fm( textField->effectiveFont( Q::Text ) );
-
-    auto hint = fm.size( Qt::TextSingleLine | Qt::TextExpandTabs, textField->text() );
-
-    if ( textField->hasPanel() )
-    {
-        hint = textField->outerBoxSize( Q::Panel, hint );
-        hint = hint.expandedTo( textField->strutSizeHint( Q::Panel ) );
-    }
+    auto hint = Inherited::sizeHint( skinnable, which, constraint );
+    hint = skinnable->outerBoxSize( Q::Panel, hint );
+    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Panel ) );
 
     return hint;
+}
+
+QString QskTextFieldSkinlet::effectivePlaceholderText(
+    const QskTextField* textField ) const
+{
+    if ( textField->text().isEmpty() &&
+        !( textField->isReadOnly() || textField->isEditing() ) )
+    {
+        return textField->placeholderText();
+    }
+
+    return QString();
 }
 
 #include "moc_QskTextFieldSkinlet.cpp"

@@ -1776,14 +1776,14 @@ void Editor::setupTextFieldMetrics()
 {
     using Q = QskTextField;
 
-    setStrutSize( Q::Panel, { -1, 30_px } );
-    setPadding( Q::Panel, { 11_px, 0, 11_px, 0 } );
+    setStrutSize( Q::TextPanel, { -1, 30_px } );
+    setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
 
-    setBoxBorderMetrics( Q::Panel, 1_px );
+    setBoxBorderMetrics( Q::TextPanel, 1_px );
     for( const auto& state : { Q::Focused, Q::Editing } )
-        setBoxBorderMetrics( Q::Panel | state, { 1_px, 1_px, 1_px, 2_px } );
+        setBoxBorderMetrics( Q::TextPanel | state, { 1_px, 1_px, 1_px, 2_px } );
 
-    setBoxShape( Q::Panel, 3_px );
+    setBoxShape( Q::TextPanel, 3_px );
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setFontRole( Q::Text, Fluent2::Body );
@@ -1801,7 +1801,7 @@ void Editor::setupTextFieldColors(
 
     const auto& pal = theme.palette;
 
-    setColor( Q::Panel | SK::Selected, pal.fillColor.accent.selectedTextBackground );
+    setColor( Q::TextPanel | SK::Selected, pal.fillColor.accent.selectedTextBackground );
     setColor( Q::Text | SK::Selected, pal.fillColor.textOnAccent.selectedText );
     setColor( Q::PlaceholderText, pal.fillColor.text.secondary );
 
@@ -1837,7 +1837,7 @@ void Editor::setupTextFieldColors(
             textColor = pal.fillColor.text.disabled;
         }
 
-        const auto panel = Q::Panel | section | state;
+        const auto panel = Q::TextPanel | section | state;
         const auto text = Q::Text | section | state;
 
         panelColor = rgbSolid( panelColor, pal.background.solid.base );

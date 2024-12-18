@@ -434,12 +434,12 @@ void Editor::setupTextLabel()
 void Editor::setupTextField()
 {
     using Q = QskTextField;
-    using SK = QskTextFieldSkinlet;
+    using SK = QskTextInputSkinlet;
 
     setStrutSize( Q::Panel,  -1.0, 56_px );
     setPadding( Q::Panel, { 12_px, 8_px, 12_px, 8_px } );
     setGradient( Q::Panel, m_pal.surfaceVariant );
-    setColor( Q::Panel | SK::Selected, m_pal.primary12 );
+    setColor( Q::TextPanel | SK::Selected, m_pal.primary12 );
     setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
     setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_px } );
     setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );
