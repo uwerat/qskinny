@@ -18,9 +18,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3TextFieldSkinlet : public QskTextFieldSki
   public:
     enum NodeRole : quint8
     {
-        RippleRole = Inherited::RoleCount,
-
-        SupportingTextRole,
+        SupportingTextRole = Inherited::RoleCount,
         CharacterCountRole
     };
 

@@ -13,7 +13,9 @@ using Q = QskTextField;
 QskTextFieldSkinlet::QskTextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, TextPanelRole, LabelTextRole, PlaceholderTextRole, } );
+    setNodeRoles( { PanelRole, TextPanelRole,
+        IconRole, ButtonPanelRole, ButtonRole,
+        PlaceholderRole, HeaderRole, FooterRole } );
 }
 
 QskTextFieldSkinlet::~QskTextFieldSkinlet()
@@ -33,16 +35,16 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         auto rect = skinnable->subControlContentsRect( contentsRect, Q::TextPanel );
 
-        if( !skinnable->symbolHint( Q::LeadingIcon ).isEmpty() )
+        if( !skinnable->symbolHint( Q::Icon ).isEmpty() )
         {
-            const auto r = subControlRect( skinnable, contentsRect, Q::LeadingIcon );
+            const auto r = subControlRect( skinnable, contentsRect, Q::Icon );
             if ( !r.isEmpty() )
                 rect.setLeft( r.right() );
         }
 
-        if( !skinnable->symbolHint( Q::TrailingIcon ).isEmpty() )
+        if( !skinnable->symbolHint( Q::Button ).isEmpty() )
         {
-            const auto r = subControlRect( skinnable, contentsRect, Q::TrailingIcon );
+            const auto r = subControlRect( skinnable, contentsRect, Q::Button );
             if( !r.isEmpty() )
                 rect.setRight( r.left() );
         }
@@ -55,7 +57,7 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
         return rect;
     }
 
-    if ( subControl == Q::PlaceholderText )
+    if ( subControl == Q::Placeholder )
     {
         const auto textField = static_cast< const QskTextField* >( skinnable );
         if( textField->text().isEmpty() )
@@ -64,7 +66,7 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
         return QRectF();
     }
 
-    if ( subControl == Q::LeadingIcon )
+    if ( subControl == Q::Icon )
     {
         if( !skinnable->symbolHint( subControl ).isEmpty() )
         {
@@ -82,7 +84,30 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
         return QRectF();
     }
 
-    if ( subControl == Q::TrailingIcon )
+    if ( subControl == Q::ButtonPanel )
+    {
+        const auto textField = static_cast< const QskTextField* >( skinnable );
+
+        const auto aspect = Q::ButtonPanel | Q::Hovered
+            | QskAspect::Metric | QskAspect::Position;
+
+        const auto pos = textField->effectiveSkinHint( aspect ).toPointF();
+
+        if ( !pos.isNull() )
+        {
+            const auto r = textField->subControlRect( Q::Button );
+
+            if( r.contains( pos ) )
+            {
+                QRectF rect( QPointF(), textField->strutSizeHint( subControl ) );
+                rect.moveCenter( r.center() );
+
+                return rect;
+            }
+        }
+    }
+
+    if ( subControl == Q::Button )
     {
         if( !skinnable->symbolHint( subControl ).isEmpty() )
         {
@@ -113,17 +138,15 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
     switch ( nodeRole )
     {
         case PanelRole:
-        {
             return updateBoxNode( skinnable, node, Q::Panel );
-        }
 
-        case PlaceholderTextRole:
+        case PlaceholderRole:
         {
             const auto text = effectivePlaceholderText( textField );
             if ( text.isEmpty() )
                 return nullptr;
 
-            const auto subControl = Q::PlaceholderText;
+            const auto subControl = Q::Placeholder;
 
             QskSkinHintStatus status;
 
@@ -136,21 +159,27 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
                 textField->alignmentHint( subControl, Qt::AlignLeft ),
                 options, text, subControl );
         }
-        case LabelTextRole:
+
+        case HeaderRole:
         {
             return updateTextNode( skinnable, node,
-                textField->labelText(), Q::LabelText );
+                textField->headerText(), Q::Header );
         }
 
-        case LeadingIconRole:
+        case FooterRole:
         {
-            return updateSymbolNode( skinnable, node, Q::LeadingIcon );
+           return updateTextNode( skinnable, node,
+                textField->footerText(), Q::Footer );
         }
 
-        case TrailingIconRole:
-        {
-            return updateSymbolNode( skinnable, node, Q::TrailingIcon );
-        }
+        case IconRole:
+            return updateSymbolNode( skinnable, node, Q::Icon );
+
+        case ButtonPanelRole:
+            return updateBoxNode( skinnable, node, Q::ButtonPanel );
+
+        case ButtonRole:
+            return updateSymbolNode( skinnable, node, Q::Button );
     }
 
     return Inherited::updateSubNode( skinnable, nodeRole, node );

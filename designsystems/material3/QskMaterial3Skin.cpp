@@ -505,32 +505,32 @@ void Editor::setupTextField()
         setColor( Q::TextPanel | variation | SK::Selected, m_pal.primary12 );
     }
 
-    // LeadingIcon
+    // Icon
 
-    setStrutSize( Q::LeadingIcon, { 24_px, 24_px } );
-    setMargin( Q::LeadingIcon, 2_px );
-    setSymbol( Q::LeadingIcon, symbol( "text_field_search" ) );
+    setStrutSize( Q::Icon, { 24_px, 24_px } );
+    setMargin( Q::Icon, 2_px );
+    setSymbol( Q::Icon, symbol( "text_field_search" ) );
 
-    setGraphicRole( Q::LeadingIcon, M3::GraphicRoleOnSurface );
-    setGraphicRole( Q::LeadingIcon | Q::Error, M3::GraphicRoleOnSurfaceVariant );
+    setGraphicRole( Q::Icon, M3::GraphicRoleOnSurface );
+    setGraphicRole( Q::Icon | Q::Error, M3::GraphicRoleOnSurfaceVariant );
 
-    setGraphicRole( Q::LeadingIcon | Q::Disabled, M3::GraphicRoleOnSurface38 );
+    setGraphicRole( Q::Icon | Q::Disabled, M3::GraphicRoleOnSurface38 );
 
     {
-        setAlignment( Q::LabelText, Qt::AlignLeft | Qt::AlignVCenter );
-        setFontRole( Q::LabelText, BodySmall );
+        setAlignment( Q::Header, Qt::AlignLeft | Qt::AlignVCenter );
+        setFontRole( Q::Header, BodySmall );
 
-        setColor( Q::LabelText, m_pal.onSurfaceVariant );
-        setColor( Q::LabelText, m_pal.primary, activeStates );
-        setColor( Q::LabelText | Q::Error, m_pal.error );
-        setColor( Q::LabelText | Q::Disabled, m_pal.onSurface38 );
+        setColor( Q::Header, m_pal.onSurfaceVariant );
+        setColor( Q::Header, m_pal.primary, activeStates );
+        setColor( Q::Header | Q::Error, m_pal.error );
+        setColor( Q::Header | Q::Disabled, m_pal.onSurface38 );
     }
 
 #if 0
-    setMargin( Q::LabelText | Outlined, 4_px, 0, 4_px, 0 );
+    setMargin( Q::Header | Outlined, 4_px, 0, 4_px, 0 );
 #endif
 
-    for ( const auto subControl : { Q::Text, Q::PlaceholderText } )
+    for ( const auto subControl : { Q::Text, Q::Placeholder } )
     {
         setAlignment( subControl, Qt::AlignLeft | Qt::AlignVCenter );
 
@@ -549,45 +549,43 @@ void Editor::setupTextField()
         }
     }
 
-    // TrailingIcon
+    // Button
 
-    setStrutSize( Q::TrailingIcon, { 24_px, 24_px } );
-    setMargin( Q::TrailingIcon, 2_px );
-    setGraphicRole( Q::TrailingIcon, M3::GraphicRoleOnSurfaceVariant );
-    const auto trailingIcon = symbol( "text_field_cancel" );
-    setSymbol( Q::TrailingIcon, trailingIcon );
+    setStrutSize( Q::Button, { 24_px, 24_px } );
+    setMargin( Q::Button, 2_px );
+    setGraphicRole( Q::Button, M3::GraphicRoleOnSurfaceVariant );
+    setSymbol( Q::Button, symbol( "text_field_cancel" ) );
 
-    const auto errorIcon = symbol( "text_field_error" );
-    setSymbol( Q::TrailingIcon | Q::Error, errorIcon );
-    setGraphicRole( Q::TrailingIcon | Q::Error, M3::GraphicRoleError );
-    setGraphicRole( Q::TrailingIcon | Q::Error | Q::Hovered, M3::GraphicRoleOnErrorContainer );
+    setSymbol( Q::Button | Q::Error, symbol( "text_field_error" ) );
+    setGraphicRole( Q::Button | Q::Error, M3::GraphicRoleError );
+    setGraphicRole( Q::Button | Q::Error | Q::Hovered, M3::GraphicRoleOnErrorContainer );
 
-    setGraphicRole( Q::TrailingIcon | Q::Disabled, M3::GraphicRoleOnSurface38 );
+    setGraphicRole( Q::Button | Q::Disabled, M3::GraphicRoleOnSurface38 );
 
-    // TrailingIconRipple
+    // ButtonPanel
 
-    setStrutSize( Q::Ripple, { 45_px, 45_px } );
-    setGradient( Q::Ripple | Q::Hovered, m_pal.onSurface8 );
-    setBoxShape( Q::Ripple, 100, Qt::RelativeSize );
+    setStrutSize( Q::ButtonPanel, { 45_px, 45_px } );
+    setGradient( Q::ButtonPanel | Q::Hovered, m_pal.onSurface8 );
+    setBoxShape( Q::ButtonPanel, 100, Qt::RelativeSize );
 
 
     // SupportingText
 
-    setMargin( Q::SupportingText, { 16_px, 4_px, 16_px, 4_px } );
-    setColor( Q::SupportingText, m_pal.onSurfaceVariant );
-    setColor( Q::SupportingText | Q::Error, m_pal.error );
-    setFontRole( Q::SupportingText, BodySmall );
-    setAlignment( Q::SupportingText, Qt::AlignLeft | Qt::AlignVCenter );
+    setMargin( Q::Footer, { 16_px, 4_px, 16_px, 4_px } );
+    setColor( Q::Footer, m_pal.onSurfaceVariant );
+    setColor( Q::Footer | Q::Error, m_pal.error );
+    setFontRole( Q::Footer, BodySmall );
+    setAlignment( Q::Footer, Qt::AlignLeft | Qt::AlignVCenter );
 
-    setColor( Q::SupportingText | Q::Disabled, m_pal.onSurface38 );
+    setColor( Q::Footer | Q::Disabled, m_pal.onSurface38 );
 
     // CharacterCount
 
-    setMargin( Q::CharacterCount, margin( Q::SupportingText ) );
-    setColor( Q::CharacterCount, color( Q::SupportingText ) );
-    setFontRole( Q::CharacterCount, fontRole( Q::SupportingText ) );
+    setMargin( Q::CharacterCount, margin( Q::Footer ) );
+    setColor( Q::CharacterCount, color( Q::Footer ) );
+    setFontRole( Q::CharacterCount, fontRole( Q::Footer ) );
     setAlignment( Q::CharacterCount, Qt::AlignRight | Qt::AlignVCenter );
-    setColor( Q::CharacterCount | Q::Disabled, color( Q::SupportingText | Q::Disabled ) );
+    setColor( Q::CharacterCount | Q::Disabled, color( Q::Footer | Q::Disabled ) );
 }
 
 void Editor::setupProgressBar()

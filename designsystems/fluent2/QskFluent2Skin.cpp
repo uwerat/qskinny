@@ -1785,14 +1785,14 @@ void Editor::setupTextFieldMetrics()
 
     setBoxShape( Q::TextPanel, 3_px );
 
-    setStrutSize( Q::LabelText, { -1, 30_px } );
-    setFontRole( Q::LabelText, Fluent2::Body );
+    setStrutSize( Q::Header, { -1, 30_px } );
+    setFontRole( Q::Header, Fluent2::Body );
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setFontRole( Q::Text, Fluent2::Body );
 
-    setAlignment( Q::PlaceholderText, alignment( Q::Text ) );
-    setFontRole( Q::PlaceholderText, fontRole( Q::Text ) );
+    setAlignment( Q::Placeholder, alignment( Q::Text ) );
+    setFontRole( Q::Placeholder, fontRole( Q::Text ) );
 }
 
 void Editor::setupTextFieldColors(
@@ -1805,9 +1805,9 @@ void Editor::setupTextFieldColors(
     const auto& pal = theme.palette;
 
     setColor( Q::TextPanel | SK::Selected, pal.fillColor.accent.selectedTextBackground );
-    setColor( Q::LabelText, pal.fillColor.text.primary );
+    setColor( Q::Header, pal.fillColor.text.primary );
     setColor( Q::Text | SK::Selected, pal.fillColor.textOnAccent.selectedText );
-    setColor( Q::PlaceholderText, pal.fillColor.text.secondary );
+    setColor( Q::Placeholder, pal.fillColor.text.secondary );
 
     for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
     {

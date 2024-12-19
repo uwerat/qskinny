@@ -13,14 +13,14 @@ class QSK_EXPORT QskTextField : public QskTextInput
 {
     Q_OBJECT
 
-    Q_PROPERTY( QString labelText READ labelText
-        WRITE setLabelText NOTIFY labelTextChanged )
+    Q_PROPERTY( QString headerText READ headerText
+        WRITE setHeaderText NOTIFY headerTextChanged )
+
+    Q_PROPERTY( QString footerText READ footerText
+        WRITE setFooterText NOTIFY footerTextChanged )
 
     Q_PROPERTY( QString placeholderText READ placeholderText
         WRITE setPlaceholderText NOTIFY placeholderTextChanged )
-
-    Q_PROPERTY( QString supportingText READ supportingText
-        WRITE setSupportingText NOTIFY supportingTextChanged )
 
     Q_PROPERTY( Style style READ style
         WRITE setStyle NOTIFY styleChanged )
@@ -28,8 +28,8 @@ class QSK_EXPORT QskTextField : public QskTextInput
     using Inherited = QskTextInput;
 
   public:
-    QSK_SUBCONTROLS( Panel, LabelText, PlaceholderText,
-        LeadingIcon, TrailingIcon, Ripple, SupportingText, CharacterCount )
+    QSK_SUBCONTROLS( Panel, Header, Footer, Placeholder,
+        Icon, Button, ButtonPanel, CharacterCount )
 
     enum Style : quint8
     {
@@ -48,24 +48,24 @@ class QSK_EXPORT QskTextField : public QskTextInput
     void setStyle( Style );
     Style style() const;
 
-    void setLabelText( const QString& );
-    QString labelText() const;
+    void setHeaderText( const QString& );
+    QString headerText() const;
 
-    QskGraphic leadingIcon() const;
-    void setLeadingIcon( const QskGraphic& );
+    void setFooterText( const QString& );
+    QString footerText() const;
+
+    QskGraphic icon() const;
+    void setIcon( const QskGraphic& );
 
     void setPlaceholderText( const QString& );
     QString placeholderText() const;
 
-    void setSupportingText( const QString& );
-    QString supportingText() const;
-
     QskAspect::Variation effectiveVariation() const override;
 
   Q_SIGNALS:
-    void labelTextChanged( const QString& );
+    void headerTextChanged( const QString& );
+    void footerTextChanged( const QString& );
     void placeholderTextChanged( const QString& );
-    void supportingTextChanged( const QString& );
     void styleChanged( Style );
 
   protected:

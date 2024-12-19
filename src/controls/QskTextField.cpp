@@ -4,33 +4,34 @@
  *****************************************************************************/
 
 #include "QskTextField.h"
-#include "QskTextFieldSkinlet.h"
 #include "QskEvent.h"
 #include "QskFontRole.h"
 #include "QskQuick.h"
 
 QSK_SUBCONTROL( QskTextField, Panel )
 
-QSK_SUBCONTROL( QskTextField, LeadingIcon )
-QSK_SUBCONTROL( QskTextField, LabelText )
-QSK_SUBCONTROL( QskTextField, Ripple )
-QSK_SUBCONTROL( QskTextField, TrailingIcon )
-QSK_SUBCONTROL( QskTextField, PlaceholderText )
-QSK_SUBCONTROL( QskTextField, SupportingText )
+QSK_SUBCONTROL( QskTextField, Header )
+QSK_SUBCONTROL( QskTextField, Footer )
+
+QSK_SUBCONTROL( QskTextField, Icon )
+QSK_SUBCONTROL( QskTextField, ButtonPanel )
+QSK_SUBCONTROL( QskTextField, Button )
+QSK_SUBCONTROL( QskTextField, Placeholder )
+
 QSK_SUBCONTROL( QskTextField, CharacterCount )
 
 static constexpr QskAspect qskAspectRipple()
 {
     using Q = QskTextField;
-    return Q::Ripple | Q::Hovered | QskAspect::Metric | QskAspect::Position;
+    return Q::ButtonPanel | Q::Hovered | QskAspect::Metric | QskAspect::Position;
 }
 
 class QskTextField::PrivateData
 {
   public:
-    QString labelText;
+    QString headerText;
+    QString footerText;
     QString placeholderText;
-    QString supportingText;
 
     Style style = PlainStyle;
 };
@@ -73,28 +74,54 @@ QskTextField::Style QskTextField::style() const
     return m_data->style;
 }
 
-QString QskTextField::labelText() const
+QString QskTextField::headerText() const
 {
-    return m_data->labelText;
+    return m_data->headerText;
 }
 
-void QskTextField::setLabelText( const QString& text )
+void QskTextField::setHeaderText( const QString& text )
 {
-    if ( m_data->labelText != text )
+    if ( m_data->headerText != text )
     {
-        m_data->labelText = text;
-        Q_EMIT labelTextChanged( text );
+        m_data->headerText = text;
+
+        update();
+        resetImplicitSize();
+
+        Q_EMIT headerTextChanged( text );
     }
 }
 
-QskGraphic QskTextField::leadingIcon() const
+QString QskTextField::footerText() const
 {
-    return symbolHint( LeadingIcon );
+    return m_data->footerText;
 }
 
-void QskTextField::setLeadingIcon( const QskGraphic& icon )
+void QskTextField::setFooterText( const QString& text )
 {
-    setSymbolHint( LeadingIcon, icon );
+    if ( m_data->footerText != text )
+    {
+        m_data->footerText = text;
+
+        update();
+        resetImplicitSize();
+
+        Q_EMIT footerTextChanged( text );
+    }
+}
+
+QskGraphic QskTextField::icon() const
+{
+    return symbolHint( Icon );
+}
+
+void QskTextField::setIcon( const QskGraphic& icon )
+{
+    if ( setSymbolHint( Icon, icon ) )
+    {
+        update();
+        resetImplicitSize();
+    }
 }
 
 void QskTextField::setPlaceholderText( const QString& text )
@@ -111,20 +138,6 @@ QString QskTextField::placeholderText() const
     return m_data->placeholderText;
 }
 
-void QskTextField::setSupportingText( const QString& text )
-{
-    if ( m_data->supportingText != text )
-    {
-        m_data->supportingText = text;
-        Q_EMIT supportingTextChanged( text );
-    }
-}
-
-QString QskTextField::supportingText() const
-{
-    return m_data->supportingText;
-}
-
 QskAspect::Variation QskTextField::effectiveVariation() const
 {
     return static_cast< QskAspect::Variation >( m_data->style );
@@ -132,12 +145,16 @@ QskAspect::Variation QskTextField::effectiveVariation() const
 
 void QskTextField::mousePressEvent( QMouseEvent* event )
 {
-    if( !isReadOnly() && subControlContentsRect( TrailingIcon ).contains( event->pos() ) )
+    if( !isReadOnly() )
     {
-        setText( QString() );
-        setEditing( true );
+        const auto r = subControlRect( Button );
+        if ( r.contains( qskMousePosition( event ) ) )
+        {
+            setText( QString() );
+            setEditing( true );
 
-        return;
+            return;
+        }
     }
 
     Inherited::mousePressEvent( event );

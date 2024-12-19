@@ -27,10 +27,11 @@ QRectF QskFluent2TextFieldSkinlet::subControlRect( const QskSkinnable* skinnable
 
         return rect;
     }
-    else if ( subControl == Q::LabelText )
+
+    if ( subControl == Q::Header )
     {
         const auto rect = subControlRect( skinnable, contentsRect, Q::TextPanel );
-        const auto h = skinnable->effectiveFontHeight( Q::LabelText );
+        const auto h = skinnable->effectiveFontHeight( Q::Header );
 
         return QRectF( rect.x(), rect.y() - h, rect.width(), h );
     }
@@ -47,10 +48,10 @@ QSizeF QskFluent2TextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
     auto hint = Inherited::sizeHint( skinnable, which, constraint );
 
     const auto textField = static_cast< const QskTextField* >( skinnable );
-    if ( !textField->labelText().isEmpty() )
+    if ( !textField->headerText().isEmpty() )
     {
         // spacing ???
-        hint.rheight() += textField->strutSizeHint( Q::LabelText ).height();
+        hint.rheight() += textField->strutSizeHint( Q::Header ).height();
     }
 
     return hint;

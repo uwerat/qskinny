@@ -21,10 +21,12 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskTextInputSkinlet
     {
         PanelRole = QskTextInputSkinlet::RoleCount,
 
-        LabelTextRole,
-        PlaceholderTextRole,
-        LeadingIconRole,
-        TrailingIconRole,
+        HeaderRole,
+        FooterRole,
+        PlaceholderRole,
+        IconRole,
+        ButtonPanelRole,
+        ButtonRole,
 
         RoleCount
     };

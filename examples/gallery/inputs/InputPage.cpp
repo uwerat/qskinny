@@ -78,45 +78,45 @@ namespace
 
             {
                 auto field = new QskTextField( this );
-                field->setLabelText( "Name" );
+                field->setHeaderText( "Name" );
                 field->setText( "John Doe" );
                 field->setPlaceholderText( "<Name>" );
-                field->setSupportingText( "Required *" );
+                field->setFooterText( "Required *" );
             }
 
             {
                 auto field = new QskTextField( this );
-                field->setLabelText( "Nickname" );
+                field->setHeaderText( "Nickname" );
                 field->setPlaceholderText( "<Nickname>" );
-                field->setSupportingText( "Optional" );
+                field->setFooterText( "Optional" );
             }
             {
                 auto field = new QskTextField( this );
-                field->setLeadingIcon( {} );
-                field->setPlaceholderText( "<no label text>" );
+                field->setIcon( {} );
+                field->setPlaceholderText( "<no header>" );
             }
 
             {
                 auto field = new QskTextField( this );
                 field->setSkinStateFlag( QskTextField::Error );
                 field->setText( "Error Text" );
-                field->setLabelText( "error" );
+                field->setHeaderText( "error" );
                 field->setPlaceholderText( "<text>" );
-                field->setSupportingText( "error text" );
+                field->setFooterText( "error text" );
             }
 
             {
                 auto field = new QskTextField( this );
                 field->setReadOnly( true );
                 field->setText( "Read Only" );
-                field->setLabelText( "read only" );
+                field->setHeaderText( "read only" );
                 field->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
             }
 
             {
                 auto field = new QskTextField( this );
                 field->setMaxLength( 15 );
-                field->setLabelText( "password" );
+                field->setHeaderText( "password" );
                 field->setEchoMode( QskTextField::Password );
                 field->setPlaceholderText( "<password>" );
             }
