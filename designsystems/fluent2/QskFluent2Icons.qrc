@@ -3,5 +3,7 @@
         <file>icons/qvg/checkmark.qvg</file>
         <file>icons/qvg/chevron_down.qvg</file>
         <file>icons/qvg/chevron_up.qvg</file>
+        <file>icons/qvg/dismiss.qvg</file>
+        <file>icons/qvg/search.qvg</file>
     </qresource>
 </RCC>

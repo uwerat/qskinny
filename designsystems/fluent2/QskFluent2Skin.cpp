@@ -1793,6 +1793,15 @@ void Editor::setupTextFieldMetrics()
 
     setAlignment( Q::Placeholder, alignment( Q::Text ) );
     setFontRole( Q::Placeholder, fontRole( Q::Text ) );
+
+    setSymbol( Q::Icon, symbol( "search" ) );
+    setSymbol( Q::Button, symbol( "dismiss" ) );
+
+    for ( const auto subControl : { Q::Icon, Q::Button } )
+    {
+        setMargin( subControl, 2_px );
+        setStrutSize( subControl, 16_px, 16_px );
+    }
 }
 
 void Editor::setupTextFieldColors(
@@ -1801,6 +1810,7 @@ void Editor::setupTextFieldColors(
     using Q = QskTextField;
     using SK = QskTextFieldSkinlet;
     using A = QskAspect;
+    using W = QskFluent2Skin;
 
     const auto& pal = theme.palette;
 
@@ -1850,6 +1860,12 @@ void Editor::setupTextFieldColors(
         setBoxBorderGradient( panel, borderColor1, borderColor2, panelColor );
 
         setColor( text, textColor );
+    }
+
+    for ( const auto subControl : { Q::Icon, Q::Button } )
+    {
+        setGraphicRole( subControl, W::GraphicRoleFillColorTextSecondary );
+        setGraphicRole( subControl | Q::Disabled, W::GraphicRoleFillColorTextDisabled );
     }
 }
 

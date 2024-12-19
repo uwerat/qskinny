@@ -28,6 +28,8 @@ class QSK_EXPORT QskTextField : public QskTextInput
     using Inherited = QskTextInput;
 
   public:
+    QSK_STATES( Pressed )
+
     QSK_SUBCONTROLS( Panel, Header, Footer, Placeholder,
         Icon, Button, ButtonPanel, CharacterCount )
 
@@ -62,6 +64,10 @@ class QSK_EXPORT QskTextField : public QskTextInput
 
     QskAspect::Variation effectiveVariation() const override;
 
+#if 1
+    QskAspect::States buttonStates() const;
+#endif
+
   Q_SIGNALS:
     void headerTextChanged( const QString& );
     void footerTextChanged( const QString& );
@@ -74,8 +80,15 @@ class QSK_EXPORT QskTextField : public QskTextInput
     void hoverLeaveEvent( QHoverEvent* ) override;
 
     void mousePressEvent( QMouseEvent* ) override;
+    void mouseMoveEvent( QMouseEvent* ) override;
+    void mouseReleaseEvent( QMouseEvent* ) override;
+    void mouseUngrabEvent() override;
+
+    virtual void handleButtonClick();
 
   private:
+    void setButtonState( QskAspect::State, bool );
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

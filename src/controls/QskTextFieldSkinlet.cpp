@@ -87,24 +87,17 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     if ( subControl == Q::ButtonPanel )
     {
         const auto textField = static_cast< const QskTextField* >( skinnable );
-
-        const auto aspect = Q::ButtonPanel | Q::Hovered
-            | QskAspect::Metric | QskAspect::Position;
-
-        const auto pos = textField->effectiveSkinHint( aspect ).toPointF();
-
-        if ( !pos.isNull() )
+        if ( textField->buttonStates() & Q::Hovered )
         {
-            const auto r = textField->subControlRect( Q::Button );
+            const auto r = subControlRect( skinnable, contentsRect, Q::Button );
 
-            if( r.contains( pos ) )
-            {
-                QRectF rect( QPointF(), textField->strutSizeHint( subControl ) );
-                rect.moveCenter( r.center() );
+            QRectF rect( QPointF(), skinnable->strutSizeHint( subControl ) );
+            rect.moveCenter( r.center() );
 
-                return rect;
-            }
+            return rect;
         }
+
+        return QRectF();
     }
 
     if ( subControl == Q::Button )

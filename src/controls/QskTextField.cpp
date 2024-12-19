@@ -20,11 +20,7 @@ QSK_SUBCONTROL( QskTextField, Placeholder )
 
 QSK_SUBCONTROL( QskTextField, CharacterCount )
 
-static constexpr QskAspect qskAspectRipple()
-{
-    using Q = QskTextField;
-    return Q::ButtonPanel | Q::Hovered | QskAspect::Metric | QskAspect::Position;
-}
+QSK_SYSTEM_STATE( QskTextField, Pressed, QskAspect::LastUserState << 1 )
 
 class QskTextField::PrivateData
 {
@@ -34,6 +30,7 @@ class QskTextField::PrivateData
     QString placeholderText;
 
     Style style = PlainStyle;
+    QskAspect::States buttonStates;
 };
 
 QskTextField::QskTextField( QQuickItem* parent )
@@ -143,6 +140,12 @@ QskAspect::Variation QskTextField::effectiveVariation() const
     return static_cast< QskAspect::Variation >( m_data->style );
 }
 
+void QskTextField::handleButtonClick()
+{
+    clear();
+    setEditing( true );
+}
+
 void QskTextField::mousePressEvent( QMouseEvent* event )
 {
     if( !isReadOnly() )
@@ -150,9 +153,7 @@ void QskTextField::mousePressEvent( QMouseEvent* event )
         const auto r = subControlRect( Button );
         if ( r.contains( qskMousePosition( event ) ) )
         {
-            setText( QString() );
-            setEditing( true );
-
+            setButtonState( Pressed, true );
             return;
         }
     }
@@ -160,22 +161,80 @@ void QskTextField::mousePressEvent( QMouseEvent* event )
     Inherited::mousePressEvent( event );
 }
 
+void QskTextField::mouseMoveEvent( QMouseEvent* event )
+{
+    if ( m_data->buttonStates & Pressed )
+    {
+        const auto r = subControlRect( Button );
+        setButtonState( Pressed, r.contains( qskMousePosition( event ) ) );
+        return;
+    }
+
+    Inherited::mouseMoveEvent( event );
+}
+
+void QskTextField::mouseReleaseEvent( QMouseEvent* event )
+{
+    if ( m_data->buttonStates & Pressed )
+    {
+        setButtonState( Pressed, false );
+        handleButtonClick();
+
+        return;
+    }
+
+    Inherited::mouseReleaseEvent( event );
+}
+
+void QskTextField::mouseUngrabEvent()
+{
+    setButtonState( Pressed, false );
+    Inherited::mouseUngrabEvent();
+}
+
 void QskTextField::hoverEnterEvent( QHoverEvent* event )
 {
-    setSkinHint( qskAspectRipple(), qskHoverPosition( event ) );
     Inherited::hoverEnterEvent( event );
+
+    const auto r = subControlRect( Button );
+    setButtonState( Hovered, r.contains( qskHoverPosition( event ) ) );
 }
 
 void QskTextField::hoverMoveEvent( QHoverEvent* event )
 {
-    setSkinHint( qskAspectRipple(), qskHoverPosition( event ) );
+    const auto r = subControlRect( Button );
+    setButtonState( Hovered, r.contains( qskHoverPosition( event ) ) );
+
     Inherited::hoverMoveEvent( event );
 }
 
 void QskTextField::hoverLeaveEvent( QHoverEvent* event )
 {
-    resetSkinHint( qskAspectRipple() );
+    setButtonState( Hovered, false );
     Inherited::hoverLeaveEvent( event );
+}
+
+QskAspect::States QskTextField::buttonStates() const
+{
+    auto states = skinStates() | m_data->buttonStates;
+
+    if ( !( m_data->buttonStates & Hovered ) )
+        states &= ~Hovered;
+
+    return states;
+}
+
+void QskTextField::setButtonState( QskAspect::State state, bool on )
+{
+    const auto oldStates = m_data->buttonStates;
+
+    if ( on )
+        m_data->buttonStates |= state;
+    else
+        m_data->buttonStates &= ~state;
+
+    if ( oldStates != m_data->buttonStates )
+        update();
 }
 
 #include "moc_QskTextField.cpp"
