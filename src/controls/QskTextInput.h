@@ -47,6 +47,9 @@ class QSK_EXPORT QskTextInput : public QskControl
         WRITE setPasswordMaskDelay RESET resetPasswordMaskDelay
         NOTIFY passwordMaskDelayChanged )
 
+    Q_PROPERTY( bool selectByMouse READ selectByMouse
+        WRITE setSelectByMouse )
+
     using Inherited = QskControl;
 
   public:
@@ -98,6 +101,9 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     void setActivationModes( ActivationModes );
     ActivationModes activationModes() const;
+
+    void setSelectByMouse( bool );
+    bool selectByMouse() const;
 
     bool isEditing() const;
 

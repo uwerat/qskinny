@@ -114,66 +114,6 @@ namespace
             return QQuickTextInputPrivate::get( this )->fixup();
         }
 
-        bool hasAcceptableInput() const
-        {
-            /*
-                we would like to call QQuickTextInputPrivate::hasAcceptableInput
-                but unfortunately it is private, so we need to hack somthing
-                together
-             */
-
-            auto that = const_cast< QuickTextInput* >( this );
-            auto d = QQuickTextInputPrivate::get( that );
-
-            if ( d->m_validator )
-            {
-                QString text = displayText();
-                int pos = d->m_cursor;
-
-                const auto state = d->m_validator->validate( text, pos );
-                if ( state != QValidator::Acceptable )
-                    return false;
-            }
-
-            if ( d->m_maskData )
-            {
-                /*
-                    We only want to do the check for the maskData here
-                    and have to disable d->m_validator temporarily
-                 */
-
-                class Validator final : public QValidator
-                {
-                  public:
-                    State validate( QString&, int& ) const override
-                    {
-                        return QValidator::Acceptable;
-                    }
-                };
-
-                const auto validator = d->m_validator;
-
-                const auto validInput = d->m_validInput;
-                const auto acceptableInput = d->m_acceptableInput;
-
-                d->m_acceptableInput = true;
-
-                static Validator noValidator;
-                that->setValidator( &noValidator ); // implicitly checking maskData
-                that->setValidator( d->m_validator );
-
-                const bool isAcceptable = d->m_acceptableInput;
-
-                // restoring old values
-                d->m_validInput = validInput;
-                d->m_acceptableInput = acceptableInput;
-
-                return isAcceptable;
-            }
-
-            return true;
-        }
-
         void updateColors();
         void updateMetrics();
 
@@ -248,6 +188,7 @@ namespace
         setActiveFocusOnTab( false );
         setFlag( ItemAcceptsInputMethod, false );
         setFocusOnPress( false );
+        setSelectByMouse( true );
 
         componentComplete();
 
@@ -285,48 +226,16 @@ namespace
 
     void QuickTextInput::updateColors()
     {
-        auto textInput = static_cast< const QskTextInput* >( parentItem() );
-        auto d = QQuickTextInputPrivate::get( this );
+        using Q = QskTextInput;
 
-        bool isDirty = false;
+        auto input = static_cast< const QskTextInput* >( parentItem() );
 
-        QColor color;
+        setColor( input->color( Q::Text ) );
 
-        color = textInput->color( QskTextInput::Text );
-        if ( d->color != color )
-        {
-            d->color = color;
-            isDirty = true;
-        }
+        const auto state = QskTextInputSkinlet::Selected;
 
-        if ( d->hasSelectedText() )
-        {
-            QskAspect::States states = QskTextInputSkinlet::Selected;
-#if 0
-            states |= textInput->skinStates();
-#endif
-
-            color = textInput->color( QskTextInput::TextPanel | states );
-            if ( d->selectionColor != color )
-            {
-                d->selectionColor = color;
-                isDirty = true;
-            }
-
-            color = textInput->color( QskTextInput::Text | states );
-            if ( d->selectedTextColor != color )
-            {
-                d->selectedTextColor = color;
-                isDirty = true;
-            }
-        }
-
-        if ( isDirty )
-        {
-            d->textLayoutDirty = true;
-            d->updateType = QQuickTextInputPrivate::UpdatePaintNode;
-            update();
-        }
+        setSelectionColor( input->color( Q::TextPanel | state ) );
+        setSelectedTextColor( input->color( QskTextInput::Text | state ) );
     }
 }
 
@@ -621,6 +530,16 @@ QskTextOptions::WrapMode QskTextInput::wrapMode() const
 {
     return static_cast< QskTextOptions::WrapMode >(
         m_data->wrappedInput->wrapMode() );
+}
+
+void QskTextInput::setSelectByMouse( bool on )
+{
+    m_data->wrappedInput->setSelectByMouse( on );
+}
+
+bool QskTextInput::selectByMouse() const
+{
+    return m_data->wrappedInput->selectByMouse();
 }
 
 QFont QskTextInput::font() const
