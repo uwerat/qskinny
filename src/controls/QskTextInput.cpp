@@ -11,6 +11,11 @@
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextinput_p.h>
 #include <private/qquicktextinput_p_p.h>
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+#include <private/qeventpoint_p.h>
+#endif
+
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextInput, Text )
@@ -26,6 +31,19 @@ static inline void qskPropagateReadOnly( QskTextInput* input )
 
     QEvent event( QEvent::ReadOnlyChange );
     QCoreApplication::sendEvent( input, &event );
+}
+
+static inline void qskTranslateMouseEventPosition(
+    QMouseEvent* mouseEvent, const QPointF& offset ) 
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    auto& point = mouseEvent->point(0);
+
+    QMutableEventPoint::setPosition(
+        point, point.position() + offset );
+#else
+    mouseEvent->setLocalPos( mouseEvent->localPos() + offset );
+#endif
 }
 
 static inline void qskBindSignals(
@@ -96,72 +114,38 @@ namespace
             return QQuickTextInputPrivate::get( this )->fixup();
         }
 
-        bool hasAcceptableInput() const
-        {
-            /*
-                we would like to call QQuickTextInputPrivate::hasAcceptableInput
-                but unfortunately it is private, so we need to hack somthing
-                together
-             */
-
-            auto that = const_cast< QuickTextInput* >( this );
-            auto d = QQuickTextInputPrivate::get( that );
-
-            if ( d->m_validator )
-            {
-                QString text = displayText();
-                int pos = d->m_cursor;
-
-                const auto state = d->m_validator->validate( text, pos );
-                if ( state != QValidator::Acceptable )
-                    return false;
-            }
-
-            if ( d->m_maskData )
-            {
-                /*
-                    We only want to do the check for the maskData here
-                    and have to disable d->m_validator temporarily
-                 */
-
-                class Validator final : public QValidator
-                {
-                  public:
-                    State validate( QString&, int& ) const override
-                    {
-                        return QValidator::Acceptable;
-                    }
-                };
-
-                const auto validator = d->m_validator;
-
-                const auto validInput = d->m_validInput;
-                const auto acceptableInput = d->m_acceptableInput;
-
-                d->m_acceptableInput = true;
-
-                static Validator noValidator;
-                that->setValidator( &noValidator ); // implicitly checking maskData
-                that->setValidator( d->m_validator );
-
-                const bool isAcceptable = d->m_acceptableInput;
-
-                // restoring old values
-                d->m_validInput = validInput;
-                d->m_acceptableInput = acceptableInput;
-
-                return isAcceptable;
-            }
-
-            return true;
-        }
-
         void updateColors();
         void updateMetrics();
 
         inline bool handleEvent( QEvent* event )
         {
-            return this->event( event );
+            bool ok;
+
+            switch( static_cast< int >( event->type() ) )
+            {
+                case QEvent::MouseButtonDblClick:
+                case QEvent::MouseButtonPress:
+                case QEvent::MouseButtonRelease:
+                case QEvent::MouseMove:
+                {
+                    auto mouseEvent = static_cast< QMouseEvent* >( event );
+
+                    /*
+                        As the event was sent for the parent item
+                        we have to translate the position into
+                        our coordinate system.
+                     */
+                    qskTranslateMouseEventPosition( mouseEvent, -position() );
+                    ok = this->event( mouseEvent );
+                    qskTranslateMouseEventPosition( mouseEvent, position() );
+
+                    break;
+                }
+                default:
+                    ok = this->event( event );
+            }
+
+            return ok;
         }
 
       protected:
@@ -204,6 +188,7 @@ namespace
         setActiveFocusOnTab( false );
         setFlag( ItemAcceptsInputMethod, false );
         setFocusOnPress( false );
+        setSelectByMouse( true );
 
         componentComplete();
 
@@ -241,48 +226,16 @@ namespace
 
     void QuickTextInput::updateColors()
     {
-        auto textInput = static_cast< const QskTextInput* >( parentItem() );
-        auto d = QQuickTextInputPrivate::get( this );
+        using Q = QskTextInput;
 
-        bool isDirty = false;
+        auto input = static_cast< const QskTextInput* >( parentItem() );
 
-        QColor color;
+        setColor( input->color( Q::Text ) );
 
-        color = textInput->color( QskTextInput::Text );
-        if ( d->color != color )
-        {
-            d->color = color;
-            isDirty = true;
-        }
+        const auto state = QskTextInputSkinlet::Selected;
 
-        if ( d->hasSelectedText() )
-        {
-            QskAspect::States states = QskTextInputSkinlet::Selected;
-#if 0
-            states |= textInput->skinStates();
-#endif
-
-            color = textInput->color( QskTextInput::TextPanel | states );
-            if ( d->selectionColor != color )
-            {
-                d->selectionColor = color;
-                isDirty = true;
-            }
-
-            color = textInput->color( QskTextInput::Text | states );
-            if ( d->selectedTextColor != color )
-            {
-                d->selectedTextColor = color;
-                isDirty = true;
-            }
-        }
-
-        if ( isDirty )
-        {
-            d->textLayoutDirty = true;
-            d->updateType = QQuickTextInputPrivate::UpdatePaintNode;
-            update();
-        }
+        setSelectionColor( input->color( Q::TextPanel | state ) );
+        setSelectedTextColor( input->color( QskTextInput::Text | state ) );
     }
 }
 
@@ -492,6 +445,16 @@ void QskTextInput::setText( const QString& text )
     m_data->wrappedInput->setText( text );
 }
 
+void QskTextInput::clear()
+{
+    m_data->wrappedInput->clear();
+}
+
+void QskTextInput::selectAll()
+{
+    m_data->wrappedInput->selectAll();
+}
+
 QskTextInput::ActivationModes QskTextInput::activationModes() const
 {
     return static_cast< QskTextInput::ActivationModes >( m_data->activationModes );
@@ -568,6 +531,16 @@ QskTextOptions::WrapMode QskTextInput::wrapMode() const
 {
     return static_cast< QskTextOptions::WrapMode >(
         m_data->wrappedInput->wrapMode() );
+}
+
+void QskTextInput::setSelectByMouse( bool on )
+{
+    m_data->wrappedInput->setSelectByMouse( on );
+}
+
+bool QskTextInput::selectByMouse() const
+{
+    return m_data->wrappedInput->selectByMouse();
 }
 
 QFont QskTextInput::font() const
