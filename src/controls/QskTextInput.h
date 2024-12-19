@@ -147,6 +147,8 @@ class QSK_EXPORT QskTextInput : public QskControl
     void ensureVisible( int position );
 
   public Q_SLOTS:
+    void clear();
+    void selectAll();
     void setText( const QString& );
     void setEditing( bool );
 

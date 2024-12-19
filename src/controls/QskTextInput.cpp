@@ -11,6 +11,11 @@
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextinput_p.h>
 #include <private/qquicktextinput_p_p.h>
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+#include <private/qeventpoint_p.h>
+#endif
+
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextInput, Text )
@@ -26,6 +31,19 @@ static inline void qskPropagateReadOnly( QskTextInput* input )
 
     QEvent event( QEvent::ReadOnlyChange );
     QCoreApplication::sendEvent( input, &event );
+}
+
+static inline void qskTranslateMouseEventPosition(
+    QMouseEvent* mouseEvent, const QPointF& offset ) 
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+    auto& point = mouseEvent->point(0);
+
+    QMutableEventPoint::setPosition(
+        point, point.position() + offset );
+#else
+    mouseEvent->setLocalPos( mouseEvent->localPos() + offset );
+#endif
 }
 
 static inline void qskBindSignals(
@@ -161,7 +179,33 @@ namespace
 
         inline bool handleEvent( QEvent* event )
         {
-            return this->event( event );
+            bool ok;
+
+            switch( static_cast< int >( event->type() ) )
+            {
+                case QEvent::MouseButtonDblClick:
+                case QEvent::MouseButtonPress:
+                case QEvent::MouseButtonRelease:
+                case QEvent::MouseMove:
+                {
+                    auto mouseEvent = static_cast< QMouseEvent* >( event );
+
+                    /*
+                        As the event was sent for the parent item
+                        we have to translate the position into
+                        our coordinate system.
+                     */
+                    qskTranslateMouseEventPosition( mouseEvent, -position() );
+                    ok = this->event( mouseEvent );
+                    qskTranslateMouseEventPosition( mouseEvent, position() );
+
+                    break;
+                }
+                default:
+                    ok = this->event( event );
+            }
+
+            return ok;
         }
 
       protected:
@@ -489,6 +533,16 @@ QString QskTextInput::text() const
 void QskTextInput::setText( const QString& text )
 {
     m_data->wrappedInput->setText( text );
+}
+
+void QskTextInput::clear()
+{
+    m_data->wrappedInput->clear();
+}
+
+void QskTextInput::selectAll()
+{
+    m_data->wrappedInput->selectAll();
 }
 
 QskTextInput::ActivationModes QskTextInput::activationModes() const
