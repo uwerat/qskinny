@@ -63,12 +63,16 @@ static QskGraphic icon( QChar symbol )
     painter.drawText( 0, 0, symbol );
 #else
     const auto rawFont = symbolFont();
-    const auto l = rawFont.glyphIndexesForString( symbol  ); 
-    Q_ASSERT( l.count() == 1 );
 
-    if ( !l.isEmpty() )
+    quint32 glyphIndex;
+    int numGlyphs = 1;
+
+    const bool success = rawFont.glyphIndexesForChars( &symbol, 1, &glyphIndex, &numGlyphs );
+    Q_ASSERT( success );
+
+    if ( success )
     {
-        auto path = rawFont.pathForGlyph( l.first() );
+        auto path = rawFont.pathForGlyph( glyphIndex );
         if ( !path.isEmpty() )
         {
             path.setFillRule(Qt::WindingFill);
