@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/fonts">
 
-        <file alias="MaterialIcons.ttf">fonts/MaterialSymbols/MaterialSymbolsOutlined.ttf</file>
+        <file alias="MaterialSymbole.ttf">fonts/MaterialSymbols/MaterialSymbolsOutlined.ttf</file>
 
     </qresource>
 </RCC>

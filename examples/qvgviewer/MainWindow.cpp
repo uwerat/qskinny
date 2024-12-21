@@ -68,6 +68,8 @@ class GraphicLabel : public QskGraphicLabel
 
     void showSymbol( QChar c )
     {
+        m_symbol = c;
+
         if ( auto graphic = m_symbolProvider->requestSymbol( c ) )
             setGraphic( *graphic );
         else
@@ -106,13 +108,17 @@ class GraphicLabel : public QskGraphicLabel
     void changeEvent( QEvent* event ) override
     {
         if ( event->type() == QEvent::StyleChange )
+        {
             m_symbolProvider->updateFont();
+            showSymbol( m_symbol );
+        }
 
         QskGraphicLabel::changeEvent( event );
     }
 
   private:
     SymbolProvider* m_symbolProvider;
+    QChar m_symbol;
 };
 
 MainWindow::MainWindow()
