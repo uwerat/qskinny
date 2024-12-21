@@ -24,57 +24,63 @@
 #include <QRawFont>
 #include <QPainterPath>
 #include <QFontDatabase>
+#include <QFile>
 
+static QString symbolName()
+{
+#if 0
+    return "FluentSystemIcons-Resizable";
+#endif
 #if 1
+    return "Material Symbols Outlined";
+#endif
+#if 0
+    return "Font Awesome 6 Free";
+#endif
+}
 
 static QskGraphic icon( QChar symbol )
 {
-#if 0
-    QFont font( "FluentSystemIcons-Resizable" );
-#endif
-#if 0
-    QFont font( "Material Symbols Outlined" );
-#endif
-#if 1
-    QFont font( "Font Awesome 6 Free" );
-#endif
-
     QskGraphic graphic;
     
+#if 0
     QPainter painter( &graphic );
-    painter.setFont( font );
+    painter.setFont( QFont( symbolName() ) );
     painter.setPen( Qt::black );
     painter.drawText( 0, 0, symbol );
-
-    return graphic;
-}
-
 #else
+    graphic.setRenderHint( QskGraphic::RenderPensUnscaled );
 
-static QskGraphic icon( QChar symbol )
-{
-    QskGraphic graphic;
-    //graphic.setRenderHint( QskGraphic::RenderPensUnscaled );;
+#if 0
+    const auto rawFont = QRawFont::fromFont( QFont( symbolName() ) );
+qDebug() << rawFont.pixelSize();
+#else
+    //QRawFont rawFont( QByteArray( ":/fonts/FluentSystemIcons.ttf" ), 16 );
+    QRawFont rawFont;
 
-    QRawFont rawFont( QStringLiteral( ":/fonts/FluentSystemIcons.ttf" ), 16 );
+    QFile file( ":/fonts/FluentSystemIcons.ttf" );
+    if ( file.open( QIODevice::ReadOnly ) )
+        rawFont.loadFromData( file.readAll(), 16, QFont::PreferDefaultHinting );
+#endif
     
     const auto l = rawFont.glyphIndexesForString( symbol  ); 
+    Q_ASSERT( l.count() == 1 );
+
     if ( !l.isEmpty() )
     {
-        const auto path = rawFont.pathForGlyph( l.first() );
+        auto path = rawFont.pathForGlyph( l.first() );
         if ( !path.isEmpty() )
         {
+            path.setFillRule(Qt::WindingFill);
+
             QPainter painter( &graphic );
-            painter.scale( 0.2, 0.2 );
-            painter.setPen( Qt::black );
-            painter.drawPath( path );
+            painter.fillPath( path, Qt::black );
         }
     }
+#endif
 
     return graphic;
 }
-
-#endif
 
 class SymbolBox : public QskSpinBox
 {
