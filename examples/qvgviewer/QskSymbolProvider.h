@@ -20,9 +20,9 @@ class QskSymbolProvider : public QskGraphicProvider
     QskSymbolProvider( QObject* parent = nullptr );
     ~QskSymbolProvider() override;
 
-    void setFont( const QFont & );
-    void setRawFont( const QRawFont & );
-    void setFontData( const QByteArray & );
+    void setFont( const QFont& );
+    void setRawFont( const QRawFont& );
+    void setFontData( const QByteArray& );
 
     QskGraphic* requestSymbol( uint ) const;
     QskGraphic* requestSymbol( QChar ) const;

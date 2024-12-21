@@ -37,7 +37,7 @@ class SymbolBox : public QskSpinBox
             this, [this]() { Q_EMIT symbolChanged( symbol() ); } );
     }
 
-    QChar symbol() const { return static_cast< char16_t  >( value() ); }
+    QChar symbol() const { return static_cast< char16_t >( value() ); }
     void setSymbol( QChar symbol ) { setValue( symbol.unicode() ); }
 
   Q_SIGNALS:
@@ -126,7 +126,7 @@ MainWindow::MainWindow()
     auto label = new GraphicLabel();
 
     auto spinBox = new SymbolBox();
-    
+
     auto invertButton = new QskPushButton( "Inverted" );
     invertButton->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
     invertButton->setCheckable( true );
