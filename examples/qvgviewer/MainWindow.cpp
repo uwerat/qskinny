@@ -26,18 +26,31 @@
 #include <QFontDatabase>
 #include <QFile>
 
-static QString symbolName()
+#if 0
+static QRawFont symbolFont()
 {
-#if 0
-    return "FluentSystemIcons-Resizable";
-#endif
-#if 1
-    return "Material Symbols Outlined";
-#endif
-#if 0
-    return "Font Awesome 6 Free";
-#endif
+    const auto name = "FluentSystemIcons-Resizable";
+    //const auto symbolName = "Material Symbols Outlined";
+    //const auto symbolName = "Font Awesome 6 Free";
+
+    return QRawFont::fromFont( QFont( name ) );
 }
+#else
+static QRawFont symbolFont()
+{
+    const auto name = ":/fonts/FluentSystemIcons.ttf";
+
+    QRawFont font;
+
+    QFile file( name );
+    if ( file.open( QIODevice::ReadOnly ) )
+        font.loadFromData( file.readAll(), 16, QFont::PreferDefaultHinting );
+    else
+        qWarning() << "Can't load symbol fonts from:" << file.fileName();
+
+    return font;
+}
+#endif
 
 static QskGraphic icon( QChar symbol )
 {
@@ -49,20 +62,7 @@ static QskGraphic icon( QChar symbol )
     painter.setPen( Qt::black );
     painter.drawText( 0, 0, symbol );
 #else
-    graphic.setRenderHint( QskGraphic::RenderPensUnscaled );
-
-#if 0
-    const auto rawFont = QRawFont::fromFont( QFont( symbolName() ) );
-qDebug() << rawFont.pixelSize();
-#else
-    //QRawFont rawFont( QByteArray( ":/fonts/FluentSystemIcons.ttf" ), 16 );
-    QRawFont rawFont;
-
-    QFile file( ":/fonts/FluentSystemIcons.ttf" );
-    if ( file.open( QIODevice::ReadOnly ) )
-        rawFont.loadFromData( file.readAll(), 16, QFont::PreferDefaultHinting );
-#endif
-    
+    const auto rawFont = symbolFont();
     const auto l = rawFont.glyphIndexesForString( symbol  ); 
     Q_ASSERT( l.count() == 1 );
 
@@ -74,6 +74,7 @@ qDebug() << rawFont.pixelSize();
             path.setFillRule(Qt::WindingFill);
 
             QPainter painter( &graphic );
+            painter.setRenderHint( QPainter::Antialiasing, true );
             painter.fillPath( path, Qt::black );
         }
     }
