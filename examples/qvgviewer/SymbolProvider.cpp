@@ -7,6 +7,7 @@
 #include "SymbolProvider.h"
 
 #include <QskSkinManager.h>
+#include <QskGraphic.h>
 
 #include <QFile>
 #include <QDebug>
@@ -32,11 +33,26 @@ SymbolProvider::SymbolProvider( QObject* parent )
 void SymbolProvider::updateFont()
 {
     const auto fileName = fontFileName();
+    if ( fileName == m_fontFileName )
+        return;
+
     qDebug() << fileName;
 
     QFile file( fileName );
-    if ( file.open( QIODevice::ReadOnly ) )
-        setFontData( file.readAll() );
-    else
+    if ( !file.open( QIODevice::ReadOnly ) )
+    {
         qWarning() << "Can't load symbol fonts from:" << file.fileName();
+        return;
+    }
+
+    m_fontFileName = fileName;
+    setFontData( file.readAll() );
+
+#if 0
+    for ( uint i = 0xe000; i < 0xffff; i++ )
+    {
+        const auto graphic = requestSymbol( i );
+        delete graphic;
+    }
+#endif
 }

@@ -13,4 +13,7 @@ class SymbolProvider : public QskSymbolProvider
     SymbolProvider( QObject* parent = nullptr );
 
     void updateFont();
+
+  private:
+    QString m_fontFileName;
 };

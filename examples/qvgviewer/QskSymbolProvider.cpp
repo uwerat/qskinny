@@ -33,9 +33,11 @@ static QskGraphic qskRenderGraphic( QRawFont rawFont, QChar c )
     for ( int i = 0; i < numIndices; i++ )
     {
         auto path = rawFont.pathForGlyph( indices[0] );
-        Q_ASSERT( !path.isEmpty() );
-
-        if ( !path.isEmpty() )
+        if ( path.isEmpty() )
+        {
+            qWarning() << "character has no path:" << c;
+        }
+        else
         {
             path.setFillRule(Qt::WindingFill);
             painter.fillPath( path, Qt::black );
