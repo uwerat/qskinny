@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "MainWindow.h"
+#include "SymbolProvider.h"
 
 #include <QskAnimationHint.h>
 #include <QskAspect.h>
@@ -19,73 +20,7 @@
 #include <QskSkin.h>
 #include <QskBoxShapeMetrics.h>
 
-#include <QPainter>
-#include <QVariant>
-#include <QRawFont>
-#include <QPainterPath>
-#include <QFontDatabase>
 #include <QFile>
-
-#if 0
-static QRawFont symbolFont()
-{
-    const auto name = "FluentSystemIcons-Resizable";
-    //const auto symbolName = "Material Symbols Outlined";
-    //const auto symbolName = "Font Awesome 6 Free";
-
-    return QRawFont::fromFont( QFont( name ) );
-}
-#else
-static QRawFont symbolFont()
-{
-    const auto name = ":/fonts/FluentSystemIcons.ttf";
-
-    QRawFont font;
-
-    QFile file( name );
-    if ( file.open( QIODevice::ReadOnly ) )
-        font.loadFromData( file.readAll(), 16, QFont::PreferDefaultHinting );
-    else
-        qWarning() << "Can't load symbol fonts from:" << file.fileName();
-
-    return font;
-}
-#endif
-
-static QskGraphic icon( QChar symbol )
-{
-    QskGraphic graphic;
-    
-#if 0
-    QPainter painter( &graphic );
-    painter.setFont( QFont( symbolName() ) );
-    painter.setPen( Qt::black );
-    painter.drawText( 0, 0, symbol );
-#else
-    const auto rawFont = symbolFont();
-
-    quint32 glyphIndex;
-    int numGlyphs = 1;
-
-    const bool success = rawFont.glyphIndexesForChars( &symbol, 1, &glyphIndex, &numGlyphs );
-    Q_ASSERT( success );
-
-    if ( success )
-    {
-        auto path = rawFont.pathForGlyph( glyphIndex );
-        if ( !path.isEmpty() )
-        {
-            path.setFillRule(Qt::WindingFill);
-
-            QPainter painter( &graphic );
-            painter.setRenderHint( QPainter::Antialiasing, true );
-            painter.fillPath( path, Qt::black );
-        }
-    }
-#endif
-
-    return graphic;
-}
 
 class SymbolBox : public QskSpinBox
 {
@@ -127,11 +62,16 @@ class GraphicLabel : public QskGraphicLabel
         setBoxShapeHint( Panel, 8 );
         setAlignment( Qt::AlignCenter );
         setDarknessMode( false );
+
+        m_symbolProvider = new SymbolProvider( this );
     }
 
-    void showSymbol( QChar symbol )
+    void showSymbol( QChar c )
     {
-        setGraphic( icon( symbol ) );
+        if ( auto graphic = m_symbolProvider->requestSymbol( c ) )
+            setGraphic( *graphic );
+        else
+            setGraphic( QskGraphic() );
     }
 
     void setDarknessMode( bool on )
@@ -162,6 +102,17 @@ class GraphicLabel : public QskGraphicLabel
         startTransition( Graphic | QskAspect::GraphicRole,
             duration, oldRole, graphicRole() );
     }
+  protected:
+    void changeEvent( QEvent* event ) override
+    {
+        if ( event->type() == QEvent::StyleChange )
+            m_symbolProvider->updateFont();
+
+        QskGraphicLabel::changeEvent( event );
+    }
+
+  private:
+    SymbolProvider* m_symbolProvider;
 };
 
 MainWindow::MainWindow()

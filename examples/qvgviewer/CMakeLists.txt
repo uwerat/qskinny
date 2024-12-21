@@ -3,7 +3,11 @@
 #           SPDX-License-Identifier: BSD-3-Clause
 ############################################################################
 
-set(SOURCES MainWindow.h MainWindow.cpp main.cpp)
-qt_add_resources(SOURCES qvgviewer.qrc)
+set(SOURCES
+    MainWindow.h MainWindow.cpp
+    SymbolProvider.h SymbolProvider.cpp
+    QskSymbolProvider.h QskSymbolProvider.cpp
+    main.cpp
+)
 
 qsk_add_example(qvgviewer ${SOURCES})
