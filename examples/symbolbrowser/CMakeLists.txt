@@ -10,4 +10,4 @@ set(SOURCES
     main.cpp
 )
 
-qsk_add_example(qvgviewer ${SOURCES})
+qsk_add_example(symbolbrowser ${SOURCES})
