@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/fonts">
+
+        <file alias="FluentSystemIcons.ttf">fonts/FluentSystemIcons-Resizable.ttf</file>
+        <file alias="FontAwesomeIconsIcons.otf">fonts/Font Awesome 6 Free-Regular-400.otf</file>
+        <file alias="IcoMoon.ttf">fonts/IcoMoon-Free.ttf</file>
+        <file alias="MaterialSymbols.ttf">fonts/MaterialSymbolsOutlined.ttf</file>
+        <file alias="Octicons.ttf">fonts/Octicons.ttf</file>
+
+    </qresource>
+</RCC>

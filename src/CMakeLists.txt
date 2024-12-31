@@ -83,6 +83,7 @@ list(APPEND HEADERS
     graphic/QskIcon.h
     graphic/QskPainterCommand.h
     graphic/QskStandardSymbol.h
+    graphic/QskSymbolProvider.h
 )
 
 list(APPEND SOURCES
@@ -97,6 +98,7 @@ list(APPEND SOURCES
     graphic/QskIcon.cpp
     graphic/QskPainterCommand.cpp
     graphic/QskStandardSymbol.cpp
+    graphic/QskSymbolProvider.cpp
 )
 
 list(APPEND HEADERS
