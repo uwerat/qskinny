@@ -73,6 +73,8 @@ list(APPEND SOURCES
 
 list(APPEND HEADERS
     graphic/QskColorFilter.h
+    graphic/QskGlyphGraphicProvider.h
+    graphic/QskGlyphTable.h
     graphic/QskGraphic.h
     graphic/QskGraphicImageProvider.h
     graphic/QskGraphicIO.h
@@ -83,11 +85,12 @@ list(APPEND HEADERS
     graphic/QskIcon.h
     graphic/QskPainterCommand.h
     graphic/QskStandardSymbol.h
-    graphic/QskSymbolProvider.h
 )
 
 list(APPEND SOURCES
     graphic/QskColorFilter.cpp
+    graphic/QskGlyphGraphicProvider.cpp
+    graphic/QskGlyphTable.cpp
     graphic/QskGraphic.cpp
     graphic/QskGraphicImageProvider.cpp
     graphic/QskGraphicIO.cpp
@@ -98,7 +101,6 @@ list(APPEND SOURCES
     graphic/QskIcon.cpp
     graphic/QskPainterCommand.cpp
     graphic/QskStandardSymbol.cpp
-    graphic/QskSymbolProvider.cpp
 )
 
 list(APPEND HEADERS

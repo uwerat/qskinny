@@ -1,26 +1,37 @@
-#include "GlyphTable.h"
+/******************************************************************************
+ * QSkinny - Copyright (C) The authors
+ *           SPDX-License-Identifier: BSD-3-Clause
+ *****************************************************************************/
+
+#include "QskGlyphTable.h"
+#include "QskGraphic.h"
 
 #include <qrawfont.h>
+#include <qpainter.h>
+#include <qpainterpath.h>
+
+QSK_QT_PRIVATE_BEGIN
 #include <private/qrawfont_p.h>
-#include <qvarlengtharray.h>
+QSK_QT_PRIVATE_END
 
-#include <cstdio>
-#include <QtEndian>
+typedef QHash< QString, uint > GlyphNameTable;
 
-namespace PostTable
+namespace PostTableParser
 {
     /*
         https://learn.microsoft.com/en-us/typography/opentype/spec/post
      */
 
-    inline QByteArray toByteArray( const uint8_t* s )
+    inline QString toString( const uint8_t* s )
     {
+#if 1
         return QByteArray( reinterpret_cast< const char* > ( s + 1 ), *s );
+#endif
     }
 
-    QHash< QByteArray, int > glyphTab( const QByteArray& blob )
+    GlyphNameTable glyphNames( const QByteArray& blob )
     {
-        QHash< QByteArray, int > tab;
+        GlyphNameTable names;
 
         const auto* glyphData = reinterpret_cast< const uint16_t* >( blob.constData() + 32 );
         if ( const auto nglyphs = qFromBigEndian( *glyphData++ ) )
@@ -39,15 +50,15 @@ namespace PostTable
                 const int idx = qFromBigEndian( glyphData[i] ) - 258;
 
                 if ( idx >= 0 )
-                    tab.insert( toByteArray( strings[idx] ), i );
+                    names.insert( toString( strings[idx] ), i );
             }
         }
 
-        return tab;
+        return names;
     }
 }
 
-namespace CompactFontFormatTable
+namespace CFFTableParser
 {
     /*
         https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf
@@ -105,7 +116,6 @@ namespace CompactFontFormatTable
     {
         return d + indexDataSize( d );
     }
-
 
     static QVector< int > stringIds( const uint8_t* data, int nglyphs )
     {
@@ -261,7 +271,8 @@ namespace CompactFontFormatTable
         const uint8_t* _offset = nullptr;
         int _offsize = -1;
     };
-    QHash< QByteArray, int > glyphTable( const QByteArray& blob, int glyphCount )
+
+    GlyphNameTable glyphNames( const QByteArray& blob, int glyphCount )
     {
         auto data = reinterpret_cast< const uint8_t* >( blob.constData() );
 
@@ -275,7 +286,7 @@ namespace CompactFontFormatTable
 
         const StringTable table( stringIndex );
 
-        QHash< QByteArray, int > names;
+        GlyphNameTable names;
 
         for ( int i = 0; i < glyphCount; i++ )
         {
@@ -294,108 +305,162 @@ namespace CompactFontFormatTable
     }
 }
 
-static int glyphCount( const QRawFont& font )
+static uint qskGlyphCount( const QRawFont& font )
 {
     if ( !font.isValid() )
         return 0;
 
-#if 0
-    // https://learn.microsoft.com/en-us/typography/opentype/spec/maxp
+    /*
+        we could also read the count from the "maxp" table:
+        https://learn.microsoft.com/en-us/typography/opentype/spec/maxp
+     */
 
-    const auto table = font.fontTable( "maxp");
-    if ( table.size() < 6 )
-        return 0;
-
-    //Big Endian
-    const uint8_t* d = reinterpret_cast< const uint8_t* >( table.constData() ) + 4;
-    return d[1] + ( d[0] << 8 );
-#else
     return QRawFontPrivate::get( font )->fontEngine->glyphCount();
-#endif
 }
 
-QHash< QByteArray, int > GlyphTable::nameTable( const QRawFont& font )
+static GlyphNameTable qskGlyphNameTable( const QRawFont& font )
 {
-    if ( const auto count = glyphCount( font ) )
+    const auto count = qskGlyphCount( font );
+    if ( count > 0 )
     {
+        /*
+            The Compact Font Format ( CFF ) table has been introduced with
+            the OpenType specification. For not complying fonts the names
+            might be found in the Post table
+         */
         auto blob = font.fontTable( "CFF ");
         if ( !blob.isEmpty() )
-            return CompactFontFormatTable::glyphTable( blob, count );
+            return CFFTableParser::glyphNames( blob, count );
 
         blob = font.fontTable( "post" );
         if ( !blob.isEmpty() )
-            return PostTable::glyphTab( blob );
+            return PostTableParser::glyphNames( blob );
     }
 
-    return QHash< QByteArray, int >();
+    return GlyphNameTable();
 }
 
-quint32 GlyphTable::ucs4ToIndex( const QRawFont& font, char32_t ucs4 )
+static inline quint32 qskGlyphIndex( const QRawFont& font, char32_t ucs4 )
 {
+    if ( !font.isValid() )
+        return 0;
+
     QString s;
     s += QChar::fromUcs4( ucs4 );
 
     const auto idxs = font.glyphIndexesForString( s );
+
+    // fingers crossed: icon fonts will map code points to single glyphs only
     Q_ASSERT( idxs.size() == 1 );
+
     return idxs.size() == 1 ? idxs[0] : 0;
 }
 
-void GlyphTable::dump( const QHash< QByteArray, int >& hashTab )
+class QskGlyphTable::PrivateData
 {
-    QMap< int, QByteArray > sorted;
+  public:
+    inline const GlyphNameTable& glyphNameTable() const
+    {
+        if ( !validNames )
+        {
+            auto that = const_cast< PrivateData* >( this );
+            that->nameTable = qskGlyphNameTable( font );
+            that->validNames = true;
+        }
 
-    for ( auto it = hashTab.constBegin(); it != hashTab.constEnd(); ++it )
-        sorted.insert( it.value(), it.key() );
+        return nameTable;
+    }
 
-    for ( auto it = sorted.constBegin(); it != sorted.constEnd(); ++it )
-        printf("%d %s\n", it.key(), qPrintable( it.value() ) );
+    QRawFont font;
+    GlyphNameTable nameTable;
+    bool validNames = false;
+};
+
+QskGlyphTable::QskGlyphTable()
+    : m_data( new PrivateData )
+{
 }
 
-int GlyphTable::dump( const QHash< QByteArray, int >& table,
-    const QRawFont& font, char32_t from, char32_t to )
+QskGlyphTable::QskGlyphTable( const QRawFont& font )
+    : QskGlyphTable()
 {
-    QHash< int, QByteArray > inverted;
+    m_data->font = font;
+}
 
-    for ( auto it = table.constBegin(); it != table.constEnd(); ++it )
-        inverted.insert( it.value(), it.key() );
+QskGlyphTable::QskGlyphTable( const QskGlyphTable& other )
+    : QskGlyphTable()
+{
+    *m_data = *other.m_data;
+}
 
-    int n = 0;
+QskGlyphTable::~QskGlyphTable()
+{
+}
 
-    for ( auto c = from; c <= to; c++ )
+QskGlyphTable& QskGlyphTable::operator=( const QskGlyphTable& other )
+{
+    if ( m_data != other.m_data )
+        *m_data = *other.m_data;
+
+    return *this;
+}
+
+void QskGlyphTable::setIconFont( const QRawFont& font )
+{
+    if ( font != m_data->font )
     {
-        if ( const auto glyphIndex = ucs4ToIndex( font, c ) )
-        {
-            const auto it = inverted.constFind( glyphIndex );
-            if ( it != inverted.constEnd() )
-            {
-                printf("%X %d %s\n", c, it.key(), qPrintable( it.value() ) );
+        m_data->font = font;
+        m_data->nameTable.clear();
+        m_data->validNames = false;
+    }
+}
 
-                n++;
-            }
+QRawFont QskGlyphTable::iconFont() const
+{
+    return m_data->font;
+}
+
+QPainterPath QskGlyphTable::path( uint index ) const
+{
+    return m_data->font.pathForGlyph( index );
+}
+
+QskGraphic QskGlyphTable::graphic( uint index ) const
+{
+    QskGraphic graphic;
+
+    if ( index > 0 && m_data->font.isValid() )
+    {
+        const auto path = m_data->font.pathForGlyph( index );
+
+        if ( !path.isEmpty() )
+        {
+            QPainter painter( &graphic );
+            painter.setRenderHint( QPainter::Antialiasing, true );
+            painter.fillPath( path, Qt::black );
         }
     }
 
-    return n;
+    return graphic;
 }
 
-void GlyphTable::dumpSymbols(
-    const QHash< QByteArray, int >& table, const QRawFont& font )
+uint QskGlyphTable::count() const
 {
-    /*
-        Unicode Private Use Areas (PUA)
-        see https://en.wikipedia.org/wiki/Private_Use_Areas
-     */
-
-#if 0
-    int count = 0;
-    count += dump( table, font, 0xe000, 0xf8ff );
-    count += dump( table, font, 0xf0000, 0xffffd );
-    count += dump( table, font, 0x100000, 0x10fffd );
-
-    qDebug() << "GlyphNames:" << table.count() << count << glyphCount( font );
-#else
-    dump( table );
-    qDebug() << "GlyphNames:" << table.count() << glyphCount( font );
-#endif
+    return qskGlyphCount( m_data->font );
 }
 
+uint QskGlyphTable::codeToIndex( char32_t ucs4 ) const
+{
+    return qskGlyphIndex( m_data->font, ucs4 );
+}
+
+uint QskGlyphTable::nameToIndex( const QString& name ) const
+{
+    // 0: see https://learn.microsoft.com/en-us/typography/opentype/spec/cmap
+    return m_data->glyphNameTable().value( name.toLatin1(), 0 );
+}
+
+QHash< QString, uint > QskGlyphTable::nameTable() const
+{
+    return m_data->glyphNameTable();
+}

@@ -5,17 +5,14 @@
 
 #pragma once
 
-#include <QskWindow.h>
+class QskGlyphTable;
+class QString;
 
-class QskSkin;
-
-class MainWindow : public QskWindow
+namespace GlyphTable
 {
-    Q_OBJECT
+    void dumpAllFonts();
+    void dumpFont( const QString& );
 
-  public:
-    MainWindow();
-
-  private Q_SLOTS:
-    void setGraphicRoles( QskSkin* );
+    void dump( const QskGlyphTable& );
+    void dumpPrivateCodes( const QskGlyphTable& );
 };

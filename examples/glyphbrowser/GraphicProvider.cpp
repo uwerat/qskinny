@@ -1,15 +1,15 @@
-
 /******************************************************************************
  * QSkinny - Copyright (C) The authors
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "SymbolProvider.h"
+#include "GraphicProvider.h"
 
 #include <QskSkinManager.h>
 #include <QskGraphic.h>
 
 #include <QFile>
+#include <QRawFont>
 #include <QDebug>
 
 static QString fontFileName()
@@ -24,13 +24,13 @@ static QString fontFileName()
     return QStringLiteral( ":/fonts/FontAwesome.ttf" );
 }
 
-SymbolProvider::SymbolProvider( QObject* parent )
-    : QskSymbolProvider( parent )
+GraphicProvider::GraphicProvider( QObject* parent )
+    : QskGlyphGraphicProvider( parent )
 {
     updateFont();
 }
 
-void SymbolProvider::updateFont()
+void GraphicProvider::updateFont()
 {
     const auto fileName = fontFileName();
     if ( fileName == m_fontFileName )
@@ -46,7 +46,7 @@ void SymbolProvider::updateFont()
     }
 
     m_fontFileName = fileName;
-    setFontData( file.readAll() );
+    setIconFont( QRawFont( file.readAll(), 16 ) );
 
 #if 0
     for ( uint i = 0xe000; i < 0xffff; i++ )

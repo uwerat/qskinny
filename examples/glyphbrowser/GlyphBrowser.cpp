@@ -3,8 +3,8 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "MainWindow.h"
-#include "SymbolProvider.h"
+#include "GlyphBrowser.h"
+#include "GraphicProvider.h"
 
 #include <QskAnimationHint.h>
 #include <QskAspect.h>
@@ -20,28 +20,31 @@
 #include <QskSkin.h>
 #include <QskBoxShapeMetrics.h>
 
-#include <QFile>
-
-class SymbolBox : public QskSpinBox
+class GlyphSpinBox : public QskSpinBox
 {
     Q_OBJECT
 
   public:
-    SymbolBox( QQuickItem* parent = nullptr )
-        : QskSpinBox( 0xe700, 0xf800, 1.0, parent )
+    GlyphSpinBox( QQuickItem* parent = nullptr )
+        : QskSpinBox( 0, 2000, 1.0, parent )
     {
         setDecimals( 0 );
-        setValue( 0xf1c4 );
+        setValue( 100 );
 
         connect( this, &QskSpinBox::valueChanged,
-            this, [this]() { Q_EMIT symbolChanged( symbol() ); } );
+            this, [this]() { Q_EMIT indexChanged( index() ); } );
     }
 
-    QChar symbol() const { return static_cast< char16_t >( value() ); }
-    void setSymbol( QChar symbol ) { setValue( symbol.unicode() ); }
+    void setGlyphCount( uint count )
+    {
+        setMaximum( count );
+    }
+
+    uint index() const { return static_cast< uint >( value() ); }
+    void setIndex( uint index ) { setValue( index ); }
 
   Q_SIGNALS:
-    void symbolChanged( QChar );
+    void indexChanged( uint );
 };
 
 class GraphicLabel : public QskGraphicLabel
@@ -63,17 +66,6 @@ class GraphicLabel : public QskGraphicLabel
         setAlignment( Qt::AlignCenter );
         setDarknessMode( false );
 
-        m_symbolProvider = new SymbolProvider( this );
-    }
-
-    void showSymbol( QChar c )
-    {
-        m_symbol = c;
-
-        if ( auto graphic = m_symbolProvider->requestSymbol( c ) )
-            setGraphic( *graphic );
-        else
-            setGraphic( QskGraphic() );
     }
 
     void setDarknessMode( bool on )
@@ -104,28 +96,18 @@ class GraphicLabel : public QskGraphicLabel
         startTransition( Graphic | QskAspect::GraphicRole,
             duration, oldRole, graphicRole() );
     }
-  protected:
-    void changeEvent( QEvent* event ) override
-    {
-        if ( event->type() == QEvent::StyleChange )
-        {
-            m_symbolProvider->updateFont();
-            showSymbol( m_symbol );
-        }
-
-        QskGraphicLabel::changeEvent( event );
-    }
-
-  private:
-    SymbolProvider* m_symbolProvider;
-    QChar m_symbol;
 };
 
-MainWindow::MainWindow()
+GlyphBrowser::GlyphBrowser( QQuickItem* parentItem )
+    : QskControl( parentItem )
 {
-    auto label = new GraphicLabel();
+    setAutoLayoutChildren( true );
 
-    auto spinBox = new SymbolBox();
+    m_graphicProvider = new GraphicProvider( this );
+
+    m_graphicLabel= new GraphicLabel();
+
+    auto spinBox = new GlyphSpinBox();
 
     auto invertButton = new QskPushButton( "Inverted" );
     invertButton->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
@@ -136,33 +118,26 @@ MainWindow::MainWindow()
     hBox->addItem( spinBox );
     hBox->addItem( invertButton );
 
-    auto box = new QskLinearBox( Qt::Vertical );
+    auto box = new QskLinearBox( Qt::Vertical, this );
     box->setPanel( true );
     box->setPadding( 5 );
     box->addItem( hBox );
-    box->addItem( label );
+    box->addItem( m_graphicLabel );
 
-    addItem( box );
-
-    connect( spinBox, &SymbolBox::symbolChanged,
-        label, &GraphicLabel::showSymbol );
+    connect( spinBox, &GlyphSpinBox::indexChanged,
+        this, &GlyphBrowser::showGlyph );
 
     connect( invertButton, &QskPushButton::toggled,
-        label, &GraphicLabel::setDarknessMode );
+        m_graphicLabel, &GraphicLabel::setDarknessMode );
 
     connect( qskSkinManager, &QskSkinManager::skinChanged,
-        this, &MainWindow::setGraphicRoles );
+        this, &GlyphBrowser::setGraphicRoles );
 
     setGraphicRoles( qskSkinManager->skin() );
-    label->showSymbol( spinBox->symbol() );
-
-#if 0
-    for ( auto name : QFontDatabase::families() )
-        qDebug() << name;
-#endif
+    showGlyph( spinBox->index() );
 }
 
-void MainWindow::setGraphicRoles( QskSkin* skin )
+void GlyphBrowser::setGraphicRoles( QskSkin* skin )
 {
     // substituting black
     QskColorFilter colorFilter;
@@ -171,5 +146,21 @@ void MainWindow::setGraphicRoles( QskSkin* skin )
     skin->setGraphicFilter( GraphicLabel::Inverted, colorFilter );
 }
 
-#include "MainWindow.moc"
-#include "moc_MainWindow.cpp"
+void GlyphBrowser::showGlyph( uint index )
+{
+    m_graphicLabel->setGraphic( m_graphicProvider->glyphGraphic( index ) );
+}
+
+void GlyphBrowser::changeEvent( QEvent* event )
+{
+    if ( event->type() == QEvent::StyleChange )
+    {
+        m_graphicProvider->updateFont();
+        showGlyph( 0 );
+    }
+
+    Inherited::changeEvent( event );
+}
+
+#include "GlyphBrowser.moc"
+#include "moc_GlyphBrowser.cpp"

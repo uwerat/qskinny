@@ -5,12 +5,14 @@
 
 #pragma once
 
-#include <QskSymbolProvider.h>
+#include <QskGlyphGraphicProvider.h>
 
-class SymbolProvider : public QskSymbolProvider
+class GraphicProvider : public QskGlyphGraphicProvider
 {
+    using Inherited = QskGlyphGraphicProvider;
+
   public:
-    SymbolProvider( QObject* parent = nullptr );
+    GraphicProvider( QObject* parent = nullptr );
 
     void updateFont();
 
