@@ -285,12 +285,12 @@ void QskPlotView::updateNode( QSGNode* node )
 {
     if ( !m_data->orphanedNodes.empty() )
     {
-        for ( auto node : m_data->orphanedNodes )
+        for ( auto orphanedNode : m_data->orphanedNodes )
         {
             if ( auto parentNode = node->parent() )
-                parentNode->removeChildNode( node );
+                parentNode->removeChildNode( orphanedNode );
 
-            delete node;
+            delete orphanedNode;
         }
 
         m_data->orphanedNodes.clear();

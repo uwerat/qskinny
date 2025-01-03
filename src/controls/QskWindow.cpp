@@ -446,8 +446,8 @@ void QskWindow::resizeEvent( QResizeEvent* event )
     const auto newRect = qskItemGeometry( rootItem );
     if ( newRect != oldRect )
     {
-        QskGeometryChangeEvent event( newRect, oldRect );
-        QCoreApplication::sendEvent( rootItem, &event );
+        QskGeometryChangeEvent ev( newRect, oldRect );
+        QCoreApplication::sendEvent( rootItem, &ev );
     }
 
     if ( isExposed() )

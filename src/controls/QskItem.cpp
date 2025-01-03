@@ -218,7 +218,8 @@ namespace
             }
         }
 
-        void itemChildRemoved( QQuickItem* parentItem, QQuickItem* )
+        void itemChildRemoved(
+            QQuickItem* parentItem, QQuickItem* ) override
         {
             update( parentItem );
         }

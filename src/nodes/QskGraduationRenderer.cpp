@@ -32,7 +32,7 @@ namespace
         {
         }
 
-        inline qreal map( qreal v ) const { return t + f * v; };
+        inline qreal map( qreal v ) const { return t + f * v; }
 
       private:
         const qreal t;
