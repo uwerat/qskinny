@@ -19,18 +19,16 @@ typedef QHash< QString, uint > GlyphNameTable;
 
 namespace PostTableParser
 {
-    /*
-        https://learn.microsoft.com/en-us/typography/opentype/spec/post
-     */
+    // https://learn.microsoft.com/en-us/typography/opentype/spec/post
 
-    inline QString toString( const uint8_t* s )
+    static inline QString toString( const uint8_t* s )
     {
-#if 1
-        return QByteArray( reinterpret_cast< const char* > ( s + 1 ), *s );
-#endif
+        // Pascal string. Valid characters are: [A–Z] [a–z] [0–9] '.' '_' 
+        return QString::fromUtf8(
+            reinterpret_cast< const char* > ( s + 1 ), *s );
     }
 
-    GlyphNameTable glyphNames( const QByteArray& blob )
+    static GlyphNameTable glyphNames( const QByteArray& blob )
     {
         GlyphNameTable names;
 
@@ -65,7 +63,7 @@ namespace CFFTableParser
         https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf
      */
 
-    uint32_t offsetAt( const uint8_t* d, int size )
+    static uint32_t offsetAt( const uint8_t* d, int size )
     {
         switch (size)
         {
@@ -82,7 +80,7 @@ namespace CFFTableParser
         }
     }
 
-    static int indexDataSize( const uint8_t* d)
+    static int indexDataSize( const uint8_t* d )
     {
         const int nitems = ( d[0] << 8 ) | d[1];
         if ( nitems == 0 )
@@ -170,7 +168,7 @@ namespace CFFTableParser
     {
         /*
             see https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf
-            We are intersted in the offsets ( operator 15/16/17 ).
+            We are intersted in the offset ( operator 15 ).
          */
 
         const uint8_t* data = indexData( d );
@@ -202,8 +200,8 @@ namespace CFFTableParser
                  */
                 while( ++data )
                 {
-                    const int d = *data;
-                    if ( ( d & 0x0f ) == 0x0f || ( d & 0xf0 ) == 0xf0 )
+                    const int b = *data;
+                    if ( ( b & 0x0f ) == 0x0f || ( b & 0xf0 ) == 0xf0 )
                         break; // 0xf nibble indicating the end
                 }
 
@@ -239,7 +237,7 @@ namespace CFFTableParser
     class StringTable
     {
       public:
-        StringTable(const uint8_t* data)
+        StringTable( const uint8_t* data )
         {
             const int nitems = ( data[0] << 8 ) | data[1];
             if ( nitems == 0 )
@@ -257,14 +255,15 @@ namespace CFFTableParser
             }
         }
 
-        inline QByteArray operator[](int which) const
+        inline QString operator[]( int which ) const
         {
             const auto x = _offset + which * _offsize;
 
             const auto d1 = _contents + offsetAt(x, _offsize);
             const auto d2 = _contents + offsetAt(x + _offsize, _offsize);
 
-            return QByteArray( reinterpret_cast< const char* >( d1 ), d2 - d1 );
+            return QString::fromUtf8(
+                reinterpret_cast< const char* >( d1 ), d2 - d1 );
         }
 
       private:
@@ -273,7 +272,7 @@ namespace CFFTableParser
         int _offsize = -1;
     };
 
-    GlyphNameTable glyphNames( const QByteArray& blob, int glyphCount )
+    static GlyphNameTable glyphNames( const QByteArray& blob, int glyphCount )
     {
         auto data = reinterpret_cast< const uint8_t* >( blob.constData() );
 
