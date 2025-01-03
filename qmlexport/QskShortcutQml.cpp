@@ -9,6 +9,8 @@
 #include <qquickitem.h>
 #include <qquickwindow.h>
 
+#include <QskInternalMacros.h>
+
 QSK_QT_PRIVATE_BEGIN
 #include <QtGui/private/qguiapplication_p.h>
 QSK_QT_PRIVATE_END

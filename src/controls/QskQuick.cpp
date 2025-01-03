@@ -8,6 +8,8 @@
 #include "QskFunctions.h"
 #include "QskLayoutElement.h"
 #include "QskPlatform.h"
+#include "QskInternalMacros.h"
+
 #include <qquickitem.h>
 
 QSK_QT_PRIVATE_BEGIN

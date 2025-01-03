@@ -5,6 +5,7 @@
 
 #include "QskItemAnchors.h"
 #include "QskMargins.h"
+#include "QskInternalMacros.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickanchors_p.h>

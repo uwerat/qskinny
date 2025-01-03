@@ -6,7 +6,6 @@
 #ifndef QSK_GLOBAL_H
 #define QSK_GLOBAL_H
 
-#include <qcompilerdetection.h>
 #include <qglobal.h>
 
 #if QT_VERSION < QT_VERSION_CHECK( 5, 15, 0 )
@@ -31,24 +30,6 @@
 #ifndef QSK_EXPORT
     #define QSK_EXPORT
 #endif
-
-#define QSK_QT_PRIVATE_BEGIN \
-    QT_WARNING_PUSH \
-    QT_WARNING_DISABLE_GCC("-Wpragmas") \
-    QT_WARNING_DISABLE_GCC("-Wpedantic") \
-    QT_WARNING_DISABLE_GCC("-Wsuggest-override") \
-    QT_WARNING_DISABLE_GCC("-Wsuggest-final-types") \
-    QT_WARNING_DISABLE_GCC("-Wsuggest-final-methods")
-
-#define QSK_QT_PRIVATE_END \
-    QT_WARNING_POP
-
-#define QSK_HIDDEN_EXTERNAL_BEGIN \
-    QT_WARNING_PUSH \
-    QT_WARNING_DISABLE_GCC("-Wmissing-declarations")
-
-#define QSK_HIDDEN_EXTERNAL_END \
-    QT_WARNING_POP
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     using QskHashValue = uint;

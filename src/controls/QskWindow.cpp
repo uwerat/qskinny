@@ -10,6 +10,7 @@
 #include "QskSetup.h"
 #include "QskSkin.h"
 #include "QskSkinManager.h"
+#include "QskInternalMacros.h"
 
 #include <qmath.h>
 #include <qpointer.h>

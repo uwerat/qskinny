@@ -11,6 +11,7 @@
 #include "QskSkinManager.h"
 #include "QskSkin.h"
 #include "QskDirtyItemFilter.h"
+#include "QskInternalMacros.h"
 
 #include <qglobalstatic.h>
 #include <qquickwindow.h>

@@ -9,6 +9,7 @@
 #include "QskScrollViewSkinlet.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskSGNode.h"
+#include "QskInternalMacros.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickitem_p.h>

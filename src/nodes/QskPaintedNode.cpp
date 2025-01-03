@@ -6,6 +6,7 @@
 #include "QskPaintedNode.h"
 #include "QskSGNode.h"
 #include "QskTextureRenderer.h"
+#include "QskInternalMacros.h"
 
 #include <qsgimagenode.h>
 #include <qquickwindow.h>

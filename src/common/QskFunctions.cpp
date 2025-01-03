@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskFunctions.h"
+#include "QskInternalMacros.h"
 
 #include <qfont.h>
 #include <qfontmetrics.h>

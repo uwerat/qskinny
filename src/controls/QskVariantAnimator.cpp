@@ -16,6 +16,7 @@
 #include "QskMargins.h"
 #include "QskIntervalF.h"
 #include "QskTextColors.h"
+#include "QskInternalMacros.h"
 
 // Even if we don't use the standard Qt animation system we
 // use its registry of interpolators: why adding our own ...

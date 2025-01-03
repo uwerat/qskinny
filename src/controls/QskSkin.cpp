@@ -106,6 +106,8 @@
 #include "QskStatusIndicator.h"
 #include "QskStatusIndicatorSkinlet.h"
 
+#include "QskInternalMacros.h"
+
 #include <qhash.h>
 
 static inline QskSkinlet* qskNewSkinlet( const QMetaObject* metaObject, QskSkin* skin )
