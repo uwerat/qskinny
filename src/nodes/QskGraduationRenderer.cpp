@@ -501,7 +501,6 @@ QRectF QskGraduationRenderer::labelRect(
     }
     else
     {
-        const auto tickPos = map.map( tick );
         y = tickPos - 0.5 * h;
 
         if ( clampLabels )
