@@ -1136,10 +1136,14 @@ QSGNode* QskItem::updateItemPaintNode( QSGNode* node )
     return node;
 }
 
+QSK_HIDDEN_EXTERNAL_BEGIN
+
 void qskUpdateItemFlags()
 {
     if ( qskRegistry )
         qskRegistry->updateItemFlags();
 }
+
+QSK_HIDDEN_EXTERNAL_END
 
 #include "moc_QskItem.cpp"

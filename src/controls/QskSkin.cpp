@@ -126,6 +126,8 @@ static inline QskSkinlet* qskNewSkinlet( const QMetaObject* metaObject, QskSkin*
 
 // also used in QskSkinTransition.cpp TODO ...
 
+QSK_HIDDEN_EXTERNAL_BEGIN
+
 QFont qskResolvedFont( const QHash< QskFontRole, QFont >& fontTable,
     const QskFontRole& fontRole )
 {
@@ -139,6 +141,8 @@ QFont qskResolvedFont( const QHash< QskFontRole, QFont >& fontTable,
 
     return QGuiApplication::font();
 }
+
+QSK_HIDDEN_EXTERNAL_END
 
 namespace
 {

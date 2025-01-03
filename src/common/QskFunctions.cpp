@@ -234,7 +234,8 @@ float qskConstrainedRadians( float radians )
     return radians;
 }
 
-// do not export;
+QSK_HIDDEN_EXTERNAL_BEGIN
+
 bool qskHasEnvironment( const char* env )
 {
     bool ok;
@@ -247,3 +248,5 @@ bool qskHasEnvironment( const char* env )
     auto result = qgetenv( env );
     return !result.isEmpty() && result != "false";
 }
+
+QSK_HIDDEN_EXTERNAL_END

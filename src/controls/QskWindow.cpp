@@ -482,6 +482,8 @@ void QskWindow::resetLocale()
     qskResolveLocale( this );
 }
 
+QSK_HIDDEN_EXTERNAL_BEGIN
+
 bool qskInheritLocale( QskWindow* window, const QLocale& locale )
 {
     auto d = static_cast< QskWindowPrivate* >( QQuickWindowPrivate::get( window ) );
@@ -494,6 +496,8 @@ bool qskInheritLocale( QskWindow* window, const QLocale& locale )
 
     return true;
 }
+
+QSK_HIDDEN_EXTERNAL_END
 
 static void qskResolveLocale( QskWindow* window )
 {

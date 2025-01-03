@@ -43,6 +43,13 @@
 #define QSK_QT_PRIVATE_END \
     QT_WARNING_POP
 
+#define QSK_HIDDEN_EXTERNAL_BEGIN \
+    QT_WARNING_PUSH \
+    QT_WARNING_DISABLE_GCC("-Wmissing-declarations")
+
+#define QSK_HIDDEN_EXTERNAL_END \
+    QT_WARNING_POP
+
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     using QskHashValue = uint;
 #else
