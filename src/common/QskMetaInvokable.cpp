@@ -5,6 +5,7 @@
 
 #include "QskMetaInvokable.h"
 #include "QskMetaFunction.h"
+#include "QskInternalMacros.h"
 
 #include <qmetaobject.h>
 #include <qobject.h>

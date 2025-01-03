@@ -13,6 +13,7 @@
 #include "QskSkinlet.h"
 #include "QskEvent.h"
 #include "QskPlatform.h"
+#include "QskInternalMacros.h"
 
 #include <qvector.h>
 #include <qvariant.h>

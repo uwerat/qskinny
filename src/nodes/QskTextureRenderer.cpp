@@ -5,6 +5,7 @@
 
 #include "QskTextureRenderer.h"
 #include "QskQuick.h"
+#include "QskInternalMacros.h"
 
 #include <qopenglcontext.h>
 #include <qopenglframebufferobject.h>

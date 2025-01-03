@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskPlatform.h"
+#include "QskInternalMacros.h"
 
 #include <qguiapplication.h>
 #include <qquickwindow.h>

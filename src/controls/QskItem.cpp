@@ -11,6 +11,7 @@
 #include "QskSkinManager.h"
 #include "QskSkin.h"
 #include "QskDirtyItemFilter.h"
+#include "QskInternalMacros.h"
 
 #include <qglobalstatic.h>
 #include <qquickwindow.h>
@@ -218,7 +219,8 @@ namespace
             }
         }
 
-        void itemChildRemoved( QQuickItem* parentItem, QQuickItem* )
+        void itemChildRemoved(
+            QQuickItem* parentItem, QQuickItem* ) override
         {
             update( parentItem );
         }
@@ -1135,10 +1137,14 @@ QSGNode* QskItem::updateItemPaintNode( QSGNode* node )
     return node;
 }
 
+QSK_HIDDEN_EXTERNAL_BEGIN
+
 void qskUpdateItemFlags()
 {
     if ( qskRegistry )
         qskRegistry->updateItemFlags();
 }
+
+QSK_HIDDEN_EXTERNAL_END
 
 #include "moc_QskItem.cpp"

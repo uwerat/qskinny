@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "Image.h"
+#include <QskInternalMacros.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickimage_p_p.h>

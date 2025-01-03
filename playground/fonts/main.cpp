@@ -88,7 +88,7 @@ namespace
         }
 
       protected:
-        void changeEvent( QEvent* event )
+        void changeEvent( QEvent* event ) override
         {
             if ( event->type() == QEvent::StyleChange )
                 updateText();

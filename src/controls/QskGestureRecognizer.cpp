@@ -6,6 +6,7 @@
 #include "QskGestureRecognizer.h"
 #include "QskEvent.h"
 #include "QskQuick.h"
+#include "QskInternalMacros.h"
 
 #include <qcoreapplication.h>
 #include <qquickitem.h>

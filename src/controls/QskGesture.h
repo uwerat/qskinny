@@ -137,7 +137,7 @@ class QSK_EXPORT QskSwipeGesture : public QskGesture
     ~QskSwipeGesture() override;
 
     void setAngle( qreal angle );
-    inline qreal angle() const { return m_angle; };
+    inline qreal angle() const { return m_angle; }
 
   private:
     qreal m_angle;

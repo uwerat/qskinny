@@ -13,11 +13,31 @@
 
 #include <cmath>
 
-namespace Engine
+namespace
 {
-    // What about using qskFuzzyCompare and friends ???
+    /*
+        Code has been copied from the Qwt project ( with permission of the
+        copyright holder ( = me ). Maybe the code could be adjusted using Qskinny
+        fuzzy operators
+     */
 
-    inline int fuzzyCompare( double value1, double value2, double intervalSize )
+    class Engine
+    {
+      public:
+        static QskTickmarks buildTicks( const QskIntervalF&, qreal, int );
+        static QVector< qreal > buildMajorTicks( const QskIntervalF&, qreal );
+        static void buildMinorTicks( const QVector< qreal >&, int, qreal,
+            QVector< qreal >&, QVector< qreal >& );
+
+      private:
+        static bool fuzzyContains( const QskIntervalF&, double );
+        static int fuzzyCompare( double, double, double );
+        static double minorStepSize( double, int );
+
+        static QVector< qreal > strip( const QVector< qreal >&, const QskIntervalF& );
+    };
+
+    inline int Engine::fuzzyCompare( double value1, double value2, double intervalSize )
     {
         const double eps = std::abs( 1.0e-6 * intervalSize );
 
@@ -30,7 +50,7 @@ namespace Engine
         return 0;
     }
 
-    inline bool fuzzyContains( const QskIntervalF& interval, double value )
+    inline bool Engine::fuzzyContains( const QskIntervalF& interval, double value )
     {
         if ( !interval.isValid() )
             return false;
@@ -44,7 +64,7 @@ namespace Engine
         return true;
     }
 
-    double minorStepSize( double intervalSize, int maxSteps )
+    double Engine::minorStepSize( double intervalSize, int maxSteps )
     {
         const double minStep = QskGraduation::stepSize( intervalSize, maxSteps );
 
@@ -65,7 +85,7 @@ namespace Engine
         return minStep;
     }
 
-    QVector< qreal > strip(
+    QVector< qreal > Engine::strip(
         const QVector< qreal >& ticks, const QskIntervalF& interval )
     {
         if ( !interval.isValid() || ticks.count() == 0 )
@@ -89,7 +109,7 @@ namespace Engine
         return strippedTicks;
     }
 
-    QVector< qreal > buildMajorTicks(
+    QVector< qreal > Engine::buildMajorTicks(
         const QskIntervalF& interval, qreal stepSize )
     {
         int numTicks = qRound( interval.length() / stepSize ) + 1;
@@ -107,7 +127,7 @@ namespace Engine
         return ticks;
     }
 
-    void buildMinorTicks(
+    void Engine::buildMinorTicks(
         const QVector< qreal >& majorTicks, int maxMinorSteps, qreal stepSize,
         QVector< qreal >& minorTicks, QVector< qreal >& mediumTicks )
     {
@@ -143,8 +163,8 @@ namespace Engine
         }
     }
 
-    QskTickmarks buildTicks(
-        const QskIntervalF& interval, qreal stepSize, int maxMinorSteps )
+    QskTickmarks Engine::buildTicks( const QskIntervalF& interval,
+        qreal stepSize, int maxMinorSteps )
     {
         using T = QskTickmarks;
 
@@ -175,7 +195,6 @@ namespace Engine
 
         return { ticks[T::MinorTick], ticks[T::MediumTick], ticks[T::MajorTick] };
     }
-
 }
 
 QskTickmarks QskGraduation::divideInterval(

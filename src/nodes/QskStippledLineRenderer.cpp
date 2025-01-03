@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskStippledLineRenderer.h"
+#include "QskInternalMacros.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qstroker_p.h>

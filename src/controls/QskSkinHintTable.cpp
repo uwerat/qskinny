@@ -246,8 +246,8 @@ QskAspect QskSkinHintTable::resolvedAnimator(
 
         Q_FOREVER
         {
-            auto it = m_hints->find( aspect );
-            if ( it != m_hints->cend() )
+            auto it = m_hints->constFind( aspect );
+            if ( it != m_hints->constEnd() )
             {
                 hint = it.value().value< QskAnimationHint >();
                 return aspect;

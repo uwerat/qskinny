@@ -8,6 +8,7 @@
 #include "QskGradientDirection.h"
 #include "QskVertex.h"
 #include "QskFillNodePrivate.h"
+#include "QskInternalMacros.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qvectorpath_p.h>

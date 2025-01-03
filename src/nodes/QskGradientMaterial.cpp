@@ -54,7 +54,7 @@ namespace
         }
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-        // make Qt 5/6 APIs matchaing
+        // make Qt 5/6 APIs matching
 
         QSGMaterialShader* createShader(
             QSGRendererInterface::RenderMode ) const override final

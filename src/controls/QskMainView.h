@@ -28,7 +28,7 @@ class QSK_EXPORT QskMainView : public QskLinearBox
     void setFooter( QskControl* );
 
   protected:
-    void focusInEvent( QFocusEvent* );
+    void focusInEvent( QFocusEvent* ) override;
 
   private:
     class PrivateData;

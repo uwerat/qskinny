@@ -7,6 +7,7 @@
 #include "QskVertex.h"
 #include "QskGradient.h"
 #include "QskRgbValue.h"
+#include "QskInternalMacros.h"
 
 #include <qpainterpath.h>
 
