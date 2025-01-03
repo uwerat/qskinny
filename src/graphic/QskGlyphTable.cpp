@@ -5,6 +5,7 @@
 
 #include "QskGlyphTable.h"
 #include "QskGraphic.h"
+#include "QskInternalMacros.h"
 
 #include <qrawfont.h>
 #include <qpainter.h>
