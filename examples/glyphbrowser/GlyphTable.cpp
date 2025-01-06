@@ -80,12 +80,12 @@ void GlyphTable::dumpFont( const QString& path )
 void GlyphTable::dumpAllFonts()
 {
     const auto entries = QDir( ":fonts" ).entryInfoList();
-#if 0
+#if 1
     for ( const auto& entry : entries )
     {
         const auto path = entry.absoluteFilePath();
         qDebug() << path;
-        dumpGlyphs( path );
+        dumpFont( path );
     }
 #else
     {

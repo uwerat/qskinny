@@ -39,12 +39,12 @@ class QSK_EXPORT QskGlyphTable
 
     /*
         Most icon fonts use code points from the Unicode Private Use Areas (PUA)
-        ( see https://en.wikipedia.org/wiki/Private_Use_Areas ): 
+        ( see https://en.wikipedia.org/wiki/Private_Use_Areas ):
 
         - [0x00e000, 0x00f8ff]
         - [0x0f0000, 0x0ffffd]
         - [0x100000, 0x10fffd]
-        
+
         Note that QChar is 16-bit entity only that does not cover the higher PUA blocks.
      */
     uint codeToIndex( char32_t ) const;

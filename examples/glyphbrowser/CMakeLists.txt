@@ -4,6 +4,7 @@
 ############################################################################
 
 set(SOURCES
+    FontBrowser.h FontBrowser.cpp
     GlyphBrowser.h GlyphBrowser.cpp
     GlyphTable.h GlyphTable.cpp
     GraphicProvider.h GraphicProvider.cpp

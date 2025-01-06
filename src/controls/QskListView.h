@@ -49,7 +49,7 @@ class QSK_EXPORT QskListView : public QskScrollView
     void setSelectionMode( SelectionMode );
     SelectionMode selectionMode() const;
 
-    void setTextOptions( const QskTextOptions& textOptions );
+    void setTextOptions( const QskTextOptions& );
     void resetTextOptions();
     QskTextOptions textOptions() const;
 
@@ -91,7 +91,7 @@ class QSK_EXPORT QskListView : public QskScrollView
     void hoverLeaveEvent( QHoverEvent* ) override;
 
 #ifndef QT_NO_WHEELEVENT
-    virtual QPointF scrollOffset( const QWheelEvent* ) const override;
+    QPointF scrollOffset( const QWheelEvent* ) const override;
 #endif
 
     void updateScrollableSize();

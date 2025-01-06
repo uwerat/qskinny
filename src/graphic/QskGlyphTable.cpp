@@ -23,7 +23,7 @@ namespace PostTableParser
 
     static inline QString toString( const uint8_t* s )
     {
-        // Pascal string. Valid characters are: [A–Z] [a–z] [0–9] '.' '_' 
+        // Pascal string. Valid characters are: [A–Z] [a–z] [0–9] '.' '_'
         return QString::fromUtf8(
             reinterpret_cast< const char* > ( s + 1 ), *s );
     }
@@ -374,6 +374,12 @@ class QskGlyphTable::PrivateData
     QRawFont font;
     GlyphNameTable nameTable;
     bool validNames = false;
+
+    /*
+        to avoid running into assertions, when calling qskGlyphCount from
+        the scene graph thread ( see comment in QskGlyphTable::path()
+     */
+    uint glyphCount = 0;
 };
 
 QskGlyphTable::QskGlyphTable()
@@ -385,6 +391,7 @@ QskGlyphTable::QskGlyphTable( const QRawFont& font )
     : QskGlyphTable()
 {
     m_data->font = font;
+    m_data->glyphCount = qskGlyphCount( m_data->font );
 }
 
 QskGlyphTable::QskGlyphTable( const QskGlyphTable& other )
@@ -410,6 +417,7 @@ void QskGlyphTable::setIconFont( const QRawFont& font )
     if ( font != m_data->font )
     {
         m_data->font = font;
+        m_data->glyphCount = qskGlyphCount( m_data->font );
         m_data->nameTable.clear();
         m_data->validNames = false;
     }
@@ -422,22 +430,39 @@ QRawFont QskGlyphTable::iconFont() const
 
 QPainterPath QskGlyphTable::path( uint index ) const
 {
-    return m_data->font.pathForGlyph( index );
+    QPainterPath path;
+
+    /*
+        Unfortunately QRawFont::pathForGlyph runs into an assertion
+        when not being on the main thread - what is the case, when being
+        called from the scene graph thread. To avoid crashes with
+        Qt being built in debug mode we bypass QRawFont and retrieve
+        directly from the fontEngine.
+     */
+    if ( auto fontEngine = QRawFontPrivate::get( m_data->font )->fontEngine )
+    {
+        QFixedPoint position;
+        quint32 glyphIndex = index;
+
+        fontEngine->addGlyphsToPath( &glyphIndex, &position, 1, &path, {} );
+    }
+
+    return path;
 }
 
 QskGraphic QskGlyphTable::graphic( uint index ) const
 {
     QskGraphic graphic;
 
-    if ( index > 0 && m_data->font.isValid() )
+    if ( index > 0 && m_data->glyphCount > 0 )
     {
-        const auto path = m_data->font.pathForGlyph( index );
+        const auto glyphPath = path( index );
 
-        if ( !path.isEmpty() )
+        if ( !glyphPath.isEmpty() )
         {
             QPainter painter( &graphic );
             painter.setRenderHint( QPainter::Antialiasing, true );
-            painter.fillPath( path, Qt::black );
+            painter.fillPath( glyphPath, Qt::black );
         }
     }
 
@@ -446,7 +471,7 @@ QskGraphic QskGlyphTable::graphic( uint index ) const
 
 uint QskGlyphTable::count() const
 {
-    return qskGlyphCount( m_data->font );
+    return m_data->glyphCount;
 }
 
 uint QskGlyphTable::codeToIndex( char32_t ucs4 ) const

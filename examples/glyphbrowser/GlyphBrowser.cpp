@@ -105,7 +105,7 @@ GlyphBrowser::GlyphBrowser( QQuickItem* parentItem )
 
     m_graphicProvider = new GraphicProvider( this );
 
-    m_graphicLabel= new GraphicLabel();
+    m_graphicLabel = new GraphicLabel();
 
     auto spinBox = new GlyphSpinBox();
 
