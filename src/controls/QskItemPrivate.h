@@ -61,7 +61,9 @@ class QskItemPrivate : public QQuickItemPrivate
     bool initiallyPainted : 1;
     bool wheelEnabled : 1;
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 7, 0 )
     uint focusPolicy : 4;
+#endif
 };
 
 #endif

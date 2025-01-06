@@ -23,7 +23,9 @@ QskItemPrivate::QskItemPrivate()
     , clearPreviousNodes( false )
     , initiallyPainted( false )
     , wheelEnabled( false )
+#if QT_VERSION < QT_VERSION_CHECK( 6, 7, 0 )
     , focusPolicy( Qt::NoFocus )
+#endif
 {
     if ( updateFlags & QskItem::DeferredLayout )
     {
