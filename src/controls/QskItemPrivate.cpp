@@ -6,6 +6,7 @@
 #include "QskItemPrivate.h"
 #include "QskTreeNode.h"
 #include "QskSetup.h"
+#include "QskEvent.h"
 
 static inline void qskSendEventTo( QObject* object, QEvent::Type type )
 {
@@ -251,8 +252,24 @@ QSGTransformNode* QskItemPrivate::createTransformNode()
     return new QskItemNode();
 }
 
-/*
-    Can we do something useful with overloading:
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 3, 0 )
 
-        - QQuickItemPrivate::transformChanged
- */
+bool QskItemPrivate::transformChanged( QQuickItem* transformedItem )
+{
+    bool accepted = false;
+
+    if ( q_func()->flags() & QQuickItem::ItemObservesViewport )
+    {
+        QskViewportChangeEvent event( transformedItem );
+        QCoreApplication::sendEvent( q_func(), &event );
+
+        accepted = event.isAccepted();
+    }
+
+    accepted |= Inherited::transformChanged( transformedItem );
+
+
+    return accepted;
+}
+
+#endif

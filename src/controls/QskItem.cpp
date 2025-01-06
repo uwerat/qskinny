@@ -781,6 +781,11 @@ bool QskItem::event( QEvent* event )
             changeEvent( event );
             return true;
         }
+        case QskEvent::ViewportChange:
+        {
+            viewportChangeEvent( static_cast< QskViewportChangeEvent* >( event ) );
+            return true;
+        }
         case QskEvent::GeometryChange:
         {
             geometryChangeEvent( static_cast< QskGeometryChangeEvent* >( event ) );
@@ -856,6 +861,11 @@ bool QskItem::event( QEvent* event )
 
 void QskItem::windowChangeEvent( QskWindowChangeEvent* )
 {
+}
+
+void QskItem::viewportChangeEvent( QskViewportChangeEvent* event )
+{
+    event->ignore();
 }
 
 void QskItem::geometryChangeEvent( QskGeometryChangeEvent* )

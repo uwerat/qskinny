@@ -45,6 +45,10 @@ class QskItemPrivate : public QQuickItemPrivate
     void setImplicitSize( qreal width, qreal height, bool doNotify );
     virtual QSizeF implicitSizeHint() const = 0;
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 3, 0 )
+    bool transformChanged( QQuickItem* ) override final;
+#endif
+
   private:
     Q_DECLARE_PUBLIC( QskItem )
 

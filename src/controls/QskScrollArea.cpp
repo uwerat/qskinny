@@ -245,6 +245,8 @@ namespace
         {
             if ( change.sizeChange() )
                 scrolledItemGeometryChange();
+
+            viewportChanged();
         }
 
         void updateNode( QSGNode* ) override;
@@ -286,6 +288,17 @@ namespace
         }
 
         const QSGClipNode* viewPortClipNode() const;
+
+        void viewportChanged()
+        {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 3, 0 )
+            if ( auto item = scrollArea()->scrolledItem() )
+            {
+                QskViewportChangeEvent ev( this );
+                QCoreApplication::sendEvent( item, &ev );
+            }
+#endif
+        }
 
         bool m_isSizeChangedEnabled = true;
     };
@@ -422,6 +435,7 @@ namespace
             {
                 // we need to restore the clip node
                 update();
+                viewportChanged();
             }
         }
 

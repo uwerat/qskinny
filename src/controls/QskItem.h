@@ -11,6 +11,7 @@
 
 class QskItemPrivate;
 class QskGeometryChangeEvent;
+class QskViewportChangeEvent;
 class QskWindowChangeEvent;
 
 class QSK_EXPORT QskItem : public QQuickItem
@@ -154,6 +155,7 @@ class QSK_EXPORT QskItem : public QQuickItem
 
     virtual void changeEvent( QEvent* );
     virtual void geometryChangeEvent( QskGeometryChangeEvent* );
+    virtual void viewportChangeEvent( QskViewportChangeEvent* );
     virtual void windowChangeEvent( QskWindowChangeEvent* );
 
     void mouseUngrabEvent() override;
