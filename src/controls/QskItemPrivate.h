@@ -45,6 +45,10 @@ class QskItemPrivate : public QQuickItemPrivate
     void setImplicitSize( qreal width, qreal height, bool doNotify );
     virtual QSizeF implicitSizeHint() const = 0;
 
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 3, 0 )
+    bool transformChanged( QQuickItem* ) override final;
+#endif
+
   private:
     Q_DECLARE_PUBLIC( QskItem )
 
@@ -61,7 +65,9 @@ class QskItemPrivate : public QQuickItemPrivate
     bool initiallyPainted : 1;
     bool wheelEnabled : 1;
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 7, 0 )
     uint focusPolicy : 4;
+#endif
 };
 
 #endif

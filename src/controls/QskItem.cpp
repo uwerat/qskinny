@@ -414,14 +414,10 @@ bool QskItem::isTabFence() const
     return d_func()->isTabFence;
 }
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 7, 0 )
+
 void QskItem::setFocusPolicy( Qt::FocusPolicy policy )
 {
-    /*
-        Qt::FocusPolicy has always been there with widgets, got lost with
-        Qt/Quick and has been reintroduced with Qt/Quick Controls 2 ( QC2 ).
-        Unfortunately this was done by adding code on top instead of fixing
-        the foundation.
-     */
     Q_D( QskItem );
     if ( policy != d->focusPolicy )
     {
@@ -453,6 +449,14 @@ Qt::FocusPolicy QskItem::focusPolicy() const
 
     return static_cast< Qt::FocusPolicy >( policy );
 }
+
+#else
+
+/*
+    shifting the activeFocusItem before removing it from the tab focus
+    chain is not done by QQuickItem::setFocusPolicy. TODO ...
+ */
+#endif
 
 void QskItem::setWheelEnabled( bool on )
 {
@@ -777,6 +781,11 @@ bool QskItem::event( QEvent* event )
             changeEvent( event );
             return true;
         }
+        case QskEvent::ViewportChange:
+        {
+            viewportChangeEvent( static_cast< QskViewportChangeEvent* >( event ) );
+            return true;
+        }
         case QskEvent::GeometryChange:
         {
             geometryChangeEvent( static_cast< QskGeometryChangeEvent* >( event ) );
@@ -852,6 +861,11 @@ bool QskItem::event( QEvent* event )
 
 void QskItem::windowChangeEvent( QskWindowChangeEvent* )
 {
+}
+
+void QskItem::viewportChangeEvent( QskViewportChangeEvent* event )
+{
+    event->ignore();
 }
 
 void QskItem::geometryChangeEvent( QskGeometryChangeEvent* )
