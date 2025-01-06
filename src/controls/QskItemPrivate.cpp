@@ -268,7 +268,6 @@ bool QskItemPrivate::transformChanged( QQuickItem* transformedItem )
 
     accepted |= Inherited::transformChanged( transformedItem );
 
-
     return accepted;
 }
 
