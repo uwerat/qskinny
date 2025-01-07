@@ -66,7 +66,7 @@ int FontBrowser::rowCount() const
 
 int FontBrowser::columnCount() const
 {
-    return 2;
+    return 3;
 }
 
 qreal FontBrowser::columnWidth( int col ) const
@@ -74,9 +74,15 @@ qreal FontBrowser::columnWidth( int col ) const
     switch( col )
     {
         case 0:
-            return glyphSize;
+        {
+            const QFontMetricsF fm( effectiveFont( Text ) );
+            return qskHorizontalAdvance( fm, "999999" );
+        }
 
         case 1:
+            return glyphSize;
+
+        case 2:
             return m_maxNameWidth;
     }
 
@@ -94,9 +100,12 @@ QVariant FontBrowser::valueAt( int row, int col ) const
     switch( col )
     {
         case 0:
-            return QVariant::fromValue( m_glyphTable.graphic( glyphIndex ) );
+            return QVariant::fromValue( QString::number( glyphIndex ) );
 
         case 1:
+            return QVariant::fromValue( m_glyphTable.graphic( glyphIndex ) );
+
+        case 2:
             return QVariant::fromValue( m_nameTable.value( glyphIndex ) );
     }
 
