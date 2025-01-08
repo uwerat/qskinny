@@ -10,6 +10,7 @@
 #include <qrawfont.h>
 #include <qpainter.h>
 #include <qpainterpath.h>
+#include <qendian.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qrawfont_p.h>
@@ -345,10 +346,8 @@ static inline quint32 qskGlyphIndex( const QRawFont& font, char32_t ucs4 )
     if ( !font.isValid() )
         return 0;
 
-    QString s;
-    s += QChar::fromUcs4( ucs4 );
-
-    const auto idxs = font.glyphIndexesForString( s );
+    const auto idxs = font.glyphIndexesForString(
+        QString::fromUcs4( &ucs4, 1 ) );
 
     // fingers crossed: icon fonts will map code points to single glyphs only
     Q_ASSERT( idxs.size() == 1 );
