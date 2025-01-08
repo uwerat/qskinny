@@ -68,6 +68,9 @@ macro(qsk_setup_Qt)
 
             find_package(Qt${QT_VERSION_MAJOR} QUIET
                 OPTIONAL_COMPONENTS QuickShapesPrivate)
+
+            find_package(Qt${QT_VERSION_MAJOR} QUIET
+                OPTIONAL_COMPONENTS QuickDialogs2Utils QuickDialogs2 )
         endif()
 
         if( NOT Qt${QT_VERSION_MAJOR}WebEngineQuick_FOUND)
@@ -76,6 +79,10 @@ macro(qsk_setup_Qt)
 
         if (NOT Qt${QT_VERSION_MAJOR}QuickShapesPrivate_FOUND)
             message(STATUS "No Qt/Quick Shapes support: skipping some unimportant examples")
+        endif()
+
+        if( NOT Qt${QT_VERSION_MAJOR}QuickDialogs2_FOUND)
+            message(STATUS "No Qt/Quick Dialogs2 support: skipping some unimportant examples")
         endif()
     endif()
 endmacro()
