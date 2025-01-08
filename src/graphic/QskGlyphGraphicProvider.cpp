@@ -59,7 +59,7 @@ uint QskGlyphGraphicProvider::glyphIndex( const QString& key ) const
 {
     const auto& table = m_data->glyphTable;
 
-    if ( ( table.count() > 0 ) && !key.isEmpty() )
+    if ( ( table.glyphCount() > 0 ) && !key.isEmpty() )
     {
         if ( key.startsWith( '#' ) )
         {

@@ -29,13 +29,15 @@ class QSK_EXPORT QskGlyphTable
 
     QskGlyphTable& operator=( const QskGlyphTable& );
 
+    bool isValid() const;
+
     void setIconFont( const QRawFont& );
     QRawFont iconFont() const;
 
-    uint count() const;
+    uint glyphCount() const;
 
-    QPainterPath path( uint index ) const;
-    QskGraphic graphic( uint index ) const;
+    QPainterPath glyphPath( uint glyphIndex ) const;
+    QskGraphic graphic( uint glyphIndex ) const;
 
     /*
         Most icon fonts use code points from the Unicode Private Use Areas (PUA)
@@ -62,5 +64,10 @@ class QSK_EXPORT QskGlyphTable
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
+
+inline bool QskGlyphTable::isValid() const
+{
+    return glyphCount() > 0;
+}
 
 #endif

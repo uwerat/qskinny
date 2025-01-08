@@ -57,7 +57,8 @@ void GlyphTable::dumpPrivateCodes( const QskGlyphTable& table )
     count += dumpCodes( table, 0xf0000, 0xffffd );
     count += dumpCodes( table, 0x100000, 0x10fffd );
 
-    qDebug() << "GlyphNames:" << table.count() << count << table.nameTable().count();
+    qDebug() << "GlyphNames:" << table.glyphCount()
+        << count << table.nameTable().count();
 #else
     dump( table );
     qDebug() << "GlyphNames:" << table.count() << table.nameTable().count();

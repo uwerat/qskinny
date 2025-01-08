@@ -18,6 +18,14 @@ QSK_QT_PRIVATE_END
 
 typedef QHash< QString, uint > GlyphNameTable;
 
+/*
+    The parsers below do include any validation checks as the font has
+    already been validated inside of QRawFont 
+
+    Hope QRawFont will extend its API some day ( the underlying
+    font libraries do support glyph names ) and we can remove the nasty
+    code below. see https://bugreports.qt.io/browse/QTBUG-132629
+ */
 namespace PostTableParser
 {
     // https://learn.microsoft.com/en-us/typography/opentype/spec/post
@@ -308,15 +316,13 @@ namespace CFFTableParser
 
 static uint qskGlyphCount( const QRawFont& font )
 {
-    if ( !font.isValid() )
-        return 0;
-
     /*
         we could also read the count from the "maxp" table:
         https://learn.microsoft.com/en-us/typography/opentype/spec/maxp
      */
 
-    return QRawFontPrivate::get( font )->fontEngine->glyphCount();
+    const auto fontEngine = QRawFontPrivate::get( font )->fontEngine;
+    return fontEngine ? fontEngine->glyphCount() : 0;
 }
 
 static GlyphNameTable qskGlyphNameTable( const QRawFont& font )
@@ -343,7 +349,7 @@ static GlyphNameTable qskGlyphNameTable( const QRawFont& font )
 
 static inline quint32 qskGlyphIndex( const QRawFont& font, char32_t ucs4 )
 {
-    if ( !font.isValid() )
+    if ( qskGlyphCount( font ) == 0 )
         return 0;
 
     const auto idxs = font.glyphIndexesForString(
@@ -373,12 +379,6 @@ class QskGlyphTable::PrivateData
     QRawFont font;
     GlyphNameTable nameTable;
     bool validNames = false;
-
-    /*
-        to avoid running into assertions, when calling qskGlyphCount from
-        the scene graph thread ( see comment in QskGlyphTable::path()
-     */
-    uint glyphCount = 0;
 };
 
 QskGlyphTable::QskGlyphTable()
@@ -390,7 +390,6 @@ QskGlyphTable::QskGlyphTable( const QRawFont& font )
     : QskGlyphTable()
 {
     m_data->font = font;
-    m_data->glyphCount = qskGlyphCount( m_data->font );
 }
 
 QskGlyphTable::QskGlyphTable( const QskGlyphTable& other )
@@ -416,7 +415,6 @@ void QskGlyphTable::setIconFont( const QRawFont& font )
     if ( font != m_data->font )
     {
         m_data->font = font;
-        m_data->glyphCount = qskGlyphCount( m_data->font );
         m_data->nameTable.clear();
         m_data->validNames = false;
     }
@@ -427,50 +425,48 @@ QRawFont QskGlyphTable::iconFont() const
     return m_data->font;
 }
 
-QPainterPath QskGlyphTable::path( uint index ) const
+QPainterPath QskGlyphTable::glyphPath( uint glyphIndex ) const
 {
     QPainterPath path;
 
     /*
-        Unfortunately QRawFont::pathForGlyph runs into an assertion
-        when not being on the main thread - what is the case, when being
-        called from the scene graph thread. To avoid crashes with
-        Qt being built in debug mode we bypass QRawFont and retrieve
-        directly from the fontEngine.
+        Unfortunately QRawFont::pathForGlyph runs into failing checks
+        when being called from a different thread - f.e the scene graph thread.
+        So we need to bypass QRawFont and retrieve from its fontEngine.
      */
     if ( auto fontEngine = QRawFontPrivate::get( m_data->font )->fontEngine )
     {
         QFixedPoint position;
-        quint32 glyphIndex = index;
+        quint32 idx = glyphIndex;
 
-        fontEngine->addGlyphsToPath( &glyphIndex, &position, 1, &path, {} );
+        fontEngine->addGlyphsToPath( &idx, &position, 1, &path, {} );
     }
 
     return path;
 }
 
-QskGraphic QskGlyphTable::graphic( uint index ) const
+QskGraphic QskGlyphTable::graphic( uint glyphIndex ) const
 {
     QskGraphic graphic;
 
-    if ( index > 0 && m_data->glyphCount > 0 )
+    if ( glyphIndex > 0 && qskGlyphCount( m_data->font ) > 0 )
     {
-        const auto glyphPath = path( index );
+        const auto path = glyphPath( glyphIndex );
 
-        if ( !glyphPath.isEmpty() )
+        if ( !path.isEmpty() )
         {
             QPainter painter( &graphic );
             painter.setRenderHint( QPainter::Antialiasing, true );
-            painter.fillPath( glyphPath, Qt::black );
+            painter.fillPath( path, Qt::black );
         }
     }
 
     return graphic;
 }
 
-uint QskGlyphTable::count() const
+uint QskGlyphTable::glyphCount() const
 {
-    return m_data->glyphCount;
+    return qskGlyphCount( m_data->font );
 }
 
 uint QskGlyphTable::codeToIndex( char32_t ucs4 ) const

@@ -61,7 +61,7 @@ QRawFont FontBrowser::font() const
 
 int FontBrowser::rowCount() const
 {
-    return m_glyphTable.count() - 1;
+    return m_glyphTable.glyphCount() - 1;
 }
 
 int FontBrowser::columnCount() const
