@@ -890,7 +890,6 @@ void QskItem::itemChange( QQuickItem::ItemChange change,
                     qskFilterWindow( changeData.window );
             }
 
-#if 1
             auto oldWindow = qskReleasedWindowCounter->window();
 
             if ( oldWindow && oldWindow->contentItem()
@@ -921,9 +920,6 @@ void QskItem::itemChange( QQuickItem::ItemChange change,
                     wd->activeFocusItem = nullptr;
                 }
             }
-#endif
-
-#if 1
             if ( changeData.window == nullptr )
             {
                 Q_D( QskItem );
@@ -942,7 +938,6 @@ void QskItem::itemChange( QQuickItem::ItemChange change,
                     d->focus = false;
                 }
             }
-#endif
 
             QskWindowChangeEvent event( oldWindow, changeData.window );
             QCoreApplication::sendEvent( this, &event );
@@ -957,14 +952,7 @@ void QskItem::itemChange( QQuickItem::ItemChange change,
         case QQuickItem::ItemVisibleHasChanged:
         {
             Q_D( QskItem );
-#if 1
-            /*
-                ~QQuickItem sends QQuickItem::ItemVisibleHasChanged recursively
-                to all childItems. When being a child ( not only a childItem() )
-                we are short before being destructed too and any updates
-                done here are totally pointless. TODO ...
-             */
-#endif
+
             if ( changeData.boolValue )
             {
                 if ( d->blockedPolish )

@@ -1366,9 +1366,16 @@ void Editor::setupListView()
     setColor( Q::Text, m_pal.onSurface );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
+    setGraphicRole( Q::Graphic,
+        QskMaterial3Skin::GraphicRoleOnSurface );
+
+    setGraphicRole( Q::Graphic | Q::Disabled,
+        QskMaterial3Skin::GraphicRoleOnSurface38 );
+
 #if 1
     setAnimation( Q::Cell | A::Color, 100 );
     setAnimation( Q::Text | A::Color, 100 );
+    setAnimation( Q::Graphic | A::Color, 100 );
 #endif
 }
 
