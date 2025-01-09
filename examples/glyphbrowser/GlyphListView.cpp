@@ -26,6 +26,11 @@ GlyphListView::GlyphListView( const QString& fontName, QQuickItem* parentItem )
     setFontRoleHint( Text, QskFontRole::Title );
 }
 
+void GlyphListView::setFontPath( const QString& fontPath )
+{
+    setFont( QRawFont( fontPath, 16 ) );
+}
+
 void GlyphListView::setFont( const QRawFont& font )
 {
     m_glyphTable.setIconFont( font );

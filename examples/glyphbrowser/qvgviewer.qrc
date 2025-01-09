@@ -1,8 +1,0 @@
-<!-- after running a SVG cleaner for https://en.m.wikipedia.org/wiki/File:Tux-simple-flat-monochrome.svg -->
-
-<RCC>
-    <qresource>
-        <file>qvg/Tux.qvg</file>
-    </qresource>
-</RCC>
-

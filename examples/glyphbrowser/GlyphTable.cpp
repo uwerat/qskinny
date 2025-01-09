@@ -78,7 +78,7 @@ void Glyph::dumpFont( const QString& path )
 
 void Glyph::dumpAllFonts()
 {
-    const auto entries = QDir( ":fonts" ).entryInfoList();
+    const auto entries = QDir( ":iconfonts" ).entryInfoList();
 #if 1
     for ( const auto& entry : entries )
     {

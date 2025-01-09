@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/fonts">
+    <qresource prefix="/iconfonts">
 
         <file alias="FluentSystemIcons.ttf">fonts/FluentSystemIcons-Resizable.ttf</file>
         <file alias="FontAwesomeIconsIcons.otf">fonts/Font Awesome 6 Free-Regular-400.otf</file>

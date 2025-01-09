@@ -18,6 +18,7 @@ class GlyphListView : public QskListView
     GlyphListView( QQuickItem* = nullptr);
     GlyphListView( const QString&, QQuickItem* = nullptr);
 
+    void setFontPath( const QString& );
     void setFont( const QRawFont& );
     QRawFont font() const;
 
