@@ -777,6 +777,15 @@ void Editor::setupListViewColors(
         }
     }
 
+    setGraphicRole( Q::Graphic,
+        QskFluent2Skin::GraphicRoleFillColorTextPrimary );
+
+    setGraphicRole( Q::Graphic | Q::Pressed,
+        QskFluent2Skin::GraphicRoleFillColorTextSecondary );
+
+    setGraphicRole( Q::Graphic | Q::Disabled,
+        QskFluent2Skin::GraphicRoleFillColorTextDisabled );
+
     setAnimation( Q::Cell | A::Color, 100 );
     setAnimation( Q::Text | A::Color, 100 );
 }

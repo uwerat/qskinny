@@ -1308,8 +1308,14 @@ void Editor::setupListView()
 
             setColor( Q::Text | state1 | state2,
                 m_pal.color( colorGroup, P::HighlightedText ) );
+
+            setGraphicRole( Q::Graphic | state1 | state2,
+                QskFusionSkin::GraphicHighlighted );
         }
     }
+
+    setGraphicRole( Q::Graphic, QskFusionSkin::GraphicNormal );
+    setGraphicRole( Q::Graphic | Q::Disabled, QskFusionSkin::GraphicDisabled );
 }
 
 void Editor::setupSubWindow()
