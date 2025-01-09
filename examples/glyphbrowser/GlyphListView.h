@@ -9,14 +9,14 @@
 #include <QskGlyphTable.h>
 #include <QHash>
 
-class FontBrowser : public QskListView
+class GlyphListView : public QskListView
 {
     Q_OBJECT
     using Inherited = QskListView;
 
   public:
-    FontBrowser( QQuickItem* = nullptr);
-    FontBrowser( const QString&, QQuickItem* = nullptr);
+    GlyphListView( QQuickItem* = nullptr);
+    GlyphListView( const QString&, QQuickItem* = nullptr);
 
     void setFont( const QRawFont& );
     QRawFont font() const;

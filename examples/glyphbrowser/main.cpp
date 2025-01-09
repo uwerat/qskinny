@@ -3,11 +3,11 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "FontBrowser.h"
-#include "GlyphTable.h"
+#include "GlyphListView.h"
 
 #include <SkinnyShortcut.h>
 
+#include <QskMainView.h>
 #include <QskFocusIndicator.h>
 #include <QskObjectCounter.h>
 #include <QskWindow.h>
@@ -23,16 +23,13 @@ int main( int argc, char* argv[] )
 
     QGuiApplication app( argc, argv );
 
-#if 0
-    GlyphTable::dumpAllFonts();
-    return 0;
-#endif
     SkinnyShortcut::enable( SkinnyShortcut::AllShortcuts );
 
-    auto browser = new FontBrowser( ":/fonts/Octicons.ttf" );
+    auto mainView = new QskMainView();
+    mainView->setBody( new GlyphListView( ":/fonts/Octicons.ttf" ) );
 
     QskWindow window;
-    window.addItem( browser );
+    window.addItem( mainView );
     window.addItem( new QskFocusIndicator() );
     window.resize( 600, 400 );
     window.show();

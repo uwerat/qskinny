@@ -3,7 +3,7 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "FontBrowser.h"
+#include "GlyphListView.h"
 
 #include <QskFunctions.h>
 #include <QskGraphic.h>
@@ -14,19 +14,19 @@
 
 constexpr int glyphSize = 100;
 
-FontBrowser::FontBrowser( QQuickItem* parentItem )
+GlyphListView::GlyphListView( QQuickItem* parentItem )
     : Inherited( parentItem )
 {
 }
 
-FontBrowser::FontBrowser( const QString& fontName, QQuickItem* parentItem )
-    : FontBrowser( parentItem )
+GlyphListView::GlyphListView( const QString& fontName, QQuickItem* parentItem )
+    : GlyphListView( parentItem )
 {
     setFont( QRawFont( fontName, 16 ) );
     setFontRoleHint( Text, QskFontRole::Title );
 }
 
-void FontBrowser::setFont( const QRawFont& font )
+void GlyphListView::setFont( const QRawFont& font )
 {
     m_glyphTable.setIconFont( font );
 
@@ -54,22 +54,22 @@ void FontBrowser::setFont( const QRawFont& font )
     update();
 }
 
-QRawFont FontBrowser::font() const
+QRawFont GlyphListView::font() const
 {
     return m_glyphTable.iconFont();
 }
 
-int FontBrowser::rowCount() const
+int GlyphListView::rowCount() const
 {
     return m_glyphTable.glyphCount() - 1;
 }
 
-int FontBrowser::columnCount() const
+int GlyphListView::columnCount() const
 {
     return 3;
 }
 
-qreal FontBrowser::columnWidth( int col ) const
+qreal GlyphListView::columnWidth( int col ) const
 {
     switch( col )
     {
@@ -89,12 +89,12 @@ qreal FontBrowser::columnWidth( int col ) const
     return 0;
 }
 
-qreal FontBrowser::rowHeight() const
+qreal GlyphListView::rowHeight() const
 {
     return glyphSize + 20;
 }
 
-QVariant FontBrowser::valueAt( int row, int col ) const
+QVariant GlyphListView::valueAt( int row, int col ) const
 {
     const auto glyphIndex = row + 1;
     switch( col )
@@ -112,4 +112,4 @@ QVariant FontBrowser::valueAt( int row, int col ) const
     return QVariant();
 }
 
-#include "moc_FontBrowser.cpp"
+#include "moc_GlyphListView.cpp"

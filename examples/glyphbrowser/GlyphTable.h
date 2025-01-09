@@ -8,7 +8,7 @@
 class QskGlyphTable;
 class QString;
 
-namespace GlyphTable
+namespace Glyph
 {
     void dumpAllFonts();
     void dumpFont( const QString& );

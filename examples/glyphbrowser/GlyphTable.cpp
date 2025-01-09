@@ -30,7 +30,7 @@ static int dumpCodes( const QskGlyphTable& table, char32_t from, char32_t to )
     return n;
 }
 
-void GlyphTable::dump( const QskGlyphTable& table )
+void Glyph::dump( const QskGlyphTable& table )
 {
     QMap< int, QString > sorted;
 
@@ -44,7 +44,7 @@ void GlyphTable::dump( const QskGlyphTable& table )
         printf("%d %s\n", it.key(), qPrintable( it.value() ) );
 }
 
-void GlyphTable::dumpPrivateCodes( const QskGlyphTable& table )
+void Glyph::dumpPrivateCodes( const QskGlyphTable& table )
 {
 #if 1
     /*
@@ -69,16 +69,14 @@ void GlyphTable::dumpPrivateCodes( const QskGlyphTable& table )
 #include <QString>
 #include <QRawFont>
 
-void GlyphTable::dumpFont( const QString& path )
+void Glyph::dumpFont( const QString& path )
 {
     const QRawFont font( path, 16 );
     Q_ASSERT( font.isValid() );
-
-    //GlyphTable::dumpPrivateCodes( font );
-    GlyphTable::dump( font );
+    Glyph::dump( font );
 }
 
-void GlyphTable::dumpAllFonts()
+void Glyph::dumpAllFonts()
 {
     const auto entries = QDir( ":fonts" ).entryInfoList();
 #if 1
