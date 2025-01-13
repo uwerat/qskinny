@@ -47,6 +47,7 @@
  */
 #include "QskFluent2Skin.h"
 #include "QskFluent2Theme.h"
+#include "QskFluent2TextAreaSkinlet.h"
 #include "QskFluent2TextFieldSkinlet.h"
 
 #include <QskTextAreaSkinlet.h>
@@ -2080,6 +2081,7 @@ void Editor::setupVirtualKeyboardColors(
 QskFluent2Skin::QskFluent2Skin( QObject* parent )
     : Inherited( parent )
 {
+    declareSkinlet< QskTextArea, QskFluent2TextAreaSkinlet >();
     declareSkinlet< QskTextField, QskFluent2TextFieldSkinlet >();
 
     setupFonts();

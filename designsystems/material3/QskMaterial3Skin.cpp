@@ -11,6 +11,7 @@
 #include "QskMaterial3Skin.h"
 #include "QskMaterial3ProgressBarSkinlet.h"
 #include "QskMaterial3SliderSkinlet.h"
+#include "QskMaterial3TextAreaSkinlet.h"
 #include "QskMaterial3TextFieldSkinlet.h"
 #include <QskTextEditSkinlet.h>
 
@@ -1641,6 +1642,7 @@ QskMaterial3Skin::QskMaterial3Skin( QObject* parent )
 {
     declareSkinlet< QskProgressBar, QskMaterial3ProgressBarSkinlet >();
     declareSkinlet< QskSlider, QskMaterial3SliderSkinlet >();
+    declareSkinlet< QskTextArea, QskMaterial3TextAreaSkinlet >();
     declareSkinlet< QskTextField, QskMaterial3TextFieldSkinlet >();
 }
 

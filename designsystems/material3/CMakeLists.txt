@@ -10,6 +10,7 @@ list(APPEND HEADERS
 list(APPEND PRIVATE_HEADERS
     QskMaterial3ProgressBarSkinlet.h
     QskMaterial3SliderSkinlet.h
+    QskMaterial3TextAreaSkinlet.h
     QskMaterial3TextFieldSkinlet.h
 )
 
@@ -18,6 +19,7 @@ list(APPEND SOURCES
     QskMaterial3SkinFactory.cpp
     QskMaterial3ProgressBarSkinlet.cpp
     QskMaterial3SliderSkinlet.cpp
+    QskMaterial3TextAreaSkinlet.cpp
     QskMaterial3TextFieldSkinlet.cpp
 )
 
