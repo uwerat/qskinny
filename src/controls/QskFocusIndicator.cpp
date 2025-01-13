@@ -8,6 +8,7 @@
 #include "QskAnimationHint.h"
 #include "QskEvent.h"
 #include "QskQuick.h"
+#include "QskInternalMacros.h"
 
 #include <qpointer.h>
 #include <qquickwindow.h>

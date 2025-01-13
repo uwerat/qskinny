@@ -79,8 +79,8 @@ class FlatMap
 
     inline typename std::vector< T >::iterator lowerBound( const Key& key ) const
     {
-        auto cmp = []( const T& entry, const Key& key )
-            { return entry.key() < key; };
+        auto cmp = []( const T& entry, const Key& k )
+            { return entry.key() < k; };
 
         auto& entries = const_cast< std::vector< T >& >( m_entries );
         return std::lower_bound( entries.begin(), entries.end(), key, cmp );

@@ -6,6 +6,7 @@
 #include "QskRichTextRenderer.h"
 #include "QskTextColors.h"
 #include "QskTextOptions.h"
+#include "QskInternalMacros.h"
 
 #include <qglobalstatic.h>
 #include <qmutex.h>

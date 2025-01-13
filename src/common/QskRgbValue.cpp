@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskRgbValue.h"
+#include "QskInternalMacros.h"
 
 #include <qeasingcurve.h>
 #include <qimage.h>

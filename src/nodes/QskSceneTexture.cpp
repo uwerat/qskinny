@@ -5,6 +5,7 @@
 
 #include "QskSceneTexture.h"
 #include "QskTreeNode.h"
+#include "QskInternalMacros.h"
 
 #include <qmath.h>
 

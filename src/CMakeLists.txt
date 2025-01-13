@@ -71,6 +71,10 @@ list(APPEND SOURCES
     common/QskTickmarks.cpp
 )
 
+list(APPEND PRIVATE_HEADERS
+    common/QskInternalMacros.h
+)
+
 list(APPEND HEADERS
     graphic/QskColorFilter.h
     graphic/QskGraphic.h

@@ -6,6 +6,7 @@
 #include "QskPlainTextRenderer.h"
 #include "QskTextColors.h"
 #include "QskTextOptions.h"
+#include "QskInternalMacros.h"
 
 #include <qfontmetrics.h>
 #include <qmath.h>

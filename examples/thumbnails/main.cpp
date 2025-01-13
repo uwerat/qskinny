@@ -26,8 +26,6 @@
 
 #include <cstdlib>
 
-#define HIDE_NODES 1
-
 const int gridSize = 20;
 const int thumbnailSize = 150;
 
@@ -81,18 +79,6 @@ class Thumbnail : public QskPushButton
         setStrutSizeHint( QskPushButton::Icon, -1, -1 );
     }
 
-#if 0
-    void mousePressEvent( QMouseEvent* event ) override
-    {
-        /*
-            ignore events: to check if the pan gesture recoognizer of the scroll
-            area works, when the event arrives as regular event
-            ( not via childMouseEventFilter )
-         */
-        event->setAccepted( false );
-    }
-#endif
-
   private:
     QskGraphic thumbnailGraphic( const QColor& color,
         int shape, const QSizeF& size ) const
@@ -124,54 +110,67 @@ class IconGrid : public QskLinearBox
     IconGrid( QQuickItem* parentItem = nullptr )
         : QskLinearBox( Qt::Horizontal, gridSize, parentItem )
     {
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 3, 0 )
+        setFlag( QQuickItem::ItemObservesViewport, true );
+#endif
+
         setMargins( 20 );
         setSpacing( 20 );
 
         for ( int col = 0; col < gridSize; col++ )
         {
             for ( int row = 0; row < gridSize; row++ )
-                ( void ) new Thumbnail( randomColor(), randomShape(), this );
+            {
+                auto thumbnail = new Thumbnail( randomColor(), randomShape(), this );
+                thumbnail->setPlacementPolicy( Qsk::Hidden, QskPlacementPolicy::Reserve );
+                thumbnail->setVisible( false );
+            }
         }
 
-#if HIDE_NODES
+        setSize( sizeConstraint() );
+    }
+
+  protected:
+    void viewportChangeEvent( QskViewportChangeEvent* ) override
+    {
+        if ( isEmpty() )
+            return;
+
         /*
             When having too many nodes, the scene graph becomes horribly slow.
             So we explicitely hide all items outside the visible area
             ( see updateVisibilities below ) and make use of the DeferredUpdate and
             CleanupOnVisibility features of QskItem.
          */
-        setSize( sizeConstraint() );
-        updateLayout(); // so that every item has its initial geometry
 
-        for ( int i = 0; i < elementCount(); i++ )
-        {
-            if ( auto control = qskControlCast( itemAtIndex( i ) ) )
-            {
-                // to support the optimizations in ScrollArea::updateVisibilities
-                control->setPlacementPolicy( Qsk::Hidden, QskPlacementPolicy::Reserve );
-                control->setVisible( false );
-            }
-        }
+        QQuickItem* item;
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 3, 0 )
+        item = viewportItem();
+#else
+        for ( item = parentItem(); item && !item->clip(); item = item->parentItem() );
 #endif
-    }
 
-#if HIDE_NODES
-    void updateVisibilities( const QRectF& viewPort )
-    {
-        if ( !isEmpty() && viewPort != m_viewPort )
+        if ( item )
         {
-            setItemsVisible( m_viewPort, false );
-            setItemsVisible( viewPort, true );
+            auto r = item->clipRect();
+            r.moveTo( mapFromItem( item, r.topLeft() ) );
 
-            m_viewPort = viewPort;
+            const auto viewPort = this->viewPort( r );
+
+            if ( m_viewPort != viewPort )
+            {
+                setItemsVisible( m_viewPort, false );
+                setItemsVisible( viewPort, true );
+
+                m_viewPort = viewPort;
+            }
         }
     }
 
   private:
-    void setItemsVisible( const QRectF& rect, bool on )
+    QRect viewPort( const QRectF& rect ) const
     {
-        const auto dim = dimension();
-
         // we know, that all items have the same size
         const auto itemSize = itemAtIndex( 0 )->size();
 
@@ -181,9 +180,16 @@ class IconGrid : public QskLinearBox
         const int colMin = rect.left() / ( itemSize.width() + spacing() );
         const int colMax = rect.right() / ( itemSize.height() + spacing() );
 
-        for ( int row = rowMin; row <= rowMax; row++ )
+        return QRect( colMin, rowMin, colMax - colMin + 1, rowMax - rowMin + 1 );
+    }
+
+    void setItemsVisible( const QRect& viewPort, bool on )
+    {
+        const auto dim = dimension();
+
+        for ( int row = viewPort.top(); row <= viewPort.bottom(); row++ )
         {
-            for ( int col = colMin; col <= colMax; col++ )
+            for ( int col = viewPort.left(); col <= viewPort.right(); col++ )
             {
                 if ( auto item = itemAtIndex( row * dim + col ) )
                     item->setVisible( on );
@@ -191,8 +197,7 @@ class IconGrid : public QskLinearBox
         }
     }
 
-    QRectF m_viewPort;
-#endif
+    QRect m_viewPort;
 };
 
 class ScrollArea : public QskScrollArea
@@ -218,29 +223,6 @@ class ScrollArea : public QskScrollArea
         setBoxShapeHint( HorizontalScrollHandle, 8 );
 
         setFlickRecognizerTimeout( 300 );
-
-        connect( this, &QskScrollView::scrollPosChanged,
-            this, &ScrollArea::updateVisibilities );
-    }
-
-  protected:
-    void geometryChangeEvent( QskGeometryChangeEvent* event ) override
-    {
-        QskScrollArea::geometryChangeEvent( event );
-        updateVisibilities();
-    }
-
-  private:
-    void updateVisibilities()
-    {
-#if HIDE_NODES
-        const auto box = static_cast< IconGrid* >( scrolledItem() );
-        if ( box )
-        {
-            const QRectF viewPort( scrollPos(), viewContentsRect().size() );
-            box->updateVisibilities( viewPort );
-        }
-#endif
     }
 };
 
@@ -291,7 +273,7 @@ int main( int argc, char* argv[] )
     scrollArea->setScrolledItem( iconGrid );
 
 #if 0
-    // for testing nested gestures 
+    // for testing nested gestures
     auto swipeView = new QskSwipeView();
 
     swipeView->addItem( scrollArea );

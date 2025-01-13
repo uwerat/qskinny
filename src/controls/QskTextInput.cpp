@@ -7,6 +7,7 @@
 #include "QskTextInputSkinlet.h"
 #include "QskFontRole.h"
 #include "QskQuick.h"
+#include "QskInternalMacros.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextinput_p.h>
@@ -235,7 +236,7 @@ namespace
         const auto state = QskTextInputSkinlet::Selected;
 
         setSelectionColor( input->color( Q::TextPanel | state ) );
-        setSelectedTextColor( input->color( QskTextInput::Text | state ) );
+        setSelectedTextColor( input->color( Q::Text | state ) );
     }
 }
 

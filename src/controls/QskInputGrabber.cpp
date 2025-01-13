@@ -6,6 +6,7 @@
 #include "QskInputGrabber.h"
 #include "QskWindow.h"
 #include "QskEvent.h"
+#include "QskInternalMacros.h"
 
 #include <qpointer.h>
 

@@ -11,6 +11,7 @@
 #include "QskEvent.h"
 #include "QskPlatform.h"
 #include "QskHintAnimator.h"
+#include "QskInternalMacros.h"
 
 #include <qpa/qplatformintegration.h>
 

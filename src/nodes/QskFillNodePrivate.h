@@ -7,6 +7,7 @@
 #define QSK_FILL_NODE_PRIVATE_H
 
 #include "QskGlobal.h"
+#include "QskInternalMacros.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qsgnode_p.h>

@@ -54,7 +54,7 @@ macro(qsk_enable_pedantic_flags)
 
             add_compile_options( -Wnon-virtual-dtor )
             add_compile_options( -Woverloaded-virtual )
-            add_compile_options( -Wfloat-equal )
+            # add_compile_options( -Wfloat-equal )
 
         if ( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
 

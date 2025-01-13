@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskBasicLinesNode.h"
+#include "QskInternalMacros.h"
 
 #include <qsgmaterial.h>
 #include <qsggeometry.h>

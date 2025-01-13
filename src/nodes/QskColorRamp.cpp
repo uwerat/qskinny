@@ -5,6 +5,7 @@
 
 #include "QskColorRamp.h"
 #include "QskRgbValue.h"
+#include "QskInternalMacros.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qrhi_p.h>

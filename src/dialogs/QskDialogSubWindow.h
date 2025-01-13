@@ -85,7 +85,7 @@ class QSK_EXPORT QskDialogSubWindow : public QskSubWindow
 
     void updateLayout() override;
 
-    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const;
+    QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
   private:
     void initButtonBox();

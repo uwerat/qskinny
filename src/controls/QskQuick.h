@@ -76,7 +76,7 @@ QSK_EXPORT const QSGNode* qskPaintNode( const QQuickItem* );
 
 QSK_EXPORT const QSGRootNode* qskScenegraphAnchorNode( const QQuickItem* );
 QSK_EXPORT const QSGRootNode* qskScenegraphAnchorNode( const QQuickWindow* );
-QSK_EXPORT void qskSetScenegraphAnchor( QQuickItem*, bool on, bool hide = false );
+QSK_EXPORT void qskSetScenegraphAnchor( QQuickItem*, bool on );
 
 QSK_EXPORT void qskItemUpdateRecursive( QQuickItem* );
 

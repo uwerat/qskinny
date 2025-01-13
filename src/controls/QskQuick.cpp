@@ -8,6 +8,8 @@
 #include "QskFunctions.h"
 #include "QskLayoutElement.h"
 #include "QskPlatform.h"
+#include "QskInternalMacros.h"
+
 #include <qquickitem.h>
 
 QSK_QT_PRIVATE_BEGIN
@@ -59,6 +61,9 @@ bool qskIsItemComplete( const QQuickItem* item )
 
 bool qskIsItemInDestructor( const QQuickItem* item )
 {
+    if ( item == nullptr )
+        return false;
+
     auto d = QQuickItemPrivate::get( item );
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 5, 0 )
