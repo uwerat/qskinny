@@ -462,7 +462,7 @@ void Editor::setupTextControl()
     setColor( Q::Text, m_pal.onSurface );
     setFontRole( Q::Text, BodyLarge );
 
-    setAlignment( Q::PlaceholderText, Qt::AlignLeft | Qt::AlignVCenter );
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
 
     const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
     setGradient( Q::Panel | Q::Disabled, disabledPanelColor );
@@ -472,9 +472,9 @@ void Editor::setupTextControl()
 
     // PlaceholderText
 
-    setColor( Q::PlaceholderText, color( Q::Text ) );
-    setFontRole( Q::PlaceholderText, BodyLarge );
-    setAlignment( Q::PlaceholderText, alignment( Q::Text ) );
+    setColor( Q::Placeholder, color( Q::Text ) );
+    setFontRole( Q::Placeholder, BodyLarge );
+    setAlignment( Q::Placeholder, alignment( Q::Text ) );
 }
 
 void Editor::setupTextArea()

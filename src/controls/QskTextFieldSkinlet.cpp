@@ -27,7 +27,7 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     if ( subControl == Q::TextPanel )
         return skinnable->subControlContentsRect( contentsRect, Q::Panel );
 
-    if ( subControl == Q::PlaceholderText )
+    if ( subControl == Q::Placeholder )
     {
         const auto textField = static_cast< const QskTextField* >( skinnable );
         if( textField->text().isEmpty() )
@@ -57,7 +57,7 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
             if ( text.isEmpty() )
                 return nullptr;
 
-            const auto subControl = Q::PlaceholderText;
+            const auto subControl = Q::Placeholder;
 
             QskSkinHintStatus status;
 

@@ -18,7 +18,7 @@ class QSK_EXPORT QskTextField : public QskTextInput
     using Inherited = QskTextInput;
 
   public:
-    QSK_SUBCONTROLS( Panel, PlaceholderText )
+    QSK_SUBCONTROLS( Panel, Placeholder )
 
     QskTextField( QQuickItem* parent = nullptr );
     QskTextField( const QString& text, QQuickItem* parent = nullptr );

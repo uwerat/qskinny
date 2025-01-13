@@ -6,7 +6,7 @@
 #include "QskTextArea.h"
 
 QSK_SUBCONTROL( QskTextArea, Panel )
-QSK_SUBCONTROL( QskTextArea, PlaceholderText )
+QSK_SUBCONTROL( QskTextArea, Placeholder )
 
 class QskTextArea::PrivateData
 {

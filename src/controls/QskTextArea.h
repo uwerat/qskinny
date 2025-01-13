@@ -18,7 +18,7 @@ class QSK_EXPORT QskTextArea : public QskTextEdit
     using Inherited = QskTextEdit;
 
   public:
-    QSK_SUBCONTROLS( Panel, PlaceholderText )
+    QSK_SUBCONTROLS( Panel, Placeholder )
 
     QskTextArea( QQuickItem* parent = nullptr );
     QskTextArea( const QString& text, QQuickItem* parent = nullptr );

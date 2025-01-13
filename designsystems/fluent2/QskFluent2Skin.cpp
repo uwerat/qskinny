@@ -1807,8 +1807,8 @@ template< typename Q > void Editor::setupTextControlMetrics()
 
     setFontRole( Q::Text, Fluent2::Body );
 
-    setAlignment( Q::PlaceholderText, alignment( Q::Text ) );
-    setFontRole( Q::PlaceholderText, fontRole( Q::Text ) );
+    setAlignment( Q::Placeholder, alignment( Q::Text ) );
+    setFontRole( Q::Placeholder, fontRole( Q::Text ) );
 }
 
 template< typename Q, typename SK > void Editor::setupTextControlColors(
@@ -1820,7 +1820,7 @@ template< typename Q, typename SK > void Editor::setupTextControlColors(
 
     setColor( Q::TextPanel | SK::Selected, pal.fillColor.accent.selectedTextBackground );
     setColor( Q::Text | SK::Selected, pal.fillColor.textOnAccent.selectedText );
-    setColor( Q::PlaceholderText, pal.fillColor.text.secondary );
+    setColor( Q::Placeholder, pal.fillColor.text.secondary );
 
     for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
     {

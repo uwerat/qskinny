@@ -404,7 +404,7 @@ void Editor::setupTextControl()
 
         setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
         setColor( Q::Text | SK::Selected | state, m_pal.color( colorGroup, P::HighlightedText ) );
-        setColor( Q::PlaceholderText, m_pal.color( colorGroup, P::PlaceholderText ) );
+        setColor( Q::Placeholder, m_pal.color( colorGroup, P::PlaceholderText ) );
     }
 
     setColor( Q::TextPanel | Q::ReadOnly, m_pal.disabled( P::Base ) );
@@ -426,7 +426,7 @@ void Editor::setupTextArea()
     using SK = QskTextAreaSkinlet;
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignTop );
-    setAlignment( Q::PlaceholderText, Qt::AlignLeft | Qt::AlignTop );
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignTop );
 
     setupTextControl< Q, SK >();
 }
@@ -437,7 +437,7 @@ void Editor::setupTextField()
     using SK = QskTextFieldSkinlet;
 
     setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
-    setAlignment( Q::PlaceholderText, Qt::AlignLeft | Qt::AlignVCenter );
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
 
     setupTextControl< Q, SK >();
 }

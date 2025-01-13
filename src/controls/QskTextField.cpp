@@ -6,7 +6,7 @@
 #include "QskTextField.h"
 
 QSK_SUBCONTROL( QskTextField, Panel )
-QSK_SUBCONTROL( QskTextField, PlaceholderText )
+QSK_SUBCONTROL( QskTextField, Placeholder )
 
 class QskTextField::PrivateData
 {
