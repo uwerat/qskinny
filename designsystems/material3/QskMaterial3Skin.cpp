@@ -12,6 +12,7 @@
 #include "QskMaterial3ProgressBarSkinlet.h"
 #include "QskMaterial3SliderSkinlet.h"
 #include "QskMaterial3TextFieldSkinlet.h"
+#include <QskTextEditSkinlet.h>
 
 #include <QskSkinHintTableEditor.h>
 
@@ -46,6 +47,7 @@
 #include <QskTabBar.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
+#include <QskTextArea.h>
 #include <QskTextField.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
@@ -185,6 +187,10 @@ namespace
         Q_INVOKABLE void setupTabButton();
         Q_INVOKABLE void setupTabBar();
         Q_INVOKABLE void setupTabView();
+
+        template< typename Q, typename SK >
+        void setupTextControl();
+        Q_INVOKABLE void setupTextArea();
         Q_INVOKABLE void setupTextField();
         Q_INVOKABLE void setupTextLabel();
 
@@ -431,11 +437,9 @@ void Editor::setupTextLabel()
     setPadding( Q::Panel, 5_px );
 }
 
-void Editor::setupTextField()
+template< typename Q, typename SK >
+void Editor::setupTextControl()
 {
-    using Q = QskTextField;
-    using SK = QskTextInputSkinlet;
-
     setStrutSize( Q::Panel,  -1.0, 56_px );
     setPadding( Q::Panel, { 12_px, 8_px, 12_px, 8_px } );
     setGradient( Q::Panel, m_pal.surfaceVariant );
@@ -457,7 +461,6 @@ void Editor::setupTextField()
 
     setColor( Q::Text, m_pal.onSurface );
     setFontRole( Q::Text, BodyLarge );
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
 
     setAlignment( Q::PlaceholderText, Qt::AlignLeft | Qt::AlignVCenter );
 
@@ -472,6 +475,26 @@ void Editor::setupTextField()
     setColor( Q::PlaceholderText, color( Q::Text ) );
     setFontRole( Q::PlaceholderText, BodyLarge );
     setAlignment( Q::PlaceholderText, alignment( Q::Text ) );
+}
+
+void Editor::setupTextArea()
+{
+    using Q = QskTextArea;
+    using SK = QskTextEditSkinlet;
+
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignTop );
+
+    setupTextControl< Q, SK >();
+}
+
+void Editor::setupTextField()
+{
+    using Q = QskTextField;
+    using SK = QskTextInputSkinlet;
+
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+
+    setupTextControl< Q, SK >();
 }
 
 void Editor::setupProgressBar()

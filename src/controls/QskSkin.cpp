@@ -100,6 +100,12 @@
 #include "QskTextLabel.h"
 #include "QskTextLabelSkinlet.h"
 
+#include "QskTextArea.h"
+#include "QskTextAreaSkinlet.h"
+
+#include "QskTextEdit.h"
+#include "QskTextEditSkinlet.h"
+
 #include "QskTextField.h"
 #include "QskTextFieldSkinlet.h"
 
@@ -211,6 +217,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskTabButton, QskTabButtonSkinlet >();
     declareSkinlet< QskTabView, QskTabViewSkinlet >();
     declareSkinlet< QskTextLabel, QskTextLabelSkinlet >();
+    declareSkinlet< QskTextArea, QskTextAreaSkinlet >();
     declareSkinlet< QskTextField, QskTextFieldSkinlet >();
     declareSkinlet< QskProgressBar, QskProgressBarSkinlet >();
     declareSkinlet< QskProgressRing, QskProgressRingSkinlet >();

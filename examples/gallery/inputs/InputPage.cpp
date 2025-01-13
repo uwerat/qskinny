@@ -7,6 +7,7 @@
 
 #include <QskGridBox.h>
 #include <QskSlider.h>
+#include <QskTextArea.h>
 #include <QskTextField.h>
 #include <QskSpinBox.h>
 
@@ -92,6 +93,22 @@ namespace
             }
         }
     };
+
+    class TextAreaBox : public QskLinearBox
+    {
+      public:
+        TextAreaBox( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Horizontal, parent )
+        {
+            setSpacing( 20 );
+
+            {
+                auto textArea = new QskTextArea( "here enter longer text", this );
+                textArea->setWrapMode( QskTextOptions::Wrap );
+                textArea->setPlaceholderText( "placeholder text" );
+            }
+        }
+    };
 }
 
 InputPage::InputPage( QQuickItem* parent )
@@ -123,6 +140,8 @@ InputPage::InputPage( QQuickItem* parent )
     auto textInputBox = new TextInputBox();
     textInputBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
 
+    auto textAreaBox = new TextAreaBox();
+
     auto vBox = new QskLinearBox( Qt::Vertical );
     vBox->setSpacing( 30 );
     vBox->setExtraSpacingAt( Qt::RightEdge | Qt::BottomEdge );
@@ -130,8 +149,9 @@ InputPage::InputPage( QQuickItem* parent )
     vBox->addItem( sliders[0].continous );
     vBox->addItem( sliders[0].discrete );
     vBox->addItem( sliders[0].centered );
-    vBox->addItem( textInputBox );
     vBox->addItem( spinBox );
+    vBox->addItem( textInputBox );
+    vBox->addItem( textAreaBox );
 
     auto mainBox = new QskLinearBox( Qt::Horizontal, this );
     mainBox->setSpacing( 30 );
