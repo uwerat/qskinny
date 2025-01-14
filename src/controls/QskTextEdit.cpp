@@ -294,13 +294,20 @@ void QskTextEdit::keyPressEvent( QKeyEvent* event )
             {
                 QGuiApplication::inputMethod()->commit();
 
-                if ( !( inputMethodHints() & Qt::ImhMultiLine ) )
+                const auto hints = inputMethodQuery( Qt::ImHints ).toInt();
+
+                if ( hints & Qt::ImhMultiLine )
+                {
+                    m_data->wrappedEdit->handleEvent( event );
+                }
+                else
                 {
                     setEditing( false );
 
                     // When returning from a virtual keyboard
                     qskForceActiveFocus( this, Qt::PopupFocusReason );
                 }
+
                 break;
             }
 #if 1
