@@ -130,6 +130,9 @@ class QSK_EXPORT QskDialog : public QObject
     Q_INVOKABLE QString select( const QString& title,
         const QStringList& entries, int selectedRow = 0 ) const;
 
+    Q_INVOKABLE QString selectFile( const QString& title,
+        const QString& directory ) const;
+
     static ActionRole actionRole( Action action );
 
   Q_SIGNALS:

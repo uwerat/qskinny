@@ -6,11 +6,16 @@
 #include "QskDialog.h"
 #include "QskDialogButtonBox.h"
 
+#include "QskLinearBox.h"
+
 #include "QskMessageSubWindow.h"
 #include "QskMessageWindow.h"
 
 #include "QskSelectionSubWindow.h"
 #include "QskSelectionWindow.h"
+
+#include "QskSimpleListBox.h"
+#include "QskTextLabel.h"
 
 #include "QskFocusIndicator.h"
 
@@ -41,6 +46,192 @@ static QskDialog::Action qskActionCandidate( const QskDialogButtonBox* buttonBox
     }
 
     return QskDialog::NoAction;
+}
+
+namespace
+{
+    template< typename W, typename T, typename... Args >
+    class WindowOrSubWindow : public W, public T
+    {
+      public:
+        WindowOrSubWindow( QObject* parent, const QString& title,
+            QskDialog::Actions actions, QskDialog::Action defaultAction, Args... args )
+            : W( parent, title, actions, defaultAction )
+            , T( parent, args... )
+        {
+        }
+
+        void setContentItem()
+        {
+        }
+    };
+
+    template< typename T, typename... Args >
+    class WindowOrSubWindow< QskDialogWindow, T, Args... > : public QskDialogWindow, public T
+    {
+      public:
+        WindowOrSubWindow( QObject* parent, const QString& title,
+            QskDialog::Actions actions, QskDialog::Action defaultAction, Args... args )
+            : QskDialogWindow( static_cast< QWindow* >( parent ) )
+            , T( parent, args... )
+        {
+            auto* transientParent = static_cast< QWindow* >( parent );
+            setTransientParent( transientParent );
+
+            setTitle( title );
+            setDialogActions( actions );
+
+            if ( actions != QskDialog::NoAction && defaultAction == QskDialog::NoAction )
+                defaultAction = qskActionCandidate( buttonBox() );
+
+            setDefaultDialogAction( defaultAction );
+
+            setModality( transientParent ? Qt::WindowModal : Qt::ApplicationModal );
+
+            const QSize size = sizeConstraint();
+
+            if ( this->parent() )
+            {
+                QRect r( QPoint(), size );
+                r.moveCenter( QRect( QPoint(), this->parent()->size() ).center() );
+
+                setGeometry( r );
+            }
+
+            if ( size.isValid() )
+            {
+                setFlags( flags() | Qt::MSWindowsFixedSizeDialogHint );
+                setFixedSize( size );
+            }
+
+            setModality( Qt::ApplicationModal );
+        }
+
+        QskDialog::DialogCode exec()
+        {
+            return qskExec( this );
+        }
+
+        void setContentItem( QQuickItem* item )
+        {
+            QskDialogWindow::setDialogContentItem( item );
+        }
+
+        QQuickItem* rootItem()
+        {
+            return contentItem();
+        }
+    };
+
+    template< typename T, typename... Args >
+    class WindowOrSubWindow< QskDialogSubWindow, T, Args... > : public QskDialogSubWindow, public T
+    {
+      public:
+        WindowOrSubWindow( QObject* parent, const QString& title,
+            QskDialog::Actions actions, QskDialog::Action defaultAction, Args... args )
+            : QskDialogSubWindow( static_cast< QQuickWindow* >( parent )->contentItem() )
+            , T( parent, args... )
+        {
+            setPopupFlag( QskPopup::DeleteOnClose );
+            setModal( true );
+            setTitle( title );
+            setDialogActions( actions );
+
+            if ( actions != QskDialog::NoAction && defaultAction == QskDialog::NoAction )
+                defaultAction = qskActionCandidate( buttonBox() );
+
+            setDefaultDialogAction( defaultAction );
+        }
+
+        QskDialog::DialogCode exec()
+        {
+            return QskDialogSubWindow::exec();
+        }
+
+        void setContentItem( QQuickItem* item )
+        {
+            QskDialogSubWindow::setContentItem( item );
+        }
+
+        QQuickItem* rootItem()
+        {
+            return this;
+        }
+    };
+
+    class FileSelection
+    {
+      public:
+        FileSelection( QObject* parent, const QString& directory )
+            : m_dir( directory )
+        {
+            Q_UNUSED( parent )
+
+            m_dir.setFilter( QDir::Files | QDir::NoDotAndDotDot );
+        }
+
+        QString selectedFile() const
+        {
+            return {};
+        }
+
+        QDir currentDir()
+        {
+            return m_dir;
+        }
+
+      private:
+        QDir m_dir;
+    };
+
+    template< typename W >
+    class FileSelectionWindow : public WindowOrSubWindow< W, FileSelection, QString >
+    {
+        using Inherited = WindowOrSubWindow< W, FileSelection, QString >;
+
+      public:
+        FileSelectionWindow( QObject* parent, const QString& title,
+            QskDialog::Actions actions, QskDialog::Action defaultAction,const QString& directory )
+            : WindowOrSubWindow< W, FileSelection, QString >( parent, title, actions, defaultAction, directory )
+        {
+            auto* outerBox = new QskLinearBox( Qt::Vertical );
+#if 1
+            outerBox->setPreferredSize( 500, 500 );
+#endif
+            setupHeader( outerBox );
+            setupListBox( outerBox );
+
+            Inherited::setContentItem( outerBox );
+        }
+
+      private:
+        void setupHeader( QQuickItem* parentItem )
+        {
+            m_header = new QskTextLabel( parentItem );
+            const auto path = FileSelection::currentDir().absolutePath();
+            updateHeader( path );
+        }
+
+        void updateHeader( const QString& path )
+        {
+            // m_header->setText( s );
+        }
+
+        void setupListBox( QQuickItem* parentItem )
+        {
+            m_listBox = new QskSimpleListBox( parentItem );
+            loadContents();
+        }
+
+        void loadContents()
+        {
+            m_listBox->removeBulk( 0 );
+            m_listBox->setEntries( FileSelection::currentDir().entryList() );
+        }
+
+        QskSimpleListBox* m_listBox;
+        QskTextLabel* m_header;
+    };
 }
 
 static QskDialog::DialogCode qskExec( QskDialogWindow* dialogWindow )
@@ -108,6 +299,7 @@ static void qskSetupWindow(
     window->setModality( transientParent ? Qt::WindowModal : Qt::ApplicationModal );
 
     const QSize size = window->sizeConstraint();
+    qDebug() << "sc:" << size;
 
     if ( window->parent() )
     {
@@ -205,6 +397,17 @@ static QString qskSelectWindow(
         selectedEntry = window.selectedEntry();
 
     return selectedEntry;
+}
+
+template< typename W >
+static QString qskSelectFile( FileSelectionWindow< W >& window )
+{
+    QString selectedFile = window.selectedFile();
+
+    if( window.exec() == QskDialog::Accepted )
+        selectedFile = window.selectedFile();
+
+    return selectedFile;
 }
 
 class QskDialog::PrivateData
@@ -319,6 +522,33 @@ QString QskDialog::select( const QString& title,
     return qskSelectWindow( m_data->transientParent, title,
         actions, defaultAction, entries, selectedRow );
 
+}
+
+QString QskDialog::selectFile(
+    const QString& title, const QString& directory ) const
+{
+#if 1
+    // should be parameters
+    const auto actions = QskDialog::Ok | QskDialog::Cancel;
+    const auto defaultAction = QskDialog::Ok;
+#endif
+
+    if ( m_data->policy == EmbeddedBox )
+    {
+        auto quickWindow = qobject_cast< QQuickWindow* >( m_data->transientParent );
+
+        if ( quickWindow == nullptr )
+            quickWindow = qskSomeQuickWindow();
+
+        if ( quickWindow )
+        {
+            FileSelectionWindow< QskDialogSubWindow > window( quickWindow, title, actions, defaultAction, directory );
+            return qskSelectFile< QskDialogSubWindow >( window );
+        }
+    }
+
+    FileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title, actions, defaultAction, directory );
+    return qskSelectFile< QskDialogWindow >( window );
 }
 
 QskDialog::ActionRole QskDialog::actionRole( Action action )
