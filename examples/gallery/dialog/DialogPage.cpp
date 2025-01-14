@@ -9,6 +9,8 @@
 #include <QskLinearBox.h>
 #include <QskPushButton.h>
 
+#include <QDir>
+
 #if QT_CONFIG(thread)
     /*
         WebAssembly without asyncify support does not allow recursive
@@ -96,6 +98,9 @@ namespace
             auto selectButton = new Button( "Selection", this );
             connect( selectButton, &Button::clicked, this, &ButtonBox::execSelection );
 
+            auto fileSelectionButton = new Button( "File selection", this );
+            connect( fileSelectionButton, &Button::clicked, this, &ButtonBox::execFileSelection );
+
             setExtraSpacingAt( Qt::BottomEdge );
         }
 
@@ -155,6 +160,15 @@ namespace
                 QskDialog::Ok | QskDialog::Cancel, QskDialog::Ok, entries, 7 );
 #else
             (void )qskDialog->select( title, entries, 7 );
+#endif
+        }
+
+        void execFileSelection()
+        {
+#ifndef QSK_USE_EXEC
+            // not implemented for now (class is not public)
+#else
+            ( void ) qskDialog->selectFile( "select file", QDir::currentPath() );
 #endif
         }
     };

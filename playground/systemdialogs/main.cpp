@@ -11,6 +11,7 @@
 #include <QskCheckBox.h>
 #include <QskLinearBox.h>
 #include <QskMainView.h>
+#include <QskDialog.h>
 
 #include <QGuiApplication>
 
@@ -108,10 +109,29 @@ namespace
 
             if ( qGuiApp->testAttribute( Qt::AA_DontUseNativeDialogs ) )
             {
-                const auto metaEnum = QMetaEnum::fromType<DialogType>();
-                m_dialog = createQml( metaEnum.key( dialogType ) );
-                if ( m_dialog )
-                    m_dialog->setParentWindow( window() );
+                switch( dialogType )
+                {
+                    case FileDialog:
+                    {
+                        auto file = qskDialog->selectFile( "select file", "." );
+                        qDebug() << "selected file" << file;
+                        break;
+                    }
+                    case MessageDialog:
+                    {
+                        auto action = qskDialog->message( "message", "The quick brown fox jumps over the lazy dog" );
+                        qDebug() << "got message action" << action;
+                        break;
+                    }
+                    default:
+                    {
+                        const auto metaEnum = QMetaEnum::fromType<DialogType>();
+                        m_dialog = createQml( metaEnum.key( dialogType ) );
+
+                        if ( m_dialog )
+                            m_dialog->setParentWindow( window() );
+                    }
+                }
             }
             else
             {
