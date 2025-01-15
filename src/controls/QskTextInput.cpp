@@ -35,7 +35,7 @@ static inline void qskPropagateReadOnly( QskTextInput* input )
 }
 
 static inline void qskTranslateMouseEventPosition(
-    QMouseEvent* mouseEvent, const QPointF& offset ) 
+    QMouseEvent* mouseEvent, const QPointF& offset )
 {
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
     auto& point = mouseEvent->point(0);
@@ -139,6 +139,27 @@ namespace
                     qskTranslateMouseEventPosition( mouseEvent, -position() );
                     ok = this->event( mouseEvent );
                     qskTranslateMouseEventPosition( mouseEvent, position() );
+
+                    break;
+                }
+                case QEvent::InputMethod:
+                {
+                    const bool hadCursor = isCursorVisible();
+
+                    ok = this->event( event );
+
+                    if ( isCursorVisible() && !hadCursor )
+                    {
+                        /*
+                            The initial InputMethod events might be sent from the
+                            platform depending on focus. Unfortunately an
+                            empty dummy event ( = no attributes ) leads to showing
+                            the cursor.
+                         */
+                        auto input = static_cast< const QskTextInput* >( parentItem() );
+                        if ( !input->isEditing() )
+                            setCursorVisible( false );
+                    }
 
                     break;
                 }
