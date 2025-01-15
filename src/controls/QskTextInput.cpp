@@ -304,22 +304,13 @@ void QskTextInput::keyPressEvent( QKeyEvent* event )
             case Qt::Key_Enter:
             case Qt::Key_Return:
             {
-                if ( hasAcceptableInput() || fixup() )
+                const auto hints = inputMethodQuery( Qt::ImHints ).toInt();
+                if ( !( hints & Qt::ImhMultiLine ) )
                 {
-                    QGuiApplication::inputMethod()->commit();
-
-                    const auto hints = inputMethodQuery( Qt::ImHints ).toInt();
-
-                    if ( hints & Qt::ImhMultiLine )
+                    if ( hasAcceptableInput() || fixup() )
                     {
-                        m_data->wrappedInput->handleEvent( event );
-                    }
-                    else
-                    {
+                        QGuiApplication::inputMethod()->commit();
                         setEditing( false );
-
-                        // When returning from a virtual keyboard
-                        qskForceActiveFocus( this, Qt::PopupFocusReason );
                     }
                 }
 
@@ -329,14 +320,19 @@ void QskTextInput::keyPressEvent( QKeyEvent* event )
             case Qt::Key_Escape:
             {
                 setEditing( false );
-                qskForceActiveFocus( this, Qt::PopupFocusReason );
                 break;
             }
 #endif
-            default:
-            {
-                m_data->wrappedInput->handleEvent( event );
-            }
+        }
+
+        if ( isEditing() )
+        {
+            m_data->wrappedInput->handleEvent( event );
+        }
+        else
+        {
+            // When returning from a virtual keyboard
+            qskForceActiveFocus( this, Qt::PopupFocusReason );
         }
 
         return;
@@ -577,6 +573,9 @@ void QskTextInput::setReadOnly( bool on )
     // we are killing user settings here ?
     input->setFlag( QQuickItem::ItemAcceptsInputMethod, !on );
     qskUpdateInputMethod( this, Qt::ImEnabled );
+#if 0
+    qskUpdateInputMethod( this, Qt::ImReadOnly ); // since 6.2
+#endif
 
     setSkinStateFlag( ReadOnly, on );
 }

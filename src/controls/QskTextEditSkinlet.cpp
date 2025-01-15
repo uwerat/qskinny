@@ -88,5 +88,3 @@ QSizeF QskTextEditSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     return hint;
 }
-
-#include "moc_QskTextEditSkinlet.cpp"

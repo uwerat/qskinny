@@ -289,27 +289,6 @@ void QskTextEdit::keyPressEvent( QKeyEvent* event )
     {
         switch ( event->key() )
         {
-            case Qt::Key_Enter:
-            case Qt::Key_Return:
-            {
-                QGuiApplication::inputMethod()->commit();
-
-                const auto hints = inputMethodQuery( Qt::ImHints ).toInt();
-
-                if ( hints & Qt::ImhMultiLine )
-                {
-                    m_data->wrappedEdit->handleEvent( event );
-                }
-                else
-                {
-                    setEditing( false );
-
-                    // When returning from a virtual keyboard
-                    qskForceActiveFocus( this, Qt::PopupFocusReason );
-                }
-
-                break;
-            }
 #if 1
             case Qt::Key_Escape:
             {
