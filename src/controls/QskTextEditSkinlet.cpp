@@ -10,8 +10,6 @@
 
 using Q = QskTextEdit;
 
-QSK_SYSTEM_STATE( QskTextEditSkinlet, Selected, QskAspect::FirstSystemState << 3 )
-
 QskTextEditSkinlet::QskTextEditSkinlet( QskSkin* skin )
     : Inherited( skin )
 {

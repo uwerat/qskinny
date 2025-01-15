@@ -197,6 +197,7 @@ endif()
 
 list(APPEND HEADERS
     controls/QskAbstractButton.h
+    controls/QskAbstractTextInput.h
     controls/QskAnimationHint.h
     controls/QskAnimator.h
     controls/QskMainView.h
@@ -306,6 +307,7 @@ list(APPEND PRIVATE_HEADERS
 
 list(APPEND SOURCES
     controls/QskAbstractButton.cpp
+    controls/QskAbstractTextInput.cpp
     controls/QskAnimator.cpp
     controls/QskAnimationHint.cpp
     controls/QskMainView.cpp

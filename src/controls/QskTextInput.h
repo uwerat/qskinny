@@ -6,35 +6,14 @@
 #ifndef QSK_TEXT_INPUT_H
 #define QSK_TEXT_INPUT_H
 
-#include "QskControl.h"
+#include "QskAbstractTextInput.h"
 #include "QskTextOptions.h"
 
 class QValidator;
-class QskFontRole;
 
-class QSK_EXPORT QskTextInput : public QskControl
+class QSK_EXPORT QskTextInput : public QskAbstractTextInput
 {
     Q_OBJECT
-
-    Q_PROPERTY( QString text READ text
-        WRITE setText NOTIFY textChanged USER true )
-
-    Q_PROPERTY( QskFontRole fontRole READ fontRole
-        WRITE setFontRole RESET resetFontRole NOTIFY fontRoleChanged )
-
-    Q_PROPERTY( QFont font READ font )
-
-    Q_PROPERTY( Qt::Alignment alignment READ alignment
-        WRITE setAlignment RESET resetAlignment NOTIFY alignmentChanged )
-
-    Q_PROPERTY( QskTextOptions::WrapMode wrapMode READ wrapMode
-        WRITE setWrapMode NOTIFY wrapModeChanged )
-
-    Q_PROPERTY( ActivationModes activationModes READ activationModes
-        WRITE setActivationModes NOTIFY activationModesChanged )
-
-    Q_PROPERTY( bool editing READ isEditing
-        WRITE setEditing NOTIFY editingChanged )
 
     Q_PROPERTY( EchoMode echoMode READ echoMode
         WRITE setEchoMode NOTIFY echoModeChanged )
@@ -47,30 +26,12 @@ class QSK_EXPORT QskTextInput : public QskControl
         WRITE setPasswordMaskDelay RESET resetPasswordMaskDelay
         NOTIFY passwordMaskDelayChanged )
 
-    Q_PROPERTY( bool selectByMouse READ selectByMouse
-        WRITE setSelectByMouse )
-
-    using Inherited = QskControl;
+    using Inherited = QskAbstractTextInput;
 
   public:
-    QSK_SUBCONTROLS( TextPanel, Text )
+    QSK_SUBCONTROLS( TextPanel )
 
-    QSK_STATES( ReadOnly, Editing, Error )
-
-    enum ActivationMode : quint8
-    {
-        NoActivation,
-
-        ActivationOnFocus = 1 << 0,
-        ActivationOnMouse = 1 << 1,
-        ActivationOnKey = 1 << 2,
-
-        ActivationOnInput = ActivationOnMouse | ActivationOnKey,
-        ActivationOnAll = ActivationOnFocus | ActivationOnMouse | ActivationOnKey
-    };
-
-    Q_ENUM( ActivationMode )
-    Q_DECLARE_FLAGS( ActivationModes, ActivationMode )
+    QSK_STATES( Error )
 
     enum EchoMode : quint8
     {
@@ -82,38 +43,10 @@ class QSK_EXPORT QskTextInput : public QskControl
 
     Q_ENUM( EchoMode )
 
+    QskTextInput( QQuickItem* parent = nullptr );
     ~QskTextInput() override;
 
     void setupFrom( const QQuickItem* );
-
-    QString text() const;
-
-    void setFontRole( const QskFontRole& role );
-    void resetFontRole();
-    QskFontRole fontRole() const;
-
-    void setAlignment( Qt::Alignment );
-    void resetAlignment();
-    Qt::Alignment alignment() const;
-
-    void setWrapMode( QskTextOptions::WrapMode );
-    QskTextOptions::WrapMode wrapMode() const;
-
-    void setActivationModes( ActivationModes );
-    ActivationModes activationModes() const;
-
-    void setSelectByMouse( bool );
-    bool selectByMouse() const;
-
-    bool isEditing() const;
-
-    QFont font() const;
-
-    bool isReadOnly() const;
-    void setReadOnly( bool );
-
-    int cursorPosition() const;
-    void setCursorPosition( int );
 
     int maxLength() const;
     void setMaxLength( int );
@@ -136,44 +69,14 @@ class QSK_EXPORT QskTextInput : public QskControl
     void resetPasswordMaskDelay();
 
     QString displayText() const;
-    QString preeditText() const;
-
-    bool overwriteMode() const;
-    void setOverwriteMode( bool );
 
     bool hasAcceptableInput() const;
     bool fixup();
-
-    QVariant inputMethodQuery( Qt::InputMethodQuery ) const override;
-    QVariant inputMethodQuery( Qt::InputMethodQuery, const QVariant& argument ) const;
-
-    Qt::InputMethodHints inputMethodHints() const;
-    void setInputMethodHints( Qt::InputMethodHints );
+    bool acceptInput() override;
 
     void ensureVisible( int position );
 
-  public Q_SLOTS:
-    void clear();
-    void selectAll();
-    void setText( const QString& );
-    void setEditing( bool );
-
   Q_SIGNALS:
-    void editingChanged( bool );
-
-    void activationModesChanged();
-    void readOnlyChanged( bool );
-
-    void textChanged( const QString& );
-    void displayTextChanged( const QString& );
-
-    void textEdited( const QString& );
-
-    void fontRoleChanged();
-    void alignmentChanged();
-    void wrapModeChanged( QskTextOptions::WrapMode );
-
-    void overwriteModeChanged( bool );
     void maximumLengthChanged( int );
 
     void echoModeChanged( EchoMode );
@@ -184,32 +87,11 @@ class QSK_EXPORT QskTextInput : public QskControl
     void inputMaskChanged( const QString& );
 
   protected:
-    QskTextInput( QQuickItem* parent = nullptr );
-
-    bool event( QEvent* ) override;
-
-    void inputMethodEvent( QInputMethodEvent* ) override;
-
-    void focusInEvent( QFocusEvent* ) override;
-    void focusOutEvent( QFocusEvent* ) override;
-
-    void mousePressEvent( QMouseEvent* ) override;
-    void mouseMoveEvent( QMouseEvent* ) override;
-    void mouseReleaseEvent( QMouseEvent* ) override;
-    void mouseDoubleClickEvent( QMouseEvent* ) override;
-
-    void keyPressEvent( QKeyEvent* ) override;
-    void keyReleaseEvent( QKeyEvent* ) override;
-
-    void updateLayout() override;
-    void updateNode( QSGNode* ) override;
+    QQuickItem* wrappedInput() override final;
 
   private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };
-
-Q_DECLARE_OPERATORS_FOR_FLAGS( QskTextInput::ActivationModes )
-Q_DECLARE_METATYPE( QskTextInput::ActivationModes )
 
 #endif

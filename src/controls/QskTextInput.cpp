@@ -13,17 +13,10 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextinput_p.h>
 #include <private/qquicktextinput_p_p.h>
 
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-#include <private/qeventpoint_p.h>
-#endif
-
 QSK_QT_PRIVATE_END
 
-QSK_SUBCONTROL( QskTextInput, Text )
 QSK_SUBCONTROL( QskTextInput, TextPanel )
 
-QSK_SYSTEM_STATE( QskTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
-QSK_SYSTEM_STATE( QskTextInput, Editing, QskAspect::FirstSystemState << 2 )
 QSK_SYSTEM_STATE( QskTextInput, Error, QskAspect::FirstSystemState << 4 )
 
 static inline void qskPropagateReadOnly( QskTextInput* input )
@@ -32,19 +25,6 @@ static inline void qskPropagateReadOnly( QskTextInput* input )
 
     QEvent event( QEvent::ReadOnlyChange );
     QCoreApplication::sendEvent( input, &event );
-}
-
-static inline void qskTranslateMouseEventPosition(
-    QMouseEvent* mouseEvent, const QPointF& offset )
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    auto& point = mouseEvent->point(0);
-
-    QMutableEventPoint::setPosition(
-        point, point.position() + offset );
-#else
-    mouseEvent->setLocalPos( mouseEvent->localPos() + offset );
-#endif
 }
 
 static inline void qskBindSignals(
@@ -70,6 +50,9 @@ static inline void qskBindSignals(
 
     QObject::connect( wrappedInput, &QQuickTextInput::overwriteModeChanged,
         input, &QskTextInput::overwriteModeChanged );
+
+    QObject::connect( wrappedInput, &QQuickTextInput::cursorPositionChanged,
+        input, [ input ] { Q_EMIT input->cursorPositionChanged( input->cursorPosition() ); } );
 
     QObject::connect( wrappedInput, &QQuickTextInput::maximumLengthChanged,
         input, &QskTextInput::maximumLengthChanged );
@@ -97,12 +80,12 @@ namespace
 {
     class QuickTextInput final : public QQuickTextInput
     {
+        Q_OBJECT
+
         using Inherited = QQuickTextInput;
 
       public:
         QuickTextInput( QskTextInput* );
-
-        void setEditing( bool on );
 
         inline void setAlignment( Qt::Alignment alignment )
         {
@@ -115,60 +98,9 @@ namespace
             return QQuickTextInputPrivate::get( this )->fixup();
         }
 
-        void updateColors();
-        void updateMetrics();
-
-        inline bool handleEvent( QEvent* event )
-        {
-            bool ok;
-
-            switch( static_cast< int >( event->type() ) )
-            {
-                case QEvent::MouseButtonDblClick:
-                case QEvent::MouseButtonPress:
-                case QEvent::MouseButtonRelease:
-                case QEvent::MouseMove:
-                {
-                    auto mouseEvent = static_cast< QMouseEvent* >( event );
-
-                    /*
-                        As the event was sent for the parent item
-                        we have to translate the position into
-                        our coordinate system.
-                     */
-                    qskTranslateMouseEventPosition( mouseEvent, -position() );
-                    ok = this->event( mouseEvent );
-                    qskTranslateMouseEventPosition( mouseEvent, position() );
-
-                    break;
-                }
-                case QEvent::InputMethod:
-                {
-                    const bool hadCursor = isCursorVisible();
-
-                    ok = this->event( event );
-
-                    if ( isCursorVisible() && !hadCursor )
-                    {
-                        /*
-                            The initial InputMethod events might be sent from the
-                            platform depending on focus. Unfortunately an
-                            empty dummy event ( = no attributes ) leads to showing
-                            the cursor.
-                         */
-                        auto input = static_cast< const QskTextInput* >( parentItem() );
-                        if ( !input->isEditing() )
-                            setCursorVisible( false );
-                    }
-
-                    break;
-                }
-                default:
-                    ok = this->event( event );
-            }
-
-            return ok;
-        }
+        Q_INVOKABLE void updateColors();
+        Q_INVOKABLE void updateMetrics();
+        Q_INVOKABLE void handleEvent( QEvent* );
 
       protected:
 
@@ -218,25 +150,6 @@ namespace
             this, &QuickTextInput::updateClip );
     }
 
-    void QuickTextInput::setEditing( bool on )
-    {
-        auto d = QQuickTextInputPrivate::get( this );
-
-        if ( d->cursorVisible == on )
-            return;
-
-        setCursorVisible( on );
-        d->setBlinkingCursorEnabled( on );
-
-        if ( !on )
-        {
-            if ( d->m_passwordEchoEditing || d->m_passwordEchoTimer.isActive() )
-                d->updatePasswordEchoEditing( false );
-        }
-
-        polish();
-        update();
-    }
 
     void QuickTextInput::updateMetrics()
     {
@@ -254,34 +167,29 @@ namespace
 
         setColor( input->color( Q::Text ) );
 
-        const auto state = QskTextInputSkinlet::Selected;
+        const auto state = QskTextInput::Selected;
 
         setSelectionColor( input->color( Q::TextPanel | state ) );
         setSelectedTextColor( input->color( Q::Text | state ) );
     }
+
+    void QuickTextInput::handleEvent( QEvent* ev )
+    {
+        event( ev );
+    }
+
 }
 
 class QskTextInput::PrivateData
 {
   public:
     QuickTextInput* wrappedInput;
-
-    ActivationModes activationModes;
 };
 
 QskTextInput::QskTextInput( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    m_data->activationModes = ActivationOnMouse | ActivationOnKey;
-
-    setPolishOnResize( true );
-
-    setAcceptHoverEvents( true );
-    setFocusPolicy( Qt::StrongFocus );
-
-    setFlag( QQuickItem::ItemAcceptsInputMethod );
-
     /*
         QQuickTextInput is a beast of almost 5k lines of code, we don't
         want to reimplement that - at least not now.
@@ -302,353 +210,9 @@ QskTextInput::~QskTextInput()
 {
 }
 
-bool QskTextInput::event( QEvent* event )
-{
-    if ( event->type() == QEvent::ShortcutOverride )
-    {
-        return m_data->wrappedInput->handleEvent( event );
-    }
-    else if ( event->type() == QEvent::LocaleChange )
-    {
-        qskUpdateInputMethod( this, Qt::ImPreferredLanguage );
-    }
-
-    return Inherited::event( event );
-}
-
-void QskTextInput::keyPressEvent( QKeyEvent* event )
-{
-    if ( isEditing() )
-    {
-        switch ( event->key() )
-        {
-            case Qt::Key_Enter:
-            case Qt::Key_Return:
-            {
-                const auto hints = inputMethodQuery( Qt::ImHints ).toInt();
-                if ( !( hints & Qt::ImhMultiLine ) )
-                {
-                    if ( hasAcceptableInput() || fixup() )
-                    {
-                        QGuiApplication::inputMethod()->commit();
-                        setEditing( false );
-                    }
-                }
-
-                break;
-            }
-#if 1
-            case Qt::Key_Escape:
-            {
-                setEditing( false );
-                break;
-            }
-#endif
-        }
-
-        if ( isEditing() )
-        {
-            m_data->wrappedInput->handleEvent( event );
-        }
-        else
-        {
-            // When returning from a virtual keyboard
-            qskForceActiveFocus( this, Qt::PopupFocusReason );
-        }
-
-        return;
-    }
-
-    if ( ( m_data->activationModes & ActivationOnKey ) && !event->isAutoRepeat() )
-    {
-        if ( event->key() == Qt::Key_Select || event->key() == Qt::Key_Space )
-        {
-            setEditing( true );
-            return;
-        }
-    }
-
-    Inherited::keyPressEvent( event );
-}
-
-void QskTextInput::keyReleaseEvent( QKeyEvent* event )
-{
-    Inherited::keyReleaseEvent( event );
-}
-
-void QskTextInput::mousePressEvent( QMouseEvent* event )
-{
-    m_data->wrappedInput->handleEvent( event );
-
-    if ( !isReadOnly() && !qGuiApp->styleHints()->setFocusOnTouchRelease() )
-        setEditing( true );
-}
-
-void QskTextInput::mouseMoveEvent( QMouseEvent* event )
-{
-    m_data->wrappedInput->handleEvent( event );
-}
-
-void QskTextInput::mouseReleaseEvent( QMouseEvent* event )
-{
-    m_data->wrappedInput->handleEvent( event );
-
-    if ( !isReadOnly() && qGuiApp->styleHints()->setFocusOnTouchRelease() )
-        setEditing( true );
-}
-
-void QskTextInput::mouseDoubleClickEvent( QMouseEvent* event )
-{
-    m_data->wrappedInput->handleEvent( event );
-}
-
-void QskTextInput::inputMethodEvent( QInputMethodEvent* event )
-{
-    m_data->wrappedInput->handleEvent( event );
-}
-
-void QskTextInput::focusInEvent( QFocusEvent* event )
-{
-    if ( m_data->activationModes & ActivationOnFocus )
-    {
-        switch ( event->reason() )
-        {
-            case Qt::ActiveWindowFocusReason:
-            case Qt::PopupFocusReason:
-                break;
-
-            default:
-#if 1
-                // auto selecting the complete text ???
-#endif
-                setEditing( true );
-        }
-    }
-
-    Inherited::focusInEvent( event );
-}
-
-void QskTextInput::focusOutEvent( QFocusEvent* event )
-{
-    switch ( event->reason() )
-    {
-        case Qt::ActiveWindowFocusReason:
-        case Qt::PopupFocusReason:
-        {
-            break;
-        }
-        default:
-        {
-            m_data->wrappedInput->deselect();
-            setEditing( false );
-        }
-    }
-
-    Inherited::focusOutEvent( event );
-}
-
-void QskTextInput::updateLayout()
-{
-    m_data->wrappedInput->updateMetrics();
-    qskSetItemGeometry( m_data->wrappedInput, subControlRect( Text ) );
-}
-
-void QskTextInput::updateNode( QSGNode* node )
-{
-    m_data->wrappedInput->updateColors();
-    Inherited::updateNode( node );
-}
-
-QString QskTextInput::text() const
-{
-    return m_data->wrappedInput->text();
-}
-
-void QskTextInput::setText( const QString& text )
-{
-    m_data->wrappedInput->setText( text );
-}
-
-void QskTextInput::clear()
-{
-    m_data->wrappedInput->clear();
-}
-
-void QskTextInput::selectAll()
-{
-    m_data->wrappedInput->selectAll();
-}
-
-QskTextInput::ActivationModes QskTextInput::activationModes() const
-{
-    return static_cast< QskTextInput::ActivationModes >( m_data->activationModes );
-}
-
-void QskTextInput::setActivationModes( ActivationModes modes )
-{
-    if ( static_cast< ActivationModes >( m_data->activationModes ) != modes )
-    {
-        m_data->activationModes = modes;
-        Q_EMIT activationModesChanged();
-    }
-}
-
-static inline void qskUpdateInputMethodFont( const QskTextInput* input )
-{
-    const auto queries = Qt::ImCursorRectangle | Qt::ImFont | Qt::ImAnchorRectangle;
-    qskUpdateInputMethod( input, queries );
-}
-
-void QskTextInput::setFontRole( const QskFontRole& role )
-{
-    if ( setFontRoleHint( Text, role ) )
-    {
-        qskUpdateInputMethodFont( this );
-        Q_EMIT fontRoleChanged();
-    }
-}
-
-void QskTextInput::resetFontRole()
-{
-    if ( resetFontRoleHint( Text ) )
-    {
-        qskUpdateInputMethodFont( this );
-        Q_EMIT fontRoleChanged();
-    }
-}
-
-QskFontRole QskTextInput::fontRole() const
-{
-    return fontRoleHint( Text );
-}
-
-void QskTextInput::setAlignment( Qt::Alignment alignment )
-{
-    if ( setAlignmentHint( Text, alignment ) )
-    {
-        m_data->wrappedInput->setAlignment( alignment );
-        Q_EMIT alignmentChanged();
-    }
-}
-
-void QskTextInput::resetAlignment()
-{
-    if ( resetAlignmentHint( Text ) )
-    {
-        m_data->wrappedInput->setAlignment( alignment() );
-        Q_EMIT alignmentChanged();
-    }
-}
-
-Qt::Alignment QskTextInput::alignment() const
-{
-    return alignmentHint( Text, Qt::AlignLeft | Qt::AlignTop );
-}
-
-void QskTextInput::setWrapMode( QskTextOptions::WrapMode wrapMode )
-{
-    m_data->wrappedInput->setWrapMode(
-        static_cast< QQuickTextInput::WrapMode >( wrapMode ) );
-}
-
-QskTextOptions::WrapMode QskTextInput::wrapMode() const
-{
-    return static_cast< QskTextOptions::WrapMode >(
-        m_data->wrappedInput->wrapMode() );
-}
-
-void QskTextInput::setSelectByMouse( bool on )
-{
-    m_data->wrappedInput->setSelectByMouse( on );
-}
-
-bool QskTextInput::selectByMouse() const
-{
-    return m_data->wrappedInput->selectByMouse();
-}
-
-QFont QskTextInput::font() const
-{
-    return effectiveFont( QskTextInput::Text );
-}
-
-bool QskTextInput::isReadOnly() const
-{
-    return m_data->wrappedInput->isReadOnly();
-}
-
-void QskTextInput::setReadOnly( bool on )
-{
-    auto input = m_data->wrappedInput;
-
-    if ( input->isReadOnly() == on )
-        return;
-
-#if 1
-    // do we want to be able to restore the previous policy ?
-    setFocusPolicy( Qt::NoFocus );
-#endif
-
-    input->setReadOnly( on );
-
-    // we are killing user settings here ?
-    input->setFlag( QQuickItem::ItemAcceptsInputMethod, !on );
-    qskUpdateInputMethod( this, Qt::ImEnabled );
-#if 0
-    qskUpdateInputMethod( this, Qt::ImReadOnly ); // since 6.2
-#endif
-
-    setSkinStateFlag( ReadOnly, on );
-}
-
-void QskTextInput::setEditing( bool on )
-{
-    if ( isReadOnly() || on == isEditing() )
-        return;
-
-    setSkinStateFlag( Editing, on );
-    m_data->wrappedInput->setEditing( on );
-
-    if ( on )
-    {
-#if 0
-        updateInputMethod( Qt::ImCursorRectangle | Qt::ImAnchorRectangle );
-        QGuiApplication::inputMethod()->inputDirection
-#endif
-        qskInputMethodSetVisible( this, true );
-    }
-    else
-    {
-        if ( hasAcceptableInput() || fixup() )
-            Q_EMIT m_data->wrappedInput->editingFinished();
-
-#if 0
-        inputMethod->reset();
-#endif
-        qskInputMethodSetVisible( this, false );
-    }
-
-    Q_EMIT editingChanged( on );
-}
-
-bool QskTextInput::isEditing() const
-{
-    return hasSkinState( Editing );
-}
-
 void QskTextInput::ensureVisible( int position )
 {
     m_data->wrappedInput->ensureVisible( position );
-}
-
-int QskTextInput::cursorPosition() const
-{
-    return m_data->wrappedInput->cursorPosition();
-}
-
-void QskTextInput::setCursorPosition( int pos )
-{
-    m_data->wrappedInput->setCursorPosition( pos );
 }
 
 int QskTextInput::maxLength() const
@@ -734,22 +298,6 @@ QString QskTextInput::displayText() const
     return m_data->wrappedInput->displayText();
 }
 
-QString QskTextInput::preeditText() const
-{
-    const auto d = QQuickTextInputPrivate::get( m_data->wrappedInput );
-    return d->m_textLayout.preeditAreaText();
-}
-
-bool QskTextInput::overwriteMode() const
-{
-    return m_data->wrappedInput->overwriteMode();
-}
-
-void QskTextInput::setOverwriteMode( bool overwrite )
-{
-    m_data->wrappedInput->setOverwriteMode( overwrite );
-}
-
 bool QskTextInput::hasAcceptableInput() const
 {
     return m_data->wrappedInput->hasAcceptableInput();
@@ -760,58 +308,9 @@ bool QskTextInput::fixup()
     return m_data->wrappedInput->fixup();
 }
 
-QVariant QskTextInput::inputMethodQuery(
-    Qt::InputMethodQuery property ) const
+bool QskTextInput::acceptInput()
 {
-    return inputMethodQuery( property, QVariant() );
-}
-
-QVariant QskTextInput::inputMethodQuery(
-    Qt::InputMethodQuery query, const QVariant& argument ) const
-{
-    switch ( query )
-    {
-        case Qt::ImEnabled:
-        {
-            return QVariant( ( bool ) ( flags() & ItemAcceptsInputMethod ) );
-        }
-        case Qt::ImFont:
-        {
-            return font();
-        }
-        case Qt::ImPreferredLanguage:
-        {
-            return locale();
-        }
-        case Qt::ImInputItemClipRectangle:
-        case Qt::ImCursorRectangle:
-        {
-            QVariant v = m_data->wrappedInput->inputMethodQuery( query, argument );
-#if 1
-            if ( v.canConvert< QRectF >() )
-                v.setValue( v.toRectF().translated( m_data->wrappedInput->position() ) );
-#endif
-            return v;
-        }
-        default:
-        {
-            return m_data->wrappedInput->inputMethodQuery( query, argument );
-        }
-    }
-}
-
-Qt::InputMethodHints QskTextInput::inputMethodHints() const
-{
-    return m_data->wrappedInput->inputMethodHints();
-}
-
-void QskTextInput::setInputMethodHints( Qt::InputMethodHints hints )
-{
-    if ( m_data->wrappedInput->inputMethodHints() != hints )
-    {
-        m_data->wrappedInput->setInputMethodHints( hints );
-        qskUpdateInputMethod( this, Qt::ImHints );
-    }
+    return hasAcceptableInput() || fixup();
 }
 
 void QskTextInput::setupFrom( const QQuickItem* item )
@@ -915,4 +414,10 @@ void QskTextInput::setupFrom( const QQuickItem* item )
     setEchoMode( echoMode );
 }
 
+QQuickItem* QskTextInput::wrappedInput()
+{
+    return m_data->wrappedInput;
+}
+
+#include "QskTextInput.moc"
 #include "moc_QskTextInput.cpp"

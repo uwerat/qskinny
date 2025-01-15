@@ -13,8 +13,6 @@ class QSK_EXPORT QskTextEditSkinlet : public QskSkinlet
     using Inherited = QskSkinlet;
 
   public:
-    QSK_STATES( Selected )
-
     enum NodeRole : quint8
     {
         TextPanelRole,

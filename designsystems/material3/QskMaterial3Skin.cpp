@@ -12,7 +12,6 @@
 #include "QskMaterial3ProgressBarSkinlet.h"
 #include "QskMaterial3SliderSkinlet.h"
 #include "QskMaterial3TextFieldSkinlet.h"
-#include <QskTextEditSkinlet.h>
 
 #include <QskSkinHintTableEditor.h>
 
@@ -188,8 +187,7 @@ namespace
         Q_INVOKABLE void setupTabBar();
         Q_INVOKABLE void setupTabView();
 
-        template< typename Q, typename SK >
-        void setupTextControl();
+        Q_INVOKABLE void setupTextInput();
         Q_INVOKABLE void setupTextArea();
         Q_INVOKABLE void setupTextField();
         Q_INVOKABLE void setupTextLabel();
@@ -437,13 +435,25 @@ void Editor::setupTextLabel()
     setPadding( Q::Panel, 5_px );
 }
 
-template< typename Q, typename SK >
-void Editor::setupTextControl()
+void Editor::setupTextInput()
 {
+    using Q = QskAbstractTextInput;
+
+    setColor( Q::Text, m_pal.onSurface );
+    setFontRole( Q::Text, BodyLarge );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
+}
+
+void Editor::setupTextArea()
+{
+    using Q = QskTextArea;
+
+    // ==========
+
     setStrutSize( Q::Panel,  -1.0, 56_px );
     setPadding( Q::Panel, { 12_px, 8_px, 12_px, 8_px } );
     setGradient( Q::Panel, m_pal.surfaceVariant );
-    setColor( Q::TextPanel | SK::Selected, m_pal.primary12 );
+    setColor( Q::TextPanel | Q::Selected, m_pal.primary12 );
     setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
     setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_px } );
     setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );
@@ -459,7 +469,45 @@ void Editor::setupTextControl()
 
     // ### Also add a pressed state
 
-    setColor( Q::Text, m_pal.onSurface );
+
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
+
+    const auto disabledPanelColor = QskRgb::toTransparentF( m_pal.onSurface, 0.04 );
+    setGradient( Q::Panel | Q::Disabled, disabledPanelColor );
+    setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
+
+    // PlaceholderText
+
+    setColor( Q::Placeholder, color( Q::Text ) );
+    setFontRole( Q::Placeholder, BodyLarge );
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignTop );
+}
+
+void Editor::setupTextField()
+{
+    using Q = QskTextField;
+
+    // ===
+
+    setStrutSize( Q::Panel,  -1.0, 56_px );
+    setPadding( Q::Panel, { 12_px, 8_px, 12_px, 8_px } );
+    setGradient( Q::Panel, m_pal.surfaceVariant );
+    setColor( Q::TextPanel | Q::Selected, m_pal.primary12 );
+    setBoxShape( Q::Panel, m_pal.shapeExtraSmallTop );
+    setBoxBorderMetrics( Q::Panel, { 0, 0, 0, 1_px } );
+    setBoxBorderColors( Q::Panel, m_pal.onSurfaceVariant );
+    setSpacing( Q::Panel, 8_px );
+
+    const auto hoverColor = flattenedColor( m_pal.onSurfaceVariant,
+        m_pal.surfaceVariant, m_pal.hoverOpacity );
+    setGradient( Q::Panel | Q::Hovered, hoverColor );
+
+    const auto focusColor = flattenedColor( m_pal.onSurfaceVariant,
+        m_pal.surfaceVariant, m_pal.focusOpacity );
+    setGradient( Q::Panel | Q::Focused, focusColor );
+
+    // ### Also add a pressed state
+
     setFontRole( Q::Text, BodyLarge );
 
     setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
@@ -468,33 +516,11 @@ void Editor::setupTextControl()
     setGradient( Q::Panel | Q::Disabled, disabledPanelColor );
     setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
 
-    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
-
     // PlaceholderText
 
     setColor( Q::Placeholder, color( Q::Text ) );
     setFontRole( Q::Placeholder, BodyLarge );
-    setAlignment( Q::Placeholder, alignment( Q::Text ) );
-}
-
-void Editor::setupTextArea()
-{
-    using Q = QskTextArea;
-    using SK = QskTextEditSkinlet;
-
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignTop );
-
-    setupTextControl< Q, SK >();
-}
-
-void Editor::setupTextField()
-{
-    using Q = QskTextField;
-    using SK = QskTextInputSkinlet;
-
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
-
-    setupTextControl< Q, SK >();
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
 }
 
 void Editor::setupProgressBar()

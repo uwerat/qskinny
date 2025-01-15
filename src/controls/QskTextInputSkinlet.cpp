@@ -10,8 +10,6 @@
 
 using Q = QskTextInput;
 
-QSK_SYSTEM_STATE( QskTextInputSkinlet, Selected, QskAspect::FirstSystemState << 3 )
-
 QskTextInputSkinlet::QskTextInputSkinlet( QskSkin* skin )
     : Inherited( skin )
 {

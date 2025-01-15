@@ -299,11 +299,8 @@ namespace
         void setupTabViewMetrics();
         void setupTabViewColors( QskAspect::Section, const QskFluent2Theme& );
 
-        template< typename Q >
-        void setupTextControlMetrics();
-
-        template< typename Q, typename SK >
-        void setupTextControlColors( QskAspect::Section section, const QskFluent2Theme& theme );
+        void setupTextInputMetrics();
+        void setupTextInputColors( QskAspect::Section, const QskFluent2Theme& );
 
         void setupTextAreaMetrics();
         void setupTextAreaColors( QskAspect::Section, const QskFluent2Theme& );
@@ -367,6 +364,7 @@ void Editor::setupMetrics()
     setupTabButtonMetrics();
     setupTabBarMetrics();
     setupTabViewMetrics();
+    setupTextInputMetrics();
     setupTextAreaMetrics();
     setupTextFieldMetrics();
     setupTextLabelMetrics();
@@ -407,6 +405,7 @@ void Editor::setupColors( QskAspect::Section section, const QskFluent2Theme& the
     setupTabButtonColors( section, theme );
     setupTabBarColors( section, theme );
     setupTabViewColors( section, theme );
+    setupTextInputColors( section, theme );
     setupTextAreaColors( section, theme );
     setupTextFieldColors( section, theme );
     setupTextLabelColors( section, theme );
@@ -1794,8 +1793,34 @@ void Editor::setupTextLabelColors(
     setColor( Q::Text | section, pal.fillColor.text.primary );
 }
 
-template< typename Q > void Editor::setupTextControlMetrics()
+void Editor::setupTextInputMetrics()
 {
+    using Q = QskAbstractTextInput;
+    setFontRole( Q::Text, Fluent2::Body );
+}
+
+void Editor::setupTextInputColors(
+    QskAspect::Section section, const QskFluent2Theme& theme )
+{
+    using Q = QskAbstractTextInput;
+
+    const auto& pal = theme.palette;
+
+    const auto text = Q::Text | section;
+
+#if 1
+    setColor( text, pal.fillColor.text.primary ); 
+    setColor( text | Q::Selected, pal.fillColor.textOnAccent.selectedText );
+    setColor( text | Q::Disabled, pal.fillColor.text.disabled );
+#endif
+}
+
+void Editor::setupTextAreaMetrics()
+{
+    using Q = QskTextArea;
+
+    // ===
+
     setStrutSize( Q::TextPanel, { -1, 30_px } );
     setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
 
@@ -1805,97 +1830,123 @@ template< typename Q > void Editor::setupTextControlMetrics()
 
     setBoxShape( Q::TextPanel, 3_px );
 
-    setFontRole( Q::Text, Fluent2::Body );
-
-    setAlignment( Q::Placeholder, alignment( Q::Text ) );
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignTop );
     setFontRole( Q::Placeholder, fontRole( Q::Text ) );
 }
 
-template< typename Q, typename SK > void Editor::setupTextControlColors(
-    QskAspect::Section section, const QskFluent2Theme& theme)
+void Editor::setupTextAreaColors(
+    QskAspect::Section section, const QskFluent2Theme& theme )
 {
     using A = QskAspect;
+    using Q = QskTextArea;
 
     const auto& pal = theme.palette;
 
-    setColor( Q::TextPanel | SK::Selected, pal.fillColor.accent.selectedTextBackground );
-    setColor( Q::Text | SK::Selected, pal.fillColor.textOnAccent.selectedText );
+    setColor( Q::TextPanel | Q::Selected, pal.fillColor.accent.selectedTextBackground );
     setColor( Q::Placeholder, pal.fillColor.text.secondary );
 
     for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
     {
-        QRgb panelColor, borderColor1, borderColor2, textColor;
+        QRgb panelColor, borderColor1, borderColor2;
 
         if ( state == A::NoState )
         {
             panelColor = pal.fillColor.control.defaultColor;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.elevation.textControl.border[1];
-            textColor = pal.fillColor.text.primary;
         }
         else if ( state == Q::Hovered )
         {
             panelColor = pal.fillColor.control.secondary;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.elevation.textControl.border[1];
-            textColor = pal.fillColor.text.primary;
         }
         else if ( ( state == Q::Focused ) || ( state == Q::Editing ) )
         {
             panelColor = pal.fillColor.control.inputActive;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.fillColor.accent.defaultColor;
-            textColor = pal.fillColor.text.primary;
         }
         else if ( state == Q::Disabled )
         {
             panelColor = pal.fillColor.control.disabled;
             borderColor1 = borderColor2 = pal.strokeColor.control.defaultColor;
-            textColor = pal.fillColor.text.disabled;
         }
 
         const auto panel = Q::TextPanel | section | state;
-        const auto text = Q::Text | section | state;
 
         panelColor = rgbSolid( panelColor, pal.background.solid.base );
 
         setGradient( panel, panelColor );
         setBoxBorderGradient( panel, borderColor1, borderColor2, panelColor );
-
-        setColor( text, textColor );
     }
 }
-
-void Editor::setupTextAreaMetrics()
-{
-    using Q = QskTextArea;
-
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignTop );
-
-    setupTextControlMetrics< Q >();
-}
-
-void Editor::setupTextAreaColors(
-    QskAspect::Section section, const QskFluent2Theme& theme )
-{
-    setupTextControlColors< QskTextArea, QskTextAreaSkinlet >( section, theme );
-}
-
 void Editor::setupTextFieldMetrics()
 {
     using Q = QskTextField;
 
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+    // =============
 
-    setupTextControlMetrics< Q >();
+    setStrutSize( Q::TextPanel, { -1, 30_px } );
+    setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
+
+    setBoxBorderMetrics( Q::TextPanel, 1_px );
+    for( const auto& state : { Q::Focused, Q::Editing } )
+        setBoxBorderMetrics( Q::TextPanel | state, { 1_px, 1_px, 1_px, 2_px } );
+
+    setBoxShape( Q::TextPanel, 3_px );
+
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
+    setFontRole( Q::Placeholder, fontRole( Q::Text ) );
 }
 
 void Editor::setupTextFieldColors(
     QskAspect::Section section, const QskFluent2Theme& theme )
 {
-    setupTextControlColors< QskTextField, QskTextFieldSkinlet >( section, theme );
-}
+    using A = QskAspect;
+    using Q = QskTextField;
 
+    const auto& pal = theme.palette;
+
+    setColor( Q::TextPanel | Q::Selected, pal.fillColor.accent.selectedTextBackground );
+    setColor( Q::Placeholder, pal.fillColor.text.secondary );
+
+    for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
+    {
+        QRgb panelColor, borderColor1, borderColor2;
+
+        if ( state == A::NoState )
+        {
+            panelColor = pal.fillColor.control.defaultColor;
+            borderColor1 = pal.elevation.textControl.border[0];
+            borderColor2 = pal.elevation.textControl.border[1];
+        }
+        else if ( state == Q::Hovered )
+        {
+            panelColor = pal.fillColor.control.secondary;
+            borderColor1 = pal.elevation.textControl.border[0];
+            borderColor2 = pal.elevation.textControl.border[1];
+        }
+        else if ( ( state == Q::Focused ) || ( state == Q::Editing ) )
+        {
+            panelColor = pal.fillColor.control.inputActive;
+            borderColor1 = pal.elevation.textControl.border[0];
+            borderColor2 = pal.fillColor.accent.defaultColor;
+        }
+        else if ( state == Q::Disabled )
+        {
+            panelColor = pal.fillColor.control.disabled;
+            borderColor1 = borderColor2 = pal.strokeColor.control.defaultColor;
+        }
+
+        const auto panel = Q::TextPanel | section | state;
+
+        panelColor = rgbSolid( panelColor, pal.background.solid.base );
+
+        setGradient( panel, panelColor );
+        setBoxBorderGradient( panel, borderColor1, borderColor2, panelColor );
+    }
+}
 void Editor::setupSwitchButtonMetrics()
 {
     using Q = QskSwitchButton;
