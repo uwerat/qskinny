@@ -86,9 +86,6 @@ class QSK_EXPORT QskTextInput : public QskAbstractTextInput
     void validatorChanged();
     void inputMaskChanged( const QString& );
 
-  protected:
-    QQuickItem* wrappedInput() override final;
-
   private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

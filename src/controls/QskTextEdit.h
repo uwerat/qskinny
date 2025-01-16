@@ -49,8 +49,6 @@ class QSK_EXPORT QskTextEdit : public QskAbstractTextInput
     void tabStopDistanceChanged( qreal );
 
   private:
-    QQuickItem* wrappedInput() override final;
-
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

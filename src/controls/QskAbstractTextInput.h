@@ -157,9 +157,7 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
 
   protected:
     QskAbstractTextInput( QQuickItem* parent = nullptr );
-
-    virtual QQuickItem* wrappedInput() = 0;
-    const QQuickItem* wrappedInput() const;
+    void setup( QQuickItem*, const QMetaObject* );
 
     void forwardEvent( QEvent* );
 

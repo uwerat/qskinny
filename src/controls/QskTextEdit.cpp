@@ -4,8 +4,6 @@
  *****************************************************************************/
 
 #include "QskTextEdit.h"
-#include "QskTextEditSkinlet.h"
-#include "QskFontRole.h"
 #include "QskInternalMacros.h"
 #include "QskQuick.h"
 
@@ -15,58 +13,6 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextEdit, TextPanel )
-
-static inline void qskPropagateReadOnly( QskTextEdit* edit )
-{
-    Q_EMIT edit->readOnlyChanged( edit->isReadOnly() );
-
-    QEvent event( QEvent::ReadOnlyChange );
-    QCoreApplication::sendEvent( edit, &event );
-}
-
-static inline void qskBindSignals(
-    const QQuickTextEdit* wrappedEdit, QskTextEdit* edit )
-{
-    QObject::connect( wrappedEdit, &QQuickTextEdit::textChanged,
-        edit, [ edit ] { Q_EMIT edit->textChanged( edit->text() ); } );
-
-    QObject::connect( wrappedEdit, &QQuickTextEdit::preeditTextChanged,
-        edit, [ edit ] { Q_EMIT edit->preeditTextChanged( edit->preeditText() ); } );
-
-    QObject::connect( wrappedEdit, &QQuickTextEdit::readOnlyChanged,
-        edit, [ edit ] { qskPropagateReadOnly( edit ); } );
-
-    QObject::connect( wrappedEdit, &QQuickTextEdit::overwriteModeChanged,
-        edit, &QskTextEdit::overwriteModeChanged );
-
-    QObject::connect( wrappedEdit, &QQuickTextEdit::cursorPositionChanged,
-        edit, [ edit ] { Q_EMIT edit->cursorPositionChanged( edit->cursorPosition() ); } );
-
-    QObject::connect( wrappedEdit, &QQuickTextEdit::wrapModeChanged,
-        edit, [ edit ] { Q_EMIT edit->wrapModeChanged( edit->wrapMode() ); } );
-
-    QObject::connect( wrappedEdit, &QQuickTextEdit::lineCountChanged,
-        [ edit ] { Q_EMIT edit->lineCountChanged( edit->lineCount() ); } );
-
-    QObject::connect( wrappedEdit, &QQuickTextEdit::textFormatChanged,
-        edit, [ edit ]( QQuickTextEdit::TextFormat format )
-    {
-        Q_EMIT edit->textFormatChanged( static_cast< QskTextOptions::TextFormat >( format ) );
-    } );
-
-    QObject::connect( wrappedEdit, &QQuickTextEdit::selectByMouseChanged,
-        edit, &QskTextEdit::selectByMouseChanged );
-
-    QObject::connect( wrappedEdit, &QQuickTextEdit::tabStopDistanceChanged,
-        edit, &QskTextEdit::tabStopDistanceChanged );
-
-
-    QObject::connect( wrappedEdit, &QQuickItem::implicitWidthChanged,
-        edit, &QskControl::resetImplicitSize );
-
-    QObject::connect( wrappedEdit, &QQuickItem::implicitHeightChanged,
-        edit, &QskControl::resetImplicitSize );
-}
 
 namespace
 {
@@ -170,20 +116,14 @@ QskTextEdit::QskTextEdit( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    /*
-        QQuickTextEdit is a beast of almost 3.5k lines of code, we don't
-        want to reimplement that - at least not now.
-        So this is more or less a simple wrapper making everything
-        conforming to qskinny.
-     */
-
     m_data->wrappedEdit = new QuickTextEdit( this );
-    qskBindSignals( m_data->wrappedEdit, this );
 
     setAcceptedMouseButtons( m_data->wrappedEdit->acceptedMouseButtons() );
     m_data->wrappedEdit->setAcceptedMouseButtons( Qt::NoButton );
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
+
+    setup( m_data->wrappedEdit, &QQuickTextEdit::staticMetaObject );
 }
 
 QskTextEdit::~QskTextEdit()
@@ -261,11 +201,6 @@ void QskTextEdit::setupFrom( const QQuickItem* item )
         }
 #endif
     }
-}
-
-QQuickItem* QskTextEdit::wrappedInput()
-{
-    return m_data->wrappedEdit;
 }
 
 #include "QskTextEdit.moc"

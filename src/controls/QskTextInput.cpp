@@ -4,77 +4,16 @@
  *****************************************************************************/
 
 #include "QskTextInput.h"
-#include "QskTextInputSkinlet.h"
-#include "QskFontRole.h"
 #include "QskQuick.h"
 #include "QskInternalMacros.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextinput_p.h>
 #include <private/qquicktextinput_p_p.h>
-
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextInput, TextPanel )
-
 QSK_SYSTEM_STATE( QskTextInput, Error, QskAspect::FirstSystemState << 4 )
-
-static inline void qskPropagateReadOnly( QskTextInput* input )
-{
-    Q_EMIT input->readOnlyChanged( input->isReadOnly() );
-
-    QEvent event( QEvent::ReadOnlyChange );
-    QCoreApplication::sendEvent( input, &event );
-}
-
-static inline void qskBindSignals(
-    const QQuickTextInput* wrappedInput, QskTextInput* input )
-{
-    QObject::connect( wrappedInput, &QQuickTextInput::textChanged,
-        input, [ input ] { Q_EMIT input->textChanged( input->text() ); } );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::displayTextChanged,
-        input, [ input ] { Q_EMIT input->displayTextChanged( input->displayText() ); } );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::textEdited,
-        input, [ input ] { Q_EMIT input->textEdited( input->text() ); } );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::validatorChanged,
-        input, &QskTextInput::validatorChanged );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::inputMaskChanged,
-        input, &QskTextInput::inputMaskChanged );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::readOnlyChanged,
-        input, [ input ] { qskPropagateReadOnly( input ); } );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::overwriteModeChanged,
-        input, &QskTextInput::overwriteModeChanged );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::cursorPositionChanged,
-        input, [ input ] { Q_EMIT input->cursorPositionChanged( input->cursorPosition() ); } );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::maximumLengthChanged,
-        input, &QskTextInput::maximumLengthChanged );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::wrapModeChanged,
-        input, [ input ] { Q_EMIT input->wrapModeChanged( input->wrapMode() ); } );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::echoModeChanged,
-        input, [ input ] { Q_EMIT input->echoModeChanged( input->echoMode() ); } );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::passwordCharacterChanged,
-        input, &QskTextInput::passwordCharacterChanged );
-
-    QObject::connect( wrappedInput, &QQuickTextInput::passwordMaskDelayChanged,
-        input, &QskTextInput::passwordMaskDelayChanged );
-
-    QObject::connect( wrappedInput, &QQuickItem::implicitWidthChanged,
-        input, &QskControl::resetImplicitSize );
-
-    QObject::connect( wrappedInput, &QQuickItem::implicitHeightChanged,
-        input, &QskControl::resetImplicitSize );
-}
 
 namespace
 {
@@ -177,7 +116,6 @@ namespace
     {
         event( ev );
     }
-
 }
 
 class QskTextInput::PrivateData
@@ -198,12 +136,13 @@ QskTextInput::QskTextInput( QQuickItem* parent )
      */
 
     m_data->wrappedInput = new QuickTextInput( this );
-    qskBindSignals( m_data->wrappedInput, this );
 
     setAcceptedMouseButtons( m_data->wrappedInput->acceptedMouseButtons() );
     m_data->wrappedInput->setAcceptedMouseButtons( Qt::NoButton );
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
+
+    setup( m_data->wrappedInput, &QQuickTextInput::staticMetaObject );
 }
 
 QskTextInput::~QskTextInput()
@@ -412,11 +351,6 @@ void QskTextInput::setupFrom( const QQuickItem* item )
         resetPasswordCharacter();
 
     setEchoMode( echoMode );
-}
-
-QQuickItem* QskTextInput::wrappedInput()
-{
-    return m_data->wrappedInput;
 }
 
 #include "QskTextInput.moc"
