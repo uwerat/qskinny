@@ -343,7 +343,7 @@ void QskInputPanelBox::keyPressEvent( QKeyEvent* event )
         case Qt::Key_Return:
         case Qt::Key_Escape:
         {
-            keyCode = event->key();
+            Q_EMIT keySelected( event->key() );
             break;
         }
 
@@ -355,13 +355,13 @@ void QskInputPanelBox::keyPressEvent( QKeyEvent* event )
                 keyCode = text[ 0 ].unicode();
             else
                 keyCode = event->key();
-        }
-    }
 
-    if ( m_data->keyboard->hasKey( keyCode ) )
-    {
-        // animating the corresponding key button ???
-        Q_EMIT keySelected( keyCode );
+            if ( m_data->keyboard->hasKey( keyCode ) )
+            {
+                // animating the corresponding key button ???
+                Q_EMIT keySelected( keyCode );
+            }
+        }
     }
 }
 

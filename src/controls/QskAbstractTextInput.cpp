@@ -121,7 +121,6 @@ static inline void qskForwardEvent( QQuickItem* item, QEvent* event )
 
 namespace
 {
-
     class PropertyBinder : public QObject
     {
         Q_OBJECT

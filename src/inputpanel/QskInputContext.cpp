@@ -14,6 +14,7 @@
 #include "QskTextPredictor.h"
 #include "QskWindow.h"
 #include "QskPlatform.h"
+#include "QskInputGrabber.h"
 
 #include <qguiapplication.h>
 #include <qmap.h>
@@ -31,20 +32,53 @@ namespace
 {
     class Popup : public QskPopup
     {
+        Q_OBJECT
+
         using Inherited = QskPopup;
 
-       public:
+      public:
         Popup()
         {
             setPolishOnResize( true );
             setPolishOnParentResize( true );
         }
 
-       protected:
+      Q_SIGNALS:
+        void commitRequested();
+
+      protected:
+        void aboutToShow() override
+        {
+            Inherited::aboutToShow();
+
+            if ( popupFlags() & QskPopup::CloseOnPressOutside )
+            {
+                if ( auto inputGrabber = findChild< QskInputGrabber* >() )
+                    inputGrabber->installEventFilter( this );
+            }
+        }
+
+        bool eventFilter( QObject* object, QEvent* event ) override
+        {
+            if ( qobject_cast< QskInputGrabber* >( object ) )
+            {
+                if ( event->type() == QEvent::MouseButtonPress )
+                {
+                    if ( popupFlags() & QskPopup::CloseOnPressOutside )
+                    {
+                        Q_EMIT commitRequested();
+                        return true;
+                    }
+                }
+            }
+
+            return Inherited::eventFilter( object, event );
+        }
+
         void updateLayout() override
-        {   
+        {
             const auto m = margins();
-            const auto item = findChild<const QskInputPanel*>();
+            const auto item = findChild< const QskInputPanel* >();
 
             auto r = qskItemGeometry( parentItem() );
             r -= m;
@@ -426,6 +460,7 @@ void QskInputContext::showPanel( const QQuickItem* item )
         popup->setMargins( 5 );
         popup->setModal( true );
 
+        popup->setPopupFlag( QskPopup::CloseOnPressOutside, true );
         popup->setPopupFlag( QskPopup::DeleteOnClose, true );
 
         popup->setParentItem( item->window()->contentItem() );
@@ -438,6 +473,9 @@ void QskInputContext::showPanel( const QQuickItem* item )
             panel->setParent( popup );
 
         popup->open();
+
+        connect( popup, &Popup::commitRequested, panel,
+            [panel]() { panel->commitCurrentText( true ); } );
     }
 
     panel->attachInputItem( const_cast< QQuickItem* >( item ) );
@@ -580,4 +618,5 @@ QskInputPanel* QskInputContextFactory::createPanel() const
     return new Panel();
 }
 
+#include "QskInputContext.moc"
 #include "moc_QskInputContext.cpp"
