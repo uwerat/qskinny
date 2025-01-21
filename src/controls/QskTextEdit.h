@@ -29,8 +29,6 @@ class QSK_EXPORT QskTextEdit : public QskAbstractTextInput
     QskTextEdit( QQuickItem* parent = nullptr );
     ~QskTextEdit() override;
 
-    void setupFrom( const QQuickItem* );
-
     void setTextFormat( QskTextOptions::TextFormat );
     QskTextOptions::TextFormat textFormat() const;
 
@@ -40,12 +38,9 @@ class QSK_EXPORT QskTextEdit : public QskAbstractTextInput
     void setTabStopDistance( qreal );
 
   Q_SIGNALS:
-    void panelChanged( bool );
-    void placeholderTextChanged( const QString& );
-
     void lineCountChanged( int );
-    void textFormatChanged( QskTextOptions::TextFormat );
 
+    void textFormatChanged( QskTextOptions::TextFormat );
     void tabStopDistanceChanged( qreal );
 
   private:

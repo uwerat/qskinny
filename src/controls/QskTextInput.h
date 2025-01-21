@@ -46,8 +46,6 @@ class QSK_EXPORT QskTextInput : public QskAbstractTextInput
     QskTextInput( QQuickItem* parent = nullptr );
     ~QskTextInput() override;
 
-    void setupFrom( const QQuickItem* );
-
     int maxLength() const;
     void setMaxLength( int );
 

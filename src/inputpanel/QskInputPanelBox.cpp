@@ -13,6 +13,108 @@
 #include <qpointer.h>
 #include <qstring.h>
 
+static void qskSetupInput( const QQuickItem* item, QskTextInput* textInput )
+{
+    if ( item == nullptr )
+        return;
+
+    // finding attributes from the input hints of item
+
+    int maxCharacters = 32767;
+    QskTextInput::EchoMode echoMode = QskTextInput::Normal;
+
+    Qt::InputMethodQueries queries = Qt::ImQueryAll;
+    queries &= ~Qt::ImEnabled;
+
+    QInputMethodQueryEvent event( queries );
+    QCoreApplication::sendEvent( const_cast< QQuickItem* >( item ), &event );
+
+    if ( event.queries() & Qt::ImHints )
+    {
+        const auto hints = static_cast< Qt::InputMethodHints >(
+            event.value( Qt::ImHints ).toInt() );
+
+        if ( hints & Qt::ImhHiddenText )
+            echoMode = QskTextInput::NoEcho;
+    }
+
+    if ( event.queries() & Qt::ImMaximumTextLength )
+    {
+        // needs to be handled before Qt::ImCursorPosition !
+
+        const auto value = event.value( Qt::ImMaximumTextLength );
+        if ( value.isValid() )
+            maxCharacters = qBound( 0, value.toInt(), maxCharacters );
+    }
+
+    textInput->setMaxLength( maxCharacters );
+
+    if ( event.queries() & Qt::ImSurroundingText )
+    {
+        const auto text = event.value( Qt::ImSurroundingText ).toString();
+        textInput->setText( text );
+    }
+
+    if ( event.queries() & Qt::ImCursorPosition )
+    {
+        const auto pos = event.value( Qt::ImCursorPosition ).toInt();
+        textInput->setCursorPosition( pos );
+    }
+
+    if ( event.queries() & Qt::ImCurrentSelection )
+    {
+#if 0
+        const auto text = event.value( Qt::ImCurrentSelection ).toString();
+        if ( !text.isEmpty() )
+        {
+        }
+#endif
+    }
+
+    int passwordMaskDelay = -1;
+    QString passwordCharacter;
+
+    if ( echoMode == QskTextInput::NoEcho )
+    {
+        /*
+             Qt::ImhHiddenText does not provide information
+             to decide between NoEcho/Password, or provides
+             more details about how to deal with hidden inputs.
+             So we try to find out more from trying some properties.
+         */
+
+        QVariant value;
+
+        value = item->property( "passwordMaskDelay" );
+        if ( value.canConvert< int >() )
+            passwordMaskDelay = value.toInt();
+
+        value = item->property( "passwordCharacter" );
+        if ( value.canConvert< QString >() )
+            passwordCharacter = value.toString();
+
+        value = item->property( "echoMode" );
+        if ( value.canConvert< int >() )
+        {
+            const auto mode = value.toInt();
+            if ( mode == QskTextInput::Password )
+                echoMode = QskTextInput::Password;
+        }
+    }
+
+    if ( passwordMaskDelay >= 0 )
+        textInput->setPasswordMaskDelay( passwordMaskDelay );
+    else
+        textInput->resetPasswordMaskDelay();
+
+    if ( !passwordCharacter.isEmpty() )
+        textInput->setPasswordCharacter( passwordCharacter );
+    else
+        textInput->resetPasswordCharacter();
+
+    textInput->setEchoMode( echoMode );
+}
+
 namespace
 {
     class TextFieldProxy final : public QskTextField
@@ -156,7 +258,7 @@ void QskInputPanelBox::attachInputItem( QQuickItem* item )
     {
         if ( m_data->panelHints & QskInputPanelBox::InputProxy )
         {
-            m_data->inputProxy->setupFrom( item );
+            qskSetupInput( item, m_data->inputProxy );
             m_data->inputProxy->setEditing( true );
         }
     }

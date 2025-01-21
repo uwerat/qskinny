@@ -157,51 +157,5 @@ void QskTextEdit::setTabStopDistance( qreal distance )
     m_data->wrappedEdit->setTabStopDistance( distance );
 }
 
-void QskTextEdit::setupFrom( const QQuickItem* item )
-{
-    if ( item == nullptr )
-        return;
-
-    // finding attributes from the input hints of item
-
-    int maxCharacters = 32767;
-
-    Qt::InputMethodQueries queries = Qt::ImQueryAll;
-    queries &= ~Qt::ImEnabled;
-
-    QInputMethodQueryEvent event( queries );
-    QCoreApplication::sendEvent( const_cast< QQuickItem* >( item ), &event );
-
-    if ( event.queries() & Qt::ImMaximumTextLength )
-    {
-        // needs to be handled before Qt::ImCursorPosition !
-
-        const auto max = event.value( Qt::ImMaximumTextLength ).toInt();
-        maxCharacters = qBound( 0, max, maxCharacters );
-    }
-
-    if ( event.queries() & Qt::ImSurroundingText )
-    {
-        const auto text = event.value( Qt::ImSurroundingText ).toString();
-        setText( text );
-    }
-
-    if ( event.queries() & Qt::ImCursorPosition )
-    {
-        const auto pos = event.value( Qt::ImCursorPosition ).toInt();
-        setCursorPosition( pos );
-    }
-
-    if ( event.queries() & Qt::ImCurrentSelection )
-    {
-#if 0
-        const auto text = event.value( Qt::ImCurrentSelection ).toString();
-        if ( !text.isEmpty() )
-        {
-        }
-#endif
-    }
-}
-
 #include "QskTextEdit.moc"
 #include "moc_QskTextEdit.cpp"
