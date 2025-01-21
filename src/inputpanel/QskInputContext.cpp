@@ -29,15 +29,38 @@
 
 namespace
 {
+    class Popup : public QskPopup
+    {
+        using Inherited = QskPopup;
+
+       public:
+        Popup()
+        {
+            setPolishOnResize( true );
+            setPolishOnParentResize( true );
+        }
+
+       protected:
+        void updateLayout() override
+        {   
+            const auto m = margins();
+            const auto item = findChild<const QskInputPanel*>();
+
+            auto r = qskItemGeometry( parentItem() );
+            r -= m;
+            r = qskConstrainedItemRect( item, r );
+            r += m;
+
+            setGeometry( r );
+        }
+    };
+
     class Panel final : public QskInputPanel
     {
       public:
         Panel( QQuickItem* parent = nullptr )
             : QskInputPanel( parent )
         {
-            setAutoLayoutChildren( true );
-            setLayoutAlignmentHint( Qt::AlignHCenter | Qt::AlignBottom );
-
             m_box = new QskInputPanelBox( this );
 
             connect( m_box, &QskInputPanelBox::keySelected,
@@ -87,7 +110,7 @@ namespace
         QPointer< QskInputPanel > panel;
 
         // popup or window embedding the panel
-        QPointer< QskPopup > popup;
+        QPointer< Popup > popup;
         QPointer< QskWindow > window;
     };
 
@@ -252,38 +275,6 @@ class QskInputContext::PrivateData
         return panel;
     }
 
-    inline QskPopup* createPopup( QskInputPanel* panel ) const
-    {
-        auto popup = new QskPopup();
-
-        popup->setAutoLayoutChildren( true );
-        popup->setPlacementPolicy( QskPlacementPolicy() );
-        popup->setMargins( 5 );
-        popup->setModal( true );
-
-        panel->setParentItem( popup );
-        if ( panel->parent() == nullptr )
-            panel->setParent( popup );
-
-        return popup;
-    }
-
-    inline QskWindow* createWindow( QskInputPanel* panel ) const
-    {
-        auto window = new QskWindow();
-
-        window->setFlags( window->flags() & Qt::Dialog );
-        // window->setModality( Qt::ApplicationModal );
-        window->setAutoLayoutChildren( true );
-#if 0
-        window->setFlags( Qt::Tool | Qt::WindowDoesNotAcceptFocus );
-#endif
-
-        panel->setParentItem( window->contentItem() );
-
-        return window;
-    }
-
     void closeChannel( Channel* channel )
     {
         if ( channel->popup )
@@ -400,12 +391,21 @@ void QskInputContext::showPanel( const QQuickItem* item )
     {
         // The input panel is embedded in a top level window
 
-        auto window = m_data->createWindow( panel );
+        auto window = new QskWindow();
+
+        window->setFlags( window->flags() & Qt::Dialog );
+        // window->setModality( Qt::ApplicationModal );
+        window->setAutoLayoutChildren( true );
+#if 0
+        window->setFlags( Qt::Tool | Qt::WindowDoesNotAcceptFocus );
+#endif
+
+        panel->setParentItem( window->contentItem() );
 
         QSize size = window->sizeConstraint();
         if ( size.isEmpty() )
         {
-            // no idea, may be something based on the screen size
+            // no idea, maybe something based on the screen size
             size = QSize( 800, 240 );
         }
 
@@ -420,13 +420,22 @@ void QskInputContext::showPanel( const QQuickItem* item )
     {
         // The input panel is embedded in a popup
 
-        auto popup = m_data->createPopup( panel );
+        auto popup = new Popup();
+
+        popup->setAutoLayoutChildren( true );
+        popup->setMargins( 5 );
+        popup->setModal( true );
 
         popup->setPopupFlag( QskPopup::DeleteOnClose, true );
+
         popup->setParentItem( item->window()->contentItem() );
         popup->setParent( this );
 
         channel->popup = popup;
+
+        panel->setParentItem( popup );
+        if ( panel->parent() == nullptr )
+            panel->setParent( popup );
 
         popup->open();
     }

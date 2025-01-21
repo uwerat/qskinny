@@ -357,7 +357,9 @@ QskInputPanel::QskInputPanel( QQuickItem* parent )
     , m_data( new PrivateData( this ) )
 {
     setAutoLayoutChildren( true );
-    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Constrained );
+    setLayoutAlignmentHint( Qt::AlignHCenter | Qt::AlignBottom );
+
+    initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Constrained );
 
     connect( this, &QskInputPanel::keySelected,
         this, &QskInputPanel::commitKey );
