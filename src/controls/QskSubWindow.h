@@ -100,8 +100,8 @@ class QSK_EXPORT QskSubWindow : public QskPopup
 
     QSizeF layoutSizeHint( Qt::SizeHint, const QSizeF& ) const override;
 
-    void itemChange( QQuickItem::ItemChange,
-        const QQuickItem::ItemChangeData& ) override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
+    void geometryChange( const QRectF&, const QRectF& ) override;
 
   private:
     class PrivateData;

@@ -635,6 +635,12 @@ void QskPopup::itemChange( QQuickItem::ItemChange change,
     }
 }
 
+void QskPopup::geometryChange(
+    const QRectF& newGeometry, const QRectF& oldGeometry )
+{
+    Inherited::geometryChange( newGeometry, oldGeometry );
+}
+
 void QskPopup::windowChangeEvent( QskWindowChangeEvent* event )
 {
     qskSendPopupEvent( event->oldWindow(), this, false );
