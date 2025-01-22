@@ -14,8 +14,8 @@
 #include "QskSelectionSubWindow.h"
 #include "QskSelectionWindow.h"
 
+#include "QskPushButton.h"
 #include "QskSimpleListBox.h"
-#include "QskTextLabel.h"
 
 #include "QskFocusIndicator.h"
 
@@ -159,7 +159,7 @@ namespace
         }
     };
 
-    class FileSelection
+    class FileSelection // ### looks like we don't need this class
     {
       public:
         FileSelection( QObject* parent, const QString& directory )
@@ -167,7 +167,7 @@ namespace
         {
             Q_UNUSED( parent )
 
-            m_dir.setFilter( QDir::Files | QDir::NoDotAndDotDot );
+            m_dir.setFilter( QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot );
         }
 
         QString selectedFile() const
@@ -178,6 +178,11 @@ namespace
         QDir currentDir()
         {
             return m_dir;
+        }
+
+        void setCurrentDir( const QString& path )
+        {
+            m_dir.setPath( path );
         }
 
       private:
@@ -195,8 +200,10 @@ namespace
             : WindowOrSubWindow< W, FileSelection, QString >( parent, title, actions, defaultAction, directory )
         {
             auto* outerBox = new QskLinearBox( Qt::Vertical );
+            outerBox->setMargins( 20 );
+            outerBox->setSpacing( 20 );
 #if 1
-            outerBox->setPreferredSize( 500, 500 );
+            outerBox->setFixedSize( 500, 500 );
 #endif
             setupHeader( outerBox );
             setupListBox( outerBox );
@@ -207,30 +214,94 @@ namespace
       private:
         void setupHeader( QQuickItem* parentItem )
         {
-            m_header = new QskTextLabel( parentItem );
-            const auto path = FileSelection::currentDir().absolutePath();
-            updateHeader( path );
+            m_headerBox = new QskLinearBox( Qt::Horizontal, parentItem );
+            m_headerBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
+        }
+
+        static QStringList splitPath( const QString& path )
+        {
+            const auto cleanPath = QDir::cleanPath( path );
+
+            QDir dir( cleanPath );
+
+            QStringList result;
+
+            do
+            {
+                if( dir != QDir::root() )
+                {
+                    result.prepend( dir.absolutePath() );
+                }
+            }
+            while( dir.cdUp() );
+
+            return result;
         }
 
         void updateHeader( const QString& path )
         {
-            // m_header->setText( s );
+            const auto dirPaths = splitPath( path );
+
+            for( int i = 0; i < dirPaths.count(); ++i )
+            {
+                QskPushButton* b;
+
+                if( m_breadcrumbsButtons.count() <= i )
+                {
+                    b = new QskPushButton( m_headerBox );
+                    b->setStrutSizeHint( QskPushButton::Panel, { -1, -1 } );
+                    m_breadcrumbsButtons.append( b );
+                }
+                else
+                {
+                    b = m_breadcrumbsButtons.at( i );
+                    b->disconnect();
+                }
+
+                QFileInfo fi( dirPaths.at( i ) );
+                b->setText( fi.baseName() );
+
+                QObject::connect( b, &QskPushButton::clicked, this, [this, fi]()
+                {
+                    FileSelection::setCurrentDir( fi.filePath() );
+                    loadContents( fi.filePath() );
+                });
+            }
+
+            for( int i = dirPaths.count(); i < m_breadcrumbsButtons.count(); i++ )
+            {
+                m_breadcrumbsButtons.at( i )->deleteLater();
+                m_breadcrumbsButtons.removeAt( i );
+            }
         }
 
         void setupListBox( QQuickItem* parentItem )
         {
             m_listBox = new QskSimpleListBox( parentItem );
-            loadContents();
+
+            QObject::connect( m_listBox, &QskSimpleListBox::selectedEntryChanged,
+                this, [this]( const QString& path )
+                {
+                    QDir dir = FileSelection::currentDir();
+                    dir.cd( path );
+                    loadContents( dir.absolutePath() );
+                });
+
+            loadContents( FileSelection::currentDir().absolutePath() );
         }
 
-        void loadContents()
+        void loadContents( const QString& path )
         {
             m_listBox->removeBulk( 0 );
+            FileSelection::setCurrentDir( path );
             m_listBox->setEntries( FileSelection::currentDir().entryList() );
+
+            updateHeader( FileSelection::currentDir().path() );
         }
 
         QskSimpleListBox* m_listBox;
-        QskTextLabel* m_header;
+        QskLinearBox* m_headerBox;
+        QVector< QskPushButton* > m_breadcrumbsButtons;
     };
 }
 
