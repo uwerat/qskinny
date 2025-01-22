@@ -15,6 +15,20 @@ class QSK_EXPORT QskTextInput : public QskAbstractTextInput
 {
     Q_OBJECT
 
+    Q_PROPERTY( QString displayText READ displayText NOTIFY displayTextChanged )
+
+    Q_PROPERTY( int maximumLength READ maxLength
+        WRITE setMaxLength NOTIFY maximumLengthChanged )
+
+    Q_PROPERTY( QString inputMask READ inputMask
+        WRITE setInputMask NOTIFY inputMaskChanged )
+
+    Q_PROPERTY( bool acceptableInput READ hasAcceptableInput
+        NOTIFY acceptableInputChanged)
+
+    Q_PROPERTY( bool autoScroll READ autoScroll
+        WRITE setAutoScroll NOTIFY autoScrollChanged )
+
     Q_PROPERTY( EchoMode echoMode READ echoMode
         WRITE setEchoMode NOTIFY echoModeChanged )
 
@@ -25,6 +39,9 @@ class QSK_EXPORT QskTextInput : public QskAbstractTextInput
     Q_PROPERTY( int passwordMaskDelay READ passwordMaskDelay
         WRITE setPasswordMaskDelay RESET resetPasswordMaskDelay
         NOTIFY passwordMaskDelayChanged )
+
+    Q_PROPERTY( QValidator* validator READ validator
+        WRITE setValidator NOTIFY validatorChanged )
 
     using Inherited = QskAbstractTextInput;
 
@@ -55,6 +72,9 @@ class QSK_EXPORT QskTextInput : public QskAbstractTextInput
     QString inputMask() const;
     void setInputMask( const QString& );
 
+    bool autoScroll() const;
+    void setAutoScroll( bool );
+
     EchoMode echoMode() const;
     void setEchoMode( EchoMode );
 
@@ -77,12 +97,17 @@ class QSK_EXPORT QskTextInput : public QskAbstractTextInput
   Q_SIGNALS:
     void maximumLengthChanged( int );
 
+    void autoScrollChanged( bool );
+
     void echoModeChanged( EchoMode );
     void passwordMaskDelayChanged();
     void passwordCharacterChanged();
 
-    void validatorChanged();
+    void validatorChanged( const QValidator* );
     void inputMaskChanged( const QString& );
+    void acceptableInputChanged( bool );
+
+    void displayTextChanged( const QString& );
 
   private:
     class PrivateData;

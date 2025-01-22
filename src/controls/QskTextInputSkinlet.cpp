@@ -59,11 +59,15 @@ QSizeF QskTextInputSkinlet::sizeHint( const QskSkinnable* skinnable,
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    const auto text = static_cast< const QskTextInput* >( skinnable )->text();
+    const auto textInput = static_cast< const QskTextInput* >( skinnable );
 
     const QFontMetricsF fm( skinnable->effectiveFont( Q::Text ) );
 
-    auto hint = fm.size( Qt::TextSingleLine | Qt::TextExpandTabs, text );
+#if 0
+    auto hint = QSizeF( textInput->unwrappedTextSize().width(), fm.height() );
+#else
+    auto hint = fm.size( Qt::TextSingleLine | Qt::TextExpandTabs, textInput->text() );
+#endif
 
     hint = skinnable->outerBoxSize( Q::TextPanel, hint );
     hint = hint.expandedTo( skinnable->strutSizeHint( Q::TextPanel ) );

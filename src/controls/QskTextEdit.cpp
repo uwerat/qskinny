@@ -130,6 +130,26 @@ QskTextEdit::~QskTextEdit()
 {
 }
 
+QUrl QskTextEdit::baseUrl() const
+{
+    return m_data->wrappedEdit->baseUrl();
+}
+
+void QskTextEdit::setBaseUrl( const QUrl& url )
+{
+    m_data->wrappedEdit->setBaseUrl( url );
+}
+
+void QskTextEdit::resetBaseUrl()
+{
+    m_data->wrappedEdit->resetBaseUrl();
+}
+
+QString QskTextEdit::hoveredLink() const
+{
+    return m_data->wrappedEdit->hoveredLink();
+}
+
 void QskTextEdit::setTextFormat( QskTextOptions::TextFormat textFormat )
 {
     m_data->wrappedEdit->setTextFormat(

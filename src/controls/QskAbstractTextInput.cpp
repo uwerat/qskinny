@@ -119,6 +119,92 @@ static inline void qskForwardEvent( QQuickItem* item, QEvent* event )
     }
 }
 
+static inline bool qskIsIrrelevantProperty( const char* name )
+{
+    static const char* properties[] =
+    {
+        /*
+            these are properties that are set from skin hints.
+            do we want to have convenience setters/getters for these hints ?
+         */
+        "color",
+        "selectionColor",
+        "selectedTextColor",
+
+        /*
+            covered by the alignment property
+         */
+        "horizontalAlignment",
+        "effectiveHorizontalAlignment",
+        "verticalAlignment",
+
+        /*
+            we don't want to offer cursorDelegates as this would be done
+            using subcontrols.
+         */
+        "cursorRectangle",
+        "cursorDelegate",
+
+        /*
+            hasSelectedText ?
+         */
+        "selectionStart",
+        "selectionEnd",
+        "selectedText",
+
+        /*
+            covered by QskAbstractTextInput::ActivationMode
+         */
+
+        "activeFocusOnPress",
+
+        /*
+            These poperties correspond to Qt::TextInteractionFlags
+            we can't simply forward them as mouseSelectionMode returns
+            local enums of QQuickTextEdit and QQuickTextInput
+         */
+        "selectByMouse",
+        "selectByKeyboard",
+        "mouseSelectionMode",
+
+        /*
+            covered by unwrappedTextSize
+         */
+        "contentWidth",
+        "contentHeight",
+        "paintedWidth",
+        "paintedHeight",
+
+        /*
+            unused we have our own padding from the skin hints
+         */
+        "padding",
+        "topPadding",
+        "leftPadding",
+        "rightPadding",
+        "bottomPadding",
+
+        /*
+            ends up in QTextDocument::documentMargin. But how is its
+            effect different to what you get from the padding ?
+         */
+        "textMargin",
+
+        /*
+            not covered so far, but IMHO of little relevance
+         */
+        "renderType"
+    };
+
+    for ( const auto n : properties )
+    {
+        if ( strcmp( name, n ) == 0 )
+            return true;
+    }
+
+    return false;
+}
+
 namespace
 {
     class PropertyBinder : public QObject
@@ -167,7 +253,8 @@ namespace
                     }
                     else
                     {
-                        // qDebug() << "Missing" << property.name();
+                        if ( !qskIsIrrelevantProperty( property.name() ) )
+                            qDebug() << "Missing:" << mo->className() << property.name();
                     }
                 }
             }
@@ -197,6 +284,11 @@ namespace
         const auto property = mo->property( binding.first );
 
         const auto value = property.read( sender() );
+#if 0
+        qDebug() << property.name() << value
+                 << binding.second.methodSignature();
+#endif
+
         void* args[3] = { nullptr, const_cast< void* >( value.data() ), nullptr };
 
         qskInvokeMetaMethod( parent(), binding.second, args, Qt::DirectConnection );
@@ -270,6 +362,21 @@ void QskAbstractTextInput::setSelectByMouse( bool on )
     m_data->input->setProperty( "selectByMouse", on );
 }
 
+bool QskAbstractTextInput::persistentSelection() const
+{
+    return m_data->input->property( "persistentSelection" ).value< bool >();
+}
+
+void QskAbstractTextInput::setPersistentSelection( bool on )
+{
+    m_data->input->setProperty( "persistentSelection", on );
+}
+
+int QskAbstractTextInput::length() const
+{
+    return m_data->input->property( "length" ).value< int >();
+}
+
 QString QskAbstractTextInput::text() const
 {
     return m_data->input->property( "text" ).value< QString >();
@@ -308,6 +415,11 @@ bool QskAbstractTextInput::canUndo() const
 bool QskAbstractTextInput::canRedo() const
 {
     return m_data->input->property( "canRedo" ).value< bool >();
+}
+
+bool QskAbstractTextInput::canPaste() const
+{
+    return m_data->input->property( "canPaste" ).value< bool >();
 }
 
 void QskAbstractTextInput::setFontRole( const QskFontRole& role )
@@ -580,6 +692,11 @@ void QskAbstractTextInput::setReadOnly( bool on )
     setSkinStateFlag( ReadOnly, on );
 }
 
+bool QskAbstractTextInput::isInputMethodComposing() const
+{
+    return m_data->input->property( "inputMethodComposing" ).value< bool >();
+}
+
 bool QskAbstractTextInput::isEditing() const
 {
     return hasSkinState( Editing );
@@ -665,6 +782,14 @@ QskTextOptions::WrapMode QskAbstractTextInput::wrapMode() const
 {
     const auto mode = m_data->input->property( "wrapMode" ).value< int >();
     return static_cast< QskTextOptions::WrapMode >( mode );
+}
+
+QSizeF QskAbstractTextInput::unwrappedTextSize() const
+{
+    const auto w = m_data->input->property( "contentWidth" ).value< qreal >();
+    const auto h = m_data->input->property( "contentHeight" ).value< qreal >();
+
+    return QSizeF( w, h );
 }
 
 void QskAbstractTextInput::setAlignment( Qt::Alignment alignment )

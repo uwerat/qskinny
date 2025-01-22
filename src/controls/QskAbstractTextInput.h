@@ -18,6 +18,8 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     Q_PROPERTY( QString text READ text
         WRITE setText NOTIFY textChanged USER true )
 
+    Q_PROPERTY( int length READ length NOTIFY lengthChanged )
+
     Q_PROPERTY( QString preeditText READ preeditText
         NOTIFY preeditTextChanged )
 
@@ -29,6 +31,12 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
 
     Q_PROPERTY( ActivationModes activationModes READ activationModes
         WRITE setActivationModes NOTIFY activationModesChanged )
+
+    Q_PROPERTY( Qt::InputMethodHints inputMethodHints READ inputMethodHints
+        WRITE setInputMethodHints NOTIFY inputMethodHintsChanged )
+
+    Q_PROPERTY( bool inputMethodComposing READ isInputMethodComposing
+        NOTIFY inputMethodComposingChanged )
 
     Q_PROPERTY( QskFontRole fontRole READ fontRole
         WRITE setFontRole RESET resetFontRole NOTIFY fontRoleChanged )
@@ -50,11 +58,12 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     Q_PROPERTY( QskTextOptions::WrapMode wrapMode READ wrapMode
         WRITE setWrapMode NOTIFY wrapModeChanged )
 
-    Q_PROPERTY( bool selectByMouse READ selectByMouse
-        WRITE setSelectByMouse NOTIFY selectByMouseChanged )
+    Q_PROPERTY( bool persistentSelection READ persistentSelection
+        WRITE setPersistentSelection NOTIFY persistentSelectionChanged )
 
     Q_PROPERTY( bool canUndo READ canUndo NOTIFY canUndoChanged )
     Q_PROPERTY( bool canRedo READ canRedo NOTIFY canRedoChanged )
+    Q_PROPERTY( bool canPaste READ canPaste NOTIFY canPasteChanged )
 
     using Inherited = QskControl;
 
@@ -82,16 +91,22 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     QString text() const;
     QString preeditText() const;
 
+    int length() const;
+
     bool isReadOnly() const;
     void setReadOnly( bool );
 
     bool isEditing() const;
+    bool isInputMethodComposing() const;
 
     void setActivationModes( ActivationModes );
     ActivationModes activationModes() const;
 
     void setSelectByMouse( bool );
     bool selectByMouse() const;
+
+    void setPersistentSelection( bool );
+    bool persistentSelection() const;
 
     void setAlignment( Qt::Alignment );
     void resetAlignment();
@@ -123,6 +138,9 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
 
     bool canUndo() const;
     bool canRedo() const;
+    bool canPaste() const;
+
+    QSizeF unwrappedTextSize() const;
 
   public Q_SLOTS:
     void setText( const QString& );
@@ -136,15 +154,20 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     void editingChanged( bool );
     void readOnlyChanged( bool );
     void activationModesChanged();
+    void inputMethodHintsChanged( Qt::InputMethodHints );
     void fontRoleChanged();
     void overwriteModeChanged( bool );
     void cursorPositionChanged( int );
     void cursorVisibleChanged( bool );
     void selectByMouseChanged( bool );
+    void persistentSelectionChanged( bool );
 
     void wrapModeChanged( QskTextOptions::WrapMode );
     void alignmentChanged();
 
+    void inputMethodComposingChanged( bool );
+
+    void lengthChanged( int );
     void textChanged( const QString& );
     void textEdited( const QString& );
     void displayTextChanged( const QString& );
@@ -153,6 +176,7 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
 #if 1
     void canUndoChanged( bool );
     void canRedoChanged( bool );
+    void canPasteChanged( bool );
 #endif
 
   protected:

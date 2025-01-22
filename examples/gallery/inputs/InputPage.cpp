@@ -75,6 +75,10 @@ namespace
                     auto field = new QskTextField( this );
                     field->setText( "John Doe" );
                     field->setPlaceholderText( "<Name>" );
+
+connect( field, &QskTextField::textChanged,
+    []( const QString& text ) { qDebug() << "Text:" << text; } );
+
                 }
 
                 {
@@ -106,6 +110,11 @@ namespace
                 auto textArea = new QskTextArea( "here enter longer text", this );
                 textArea->setWrapMode( QskTextOptions::Wrap );
                 textArea->setPlaceholderText( "placeholder text" );
+
+#if 1
+                connect( textArea, &QskTextArea::textChanged,
+                    []( const QString& text ) { qDebug() << "Text:" << text; } );
+#endif
             }
         }
     };
@@ -191,6 +200,12 @@ void InputPage::syncValues( qreal value )
         auto sliders = findChildren< QskSlider* >();
         for ( auto slider : sliders )
             slider->setValue( value );
+
+#if 1
+        auto textEdits = findChildren< QskTextEdit* >();
+        for ( auto edit : textEdits )
+            edit->setText( QString::number( value ) );
+#endif
     }
 
     blockUpdates = false;

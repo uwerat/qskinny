@@ -184,6 +184,16 @@ void QskTextInput::setInputMask( const QString& mask )
     m_data->wrappedInput->setInputMask( mask );
 }
 
+bool QskTextInput::autoScroll() const
+{
+    return m_data->wrappedInput->autoScroll();
+}
+
+void QskTextInput::setAutoScroll( bool on )
+{
+    m_data->wrappedInput->setAutoScroll( on );
+}
+
 QskTextInput::EchoMode QskTextInput::echoMode() const
 {
     const auto mode = m_data->wrappedInput->echoMode();
