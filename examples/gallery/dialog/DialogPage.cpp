@@ -101,6 +101,9 @@ namespace
             auto fileSelectionButton = new Button( "File selection", this );
             connect( fileSelectionButton, &Button::clicked, this, &ButtonBox::execFileSelection );
 
+            auto directorySelectionButton = new Button( "Directory selection", this );
+            connect( directorySelectionButton, &Button::clicked, this, &ButtonBox::execDirectorySelection );
+
             setExtraSpacingAt( Qt::BottomEdge );
         }
 
@@ -169,6 +172,15 @@ namespace
             // not implemented for now (class is not public)
 #else
             ( void ) qskDialog->selectFile( "select file", QDir::currentPath() );
+#endif
+        }
+
+        void execDirectorySelection()
+        {
+#ifndef QSK_USE_EXEC
+            // not implemented for now (class is not public)
+#else
+            ( void ) qskDialog->selectDirectory( "select directory", QDir::currentPath() );
 #endif
         }
     };

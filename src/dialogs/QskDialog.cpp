@@ -14,6 +14,7 @@
 #include "QskSelectionSubWindow.h"
 #include "QskSelectionWindow.h"
 
+#include "QskEvent.h"
 #include "QskFunctions.h"
 #include "QskListView.h"
 #include "QskPushButton.h"
@@ -157,25 +158,60 @@ namespace
         }
     };
 
+    // copied from QskListView.cpp:
+    static inline int qskRowAt( const QskListView* listView, const QPointF& pos )
+    {
+        const auto rect = listView->viewContentsRect();
+        if ( rect.contains( pos ) )
+        {
+            const auto y = pos.y() - rect.top() + listView->scrollPos().y();
+
+            const int row = y / listView->rowHeight();
+            if ( row >= 0 && row < listView->rowCount() )
+                return row;
+        }
+
+        return -1;
+    }
+
+    // copied from QskGestureRecognizer.cpp:
+    static QMouseEvent* qskClonedMouseEvent( const QMouseEvent* event )
+    {
+        QMouseEvent* clonedEvent;
+
+    #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        clonedEvent = QQuickWindowPrivate::cloneMouseEvent(
+            const_cast< QMouseEvent* >( event ), nullptr );
+    #else
+        clonedEvent = event->clone();
+    #endif
+        clonedEvent->setAccepted( false );
+
+        return clonedEvent;
+    }
+
     class FileSystemView : public QskListView
     {
+        using Inherited = QskListView;
+
       public:
-        FileSystemView( const QString& directory, QQuickItem* parent = nullptr )
+        FileSystemView( const QString& directory, QDir::Filters filter, QQuickItem* parent = nullptr )
             : QskListView( parent )
             , m_model( new QFileSystemModel( this ) )
         {
             connect( m_model, &QFileSystemModel::directoryLoaded, this, [this]()
             {
-                columnWidths.fill( 0 );
+                m_columnWidths.fill( 0 );
                 updateScrollableSize();
                 setScrollPos( { 0, 0 } );
                 setSelectedRow( -1 );
                 update();
             });
 
+            m_model->setFilter( filter );
             m_model->setRootPath( directory );
 
-            columnWidths.fill( 0, m_model->columnCount() );
+            m_columnWidths.fill( 0, m_model->columnCount() );
         }
 
         virtual int rowCount() const override
@@ -192,7 +228,7 @@ namespace
 
         virtual qreal columnWidth( int col ) const override
         {
-            auto w = columnWidths.at( col );
+            auto w = m_columnWidths.at( col );
 
             if( col == 0 )
                 w = qMax( 250, w );
@@ -220,9 +256,9 @@ namespace
 
             const auto w = qskHorizontalAdvance( effectiveFont( Text ), v.toString() );
 
-            if( w > columnWidths.at( col ) )
+            if( w > m_columnWidths.at( col ) )
             {
-                columnWidths[ col ] = w;
+                m_columnWidths[ col ] = w;
             }
 
             return v;
@@ -233,9 +269,42 @@ namespace
             return m_model;
         }
 
+      protected:
+
+        void mousePressEvent( QMouseEvent* event ) override
+        {
+            if( m_doubleClickEvent && m_doubleClickEvent->timestamp() == event->timestamp() )
+            {
+                // do not select rows from double click mouse events
+                m_doubleClickEvent = nullptr;
+            }
+            else
+            {
+                Inherited::mousePressEvent( event );
+            }
+        }
+
+        void mouseDoubleClickEvent( QMouseEvent* event ) override
+        {
+            m_doubleClickEvent = qskClonedMouseEvent( event );
+
+            const int row = qskRowAt( this, qskMousePosition( event ) );
+            const auto path = valueAt( row, 0 ).toString();
+
+            QFileInfo fi( m_model->rootPath(), path );
+
+            if( fi.isDir() )
+            {
+                m_model->setRootPath( fi.absoluteFilePath() );
+            }
+
+            Inherited::mouseDoubleClickEvent( event );
+        }
+
       private:
         QFileSystemModel* const m_model;
-        mutable QVector< int > columnWidths;
+        mutable QVector< int > m_columnWidths;
+        QMouseEvent* m_doubleClickEvent = nullptr;
     };
 
     template< typename W >
@@ -245,7 +314,8 @@ namespace
 
       public:
         FileSelectionWindow( QObject* parent, const QString& title,
-            QskDialog::Actions actions, QskDialog::Action defaultAction,const QString& directory )
+            QskDialog::Actions actions, QskDialog::Action defaultAction,
+            const QString& directory, QDir::Filters filter )
             : WindowOrSubWindow< W >( parent, title, actions, defaultAction )
         {
             auto* outerBox = new QskLinearBox( Qt::Vertical );
@@ -255,14 +325,14 @@ namespace
             outerBox->setFixedSize( 700, 500 );
 #endif
             setupHeader( outerBox );
-            setupFileSystemView( directory, outerBox );
+            setupFileSystemView( directory, filter, outerBox );
 
             updateHeader( directory );
 
             Inherited::setContentItem( outerBox );
         }
 
-        QString selectedFile() const
+        QString selectedPath() const
         {
             if( m_fileView->selectedRow() != -1 )
             {
@@ -344,24 +414,12 @@ namespace
             m_headerScrollArea->ensureItemVisible( m_breadcrumbsButtons.last() );
         }
 
-        void setupFileSystemView( const QString& directory, QQuickItem* parentItem )
+        void setupFileSystemView( const QString& directory, QDir::Filters filter, QQuickItem* parentItem )
         {
-            m_fileView = new FileSystemView( directory, parentItem );
+            m_fileView = new FileSystemView( directory, filter, parentItem );
 
             QObject::connect( m_fileView->model(), &QFileSystemModel::rootPathChanged,
                 this, &FileSelectionWindow< W >::updateHeader );
-
-            QObject::connect( m_fileView, &QskListView::selectedRowChanged,
-                this, [this]( int row )
-            {
-                const auto path = m_fileView->valueAt( row, 0 ).toString();
-                QFileInfo fi( m_fileView->model()->rootPath(), path );
-
-                if( fi.isDir() )
-                {
-                    m_fileView->model()->setRootPath( fi.absoluteFilePath() );
-                }
-            });
         }
 
         QskScrollArea* m_headerScrollArea;
@@ -527,12 +585,12 @@ static QString qskSelectWindow(
 }
 
 template< typename W >
-static QString qskSelectFile( FileSelectionWindow< W >& window )
+static QString qskSelectPath( FileSelectionWindow< W >& window )
 {
-    QString selectedFile = window.selectedFile();
+    QString selectedFile = window.selectedPath();
 
     if( window.exec() == QskDialog::Accepted )
-        selectedFile = window.selectedFile();
+        selectedFile = window.selectedPath();
 
     return selectedFile;
 }
@@ -660,6 +718,8 @@ QString QskDialog::selectFile(
     const auto defaultAction = QskDialog::Ok;
 #endif
 
+    const auto flags = QDir::AllEntries | QDir::NoDotAndDotDot | QDir::AllDirs;
+
     if ( m_data->policy == EmbeddedBox )
     {
         auto quickWindow = qobject_cast< QQuickWindow* >( m_data->transientParent );
@@ -669,13 +729,46 @@ QString QskDialog::selectFile(
 
         if ( quickWindow )
         {
-            FileSelectionWindow< QskDialogSubWindow > window( quickWindow, title, actions, defaultAction, directory );
-            return qskSelectFile< QskDialogSubWindow >( window );
+            FileSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
+                actions, defaultAction, directory, flags );
+            return qskSelectPath< QskDialogSubWindow >( window );
         }
     }
 
-    FileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title, actions, defaultAction, directory );
-    return qskSelectFile< QskDialogWindow >( window );
+    FileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
+        actions, defaultAction, directory, flags );
+    return qskSelectPath< QskDialogWindow >( window );
+}
+
+QString QskDialog::selectDirectory(
+    const QString& title, const QString& directory ) const
+{
+#if 1
+    // should be parameters
+    const auto actions = QskDialog::Ok | QskDialog::Cancel;
+    const auto defaultAction = QskDialog::Ok;
+#endif
+
+    const auto flags = QDir::NoDotAndDotDot | QDir::AllDirs;
+
+    if ( m_data->policy == EmbeddedBox )
+    {
+        auto quickWindow = qobject_cast< QQuickWindow* >( m_data->transientParent );
+
+        if ( quickWindow == nullptr )
+            quickWindow = qskSomeQuickWindow();
+
+        if ( quickWindow )
+        {
+            FileSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
+                actions, defaultAction, directory, flags );
+            return qskSelectPath< QskDialogSubWindow >( window );
+        }
+    }
+
+    FileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
+        actions, defaultAction, directory, flags );
+    return qskSelectPath< QskDialogWindow >( window );
 }
 
 QskDialog::ActionRole QskDialog::actionRole( Action action )
