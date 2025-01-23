@@ -15,10 +15,12 @@
 #include "QskSelectionWindow.h"
 
 #include "QskPushButton.h"
+#include "QskScrollArea.h"
 #include "QskSimpleListBox.h"
 
 #include "QskFocusIndicator.h"
 
+#include <qfilesystemmodel.h>
 #include <qguiapplication.h>
 #include <qpointer.h>
 #include <qquickwindow.h>
@@ -163,30 +165,30 @@ namespace
     {
       public:
         FileSelection( QObject* parent, const QString& directory )
-            : m_dir( directory )
+            : m_model( new QFileSystemModel( parent ) )
         {
-            Q_UNUSED( parent )
-
-            m_dir.setFilter( QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot );
+            m_model->setRootPath( directory );
         }
 
         QString selectedFile() const
         {
-            return {};
+            const auto index = m_model->index( m_model->rootPath() );
+            return m_model->filePath( index );
         }
 
-        QDir currentDir()
+        void setCurrentPath( const QString& path )
         {
-            return m_dir;
+            m_model->setRootPath( path );
         }
 
-        void setCurrentDir( const QString& path )
+        QFileSystemModel* model()
         {
-            m_dir.setPath( path );
+            return m_model;
         }
 
       private:
-        QDir m_dir;
+        QFileSystemModel* const m_model;
+
     };
 
     template< typename W >
@@ -214,8 +216,12 @@ namespace
       private:
         void setupHeader( QQuickItem* parentItem )
         {
-            m_headerBox = new QskLinearBox( Qt::Horizontal, parentItem );
-            m_headerBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
+            m_scrollArea = new QskScrollArea( parentItem );
+            m_scrollArea->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
+            m_scrollArea->setFlickableOrientations( Qt::Horizontal );
+
+            m_headerBox = new QskLinearBox( Qt::Horizontal, m_scrollArea );
+            m_scrollArea->setScrolledItem( m_headerBox );
         }
 
         static QStringList splitPath( const QString& path )
@@ -263,8 +269,8 @@ namespace
 
                 QObject::connect( b, &QskPushButton::clicked, this, [this, fi]()
                 {
-                    FileSelection::setCurrentDir( fi.filePath() );
-                    loadContents( fi.filePath() );
+                    FileSelection::setCurrentPath( fi.filePath() );
+                    loadContents();
                 });
             }
 
@@ -273,34 +279,51 @@ namespace
                 m_breadcrumbsButtons.at( i )->deleteLater();
                 m_breadcrumbsButtons.removeAt( i );
             }
+
+            m_scrollArea->ensureItemVisible( m_breadcrumbsButtons.last() );
         }
 
         void setupListBox( QQuickItem* parentItem )
         {
             m_listBox = new QskSimpleListBox( parentItem );
 
+            auto* m = FileSelection::model();
+
+            QObject::connect( m, &QFileSystemModel::directoryLoaded,
+                this, &FileSelectionWindow< W >::loadContents );
+
+            QObject::connect( m, &QFileSystemModel::rootPathChanged,
+                this, &FileSelectionWindow< W >::loadContents );
+
             QObject::connect( m_listBox, &QskSimpleListBox::selectedEntryChanged,
                 this, [this]( const QString& path )
-                {
-                    QDir dir = FileSelection::currentDir();
-                    dir.cd( path );
-                    loadContents( dir.absolutePath() );
-                });
-
-            loadContents( FileSelection::currentDir().absolutePath() );
+            {
+                auto* m = FileSelection::model();
+                QFileInfo fi( m->rootPath(), path );
+                FileSelection::setCurrentPath( fi.absoluteFilePath() );
+            });
         }
 
-        void loadContents( const QString& path )
+        void loadContents()
         {
             m_listBox->removeBulk( 0 );
-            FileSelection::setCurrentDir( path );
-            m_listBox->setEntries( FileSelection::currentDir().entryList() );
 
-            updateHeader( FileSelection::currentDir().path() );
+            auto* m = FileSelection::model();
+
+            const auto index = m->index( m->rootPath() );
+
+            for ( int row = 0; row < m->rowCount( index ); row++ )
+            {
+                auto idx = m->index( row, 0, index );
+                m_listBox->append( m->fileName( idx ) );
+            }
+
+            updateHeader( QDir( FileSelection::selectedFile() ).path() );
         }
 
         QskSimpleListBox* m_listBox;
         QskLinearBox* m_headerBox;
+        QskScrollArea* m_scrollArea;
         QVector< QskPushButton* > m_breadcrumbsButtons;
     };
 }
