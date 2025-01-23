@@ -50,32 +50,37 @@ static QskDialog::Action qskActionCandidate( const QskDialogButtonBox* buttonBox
     return QskDialog::NoAction;
 }
 
+static QskDialog::DialogCode qskExec( QskDialogWindow* dialogWindow )
+{
+#if 1
+    auto focusIndicator = new QskFocusIndicator();
+    focusIndicator->setObjectName( QStringLiteral( "DialogFocusIndicator" ) );
+    dialogWindow->addItem( focusIndicator );
+#endif
+
+    return dialogWindow->exec();
+}
+
 namespace
 {
-    template< typename W, typename T, typename... Args >
-    class WindowOrSubWindow : public W, public T
+    template< typename W >
+    class WindowOrSubWindow : public W
     {
       public:
         WindowOrSubWindow( QObject* parent, const QString& title,
-            QskDialog::Actions actions, QskDialog::Action defaultAction, Args... args )
+            QskDialog::Actions actions, QskDialog::Action defaultAction )
             : W( parent, title, actions, defaultAction )
-            , T( parent, args... )
-        {
-        }
-
-        void setContentItem()
         {
         }
     };
 
-    template< typename T, typename... Args >
-    class WindowOrSubWindow< QskDialogWindow, T, Args... > : public QskDialogWindow, public T
+    template<>
+    class WindowOrSubWindow< QskDialogWindow > : public QskDialogWindow
     {
       public:
         WindowOrSubWindow( QObject* parent, const QString& title,
-            QskDialog::Actions actions, QskDialog::Action defaultAction, Args... args )
+            QskDialog::Actions actions, QskDialog::Action defaultAction )
             : QskDialogWindow( static_cast< QWindow* >( parent ) )
-            , T( parent, args... )
         {
             auto* transientParent = static_cast< QWindow* >( parent );
             setTransientParent( transientParent );
@@ -125,14 +130,13 @@ namespace
         }
     };
 
-    template< typename T, typename... Args >
-    class WindowOrSubWindow< QskDialogSubWindow, T, Args... > : public QskDialogSubWindow, public T
+    template<>
+    class WindowOrSubWindow< QskDialogSubWindow > : public QskDialogSubWindow
     {
       public:
         WindowOrSubWindow( QObject* parent, const QString& title,
-            QskDialog::Actions actions, QskDialog::Action defaultAction, Args... args )
+            QskDialog::Actions actions, QskDialog::Action defaultAction )
             : QskDialogSubWindow( static_cast< QQuickWindow* >( parent )->contentItem() )
-            , T( parent, args... )
         {
             setPopupFlag( QskPopup::DeleteOnClose );
             setModal( true );
@@ -161,46 +165,19 @@ namespace
         }
     };
 
-    class FileSelection // ### looks like we don't need this class
-    {
-      public:
-        FileSelection( QObject* parent, const QString& directory )
-            : m_model( new QFileSystemModel( parent ) )
-        {
-            m_model->setRootPath( directory );
-        }
-
-        QString selectedFile() const
-        {
-            const auto index = m_model->index( m_model->rootPath() );
-            return m_model->filePath( index );
-        }
-
-        void setCurrentPath( const QString& path )
-        {
-            m_model->setRootPath( path );
-        }
-
-        QFileSystemModel* model()
-        {
-            return m_model;
-        }
-
-      private:
-        QFileSystemModel* const m_model;
-
-    };
-
     template< typename W >
-    class FileSelectionWindow : public WindowOrSubWindow< W, FileSelection, QString >
+    class FileSelectionWindow : public WindowOrSubWindow< W >
     {
-        using Inherited = WindowOrSubWindow< W, FileSelection, QString >;
+        using Inherited = WindowOrSubWindow< W >;
 
       public:
         FileSelectionWindow( QObject* parent, const QString& title,
             QskDialog::Actions actions, QskDialog::Action defaultAction,const QString& directory )
-            : WindowOrSubWindow< W, FileSelection, QString >( parent, title, actions, defaultAction, directory )
+            : WindowOrSubWindow< W >( parent, title, actions, defaultAction )
+            , m_model( new QFileSystemModel( parent ) )
         {
+            m_model->setRootPath( directory );
+
             auto* outerBox = new QskLinearBox( Qt::Vertical );
             outerBox->setMargins( 20 );
             outerBox->setSpacing( 20 );
@@ -211,6 +188,12 @@ namespace
             setupListBox( outerBox );
 
             Inherited::setContentItem( outerBox );
+        }
+
+        QString selectedFile() const
+        {
+            const auto index = m_model->index( m_model->rootPath() );
+            return m_model->filePath( index );
         }
 
       private:
@@ -269,8 +252,7 @@ namespace
 
                 QObject::connect( b, &QskPushButton::clicked, this, [this, fi]()
                 {
-                    FileSelection::setCurrentPath( fi.filePath() );
-                    loadContents();
+                    m_model->setRootPath( fi.filePath() );
                 });
             }
 
@@ -287,20 +269,17 @@ namespace
         {
             m_listBox = new QskSimpleListBox( parentItem );
 
-            auto* m = FileSelection::model();
-
-            QObject::connect( m, &QFileSystemModel::directoryLoaded,
+            QObject::connect( m_model, &QFileSystemModel::directoryLoaded,
                 this, &FileSelectionWindow< W >::loadContents );
 
-            QObject::connect( m, &QFileSystemModel::rootPathChanged,
+            QObject::connect( m_model, &QFileSystemModel::rootPathChanged,
                 this, &FileSelectionWindow< W >::loadContents );
 
             QObject::connect( m_listBox, &QskSimpleListBox::selectedEntryChanged,
                 this, [this]( const QString& path )
             {
-                auto* m = FileSelection::model();
-                QFileInfo fi( m->rootPath(), path );
-                FileSelection::setCurrentPath( fi.absoluteFilePath() );
+                QFileInfo fi( m_model->rootPath(), path );
+                m_model->setRootPath( fi.absoluteFilePath() );
             });
         }
 
@@ -308,35 +287,24 @@ namespace
         {
             m_listBox->removeBulk( 0 );
 
-            auto* m = FileSelection::model();
+            const auto index = m_model->index( m_model->rootPath() );
 
-            const auto index = m->index( m->rootPath() );
-
-            for ( int row = 0; row < m->rowCount( index ); row++ )
+            for ( int row = 0; row < m_model->rowCount( index ); row++ )
             {
-                auto idx = m->index( row, 0, index );
-                m_listBox->append( m->fileName( idx ) );
+                auto idx = m_model->index( row, 0, index );
+                m_listBox->append( m_model->fileName( idx ) );
             }
 
-            updateHeader( QDir( FileSelection::selectedFile() ).path() );
+            updateHeader( QDir( selectedFile() ).path() );
         }
+
+        QFileSystemModel* const m_model;
 
         QskSimpleListBox* m_listBox;
         QskLinearBox* m_headerBox;
         QskScrollArea* m_scrollArea;
         QVector< QskPushButton* > m_breadcrumbsButtons;
     };
-}
-
-static QskDialog::DialogCode qskExec( QskDialogWindow* dialogWindow )
-{
-#if 1
-    auto focusIndicator = new QskFocusIndicator();
-    focusIndicator->setObjectName( QStringLiteral( "DialogFocusIndicator" ) );
-    dialogWindow->addItem( focusIndicator );
-#endif
-
-    return dialogWindow->exec();
 }
 
 static QQuickWindow* qskSomeQuickWindow()
