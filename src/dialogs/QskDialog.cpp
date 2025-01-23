@@ -272,14 +272,15 @@ namespace
             QObject::connect( m_model, &QFileSystemModel::directoryLoaded,
                 this, &FileSelectionWindow< W >::loadContents );
 
-            QObject::connect( m_model, &QFileSystemModel::rootPathChanged,
-                this, &FileSelectionWindow< W >::loadContents );
-
             QObject::connect( m_listBox, &QskSimpleListBox::selectedEntryChanged,
                 this, [this]( const QString& path )
             {
                 QFileInfo fi( m_model->rootPath(), path );
-                m_model->setRootPath( fi.absoluteFilePath() );
+
+                if( fi.isDir() )
+                {
+                    m_model->setRootPath( fi.absoluteFilePath() );
+                }
             });
         }
 
