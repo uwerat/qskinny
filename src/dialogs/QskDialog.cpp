@@ -206,20 +206,21 @@ namespace
             : QskListView( parent )
             , m_model( new QFileSystemModel( this ) )
         {
-            connect( m_model, &QFileSystemModel::directoryLoaded, this, [this]()
+            const auto defaultWidth = 50;
+
+            connect( m_model, &QFileSystemModel::directoryLoaded, this, [this, defaultWidth]()
             {
-                m_columnWidths.fill( 0 );
+                m_columnWidths.fill( defaultWidth );
                 updateScrollableSize();
                 setScrollPos( { 0, 0 } );
                 setSelectedRow( -1 );
-                update();
             });
 
             m_model->setFilter( filters );
             m_model->setRootPath( {} ); // invalidate to make sure to get an update
             m_model->setRootPath( directory );
 
-            m_columnWidths.fill( 0, m_model->columnCount() );
+            m_columnWidths.fill( defaultWidth, m_model->columnCount() );
         }
 
         virtual int rowCount() const override
@@ -239,7 +240,9 @@ namespace
             auto w = m_columnWidths.at( col );
 
             if( col == 0 )
-                w = qMax( 250, w );
+            {
+                w = qMax( 250, w ); // min width for the name
+            }
 
             return w + 15; // spacing
         }
