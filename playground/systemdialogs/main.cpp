@@ -114,7 +114,11 @@ namespace
                     case FileDialog:
                     {
                         auto file = qskDialog->selectFile( "select file", QDir::currentPath() );
-                        qDebug() << "selected file" << file;
+                        break;
+                    }
+                    case FolderDialog:
+                    {
+                        auto file = qskDialog->selectDirectory( "select directory", QDir::currentPath() );
                         break;
                     }
                     case MessageDialog:
