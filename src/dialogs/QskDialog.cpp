@@ -27,6 +27,7 @@
 #include <qguiapplication.h>
 #include <qpointer.h>
 #include <qquickwindow.h>
+#include <qtimer.h>
 
 #include <qpa/qplatformdialoghelper.h>
 
@@ -195,7 +196,7 @@ namespace
         using Inherited = QskListView;
 
       public:
-        FileSystemView( const QString& directory, QDir::Filters filter, QQuickItem* parent = nullptr )
+        FileSystemView( const QString& directory, QDir::Filters filters, QQuickItem* parent = nullptr )
             : QskListView( parent )
             , m_model( new QFileSystemModel( this ) )
         {
@@ -208,7 +209,8 @@ namespace
                 update();
             });
 
-            m_model->setFilter( filter );
+            m_model->setFilter( filters );
+            m_model->setRootPath( {} ); // invalidate to make sure to get an update
             m_model->setRootPath( directory );
 
             m_columnWidths.fill( 0, m_model->columnCount() );
@@ -313,9 +315,10 @@ namespace
         using Inherited = WindowOrSubWindow< W >;
 
       public:
+
         FileSelectionWindow( QObject* parent, const QString& title,
             QskDialog::Actions actions, QskDialog::Action defaultAction,
-            const QString& directory, QDir::Filters filter )
+            const QString& directory, QDir::Filters filters )
             : WindowOrSubWindow< W >( parent, title, actions, defaultAction )
         {
             auto* outerBox = new QskLinearBox( Qt::Vertical );
@@ -325,7 +328,7 @@ namespace
             outerBox->setFixedSize( 700, 500 );
 #endif
             setupHeader( outerBox );
-            setupFileSystemView( directory, filter, outerBox );
+            setupFileSystemView( directory, filters, outerBox );
 
             updateHeader( directory );
 
@@ -411,15 +414,33 @@ namespace
 
             m_breadcrumbsButtons.remove( dirPaths.count(), m_breadcrumbsButtons.count() - dirPaths.count() );
 
-            m_headerScrollArea->ensureItemVisible( m_breadcrumbsButtons.last() );
+            if( !m_breadcrumbsButtons.isEmpty() )
+            {
+                auto* b = m_breadcrumbsButtons.last();
+
+                // button might just have been created and not be layed out yet:
+                QObject::connect( b, &QskPushButton::widthChanged, this, [this, b]()
+                {
+                    m_headerScrollArea->ensureItemVisible( b );
+                } );
+            }
         }
 
-        void setupFileSystemView( const QString& directory, QDir::Filters filter, QQuickItem* parentItem )
+        void setupFileSystemView( const QString& directory, QDir::Filters filters, QQuickItem* parentItem )
         {
-            m_fileView = new FileSystemView( directory, filter, parentItem );
+            m_fileView = new FileSystemView( directory, filters, parentItem );
 
             QObject::connect( m_fileView->model(), &QFileSystemModel::rootPathChanged,
                 this, &FileSelectionWindow< W >::updateHeader );
+
+            QObject::connect( m_fileView, &QskListView::selectedRowChanged, this, [this]()
+            {
+                if( m_fileView->model()->filter() & QDir::Files )
+                {
+                    QFileInfo fi( selectedPath() );
+                    W::defaultButton()->setEnabled( !fi.isDir() );
+                }
+            } );
         }
 
         QskScrollArea* m_headerScrollArea;
@@ -718,7 +739,7 @@ QString QskDialog::selectFile(
     const auto defaultAction = QskDialog::Ok;
 #endif
 
-    const auto flags = QDir::AllEntries | QDir::NoDotAndDotDot | QDir::AllDirs;
+    const auto filters = QDir::AllEntries | QDir::NoDotAndDotDot | QDir::AllDirs;
 
     if ( m_data->policy == EmbeddedBox )
     {
@@ -730,13 +751,13 @@ QString QskDialog::selectFile(
         if ( quickWindow )
         {
             FileSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
-                actions, defaultAction, directory, flags );
+                actions, defaultAction, directory, filters );
             return qskSelectPath< QskDialogSubWindow >( window );
         }
     }
 
     FileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
-        actions, defaultAction, directory, flags );
+        actions, defaultAction, directory, filters );
     return qskSelectPath< QskDialogWindow >( window );
 }
 
@@ -749,7 +770,7 @@ QString QskDialog::selectDirectory(
     const auto defaultAction = QskDialog::Ok;
 #endif
 
-    const auto flags = QDir::NoDotAndDotDot | QDir::AllDirs;
+    const auto filters = QDir::NoDotAndDotDot | QDir::AllDirs;
 
     if ( m_data->policy == EmbeddedBox )
     {
@@ -761,13 +782,13 @@ QString QskDialog::selectDirectory(
         if ( quickWindow )
         {
             FileSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
-                actions, defaultAction, directory, flags );
+                actions, defaultAction, directory, filters );
             return qskSelectPath< QskDialogSubWindow >( window );
         }
     }
 
     FileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
-        actions, defaultAction, directory, flags );
+        actions, defaultAction, directory, filters );
     return qskSelectPath< QskDialogWindow >( window );
 }
 
