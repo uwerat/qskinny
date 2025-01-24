@@ -109,13 +109,19 @@ namespace
                 setGeometry( r );
             }
 
-            if ( size.isValid() )
+            auto adjustSize = [this]()
             {
-                setFlags( flags() | Qt::MSWindowsFixedSizeDialogHint );
-                setFixedSize( size );
-            }
+                const QSize size = sizeConstraint();
 
-            setModality( Qt::ApplicationModal );
+                if ( size.isValid() )
+                {
+                    setFlags( flags() | Qt::MSWindowsFixedSizeDialogHint );
+                    setFixedSize( size );
+                }
+            };
+
+            connect( contentItem(), &QQuickItem::widthChanged, this, adjustSize );
+            connect( contentItem(), &QQuickItem::heightChanged, this, adjustSize );
         }
 
         QskDialog::DialogCode exec()
