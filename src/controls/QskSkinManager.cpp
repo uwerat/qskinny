@@ -412,7 +412,8 @@ void QskSkinManager::addPluginPath( const QString& path )
 {
     const auto pluginPath = qskResolvedPath( path );
 
-    if ( !pluginPath.isEmpty() && !pluginPath.contains( pluginPath ) )
+    // Avoid adding pluginPath that is empty or is already contained in the paths.
+    if ( !pluginPath.isEmpty() && !m_data->pluginPaths.contains( pluginPath ) )
     {
         m_data->pluginPaths += pluginPath;
 
