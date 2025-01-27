@@ -262,7 +262,11 @@ void QskSkin::setColorScheme( ColorScheme colorScheme )
 
     m_data->colorScheme = colorScheme;
 
-    const auto transitionHint = qskSkinManager->transitionHint();
+    QskAnimationHint transitionHint;
+
+    if ( qskSkinManager->currentSkin() == this )
+        transitionHint = qskSkinManager->transitionHint();
+
     if ( transitionHint.isValid() )
     {
         QskSkinTransition transition;

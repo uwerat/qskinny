@@ -625,6 +625,11 @@ QskSkin* QskSkinManager::skin()
     return m_data->skin;
 }
 
+const QskSkin* QskSkinManager::currentSkin() const
+{
+    return m_data->skin;
+}
+
 void QskSkinManager::setTransitionHint( const QskAnimationHint& hint )
 {
     m_data->transitionHint = hint;
