@@ -104,6 +104,9 @@ namespace
             auto directorySelectionButton = new Button( "Directory selection", this );
             connect( directorySelectionButton, &Button::clicked, this, &ButtonBox::execDirectorySelection );
 
+            auto colorSelectionButton = new Button( "Color selection", this );
+            connect( colorSelectionButton, &Button::clicked, this, &ButtonBox::execColorSelection );
+
             setExtraSpacingAt( Qt::BottomEdge );
         }
 
@@ -181,6 +184,15 @@ namespace
             // not implemented for now (class is not public)
 #else
             ( void ) qskDialog->selectDirectory( "select directory", QDir::currentPath() );
+#endif
+        }
+
+        void execColorSelection()
+        {
+#ifndef QSK_USE_EXEC
+            // not implemented for now (class is not public)
+#else
+            ( void ) qskDialog->selectColor( "select color" );
 #endif
         }
     };

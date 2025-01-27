@@ -14,11 +14,16 @@
 #include "QskSelectionSubWindow.h"
 #include "QskSelectionWindow.h"
 
+#include "QskBoxBorderColors.h"
+#include "QskBoxBorderMetrics.h"
+#include "QskBoxShapeMetrics.h"
+#include "QskColorPicker.h"
 #include "QskEvent.h"
 #include "QskFunctions.h"
 #include "QskListView.h"
 #include "QskPushButton.h"
 #include "QskScrollArea.h"
+#include "QskSlider.h"
 
 #include "QskFocusIndicator.h"
 
@@ -458,6 +463,72 @@ namespace
 
         FileSystemView* m_fileView;
     };
+
+    template< typename W >
+    class ColorSelectionWindow : public WindowOrSubWindow< W >
+    {
+        using Inherited = WindowOrSubWindow< W >;
+
+      public:
+
+        ColorSelectionWindow( QObject* parent, const QString& title,
+            QskDialog::Actions actions, QskDialog::Action defaultAction )
+            : WindowOrSubWindow< W >( parent, title, actions, defaultAction )
+        {
+            auto* outerBox = new QskLinearBox( Qt::Vertical );
+            outerBox->setMargins( 20 );
+            outerBox->setSpacing( 20 );
+#if 1
+            outerBox->setFixedSize( 700, 500 );
+#endif
+            auto* upperBox = new QskLinearBox( Qt::Horizontal, outerBox );
+            upperBox->setSpacing( 12 );
+
+            m_picker = new QskColorPicker( upperBox );
+            m_picker->setStrutSizeHint( QskColorPicker::Selector, { 18, 18 } );
+            m_picker->setBoxShapeHint( QskColorPicker::Selector, { 100, Qt::RelativeSize } );
+            m_picker->setBoxBorderMetricsHint( QskColorPicker::Selector, 2 );
+            m_picker->setBoxBorderColorsHint( QskColorPicker::Selector, Qt::black );
+            m_picker->setGradientHint( QskColorPicker::Selector, Qt::transparent );
+
+            auto* outputBox = new QskBox( upperBox );
+            outputBox->setPanel( true );
+
+            QObject::connect( m_picker, &QskColorPicker::selectedColorChanged,
+                this, [this, outputBox]()
+            {
+                const auto c = m_picker->selectedColor();
+                outputBox->setGradientHint( QskBox::Panel, c );
+            } );
+
+            upperBox->setStretchFactor( m_picker, 9 );
+            upperBox->setStretchFactor( outputBox, 1 );
+
+
+            auto* valueSlider = new QskSlider( outerBox );
+            valueSlider->setBoundaries( 0, 1 );
+            valueSlider->setValue( m_picker->value() );
+
+            QskGradient g( Qt::black, Qt::white );
+            g.setLinearDirection( Qt::Horizontal );
+            valueSlider->setGradientHint( QskSlider::Groove, g );
+            valueSlider->setGradientHint( QskSlider::Fill, Qt::transparent );
+            valueSlider->setGradientHint( QskSlider::Handle, Qt::black );
+
+            QObject::connect( valueSlider, &QskSlider::valueChanged,
+                m_picker, &QskColorPicker::setValueAsRatio );
+
+            Inherited::setContentItem( outerBox );
+        }
+
+        QColor selectedColor() const
+        {
+            return m_picker->selectedColor();
+        }
+
+      private:
+        QskColorPicker* m_picker;
+    };
 }
 
 static QQuickWindow* qskSomeQuickWindow()
@@ -623,6 +694,17 @@ static QString qskSelectPath( FileSelectionWindow< W >& window )
         selectedFile = window.selectedPath();
 
     return selectedFile;
+}
+
+template< typename W >
+static QColor qskSelectColor( ColorSelectionWindow< W >& window )
+{
+    QColor selectedColor = window.selectedColor();
+
+    if( window.exec() == QskDialog::Accepted )
+        selectedColor = window.selectedColor();
+
+    return selectedColor;
 }
 
 class QskDialog::PrivateData
@@ -799,6 +881,34 @@ QString QskDialog::selectDirectory(
     FileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
         actions, defaultAction, directory, filters );
     return qskSelectPath< QskDialogWindow >( window );
+}
+
+QColor QskDialog::selectColor( const QString& title ) const
+{
+#if 1
+    // should be parameters
+    const auto actions = QskDialog::Ok | QskDialog::Cancel;
+    const auto defaultAction = QskDialog::Ok;
+#endif
+
+    if ( m_data->policy == EmbeddedBox )
+    {
+        auto quickWindow = qobject_cast< QQuickWindow* >( m_data->transientParent );
+
+        if ( quickWindow == nullptr )
+            quickWindow = qskSomeQuickWindow();
+
+        if ( quickWindow )
+        {
+            ColorSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
+                actions, defaultAction );
+            return qskSelectColor< QskDialogSubWindow >( window );
+        }
+    }
+
+    ColorSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
+        actions, defaultAction );
+    return qskSelectColor< QskDialogWindow >( window );
 }
 
 QskDialog::ActionRole QskDialog::actionRole( Action action )

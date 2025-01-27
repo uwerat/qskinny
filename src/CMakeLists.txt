@@ -454,7 +454,14 @@ list(APPEND HEADERS
     dialogs/QskSelectionWindow.h
 )
 
+list(APPEND PRIVATE_HEADERS
+    dialogs/QskColorPicker.h
+    dialogs/QskColorPickerSkinlet.h
+)
+
 list(APPEND SOURCES
+    dialogs/QskColorPicker.cpp
+    dialogs/QskColorPickerSkinlet.cpp
     dialogs/QskDialogButton.cpp
     dialogs/QskDialogButtonBox.cpp
     dialogs/QskDialog.cpp

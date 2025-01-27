@@ -111,6 +111,12 @@ namespace
             {
                 switch( dialogType )
                 {
+                    case ColorDialog:
+                    {
+                        auto color = qskDialog->selectColor( "select color" );
+                        qDebug() << "selected color" << QColor( color );
+                        break;
+                    }
                     case FileDialog:
                     {
                         auto file = qskDialog->selectFile( "select file", QDir::currentPath() );
