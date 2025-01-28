@@ -22,64 +22,34 @@ namespace
         {
         }
 
-        void paint( QPainter* p, const QSize& size, const void* nodeData ) override
+        void paint( QPainter* p, const QSize&, const void* nodeData ) override
         {
-            if(  m_image.size() != size )
-            {
-                m_image = QImage( size.width(), size.height(), QImage::Format_RGB32 );
-            }
-
-            QColor color;
-            float h, s;
-            const float v = *reinterpret_cast< const int* >( nodeData ) / 255.0;
-
-            for( int x = 0; x < m_image.width(); x++ )
-            {
-                h = ( float ) x / m_image.width();
-
-                for( int y = 0; y < m_image.height(); y++ )
-                {
-                    s = 1.0 - ( float ) y / m_image.height();
-                    color.setHsvF( h, s, v );
-                    m_image.setPixel( x, y, color.rgb() );
-                }
-            }
-
-            p->drawImage( QPointF( 0, 0 ), m_image );
+            const Q* q = static_cast< const Q* >( nodeData );
+            p->drawImage( QPointF( 0, 0 ), q->image() );
         }
 
-        void updateNode( QQuickWindow* window, const QRectF& rect, int value )
+        void updateNode( QQuickWindow* window, const QRectF& rect, const Q* q )
         {
-            update( window, rect, QSizeF(), &value );
-        }
-
-        QColor selectedColor( const QPointF& p ) const
-        {
-            return m_image.pixelColor( p.toPoint() );
+            update( window, rect, QSizeF(), q );
         }
 
       protected:
         QskHashValue hash( const void* nodeData ) const override
         {
-            const auto* value = reinterpret_cast< const int* >( nodeData );
-            return *value;
-        }
+            const Q* q = static_cast< const Q* >( nodeData );
+            const auto r = q->subControlRect( Q::ColorPane );
 
-      private:
-        QImage m_image;
+            QskHashValue h = qHash( r.width() );
+            h = qHash( r.height() );
+            h = qHash( q->value() );
+
+            return h;
+        }
     };
 }
 
-class QskColorPickerSkinlet::PrivateData
-{
-  public:
-    QColor selectedColor;
-    ColorPaneNode* colorPaneNode = nullptr;
-};
-
 QskColorPickerSkinlet::QskColorPickerSkinlet( QskSkin* skin )
     : Inherited( skin )
-    , m_data( new PrivateData )
 {
     setNodeRoles( { PanelRole, ColorPaneRole, SelectorRole } );
 }
@@ -103,9 +73,7 @@ QSGNode* QskColorPickerSkinlet::updateSubNode(
         }
         case SelectorRole:
         {
-            auto* n = updateBoxNode( skinnable, node, Q::Selector );
-            updateSelectedColor( q );
-            return n;
+            return updateBoxNode( skinnable, node, Q::Selector );
         }
     }
 
@@ -125,57 +93,26 @@ QRectF QskColorPickerSkinlet::subControlRect(
 
     if( subControl == Q::Selector )
     {
-        const auto size = q->strutSizeHint( Q::Selector );
-        const auto x = q->positionHint( Q::Selector | QskAspect::Horizontal );
-        const auto y = q->positionHint( Q::Selector | QskAspect::Vertical );
+        const auto s = q->strutSizeHint( Q::Selector );
+        const auto p = q->position();
 
-        QRectF r( { x - size.width() / 2.0, y - size.height() / 2.0 }, size );
+        const QRectF r( { p.x() - s.width() / 2.0, p.y() - s.height() / 2.0 }, s );
         return r;
     }
 
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QColor QskColorPickerSkinlet::selectedColor() const
-{
-    return m_data->selectedColor;
-}
-
 QSGNode* QskColorPickerSkinlet::updateColorPaneNode(
     const QskColorPicker* q, QSGNode* node ) const
 {
-    m_data->colorPaneNode = QskSGNode::ensureNode< ColorPaneNode >( node );
-
-    const auto rect = q->subControlRect( Q::ColorPane );
-    m_data->colorPaneNode->updateNode( q->window(), rect, q->value() );
-
-    updateSelectedColor( q );
-
-    return m_data->colorPaneNode;
-}
-
-QPointF QskColorPickerSkinlet::selectorPos( const Q* q ) const
-{
-    const auto x = q->positionHint( Q::Selector | QskAspect::Horizontal );
-    const auto y = q->positionHint( Q::Selector | QskAspect::Vertical );
-
-    QPointF p( x, y );
+    auto* colorPaneNode = QskSGNode::ensureNode< ColorPaneNode >( node );
 
     const auto rect = q->subControlRect( Q::ColorPane );
 
-    p.rx() = qBound( rect.x(), p.x(), rect.right() );
-    p.ry() = qBound( rect.y(), p.y(), rect.bottom() );
+    colorPaneNode->updateNode( q->window(), rect, q );
 
-    return p;
-}
-
-void QskColorPickerSkinlet::updateSelectedColor( const Q* q ) const
-{
-    const auto color = m_data->colorPaneNode->selectedColor( selectorPos( q ) );
-    m_data->selectedColor = color;
-
-    auto* e = new QEvent( static_cast< QEvent::Type >( q->colorChangedEventType() ) );
-    QCoreApplication::postEvent( const_cast< Q* >( q ), e );
+    return colorPaneNode;
 }
 
 #include "moc_QskColorPickerSkinlet.cpp"

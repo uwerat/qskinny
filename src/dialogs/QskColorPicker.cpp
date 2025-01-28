@@ -12,31 +12,67 @@ QSK_SUBCONTROL( QskColorPicker, Panel )
 QSK_SUBCONTROL( QskColorPicker, ColorPane )
 QSK_SUBCONTROL( QskColorPicker, Selector )
 
+using A = QskAspect;
+
+namespace
+{
+    const auto HPos = QskColorPicker::Selector | A::Horizontal;
+    const auto VPos = QskColorPicker::Selector | A::Vertical;
+
+    void createImage( QImage* image, const QSizeF& size, qreal v )
+    {
+        if( image->size() != size )
+        {
+            *image = QImage( size.width(), size.height(), QImage::Format_RGB32 );
+        }
+
+        QColor color;
+        float h, s;
+
+        for( int x = 0; x < image->width(); x++ )
+        {
+            h = static_cast< float >( x ) / image->width();
+
+            for( int y = 0; y < image->height(); y++ )
+            {
+                s = 1.0 - static_cast< float >( y ) / image->height();
+                color.setHsvF( h, s, v );
+                image->setPixel( x, y, color.rgb() );
+            }
+        }
+    }
+}
+
 class QskColorPicker::PrivateData
 {
   public:
     qreal value = 255;
     bool isPressed = false;
-    int colorChangedEventType;
+    QImage image;
 };
 
 QskColorPicker::QskColorPicker( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData )
 {
-    m_data->colorChangedEventType = QEvent::registerEventType();
-
     setAcceptedMouseButtons( Qt::LeftButton );
     setBoundaries( 0, 255 );
+    setPolishOnResize( true );
+    createImage();
+    setPositionHint( HPos, -1 );
+    setPositionHint( VPos, -1 );
 }
 
 QskColorPicker::~QskColorPicker() = default;
 
 QColor QskColorPicker::selectedColor() const
 {
-    auto* skinlet = static_cast< const QskColorPickerSkinlet* >( effectiveSkinlet() );
-    Q_ASSERT( skinlet );
-    return skinlet->selectedColor();
+    if( image().isNull() )
+    {
+        return {};
+    }
+
+    return m_data->image.pixelColor( position().toPoint() );
 }
 
 qreal QskColorPicker::value() const
@@ -49,9 +85,9 @@ qreal QskColorPicker::valueAsRatio() const
     return valueAsRatio( m_data->value );
 }
 
-int QskColorPicker::colorChangedEventType() const
+QImage QskColorPicker::image() const
 {
-    return m_data->colorChangedEventType;
+    return m_data->image;
 }
 
 void QskColorPicker::setValue( qreal v )
@@ -59,8 +95,10 @@ void QskColorPicker::setValue( qreal v )
     if( !qskFuzzyCompare( m_data->value, v ) )
     {
         m_data->value = v;
+        createImage();
         update();
         Q_EMIT valueChanged( m_data->value );
+        Q_EMIT selectedColorChanged();
     }
 }
 
@@ -70,22 +108,16 @@ void QskColorPicker::setValueAsRatio( qreal ratio )
     setValue( minimum() + ratio * boundaryLength() );
 }
 
-bool QskColorPicker::event( QEvent* event )
+void QskColorPicker::updateLayout()
 {
-    if( event->type() == colorChangedEventType() )
-    {
-        event->setAccepted( true );
-        Q_EMIT selectedColorChanged();
-        return true;
-    }
-
-    return Inherited::event( event );
+    createImage();
+    updatePosition( position() );
 }
 
 void QskColorPicker::mousePressEvent( QMouseEvent* event )
 {
     m_data->isPressed = true;
-    updatePosition( event );
+    updatePosition( qskMousePosition( event ) );
 }
 
 void QskColorPicker::mouseMoveEvent( QMouseEvent* event )
@@ -95,7 +127,7 @@ void QskColorPicker::mouseMoveEvent( QMouseEvent* event )
         return;
     }
 
-    updatePosition( event );
+    updatePosition( qskMousePosition( event ) );
 }
 
 void QskColorPicker::mouseReleaseEvent( QMouseEvent* )
@@ -103,24 +135,51 @@ void QskColorPicker::mouseReleaseEvent( QMouseEvent* )
     m_data->isPressed = false;
 }
 
-void QskColorPicker::updatePosition( QMouseEvent* event )
+void QskColorPicker::updatePosition( const QPointF& point )
 {
-    auto p = qskMousePosition( event );
     const auto rect = subControlRect( ColorPane );
 
-    p.rx() = qBound( rect.x(), p.x(), rect.right() );
-    p.ry() = qBound( rect.y(), p.y(), rect.bottom() );
+    if( rect.isEmpty() )
+    {
+        return;
+    }
 
-    const auto oldX = positionHint( Selector | QskAspect::Horizontal );
-    const auto oldY = positionHint( Selector | QskAspect::Vertical );
+    auto p = point;
+    p.rx() = qBound( rect.x(), p.x(), rect.right() - 1.0 );
+    p.ry() = qBound( rect.y(), p.y(), rect.bottom() - 1.0 );
+
+    const auto oldX = positionHint( HPos );
+    const auto oldY = positionHint( VPos );
 
     if( !qskFuzzyCompare( p.x(), oldX ) || !qskFuzzyCompare( p.y(), oldY ) )
     {
-        setPositionHint( Selector | QskAspect::Horizontal, p.x() );
-        setPositionHint( Selector | QskAspect::Vertical, p.y() );
+        setPositionHint( HPos, p.x() );
+        setPositionHint( VPos, p.y() );
 
         update();
+        Q_EMIT positionChanged();
+        Q_EMIT selectedColorChanged();
     }
+}
+
+QPointF QskColorPicker::position() const
+{
+    const auto r = subControlRect( ColorPane );
+
+    if( !r.size().isValid() )
+    {
+        return {};
+    }
+
+    const auto x = positionHint( HPos );
+    const auto y = positionHint( VPos );
+    return { x, y };
+}
+
+void QskColorPicker::createImage()
+{
+    const auto r = subControlRect( ColorPane );
+    ::createImage( &m_data->image, r.size(), valueAsRatio() );
 }
 
 #include "moc_QskColorPicker.cpp"
