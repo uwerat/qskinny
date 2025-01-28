@@ -6,8 +6,6 @@
 #include "QskDialog.h"
 #include "QskDialogButtonBox.h"
 
-#include "QskLinearBox.h"
-
 #include "QskMessageSubWindow.h"
 #include "QskMessageWindow.h"
 
@@ -16,18 +14,11 @@
 
 #include "QskBoxBorderColors.h"
 #include "QskBoxBorderMetrics.h"
-#include "QskBoxShapeMetrics.h"
-#include "QskColorPicker.h"
-#include "QskComboBox.h"
+#include "QskColorSelectionWindow.h"
+#include "QskFileSelectionWindow.h"
 #include "QskEvent.h"
 #include "QskFunctions.h"
-#include "QskGridBox.h"
 #include "QskListView.h"
-#include "QskPushButton.h"
-#include "QskScrollArea.h"
-#include "QskSlider.h"
-#include "QskTextField.h"
-#include "QskTextLabel.h"
 
 #include "QskFocusIndicator.h"
 
@@ -76,503 +67,6 @@ static QskDialog::DialogCode qskExec( QskDialogWindow* dialogWindow )
 
 namespace
 {
-    template< typename W >
-    class WindowOrSubWindow : public W
-    {
-      public:
-        WindowOrSubWindow( QObject* parent, const QString& title,
-            QskDialog::Actions actions, QskDialog::Action defaultAction )
-            : W( parent, title, actions, defaultAction )
-        {
-        }
-    };
-
-    template<>
-    class WindowOrSubWindow< QskDialogWindow > : public QskDialogWindow
-    {
-      public:
-        WindowOrSubWindow( QObject* parent, const QString& title,
-            QskDialog::Actions actions, QskDialog::Action defaultAction )
-            : QskDialogWindow( static_cast< QWindow* >( parent ) )
-        {
-            auto* transientParent = static_cast< QWindow* >( parent );
-            setTransientParent( transientParent );
-
-            setTitle( title );
-            setDialogActions( actions );
-
-            if ( actions != QskDialog::NoAction && defaultAction == QskDialog::NoAction )
-                defaultAction = qskActionCandidate( buttonBox() );
-
-            setDefaultDialogAction( defaultAction );
-
-            setModality( transientParent ? Qt::WindowModal : Qt::ApplicationModal );
-
-            const QSize size = sizeConstraint();
-
-            if ( this->parent() )
-            {
-                QRect r( QPoint(), size );
-                r.moveCenter( QRect( QPoint(), this->parent()->size() ).center() );
-
-                setGeometry( r );
-            }
-
-            auto adjustSize = [this]()
-            {
-                const QSize size = sizeConstraint();
-
-                if ( size.isValid() )
-                {
-                    setFlags( flags() | Qt::MSWindowsFixedSizeDialogHint );
-                    setFixedSize( size );
-                }
-            };
-
-            connect( contentItem(), &QQuickItem::widthChanged, this, adjustSize );
-            connect( contentItem(), &QQuickItem::heightChanged, this, adjustSize );
-        }
-
-        QskDialog::DialogCode exec()
-        {
-            return qskExec( this );
-        }
-
-        void setContentItem( QQuickItem* item )
-        {
-            QskDialogWindow::setDialogContentItem( item );
-        }
-    };
-
-    template<>
-    class WindowOrSubWindow< QskDialogSubWindow > : public QskDialogSubWindow
-    {
-      public:
-        WindowOrSubWindow( QObject* parent, const QString& title,
-            QskDialog::Actions actions, QskDialog::Action defaultAction )
-            : QskDialogSubWindow( static_cast< QQuickWindow* >( parent )->contentItem() )
-        {
-            setPopupFlag( QskPopup::DeleteOnClose );
-            setModal( true );
-            setTitle( title );
-            setDialogActions( actions );
-
-            if ( actions != QskDialog::NoAction && defaultAction == QskDialog::NoAction )
-                defaultAction = qskActionCandidate( buttonBox() );
-
-            setDefaultDialogAction( defaultAction );
-        }
-
-        QskDialog::DialogCode exec()
-        {
-            return QskDialogSubWindow::exec();
-        }
-
-        void setContentItem( QQuickItem* item )
-        {
-            QskDialogSubWindow::setContentItem( item );
-        }
-    };
-
-    // copied from QskListView.cpp:
-    static inline int qskRowAt( const QskListView* listView, const QPointF& pos )
-    {
-        const auto rect = listView->viewContentsRect();
-        if ( rect.contains( pos ) )
-        {
-            const auto y = pos.y() - rect.top() + listView->scrollPos().y();
-
-            const int row = y / listView->rowHeight();
-            if ( row >= 0 && row < listView->rowCount() )
-                return row;
-        }
-
-        return -1;
-    }
-
-    // copied from QskGestureRecognizer.cpp:
-    static QMouseEvent* qskClonedMouseEvent( const QMouseEvent* event )
-    {
-        QMouseEvent* clonedEvent;
-
-    #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-        clonedEvent = QQuickWindowPrivate::cloneMouseEvent(
-            const_cast< QMouseEvent* >( event ), nullptr );
-    #else
-        clonedEvent = event->clone();
-    #endif
-        clonedEvent->setAccepted( false );
-
-        return clonedEvent;
-    }
-
-    class FileSystemView : public QskListView
-    {
-        using Inherited = QskListView;
-
-      public:
-        FileSystemView( const QString& directory, QDir::Filters filters, QQuickItem* parent = nullptr )
-            : QskListView( parent )
-            , m_model( new QFileSystemModel( this ) )
-        {
-            const auto defaultWidth = 50;
-
-            connect( m_model, &QFileSystemModel::directoryLoaded, this, [this, defaultWidth]()
-            {
-                m_columnWidths.fill( defaultWidth );
-                updateScrollableSize();
-                setScrollPos( { 0, 0 } );
-                setSelectedRow( -1 );
-            });
-
-            m_model->setFilter( filters );
-            m_model->setRootPath( {} ); // invalidate to make sure to get an update
-            m_model->setRootPath( directory );
-
-            m_columnWidths.fill( defaultWidth, m_model->columnCount() );
-        }
-
-        virtual int rowCount() const override
-        {
-            const auto index = m_model->index( m_model->rootPath() );
-            return m_model->rowCount( index );
-        }
-
-        virtual int columnCount() const override
-        {
-            const auto index = m_model->index( m_model->rootPath() );
-            return m_model->columnCount( index );
-        }
-
-        virtual qreal columnWidth( int col ) const override
-        {
-            auto w = m_columnWidths.at( col );
-
-            if( col == 0 )
-            {
-                w = qMax( 250, w ); // min width for the name
-            }
-
-            return w + 15; // spacing
-        }
-
-        virtual qreal rowHeight() const override
-        {
-            const auto hint = strutSizeHint( Cell );
-            const auto padding = paddingHint( Cell );
-
-            qreal h = effectiveFontHeight( Text );
-            h += padding.top() + padding.bottom();
-
-            return qMax( h, hint.height() );
-        }
-
-        virtual QVariant valueAt( int row, int col ) const override
-        {
-            const auto rootIndex = m_model->index( m_model->rootPath() );
-
-            const auto index = m_model->index( row, col, rootIndex );
-            const auto v = m_model->data( index );
-
-            const auto w = qskHorizontalAdvance( effectiveFont( Text ), v.toString() );
-
-            if( w > m_columnWidths.at( col ) )
-            {
-                m_columnWidths[ col ] = w;
-            }
-
-            return v;
-        }
-
-        QFileSystemModel* model()
-        {
-            return m_model;
-        }
-
-      protected:
-
-        void mousePressEvent( QMouseEvent* event ) override
-        {
-            if( m_doubleClickEvent && m_doubleClickEvent->timestamp() == event->timestamp() )
-            {
-                // do not select rows from double click mouse events
-                m_doubleClickEvent = nullptr;
-            }
-            else
-            {
-                Inherited::mousePressEvent( event );
-            }
-        }
-
-        void mouseDoubleClickEvent( QMouseEvent* event ) override
-        {
-            m_doubleClickEvent = qskClonedMouseEvent( event );
-
-            const int row = qskRowAt( this, qskMousePosition( event ) );
-            const auto path = valueAt( row, 0 ).toString();
-
-            QFileInfo fi( m_model->rootPath(), path );
-
-            if( fi.isDir() )
-            {
-                m_model->setRootPath( fi.absoluteFilePath() );
-            }
-
-            Inherited::mouseDoubleClickEvent( event );
-        }
-
-      private:
-        QFileSystemModel* const m_model;
-        mutable QVector< int > m_columnWidths;
-        QMouseEvent* m_doubleClickEvent = nullptr;
-    };
-
-    template< typename W >
-    class FileSelectionWindow : public WindowOrSubWindow< W >
-    {
-        using Inherited = WindowOrSubWindow< W >;
-
-      public:
-
-        FileSelectionWindow( QObject* parent, const QString& title,
-            QskDialog::Actions actions, QskDialog::Action defaultAction,
-            const QString& directory, QDir::Filters filters )
-            : WindowOrSubWindow< W >( parent, title, actions, defaultAction )
-        {
-            auto* outerBox = new QskLinearBox( Qt::Vertical );
-            outerBox->setMargins( 20 );
-            outerBox->setSpacing( 20 );
-#if 1
-            outerBox->setFixedSize( 700, 500 );
-#endif
-            setupHeader( outerBox );
-            setupFileSystemView( directory, filters, outerBox );
-
-            updateHeader( directory );
-
-            Inherited::setContentItem( outerBox );
-        }
-
-        QString selectedPath() const
-        {
-            if( m_fileView->selectedRow() != -1 )
-            {
-                const auto path = m_fileView->valueAt( m_fileView->selectedRow(), 0 ).toString();
-                QFileInfo fi( m_fileView->model()->rootPath(), path );
-                return fi.absoluteFilePath();
-            }
-
-            return {};
-        }
-
-      private:
-        void setupHeader( QQuickItem* parentItem )
-        {
-            m_headerScrollArea = new QskScrollArea( parentItem );
-            m_headerScrollArea->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
-            m_headerScrollArea->setFlickableOrientations( Qt::Horizontal );
-
-            m_headerBox = new QskLinearBox( Qt::Horizontal, m_headerScrollArea );
-            m_headerScrollArea->setScrolledItem( m_headerBox );
-        }
-
-        static QStringList splitPath( const QString& path )
-        {
-            const auto cleanPath = QDir::cleanPath( path );
-
-            QDir dir( cleanPath );
-
-            QStringList result;
-
-            do
-            {
-                if( dir != QDir::root() )
-                {
-                    result.prepend( dir.absolutePath() );
-                }
-            }
-            while( dir.cdUp() );
-
-            return result;
-        }
-
-        void updateHeader( const QString& path )
-        {
-            const auto dirPaths = splitPath( path );
-
-            for( int i = 0; i < dirPaths.count(); ++i )
-            {
-                QskPushButton* b;
-
-                if( m_breadcrumbsButtons.count() <= i )
-                {
-                    b = new QskPushButton( m_headerBox );
-                    b->setStrutSizeHint( QskPushButton::Panel, { -1, -1 } );
-                    m_breadcrumbsButtons.append( b );
-                }
-                else
-                {
-                    b = m_breadcrumbsButtons.at( i );
-                    b->disconnect();
-                }
-
-                QFileInfo fi( dirPaths.at( i ) );
-                b->setText( fi.baseName() );
-
-                QObject::connect( b, &QskPushButton::clicked, this, [this, fi]()
-                {
-                    m_fileView->model()->setRootPath( fi.filePath() );
-                });
-            }
-
-            for( int i = dirPaths.count(); i < m_breadcrumbsButtons.count(); i++ )
-            {
-                m_breadcrumbsButtons.at( i )->deleteLater();
-            }
-
-            m_breadcrumbsButtons.remove( dirPaths.count(), m_breadcrumbsButtons.count() - dirPaths.count() );
-
-            if( !m_breadcrumbsButtons.isEmpty() )
-            {
-                auto* b = m_breadcrumbsButtons.last();
-
-                // button might just have been created and not be layed out yet:
-                QObject::connect( b, &QskPushButton::widthChanged, this, [this, b]()
-                {
-                    m_headerScrollArea->ensureItemVisible( b );
-                } );
-            }
-        }
-
-        void setupFileSystemView( const QString& directory, QDir::Filters filters, QQuickItem* parentItem )
-        {
-            m_fileView = new FileSystemView( directory, filters, parentItem );
-
-            QObject::connect( m_fileView->model(), &QFileSystemModel::rootPathChanged,
-                this, &FileSelectionWindow< W >::updateHeader );
-
-            QObject::connect( m_fileView, &QskListView::selectedRowChanged, this, [this]()
-            {
-                if( m_fileView->model()->filter() & QDir::Files )
-                {
-                    QFileInfo fi( selectedPath() );
-                    W::defaultButton()->setEnabled( !fi.isDir() );
-                }
-            } );
-        }
-
-        QskScrollArea* m_headerScrollArea;
-        QskLinearBox* m_headerBox;
-        QVector< QskPushButton* > m_breadcrumbsButtons;
-
-        FileSystemView* m_fileView;
-    };
-
-    template< typename W >
-    class ColorSelectionWindow : public WindowOrSubWindow< W >
-    {
-        using Inherited = WindowOrSubWindow< W >;
-
-      public:
-
-        ColorSelectionWindow( QObject* parent, const QString& title,
-            QskDialog::Actions actions, QskDialog::Action defaultAction )
-            : WindowOrSubWindow< W >( parent, title, actions, defaultAction )
-        {
-            auto* outerBox = new QskLinearBox( Qt::Vertical );
-            outerBox->setMargins( 20 );
-            outerBox->setSpacing( 20 );
-#if 1
-            outerBox->setFixedSize( 350, 500 );
-#endif
-            auto* upperBox = new QskLinearBox( Qt::Horizontal, outerBox );
-            upperBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Expanding );
-            upperBox->setSpacing( 12 );
-
-            m_picker = new QskColorPicker( upperBox );
-            m_picker->setStrutSizeHint( QskColorPicker::Selector, { 18, 18 } );
-            m_picker->setBoxShapeHint( QskColorPicker::Selector, { 100, Qt::RelativeSize } );
-            m_picker->setBoxBorderMetricsHint( QskColorPicker::Selector, 2 );
-            m_picker->setBoxBorderColorsHint( QskColorPicker::Selector, Qt::black );
-            m_picker->setGradientHint( QskColorPicker::Selector, Qt::transparent );
-
-            auto* outputBox = new QskBox( upperBox );
-            outputBox->setPanel( true );
-
-            QObject::connect( m_picker, &QskColorPicker::selectedColorChanged,
-                this, [this, outputBox]()
-            {
-                const auto c = m_picker->selectedColor();
-                outputBox->setGradientHint( QskBox::Panel, c );
-            } );
-
-            upperBox->setStretchFactor( m_picker, 9 );
-            upperBox->setStretchFactor( outputBox, 1 );
-
-
-            auto* valueSlider = new QskSlider( outerBox );
-            valueSlider->setBoundaries( 0, 1 );
-            valueSlider->setValue( m_picker->value() );
-
-            QskGradient g( Qt::black, Qt::white );
-            g.setLinearDirection( Qt::Horizontal );
-            valueSlider->setGradientHint( QskSlider::Groove, g );
-            valueSlider->setGradientHint( QskSlider::Fill, Qt::transparent );
-            valueSlider->setGradientHint( QskSlider::Handle, Qt::black );
-
-            QObject::connect( valueSlider, &QskSlider::valueChanged,
-                m_picker, &QskColorPicker::setValueAsRatio );
-
-
-            auto* gridBox = new QskGridBox( outerBox );
-            gridBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Preferred );
-
-            auto* menu = new QskComboBox( gridBox );
-            menu->addOption( QUrl(), "RGB" );
-            menu->setCurrentIndex( 0 );
-            gridBox->addItem( menu, 0, 0 );
-
-            auto* rgbValue = new QskTextField( gridBox );
-            rgbValue->setReadOnly( true );
-            gridBox->addItem( rgbValue, 0, 2 );
-
-            auto* redValue = new QskTextField( gridBox );
-            redValue->setReadOnly( true );
-            gridBox->addItem( redValue, 1, 0 );
-            gridBox->addItem( new QskTextLabel( "Red", gridBox ), 1, 1 );
-
-            auto* greenValue = new QskTextField( gridBox );
-            greenValue->setReadOnly( true );
-            gridBox->addItem( greenValue, 2, 0 );
-            gridBox->addItem( new QskTextLabel( "Green", gridBox ), 2, 1 );
-
-            auto* blueValue = new QskTextField( gridBox );
-            blueValue->setReadOnly( true );
-            gridBox->addItem( blueValue, 3, 0 );
-            gridBox->addItem( new QskTextLabel( "Blue", gridBox ), 3, 1 );
-
-            QObject::connect( m_picker, &QskColorPicker::selectedColorChanged,
-                this, [this, rgbValue, redValue, greenValue, blueValue]()
-            {
-                    const auto c = m_picker->selectedColor();
-                    rgbValue->setText( c.name() );
-
-                    redValue->setText( QString::number( c.red() ) );
-                    greenValue->setText( QString::number( c.green() ) );
-                    blueValue->setText( QString::number( c.blue() ) );
-            } );
-
-            Inherited::setContentItem( outerBox );
-        }
-
-        QColor selectedColor() const
-        {
-            return m_picker->selectedColor();
-        }
-
-      private:
-        QskColorPicker* m_picker;
-    };
 }
 
 static QQuickWindow* qskSomeQuickWindow()
@@ -730,7 +224,7 @@ static QString qskSelectWindow(
 }
 
 template< typename W >
-static QString qskSelectPath( FileSelectionWindow< W >& window )
+static QString qskSelectPath( QskFileSelectionWindow< W >& window )
 {
     QString selectedFile = window.selectedPath();
 
@@ -741,7 +235,7 @@ static QString qskSelectPath( FileSelectionWindow< W >& window )
 }
 
 template< typename W >
-static QColor qskSelectColor( ColorSelectionWindow< W >& window )
+static QColor qskSelectColor( QskColorSelectionWindow< W >& window )
 {
     QColor selectedColor = window.selectedColor();
 
@@ -885,13 +379,13 @@ QString QskDialog::selectFile(
 
         if ( quickWindow )
         {
-            FileSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
+            QskFileSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
                 actions, defaultAction, directory, filters );
             return qskSelectPath< QskDialogSubWindow >( window );
         }
     }
 
-    FileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
+    QskFileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
         actions, defaultAction, directory, filters );
     return qskSelectPath< QskDialogWindow >( window );
 }
@@ -916,13 +410,13 @@ QString QskDialog::selectDirectory(
 
         if ( quickWindow )
         {
-            FileSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
+            QskFileSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
                 actions, defaultAction, directory, filters );
             return qskSelectPath< QskDialogSubWindow >( window );
         }
     }
 
-    FileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
+    QskFileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
         actions, defaultAction, directory, filters );
     return qskSelectPath< QskDialogWindow >( window );
 }
@@ -944,13 +438,13 @@ QColor QskDialog::selectColor( const QString& title ) const
 
         if ( quickWindow )
         {
-            ColorSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
+            QskColorSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
                 actions, defaultAction );
             return qskSelectColor< QskDialogSubWindow >( window );
         }
     }
 
-    ColorSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
+    QskColorSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
         actions, defaultAction );
     return qskSelectColor< QskDialogWindow >( window );
 }
