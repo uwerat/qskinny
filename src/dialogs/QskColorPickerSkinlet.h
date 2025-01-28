@@ -42,11 +42,6 @@ class QskColorPickerSkinlet : public QskSkinlet
 
   private:
     QRectF cursorRect( const QskSkinnable*, const QRectF&, int index ) const;
-    QPointF selectorPos( const QskColorPicker* ) const;
-    void updateSelectedColor( const QskColorPicker* ) const;
-
-    class PrivateData;
-    std::unique_ptr< PrivateData > m_data;
 };
 
 #endif

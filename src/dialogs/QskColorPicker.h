@@ -28,7 +28,8 @@ class QskColorPicker : public QskBoundedControl
     qreal valueAsRatio() const; // [0.0, 1.0]
     using QskBoundedControl::valueAsRatio;
 
-    int colorChangedEventType() const;
+    QImage image() const;
+    QPointF position() const;
 
   public Q_SLOTS:
     void setValue( qreal );
@@ -37,15 +38,17 @@ class QskColorPicker : public QskBoundedControl
   Q_SIGNALS:
     void valueChanged( qreal );
     void selectedColorChanged() const;
+    void positionChanged() const;
 
   protected:
-    bool event( QEvent* ) override;
+    void updateLayout() override;
     void mousePressEvent( QMouseEvent* ) override;
     void mouseMoveEvent( QMouseEvent* ) override;
     void mouseReleaseEvent( QMouseEvent* ) override;
 
   private:
-    void updatePosition( QMouseEvent* );
+    void updatePosition( const QPointF& );
+    void createImage();
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

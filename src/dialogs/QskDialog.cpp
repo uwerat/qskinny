@@ -479,7 +479,7 @@ namespace
             outerBox->setMargins( 20 );
             outerBox->setSpacing( 20 );
 #if 1
-            outerBox->setFixedSize( 700, 500 );
+            outerBox->setFixedSize( 500, 500 );
 #endif
             auto* upperBox = new QskLinearBox( Qt::Horizontal, outerBox );
             upperBox->setSpacing( 12 );
