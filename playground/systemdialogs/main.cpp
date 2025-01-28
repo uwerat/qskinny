@@ -113,8 +113,7 @@ namespace
                 {
                     case ColorDialog:
                     {
-                        auto color = qskDialog->selectColor( "select color" );
-                        qDebug() << "selected color" << QColor( color );
+                        qskDialog->selectColor( "select color" );
                         break;
                     }
                     case FileDialog:
