@@ -18,12 +18,16 @@
 #include "QskBoxBorderMetrics.h"
 #include "QskBoxShapeMetrics.h"
 #include "QskColorPicker.h"
+#include "QskComboBox.h"
 #include "QskEvent.h"
 #include "QskFunctions.h"
+#include "QskGridBox.h"
 #include "QskListView.h"
 #include "QskPushButton.h"
 #include "QskScrollArea.h"
 #include "QskSlider.h"
+#include "QskTextField.h"
+#include "QskTextLabel.h"
 
 #include "QskFocusIndicator.h"
 
@@ -479,9 +483,10 @@ namespace
             outerBox->setMargins( 20 );
             outerBox->setSpacing( 20 );
 #if 1
-            outerBox->setFixedSize( 500, 500 );
+            outerBox->setFixedSize( 350, 500 );
 #endif
             auto* upperBox = new QskLinearBox( Qt::Horizontal, outerBox );
+            upperBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Expanding );
             upperBox->setSpacing( 12 );
 
             m_picker = new QskColorPicker( upperBox );
@@ -517,6 +522,45 @@ namespace
 
             QObject::connect( valueSlider, &QskSlider::valueChanged,
                 m_picker, &QskColorPicker::setValueAsRatio );
+
+
+            auto* gridBox = new QskGridBox( outerBox );
+            gridBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Preferred );
+
+            auto* menu = new QskComboBox( gridBox );
+            menu->addOption( QUrl(), "RGB" );
+            menu->setCurrentIndex( 0 );
+            gridBox->addItem( menu, 0, 0 );
+
+            auto* rgbValue = new QskTextField( gridBox );
+            rgbValue->setReadOnly( true );
+            gridBox->addItem( rgbValue, 0, 2 );
+
+            auto* redValue = new QskTextField( gridBox );
+            redValue->setReadOnly( true );
+            gridBox->addItem( redValue, 1, 0 );
+            gridBox->addItem( new QskTextLabel( "Red", gridBox ), 1, 1 );
+
+            auto* greenValue = new QskTextField( gridBox );
+            greenValue->setReadOnly( true );
+            gridBox->addItem( greenValue, 2, 0 );
+            gridBox->addItem( new QskTextLabel( "Green", gridBox ), 2, 1 );
+
+            auto* blueValue = new QskTextField( gridBox );
+            blueValue->setReadOnly( true );
+            gridBox->addItem( blueValue, 3, 0 );
+            gridBox->addItem( new QskTextLabel( "Blue", gridBox ), 3, 1 );
+
+            QObject::connect( m_picker, &QskColorPicker::selectedColorChanged,
+                this, [this, rgbValue, redValue, greenValue, blueValue]()
+            {
+                    const auto c = m_picker->selectedColor();
+                    rgbValue->setText( c.name() );
+
+                    redValue->setText( QString::number( c.red() ) );
+                    greenValue->setText( QString::number( c.green() ) );
+                    blueValue->setText( QString::number( c.blue() ) );
+            } );
 
             Inherited::setContentItem( outerBox );
         }
