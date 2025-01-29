@@ -14,6 +14,19 @@ QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskTextEdit, TextPanel )
 
+/*
+    Other properties offered from QQuickTextEdit:
+
+    - textMarginChanged
+      should be the TextPanel::Padding
+
+    - selectByKeyboardChanged(bool selectByKeyboard);
+      Why is this one specific for QQuickTextEdit ) ?
+
+    - tabStopDistanceChanged
+      Why is this one specific for QQuickTextEdit ?
+ */
+
 namespace
 {
     class QuickTextEdit final : public QQuickTextEdit
@@ -33,6 +46,7 @@ namespace
 
         Q_INVOKABLE void updateColors();
         Q_INVOKABLE void updateMetrics();
+        Q_INVOKABLE void setEditing( bool );
         Q_INVOKABLE void handleEvent( QEvent* ev ) { event( ev ); }
 
       protected:
@@ -83,6 +97,14 @@ namespace
             this, &QuickTextEdit::updateClip );
     }
 
+    void QuickTextEdit::setEditing( bool on )
+    {
+        Q_ASSERT( focusOnPress() == false );
+
+        QFocusEvent event( on ? QEvent::FocusIn : QEvent::FocusOut );
+        QQuickTextEditPrivate::get( this )->handleFocusEvent( &event );
+    }
+
     void QuickTextEdit::updateMetrics()
     {
         auto textEdit = static_cast< const QskTextEdit* >( parentItem() );
@@ -123,7 +145,19 @@ QskTextEdit::QskTextEdit( QQuickItem* parent )
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
 
-    setup( m_data->wrappedEdit, &QQuickTextEdit::staticMetaObject );
+    setup( m_data->wrappedEdit );
+
+    connect( m_data->wrappedEdit, &QQuickTextEdit::lineCountChanged,
+        this, [this]() { Q_EMIT lineCountChanged( lineCount() ); } );
+
+    connect( m_data->wrappedEdit, &QQuickTextEdit::linkActivated,
+        this, &QskTextEdit::linkActivated );
+
+    connect( m_data->wrappedEdit, &QQuickTextEdit::linkHovered,
+        this, &QskTextEdit::linkHovered );
+
+    connect( m_data->wrappedEdit, &QQuickTextEdit::linkActivated,
+        this, &QskTextEdit::linkActivated );
 }
 
 QskTextEdit::~QskTextEdit()
@@ -137,7 +171,11 @@ QUrl QskTextEdit::baseUrl() const
 
 void QskTextEdit::setBaseUrl( const QUrl& url )
 {
-    m_data->wrappedEdit->setBaseUrl( url );
+    if ( url != m_data->wrappedEdit->baseUrl() )
+    {
+        m_data->wrappedEdit->setBaseUrl( url );
+        Q_EMIT baseUrlChanged( url );
+    }
 }
 
 void QskTextEdit::resetBaseUrl()
@@ -145,15 +183,15 @@ void QskTextEdit::resetBaseUrl()
     m_data->wrappedEdit->resetBaseUrl();
 }
 
-QString QskTextEdit::hoveredLink() const
+void QskTextEdit::setTextFormat( QskTextOptions::TextFormat format )
 {
-    return m_data->wrappedEdit->hoveredLink();
-}
+    if ( format != textFormat() )
+    {
+        m_data->wrappedEdit->setTextFormat(
+            static_cast< QQuickTextEdit::TextFormat >( format ) );
 
-void QskTextEdit::setTextFormat( QskTextOptions::TextFormat textFormat )
-{
-    m_data->wrappedEdit->setTextFormat(
-        static_cast< QQuickTextEdit::TextFormat >( textFormat ) );
+        Q_EMIT textFormatChanged( format );
+    }
 }
 
 QskTextOptions::TextFormat QskTextEdit::textFormat() const
@@ -174,6 +212,7 @@ int QskTextEdit::tabStopDistance() const
 
 void QskTextEdit::setTabStopDistance( qreal distance )
 {
+    // QTextOption !
     m_data->wrappedEdit->setTabStopDistance( distance );
 }
 

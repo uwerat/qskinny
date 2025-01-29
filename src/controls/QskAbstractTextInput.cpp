@@ -7,19 +7,19 @@
 #include "QskFontRole.h"
 #include "QskQuick.h"
 #include "QskEvent.h"
-#include "QskMetaInvokable.h"
 #include "QskInternalMacros.h"
+
+#include <qguiapplication.h>
+#include <qstylehints.h>
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextedit_p.h>
 #include <private/qquicktextinput_p.h>
-#include <private/qquicktextinput_p_p.h>
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+#include <qwindow.h>
 #include <private/qeventpoint_p.h>
 #endif
-
-#include <qhash.h>
 
 QSK_QT_PRIVATE_END
 
@@ -28,12 +28,6 @@ QSK_SUBCONTROL( QskAbstractTextInput, Text )
 QSK_SYSTEM_STATE( QskAbstractTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskAbstractTextInput, Editing, QskAspect::FirstSystemState << 2 )
 QSK_SYSTEM_STATE( QskAbstractTextInput, Selected, QskAspect::FirstSystemState << 3 )
-
-static inline void qskUpdateInputMethodFont( const QskAbstractTextInput* input )
-{
-    const auto queries = Qt::ImCursorRectangle | Qt::ImFont | Qt::ImAnchorRectangle;
-    qskUpdateInputMethod( input, queries );
-}
 
 static inline QVariant qskInputMethodQuery(
     const QQuickItem* item, Qt::InputMethodQuery query, QVariant argument )
@@ -45,26 +39,6 @@ static inline QVariant qskInputMethodQuery(
         return edit->inputMethodQuery( query, argument );
 
     return QVariant();
-}
-
-static inline Qt::InputMethodHints qskInputMethodHints( const QQuickItem* item )
-{
-    if ( auto input = qobject_cast< const QQuickTextInput* >( item ) )
-        return input->inputMethodHints();
-
-    if ( auto edit = qobject_cast< const QQuickTextEdit* >( item ) )
-        return edit->inputMethodHints();
-
-    return Qt::InputMethodHints();
-}
-
-static inline void qskSetInputMethodHints(
-    QQuickItem* item, Qt::InputMethodHints hints )
-{
-    if ( auto input = qobject_cast< QQuickTextInput* >( item ) )
-        input->setInputMethodHints( hints );
-    else if ( auto edit = qobject_cast< QQuickTextEdit* >( item ) )
-        edit->setInputMethodHints( hints );
 }
 
 inline void qskSetAlignment( QQuickItem* item, Qt::Alignment alignment )
@@ -119,199 +93,35 @@ static inline void qskForwardEvent( QQuickItem* item, QEvent* event )
     }
 }
 
-static inline bool qskIsIrrelevantProperty( const char* name )
-{
-    static const char* properties[] =
-    {
-        /*
-            these are properties that are set from skin hints.
-            do we want to have convenience setters/getters for these hints ?
-         */
-        "color",
-        "selectionColor",
-        "selectedTextColor",
-
-        /*
-            covered by the alignment property
-         */
-        "horizontalAlignment",
-        "effectiveHorizontalAlignment",
-        "verticalAlignment",
-
-        /*
-            we don't want to offer cursorDelegates as this would be done
-            using subcontrols.
-         */
-        "cursorRectangle",
-        "cursorDelegate",
-
-        /*
-            hasSelectedText ?
-         */
-        "selectionStart",
-        "selectionEnd",
-        "selectedText",
-
-        /*
-            covered by QskAbstractTextInput::ActivationMode
-         */
-
-        "activeFocusOnPress",
-
-        /*
-            These poperties correspond to Qt::TextInteractionFlags
-            we can't simply forward them as mouseSelectionMode returns
-            local enums of QQuickTextEdit and QQuickTextInput
-         */
-        "selectByMouse",
-        "selectByKeyboard",
-        "mouseSelectionMode",
-
-        /*
-            covered by unwrappedTextSize
-         */
-        "contentWidth",
-        "contentHeight",
-        "paintedWidth",
-        "paintedHeight",
-
-        /*
-            unused we have our own padding from the skin hints
-         */
-        "padding",
-        "topPadding",
-        "leftPadding",
-        "rightPadding",
-        "bottomPadding",
-
-        /*
-            ends up in QTextDocument::documentMargin. But how is its
-            effect different to what you get from the padding ?
-         */
-        "textMargin",
-
-        /*
-            not covered so far, but IMHO of little relevance
-         */
-        "renderType"
-    };
-
-    for ( const auto n : properties )
-    {
-        if ( strcmp( name, n ) == 0 )
-            return true;
-    }
-
-    return false;
-}
-
-namespace
-{
-    class PropertyBinder : public QObject
-    {
-        Q_OBJECT
-
-      public:
-        void setup( const QObject*, const QMetaObject*, QObject* );
-
-      private:
-        Q_INVOKABLE void forwardNotification() const;
-
-        typedef QPair< int, QMetaMethod > Binding;
-        typedef QHash< int, Binding > BindingTable;
-
-        Binding bindingOf( const QMetaObject*, int methodIndex ) const;
-        static QMap< const QMetaObject*, BindingTable > m_tables;
-    };
-
-    QMap< const QMetaObject*, PropertyBinder::BindingTable > PropertyBinder::m_tables;
-
-    void PropertyBinder::setup( const QObject* input,
-        const QMetaObject* mo, QObject* proxy )
-    {
-        setParent( proxy );
-
-        auto& hash = m_tables[ mo ];
-
-        if ( hash.isEmpty() )
-        {
-            for ( int i = mo->propertyOffset(); i < mo->propertyCount(); i++ )
-            {
-                const auto property = mo->property( i );
-
-                const auto signalIndex = property.notifySignalIndex();
-                if ( signalIndex >= 0 )
-                {
-                    const auto moProxy = proxy->metaObject();
-
-                    const int idx = moProxy->indexOfProperty( property.name() );
-                    if ( idx >= 0 )
-                    {
-                        const auto method = moProxy->property( idx ).notifySignal();
-                        if ( method.isValid() )
-                            hash.insert( signalIndex, { i, method } );
-                    }
-                    else
-                    {
-                        if ( !qskIsIrrelevantProperty( property.name() ) )
-                            qDebug() << "Missing:" << mo->className() << property.name();
-                    }
-                }
-            }
-        }
-
-        const int idx = staticMetaObject.indexOfMethod( "forwardNotification()" );
-        const auto forwardMethod = staticMetaObject.method( idx );
-
-        for ( auto it = hash.constBegin(); it != hash.constEnd(); ++it )
-        {
-            connect( input, input->metaObject()->method( it.key() ),
-                this, forwardMethod, Qt::DirectConnection );
-        }
-    }
-
-    void PropertyBinder::forwardNotification() const
-    {
-        if ( thread() != QThread::currentThread() )
-            return;
-
-        const auto mo = sender()->metaObject();
-
-        const auto binding = bindingOf( mo, senderSignalIndex() );
-        if ( !binding.second.isValid() )
-            return;
-
-        const auto property = mo->property( binding.first );
-
-        const auto value = property.read( sender() );
-#if 0
-        qDebug() << property.name() << value
-                 << binding.second.methodSignature();
-#endif
-
-        void* args[3] = { nullptr, const_cast< void* >( value.data() ), nullptr };
-
-        qskInvokeMetaMethod( parent(), binding.second, args, Qt::DirectConnection );
-    }
-
-    PropertyBinder::Binding PropertyBinder::bindingOf(
-        const QMetaObject* metaObject, int methodIndex ) const
-    {
-        const auto method = metaObject->method( methodIndex );
-
-        const auto& hash = m_tables[ method.enclosingMetaObject() ];
-        return hash.value( methodIndex );
-    }
-}
-
 class QskAbstractTextInput::PrivateData
 {
   public:
     ActivationModes activationModes;
-    PropertyBinder binder;
 
     QQuickItem* input = nullptr;
+    QQuickTextInput* textInput = nullptr;
+    QQuickTextEdit* textEdit = nullptr;
 };
+
+#define INPUT_INVOKE(func) \
+    ( m_data->textInput ? m_data->textInput->func() : m_data->textEdit->func() )
+
+#define INPUT_INVOKE_ARG(func, arg) \
+    ( m_data->textInput ? m_data->textInput->func( arg ) : m_data->textEdit->func( arg ) )
+ 
+#define INPUT_CONNECT( func ) \
+    m_data->textInput \
+        ? connect( m_data->textInput, &QQuickTextInput::func, this, &QskAbstractTextInput::func ) \
+        : connect( m_data->textEdit, &QQuickTextEdit::func, this, &QskAbstractTextInput::func )
+
+#define INPUT_CONNECT1( func, get ) \
+    do \
+    { \
+        auto f = [this]() { Q_EMIT func( get() ); }; \
+        m_data->textInput \
+            ? connect( m_data->textInput, &QQuickTextInput::func, this, f ) \
+            : connect( m_data->textEdit, &QQuickTextEdit::func, this, f ); \
+    } while ( false )
 
 QskAbstractTextInput::QskAbstractTextInput( QQuickItem* parent )
     : Inherited( parent )
@@ -331,11 +141,94 @@ QskAbstractTextInput::~QskAbstractTextInput()
 {
 }
 
-void QskAbstractTextInput::setup( QQuickItem* wrappedInput,
-    const QMetaObject* metaObject )
+void QskAbstractTextInput::setup( QQuickItem* wrappedInput )
 {
     m_data->input = wrappedInput;
-    m_data->binder.setup( wrappedInput, metaObject, this );
+
+    m_data->textInput = qobject_cast< QQuickTextInput* >( wrappedInput );
+    m_data->textEdit = qobject_cast< QQuickTextEdit* >( wrappedInput );
+
+    INPUT_CONNECT( textChanged );
+    INPUT_CONNECT( preeditTextChanged );
+    INPUT_CONNECT( readOnlyChanged );
+    INPUT_CONNECT( overwriteModeChanged );
+    INPUT_CONNECT( cursorVisibleChanged );
+    INPUT_CONNECT1( cursorPositionChanged, cursorPosition );
+    INPUT_CONNECT( selectByMouseChanged );
+    INPUT_CONNECT1( persistentSelectionChanged, persistentSelection );
+    INPUT_CONNECT1( wrapModeChanged, wrapMode );
+
+    INPUT_CONNECT1( canUndoChanged, canUndo );
+    INPUT_CONNECT1( canRedoChanged, canRedo );
+    INPUT_CONNECT1( canPasteChanged, canPaste );
+
+    INPUT_CONNECT1( inputMethodHintsChanged, inputMethodHints );
+    INPUT_CONNECT1( inputMethodComposingChanged, isInputMethodComposing );
+
+    /*
+        Other properties offered from QQuickTextInput/QQuickTextEdit:
+
+        - cursorRectangleChanged
+        - cursorDelegateChanged
+
+          The default implementation creates a QQuickRectangle for the cursor
+          that can be replaced by a delegate.
+
+          However the concept of QSkinny would be to customize the
+          the cursor using skin hints and/or creating the scene graph node
+          from the skinlet. TODO ...
+
+        - colorChanged
+        - fontChanged
+
+          Set from the skin hints - might be important enough to offer a
+          convenience API
+
+        - selectionColorChanged
+        - selectedTextColorChanged
+
+          This properties are set from the skin hints and are not worth to appear
+          at the public API
+
+        - horizontalAlignmentChanged
+        - verticalAlignmentChanged
+        - effectiveHorizontalAlignmentChanged
+
+          covered by QskAbstractTextInput::alignmentChanged
+
+        - activeFocusOnPressChanged
+
+          covered by QskAbstractTextInput::activationModesChanged
+
+        - selectionStartChanged;
+        - selectionEndChanged;
+        - selectedTextChanged;
+
+          Maybe there is a better API for the selection TODO ...
+
+        - mouseSelectionModeChanged
+
+          What to do with this mode. TODO ...
+
+        - editingFinished
+
+          This signal should never be emitted as it happens on
+          events ( focusOut, commit keys ) that are handled in
+          QskAbstractTextInput and indicated with editicgChanged( bool );
+          ( Maybe having an assertion TODO ... )
+
+        - contentSizeChanged
+
+          Need to understand what this information might be good for.
+          Maybe the sizeHints ....
+
+        - renderTypeChanged
+
+          This one is about the type of renderer to be used. This is similar
+          to QskItem::PreferRasterForTextures and instead of having a flag in
+          QskAbstractTextInput we might want to have a more general solution
+          in QskItem. TODO ...
+     */
 }
 
 QskAbstractTextInput::ActivationModes QskAbstractTextInput::activationModes() const
@@ -354,79 +247,81 @@ void QskAbstractTextInput::setActivationModes( ActivationModes modes )
 
 bool QskAbstractTextInput::selectByMouse() const
 {
-    return m_data->input->property( "selectByMouse" ).value< bool >();
+    return INPUT_INVOKE( selectByMouse );
 }
 
 void QskAbstractTextInput::setSelectByMouse( bool on )
 {
-    m_data->input->setProperty( "selectByMouse", on );
+    INPUT_INVOKE_ARG( setSelectByMouse, on );
 }
 
 bool QskAbstractTextInput::persistentSelection() const
 {
-    return m_data->input->property( "persistentSelection" ).value< bool >();
+    return INPUT_INVOKE( persistentSelection );
 }
 
 void QskAbstractTextInput::setPersistentSelection( bool on )
 {
-    m_data->input->setProperty( "persistentSelection", on );
+    INPUT_INVOKE_ARG( setPersistentSelection, on );
 }
 
 int QskAbstractTextInput::length() const
 {
-    return m_data->input->property( "length" ).value< int >();
+    return INPUT_INVOKE( length );
 }
 
 QString QskAbstractTextInput::text() const
 {
-    return m_data->input->property( "text" ).value< QString >();
+    return INPUT_INVOKE( text );
 }
 
 void QskAbstractTextInput::setText( const QString& text )
 {
-    m_data->input->setProperty( "text", text );
+    INPUT_INVOKE_ARG( setText, text );
 }
 
 QString QskAbstractTextInput::preeditText() const
 {
-    return m_data->input->property( "preeditText" ).value< QString >();
+    return INPUT_INVOKE( preeditText );
 }
 
 void QskAbstractTextInput::clear()
 {
-    QMetaObject::invokeMethod( m_data->input, "clear" );
+    INPUT_INVOKE( clear );
 }
 
 void QskAbstractTextInput::selectAll()
 {
-    QMetaObject::invokeMethod( m_data->input, "selectAll" );
+    INPUT_INVOKE( selectAll );
 }
 
 void QskAbstractTextInput::deselect()
 {
-    QMetaObject::invokeMethod( m_data->input, "deselect" );
+    INPUT_INVOKE( deselect );
 }
 
 bool QskAbstractTextInput::canUndo() const
 {
-    return m_data->input->property( "canUndo" ).value< bool >();
+    return INPUT_INVOKE( canUndo );
 }
 
 bool QskAbstractTextInput::canRedo() const
 {
-    return m_data->input->property( "canRedo" ).value< bool >();
+    return INPUT_INVOKE( canRedo );
 }
 
 bool QskAbstractTextInput::canPaste() const
 {
-    return m_data->input->property( "canPaste" ).value< bool >();
+    return INPUT_INVOKE( canPaste );
 }
 
 void QskAbstractTextInput::setFontRole( const QskFontRole& role )
 {
     if ( setFontRoleHint( Text, role ) )
     {
-        qskUpdateInputMethodFont( this );
+        const auto queries = Qt::ImCursorRectangle | Qt::ImFont | Qt::ImAnchorRectangle;
+        qskUpdateInputMethod( this, queries );
+
         Q_EMIT fontRoleChanged();
     }
 }
@@ -435,7 +330,9 @@ void QskAbstractTextInput::resetFontRole()
 {
     if ( resetFontRoleHint( Text ) )
     {
-        qskUpdateInputMethodFont( this );
+        const auto queries = Qt::ImCursorRectangle | Qt::ImFont | Qt::ImAnchorRectangle;
+        qskUpdateInputMethod( this, queries );
+
         Q_EMIT fontRoleChanged();
     }
 }
@@ -451,9 +348,9 @@ QFont QskAbstractTextInput::font() const
 }
 
 QVariant QskAbstractTextInput::inputMethodQuery(
-    Qt::InputMethodQuery property ) const
+    Qt::InputMethodQuery query ) const
 {
-    return inputMethodQuery( property, QVariant() );
+    return inputMethodQuery( query, QVariant() );
 }
 
 QVariant QskAbstractTextInput::inputMethodQuery(
@@ -492,14 +389,14 @@ QVariant QskAbstractTextInput::inputMethodQuery(
 
 Qt::InputMethodHints QskAbstractTextInput::inputMethodHints() const
 {
-    return qskInputMethodHints( m_data->input );
+    return INPUT_INVOKE( inputMethodHints );
 }
 
 void QskAbstractTextInput::setInputMethodHints( Qt::InputMethodHints hints )
 {
-    if ( qskInputMethodHints( m_data->input ) != hints )
+    if ( inputMethodHints() != hints )
     {
-        qskSetInputMethodHints( m_data->input, hints );
+        INPUT_INVOKE_ARG( setInputMethodHints, hints );
         qskUpdateInputMethod( this, Qt::ImHints );
     }
 }
@@ -562,11 +459,21 @@ void QskAbstractTextInput::keyPressEvent( QKeyEvent* event )
                 const auto hints = inputMethodQuery( Qt::ImHints ).toInt();
                 if ( !( hints & Qt::ImhMultiLine ) )
                 {
-                    if ( acceptInput() )
+                    if ( auto input = m_data->textInput )
                     {
-                        QGuiApplication::inputMethod()->commit();
-                        setEditing( false );
+                        bool accept = input->hasAcceptableInput();
+                        if ( !accept )
+                        {
+                            QMetaObject::invokeMethod( input, "fixup",
+                                Qt::DirectConnection, Q_RETURN_ARG(bool, accept) );
+                        }
+
+                        if ( !accept )
+                            return; // ignore
                     }
+
+                    QGuiApplication::inputMethod()->commit();
+                    setEditing( false );
                 }
 
                 break;
@@ -664,7 +571,7 @@ void QskAbstractTextInput::inputMethodEvent( QInputMethodEvent* event )
 
 bool QskAbstractTextInput::isReadOnly() const
 {
-    return m_data->input->property( "readOnly" ).value< bool >();
+    return INPUT_INVOKE( isReadOnly );
 }
 
 void QskAbstractTextInput::setReadOnly( bool on )
@@ -677,11 +584,10 @@ void QskAbstractTextInput::setReadOnly( bool on )
     setFocusPolicy( Qt::NoFocus );
 #endif
 
-    auto input = m_data->input;
-    input->setProperty( "readOnly", on );
+    INPUT_INVOKE_ARG( setReadOnly, on );
 
     // we are killing user settings here ?
-    input->setFlag( QQuickItem::ItemAcceptsInputMethod, !on );
+    m_data->input->setFlag( QQuickItem::ItemAcceptsInputMethod, !on );
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 2, 0 )
     qskUpdateInputMethod( this, Qt::ImReadOnly );
@@ -694,7 +600,7 @@ void QskAbstractTextInput::setReadOnly( bool on )
 
 bool QskAbstractTextInput::isInputMethodComposing() const
 {
-    return m_data->input->property( "inputMethodComposing" ).value< bool >();
+    return INPUT_INVOKE( isInputMethodComposing );
 }
 
 bool QskAbstractTextInput::isEditing() const
@@ -704,90 +610,74 @@ bool QskAbstractTextInput::isEditing() const
 
 void QskAbstractTextInput::setEditing( bool on )
 {
-    if ( isReadOnly() || on == isEditing() )
+    if ( ( on == isEditing() ) || ( on && isReadOnly() ) )
         return;
 
     setSkinStateFlag( Editing, on );
 
-    auto input = m_data->input;
-
-    if ( input->property( "cursorVisible" ).value< bool >() != on )
-    {
-        input->setProperty( "cursorVisible", on );
-
-        if ( auto textInput = qobject_cast< QQuickTextInput* >( input ) )
-        {
-            auto d = QQuickTextInputPrivate::get( textInput );
-            d->setBlinkingCursorEnabled( on );
-
-            if ( !on )
-            {
-                if ( d->m_passwordEchoEditing || d->m_passwordEchoTimer.isActive() )
-                    d->updatePasswordEchoEditing( false );
-            }
-        }
-
-        input->polish();
-        input->update();
-    }
-
-    if ( !on && acceptInput() )
-        QMetaObject::invokeMethod( input, "editingFinished" );
+    QMetaObject::invokeMethod( m_data->input, "setEditing",
+        Qt::DirectConnection, Q_ARG( bool, on ) );
 
     qskInputMethodSetVisible( this, on );
     Q_EMIT editingChanged( on );
 }
 
-bool QskAbstractTextInput::acceptInput()
-{
-    return true;
-}
-
 bool QskAbstractTextInput::overwriteMode() const
 {
-    return m_data->input->property( "overwriteMode" ).value< bool >();
+    return INPUT_INVOKE( overwriteMode );
 }
 
-void QskAbstractTextInput::setOverwriteMode( bool overwrite )
+void QskAbstractTextInput::setOverwriteMode( bool on )
 {
-    m_data->input->setProperty( "overwriteMode", overwrite );
+    INPUT_INVOKE_ARG( setOverwriteMode, on );
 }
 
 int QskAbstractTextInput::cursorPosition() const
 {
-    return m_data->input->property( "cursorPosition" ).value< int >();
+    return INPUT_INVOKE( cursorPosition );
 }
 
 void QskAbstractTextInput::setCursorPosition( int pos )
 {
-    m_data->input->setProperty( "cursorPosition", pos );
+    INPUT_INVOKE_ARG( setCursorPosition, pos );
 }
 
 bool QskAbstractTextInput::isCursorVisible() const
 {
-    return m_data->input->property( "cursorVisible" ).value< bool >();
+    return INPUT_INVOKE( isCursorVisible );
 }
 
 void QskAbstractTextInput::setCursorVisible( bool on )
 {
-    m_data->input->setProperty( "cursorVisible", on );
+    INPUT_INVOKE_ARG( setCursorVisible, on );
 }
 
 void QskAbstractTextInput::setWrapMode( QskTextOptions::WrapMode wrapMode )
 {
-    m_data->input->setProperty( "wrapMode", static_cast< int >( wrapMode ) );
+    if ( m_data->textInput )
+    {
+        auto mode = static_cast< QQuickTextInput::WrapMode >( wrapMode );
+        m_data->textInput->setWrapMode( mode );
+    }
+    else
+    {
+        auto mode = static_cast< QQuickTextEdit::WrapMode >( wrapMode );
+        m_data->textEdit->setWrapMode( mode );
+    }
 }
 
 QskTextOptions::WrapMode QskAbstractTextInput::wrapMode() const
 {
-    const auto mode = m_data->input->property( "wrapMode" ).value< int >();
-    return static_cast< QskTextOptions::WrapMode >( mode );
+    if ( m_data->textInput )
+        return static_cast< QskTextOptions::WrapMode >( m_data->textInput->wrapMode() );
+    else
+        return static_cast< QskTextOptions::WrapMode >( m_data->textEdit->wrapMode() );
 }
 
 QSizeF QskAbstractTextInput::unwrappedTextSize() const
 {
-    const auto w = m_data->input->property( "contentWidth" ).value< qreal >();
-    const auto h = m_data->input->property( "contentHeight" ).value< qreal >();
+    const auto w = INPUT_INVOKE( contentWidth );
+    const auto h = INPUT_INVOKE( contentHeight );
 
     return QSizeF( w, h );
 }
@@ -838,5 +728,4 @@ void QskAbstractTextInput::forwardEvent( QEvent* event )
     qskForwardEvent( m_data->input, event );
 }
 
-#include "QskAbstractTextInput.moc"
 #include "moc_QskAbstractTextInput.cpp"

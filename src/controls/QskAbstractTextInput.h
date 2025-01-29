@@ -18,7 +18,7 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     Q_PROPERTY( QString text READ text
         WRITE setText NOTIFY textChanged USER true )
 
-    Q_PROPERTY( int length READ length NOTIFY lengthChanged )
+    Q_PROPERTY( int length READ length NOTIFY textChanged )
 
     Q_PROPERTY( QString preeditText READ preeditText
         NOTIFY preeditTextChanged )
@@ -167,11 +167,9 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
 
     void inputMethodComposingChanged( bool );
 
-    void lengthChanged( int );
-    void textChanged( const QString& );
+    void textChanged();
     void textEdited( const QString& );
-    void displayTextChanged( const QString& );
-    void preeditTextChanged( const QString& );
+    void preeditTextChanged();
 
 #if 1
     void canUndoChanged( bool );
@@ -181,7 +179,7 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
 
   protected:
     QskAbstractTextInput( QQuickItem* parent = nullptr );
-    void setup( QQuickItem*, const QMetaObject* );
+    void setup( QQuickItem* );
 
     void forwardEvent( QEvent* );
 
@@ -199,8 +197,6 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     void focusOutEvent( QFocusEvent* ) override;
 
     void inputMethodEvent( QInputMethodEvent* ) override;
-
-    virtual bool acceptInput();
 
     void updateLayout() override;
     void updateNode( QSGNode* ) override;

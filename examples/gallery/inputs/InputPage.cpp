@@ -77,7 +77,7 @@ namespace
                     field->setPlaceholderText( "<Name>" );
 
 connect( field, &QskTextField::textChanged,
-    []( const QString& text ) { qDebug() << "Text:" << text; } );
+    [field]() { qDebug() << "Text:" << field->text(); } );
 
                 }
 
@@ -113,7 +113,7 @@ connect( field, &QskTextField::textChanged,
 
 #if 1
                 connect( textArea, &QskTextArea::textChanged,
-                    []( const QString& text ) { qDebug() << "Text:" << text; } );
+                    this, [textArea]() { qDebug() << "Text:" << textArea->text(); } );
 #endif
             }
         }

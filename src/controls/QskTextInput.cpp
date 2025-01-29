@@ -15,6 +15,23 @@ QSK_QT_PRIVATE_END
 QSK_SUBCONTROL( QskTextInput, TextPanel )
 QSK_SYSTEM_STATE( QskTextInput, Error, QskAspect::FirstSystemState << 4 )
 
+/*
+    Other properties offered from QQuickTextInput:
+
+    - accepted();
+
+      What is this one good for ?
+
+    - textEdited();
+
+      TODO ...
+
+    - passwordCharacterChanged();
+    - passwordMaskDelayChanged(int delay);
+
+      Maybe we will have a QskPasswordField class, where we export
+      these properties.
+ */
 namespace
 {
     class QuickTextInput final : public QQuickTextInput
@@ -32,13 +49,10 @@ namespace
             setVAlign( ( VAlignment ) ( int( alignment ) & 0xf0 ) );
         }
 
-        bool fixup()
-        {
-            return QQuickTextInputPrivate::get( this )->fixup();
-        }
-
+        Q_INVOKABLE bool fixup();
         Q_INVOKABLE void updateColors();
         Q_INVOKABLE void updateMetrics();
+        Q_INVOKABLE void setEditing( bool );
         Q_INVOKABLE void handleEvent( QEvent* );
 
       protected:
@@ -89,6 +103,18 @@ namespace
             this, &QuickTextInput::updateClip );
     }
 
+    void QuickTextInput::setEditing( bool on )
+    {
+        Q_ASSERT( focusOnPress() == false );
+
+        QFocusEvent event( on ? QEvent::FocusIn : QEvent::FocusOut );
+        QQuickTextInputPrivate::get( this )->handleFocusEvent( &event );
+    }
+
+    bool QuickTextInput::fixup()
+    {
+        return QQuickTextInputPrivate::get( this )->fixup();
+    }
 
     void QuickTextInput::updateMetrics()
     {
@@ -136,13 +162,29 @@ QskTextInput::QskTextInput( QQuickItem* parent )
      */
 
     m_data->wrappedInput = new QuickTextInput( this );
+    auto wrappedInput = m_data->wrappedInput;
 
-    setAcceptedMouseButtons( m_data->wrappedInput->acceptedMouseButtons() );
-    m_data->wrappedInput->setAcceptedMouseButtons( Qt::NoButton );
+    setAcceptedMouseButtons( wrappedInput->acceptedMouseButtons() );
+    wrappedInput->setAcceptedMouseButtons( Qt::NoButton );
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
 
-    setup( m_data->wrappedInput, &QQuickTextInput::staticMetaObject );
+    setup( wrappedInput );
+
+#if 1
+    connect( wrappedInput, &QQuickTextInput::maximumLengthChanged,
+        this, &QskTextInput::maximumLengthChanged );
+
+    connect( wrappedInput, &QQuickTextInput::displayTextChanged,
+        this, &QskTextInput::displayTextChanged );
+
+    connect( wrappedInput, &QQuickTextInput::inputMaskChanged,
+        this, &QskTextInput::inputMaskChanged );
+
+    connect( wrappedInput, &QQuickTextInput::acceptableInputChanged,
+        this, [this]() { Q_EMIT acceptableInputChanged( hasAcceptableInput() ); } );
+
+#endif
 }
 
 QskTextInput::~QskTextInput()
@@ -171,7 +213,11 @@ QValidator* QskTextInput::validator() const
 
 void QskTextInput::setValidator( QValidator* validator )
 {
-    m_data->wrappedInput->setValidator( validator );
+    if ( validator != m_data->wrappedInput->validator() )
+    {
+        m_data->wrappedInput->setValidator( validator );
+        Q_EMIT validatorChanged( validator );
+    }
 }
 
 QString QskTextInput::inputMask() const
@@ -191,7 +237,11 @@ bool QskTextInput::autoScroll() const
 
 void QskTextInput::setAutoScroll( bool on )
 {
-    m_data->wrappedInput->setAutoScroll( on );
+    if ( m_data->wrappedInput->autoScroll() != on )
+    {
+        m_data->wrappedInput->setAutoScroll( on );
+        Q_EMIT autoScrollChanged( on );
+    }
 }
 
 QskTextInput::EchoMode QskTextInput::echoMode() const
@@ -208,6 +258,8 @@ void QskTextInput::setEchoMode( EchoMode mode )
             static_cast< QQuickTextInput::EchoMode >( mode ) );
 
         qskUpdateInputMethod( this, Qt::ImHints );
+
+        Q_EMIT echoModeChanged( mode );
     }
 }
 
@@ -249,17 +301,17 @@ QString QskTextInput::displayText() const
 
 bool QskTextInput::hasAcceptableInput() const
 {
+    /*
+        We might want to make visual adjustments while having
+        an "invalid" text. Don't we need a QSkinny state
+        for this: TODO ...
+     */
     return m_data->wrappedInput->hasAcceptableInput();
 }
 
 bool QskTextInput::fixup()
 {
     return m_data->wrappedInput->fixup();
-}
-
-bool QskTextInput::acceptInput()
-{
-    return hasAcceptableInput() || fixup();
 }
 
 #include "QskTextInput.moc"

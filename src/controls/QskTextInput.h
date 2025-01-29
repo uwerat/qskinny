@@ -90,7 +90,6 @@ class QSK_EXPORT QskTextInput : public QskAbstractTextInput
 
     bool hasAcceptableInput() const;
     bool fixup();
-    bool acceptInput() override;
 
     void ensureVisible( int position );
 
@@ -107,7 +106,7 @@ class QSK_EXPORT QskTextInput : public QskAbstractTextInput
     void inputMaskChanged( const QString& );
     void acceptableInputChanged( bool );
 
-    void displayTextChanged( const QString& );
+    void displayTextChanged();
 
   private:
     class PrivateData;

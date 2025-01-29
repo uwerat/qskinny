@@ -24,8 +24,6 @@ class QSK_EXPORT QskTextEdit : public QskAbstractTextInput
     Q_PROPERTY( QUrl baseUrl READ baseUrl WRITE setBaseUrl
         RESET resetBaseUrl NOTIFY baseUrlChanged )
 
-    Q_PROPERTY( QString hoveredLink READ hoveredLink NOTIFY linkHovered )
-
     using Inherited = QskAbstractTextInput;
 
   public:
@@ -46,8 +44,6 @@ class QSK_EXPORT QskTextEdit : public QskAbstractTextInput
     void setBaseUrl( const QUrl& );
     void resetBaseUrl();
 
-    QString hoveredLink() const;
-
   Q_SIGNALS:
     void lineCountChanged( int );
     void baseUrlChanged( QUrl );
@@ -56,6 +52,7 @@ class QSK_EXPORT QskTextEdit : public QskAbstractTextInput
     void tabStopDistanceChanged( qreal );
 
     void linkHovered( const QString& );
+    void linkActivated( const QString& );
 
   private:
     class PrivateData;
