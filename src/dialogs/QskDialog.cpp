@@ -16,9 +16,9 @@
 #include "QskBoxBorderMetrics.h"
 #include "QskColorSelectionWindow.h"
 #include "QskFileSelectionWindow.h"
+#include "QskFontSelectionWindow.h"
 #include "QskEvent.h"
 #include "QskFunctions.h"
-#include "QskListView.h"
 
 #include "QskFocusIndicator.h"
 
@@ -245,6 +245,17 @@ static QColor qskSelectColor( QskColorSelectionWindow< W >& window )
     return selectedColor;
 }
 
+template< typename W >
+static QFont qskSelectFont( QskFontSelectionWindow< W >& window )
+{
+    QFont selectedFont = window.selectedFont();
+
+    if( window.exec() == QskDialog::Accepted )
+        selectedFont = window.selectedFont();
+
+    return selectedFont;
+}
+
 class QskDialog::PrivateData
 {
   public:
@@ -447,6 +458,34 @@ QColor QskDialog::selectColor( const QString& title ) const
     QskColorSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
         actions, defaultAction );
     return qskSelectColor< QskDialogWindow >( window );
+}
+
+QFont QskDialog::selectFont( const QString& title ) const
+{
+#if 1
+    // should be parameters
+    const auto actions = QskDialog::Ok | QskDialog::Cancel;
+    const auto defaultAction = QskDialog::Ok;
+#endif
+
+    if ( m_data->policy == EmbeddedBox )
+    {
+        auto quickWindow = qobject_cast< QQuickWindow* >( m_data->transientParent );
+
+        if ( quickWindow == nullptr )
+            quickWindow = qskSomeQuickWindow();
+
+        if ( quickWindow )
+        {
+            QskFontSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
+                actions, defaultAction );
+            return qskSelectFont< QskDialogSubWindow >( window );
+        }
+    }
+
+    QskFontSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
+        actions, defaultAction );
+    return qskSelectFont< QskDialogWindow >( window );
 }
 
 QskDialog::ActionRole QskDialog::actionRole( Action action )

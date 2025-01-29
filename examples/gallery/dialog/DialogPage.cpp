@@ -107,6 +107,9 @@ namespace
             auto colorSelectionButton = new Button( "Color selection", this );
             connect( colorSelectionButton, &Button::clicked, this, &ButtonBox::execColorSelection );
 
+            auto fontSelectionButton = new Button( "Font selection", this );
+            connect( fontSelectionButton, &Button::clicked, this, &ButtonBox::execFontSelection );
+
             setExtraSpacingAt( Qt::BottomEdge );
         }
 
@@ -193,6 +196,15 @@ namespace
             // not implemented for now (class is not public)
 #else
             ( void ) qskDialog->selectColor( "select color" );
+#endif
+        }
+
+        void execFontSelection()
+        {
+#ifndef QSK_USE_EXEC
+            // not implemented for now (class is not public)
+#else
+            ( void ) qskDialog->selectFont( "select font" );
 #endif
         }
     };
