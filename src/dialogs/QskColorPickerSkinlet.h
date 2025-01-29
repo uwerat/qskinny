@@ -32,15 +32,13 @@ class QskColorPickerSkinlet : public QskSkinlet
     QRectF subControlRect( const QskSkinnable*,
         const QRectF&, QskAspect::Subcontrol ) const override;
 
-    QColor selectedColor() const;
-
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
+  private:
     QSGNode* updateColorPaneNode( const QskColorPicker*, QSGNode* ) const;
 
-  private:
     QRectF cursorRect( const QskSkinnable*, const QRectF&, int index ) const;
 };
 

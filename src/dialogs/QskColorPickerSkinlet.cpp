@@ -18,10 +18,6 @@ namespace
     class ColorPaneNode : public QskPaintedNode
     {
       public:
-        ColorPaneNode()
-        {
-        }
-
         void paint( QPainter* p, const QSize& size, const void* nodeData ) override
         {
             const Q* q = static_cast< const Q* >( nodeData );

@@ -8,7 +8,7 @@
 
 #include "QskGlobal.h"
 
-#include <qrgb.h>
+#include <qcolor.h>
 #include <qobject.h>
 #include <memory>
 

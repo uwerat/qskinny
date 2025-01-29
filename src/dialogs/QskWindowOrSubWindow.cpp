@@ -8,6 +8,7 @@
 #include "QskDialogButtonBox.h"
 #include "QskFocusIndicator.h"
 
+// copied from QskDialog.cpp:
 static QskDialog::Action qskActionCandidate( const QskDialogButtonBox* buttonBox )
 {
     // not the fastest code ever, but usually we always

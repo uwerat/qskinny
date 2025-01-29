@@ -90,12 +90,12 @@ namespace
                     }
                     case FileDialog:
                     {
-                        auto file = qskDialog->selectFile( "select file", QDir::currentPath() );
+                        qskDialog->selectFile( "select file", QDir::currentPath() );
                         break;
                     }
                     case FolderDialog:
                     {
-                        auto file = qskDialog->selectDirectory( "select directory", QDir::currentPath() );
+                        qskDialog->selectDirectory( "select directory", QDir::currentPath() );
                         break;
                     }
                     case FontDialog:
@@ -105,8 +105,7 @@ namespace
                     }
                     case MessageDialog:
                     {
-                        auto action = qskDialog->message( "message", "The quick brown fox jumps over the lazy dog" );
-                        qDebug() << "got message action" << action;
+                        qskDialog->message( "message", "The quick brown fox jumps over the lazy dog" );
                         break;
                     }
                     default:

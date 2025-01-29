@@ -23,7 +23,7 @@ class QskFontSelectionWindow : public QskWindowOrSubWindow< W >
 
   private:
     void setupControls( QQuickItem* );
-    void loadFontInfo();
+    void connectSignals();
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

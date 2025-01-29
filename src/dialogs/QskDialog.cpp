@@ -12,22 +12,15 @@
 #include "QskSelectionSubWindow.h"
 #include "QskSelectionWindow.h"
 
-#include "QskBoxBorderColors.h"
-#include "QskBoxBorderMetrics.h"
 #include "QskColorSelectionWindow.h"
 #include "QskFileSelectionWindow.h"
 #include "QskFontSelectionWindow.h"
-#include "QskEvent.h"
-#include "QskFunctions.h"
 
 #include "QskFocusIndicator.h"
 
-#include <qfontmetrics.h>
-#include <qfilesystemmodel.h>
 #include <qguiapplication.h>
 #include <qpointer.h>
 #include <qquickwindow.h>
-#include <qtimer.h>
 
 #include <qpa/qplatformdialoghelper.h>
 
@@ -63,10 +56,6 @@ static QskDialog::DialogCode qskExec( QskDialogWindow* dialogWindow )
 #endif
 
     return dialogWindow->exec();
-}
-
-namespace
-{
 }
 
 static QQuickWindow* qskSomeQuickWindow()
@@ -123,7 +112,6 @@ static void qskSetupWindow(
     window->setModality( transientParent ? Qt::WindowModal : Qt::ApplicationModal );
 
     const QSize size = window->sizeConstraint();
-    qDebug() << "sc:" << size;
 
     if ( window->parent() )
     {
