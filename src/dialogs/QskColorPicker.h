@@ -37,8 +37,8 @@ class QskColorPicker : public QskBoundedControl
 
   Q_SIGNALS:
     void valueChanged( qreal );
-    void selectedColorChanged() const;
-    void positionChanged() const;
+    void selectedColorChanged();
+    void positionChanged();
 
   protected:
     void updateLayout() override;

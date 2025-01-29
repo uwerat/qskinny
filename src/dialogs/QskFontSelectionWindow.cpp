@@ -40,7 +40,7 @@ QskFontSelectionWindow< W >::QskFontSelectionWindow( QObject* parent, const QStr
 #endif
 
     setupControls( outerBox );
-    loadFontInfo();
+    connectSignals();
 
     Inherited::setContentItem( outerBox );
 }
@@ -101,7 +101,7 @@ void QskFontSelectionWindow< W >::setupControls( QQuickItem* parentItem )
 }
 
 template< typename W >
-void QskFontSelectionWindow< W >::loadFontInfo()
+void QskFontSelectionWindow< W >::connectSignals()
 {
     const auto families = QFontDatabase::families();
     m_data->familyView->setEntries( families );
