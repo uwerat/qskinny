@@ -3,25 +3,28 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#ifndef QSK_COLOR_SELECTION_WINDODW_H
-#define QSK_COLOR_SELECTION_WINDODW_H
+#ifndef QSK_FONT_SELECTION_WINDODW_H
+#define QSK_FONT_SELECTION_WINDODW_H
 
 #include "QskWindowOrSubWindow.h"
 
 template< typename W >
-class QskColorSelectionWindow : public QskWindowOrSubWindow< W >
+class QskFontSelectionWindow : public QskWindowOrSubWindow< W >
 {
     using Inherited = QskWindowOrSubWindow< W >;
 
   public:
 
-    QskColorSelectionWindow( QObject* parent, const QString& title,
+    QskFontSelectionWindow( QObject* parent, const QString& title,
         QskDialog::Actions actions, QskDialog::Action defaultAction );
-    ~QskColorSelectionWindow();
+    ~QskFontSelectionWindow();
 
-    QColor selectedColor() const;
+    QFont selectedFont() const;
 
   private:
+    void setupControls( QQuickItem* );
+    void loadFontInfo();
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

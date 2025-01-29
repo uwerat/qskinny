@@ -457,6 +457,7 @@ list(APPEND PRIVATE_HEADERS
     dialogs/QskColorPickerSkinlet.h
     dialogs/QskColorSelectionWindow.h
     dialogs/QskFileSelectionWindow.h
+    dialogs/QskFontSelectionWindow.h
     dialogs/QskWindowOrSubWindow.h
 )
 
@@ -470,6 +471,7 @@ list(APPEND SOURCES
     dialogs/QskDialogSubWindow.cpp
     dialogs/QskDialogWindow.cpp
     dialogs/QskFileSelectionWindow.cpp
+    dialogs/QskFontSelectionWindow.cpp
     dialogs/QskMessageSubWindow.cpp
     dialogs/QskMessageWindow.cpp
     dialogs/QskSelectionSubWindow.cpp

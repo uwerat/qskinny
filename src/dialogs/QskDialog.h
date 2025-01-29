@@ -139,6 +139,8 @@ class QSK_EXPORT QskDialog : public QObject
 
     Q_INVOKABLE QColor selectColor( const QString& title ) const;
 
+    Q_INVOKABLE QFont selectFont( const QString& title ) const;
+
     static ActionRole actionRole( Action action );
 
   Q_SIGNALS:

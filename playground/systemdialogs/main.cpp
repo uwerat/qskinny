@@ -21,34 +21,6 @@
 #include <private/qquickfontdialog_p.h>
 #include <private/qquickmessagedialog_p.h>
 
-#include <QtQml>
-
-static QQuickAbstractDialog* createQml( const char* className )
-{
-    static QQmlEngine engine( nullptr );
-
-    QByteArray qmlCode = "import QtQuick.Dialogs\n";
-    qmlCode += className;
-    qmlCode += " {}";
-
-    auto component = new QQmlComponent( &engine );
-    component->setData( qmlCode.constData(), QUrl() );
-
-    if ( component->status() != QQmlComponent::Ready )
-    {
-        qWarning() << component->errorString();
-        delete component;
-
-        return nullptr;
-    }
-
-    auto dialog = qobject_cast< QQuickAbstractDialog* >( component->create() );
-    QObject::connect( dialog, &QObject::destroyed,
-        component, &QObject::deleteLater );
-
-    return dialog;
-}
-
 namespace
 {
     class ButtonBox : public QskLinearBox
@@ -126,6 +98,11 @@ namespace
                         auto file = qskDialog->selectDirectory( "select directory", QDir::currentPath() );
                         break;
                     }
+                    case FontDialog:
+                    {
+                        qskDialog->selectFont( "select font" );
+                        break;
+                    }
                     case MessageDialog:
                     {
                         auto action = qskDialog->message( "message", "The quick brown fox jumps over the lazy dog" );
@@ -134,11 +111,7 @@ namespace
                     }
                     default:
                     {
-                        const auto metaEnum = QMetaEnum::fromType<DialogType>();
-                        m_dialog = createQml( metaEnum.key( dialogType ) );
-
-                        if ( m_dialog )
-                            m_dialog->setParentWindow( window() );
+                        qWarning() << "unknown dialog type detected";
                     }
                 }
             }
