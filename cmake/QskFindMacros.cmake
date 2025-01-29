@@ -24,6 +24,8 @@ macro(qsk_setup_Qt)
     else()
         message(FATAL_ERROR "Couldn't find any Qt package !")
     endif()
+    
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Quick)
 
     # Using find_package is probably no good idea as all other Qt modules should
     # be located below ${_qt_cmake_dir}. Otherwise we might end up with modules
