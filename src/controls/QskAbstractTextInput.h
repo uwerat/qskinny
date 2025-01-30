@@ -38,6 +38,9 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     Q_PROPERTY( bool inputMethodComposing READ isInputMethodComposing
         NOTIFY inputMethodComposingChanged )
 
+    Q_PROPERTY( QColor textColor READ textColor
+        WRITE setTextColor RESET resetTextColor NOTIFY textColorChanged )
+
     Q_PROPERTY( QskFontRole fontRole READ fontRole
         WRITE setFontRole RESET resetFontRole NOTIFY fontRoleChanged )
 
@@ -115,6 +118,10 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     void setWrapMode( QskTextOptions::WrapMode );
     QskTextOptions::WrapMode wrapMode() const;
 
+    void setTextColor( const QColor& );
+    void resetTextColor();
+    QColor textColor() const;
+
     void setFontRole( const QskFontRole& role );
     void resetFontRole();
     QskFontRole fontRole() const;
@@ -150,12 +157,19 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     void deselect();
     void selectAll();
 
+    void cut();
+    void copy();
+    void paste();
+    void undo();
+    void redo();
+
   Q_SIGNALS:
     void editingChanged( bool );
     void readOnlyChanged( bool );
     void activationModesChanged();
     void inputMethodHintsChanged( Qt::InputMethodHints );
-    void fontRoleChanged();
+    void fontRoleChanged( const QskFontRole& );
+    void textColorChanged( const QColor& );
     void overwriteModeChanged( bool );
     void cursorPositionChanged( int );
     void cursorVisibleChanged( bool );
@@ -171,11 +185,9 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     void textEdited( const QString& );
     void preeditTextChanged();
 
-#if 1
     void canUndoChanged( bool );
     void canRedoChanged( bool );
     void canPasteChanged( bool );
-#endif
 
   protected:
     QskAbstractTextInput( QQuickItem* parent = nullptr );

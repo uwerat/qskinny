@@ -178,12 +178,6 @@ void QskAbstractTextInput::setup( QQuickItem* wrappedInput )
           the cursor using skin hints and/or creating the scene graph node
           from the skinlet. TODO ...
 
-        - colorChanged
-        - fontChanged
-
-          Set from the skin hints - might be important enough to offer a
-          convenience API
-
         - selectionColorChanged
         - selectedTextColorChanged
 
@@ -285,35 +279,18 @@ QString QskAbstractTextInput::preeditText() const
     return INPUT_INVOKE( preeditText );
 }
 
-void QskAbstractTextInput::clear()
-{
-    INPUT_INVOKE( clear );
-}
+bool QskAbstractTextInput::canUndo() const { return INPUT_INVOKE( canUndo ); }
+bool QskAbstractTextInput::canRedo() const { return INPUT_INVOKE( canRedo ); }
+bool QskAbstractTextInput::canPaste() const { return INPUT_INVOKE( canPaste ); }
 
-void QskAbstractTextInput::selectAll()
-{
-    INPUT_INVOKE( selectAll );
-}
-
-void QskAbstractTextInput::deselect()
-{
-    INPUT_INVOKE( deselect );
-}
-
-bool QskAbstractTextInput::canUndo() const
-{
-    return INPUT_INVOKE( canUndo );
-}
-
-bool QskAbstractTextInput::canRedo() const
-{
-    return INPUT_INVOKE( canRedo );
-}
-
-bool QskAbstractTextInput::canPaste() const
-{
-    return INPUT_INVOKE( canPaste );
-}
+void QskAbstractTextInput::clear() { INPUT_INVOKE( clear ); }
+void QskAbstractTextInput::selectAll() { INPUT_INVOKE( selectAll ); }
+void QskAbstractTextInput::deselect() { INPUT_INVOKE( deselect ); }
+void QskAbstractTextInput::cut() { INPUT_INVOKE( cut ); }
+void QskAbstractTextInput::copy() { INPUT_INVOKE( copy ); }
+void QskAbstractTextInput::paste() { INPUT_INVOKE( paste ); }
+void QskAbstractTextInput::undo() { INPUT_INVOKE( undo ); }
+void QskAbstractTextInput::redo() { INPUT_INVOKE( redo ); }
 
 void QskAbstractTextInput::setFontRole( const QskFontRole& role )
 {
@@ -322,7 +299,7 @@ void QskAbstractTextInput::setFontRole( const QskFontRole& role )
         const auto queries = Qt::ImCursorRectangle | Qt::ImFont | Qt::ImAnchorRectangle;
         qskUpdateInputMethod( this, queries );
 
-        Q_EMIT fontRoleChanged();
+        Q_EMIT fontRoleChanged( role );
     }
 }
 
@@ -333,7 +310,7 @@ void QskAbstractTextInput::resetFontRole()
         const auto queries = Qt::ImCursorRectangle | Qt::ImFont | Qt::ImAnchorRectangle;
         qskUpdateInputMethod( this, queries );
 
-        Q_EMIT fontRoleChanged();
+        Q_EMIT fontRoleChanged( fontRole() );
     }
 }
 
@@ -680,6 +657,23 @@ QSizeF QskAbstractTextInput::unwrappedTextSize() const
     const auto h = INPUT_INVOKE( contentHeight );
 
     return QSizeF( w, h );
+}
+
+void QskAbstractTextInput::setTextColor( const QColor& color )
+{
+    if ( setColor( Text, color ) )
+        Q_EMIT textColorChanged( color );
+}
+  
+void QskAbstractTextInput::resetTextColor()
+{
+    if ( resetColor( Text ) )
+        Q_EMIT textColorChanged( color( Text ) );
+}   
+
+QColor QskAbstractTextInput::textColor() const
+{
+    return color( Text );
 }
 
 void QskAbstractTextInput::setAlignment( Qt::Alignment alignment )
