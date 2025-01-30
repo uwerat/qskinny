@@ -22,10 +22,11 @@ namespace
         {
         }
 
-        void paint( QPainter* p, const QSize&, const void* nodeData ) override
+        void paint( QPainter* p, const QSize& size, const void* nodeData ) override
         {
             const Q* q = static_cast< const Q* >( nodeData );
-            p->drawImage( QPointF( 0, 0 ), q->image() );
+            const auto image = q->image().scaled( size );
+            p->drawImage( QPointF( 0, 0 ), image );
         }
 
         void updateNode( QQuickWindow* window, const QRectF& rect, const Q* q )

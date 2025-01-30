@@ -8,6 +8,8 @@
 #include "QskEvent.h"
 #include "QskFunctions.h"
 
+#include <QQuickWindow>
+
 QSK_SUBCONTROL( QskColorPicker, Panel )
 QSK_SUBCONTROL( QskColorPicker, ColorPane )
 QSK_SUBCONTROL( QskColorPicker, Selector )
@@ -180,7 +182,10 @@ QPointF QskColorPicker::position() const
 void QskColorPicker::createImage()
 {
     const auto r = subControlRect( ColorPane );
-    ::createImage( &m_data->image, r.size(), valueAsRatio() );
+    const auto ratio = window() ? window()->effectiveDevicePixelRatio() : 1.0;
+    const auto size = r.size() * ratio;
+
+    ::createImage( &m_data->image, size, valueAsRatio() );
 }
 
 #include "moc_QskColorPicker.cpp"
