@@ -7,12 +7,21 @@
 
 #include "QskEvent.h"
 #include "QskFunctions.h"
+#include "QskInternalMacros.h"
 #include "QskLinearBox.h"
 #include "QskListView.h"
 #include "QskScrollArea.h"
 #include "QskPushButton.h"
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+#include <QDateTime>
+#else
 #include <QFileSystemModel>
+#endif
+
+QSK_QT_PRIVATE_BEGIN
+#include <private/qquickwindow_p.h>
+QSK_QT_PRIVATE_END
 
 // copied from QskListView.cpp:
 static inline int qskRowAt( const QskListView* listView, const QPointF& pos )
@@ -48,18 +57,132 @@ static QMouseEvent* qskClonedMouseEvent( const QMouseEvent* event )
 
 namespace
 {
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    class Model : public QObject
+    {
+        Q_OBJECT
+
+      public:
+
+        Model( QObject* parent )
+            : QObject( parent )
+        {
+        }
+
+        QString rootPath() const
+        {
+            return m_dir.absolutePath();
+        }
+
+        void setRootPath( const QString& path )
+        {
+            m_dir.setPath( path );
+            m_list = m_dir.entryInfoList();
+            Q_EMIT directoryLoaded( m_dir.path() );
+            Q_EMIT rootPathChanged( m_dir.path() );
+        }
+
+        QDir::Filters filter() const
+        {
+            return m_dir.filter();
+        }
+
+        void setFilter( QDir::Filters filter )
+        {
+            m_dir.setFilter( filter );
+        }
+
+        int rows() const
+        {
+            return m_dir.count();
+        }
+
+        int columns() const
+        {
+            return 3;
+        }
+
+        QVariant entry( int row, int col )
+        {
+            Q_ASSERT( row < m_list.count() );
+
+            const auto fi = m_list.at( row );
+
+            switch( col )
+            {
+            case 0:
+                return fi.fileName();
+            case 1:
+            {
+                if( fi.isDir() )
+                    return "Directory";
+                else if( fi.isExecutable() )
+                    return "Executable";
+                else
+                    return "File";
+            }
+            default:
+                return fi.fileTime( QFileDevice::FileAccessTime ).toString();
+            }
+        }
+
+      Q_SIGNALS:
+        void directoryLoaded( const QString& path );
+        void rootPathChanged( const QString& path );
+
+      private:
+        QDir m_dir;
+        QFileInfoList m_list;
+    };
+#else
+    class Model : public QFileSystemModel
+    {
+        using Inherited = QFileSystemModel;
+
+      public:
+        Model( QObject* parent )
+            : QFileSystemModel( parent )
+        {
+        }
+
+        int rows() const
+        {
+            const auto i = index( rootPath() );
+            return Inherited::rowCount( i );
+        }
+
+        int columns() const
+        {
+            const auto i = index( rootPath() );
+            return Inherited::columnCount( i );
+        }
+
+        QVariant entry( int row, int col ) const
+        {
+            const auto rootIndex = index( rootPath() );
+
+            const auto i = index( row, col, rootIndex );
+            const auto v = data( i );
+
+            return v;
+        }
+    };
+#endif
+
     class FileSystemView : public QskListView
     {
         using Inherited = QskListView;
 
+        Q_OBJECT
+
       public:
         FileSystemView( const QString& directory, QDir::Filters filters, QQuickItem* parent = nullptr )
             : QskListView( parent )
-            , m_model( new QFileSystemModel( this ) )
+            , m_model( new Model( this ) )
         {
             const auto defaultWidth = 50;
 
-            connect( m_model, &QFileSystemModel::directoryLoaded, this, [this]()
+            connect( m_model, &Model::directoryLoaded, this, [this, defaultWidth]()
             {
                 m_columnWidths.fill( defaultWidth );
                 updateScrollableSize();
@@ -67,23 +190,24 @@ namespace
                 setSelectedRow( -1 );
             });
 
+            connect( m_model, &Model::rootPathChanged,
+                this, &FileSystemView::rootPathChanged );
+
+            m_columnWidths.fill( defaultWidth, m_model->columns() );
+
             m_model->setFilter( filters );
             m_model->setRootPath( {} ); // invalidate to make sure to get an update
             m_model->setRootPath( directory );
-
-            m_columnWidths.fill( defaultWidth, m_model->columnCount() );
         }
 
         virtual int rowCount() const override
         {
-            const auto index = m_model->index( m_model->rootPath() );
-            return m_model->rowCount( index );
+            return m_model->rows();
         }
 
         virtual int columnCount() const override
         {
-            const auto index = m_model->index( m_model->rootPath() );
-            return m_model->columnCount( index );
+            return m_model->columns();
         }
 
         virtual qreal columnWidth( int col ) const override
@@ -111,10 +235,7 @@ namespace
 
         virtual QVariant valueAt( int row, int col ) const override
         {
-            const auto rootIndex = m_model->index( m_model->rootPath() );
-
-            const auto index = m_model->index( row, col, rootIndex );
-            const auto v = m_model->data( index );
+            const auto v = m_model->entry( row, col );
 
             const auto w = qskHorizontalAdvance( effectiveFont( Text ), v.toString() );
 
@@ -126,13 +247,25 @@ namespace
             return v;
         }
 
-        QFileSystemModel* model()
+        QString rootPath() const
         {
-            return m_model;
+            return m_model->rootPath();
         }
 
-      protected:
+        void setRootPath( const QString& rootPath )
+        {
+            m_model->setRootPath( rootPath );
+        }
 
+        QDir::Filters filter() const
+        {
+            return m_model->filter();
+        }
+
+      Q_SIGNALS:
+        void rootPathChanged( const QString& rootPath );
+
+      protected:
         void mousePressEvent( QMouseEvent* event ) override
         {
             if( m_doubleClickEvent && m_doubleClickEvent->timestamp() == event->timestamp() )
@@ -164,7 +297,7 @@ namespace
         }
 
       private:
-        QFileSystemModel* const m_model;
+        Model* const m_model;
         mutable QVector< int > m_columnWidths;
         QMouseEvent* m_doubleClickEvent = nullptr;
     };
@@ -211,7 +344,7 @@ QString QskFileSelectionWindow< W >::selectedPath() const
     if( m_data->fileView->selectedRow() != -1 )
     {
         const auto path = m_data->fileView->valueAt( m_data->fileView->selectedRow(), 0 ).toString();
-        QFileInfo fi( m_data->fileView->model()->rootPath(), path );
+        QFileInfo fi( m_data->fileView->rootPath(), path );
         return fi.absoluteFilePath();
     }
 
@@ -275,7 +408,7 @@ void QskFileSelectionWindow< W >::updateHeader( const QString& path )
 
         QObject::connect( b, &QskPushButton::clicked, this, [this, fi]()
         {
-            m_data->fileView->model()->setRootPath( fi.filePath() );
+            m_data->fileView->setRootPath( fi.filePath() );
         });
     }
 
@@ -303,12 +436,12 @@ void QskFileSelectionWindow< W >::setupFileSystemView( const QString& directory,
 {
     m_data->fileView = new FileSystemView( directory, filters, parentItem );
 
-    QObject::connect( m_data->fileView->model(), &QFileSystemModel::rootPathChanged,
+    QObject::connect( m_data->fileView, &FileSystemView::rootPathChanged,
         this, &QskFileSelectionWindow< W >::updateHeader );
 
     QObject::connect( m_data->fileView, &QskListView::selectedRowChanged, this, [this]()
     {
-        if( m_data->fileView->model()->filter() & QDir::Files )
+        if( m_data->fileView->filter() & QDir::Files )
         {
             QFileInfo fi( selectedPath() );
             W::defaultButton()->setEnabled( !fi.isDir() );
@@ -318,3 +451,5 @@ void QskFileSelectionWindow< W >::setupFileSystemView( const QString& directory,
 
 template class QskFileSelectionWindow< QskDialogWindow >;
 template class QskFileSelectionWindow< QskDialogSubWindow >;
+
+#include "QskFileSelectionWindow.moc"
