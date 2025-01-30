@@ -7,12 +7,17 @@
 
 #include "QskEvent.h"
 #include "QskFunctions.h"
+#include "QskInternalMacros.h"
 #include "QskLinearBox.h"
 #include "QskListView.h"
 #include "QskScrollArea.h"
 #include "QskPushButton.h"
 
 #include <QFileSystemModel>
+
+QSK_QT_PRIVATE_BEGIN
+#include <private/qquickwindow_p.h>
+QSK_QT_PRIVATE_END
 
 // copied from QskListView.cpp:
 static inline int qskRowAt( const QskListView* listView, const QPointF& pos )
@@ -59,7 +64,7 @@ namespace
         {
             const auto defaultWidth = 50;
 
-            connect( m_model, &QFileSystemModel::directoryLoaded, this, [this]()
+            connect( m_model, &QFileSystemModel::directoryLoaded, this, [this, defaultWidth]()
             {
                 m_columnWidths.fill( defaultWidth );
                 updateScrollableSize();

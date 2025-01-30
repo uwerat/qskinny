@@ -537,8 +537,13 @@ target_include_directories(${target}
     INTERFACE
         $<INSTALL_INTERFACE:${QSK_INSTALL_HEADERS}>)
 
+if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
 target_link_libraries(${target}
     PUBLIC Qt::Core Qt::CorePrivate Qt::Quick Qt::QuickPrivate)
+else()
+target_link_libraries(${target}
+    PUBLIC Qt::Core Qt::CorePrivate Qt::Quick Qt::QuickPrivate Qt::Widgets)
+endif()
 
 if (QT_VERSION_MAJOR VERSION_GREATER 5)
     target_link_libraries(${target} PUBLIC Qt::OpenGL Qt::OpenGLPrivate)

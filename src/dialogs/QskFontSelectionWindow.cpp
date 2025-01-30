@@ -13,6 +13,44 @@
 
 #include <QFontDatabase>
 
+namespace
+{
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    QStringList families()
+    {
+        QFontDatabase db;
+        return db.families();
+    }
+
+    QStringList styles( const QString& family )
+    {
+        QFontDatabase db;
+        return db.styles( family );
+    }
+
+    QList< int > pointSizes( const QString& family )
+    {
+        QFontDatabase db;
+        return db.pointSizes( family );
+    }
+#else
+    QStringList families()
+    {
+        return QFontDatabase::families();
+    }
+
+    QStringList styles( const QString& family )
+    {
+        return QFontDatabase::styles( family );
+    }
+
+    QList< int > pointSizes( const QString& family )
+    {
+        return QFontDatabase::pointSizes( family );
+    }
+#endif
+}
+
 template< typename W >
 class QskFontSelectionWindow< W >::PrivateData
 {
@@ -103,20 +141,18 @@ void QskFontSelectionWindow< W >::setupControls( QQuickItem* parentItem )
 template< typename W >
 void QskFontSelectionWindow< W >::connectSignals()
 {
-    const auto families = QFontDatabase::families();
-    m_data->familyView->setEntries( families );
+    m_data->familyView->setEntries( families() );
 
     QObject::connect( m_data->familyView, &QskSimpleListBox::selectedEntryChanged,
         this, [this]( const QString& family )
     {
-            const auto styles = QFontDatabase::styles( family );
-            m_data->styleView->setEntries( styles );
+            m_data->styleView->setEntries( styles( family ) );
     } );
 
     QObject::connect( m_data->familyView, &QskSimpleListBox::selectedEntryChanged,
         this, [this]( const QString& family )
     {
-            const auto sizes = QFontDatabase::pointSizes( family );
+            const auto sizes = pointSizes( family );
             QStringList sizesString;
             sizesString.reserve( sizes.count() );
 
