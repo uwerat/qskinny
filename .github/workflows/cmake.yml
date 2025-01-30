@@ -378,7 +378,7 @@ jobs:
       - name: Smoke test ( QSkinny ) on MacOS
         if: startsWith(matrix.config.name, 'macOS')
         env:
-          QT_DEBUG_PLUGINS: "1"
+          QT_DEBUG_PLUGINS: "0"
         run: |
           echo "starting iotdashboard"
           DYLD_LIBRARY_PATH=./qskinny_install/lib:./qskinny_install/plugins/skins ./qskinny_build/examples/bin/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 --screenshot ${{ matrix.config.screenshot_filename }} &
@@ -388,7 +388,7 @@ jobs:
       - name: Smoke Test ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
         env:
-          QT_DEBUG_PLUGINS: "1"
+          QT_DEBUG_PLUGINS: "0"
         run: |
           $env:Path += ";./qskinny_install/bin;./qskinny_install/lib;./qskinny_install/plugins/skins;./qskinny_build/skins/material3/Release;./qskinny_build/skins/windows/Release;./qskinny_build/skins/squiek/Release"
           echo "starting iotdashboard"
@@ -399,7 +399,7 @@ jobs:
         if: startsWith(matrix.config.name, 'Ubuntu')
         env:
           DISPLAY: ":1"
-          QT_DEBUG_PLUGINS: "1"
+          QT_DEBUG_PLUGINS: "0"
         run: |
           echo starting Xvfb
           Xvfb :1 &
