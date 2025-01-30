@@ -408,7 +408,7 @@ jobs:
           ./qskinny_build/examples/bin/iotdashboard --screenshot ${{ matrix.config.screenshot_filename }} &
           sleep 10
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.config.screenshot_filename }}
           path: ${{ matrix.config.screenshot_filename }}
