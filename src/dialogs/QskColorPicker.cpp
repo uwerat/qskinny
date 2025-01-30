@@ -29,15 +29,16 @@ namespace
         QColor color;
         float h, s;
 
-        for( int x = 0; x < image->width(); x++ )
+        for ( int y = 0; y < image->height(); y++ )
         {
-            h = static_cast< float >( x ) / image->width();
+            s = 1.0 - static_cast< float >( y ) / image->height();
+            auto line = reinterpret_cast< QRgb* >( image->scanLine( y ) );
 
-            for( int y = 0; y < image->height(); y++ )
+            for ( int x = 0; x < image->width(); x++ )
             {
-                s = 1.0 - static_cast< float >( y ) / image->height();
+                h = static_cast< float >( x ) / image->width();
                 color.setHsvF( h, s, v );
-                image->setPixel( x, y, color.rgb() );
+                *line++ = color.rgb();
             }
         }
     }
