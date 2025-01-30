@@ -24,10 +24,23 @@ QSK_QT_PRIVATE_BEGIN
 QSK_QT_PRIVATE_END
 
 QSK_SUBCONTROL( QskAbstractTextInput, Text )
+QSK_SUBCONTROL( QskAbstractTextInput, TextPanel )
 
 QSK_SYSTEM_STATE( QskAbstractTextInput, ReadOnly, QskAspect::FirstSystemState << 1 )
 QSK_SYSTEM_STATE( QskAbstractTextInput, Editing, QskAspect::FirstSystemState << 2 )
 QSK_SYSTEM_STATE( QskAbstractTextInput, Selected, QskAspect::FirstSystemState << 3 )
+
+/*
+    QQuickText-Edit/Input are beasts of several thousands lines of code,
+    we can't ( and don't want to ) reimplement them.
+    Instead we implement wrappers with some extra functionality to
+    have it in line with the QSkinny framework.
+
+    For some reason Qt development decided not to introduce a common
+    base class for QQuickText-Edit/input and implemented large parts
+    of the API twice. To avoid that we also have to copy those parts to our
+    wrappers we need the ugly implementation you find in this file.
+ */
 
 static inline QVariant qskInputMethodQuery(
     const QQuickItem* item, Qt::InputMethodQuery query, QVariant argument )
@@ -109,12 +122,14 @@ class QskAbstractTextInput::PrivateData
 #define INPUT_INVOKE_ARG(func, arg) \
     ( m_data->textInput ? m_data->textInput->func( arg ) : m_data->textEdit->func( arg ) )
  
-#define INPUT_CONNECT( func ) \
+#define INPUT_CONNECT2( func1, func2 ) \
     m_data->textInput \
-        ? connect( m_data->textInput, &QQuickTextInput::func, this, &QskAbstractTextInput::func ) \
-        : connect( m_data->textEdit, &QQuickTextEdit::func, this, &QskAbstractTextInput::func )
+        ? connect( m_data->textInput, &QQuickTextInput::func1, this, &QskAbstractTextInput::func2 ) \
+        : connect( m_data->textEdit, &QQuickTextEdit::func1, this, &QskAbstractTextInput::func2 )
 
-#define INPUT_CONNECT1( func, get ) \
+#define INPUT_CONNECT1( func ) INPUT_CONNECT2( func, func )
+
+#define INPUT_CONNECT_ARG( func, get ) \
     do \
     { \
         auto f = [this]() { Q_EMIT func( get() ); }; \
@@ -148,22 +163,24 @@ void QskAbstractTextInput::setup( QQuickItem* wrappedInput )
     m_data->textInput = qobject_cast< QQuickTextInput* >( wrappedInput );
     m_data->textEdit = qobject_cast< QQuickTextEdit* >( wrappedInput );
 
-    INPUT_CONNECT( textChanged );
-    INPUT_CONNECT( preeditTextChanged );
-    INPUT_CONNECT( readOnlyChanged );
-    INPUT_CONNECT( overwriteModeChanged );
-    INPUT_CONNECT( cursorVisibleChanged );
-    INPUT_CONNECT1( cursorPositionChanged, cursorPosition );
-    INPUT_CONNECT( selectByMouseChanged );
-    INPUT_CONNECT1( persistentSelectionChanged, persistentSelection );
-    INPUT_CONNECT1( wrapModeChanged, wrapMode );
+    INPUT_CONNECT1( textChanged );
+    INPUT_CONNECT1( preeditTextChanged );
+    INPUT_CONNECT1( selectedTextChanged );
+    INPUT_CONNECT1( readOnlyChanged );
+    INPUT_CONNECT1( overwriteModeChanged );
+    INPUT_CONNECT1( cursorVisibleChanged );
+    INPUT_CONNECT_ARG( cursorPositionChanged, cursorPosition );
+    INPUT_CONNECT1( selectByMouseChanged );
+    INPUT_CONNECT_ARG( persistentSelectionChanged, persistentSelection );
+    INPUT_CONNECT_ARG( wrapModeChanged, wrapMode );
+    INPUT_CONNECT2( contentSizeChanged, resetImplicitSize );
 
-    INPUT_CONNECT1( canUndoChanged, canUndo );
-    INPUT_CONNECT1( canRedoChanged, canRedo );
-    INPUT_CONNECT1( canPasteChanged, canPaste );
+    INPUT_CONNECT_ARG( canUndoChanged, canUndo );
+    INPUT_CONNECT_ARG( canRedoChanged, canRedo );
+    INPUT_CONNECT_ARG( canPasteChanged, canPaste );
 
-    INPUT_CONNECT1( inputMethodHintsChanged, inputMethodHints );
-    INPUT_CONNECT1( inputMethodComposingChanged, isInputMethodComposing );
+    INPUT_CONNECT_ARG( inputMethodHintsChanged, inputMethodHints );
+    INPUT_CONNECT_ARG( inputMethodComposingChanged, isInputMethodComposing );
 
     /*
         Other properties offered from QQuickTextInput/QQuickTextEdit:
@@ -196,9 +213,8 @@ void QskAbstractTextInput::setup( QQuickItem* wrappedInput )
 
         - selectionStartChanged;
         - selectionEndChanged;
-        - selectedTextChanged;
 
-          Maybe there is a better API for the selection TODO ...
+          Do we need this ?
 
         - mouseSelectionModeChanged
 
@@ -208,7 +224,7 @@ void QskAbstractTextInput::setup( QQuickItem* wrappedInput )
 
           This signal should never be emitted as it happens on
           events ( focusOut, commit keys ) that are handled in
-          QskAbstractTextInput and indicated with editicgChanged( bool );
+          QskAbstractTextInput and are indicated with editingChanged( bool );
           ( Maybe having an assertion TODO ... )
 
         - contentSizeChanged
@@ -239,46 +255,59 @@ void QskAbstractTextInput::setActivationModes( ActivationModes modes )
     }
 }
 
+#if 1
+
+// stupid code forwarding calls 1:1 to the wrapped item
+
 bool QskAbstractTextInput::selectByMouse() const
-{
-    return INPUT_INVOKE( selectByMouse );
-}
+    { return INPUT_INVOKE( selectByMouse ); }
 
 void QskAbstractTextInput::setSelectByMouse( bool on )
-{
-    INPUT_INVOKE_ARG( setSelectByMouse, on );
-}
+    { INPUT_INVOKE_ARG( setSelectByMouse, on ); }
 
 bool QskAbstractTextInput::persistentSelection() const
-{
-    return INPUT_INVOKE( persistentSelection );
-}
+    { return INPUT_INVOKE( persistentSelection ); }
 
 void QskAbstractTextInput::setPersistentSelection( bool on )
-{
-    INPUT_INVOKE_ARG( setPersistentSelection, on );
-}
+    { INPUT_INVOKE_ARG( setPersistentSelection, on ); }
 
 int QskAbstractTextInput::length() const
-{
-    return INPUT_INVOKE( length );
-}
+    { return INPUT_INVOKE( length ); }
 
 QString QskAbstractTextInput::text() const
-{
-    return INPUT_INVOKE( text );
-}
+    { return INPUT_INVOKE( text ); }
 
 void QskAbstractTextInput::setText( const QString& text )
-{
-    INPUT_INVOKE_ARG( setText, text );
-}
+    { INPUT_INVOKE_ARG( setText, text ); }
 
 QString QskAbstractTextInput::preeditText() const
-{
-    return INPUT_INVOKE( preeditText );
-}
+    { return INPUT_INVOKE( preeditText ); }
 
+QString QskAbstractTextInput::selectedText() const
+    { return INPUT_INVOKE( selectedText ); }
+
+bool QskAbstractTextInput::isInputMethodComposing() const
+    { return INPUT_INVOKE( isInputMethodComposing ); }
+
+bool QskAbstractTextInput::overwriteMode() const
+    { return INPUT_INVOKE( overwriteMode ); }
+
+void QskAbstractTextInput::setOverwriteMode( bool on )
+    { INPUT_INVOKE_ARG( setOverwriteMode, on ); }
+
+int QskAbstractTextInput::cursorPosition() const
+    { return INPUT_INVOKE( cursorPosition ); }
+
+void QskAbstractTextInput::setCursorPosition( int pos )
+    { INPUT_INVOKE_ARG( setCursorPosition, pos ); }
+
+bool QskAbstractTextInput::isCursorVisible() const
+    { return INPUT_INVOKE( isCursorVisible ); }
+
+void QskAbstractTextInput::setCursorVisible( bool on )
+    { INPUT_INVOKE_ARG( setCursorVisible, on ); }
+
+bool QskAbstractTextInput::isReadOnly() const { return INPUT_INVOKE( isReadOnly ); }
 bool QskAbstractTextInput::canUndo() const { return INPUT_INVOKE( canUndo ); }
 bool QskAbstractTextInput::canRedo() const { return INPUT_INVOKE( canRedo ); }
 bool QskAbstractTextInput::canPaste() const { return INPUT_INVOKE( canPaste ); }
@@ -291,6 +320,14 @@ void QskAbstractTextInput::copy() { INPUT_INVOKE( copy ); }
 void QskAbstractTextInput::paste() { INPUT_INVOKE( paste ); }
 void QskAbstractTextInput::undo() { INPUT_INVOKE( undo ); }
 void QskAbstractTextInput::redo() { INPUT_INVOKE( redo ); }
+
+#endif
+
+bool QskAbstractTextInput::hasSelectedText() const
+{
+    return INPUT_INVOKE( selectionEnd ) > INPUT_INVOKE( selectionStart );
+}
+
 
 void QskAbstractTextInput::setFontRole( const QskFontRole& role )
 {
@@ -546,11 +583,6 @@ void QskAbstractTextInput::inputMethodEvent( QInputMethodEvent* event )
     }
 }
 
-bool QskAbstractTextInput::isReadOnly() const
-{
-    return INPUT_INVOKE( isReadOnly );
-}
-
 void QskAbstractTextInput::setReadOnly( bool on )
 {
     if ( on == isReadOnly() )
@@ -575,11 +607,6 @@ void QskAbstractTextInput::setReadOnly( bool on )
     setSkinStateFlag( ReadOnly, on );
 }
 
-bool QskAbstractTextInput::isInputMethodComposing() const
-{
-    return INPUT_INVOKE( isInputMethodComposing );
-}
-
 bool QskAbstractTextInput::isEditing() const
 {
     return hasSkinState( Editing );
@@ -597,36 +624,6 @@ void QskAbstractTextInput::setEditing( bool on )
 
     qskInputMethodSetVisible( this, on );
     Q_EMIT editingChanged( on );
-}
-
-bool QskAbstractTextInput::overwriteMode() const
-{
-    return INPUT_INVOKE( overwriteMode );
-}
-
-void QskAbstractTextInput::setOverwriteMode( bool on )
-{
-    INPUT_INVOKE_ARG( setOverwriteMode, on );
-}
-
-int QskAbstractTextInput::cursorPosition() const
-{
-    return INPUT_INVOKE( cursorPosition );
-}
-
-void QskAbstractTextInput::setCursorPosition( int pos )
-{
-    INPUT_INVOKE_ARG( setCursorPosition, pos );
-}
-
-bool QskAbstractTextInput::isCursorVisible() const
-{
-    return INPUT_INVOKE( isCursorVisible );
-}
-
-void QskAbstractTextInput::setCursorVisible( bool on )
-{
-    INPUT_INVOKE_ARG( setCursorVisible, on );
 }
 
 void QskAbstractTextInput::setWrapMode( QskTextOptions::WrapMode wrapMode )
@@ -664,12 +661,12 @@ void QskAbstractTextInput::setTextColor( const QColor& color )
     if ( setColor( Text, color ) )
         Q_EMIT textColorChanged( color );
 }
-  
+
 void QskAbstractTextInput::resetTextColor()
 {
     if ( resetColor( Text ) )
         Q_EMIT textColorChanged( color( Text ) );
-}   
+}
 
 QColor QskAbstractTextInput::textColor() const
 {

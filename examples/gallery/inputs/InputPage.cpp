@@ -76,8 +76,10 @@ namespace
                     field->setText( "John Doe" );
                     field->setPlaceholderText( "<Name>" );
 
-connect( field, &QskTextField::textChanged,
-    [field]() { qDebug() << "Text:" << field->text(); } );
+#if 0
+                    connect( field, &QskTextField::textChanged,
+                        [field]() { qDebug() << "Text:" << field->text(); } );
+#endif
 
                 }
 
@@ -107,11 +109,11 @@ connect( field, &QskTextField::textChanged,
             setSpacing( 20 );
 
             {
-                auto textArea = new QskTextArea( "here enter longer text", this );
+                auto textArea = new QskTextArea( "here enter longer text\nwith multiple lines", this );
                 textArea->setWrapMode( QskTextOptions::Wrap );
                 textArea->setPlaceholderText( "placeholder text" );
 
-#if 1
+#if 0
                 connect( textArea, &QskTextArea::textChanged,
                     this, [textArea]() { qDebug() << "Text:" << textArea->text(); } );
 #endif
@@ -200,12 +202,6 @@ void InputPage::syncValues( qreal value )
         auto sliders = findChildren< QskSlider* >();
         for ( auto slider : sliders )
             slider->setValue( value );
-
-#if 1
-        auto textEdits = findChildren< QskTextEdit* >();
-        for ( auto edit : textEdits )
-            edit->setText( QString::number( value ) );
-#endif
     }
 
     blockUpdates = false;

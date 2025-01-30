@@ -6,15 +6,15 @@
 #ifndef QSK_TEXT_AREA_SKINLET_H
 #define QSK_TEXT_AREA_SKINLET_H
 
-#include "QskTextEditSkinlet.h"
+#include "QskAbstractTextInputSkinlet.h"
 
 class QskTextArea;
 
-class QSK_EXPORT QskTextAreaSkinlet : public QskTextEditSkinlet
+class QSK_EXPORT QskTextAreaSkinlet : public QskAbstractTextInputSkinlet
 {
     Q_GADGET
 
-    using Inherited = QskTextEditSkinlet;
+    using Inherited = QskAbstractTextInputSkinlet;
 
   public:
     enum NodeRole : quint8

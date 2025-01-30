@@ -23,6 +23,9 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     Q_PROPERTY( QString preeditText READ preeditText
         NOTIFY preeditTextChanged )
 
+    Q_PROPERTY( QString selectedText READ selectedText
+        NOTIFY selectedTextChanged )
+
     Q_PROPERTY( bool editing READ isEditing
         WRITE setEditing NOTIFY editingChanged )
 
@@ -71,7 +74,7 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     using Inherited = QskControl;
 
   public:
-    QSK_SUBCONTROLS( Text )
+    QSK_SUBCONTROLS( Text, TextPanel )
     QSK_STATES( ReadOnly, Editing, Selected )
 
     enum ActivationMode
@@ -93,6 +96,8 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
 
     QString text() const;
     QString preeditText() const;
+    QString selectedText() const;
+    bool hasSelectedText() const;
 
     int length() const;
 
@@ -182,6 +187,7 @@ class QSK_EXPORT QskAbstractTextInput : public QskControl
     void inputMethodComposingChanged( bool );
 
     void textChanged();
+    void selectedTextChanged();
     void textEdited( const QString& );
     void preeditTextChanged();
 

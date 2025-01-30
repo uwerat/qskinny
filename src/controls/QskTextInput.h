@@ -46,8 +46,7 @@ class QSK_EXPORT QskTextInput : public QskAbstractTextInput
     using Inherited = QskAbstractTextInput;
 
   public:
-    QSK_SUBCONTROLS( TextPanel )
-
+    QSK_SUBCONTROLS( Text, TextPanel )
     QSK_STATES( Error )
 
     enum EchoMode : quint8
@@ -107,6 +106,10 @@ class QSK_EXPORT QskTextInput : public QskAbstractTextInput
     void acceptableInputChanged( bool );
 
     void displayTextChanged();
+
+  protected:
+    QskAspect::Subcontrol substitutedSubcontrol(
+        QskAspect::Subcontrol ) const override;
 
   private:
     class PrivateData;

@@ -12,6 +12,7 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextinput_p_p.h>
 QSK_QT_PRIVATE_END
 
+QSK_SUBCONTROL( QskTextInput, Text )
 QSK_SUBCONTROL( QskTextInput, TextPanel )
 QSK_SYSTEM_STATE( QskTextInput, Error, QskAspect::FirstSystemState << 4 )
 
@@ -154,13 +155,6 @@ QskTextInput::QskTextInput( QQuickItem* parent )
     : Inherited( parent )
     , m_data( new PrivateData() )
 {
-    /*
-        QQuickTextInput is a beast of almost 5k lines of code, we don't
-        want to reimplement that - at least not now.
-        So QskTextInput is more or less a simple wrapper making everything
-        conforming to qskinny.
-     */
-
     m_data->wrappedInput = new QuickTextInput( this );
     auto wrappedInput = m_data->wrappedInput;
 
@@ -171,7 +165,6 @@ QskTextInput::QskTextInput( QQuickItem* parent )
 
     setup( wrappedInput );
 
-#if 1
     connect( wrappedInput, &QQuickTextInput::maximumLengthChanged,
         this, &QskTextInput::maximumLengthChanged );
 
@@ -183,12 +176,22 @@ QskTextInput::QskTextInput( QQuickItem* parent )
 
     connect( wrappedInput, &QQuickTextInput::acceptableInputChanged,
         this, [this]() { Q_EMIT acceptableInputChanged( hasAcceptableInput() ); } );
-
-#endif
 }
 
 QskTextInput::~QskTextInput()
 {
+}
+
+QskAspect::Subcontrol QskTextInput::substitutedSubcontrol(
+    QskAspect::Subcontrol subControl ) const
+{
+    if ( subControl == Inherited::Text )
+        return Text;
+
+    if ( subControl == Inherited::TextPanel )
+        return TextPanel;
+
+    return Inherited::substitutedSubcontrol( subControl );
 }
 
 void QskTextInput::ensureVisible( int position )

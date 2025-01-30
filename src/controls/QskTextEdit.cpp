@@ -12,6 +12,7 @@ QSK_QT_PRIVATE_BEGIN
 #include <private/qquicktextedit_p_p.h>
 QSK_QT_PRIVATE_END
 
+QSK_SUBCONTROL( QskTextEdit, Text )
 QSK_SUBCONTROL( QskTextEdit, TextPanel )
 
 /*
@@ -139,29 +140,42 @@ QskTextEdit::QskTextEdit( QQuickItem* parent )
     , m_data( new PrivateData() )
 {
     m_data->wrappedEdit = new QuickTextEdit( this );
+    auto wrappedEdit = m_data->wrappedEdit;
 
-    setAcceptedMouseButtons( m_data->wrappedEdit->acceptedMouseButtons() );
-    m_data->wrappedEdit->setAcceptedMouseButtons( Qt::NoButton );
+    setAcceptedMouseButtons( wrappedEdit->acceptedMouseButtons() );
+    wrappedEdit->setAcceptedMouseButtons( Qt::NoButton );
 
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Expanding );
 
-    setup( m_data->wrappedEdit );
+    setup( wrappedEdit );
 
-    connect( m_data->wrappedEdit, &QQuickTextEdit::lineCountChanged,
+    connect( wrappedEdit, &QQuickTextEdit::lineCountChanged,
         this, [this]() { Q_EMIT lineCountChanged( lineCount() ); } );
 
-    connect( m_data->wrappedEdit, &QQuickTextEdit::linkActivated,
+    connect( wrappedEdit, &QQuickTextEdit::linkActivated,
         this, &QskTextEdit::linkActivated );
 
-    connect( m_data->wrappedEdit, &QQuickTextEdit::linkHovered,
+    connect( wrappedEdit, &QQuickTextEdit::linkHovered,
         this, &QskTextEdit::linkHovered );
 
-    connect( m_data->wrappedEdit, &QQuickTextEdit::linkActivated,
+    connect( wrappedEdit, &QQuickTextEdit::linkActivated,
         this, &QskTextEdit::linkActivated );
 }
 
 QskTextEdit::~QskTextEdit()
 {
+}
+
+QskAspect::Subcontrol QskTextEdit::substitutedSubcontrol(
+    QskAspect::Subcontrol subControl ) const
+{
+    if ( subControl == Inherited::Text )
+        return Text;
+
+    if ( subControl == Inherited::TextPanel )
+        return TextPanel;
+
+    return Inherited::substitutedSubcontrol( subControl );
 }
 
 QUrl QskTextEdit::baseUrl() const

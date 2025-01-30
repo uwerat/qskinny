@@ -27,7 +27,7 @@ class QSK_EXPORT QskTextEdit : public QskAbstractTextInput
     using Inherited = QskAbstractTextInput;
 
   public:
-    QSK_SUBCONTROLS( TextPanel )
+    QSK_SUBCONTROLS( Text, TextPanel )
 
     QskTextEdit( QQuickItem* parent = nullptr );
     ~QskTextEdit() override;
@@ -53,6 +53,10 @@ class QSK_EXPORT QskTextEdit : public QskAbstractTextInput
 
     void linkHovered( const QString& );
     void linkActivated( const QString& );
+
+  protected:
+    QskAspect::Subcontrol substitutedSubcontrol(
+        QskAspect::Subcontrol ) const override;
 
   private:
     class PrivateData;

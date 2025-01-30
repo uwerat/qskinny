@@ -198,6 +198,7 @@ endif()
 list(APPEND HEADERS
     controls/QskAbstractButton.h
     controls/QskAbstractTextInput.h
+    controls/QskAbstractTextInputSkinlet.h
     controls/QskAnimationHint.h
     controls/QskAnimator.h
     controls/QskMainView.h
@@ -287,11 +288,9 @@ list(APPEND HEADERS
     controls/QskTextArea.h
     controls/QskTextAreaSkinlet.h
     controls/QskTextEdit.h
-    controls/QskTextEditSkinlet.h
     controls/QskTextField.h
     controls/QskTextFieldSkinlet.h
     controls/QskTextInput.h
-    controls/QskTextInputSkinlet.h
     controls/QskTextLabel.h
     controls/QskTextLabelSkinlet.h
     controls/QskVariantAnimator.h
@@ -308,6 +307,7 @@ list(APPEND PRIVATE_HEADERS
 list(APPEND SOURCES
     controls/QskAbstractButton.cpp
     controls/QskAbstractTextInput.cpp
+    controls/QskAbstractTextInputSkinlet.cpp
     controls/QskAnimator.cpp
     controls/QskAnimationHint.cpp
     controls/QskMainView.cpp
@@ -400,11 +400,9 @@ list(APPEND SOURCES
     controls/QskTextArea.cpp
     controls/QskTextAreaSkinlet.cpp
     controls/QskTextEdit.cpp
-    controls/QskTextEditSkinlet.cpp
     controls/QskTextField.cpp
     controls/QskTextFieldSkinlet.cpp
     controls/QskTextInput.cpp
-    controls/QskTextInputSkinlet.cpp
     controls/QskTextLabel.cpp
     controls/QskTextLabelSkinlet.cpp
     controls/QskVariantAnimator.cpp

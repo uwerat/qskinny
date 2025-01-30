@@ -3,24 +3,22 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
-#include "QskTextInputSkinlet.h"
-#include "QskTextInput.h"
+#include "QskAbstractTextInputSkinlet.h"
+#include "QskAbstractTextInput.h"
 
-#include <qfontmetrics.h>
+using Q = QskAbstractTextInput;
 
-using Q = QskTextInput;
-
-QskTextInputSkinlet::QskTextInputSkinlet( QskSkin* skin )
+QskAbstractTextInputSkinlet::QskAbstractTextInputSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
     setNodeRoles( { TextPanelRole } );
 }
 
-QskTextInputSkinlet::~QskTextInputSkinlet()
+QskAbstractTextInputSkinlet::~QskAbstractTextInputSkinlet()
 {
 }
 
-QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
+QRectF QskAbstractTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
     const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == Q::TextPanel )
@@ -29,10 +27,6 @@ QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
     if ( subControl == Q::Text )
     {
         auto rect = skinnable->subControlContentsRect( contentsRect, Q::TextPanel );
-
-        const auto h = skinnable->effectiveFontHeight( Q::Text );
-        rect.setTop( rect.center().y() - 0.5 * h );
-        rect.setHeight( h );
         rect = rect.marginsAdded( skinnable->marginHint( Q::Text ) );
 
         return rect;
@@ -41,7 +35,7 @@ QRectF QskTextInputSkinlet::subControlRect( const QskSkinnable* skinnable,
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-QSGNode* QskTextInputSkinlet::updateSubNode(
+QSGNode* QskAbstractTextInputSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
     switch ( nodeRole )
@@ -53,24 +47,21 @@ QSGNode* QskTextInputSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QSizeF QskTextInputSkinlet::sizeHint( const QskSkinnable* skinnable,
-    Qt::SizeHint which, const QSizeF& ) const
+QSizeF QskAbstractTextInputSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& constraint ) const
 {
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    const auto textInput = static_cast< const QskTextInput* >( skinnable );
+    Q_UNUSED( constraint ); // TODO ...
 
-    const QFontMetricsF fm( skinnable->effectiveFont( Q::Text ) );
+    const auto input = static_cast< const QskAbstractTextInput* >( skinnable );
 
-#if 0
-    auto hint = QSizeF( textInput->unwrappedTextSize().width(), fm.height() );
-#else
-    auto hint = fm.size( Qt::TextSingleLine | Qt::TextExpandTabs, textInput->text() );
-#endif
-
-    hint = skinnable->outerBoxSize( Q::TextPanel, hint );
-    hint = hint.expandedTo( skinnable->strutSizeHint( Q::TextPanel ) );
+    auto hint = input->unwrappedTextSize();
+    hint = input->outerBoxSize( Q::TextPanel, hint );
+    hint = hint.expandedTo( input->strutSizeHint( Q::TextPanel ) );
 
     return hint;
 }
+
+#include "moc_QskAbstractTextInputSkinlet.cpp"
