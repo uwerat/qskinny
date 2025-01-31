@@ -85,7 +85,7 @@ function(qsk_add_example target)
 
     cmake_parse_arguments(PARSE_ARGV 1 arg "MANUAL_FINALIZATION" "" "")
 
-    qsk_add_executable(${target} WIN32 MACOSX_BUNDLE ${arg_UNPARSED_ARGUMENTS} )
+    qsk_add_executable(${target} MACOSX_BUNDLE ${arg_UNPARSED_ARGUMENTS} )
 
     set_target_properties(${target} PROPERTIES FOLDER examples)
 
