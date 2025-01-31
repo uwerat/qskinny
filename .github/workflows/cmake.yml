@@ -384,18 +384,16 @@ jobs:
           DYLD_LIBRARY_PATH=./qskinny_install/lib:./qskinny_install/plugins/skins ./qskinny_build/examples/bin/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 --screenshot ${{ matrix.config.screenshot_filename }} &
           sleep 10
 
-      # TODO remove 'qskinny_build\skins\material3\Release' when skin install is fixed
       - name: Smoke Test ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
         env:
           QT_DEBUG_PLUGINS: "0"
+          PATH: ".\\qskinny_install\\lib\\qskinny;.\\qskinny_install\\lib\\qskinny\\plugins\\skins;.\\qskinny_build\\support\\Release;%PATH%"
+        shell: cmd
         run: |
-          $env:Path += ";./qskinny_install/bin;./qskinny_install/lib/qskinny;./qskinny_install/lib/qskinny/plugins/skins;"
-          dir ./qskinny_build/designsystems/material3
           echo "starting iotdashboard"
-          Start-Process qskinny_build\examples\bin\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0 --screenshot ${{ matrix.config.screenshot_filename }}" -RedirectStandardError output.txt
-          Start-Sleep -Seconds 10
-          cat output.txt
+          start /b qskinny_build\examples\bin\Release\iotdashboard.exe -qwindowgeometry 1024x600+0+0 --screenshot ${{ matrix.config.screenshot_filename }}
+          %SystemRoot%\System32\ping.exe -n 10 localhost > nul
 
       - name: Smoke test ( QSkinny ) on Ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu')
@@ -422,6 +420,7 @@ jobs:
       - name: Smoke Test Cleanup ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
         run: |
+          tasklist /fi "IMAGENAME eq iotdashboard.exe"
           taskkill /IM iotdashboard.exe /T /F
 
       - name: Smoke Test Cleanup ( QSkinny ) on MacOS
