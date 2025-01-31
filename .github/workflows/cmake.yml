@@ -391,11 +391,11 @@ jobs:
           QT_DEBUG_PLUGINS: "0"
         run: |
           $env:Path += ";./qskinny_install/bin;./qskinny_install/lib;./qskinny_build/designsystems/material3;./qskinny_build/designsystems/fluent2;./qskinny_build/designsystems/fusion"
-          dir ./qskinny_install
-          dir ./qskinny_build/designsystems
+          dir ./qskinny_build/designsystems/material3
           echo "starting iotdashboard"
-          Start-Process qskinny_build\examples\bin\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0 --screenshot ${{ matrix.config.screenshot_filename }}"
+          Start-Process qskinny_build\examples\bin\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0 --screenshot ${{ matrix.config.screenshot_filename }}" -RedirectStandardError output.txt
           Start-Sleep -Seconds 10
+          cat output.txt
 
       - name: Smoke test ( QSkinny ) on Ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu')
