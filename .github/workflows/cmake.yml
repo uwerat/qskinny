@@ -378,19 +378,18 @@ jobs:
       - name: Smoke test ( QSkinny ) on MacOS
         if: startsWith(matrix.config.name, 'macOS')
         env:
-          QT_DEBUG_PLUGINS: "1"
+          QT_DEBUG_PLUGINS: "0"
         run: |
           echo "starting iotdashboard"
           DYLD_LIBRARY_PATH=./qskinny_install/lib:./qskinny_install/plugins/skins ./qskinny_build/examples/bin/iotdashboard.app/Contents/MacOS/iotdashboard -qwindowgeometry 1024x600+75+100 --screenshot ${{ matrix.config.screenshot_filename }} &
           sleep 10
 
-      # TODO remove 'qskinny_build\skins\material3\Release' when skin install is fixed
       - name: Smoke Test ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
         env:
-          QT_DEBUG_PLUGINS: "1"
+          QT_DEBUG_PLUGINS: "0"
         run: |
-          $env:Path += ";./qskinny_install/bin;./qskinny_install/lib;./qskinny_install/plugins/skins;./qskinny_build/skins/material3/Release;./qskinny_build/skins/windows/Release;./qskinny_build/skins/squiek/Release"
+          $env:Path += ";.\qskinny_install\lib\qskinny;.\qskinny_install\lib\qskinny\plugins\skins;.\qskinny_build\support\Release;"
           echo "starting iotdashboard"
           Start-Process qskinny_build\examples\bin\Release\iotdashboard.exe -ArgumentList "-qwindowgeometry 1024x600+0+0 --screenshot ${{ matrix.config.screenshot_filename }}"
           Start-Sleep -Seconds 10
@@ -399,7 +398,7 @@ jobs:
         if: startsWith(matrix.config.name, 'Ubuntu')
         env:
           DISPLAY: ":1"
-          QT_DEBUG_PLUGINS: "1"
+          QT_DEBUG_PLUGINS: "0"
         run: |
           echo starting Xvfb
           Xvfb :1 &
@@ -408,7 +407,7 @@ jobs:
           ./qskinny_build/examples/bin/iotdashboard --screenshot ${{ matrix.config.screenshot_filename }} &
           sleep 10
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.config.screenshot_filename }}
           path: ${{ matrix.config.screenshot_filename }}
@@ -420,6 +419,7 @@ jobs:
       - name: Smoke Test Cleanup ( QSkinny ) on Windows
         if: startsWith(matrix.config.name, 'Windows')
         run: |
+          tasklist /fi "IMAGENAME eq iotdashboard.exe"
           taskkill /IM iotdashboard.exe /T /F
 
       - name: Smoke Test Cleanup ( QSkinny ) on MacOS

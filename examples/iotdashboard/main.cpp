@@ -17,11 +17,13 @@
 #include <QskWindow.h>
 #include <QskObjectCounter.h>
 
+#include <QFileInfo>
 #include <QGuiApplication>
 #include <QTimer>
 
 int main( int argc, char* argv[] )
 {
+    qDebug() << "starting example, arg count:" << argc;
 #ifdef ITEM_STATISTICS
     QskObjectCounter counter( true );
 #endif
@@ -43,10 +45,15 @@ int main( int argc, char* argv[] )
 
     for( int i = 1; i < argc; i++ )
     {
+        qDebug() << "arg" << i << argv[i];
         if( argv[i] == QStringLiteral( "--screenshot" ) && i + 1 < argc )
         {
-            QTimer::singleShot( 500, &window, [&app, &window, filename = QString(argv[i + 1])]()
-                { auto image = window.grabWindow(); image.save(filename); } );
+            QTimer::singleShot( 500, &window, [&window, filename = QString(argv[i + 1])]()
+            {
+                auto image = window.grabWindow();
+                image.save( filename );
+                qDebug() << "saved screenshot file to" << QFileInfo( filename ).absoluteFilePath();
+            } );
 
             break;
         }
