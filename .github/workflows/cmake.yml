@@ -59,44 +59,6 @@ jobs:
               screenshot_filename: "windows-latest-msvc-qt-6.5.0.jpg",
             }
           - {
-              name: "Windows 2019 MSVC Qt5",
-              os: windows-2019,
-              artifact: "windows_msvc.7z",
-              build_type: "Release",
-              cc: "cl",
-              cxx: "cl",
-              environment_script: "C:/Program Files/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
-              archiver: "7z a",
-              generators: "Visual Studio 16 2019",
-              cmake:
-                {
-                  qtversion: "5.15.2",
-                  qtdirkey: "Qt5_DIR",
-                  qtdirvalue: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5",
-                  qtprefixpath: "../Qt/5.15.2/msvc2019_64",
-                },
-              screenshot_filename: "windows-2019-msvc-qt-5-15-2.jpg",
-            }
-          - {
-              name: "Windows 2019 MSVC Qt6",
-              os: windows-2019,
-              artifact: "windows_msvc.7z",
-              build_type: "Release",
-              cc: "cl",
-              cxx: "cl",
-              environment_script: "C:/Program Files/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
-              archiver: "7z a",
-              generators: "Visual Studio 16 2019",
-              cmake:
-                {
-                  qtversion: "6.5.0",
-                  qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.5.0/msvc2019_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.5.0/msvc2019_64",
-                },
-              screenshot_filename: "windows-2019-msvc-qt-6.5.0.jpg",
-            }
-          - {
               name: "Ubuntu Latest GCC Qt5",
               os: ubuntu-latest,
               artifact: "ubuntu_gcc.7z",
@@ -134,44 +96,6 @@ jobs:
                   qtprefixpath: "../Qt/6.5.0/gcc_64",
                 },
               screenshot_filename: "ubuntu-latest-gcc-qt-6.5.0.jpg",
-            }
-          - {
-              name: "Ubuntu GCC 9 Qt5",
-              os: ubuntu-latest,
-              artifact: "ubuntu_gcc9.7z",
-              build_type: "Release",
-              cc: "gcc",
-              cxx: "g++",
-              archiver: "7z a",
-              generators: "Ninja",
-              env: { DISPLAY: ":1" },
-              cmake:
-                {
-                  qtversion: "5.15.2",
-                  qtdirkey: "Qt5_DIR",
-                  qtdirvalue: "../Qt/5.15.2/gcc_64/lib/cmake/Qt5",
-                  qtprefixpath: "../Qt/5.15.2/gcc_64",
-                },
-              screenshot_filename: "ubuntu-latest-gcc-9-qt-5-15-2.jpg",
-            }
-          - {
-              name: "Ubuntu GCC 9 Qt6",
-              os: ubuntu-latest,
-              artifact: "ubuntu_gcc9.7z",
-              build_type: "Release",
-              cc: "gcc",
-              cxx: "g++",
-              archiver: "7z a",
-              generators: "Ninja",
-              env: { DISPLAY: ":1" },
-              cmake:
-                {
-                  qtversion: "6.5.0",
-                  qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.5.0/gcc_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.5.0/gcc_64",
-                },
-              screenshot_filename: "ubuntu-latest-gcc-9-qt-6.5.0.jpg",
             }
           - {
               name: "macOS Latest Clang Qt5",
@@ -408,7 +332,7 @@ jobs:
           ./qskinny_build/examples/bin/iotdashboard --screenshot ${{ matrix.config.screenshot_filename }} &
           sleep 10
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.config.screenshot_filename }}
           path: ${{ matrix.config.screenshot_filename }}
@@ -451,27 +375,3 @@ jobs:
           DISPLAY: ":1"
         shell: bash
         run: cmake --build qskinny_build_test --config ${{ matrix.config.build_type }}
-
-      # - name: Pack
-      #   shell: bash
-      #   working-directory: instdir
-      #   run: |
-      #     ls -laR
-      #     ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} .
-      
-      # - name: Upload
-      #   uses: actions/upload-artifact@v1
-      #   with:
-      #     path: ./${{ matrix.config.artifact }}
-      #     name: ${{ matrix.config.artifact }}
-
-      # - name: Upload release asset
-      #   if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ github.event.release.upload_url }}
-      #     asset_path: ./${{ matrix.config.artifact }}
-      #     asset_name: ${{ matrix.config.artifact }}.zip
-      #     asset_content_type: application/zip
