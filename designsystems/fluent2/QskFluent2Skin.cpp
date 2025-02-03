@@ -1523,7 +1523,7 @@ void Editor::setupSliderColors(
             grooveColor = pal.fillColor.controlStrong.defaultColor;
             handleColor = pal.fillColor.accent.defaultColor;
 
-            fillColor == ( state == Q::Pressed )
+            fillColor = ( state == Q::Pressed )
                 ? pal.fillColor.accent.tertiary : pal.fillColor.accent.defaultColor;
         }
 
