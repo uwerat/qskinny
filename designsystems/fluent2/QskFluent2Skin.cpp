@@ -299,9 +299,6 @@ namespace
         void setupTabViewMetrics();
         void setupTabViewColors( QskAspect::Section, const QskFluent2Theme& );
 
-        void setupTextInputMetrics();
-        void setupTextInputColors( QskAspect::Section, const QskFluent2Theme& );
-
         void setupTextAreaMetrics();
         void setupTextAreaColors( QskAspect::Section, const QskFluent2Theme& );
 
@@ -364,7 +361,6 @@ void Editor::setupMetrics()
     setupTabButtonMetrics();
     setupTabBarMetrics();
     setupTabViewMetrics();
-    setupTextInputMetrics();
     setupTextAreaMetrics();
     setupTextFieldMetrics();
     setupTextLabelMetrics();
@@ -405,7 +401,6 @@ void Editor::setupColors( QskAspect::Section section, const QskFluent2Theme& the
     setupTabButtonColors( section, theme );
     setupTabBarColors( section, theme );
     setupTabViewColors( section, theme );
-    setupTextInputColors( section, theme );
     setupTextAreaColors( section, theme );
     setupTextFieldColors( section, theme );
     setupTextLabelColors( section, theme );
@@ -1787,33 +1782,11 @@ void Editor::setupTextLabelColors(
     setColor( Q::Text | section, pal.fillColor.text.primary );
 }
 
-void Editor::setupTextInputMetrics()
-{
-    using Q = QskAbstractTextInput;
-    setFontRole( Q::Text, Fluent2::Body );
-}
-
-void Editor::setupTextInputColors(
-    QskAspect::Section section, const QskFluent2Theme& theme )
-{
-    using Q = QskAbstractTextInput;
-
-    const auto& pal = theme.palette;
-
-    const auto text = Q::Text | section;
-
-#if 1
-    setColor( text, pal.fillColor.text.primary ); 
-    setColor( text | Q::Selected, pal.fillColor.textOnAccent.selectedText );
-    setColor( text | Q::Disabled, pal.fillColor.text.disabled );
-#endif
-}
-
 void Editor::setupTextAreaMetrics()
 {
     using Q = QskTextArea;
 
-    // ===
+    setFontRole( Q::Text, Fluent2::Body );
 
     setStrutSize( Q::TextPanel, { -1, 30_px } );
     setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
@@ -1835,6 +1808,14 @@ void Editor::setupTextAreaColors(
     using Q = QskTextArea;
 
     const auto& pal = theme.palette;
+
+    const auto text = Q::Text | section;
+    
+#if 1
+    setColor( text, pal.fillColor.text.primary );
+    setColor( text | Q::Selected, pal.fillColor.textOnAccent.selectedText );
+    setColor( text | Q::Disabled, pal.fillColor.text.disabled );
+#endif
 
     setColor( Q::TextPanel | Q::Selected, pal.fillColor.accent.selectedTextBackground );
     setColor( Q::Placeholder, pal.fillColor.text.secondary );
@@ -1879,6 +1860,8 @@ void Editor::setupTextFieldMetrics()
 {
     using Q = QskTextField;
 
+    setFontRole( Q::Text, Fluent2::Body );
+
     setStrutSize( Q::TextPanel, { -1, 30_px } );
     setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
 
@@ -1895,10 +1878,19 @@ void Editor::setupTextFieldMetrics()
 void Editor::setupTextFieldColors(
     QskAspect::Section section, const QskFluent2Theme& theme )
 {
-    using A = QskAspect;
     using Q = QskTextField;
+    using A = QskAspect;
+    using W = QskFluent2Skin;
 
     const auto& pal = theme.palette;
+
+    const auto text = Q::Text | section;
+    
+#if 1
+    setColor( text, pal.fillColor.text.primary );
+    setColor( text | Q::Selected, pal.fillColor.textOnAccent.selectedText );
+    setColor( text | Q::Disabled, pal.fillColor.text.disabled );
+#endif
 
     setColor( Q::TextPanel | Q::Selected, pal.fillColor.accent.selectedTextBackground );
     setColor( Q::Placeholder, pal.fillColor.text.secondary );

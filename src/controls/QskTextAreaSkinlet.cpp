@@ -11,7 +11,7 @@ using Q = QskTextArea;
 QskTextAreaSkinlet::QskTextAreaSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, TextPanelRole, PlaceholderTextRole } );
+    setNodeRoles( { PanelRole, TextPanelRole, PlaceholderRole } );
 }
 
 QskTextAreaSkinlet::~QskTextAreaSkinlet()
@@ -26,6 +26,9 @@ QRectF QskTextAreaSkinlet::subControlRect( const QskSkinnable* skinnable,
 
     if ( subControl == Q::TextPanel )
         return skinnable->subControlContentsRect( contentsRect, Q::Panel );
+
+    if ( subControl == Q::Text )
+        return skinnable->subControlContentsRect( contentsRect, Q::TextPanel );
 
     if ( subControl == Q::Placeholder )
     {
@@ -50,8 +53,11 @@ QSGNode* QskTextAreaSkinlet::updateSubNode(
         {
             return updateBoxNode( skinnable, node, Q::Panel );
         }
-
-        case PlaceholderTextRole:
+        case TextPanelRole:
+        {
+            return updateBoxNode( skinnable, node, Q::TextPanel );
+        }
+        case PlaceholderRole:
         {
             const auto text = effectivePlaceholderText( textArea );
             if ( text.isEmpty() )
@@ -78,10 +84,19 @@ QSGNode* QskTextAreaSkinlet::updateSubNode(
 QSizeF QskTextAreaSkinlet::sizeHint( const QskSkinnable* skinnable,
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
+    Q_UNUSED( constraint ); // TODO ...
+
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    auto hint = Inherited::sizeHint( skinnable, which, constraint );
+    const auto input = static_cast< const QskAbstractTextInput* >( skinnable );
+
+    auto hint = input->unwrappedTextSize();
+    hint = hint.grownBy( skinnable->marginHint( Q::Text ) );
+
+    hint = input->outerBoxSize( Q::TextPanel, hint );
+    hint = hint.expandedTo( input->strutSizeHint( Q::TextPanel ) );
+
     hint = skinnable->outerBoxSize( Q::Panel, hint );
     hint = hint.expandedTo( skinnable->strutSizeHint( Q::Panel ) );
 

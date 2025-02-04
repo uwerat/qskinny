@@ -705,7 +705,9 @@ Qt::Alignment QskAbstractTextInput::alignment() const
 void QskAbstractTextInput::updateLayout()
 {
     QMetaObject::invokeMethod( m_data->input, "updateMetrics" );
-    qskSetItemGeometry( m_data->input, subControlRect( Text ) );
+
+    const auto subControl = effectiveSubcontrol( Text );
+    qskSetItemGeometry( m_data->input, subControlRect( subControl ) );
 }
 
 void QskAbstractTextInput::updateNode( QSGNode* node )

@@ -143,7 +143,6 @@ namespace
         Q_INVOKABLE void setupTabBar();
         Q_INVOKABLE void setupTabView();
 
-        Q_INVOKABLE void setupTextInput();
         Q_INVOKABLE void setupTextArea();
         Q_INVOKABLE void setupTextField();
         Q_INVOKABLE void setupTextLabel();
@@ -386,9 +385,9 @@ void Editor::setupTextLabel()
     setBoxBorderColors( Q::Panel, QskRgb::lighter( m_pal.outline, 108 ) );
 }
 
-void Editor::setupTextInput()
+void Editor::setupTextField()
 {
-    using Q = QskAbstractTextInput;
+    using Q = QskTextField;
     using A = QskAspect;
     using P = QPalette;
 
@@ -399,18 +398,9 @@ void Editor::setupTextInput()
         setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
         setColor( Q::Text | Q::Selected | state, m_pal.color( colorGroup, P::HighlightedText ) );
     }
-}
 
-void Editor::setupTextField()
-{
-    using Q = QskTextField;
-
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
-
-    // ===
-
-    using A = QskAspect;
-    using P = QPalette;
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
@@ -419,6 +409,8 @@ void Editor::setupTextField()
         setColor( Q::TextPanel | state, m_pal.color( colorGroup, P::Base ) );
         setColor( Q::TextPanel | Q::Selected | state, m_pal.color( colorGroup, P::Highlight ) );
 
+        setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
+        setColor( Q::Text | Q::Selected | state, m_pal.color( colorGroup, P::HighlightedText ) );
         setColor( Q::Placeholder, m_pal.color( colorGroup, P::PlaceholderText ) );
     }
 
@@ -438,13 +430,18 @@ void Editor::setupTextField()
 void Editor::setupTextArea()
 {
     using Q = QskTextArea;
-
-    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignTop );
-
-    // ========
-
     using A = QskAspect;
     using P = QPalette;
+
+    for ( auto state : { A::NoState, Q::Disabled } )
+    {
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
+
+        setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
+        setColor( Q::Text | Q::Selected | state, m_pal.color( colorGroup, P::HighlightedText ) );
+    }
+
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignTop );
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {

@@ -25,9 +25,6 @@
 
 #include <cmath>
 
-#include "QskAbstractTextInput.h"
-#include "QskAbstractTextInputSkinlet.h"
-
 #include "QskBox.h"
 #include "QskBoxSkinlet.h"
 
@@ -194,7 +191,6 @@ QskSkin::QskSkin( QObject* parent )
 {
     declareSkinlet< QskControl, QskSkinlet >();
 
-    declareSkinlet< QskAbstractTextInput, QskAbstractTextInputSkinlet >();
     declareSkinlet< QskBox, QskBoxSkinlet >();
     declareSkinlet< QskCheckBox, QskCheckBoxSkinlet >();
     declareSkinlet< QskComboBox, QskComboBoxSkinlet >();

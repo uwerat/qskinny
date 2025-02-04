@@ -6,22 +6,23 @@
 #ifndef QSK_TEXT_AREA_SKINLET_H
 #define QSK_TEXT_AREA_SKINLET_H
 
-#include "QskAbstractTextInputSkinlet.h"
+#include "QskSkinlet.h"
 
 class QskTextArea;
 
-class QSK_EXPORT QskTextAreaSkinlet : public QskAbstractTextInputSkinlet
+class QSK_EXPORT QskTextAreaSkinlet : public QskSkinlet
 {
     Q_GADGET
 
-    using Inherited = QskAbstractTextInputSkinlet;
+    using Inherited = QskSkinlet;
 
   public:
     enum NodeRole : quint8
     {
-        PanelRole = Inherited::RoleCount,
+        PanelRole, 
+        TextPanelRole,
+        PlaceholderRole,
 
-        PlaceholderTextRole,
         RoleCount
     };
 

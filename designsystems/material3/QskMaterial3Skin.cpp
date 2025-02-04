@@ -187,7 +187,6 @@ namespace
         Q_INVOKABLE void setupTabBar();
         Q_INVOKABLE void setupTabView();
 
-        Q_INVOKABLE void setupTextInput();
         Q_INVOKABLE void setupTextArea();
         Q_INVOKABLE void setupTextField();
         Q_INVOKABLE void setupTextLabel();
@@ -435,20 +434,13 @@ void Editor::setupTextLabel()
     setPadding( Q::Panel, 5_px );
 }
 
-void Editor::setupTextInput()
-{
-    using Q = QskAbstractTextInput;
-
-    setColor( Q::Text, m_pal.onSurface );
-    setFontRole( Q::Text, BodyLarge );
-    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
-}
-
 void Editor::setupTextArea()
 {
     using Q = QskTextArea;
 
-    // ==========
+    setColor( Q::Text, m_pal.onSurface );
+    setFontRole( Q::Text, BodyLarge );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
     setStrutSize( Q::Panel,  -1.0, 56_px );
     setPadding( Q::Panel, { 12_px, 8_px, 12_px, 8_px } );
@@ -486,6 +478,10 @@ void Editor::setupTextArea()
 void Editor::setupTextField()
 {
     using Q = QskTextField;
+
+    setColor( Q::Text, m_pal.onSurface );
+    setFontRole( Q::Text, BodyLarge );
+    setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
     setStrutSize( Q::Panel,  -1.0, 56_px );
     setPadding( Q::Panel, { 12_px, 8_px, 12_px, 8_px } );
