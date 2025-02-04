@@ -487,8 +487,6 @@ void Editor::setupTextField()
 {
     using Q = QskTextField;
 
-    // ===
-
     setStrutSize( Q::Panel,  -1.0, 56_px );
     setPadding( Q::Panel, { 12_px, 8_px, 12_px, 8_px } );
     setGradient( Q::Panel, m_pal.surfaceVariant );
