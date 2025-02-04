@@ -401,13 +401,13 @@ void Editor::setupTextInput()
     }
 }
 
-void Editor::setupTextArea()
+void Editor::setupTextField()
 {
-    using Q = QskTextArea;
+    using Q = QskTextField;
 
-    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignTop );
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
 
-    // ========
+    // ===
 
     using A = QskAspect;
     using P = QPalette;
@@ -435,13 +435,13 @@ void Editor::setupTextArea()
     setPadding( Q::TextPanel, 4_px );
 }
 
-void Editor::setupTextField()
+void Editor::setupTextArea()
 {
-    using Q = QskTextField;
+    using Q = QskTextArea;
 
-    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignTop );
 
-    // ===
+    // ========
 
     using A = QskAspect;
     using P = QPalette;

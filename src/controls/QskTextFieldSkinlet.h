@@ -21,7 +21,7 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskAbstractTextInputSkinlet
     {
         PanelRole = QskAbstractTextInputSkinlet::RoleCount,
 
-        PlaceholderTextRole,
+        PlaceholderRole,
         RoleCount
     };
 

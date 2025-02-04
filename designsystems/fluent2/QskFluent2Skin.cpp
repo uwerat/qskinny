@@ -1879,8 +1879,6 @@ void Editor::setupTextFieldMetrics()
 {
     using Q = QskTextField;
 
-    // =============
-
     setStrutSize( Q::TextPanel, { -1, 30_px } );
     setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
 
@@ -1941,6 +1939,7 @@ void Editor::setupTextFieldColors(
         setBoxBorderGradient( panel, borderColor1, borderColor2, panelColor );
     }
 }
+
 void Editor::setupSwitchButtonMetrics()
 {
     using Q = QskSwitchButton;

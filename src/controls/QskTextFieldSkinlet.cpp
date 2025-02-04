@@ -11,7 +11,7 @@ using Q = QskTextField;
 QskTextFieldSkinlet::QskTextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    setNodeRoles( { PanelRole, TextPanelRole, PlaceholderTextRole } );
+    setNodeRoles( { PanelRole, TextPanelRole, PlaceholderRole } );
 }
 
 QskTextFieldSkinlet::~QskTextFieldSkinlet()
@@ -51,7 +51,7 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
             return updateBoxNode( skinnable, node, Q::Panel );
         }
 
-        case PlaceholderTextRole:
+        case PlaceholderRole:
         {
             const auto text = effectivePlaceholderText( textField );
             if ( text.isEmpty() )
