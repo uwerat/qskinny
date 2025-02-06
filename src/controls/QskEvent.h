@@ -37,6 +37,7 @@ class QSK_EXPORT QskEvent : public QEvent
         NoEvent = 53800,
 
         GeometryChange,
+        ViewportChange,
         WindowChange,
 
         /*
@@ -83,6 +84,22 @@ class QSK_EXPORT QskGeometryChangeEvent : public QskEvent
   private:
     QRectF m_rect;
     QRectF m_oldRect;
+};
+
+class QSK_EXPORT QskViewportChangeEvent : public QskEvent
+{
+  public:
+    QskViewportChangeEvent( QQuickItem* );
+
+    inline QQuickItem* modifiedParent() const { return m_modifiedParent; }
+
+    QskViewportChangeEvent* clone() const override;
+
+  protected:
+    QSK_EVENT_DISABLE_COPY( QskViewportChangeEvent )
+
+  private:
+    QQuickItem* m_modifiedParent;
 };
 
 class QSK_EXPORT QskWindowChangeEvent : public QskEvent

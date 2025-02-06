@@ -138,13 +138,13 @@ void QskSwipeView::gestureEvent( QskGestureEvent* event )
     Inherited::gestureEvent( event );
 }
 
-QskAspect::Subcontrol QskSwipeView::effectiveSubcontrol(
+QskAspect::Subcontrol QskSwipeView::substitutedSubcontrol(
     QskAspect::Subcontrol subControl ) const
 {
     if ( subControl == QskBox::Panel )
         return QskSwipeView::Panel;
 
-    return Inherited::effectiveSubcontrol( subControl );
+    return Inherited::substitutedSubcontrol( subControl );
 }
 
 

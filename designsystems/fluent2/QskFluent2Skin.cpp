@@ -49,6 +49,7 @@
 #include "QskFluent2Theme.h"
 #include "QskFluent2TextFieldSkinlet.h"
 
+#include <QskTextAreaSkinlet.h>
 #include <QskSkinHintTableEditor.h>
 
 #include <QskBox.h>
@@ -80,6 +81,7 @@
 #include <QskTabButton.h>
 #include <QskTabView.h>
 #include <QskTextField.h>
+#include <QskTextArea.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -297,6 +299,9 @@ namespace
         void setupTabViewMetrics();
         void setupTabViewColors( QskAspect::Section, const QskFluent2Theme& );
 
+        void setupTextAreaMetrics();
+        void setupTextAreaColors( QskAspect::Section, const QskFluent2Theme& );
+
         void setupTextFieldMetrics();
         void setupTextFieldColors( QskAspect::Section, const QskFluent2Theme& );
 
@@ -356,6 +361,7 @@ void Editor::setupMetrics()
     setupTabButtonMetrics();
     setupTabBarMetrics();
     setupTabViewMetrics();
+    setupTextAreaMetrics();
     setupTextFieldMetrics();
     setupTextLabelMetrics();
     setupVirtualKeyboardMetrics();
@@ -395,6 +401,7 @@ void Editor::setupColors( QskAspect::Section section, const QskFluent2Theme& the
     setupTabButtonColors( section, theme );
     setupTabBarColors( section, theme );
     setupTabViewColors( section, theme );
+    setupTextAreaColors( section, theme );
     setupTextFieldColors( section, theme );
     setupTextLabelColors( section, theme );
     setupVirtualKeyboardColors( section, theme );
@@ -443,13 +450,7 @@ void Editor::setupCheckBoxColors(
         {
             const auto states = state1 | state2;
 
-            if ( states == A::NoState )
-            {
-                fillColor = pal.fillColor.controlAlt.secondary;
-                borderColor = pal.strokeColor.controlStrong.defaultColor;
-                textColor = pal.fillColor.text.primary;
-            }
-            else if ( states == Q::Hovered )
+            if ( states == Q::Hovered )
             {
                 fillColor = pal.fillColor.controlAlt.tertiary;
                 borderColor = pal.strokeColor.controlStrong.defaultColor;
@@ -492,6 +493,12 @@ void Editor::setupCheckBoxColors(
                 fillColor = pal.fillColor.accent.disabled;
                 borderColor = pal.fillColor.accent.disabled;
                 textColor = pal.fillColor.text.disabled;
+            }
+            else // A::NoState
+            {
+                fillColor = pal.fillColor.controlAlt.secondary;
+                borderColor = pal.strokeColor.controlStrong.defaultColor;
+                textColor = pal.fillColor.text.primary;
             }
 
             /*
@@ -570,15 +577,7 @@ void Editor::setupComboBoxColors(
     {
         QRgb panelColor, borderColor1, borderColor2, textColor;
 
-        if ( state == QskAspect::NoState )
-        {
-            panelColor = pal.fillColor.control.defaultColor;
-            borderColor1 = pal.elevation.control.border[0];
-            borderColor2 = pal.elevation.control.border[1];
-            textColor = pal.fillColor.text.primary;
-
-        }
-        else if ( state == Q::Hovered )
+        if ( state == Q::Hovered )
         {
             panelColor = pal.fillColor.control.secondary;
             borderColor1 = pal.elevation.textControl.border[0];
@@ -604,6 +603,13 @@ void Editor::setupComboBoxColors(
             panelColor = pal.fillColor.control.disabled;
             borderColor2 = borderColor1 = pal.strokeColor.control.defaultColor;
             textColor = pal.fillColor.text.disabled;
+        }
+        else // QskAspect::NoState
+        {
+            panelColor = pal.fillColor.control.defaultColor;
+            borderColor1 = pal.elevation.control.border[0];
+            borderColor2 = pal.elevation.control.border[1];
+            textColor = pal.fillColor.text.primary;
         }
 
         const auto panel = Q::Panel | section | state;
@@ -776,6 +782,15 @@ void Editor::setupListViewColors(
             setColor( text, textColor );
         }
     }
+
+    setGraphicRole( Q::Graphic,
+        QskFluent2Skin::GraphicRoleFillColorTextPrimary );
+
+    setGraphicRole( Q::Graphic | Q::Pressed,
+        QskFluent2Skin::GraphicRoleFillColorTextSecondary );
+
+    setGraphicRole( Q::Graphic | Q::Disabled,
+        QskFluent2Skin::GraphicRoleFillColorTextDisabled );
 
     setAnimation( Q::Cell | A::Color, 100 );
     setAnimation( Q::Text | A::Color, 100 );
@@ -1346,16 +1361,7 @@ void Editor::setupSegmentedBarColors(
             QRgb segmentColor, borderColor1, borderColor2, textColor;
             int graphicRole;
 
-            if ( states == A::NoState )
-            {
-                segmentColor = pal.fillColor.control.defaultColor;
-                borderColor1 = pal.elevation.control.border[0];
-                borderColor2 = pal.elevation.control.border[1];
-                textColor = pal.fillColor.text.primary;
-
-                graphicRole = W::GraphicRoleFillColorTextPrimary;
-            }
-            else if ( states == Q::Hovered )
+            if ( states == Q::Hovered )
             {
                 segmentColor = pal.fillColor.control.secondary;
                 borderColor1 = pal.elevation.control.border[0];
@@ -1387,6 +1393,15 @@ void Editor::setupSegmentedBarColors(
                 borderColor1 = borderColor2 = pal.strokeColor.control.defaultColor;
                 textColor = pal.fillColor.text.disabled;
                 graphicRole = W::GraphicRoleFillColorTextDisabled;
+            }
+            else // A::NoState
+            {
+                segmentColor = pal.fillColor.control.defaultColor;
+                borderColor1 = pal.elevation.control.border[0];
+                borderColor2 = pal.elevation.control.border[1];
+                textColor = pal.fillColor.text.primary;
+
+                graphicRole = W::GraphicRoleFillColorTextPrimary;
             }
 
             const auto segment = Q::Segment | section | states;
@@ -1493,23 +1508,18 @@ void Editor::setupSliderColors(
     {
         QRgb grooveColor, fillColor, handleColor;
 
-        if ( state == A::NoState || state == Q::Hovered )
+        if ( state == Q::Disabled )
         {
-            grooveColor = pal.fillColor.controlStrong.defaultColor;
-            fillColor = pal.fillColor.accent.defaultColor;
-            handleColor = pal.fillColor.accent.defaultColor;
-        }
-        else if ( state == Q::Pressed )
-        {
-            grooveColor = pal.fillColor.controlStrong.defaultColor;
-            handleColor = pal.fillColor.accent.tertiary;
-            fillColor = pal.fillColor.accent.defaultColor;
-        }
-        else if ( state == Q::Disabled )
-        {
-            grooveColor = pal.fillColor.controlStrong.disabled;
+            grooveColor = handleColor = pal.fillColor.controlStrong.disabled;
             fillColor = pal.fillColor.accent.disabled;
-            handleColor = grooveColor;
+        }
+        else
+        {
+            grooveColor = pal.fillColor.controlStrong.defaultColor;
+            handleColor = pal.fillColor.accent.defaultColor;
+
+            fillColor = ( state == Q::Pressed )
+                ? pal.fillColor.accent.tertiary : pal.fillColor.accent.defaultColor;
         }
 
         grooveColor = rgbSolid( grooveColor, pal.background.solid.base );
@@ -1572,13 +1582,7 @@ void Editor::setupSpinBoxColors(
     {
         QRgb panelColor, borderColor1, borderColor2;
 
-        if ( state == A::NoState )
-        {
-            panelColor = pal.fillColor.control.defaultColor;
-            borderColor1 = pal.elevation.control.border[0];
-            borderColor2 = pal.elevation.control.border[1];
-        }
-        else if ( state == Q::Hovered )
+        if ( state == Q::Hovered )
         {
             panelColor = pal.fillColor.control.secondary;
             borderColor1 = pal.elevation.textControl.border[0];
@@ -1596,6 +1600,12 @@ void Editor::setupSpinBoxColors(
         {
             panelColor = pal.fillColor.control.disabled;
             borderColor1 = borderColor2 = pal.strokeColor.control.defaultColor;
+        }
+        else // A::NoState )
+        {
+            panelColor = pal.fillColor.control.defaultColor;
+            borderColor1 = pal.elevation.control.border[0];
+            borderColor2 = pal.elevation.control.border[1];
         }
 
         QRgb textColor;
@@ -1772,80 +1782,153 @@ void Editor::setupTextLabelColors(
     setColor( Q::Text | section, pal.fillColor.text.primary );
 }
 
-void Editor::setupTextFieldMetrics()
+void Editor::setupTextAreaMetrics()
 {
-    using Q = QskTextField;
+    using Q = QskTextArea;
 
-    setStrutSize( Q::Panel, { -1, 30_px } );
-    setPadding( Q::Panel, { 11_px, 0, 11_px, 0 } );
-
-    setBoxBorderMetrics( Q::Panel, 1_px );
-    for( const auto& state : { Q::Focused, Q::Editing } )
-        setBoxBorderMetrics( Q::Panel | state, { 1_px, 1_px, 1_px, 2_px } );
-
-    setBoxShape( Q::Panel, 3_px );
-
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
     setFontRole( Q::Text, Fluent2::Body );
 
-    setAlignment( Q::PlaceholderText, alignment( Q::Text ) );
-    setFontRole( Q::PlaceholderText, fontRole( Q::Text ) );
+    setStrutSize( Q::TextPanel, { -1, 30_px } );
+    setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
+
+    setBoxBorderMetrics( Q::TextPanel, 1_px );
+    for( const auto& state : { Q::Focused, Q::Editing } )
+        setBoxBorderMetrics( Q::TextPanel | state, { 1_px, 1_px, 1_px, 2_px } );
+
+    setBoxShape( Q::TextPanel, 3_px );
+
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignTop );
+    setFontRole( Q::Placeholder, fontRole( Q::Text ) );
 }
 
-void Editor::setupTextFieldColors(
+void Editor::setupTextAreaColors(
     QskAspect::Section section, const QskFluent2Theme& theme )
 {
-    using Q = QskTextField;
-    using SK = QskTextFieldSkinlet;
     using A = QskAspect;
+    using Q = QskTextArea;
 
     const auto& pal = theme.palette;
 
-    setColor( Q::Panel | SK::Selected, pal.fillColor.accent.selectedTextBackground );
-    setColor( Q::Text | SK::Selected, pal.fillColor.textOnAccent.selectedText );
-    setColor( Q::PlaceholderText, pal.fillColor.text.secondary );
+    const auto text = Q::Text | section;
+    
+#if 1
+    setColor( text, pal.fillColor.text.primary );
+    setColor( text | Q::Selected, pal.fillColor.textOnAccent.selectedText );
+    setColor( text | Q::Disabled, pal.fillColor.text.disabled );
+#endif
+
+    setColor( Q::TextPanel | Q::Selected, pal.fillColor.accent.selectedTextBackground );
+    setColor( Q::Placeholder, pal.fillColor.text.secondary );
 
     for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
     {
-        QRgb panelColor, borderColor1, borderColor2, textColor;
+        QRgb panelColor, borderColor1, borderColor2;
 
-        if ( state == A::NoState )
-        {
-            panelColor = pal.fillColor.control.defaultColor;
-            borderColor1 = pal.elevation.textControl.border[0];
-            borderColor2 = pal.elevation.textControl.border[1];
-            textColor = pal.fillColor.text.primary;
-        }
-        else if ( state == Q::Hovered )
+        if ( state == Q::Hovered )
         {
             panelColor = pal.fillColor.control.secondary;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.elevation.textControl.border[1];
-            textColor = pal.fillColor.text.primary;
         }
         else if ( ( state == Q::Focused ) || ( state == Q::Editing ) )
         {
             panelColor = pal.fillColor.control.inputActive;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.fillColor.accent.defaultColor;
-            textColor = pal.fillColor.text.primary;
         }
         else if ( state == Q::Disabled )
         {
             panelColor = pal.fillColor.control.disabled;
             borderColor1 = borderColor2 = pal.strokeColor.control.defaultColor;
-            textColor = pal.fillColor.text.disabled;
+        }
+        else // A::NoState
+        {
+            panelColor = pal.fillColor.control.defaultColor;
+            borderColor1 = pal.elevation.textControl.border[0];
+            borderColor2 = pal.elevation.textControl.border[1];
         }
 
-        const auto panel = Q::Panel | section | state;
-        const auto text = Q::Text | section | state;
+        const auto panel = Q::TextPanel | section | state;
 
         panelColor = rgbSolid( panelColor, pal.background.solid.base );
 
         setGradient( panel, panelColor );
         setBoxBorderGradient( panel, borderColor1, borderColor2, panelColor );
+    }
+}
+void Editor::setupTextFieldMetrics()
+{
+    using Q = QskTextField;
 
-        setColor( text, textColor );
+    setFontRole( Q::Text, Fluent2::Body );
+
+    setStrutSize( Q::TextPanel, { -1, 30_px } );
+    setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
+
+    setBoxBorderMetrics( Q::TextPanel, 1_px );
+    for( const auto& state : { Q::Focused, Q::Editing } )
+        setBoxBorderMetrics( Q::TextPanel | state, { 1_px, 1_px, 1_px, 2_px } );
+
+    setBoxShape( Q::TextPanel, 3_px );
+
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
+    setFontRole( Q::Placeholder, fontRole( Q::Text ) );
+}
+
+void Editor::setupTextFieldColors(
+    QskAspect::Section section, const QskFluent2Theme& theme )
+{
+    using Q = QskTextField;
+    using A = QskAspect;
+    using W = QskFluent2Skin;
+
+    const auto& pal = theme.palette;
+
+    const auto text = Q::Text | section;
+    
+#if 1
+    setColor( text, pal.fillColor.text.primary );
+    setColor( text | Q::Selected, pal.fillColor.textOnAccent.selectedText );
+    setColor( text | Q::Disabled, pal.fillColor.text.disabled );
+#endif
+
+    setColor( Q::TextPanel | Q::Selected, pal.fillColor.accent.selectedTextBackground );
+    setColor( Q::Placeholder, pal.fillColor.text.secondary );
+
+    for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
+    {
+        QRgb panelColor, borderColor1, borderColor2;
+
+        if ( state == Q::Hovered )
+        {
+            panelColor = pal.fillColor.control.secondary;
+            borderColor1 = pal.elevation.textControl.border[0];
+            borderColor2 = pal.elevation.textControl.border[1];
+        }
+        else if ( ( state == Q::Focused ) || ( state == Q::Editing ) )
+        {
+            panelColor = pal.fillColor.control.inputActive;
+            borderColor1 = pal.elevation.textControl.border[0];
+            borderColor2 = pal.fillColor.accent.defaultColor;
+        }
+        else if ( state == Q::Disabled )
+        {
+            panelColor = pal.fillColor.control.disabled;
+            borderColor1 = borderColor2 = pal.strokeColor.control.defaultColor;
+        }
+        else // A::NoState
+        {
+            panelColor = pal.fillColor.control.defaultColor;
+            borderColor1 = pal.elevation.textControl.border[0];
+            borderColor2 = pal.elevation.textControl.border[1];
+        }
+
+        const auto panel = Q::TextPanel | section | state;
+
+        panelColor = rgbSolid( panelColor, pal.background.solid.base );
+
+        setGradient( panel, panelColor );
+        setBoxBorderGradient( panel, borderColor1, borderColor2, panelColor );
     }
 }
 
@@ -1906,13 +1989,7 @@ void Editor::setupSwitchButtonColors(
 
             QRgb grooveColor, grooveBorderColor, handleColor;
 
-            if ( states == A::NoState )
-            {
-                grooveColor = pal.fillColor.controlAlt.secondary;
-                grooveBorderColor = pal.strokeColor.controlStrong.defaultColor;
-                handleColor = pal.strokeColor.controlStrong.defaultColor;
-            }
-            else if ( states == Q::Checked )
+            if ( states == Q::Checked )
             {
                 grooveColor = pal.fillColor.accent.defaultColor;
                 grooveBorderColor = pal.strokeColor.controlStrong.defaultColor;
@@ -1954,6 +2031,12 @@ void Editor::setupSwitchButtonColors(
                 grooveColor = pal.fillColor.accent.disabled;
                 grooveBorderColor = pal.fillColor.accent.disabled;
                 handleColor = pal.fillColor.textOnAccent.disabled;
+            }
+            else // A::NoState
+            {
+                grooveColor = pal.fillColor.controlAlt.secondary;
+                grooveBorderColor = pal.strokeColor.controlStrong.defaultColor;
+                handleColor = pal.strokeColor.controlStrong.defaultColor;
             }
 
             const auto groove = Q::Groove | section | states;

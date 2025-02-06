@@ -7,6 +7,7 @@
 #include "QskColorFilter.h"
 #include "QskGraphicPaintEngine.h"
 #include "QskPainterCommand.h"
+#include "QskInternalMacros.h"
 
 #include <qguiapplication.h>
 #include <qimage.h>
