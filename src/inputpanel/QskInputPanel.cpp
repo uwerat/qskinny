@@ -311,7 +311,7 @@ class QskInputPanel::PrivateData
 
     Qt::InputMethodHints inputHints;
     bool hasPredictorLocale = false;
-    const QskInputPanel* panel;
+    QskInputPanel* panel;
 
     void handleKeyProcessingFinished( const Result& result )
     {
@@ -325,16 +325,7 @@ class QskInputPanel::PrivateData
             }
             case Qt::Key_Return:
             {
-                if ( auto proxy = panel->inputProxy() )
-                {
-                    // using input method query instead
-                    const auto value = proxy->property( "text" );
-                    if ( value.canConvert< QString >() )
-                    {
-                        qskSendReplaceText( inputItem, value.toString() );
-                    }
-                }
-
+                panel->commitCurrentText( false );
                 qskSendKey( inputItem, result.key );
                 break;
             }
@@ -357,7 +348,9 @@ QskInputPanel::QskInputPanel( QQuickItem* parent )
     , m_data( new PrivateData( this ) )
 {
     setAutoLayoutChildren( true );
-    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Constrained );
+    setLayoutAlignmentHint( Qt::AlignHCenter | Qt::AlignBottom );
+
+    initSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Constrained );
 
     connect( this, &QskInputPanel::keySelected,
         this, &QskInputPanel::commitKey );
@@ -601,6 +594,20 @@ void QskInputPanel::commitKey( int key )
 
     m_data->keyProcessor.processKey(
         key, m_data->inputHints, this, predictor, spaceLeft );
+}
+
+void QskInputPanel::commitCurrentText( bool isFinal )
+{
+    if ( auto proxy = inputProxy() )
+    {
+        // using Qt::ImSurroundingText instead ??
+        const auto value = proxy->property( "text" );
+        if ( value.canConvert< QString >() )
+            qskSendReplaceText( m_data->inputItem, value.toString() );
+    }
+
+    if ( isFinal )
+        commitKey( Qt::Key_Escape );
 }
 
 #include "moc_QskInputPanel.cpp"

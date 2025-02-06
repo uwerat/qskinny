@@ -84,6 +84,8 @@ namespace
     };
 }
 
+QSK_HIDDEN_EXTERNAL_BEGIN
+
 QLocale qskInheritedLocale( const QObject* object )
 {
     VisitorLocale visitor;
@@ -101,6 +103,16 @@ void qskInheritLocale( QObject* object, const QLocale& locale )
     QskObjectTree::traverseDown( object, visitor );
 }
 
+void qskInheritSection( QskControl* control, QskAspect::Section section )
+{
+    VisitorSection visitor;
+    visitor.setResolveValue( section );
+
+    QskObjectTree::traverseDown( control, visitor );
+}
+
+QSK_HIDDEN_EXTERNAL_END
+
 static QskAspect::Section qskInheritedSection( const QskControl* control )
 {
     VisitorSection visitor;
@@ -108,14 +120,6 @@ static QskAspect::Section qskInheritedSection( const QskControl* control )
 
     QskObjectTree::traverseUp( const_cast< QskControl* >( control ), visitor );
     return visitor.resolveValue();
-}
-
-void qskInheritSection( QskControl* control, QskAspect::Section section )
-{
-    VisitorSection visitor;
-    visitor.setResolveValue( section );
-
-    QskObjectTree::traverseDown( control, visitor );
 }
 
 /*

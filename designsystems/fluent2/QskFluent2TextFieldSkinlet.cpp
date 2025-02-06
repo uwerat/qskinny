@@ -23,4 +23,10 @@ QRectF QskFluent2TextFieldSkinlet::subControlRect( const QskSkinnable* skinnable
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
+QSizeF QskFluent2TextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
+    Qt::SizeHint which, const QSizeF& constraint ) const
+{
+    return Inherited::sizeHint( skinnable, which, constraint );
+}
+
 #include "moc_QskFluent2TextFieldSkinlet.cpp"

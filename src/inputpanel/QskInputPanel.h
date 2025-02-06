@@ -35,6 +35,7 @@ class QSK_EXPORT QskInputPanel : public QskControl
   public Q_SLOTS:
     void commitKey( int keyCode );
     void commitPredictiveText( int index );
+    void commitCurrentText( bool isFinal );
 
   Q_SIGNALS:
     void keySelected( int keyCode );

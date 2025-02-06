@@ -16,26 +16,17 @@
 class QSK_EXPORT QskPainterCommand
 {
   public:
-    //! Type of the paint command
     enum Type : qint8
     {
-        //! Invalid command
         Invalid = -1,
 
-        //! Draw a QPainterPath
         Path,
-
-        //! Draw a QPixmap
         Pixmap,
-
-        //! Draw a QImage
         Image,
 
-        //! QPainter state change
         State
     };
 
-    //! Attributes how to paint a QPixmap
     struct PixmapData
     {
         QRectF rect;
@@ -43,7 +34,6 @@ class QSK_EXPORT QskPainterCommand
         QRectF subRect;
     };
 
-    //! Attributes how to paint a QImage
     struct ImageData
     {
         QRectF rect;
@@ -52,7 +42,6 @@ class QSK_EXPORT QskPainterCommand
         Qt::ImageConversionFlags flags;
     };
 
-    //! Attributes of a state change
     struct StateData
     {
         QPaintEngine::DirtyFlags flags;
@@ -137,33 +126,28 @@ inline bool QskPainterCommand::operator!=( const QskPainterCommand& other ) cons
     return !( *this == other );
 }
 
-//! \return Type of the command
 inline QskPainterCommand::Type QskPainterCommand::type() const noexcept
 {
     return m_type;
 }
 
-//! \return Painter path to be painted
 inline const QPainterPath* QskPainterCommand::path() const noexcept
 {
     return m_path;
 }
 
-//! \return Attributes how to paint a QPixmap
 inline const QskPainterCommand::PixmapData*
 QskPainterCommand::pixmapData() const noexcept
 {
     return m_pixmapData;
 }
 
-//! \return Attributes how to paint a QImage
 inline const QskPainterCommand::ImageData*
 QskPainterCommand::imageData() const noexcept
 {
     return m_imageData;
 }
 
-//! \return Attributes of a state change
 inline const QskPainterCommand::StateData*
 QskPainterCommand::stateData() const noexcept
 {

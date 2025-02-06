@@ -166,11 +166,6 @@ static inline ListViewNode* qskListViewNode( const QskListView* listView )
     return nullptr;
 }
 
-static inline ListViewNode* qskListViewNode( const QskSkinnable* skinnable )
-{
-    return qskListViewNode( static_cast< const QskListView* >( skinnable ) );
-}
-
 QskListViewSkinlet::QskListViewSkinlet( QskSkin* skin )
     : Inherited( skin )
 {

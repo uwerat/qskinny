@@ -11,6 +11,7 @@
 #include "QskSkinManager.h"
 #include "QskSkin.h"
 #include "QskDirtyItemFilter.h"
+#include "QskInternalMacros.h"
 
 #include <qglobalstatic.h>
 #include <qquickwindow.h>
@@ -218,7 +219,8 @@ namespace
             }
         }
 
-        void itemChildRemoved( QQuickItem* parentItem, QQuickItem* )
+        void itemChildRemoved(
+            QQuickItem* parentItem, QQuickItem* ) override
         {
             update( parentItem );
         }
@@ -412,14 +414,10 @@ bool QskItem::isTabFence() const
     return d_func()->isTabFence;
 }
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 7, 0 )
+
 void QskItem::setFocusPolicy( Qt::FocusPolicy policy )
 {
-    /*
-        Qt::FocusPolicy has always been there with widgets, got lost with
-        Qt/Quick and has been reintroduced with Qt/Quick Controls 2 ( QC2 ).
-        Unfortunately this was done by adding code on top instead of fixing
-        the foundation.
-     */
     Q_D( QskItem );
     if ( policy != d->focusPolicy )
     {
@@ -451,6 +449,14 @@ Qt::FocusPolicy QskItem::focusPolicy() const
 
     return static_cast< Qt::FocusPolicy >( policy );
 }
+
+#else
+
+/*
+    shifting the activeFocusItem before removing it from the tab focus
+    chain is not done by QQuickItem::setFocusPolicy. TODO ...
+ */
+#endif
 
 void QskItem::setWheelEnabled( bool on )
 {
@@ -775,6 +781,11 @@ bool QskItem::event( QEvent* event )
             changeEvent( event );
             return true;
         }
+        case QskEvent::ViewportChange:
+        {
+            viewportChangeEvent( static_cast< QskViewportChangeEvent* >( event ) );
+            return true;
+        }
         case QskEvent::GeometryChange:
         {
             geometryChangeEvent( static_cast< QskGeometryChangeEvent* >( event ) );
@@ -852,6 +863,11 @@ void QskItem::windowChangeEvent( QskWindowChangeEvent* )
 {
 }
 
+void QskItem::viewportChangeEvent( QskViewportChangeEvent* event )
+{
+    event->ignore();
+}
+
 void QskItem::geometryChangeEvent( QskGeometryChangeEvent* )
 {
 }
@@ -874,7 +890,6 @@ void QskItem::itemChange( QQuickItem::ItemChange change,
                     qskFilterWindow( changeData.window );
             }
 
-#if 1
             auto oldWindow = qskReleasedWindowCounter->window();
 
             if ( oldWindow && oldWindow->contentItem()
@@ -905,9 +920,6 @@ void QskItem::itemChange( QQuickItem::ItemChange change,
                     wd->activeFocusItem = nullptr;
                 }
             }
-#endif
-
-#if 1
             if ( changeData.window == nullptr )
             {
                 Q_D( QskItem );
@@ -926,7 +938,6 @@ void QskItem::itemChange( QQuickItem::ItemChange change,
                     d->focus = false;
                 }
             }
-#endif
 
             QskWindowChangeEvent event( oldWindow, changeData.window );
             QCoreApplication::sendEvent( this, &event );
@@ -941,14 +952,7 @@ void QskItem::itemChange( QQuickItem::ItemChange change,
         case QQuickItem::ItemVisibleHasChanged:
         {
             Q_D( QskItem );
-#if 1
-            /*
-                ~QQuickItem sends QQuickItem::ItemVisibleHasChanged recursively
-                to all childItems. When being a child ( not only a childItem() )
-                we are short before being destructed too and any updates
-                done here are totally pointless. TODO ...
-             */
-#endif
+
             if ( changeData.boolValue )
             {
                 if ( d->blockedPolish )
@@ -1135,10 +1139,14 @@ QSGNode* QskItem::updateItemPaintNode( QSGNode* node )
     return node;
 }
 
+QSK_HIDDEN_EXTERNAL_BEGIN
+
 void qskUpdateItemFlags()
 {
     if ( qskRegistry )
         qskRegistry->updateItemFlags();
 }
+
+QSK_HIDDEN_EXTERNAL_END
 
 #include "moc_QskItem.cpp"

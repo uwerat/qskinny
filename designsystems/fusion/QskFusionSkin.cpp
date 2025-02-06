@@ -42,8 +42,8 @@
 #include <QskTabBar.h>
 #include <QskTabButton.h>
 #include <QskTabView.h>
+#include <QskTextArea.h>
 #include <QskTextField.h>
-#include <QskTextFieldSkinlet.h>
 #include <QskTextLabel.h>
 #include <QskVirtualKeyboard.h>
 
@@ -142,6 +142,8 @@ namespace
         Q_INVOKABLE void setupTabButton();
         Q_INVOKABLE void setupTabBar();
         Q_INVOKABLE void setupTabView();
+
+        Q_INVOKABLE void setupTextArea();
         Q_INVOKABLE void setupTextField();
         Q_INVOKABLE void setupTextLabel();
 
@@ -386,36 +388,82 @@ void Editor::setupTextLabel()
 void Editor::setupTextField()
 {
     using Q = QskTextField;
-    using SK = QskTextFieldSkinlet;
     using A = QskAspect;
     using P = QPalette;
-
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
-    setAlignment( Q::PlaceholderText, Qt::AlignLeft | Qt::AlignVCenter );
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {
         const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-        setColor( Q::Panel | state, m_pal.color( colorGroup, P::Base ) );
-        setColor( Q::Panel | SK::Selected | state, m_pal.color( colorGroup, P::Highlight ) );
-
         setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
-        setColor( Q::Text | SK::Selected | state, m_pal.color( colorGroup, P::HighlightedText ) );
-        setColor( Q::PlaceholderText, m_pal.color( colorGroup, P::PlaceholderText ) );
+        setColor( Q::Text | Q::Selected | state, m_pal.color( colorGroup, P::HighlightedText ) );
     }
 
-    setColor( Q::Panel | Q::ReadOnly, m_pal.disabled( P::Base ) );
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
 
-    setBoxBorderMetrics( Q::Panel, 1_px );
+    for ( auto state : { A::NoState, Q::Disabled } )
+    {
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
 
-    setBoxBorderColors( Q::Panel, m_pal.outline );
+        setColor( Q::TextPanel | state, m_pal.color( colorGroup, P::Base ) );
+        setColor( Q::TextPanel | Q::Selected | state, m_pal.color( colorGroup, P::Highlight ) );
+
+        setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
+        setColor( Q::Text | Q::Selected | state, m_pal.color( colorGroup, P::HighlightedText ) );
+        setColor( Q::Placeholder, m_pal.color( colorGroup, P::PlaceholderText ) );
+    }
+
+    setColor( Q::TextPanel | Q::ReadOnly, m_pal.disabled( P::Base ) );
+
+    setBoxBorderMetrics( Q::TextPanel, 1_px );
+
+    setBoxBorderColors( Q::TextPanel, m_pal.outline );
 #ifdef SHOW_FOCUS
-    setBoxBorderColors( Q::Panel | Q::Focused, m_pal.highlightedOutline );
+    setBoxBorderColors( Q::TextPanel | Q::Focused, m_pal.highlightedOutline );
 #endif
 
-    setBoxShape( Q::Panel, 2_px );
-    setPadding( Q::Panel, 4_px );
+    setBoxShape( Q::TextPanel, 2_px );
+    setPadding( Q::TextPanel, 4_px );
+}
+
+void Editor::setupTextArea()
+{
+    using Q = QskTextArea;
+    using A = QskAspect;
+    using P = QPalette;
+
+    for ( auto state : { A::NoState, Q::Disabled } )
+    {
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
+
+        setColor( Q::Text | state, m_pal.color( colorGroup, P::Text ) );
+        setColor( Q::Text | Q::Selected | state, m_pal.color( colorGroup, P::HighlightedText ) );
+    }
+
+    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignTop );
+
+    for ( auto state : { A::NoState, Q::Disabled } )
+    {
+        const auto colorGroup = ( state == A::NoState ) ? P::Active : P::Disabled;
+
+        setColor( Q::TextPanel | state, m_pal.color( colorGroup, P::Base ) );
+        setColor( Q::TextPanel | Q::Selected | state, m_pal.color( colorGroup, P::Highlight ) );
+
+        setColor( Q::Placeholder, m_pal.color( colorGroup, P::PlaceholderText ) );
+    }
+
+    setColor( Q::TextPanel | Q::ReadOnly, m_pal.disabled( P::Base ) );
+
+    setBoxBorderMetrics( Q::TextPanel, 1_px );
+
+    setBoxBorderColors( Q::TextPanel, m_pal.outline );
+#ifdef SHOW_FOCUS
+    setBoxBorderColors( Q::TextPanel | Q::Focused, m_pal.highlightedOutline );
+#endif
+
+    setBoxShape( Q::TextPanel, 2_px );
+    setPadding( Q::TextPanel, 4_px );
 }
 
 void Editor::setupProgressBar()
@@ -929,7 +977,7 @@ void Editor::setupSpinBox()
         setBoxBorderColors( subControl, m_pal.outline );
 
         setPadding( subControl, 4 );
-        setStrutSize( subControl, 16, 8 );
+        setStrutSize( subControl, 16, -1 );
 
         // Qt/Fusion uses a linear gradient, TODO ...
 
@@ -1308,8 +1356,14 @@ void Editor::setupListView()
 
             setColor( Q::Text | state1 | state2,
                 m_pal.color( colorGroup, P::HighlightedText ) );
+
+            setGraphicRole( Q::Graphic | state1 | state2,
+                QskFusionSkin::GraphicHighlighted );
         }
     }
+
+    setGraphicRole( Q::Graphic, QskFusionSkin::GraphicNormal );
+    setGraphicRole( Q::Graphic | Q::Disabled, QskFusionSkin::GraphicDisabled );
 }
 
 void Editor::setupSubWindow()

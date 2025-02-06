@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskObjectCounter.h"
+#include "QskInternalMacros.h"
 
 #include <qdebug.h>
 #include <qset.h>
