@@ -77,6 +77,8 @@ list(APPEND PRIVATE_HEADERS
 
 list(APPEND HEADERS
     graphic/QskColorFilter.h
+    graphic/QskGlyphGraphicProvider.h
+    graphic/QskGlyphTable.h
     graphic/QskGraphic.h
     graphic/QskGraphicImageProvider.h
     graphic/QskGraphicIO.h
@@ -91,6 +93,8 @@ list(APPEND HEADERS
 
 list(APPEND SOURCES
     graphic/QskColorFilter.cpp
+    graphic/QskGlyphGraphicProvider.cpp
+    graphic/QskGlyphTable.cpp
     graphic/QskGraphic.cpp
     graphic/QskGraphicImageProvider.cpp
     graphic/QskGraphicIO.cpp
