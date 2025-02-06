@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskMetaFunction.h"
+#include "QskInternalMacros.h"
 
 #include <qcoreapplication.h>
 #include <qobject.h>

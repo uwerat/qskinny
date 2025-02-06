@@ -8,6 +8,7 @@
 #include "QskAnimationHint.h"
 #include "QskEvent.h"
 #include "QskQuick.h"
+#include "QskInternalMacros.h"
 
 #include <qpointer.h>
 #include <qquickwindow.h>
@@ -55,9 +56,24 @@ static inline QskAspect::Section qskItemSection( const QQuickItem* item )
 }
 
 static inline bool qskIsEnablingKey( const QKeyEvent* event )
-{       
+{
     // what keys do we want have here ???
     return qskIsButtonPressKey( event ) || qskFocusChainIncrement( event );
+}
+
+static inline bool qskIsEditing( const QQuickWindow* window )
+{
+    if ( !QGuiApplication::inputMethod()->isVisible() )
+    {
+        if ( auto item = window->activeFocusItem() )
+        {
+            const QVariant v = item->property( "editing" );
+            if ( v.value< bool >() )
+                return true;
+        }
+    }
+
+    return false;
 }
 
 class QskFocusIndicator::PrivateData
@@ -73,13 +89,13 @@ class QskFocusIndicator::PrivateData
 
     inline bool isAutoDisabling() const { return duration > 0; }
     inline bool isAutoEnabling() const { return false; }
-    
+
     QPointer< QQuickItem > clippingItem;
     QVector< QMetaObject::Connection > connections;
 
     int duration = 0;
     QBasicTimer timer;
-  
+
     bool blockAutoRepeatKeyEvents = false;
 };
 
@@ -186,6 +202,9 @@ bool QskFocusIndicator::eventFilter( QObject* object, QEvent* event )
         case QEvent::KeyRelease:
         case QEvent::ShortcutOverride:
         {
+            if ( qskIsEditing( window() ) )
+                return false;
+
             if ( m_data->timer.isActive() )
             {
                 // renew the exposed period

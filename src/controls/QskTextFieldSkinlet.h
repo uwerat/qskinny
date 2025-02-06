@@ -8,6 +8,8 @@
 
 #include "QskSkinlet.h"
 
+class QskTextField;
+
 class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
 {
     Q_GADGET
@@ -15,12 +17,11 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
     using Inherited = QskSkinlet;
 
   public:
-    QSK_STATES( Selected )
-
     enum NodeRole : quint8
     {
         PanelRole,
-        PlaceholderTextRole,
+        TextPanelRole,
+        PlaceholderRole,
         RoleCount
     };
 
@@ -36,6 +37,8 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
   protected:
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
+
+    virtual QString effectivePlaceholderText( const QskTextField* ) const;
 };
 
 #endif

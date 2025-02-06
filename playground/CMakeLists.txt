@@ -33,3 +33,7 @@ endif()
 if(TARGET Qt::QuickWidgets)
     add_subdirectory(grids)
 endif()
+
+if(TARGET Qt::QuickDialogs2)
+    add_subdirectory(systemdialogs)
+endif()

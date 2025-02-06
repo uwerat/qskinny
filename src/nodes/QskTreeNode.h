@@ -25,7 +25,7 @@ class QSK_EXPORT QskTreeNode final : public QSGNode
     QskTreeNode( QSGNodePrivate& );
 
   private:
-    bool m_isBlocked = false;;
+    bool m_isBlocked = false;
 };
 
 QSK_EXPORT QskTreeNode* qskTreeNodeCast( QSGNode* );
@@ -45,7 +45,7 @@ class QSK_EXPORT QskItemNode final : public QSGTransformNode
     bool isSubtreeBlocked() const override;
 
   private:
-    bool m_isBlocked = false;;
+    bool m_isBlocked = false;
 };
 
 QSK_EXPORT QskItemNode* qskItemNodeCast( QSGNode* );

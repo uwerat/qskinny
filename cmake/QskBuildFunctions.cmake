@@ -20,6 +20,45 @@ function(qsk_add_executable target)
 
 endfunction()
 
+function(qsk_embed_sources target)
+
+    # In cross platform scenarios you might need the qvg converter
+    # tools for the build - not the target - platform. To avoid having
+    # to build all libraries those tools offer a standalone
+    # mode that includes some source files instead.
+
+    # Some moc files are transitively required:
+    #    - f.e #include <QskGraphic.cpp> -> #include "moc_QskGraphic.cpp"
+    # Those will be generated when adding the dependency below
+
+    add_dependencies(${target} qskinny)
+
+    # TODO hack for standalone qvg2svg
+    get_target_property(qskinny_AUTOGEN_DIR qskinny AUTOGEN_BUILD_DIR)
+    if (${qskinny_AUTOGEN_DIR} STREQUAL "")
+        message(FATAL_ERROR "Directory '${qskinny_AUTOGEN_DIR}' doesn't exist")
+    endif()
+
+    # TODO fix multi configuration generators
+    if(CMAKE_GENERATOR MATCHES "Visual Studio.*")
+        add_definitions("/I${qskinny_AUTOGEN_DIR}/include_\$(Configuration)")
+    elseif(CMAKE_GENERATOR MATCHES "Ninja Multi.*")
+        target_include_directories(${target}
+            PRIVATE
+                ${qskinny_AUTOGEN_DIR}/include_$<CONFIG>)
+    else()
+        target_include_directories(${target} PRIVATE ${qskinny_AUTOGEN_DIR}/include)
+    endif()
+
+    target_include_directories(${target}
+        PRIVATE
+            ${QSK_SOURCE_DIR}/src/common
+            ${QSK_SOURCE_DIR}/src/graphic)
+
+    target_compile_definitions(${target} PRIVATE QSK_STANDALONE)
+    target_link_libraries(${target} PRIVATE Qt::Gui Qt::GuiPrivate)
+endfunction()
+
 function(qsk_add_library target)
 
     if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)

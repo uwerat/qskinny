@@ -7,6 +7,7 @@
 
 #include <QskGridBox.h>
 #include <QskSlider.h>
+#include <QskTextArea.h>
 #include <QskTextField.h>
 #include <QskSpinBox.h>
 
@@ -70,23 +71,51 @@ namespace
             setSpacing( 20 );
 
             {
-                auto textField = new QskTextField( "Joe", this );
-                textField->setPlaceholderText( "<Name>" );
+                {
+                    auto field = new QskTextField( this );
+                    field->setText( "John Doe" );
+                    field->setPlaceholderText( "<Name>" );
+
+#if 0
+                    connect( field, &QskTextField::textChanged,
+                        [field]() { qDebug() << "Text:" << field->text(); } );
+#endif
+
+                }
+
+                {
+                    auto field = new QskTextField( this );
+                    field->setReadOnly( true );
+                    field->setText( "Read Only" );
+                    field->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
+                }
+
+                {
+                    auto field = new QskTextField( this );
+                    field->setMaxLength( 5 );
+                    field->setEchoMode( QskTextField::Password );
+                    field->setPlaceholderText( "<password>" );
+                }
             }
+        }
+    };
+
+    class TextAreaBox : public QskLinearBox
+    {
+      public:
+        TextAreaBox( QQuickItem* parent = nullptr )
+            : QskLinearBox( Qt::Horizontal, parent )
+        {
+            setSpacing( 20 );
 
             {
-                auto textField = new QskTextField( "Only Read Me", this );
-                textField->setReadOnly( true );
-                textField->setSizePolicy( Qt::Horizontal, QskSizePolicy::MinimumExpanding );
-            }
+                auto textArea = new QskTextArea( "here enter longer text\nwith multiple lines", this );
+                textArea->setWrapMode( QskTextOptions::Wrap );
+                textArea->setPlaceholderText( "placeholder text" );
 
-            {
-                auto textField = new QskTextField( "12345", this );
-                textField->setPlaceholderText( "<Password>" );
-                textField->setMaxLength( 5 );
-                textField->setEchoMode( QskTextField::PasswordEchoOnEdit );
-#if 1
-                textField->setFixedWidth( 100 );
+#if 0
+                connect( textArea, &QskTextArea::textChanged,
+                    this, [textArea]() { qDebug() << "Text:" << textArea->text(); } );
 #endif
             }
         }
@@ -122,6 +151,8 @@ InputPage::InputPage( QQuickItem* parent )
     auto textInputBox = new TextInputBox();
     textInputBox->setSizePolicy( Qt::Vertical, QskSizePolicy::Fixed );
 
+    auto textAreaBox = new TextAreaBox();
+
     auto vBox = new QskLinearBox( Qt::Vertical );
     vBox->setSpacing( 30 );
     vBox->setExtraSpacingAt( Qt::RightEdge | Qt::BottomEdge );
@@ -129,8 +160,9 @@ InputPage::InputPage( QQuickItem* parent )
     vBox->addItem( sliders[0].continous );
     vBox->addItem( sliders[0].discrete );
     vBox->addItem( sliders[0].centered );
-    vBox->addItem( textInputBox );
     vBox->addItem( spinBox );
+    vBox->addItem( textInputBox );
+    vBox->addItem( textAreaBox );
 
     auto mainBox = new QskLinearBox( Qt::Horizontal, this );
     mainBox->setSpacing( 30 );

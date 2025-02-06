@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "ArcShadowNode.h"
+#include <QskInternalMacros.h>
 
 #include <qcolor.h>
 #include <qsgmaterial.h>

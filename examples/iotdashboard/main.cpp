@@ -45,7 +45,7 @@ int main( int argc, char* argv[] )
     {
         if( argv[i] == QStringLiteral( "--screenshot" ) && i + 1 < argc )
         {
-            QTimer::singleShot( 500, &window, [&app, &window, filename = QString(argv[i + 1])]()
+            QTimer::singleShot( 500, &window, [ &window, filename = QString(argv[i + 1])]()
                 { auto image = window.grabWindow(); image.save(filename); } );
 
             break;
