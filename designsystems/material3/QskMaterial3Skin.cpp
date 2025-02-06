@@ -856,6 +856,7 @@ void Editor::setupPushButton()
         m_pal.secondaryContainer, checkedOpacity );
     setGradient( Q::Panel | Tonal | Q::Checked, tonalCheckedColor );
 
+
     // outlined buttons:
 
     setGradient( Q::Panel | Outlined, m_pal.surface );
