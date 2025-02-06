@@ -730,7 +730,9 @@ QSGNode* QskSkinlet::updateGraphicNode(
     const QskGraphic& graphic, QskAspect::Subcontrol subControl,
     Qt::Orientations mirrored ) const
 {
-    const auto rect = qskSubControlRect( this, skinnable, subControl );
+    auto rect = qskSubControlRect( this, skinnable, subControl );
+    rect = rect.marginsRemoved( skinnable->marginHint( subControl ) );
+
     const auto alignment = skinnable->alignmentHint( subControl, Qt::AlignCenter );
     const auto colorFilter = skinnable->effectiveGraphicFilter( subControl );
 

@@ -547,7 +547,7 @@ inline void WindowAnimator::storeAnimator(
     const QskControl* control, const QskAspect aspect,
     const QVariant& value1, const QVariant& value2, QskAnimationHint hint )
 {
-    if ( m_animatorMap.find( aspect ) == m_animatorMap.cend() )
+    if ( !m_animatorMap.contains( aspect ) )
     {
         m_animatorMap.insert( aspect,
             HintAnimator( control, aspect, value1, value2, hint ) );

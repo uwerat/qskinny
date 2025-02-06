@@ -28,29 +28,6 @@ static inline bool qskIsXAxis( int axis )
     return axis == QskPlot::XBottom;
 }
 
-static inline QTransform qskScaleTransform( Qt::Orientation orientation,
-    qreal s1, qreal s2, qreal p1, qreal p2 )
-{
-    const auto ratio = ( p2 - p1 ) / ( s2 - s1 );
-
-    if ( orientation == Qt::Horizontal )
-    {
-        auto transform = QTransform::fromTranslate( -s1, 0.0 );
-        transform *= QTransform::fromScale( ratio, 1.0 );
-        transform *= QTransform::fromTranslate( p1, 0.0 );
-
-        return transform;
-    }
-    else
-    {
-        auto transform = QTransform::fromTranslate( 0.0, -s1 );
-        transform *= QTransform::fromScale( 1.0, -ratio );
-        transform *= QTransform::fromTranslate( 0.0, p2 );
-
-        return transform;
-    }
-}
-
 class QskPlotView::PrivateData
 {
   public:
@@ -285,12 +262,12 @@ void QskPlotView::updateNode( QSGNode* node )
 {
     if ( !m_data->orphanedNodes.empty() )
     {
-        for ( auto node : m_data->orphanedNodes )
+        for ( auto orphanedNode : m_data->orphanedNodes )
         {
-            if ( auto parentNode = node->parent() )
-                parentNode->removeChildNode( node );
+            if ( auto parentNode = orphanedNode->parent() )
+                parentNode->removeChildNode( orphanedNode );
 
-            delete node;
+            delete orphanedNode;
         }
 
         m_data->orphanedNodes.clear();

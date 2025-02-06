@@ -117,7 +117,7 @@ QskFluent2Theme::QskFluent2Theme( QskSkin::ColorScheme colorScheme,
 
             colors.control.defaultColor = rgbGray( 0, 0.0578 );
             colors.control.secondary = rgbGray( 0, 0.1622 );
-            colors.control.onAccentDefault = rgbGray( 255.08 );
+            colors.control.onAccentDefault = rgbGray( 255, 0.08 );
             colors.control.onAccentSecondary = rgbGray( 0, 0.40 );
             colors.control.onAccentTertiary = rgbGray( 0, 0.2169 );
             colors.control.onAccentDisabled = rgbGray( 0, 0.0578 );

@@ -59,9 +59,13 @@
 #include <QskWindow.h>
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 2, 0 )
+
+#include <QskInternalMacros.h>
+
 QSK_QT_PRIVATE_BEGIN
-        #include <private/qqmlmetatype_p.h>
+    #include <private/qqmlmetatype_p.h>
 QSK_QT_PRIVATE_END
+
 #endif
 
 #if QT_VERSION < QT_VERSION_CHECK( 6, 5, 0 )

@@ -252,6 +252,12 @@ void QskSubWindow::itemChange( QQuickItem::ItemChange change,
     }
 }
 
+void QskSubWindow::geometryChange(
+    const QRectF& newGeometry, const QRectF& oldGeometry )
+{   
+    Inherited::geometryChange( newGeometry, oldGeometry );
+}
+
 void QskSubWindow::updateResources()
 {
     setOpacity( fadingFactor() );

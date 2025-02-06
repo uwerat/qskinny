@@ -189,6 +189,7 @@ QskEvent* QskEvent::clone() const
 }
 
 #endif
+
 // -- QskGeometryChangeEvent
 
 QskGeometryChangeEvent::QskGeometryChangeEvent(
@@ -214,6 +215,19 @@ bool QskGeometryChangeEvent::isMoved() const
 {
     return ( m_rect.x() != m_oldRect.x() ) ||
         ( m_rect.y() != m_oldRect.y() );
+}
+
+// -- QskViewportChangeEvent
+
+QskViewportChangeEvent::QskViewportChangeEvent( QQuickItem* modifiedParent )
+    : QskEvent( QskEvent::ViewportChange )
+    , m_modifiedParent( modifiedParent )
+{
+}
+
+QskViewportChangeEvent* QskViewportChangeEvent::clone() const
+{
+    return new QskViewportChangeEvent( *this );
 }
 
 // -- QskWindowChangeEvent

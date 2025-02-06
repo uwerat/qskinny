@@ -8,3 +8,5 @@ if(TARGET Qt::Svg)
         COMPONENT
             Devel)
 endif()
+
+add_subdirectory(glyph2qvg)

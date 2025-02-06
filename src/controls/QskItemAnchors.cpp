@@ -5,6 +5,7 @@
 
 #include "QskItemAnchors.h"
 #include "QskMargins.h"
+#include "QskInternalMacros.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickanchors_p.h>
@@ -257,12 +258,12 @@ void QskItemAnchors::addAnchors( Qt::Corner corner,
     QQuickItem* settledItem, Qt::Corner settledItemCorner )
 {
     auto anchorPoint =
-        []( Qt::Corner corner, Qt::Orientation orientation )
+        []( Qt::Corner cn, Qt::Orientation orientation )
         {
             if ( orientation == Qt::Horizontal )
-                return ( corner & 0x1 ) ? Qt::AnchorRight : Qt::AnchorLeft;
+                return ( cn & 0x1 ) ? Qt::AnchorRight : Qt::AnchorLeft;
             else
-                return ( corner >= 0x2 ) ? Qt::AnchorBottom : Qt::AnchorTop;
+                return ( cn >= 0x2 ) ? Qt::AnchorBottom : Qt::AnchorTop;
         };
 
     addAnchor( anchorPoint( corner, Qt::Horizontal ),
