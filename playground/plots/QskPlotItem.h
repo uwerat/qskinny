@@ -42,7 +42,7 @@ class QskPlotItem : public QObject, public QskSkinnable
         PlotCoordinates
     };
 
-    Q_ENUM( CoordinateType );
+    Q_ENUM( CoordinateType )
 
     enum ChangeFlag
     {
@@ -54,9 +54,9 @@ class QskPlotItem : public QObject, public QskSkinnable
 
         CanvasGeometryChanged = 1 << 2
     };
-    Q_ENUM( ChangeFlag );
+    Q_ENUM( ChangeFlag )
 
-    Q_DECLARE_FLAGS( ChangeFlags, ChangeFlag );
+    Q_DECLARE_FLAGS( ChangeFlags, ChangeFlag )
 
     QskPlotItem( QObject* = nullptr );
     ~QskPlotItem() override;
@@ -99,7 +99,7 @@ class QskPlotItem : public QObject, public QskSkinnable
     void resetDirty();
     bool isDirty() const;
 
-    virtual void updateNode( QSGNode* );
+    void updateNode( QSGNode* ) override;
     virtual void transformationChanged( ChangeFlags );
 
   Q_SIGNALS:

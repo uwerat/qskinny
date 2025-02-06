@@ -18,9 +18,9 @@ macro(qsk_setup_options)
 
     # we actually want to use cmake_dependent_option - minimum cmake version ??
 
-    option( BUILD_SVG2QVG_STANDALONE "Build svg2qvg without qskinny library dependency" ON )
+    option( BUILD_TOOLS_STANDALONE "Build tools without qskinny library dependency" ON )
     if( NOT BUILD_TOOLS )
-        set( BUILD_SVG2QVG_STANDALONE OFF )
+        set( BUILD_TOOLS_STANDALONE OFF )
     endif()
 
     if( NOT BUILD_INPUTCONTEXT )

@@ -11,6 +11,7 @@
 #include "QskEvent.h"
 #include "QskPlatform.h"
 #include "QskHintAnimator.h"
+#include "QskInternalMacros.h"
 
 #include <qpa/qplatformintegration.h>
 
@@ -632,6 +633,12 @@ void QskPopup::itemChange( QQuickItem::ItemChange change,
 
         updateInputGrabber();
     }
+}
+
+void QskPopup::geometryChange(
+    const QRectF& newGeometry, const QRectF& oldGeometry )
+{
+    Inherited::geometryChange( newGeometry, oldGeometry );
 }
 
 void QskPopup::windowChangeEvent( QskWindowChangeEvent* event )

@@ -8,16 +8,44 @@
 
 #include "QskGraphic.h"
 #include "QskLabelData.h"
+#include "QskTextOptions.h"
 
 #include "QskSGNode.h"
 #include "QskSubcontrolLayoutEngine.h"
+#include "QskTextRenderer.h"
+
+#include <qfontmetrics.h>
+
+static int qskWidestIndex( const QskComboBox* box )
+{
+    const auto font = box->effectiveFont( QskComboBox::Text );
+
+    int index = -1;
+    qreal w = 0.0;
+
+    for ( int i = 0; i < box->count(); i++ )
+    {
+        const auto option = box->optionAt( i );
+
+        const auto size = QskTextRenderer::textSize(
+            option.text(), font, QskTextOptions() );
+
+        if ( size.width() > w )
+        {
+            w = size.width();
+            index = i;
+        }
+    }
+
+    return index;
+}
 
 namespace
 {
     class LayoutEngine : public QskSubcontrolLayoutEngine
     {
       public:
-        LayoutEngine( const QskComboBox* box )
+        LayoutEngine( const QskComboBox* box, int index = -1 )
             : QskSubcontrolLayoutEngine( Qt::Horizontal )
         {
             setSpacing( box->spacingHint( QskComboBox::Panel ) );
@@ -25,16 +53,26 @@ namespace
             QSizeF graphicSize;
             QString text;
 
-            if ( box->currentIndex() >= 0 )
+            if ( index < 0 )
             {
-                const auto option = box->optionAt( box->currentIndex() );
+                if ( box->currentIndex() >= 0 )
+                {
+                    const auto option = box->optionAt( box->currentIndex() );
 
-                graphicSize = option.icon().graphic().defaultSize();
-                text = option.text();
+                    graphicSize = option.icon().graphic().defaultSize();
+                    text = option.text();
+                }
+                else
+                {
+                    text = box->placeholderText();
+                }
             }
             else
             {
-                text = box->placeholderText();
+                const auto option = box->optionAt( index );
+
+                graphicSize = option.icon().graphic().defaultSize();
+                text = option.text();
             }
 
             setGraphicTextElements( box,
@@ -143,7 +181,7 @@ QSizeF QskComboBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     const auto box = static_cast< const QskComboBox* >( skinnable );
 
-    LayoutEngine layoutEngine( box );
+    LayoutEngine layoutEngine( box, qskWidestIndex( box ) );
     auto size = layoutEngine.sizeHint( which, QSizeF() );
 
     const auto spacingHint = box->spacingHint( Q::Panel );

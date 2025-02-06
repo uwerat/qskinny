@@ -11,6 +11,7 @@
 
 class QskItemPrivate;
 class QskGeometryChangeEvent;
+class QskViewportChangeEvent;
 class QskWindowChangeEvent;
 
 class QSK_EXPORT QskItem : public QQuickItem
@@ -29,8 +30,10 @@ class QSK_EXPORT QskItem : public QQuickItem
     Q_PROPERTY( bool polishOnParentResize READ polishOnParentResize
         WRITE setPolishOnParentResize NOTIFY itemFlagsChanged FINAL )
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 7, 0 )
     Q_PROPERTY( Qt::FocusPolicy focusPolicy READ focusPolicy
         WRITE setFocusPolicy NOTIFY focusPolicyChanged )
+#endif
 
     Q_PROPERTY( bool wheelEnabled READ isWheelEnabled
         WRITE setWheelEnabled NOTIFY wheelEnabledChanged )
@@ -87,8 +90,10 @@ class QSK_EXPORT QskItem : public QQuickItem
     void setPolishOnParentResize( bool );
     bool polishOnParentResize() const;
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 7, 0 )
     void setFocusPolicy( Qt::FocusPolicy );
     Qt::FocusPolicy focusPolicy() const;
+#endif
 
     void setTabFence( bool );
     bool isTabFence() const;
@@ -119,7 +124,9 @@ class QSK_EXPORT QskItem : public QQuickItem
 
   Q_SIGNALS:
     void wheelEnabledChanged( bool );
+#if QT_VERSION < QT_VERSION_CHECK( 6, 7, 0 )
     void focusPolicyChanged( Qt::FocusPolicy );
+#endif
 
     void itemFlagsChanged();
     void updateFlagsChanged( UpdateFlags );
@@ -148,6 +155,7 @@ class QSK_EXPORT QskItem : public QQuickItem
 
     virtual void changeEvent( QEvent* );
     virtual void geometryChangeEvent( QskGeometryChangeEvent* );
+    virtual void viewportChangeEvent( QskViewportChangeEvent* );
     virtual void windowChangeEvent( QskWindowChangeEvent* );
 
     void mouseUngrabEvent() override;

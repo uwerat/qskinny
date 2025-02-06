@@ -10,6 +10,7 @@
 #include "QskGesture.h"
 #include "QskPanGestureRecognizer.h"
 #include "QskQuick.h"
+#include "QskInternalMacros.h"
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qquickwindow_p.h>

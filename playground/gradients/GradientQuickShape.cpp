@@ -8,6 +8,7 @@
 #include <QskGradient.h>
 #include <QskGradientDirection.h>
 #include <QskBoxRenderer.h>
+#include <QskInternalMacros.h>
 
 QSK_QT_PRIVATE_BEGIN
 

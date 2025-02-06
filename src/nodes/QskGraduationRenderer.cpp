@@ -32,7 +32,7 @@ namespace
         {
         }
 
-        inline qreal map( qreal v ) const { return t + f * v; };
+        inline qreal map( qreal v ) const { return t + f * v; }
 
       private:
         const qreal t;
@@ -501,7 +501,6 @@ QRectF QskGraduationRenderer::labelRect(
     }
     else
     {
-        const auto tickPos = map.map( tick );
         y = tickPos - 0.5 * h;
 
         if ( clampLabels )

@@ -5,6 +5,7 @@
 
 #include "QskBoxShadowNode.h"
 #include "QskBoxShapeMetrics.h"
+#include "QskInternalMacros.h"
 
 #include <qcolor.h>
 #include <qsgmaterialshader.h>

@@ -10,6 +10,7 @@
 
 #include "QskPanGestureRecognizer.h"
 #include "QskGesture.h"
+#include "QskInternalMacros.h"
 
 #include <qguiapplication.h>
 #include <qstylehints.h>

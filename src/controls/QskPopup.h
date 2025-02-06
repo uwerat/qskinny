@@ -92,8 +92,8 @@ class QSK_EXPORT QskPopup : public QskControl
     void keyPressEvent( QKeyEvent* ) override;
     void windowChangeEvent( QskWindowChangeEvent* ) override;
 
-    void itemChange( QQuickItem::ItemChange,
-        const QQuickItem::ItemChangeData& ) override;
+    void itemChange( ItemChange, const ItemChangeData& ) override;
+    void geometryChange( const QRectF&, const QRectF& ) override;
 
     virtual QQuickItem* focusSuccessor() const;
     bool isTransitionAccepted( QskAspect ) const override;
