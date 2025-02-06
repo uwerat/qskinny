@@ -19,7 +19,7 @@
 
 namespace
 {
-    class Material : public TextureFilterMaterial
+    class Material final : public TextureFilterMaterial
     {
       public:
         using TextureFilterMaterial::TextureFilterMaterial;
@@ -31,7 +31,7 @@ namespace
         }
     };
 
-    class FilterNode : public TextureFilterNode
+    class FilterNode final : public TextureFilterNode
     {
       public:
         FilterNode( bool useRhi, QSGTexture* texture )
@@ -52,7 +52,7 @@ namespace
         }
     };
 
-    class Skinlet : public QskSkinlet
+    class Skinlet final : public QskSkinlet
     {
         using Inherited = QskSkinlet;
 
@@ -70,8 +70,8 @@ namespace
             return contentsRect;
         }
 
-        QSGNode* updateSubNode(
-            const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
+        QSGNode* updateSubNode( const QskSkinnable* skinnable,
+            quint8 nodeRole, QSGNode* node ) const override
         {
             const auto overlay = static_cast< const Overlay* >( skinnable );
 

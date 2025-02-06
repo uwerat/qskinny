@@ -146,7 +146,7 @@ class MainView : public QskControl
     }
 
   protected:
-    void updateLayout()
+    void updateLayout() override
     {
         if ( m_background )
             m_background->setGeometry( rect() );
