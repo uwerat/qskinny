@@ -31,7 +31,7 @@ class QskPlotCurveData : public QObject
          */
         BoundingRectangle = 1 << 2
     };
-    Q_ENUM( Hint );
+    Q_ENUM( Hint )
 
     Q_DECLARE_FLAGS( Hints, Hint )
 

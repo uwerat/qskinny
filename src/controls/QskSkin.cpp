@@ -100,11 +100,16 @@
 #include "QskTextLabel.h"
 #include "QskTextLabelSkinlet.h"
 
+#include "QskTextArea.h"
+#include "QskTextAreaSkinlet.h"
+
 #include "QskTextField.h"
 #include "QskTextFieldSkinlet.h"
 
 #include "QskStatusIndicator.h"
 #include "QskStatusIndicatorSkinlet.h"
+
+#include "QskInternalMacros.h"
 
 #include <qhash.h>
 
@@ -126,6 +131,8 @@ static inline QskSkinlet* qskNewSkinlet( const QMetaObject* metaObject, QskSkin*
 
 // also used in QskSkinTransition.cpp TODO ...
 
+QSK_HIDDEN_EXTERNAL_BEGIN
+
 QFont qskResolvedFont( const QHash< QskFontRole, QFont >& fontTable,
     const QskFontRole& fontRole )
 {
@@ -139,6 +146,8 @@ QFont qskResolvedFont( const QHash< QskFontRole, QFont >& fontTable,
 
     return QGuiApplication::font();
 }
+
+QSK_HIDDEN_EXTERNAL_END
 
 namespace
 {
@@ -205,6 +214,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskTabButton, QskTabButtonSkinlet >();
     declareSkinlet< QskTabView, QskTabViewSkinlet >();
     declareSkinlet< QskTextLabel, QskTextLabelSkinlet >();
+    declareSkinlet< QskTextArea, QskTextAreaSkinlet >();
     declareSkinlet< QskTextField, QskTextFieldSkinlet >();
     declareSkinlet< QskProgressBar, QskProgressBarSkinlet >();
     declareSkinlet< QskProgressRing, QskProgressRingSkinlet >();
@@ -249,7 +259,11 @@ void QskSkin::setColorScheme( ColorScheme colorScheme )
 
     m_data->colorScheme = colorScheme;
 
-    const auto transitionHint = qskSkinManager->transitionHint();
+    QskAnimationHint transitionHint;
+
+    if ( qskSkinManager->currentSkin() == this )
+        transitionHint = qskSkinManager->transitionHint();
+
     if ( transitionHint.isValid() )
     {
         QskSkinTransition transition;

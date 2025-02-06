@@ -22,7 +22,7 @@
 
 static void usage( const char* appName )
 {
-    qWarning() << "usage: " << appName << "svgfile qvgfile";
+    qWarning() << "usage: " << appName << "<svgfile> <qvgfile>";
 }
 
 static QRectF viewBox( QSvgRenderer& renderer )

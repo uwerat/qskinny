@@ -10,6 +10,7 @@
 #include "QskSetup.h"
 #include "QskSkin.h"
 #include "QskSkinManager.h"
+#include "QskInternalMacros.h"
 
 #include <qmath.h>
 #include <qpointer.h>
@@ -446,8 +447,8 @@ void QskWindow::resizeEvent( QResizeEvent* event )
     const auto newRect = qskItemGeometry( rootItem );
     if ( newRect != oldRect )
     {
-        QskGeometryChangeEvent event( newRect, oldRect );
-        QCoreApplication::sendEvent( rootItem, &event );
+        QskGeometryChangeEvent ev( newRect, oldRect );
+        QCoreApplication::sendEvent( rootItem, &ev );
     }
 
     if ( isExposed() )
@@ -482,6 +483,8 @@ void QskWindow::resetLocale()
     qskResolveLocale( this );
 }
 
+QSK_HIDDEN_EXTERNAL_BEGIN
+
 bool qskInheritLocale( QskWindow* window, const QLocale& locale )
 {
     auto d = static_cast< QskWindowPrivate* >( QQuickWindowPrivate::get( window ) );
@@ -494,6 +497,8 @@ bool qskInheritLocale( QskWindow* window, const QLocale& locale )
 
     return true;
 }
+
+QSK_HIDDEN_EXTERNAL_END
 
 static void qskResolveLocale( QskWindow* window )
 {

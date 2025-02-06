@@ -100,6 +100,11 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Theme
     const qreal draggedOpacity = 0.16;
     const qreal disabledOpacity = 0.38;
 
+    QRgb hoverColor( QRgb foreground, QRgb background ) const;
+    QRgb focusColor( QRgb foreground, QRgb background ) const;
+    QRgb pressedColor( QRgb foreground, QRgb background ) const;
+    QRgb disabledColor( QRgb foreground, QRgb background ) const;
+
     qreal stateOpacity( int state ) const;
 
     QskBoxShapeMetrics shapeExtraSmallTop;
@@ -129,12 +134,6 @@ class QSK_MATERIAL3_EXPORT QskMaterial3Skin : public QskSkin
 
     QskMaterial3Skin( QObject* parent = nullptr );
     ~QskMaterial3Skin() override;
-
-    static constexpr QskAspect::Variation Filled = QskAspect::NoVariation;
-    static constexpr QskAspect::Variation Tonal = QskAspect::Huge;
-    static constexpr QskAspect::Variation Elevated = QskAspect::Large;
-    static constexpr QskAspect::Variation Outlined = QskAspect::Small;
-    static constexpr QskAspect::Variation Text = QskAspect::Tiny;
 
   protected:
     void initHints() override;

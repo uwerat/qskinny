@@ -26,7 +26,7 @@ class QSK_EXPORT QskFontRole
         Headline,
         Display
     };
-    Q_ENUM( Category );
+    Q_ENUM( Category )
 
     enum Emphasis : quint8
     {
@@ -38,7 +38,7 @@ class QSK_EXPORT QskFontRole
         High,
         VeryHigh
     };
-    Q_ENUM( Emphasis );
+    Q_ENUM( Emphasis )
 
     constexpr QskFontRole( Category = Body, Emphasis = Normal ) noexcept;
 

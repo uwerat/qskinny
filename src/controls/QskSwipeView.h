@@ -49,8 +49,6 @@ class QSK_EXPORT QskSwipeView : public QskStackBox
     void setSwipeDistance( int );
     void resetSwipeDistance();
 
-    QskAspect::Subcontrol effectiveSubcontrol( QskAspect::Subcontrol ) const;
-
   Q_SIGNALS:
     void orientationChanged( Qt::Orientation );
     void durationChanged( int );
@@ -58,6 +56,8 @@ class QSK_EXPORT QskSwipeView : public QskStackBox
 
   protected:
     void gestureEvent( QskGestureEvent* ) override;
+    QskAspect::Subcontrol substitutedSubcontrol( QskAspect::Subcontrol ) const override;
+
 
   private:
     void setAnimator( QskStackBoxAnimator* ) = delete;

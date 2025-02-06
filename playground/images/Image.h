@@ -5,7 +5,8 @@
 
 #pragma once
 
-#include "QskGlobal.h"
+#include <QskGlobal.h>
+#include <QskInternalMacros.h>
 
 QSK_QT_PRIVATE_BEGIN
 

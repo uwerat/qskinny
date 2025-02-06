@@ -46,6 +46,8 @@ class QSK_EXPORT QskSkinManager : public QObject
     void setSkin( QskSkin* );
     QskSkin* skin();
 
+    const QskSkin* currentSkin() const ;
+
     QskSkin* setSkin( const QString& );
     QString skinName() const;
 

@@ -6,6 +6,7 @@
 #include "QskShortcutMap.h"
 #include "QskMetaInvokable.h"
 #include "QskQuick.h"
+#include "QskInternalMacros.h"
 
 #include <qkeysequence.h>
 #include <qquickitem.h>
