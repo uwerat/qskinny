@@ -21,7 +21,14 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
     {
         PanelRole,
         TextPanelRole,
+
+        HeaderRole,
+        FooterRole,
         PlaceholderRole,
+        IconRole,
+        ButtonPanelRole,
+        ButtonRole,
+
         RoleCount
     };
 

@@ -1873,6 +1873,22 @@ void Editor::setupTextFieldMetrics()
 
     setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
     setFontRole( Q::Placeholder, fontRole( Q::Text ) );
+
+    setStrutSize( Q::Header, { -1, 30_px } );
+    setFontRole( Q::Header, Fluent2::Body );
+
+    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
+    setFontRole( Q::Text, Fluent2::Body );
+
+
+    setSymbol( Q::Icon, symbol( "search" ) );
+    setSymbol( Q::Button, symbol( "dismiss" ) );
+
+    for ( const auto subControl : { Q::Icon, Q::Button } )
+    {
+        setMargin( subControl, 2_px );
+        setStrutSize( subControl, 16_px, 16_px );
+    }
 }
 
 void Editor::setupTextFieldColors(
@@ -1880,54 +1896,66 @@ void Editor::setupTextFieldColors(
 {
     using Q = QskTextField;
     using A = QskAspect;
+    using W = QskFluent2Skin;
 
     const auto& pal = theme.palette;
 
-    const auto text = Q::Text | section;
-    
-#if 1
-    setColor( text, pal.fillColor.text.primary );
-    setColor( text | Q::Selected, pal.fillColor.textOnAccent.selectedText );
-    setColor( text | Q::Disabled, pal.fillColor.text.disabled );
-#endif
+    setColor( Q::Text | section | Q::Selected, pal.fillColor.textOnAccent.selectedText );
+    setColor( Q::TextPanel | section | Q::Selected, pal.fillColor.accent.selectedTextBackground );
 
-    setColor( Q::TextPanel | Q::Selected, pal.fillColor.accent.selectedTextBackground );
-    setColor( Q::Placeholder, pal.fillColor.text.secondary );
+    setColor( Q::Placeholder | section, pal.fillColor.text.secondary );
+
+    setColor( Q::Header | section, pal.fillColor.text.primary );
 
     for( const auto state : { A::NoState, Q::Hovered, Q::Focused, Q::Editing, Q::Disabled } )
     {
-        QRgb panelColor, borderColor1, borderColor2;
+        QRgb panelColor, borderColor1, borderColor2, textColor;
 
         if ( state == Q::Hovered )
         {
             panelColor = pal.fillColor.control.secondary;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.elevation.textControl.border[1];
+            textColor = pal.fillColor.text.primary;
         }
         else if ( ( state == Q::Focused ) || ( state == Q::Editing ) )
         {
             panelColor = pal.fillColor.control.inputActive;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.fillColor.accent.defaultColor;
+            textColor = pal.fillColor.text.primary;
         }
         else if ( state == Q::Disabled )
         {
             panelColor = pal.fillColor.control.disabled;
             borderColor1 = borderColor2 = pal.strokeColor.control.defaultColor;
+            textColor = pal.fillColor.text.disabled;
         }
         else // A::NoState
         {
             panelColor = pal.fillColor.control.defaultColor;
             borderColor1 = pal.elevation.textControl.border[0];
             borderColor2 = pal.elevation.textControl.border[1];
+            textColor = pal.fillColor.text.primary;
         }
 
         const auto panel = Q::TextPanel | section | state;
+        const auto text = Q::Text | section | state;
 
         panelColor = rgbSolid( panelColor, pal.background.solid.base );
 
         setGradient( panel, panelColor );
         setBoxBorderGradient( panel, borderColor1, borderColor2, panelColor );
+
+        setColor( text, textColor );
+    }
+
+    for ( const auto subControl : { Q::Icon, Q::Button } )
+    {
+        const auto aspect = subControl | section;
+
+        setGraphicRole( aspect, W::GraphicRoleFillColorTextSecondary );
+        setGraphicRole( aspect | Q::Disabled, W::GraphicRoleFillColorTextDisabled );
     }
 }
 
