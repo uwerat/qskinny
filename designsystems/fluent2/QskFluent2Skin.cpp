@@ -1880,7 +1880,6 @@ void Editor::setupTextFieldColors(
 {
     using Q = QskTextField;
     using A = QskAspect;
-    using W = QskFluent2Skin;
 
     const auto& pal = theme.palette;
 
