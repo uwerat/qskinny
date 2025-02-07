@@ -109,6 +109,8 @@ class QSK_EXPORT QskVirtualKeyboard : public QskBox
   private:
     void ensureButtons();
     void buttonPressed();
+    void buttonClicked();
+
     void updateKeyCodes();
     QskPushButton::Emphasis emphasisForType( KeyType );
 
