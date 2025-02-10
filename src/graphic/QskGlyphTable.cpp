@@ -458,15 +458,13 @@ QskGraphic QskGlyphTable::glyphGraphic( uint glyphIndex ) const
 
     if ( glyphIndex > 0 && qskGlyphCount( m_data->font ) > 0 )
     {
-        auto path = glyphPath( glyphIndex );
+        const auto path = glyphPath( glyphIndex );
 
         if ( !path.isEmpty() )
         {
-            // vertical glyph coordinates are from [-sz, 0.0]
+            // vertical glyph coordinates are in the range [-sz, 0.0]
             const auto sz = qskPixelSize( m_data->font );
-
-            path.translate( 0.0, sz );
-            graphic.setViewBox( QRectF( 0.0, 0.0, sz, sz ) );
+            graphic.setViewBox( QRectF( 0.0, -sz, sz, sz ) );
 
             QPainter painter( &graphic );
             painter.setRenderHint( QPainter::Antialiasing, true );
