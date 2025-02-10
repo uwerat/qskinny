@@ -50,15 +50,18 @@ namespace PostTableParser
             const auto from = reinterpret_cast< const uint8_t* >( glyphData + nglyphs );
             const auto to = reinterpret_cast< const uint8_t* >( blob.data() + blob.size() );
 
-            for ( auto s = from; s < to; s += *s + 1 )
-                strings += s;
-
-            for ( int i = 0; i < nglyphs; i++ )
+            if ( to > from )
             {
-                const int idx = qFromBigEndian( glyphData[i] ) - 258;
+                for ( auto s = from; s < to; s += *s + 1 )
+                    strings += s;
 
-                if ( idx >= 0 )
-                    names.insert( toString( strings[idx] ), i );
+                for ( int i = 0; i < nglyphs; i++ )
+                {
+                    const int idx = qFromBigEndian( glyphData[i] ) - 258;
+
+                    if ( idx >= 0 && idx < strings.size() )
+                        names.insert( toString( strings[idx] ), i );
+                }
             }
         }
 
