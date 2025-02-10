@@ -326,6 +326,12 @@ static uint qskGlyphCount( const QRawFont& font )
     return fontEngine ? fontEngine->glyphCount() : 0;
 }
 
+static qreal qskPixelSize( const QRawFont& font )
+{
+    const auto fontEngine = QRawFontPrivate::get( font )->fontEngine;
+    return fontEngine ? fontEngine->fontDef.pixelSize : 0.0;
+}
+
 static GlyphNameTable qskGlyphNameTable( const QRawFont& font )
 {
     const auto count = qskGlyphCount( font );
@@ -452,10 +458,16 @@ QskGraphic QskGlyphTable::glyphGraphic( uint glyphIndex ) const
 
     if ( glyphIndex > 0 && qskGlyphCount( m_data->font ) > 0 )
     {
-        const auto path = glyphPath( glyphIndex );
+        auto path = glyphPath( glyphIndex );
 
         if ( !path.isEmpty() )
         {
+            // vertical glyph coordinates are from [-sz, 0.0]
+            const auto sz = qskPixelSize( m_data->font );
+
+            path.translate( 0.0, sz );
+            graphic.setViewBox( QRectF( 0.0, 0.0, sz, sz ) );
+
             QPainter painter( &graphic );
             painter.setRenderHint( QPainter::Antialiasing, true );
             painter.fillPath( path, Qt::black );

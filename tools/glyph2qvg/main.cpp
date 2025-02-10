@@ -34,9 +34,11 @@ int main( int argc, char* argv[] )
         return -1;
     }
 
+    const int pixelSize = 24; // something
+
     QGuiApplication app( argc, argv );
 
-    QRawFont font( QString( argv[1] ), 16 );
+    QRawFont font( QString( argv[1] ), pixelSize );
     if ( !font.isValid() )
     {
         qWarning() << "invalid font name:" << argv[1];
@@ -52,14 +54,16 @@ int main( int argc, char* argv[] )
         return -3;
     }
 
-    const auto path = font.pathForGlyph( glyphIndex );
+    auto path = font.pathForGlyph( glyphIndex );
     if ( path.isEmpty() )
     {
         qWarning() << "no glyph for index:" << argv[2];
         return -3;
     }
+    path.translate( 0.0, pixelSize );
 
     QskGraphic graphic;
+    graphic.setViewBox( QRectF( 0.0, 0.0, pixelSize, pixelSize ) );
 
     QPainter painter( &graphic );
     painter.setRenderHint( QPainter::Antialiasing, true );
