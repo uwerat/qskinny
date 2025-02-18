@@ -1007,6 +1007,10 @@ void QskItem::itemChange( QQuickItem::ItemChange change,
         case QQuickItem::ItemRotationHasChanged:
         case QQuickItem::ItemAntialiasingHasChanged:
         case QQuickItem::ItemDevicePixelRatioHasChanged:
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 9, 0 )
+        case QQuickItem::ItemScaleHasChanged:
+        case QQuickItem::ItemTransformHasChanged:
+#endif
         {
             break;
         }

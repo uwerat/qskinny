@@ -34,9 +34,11 @@ int main( int argc, char* argv[] )
         return -1;
     }
 
+    const int sz = 24; // something
+
     QGuiApplication app( argc, argv );
 
-    QRawFont font( QString( argv[1] ), 16 );
+    QRawFont font( QString( argv[1] ), sz );
     if ( !font.isValid() )
     {
         qWarning() << "invalid font name:" << argv[1];
@@ -60,6 +62,9 @@ int main( int argc, char* argv[] )
     }
 
     QskGraphic graphic;
+
+    // vertical glyph coordinates are in the range [-sz, 0.0]
+    graphic.setViewBox( QRectF( 0.0, -sz, sz, sz ) );
 
     QPainter painter( &graphic );
     painter.setRenderHint( QPainter::Antialiasing, true );

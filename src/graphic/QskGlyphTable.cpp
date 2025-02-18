@@ -50,15 +50,18 @@ namespace PostTableParser
             const auto from = reinterpret_cast< const uint8_t* >( glyphData + nglyphs );
             const auto to = reinterpret_cast< const uint8_t* >( blob.data() + blob.size() );
 
-            for ( auto s = from; s < to; s += *s + 1 )
-                strings += s;
-
-            for ( int i = 0; i < nglyphs; i++ )
+            if ( to > from )
             {
-                const int idx = qFromBigEndian( glyphData[i] ) - 258;
+                for ( auto s = from; s < to; s += *s + 1 )
+                    strings += s;
 
-                if ( idx >= 0 )
-                    names.insert( toString( strings[idx] ), i );
+                for ( int i = 0; i < nglyphs; i++ )
+                {
+                    const int idx = qFromBigEndian( glyphData[i] ) - 258;
+
+                    if ( idx >= 0 && idx < strings.size() )
+                        names.insert( toString( strings[idx] ), i );
+                }
             }
         }
 
@@ -323,6 +326,12 @@ static uint qskGlyphCount( const QRawFont& font )
     return fontEngine ? fontEngine->glyphCount() : 0;
 }
 
+static qreal qskPixelSize( const QRawFont& font )
+{
+    const auto fontEngine = QRawFontPrivate::get( font )->fontEngine;
+    return fontEngine ? fontEngine->fontDef.pixelSize : 0.0;
+}
+
 static GlyphNameTable qskGlyphNameTable( const QRawFont& font )
 {
     const auto count = qskGlyphCount( font );
@@ -453,6 +462,10 @@ QskGraphic QskGlyphTable::glyphGraphic( uint glyphIndex ) const
 
         if ( !path.isEmpty() )
         {
+            // vertical glyph coordinates are in the range [-sz, 0.0]
+            const auto sz = qskPixelSize( m_data->font );
+            graphic.setViewBox( QRectF( 0.0, -sz, sz, sz ) );
+
             QPainter painter( &graphic );
             painter.setRenderHint( QPainter::Antialiasing, true );
             painter.fillPath( path, Qt::black );
