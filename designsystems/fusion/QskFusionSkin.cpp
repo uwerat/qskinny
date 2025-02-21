@@ -1338,7 +1338,7 @@ void Editor::setupListView()
     using P = QPalette;
 
     // padding for each cell
-    setPadding( Q::Cell, QskMargins( 4, 0 ) );
+    setPadding( Q::Cell, QskMargins( 4, 4 ) );
 
     for ( auto state : { A::NoState, Q::Disabled } )
     {

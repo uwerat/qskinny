@@ -20,25 +20,25 @@ b) Cassowary constraint solving algorithm ( examples )
 	SPDX-License-Identifier: BSD 3-Clause "New" or "Revised" License
 	Copyright (c) 2013, Nucleic Development Team
 
-fonts ( only for running the examples ):
+fonts ( needed for the Material3/Fluent2 skin )
 
 a) Material3 Icons
 
     Code: https://github.com/google/material-design-icons
 	SPDX-License-Identifier: Apache License 2.0
 
-b) Fluent2 Icons
+b) Roboto Fonts
+
+	Code: https://github.com/googlefonts/roboto-classic
+	SPDX-License-Identifier: SIL Open Font License 1.1
+	Copyright 2011 The Roboto Project Authors
+
+c) Fluent2 Icons
 
 	Code: https://github.com/microsoft/fluentui-system-icons
 	SPDX-License-Identifier: MIT License
 
-c) Segoe-UI Fonts
+d) Segoe-UI Fonts
 
     Code: https://github.com/mrbvrz/segoe-ui-linux
 	License: https://github.com/mrbvrz/segoe-ui-linux/blob/master/license.txt
-
-d) Font Awesome
-
-    Code: https://fontawesome.com/
-	SPDX-License-Identifier: OFL-1.1-RFN
-	Copyright (c) 2024 Fonticons, Inc.

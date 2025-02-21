@@ -21,56 +21,87 @@
 #include <QPainterPath>
 #include <QDebug>
 
+enum Options
+{
+    ViewBox = 1 << 0,
+    Antialiasing = 1 << 1
+};
+
 static void usage( const char* appName )
 {
-    qWarning() << "usage: " << appName << "<fontfile> <glyphindex> <qvgfile>";
+    qWarning() << "usage: " << appName << "<fontfile> <pixelsize> <glyphindex> <qvgfile>";
+}
+
+static QPainterPath glyphPath( const QRawFont& font,
+    const qreal pixelSize, const uint glyphIndex )
+{
+    auto path = font.pathForGlyph( glyphIndex );
+    path = path.simplified();
+    path = path.translated( 0.0, pixelSize );
+
+    return path;
+}
+
+static QskGraphic icon( const QPainterPath& path,
+    const qreal pixelSize, const int options )
+{
+    QskGraphic graphic;
+
+    if ( options & ViewBox )
+        graphic.setViewBox( QRectF( 0.0, 0.0, pixelSize, pixelSize ) );
+
+    QPainter painter( &graphic );
+
+    if ( options & Antialiasing )
+        painter.setRenderHint( QPainter::Antialiasing, true );
+
+    painter.fillPath( path, Qt::black );
+
+    return graphic;
 }
 
 int main( int argc, char* argv[] )
 {
-    if ( argc != 4 )
+    QGuiApplication app( argc, argv );
+
+    if ( argc != 5 )
     {
         usage( argv[0] );
         return -1;
     }
 
-    const int sz = 24; // something
+    bool ok;
 
-    QGuiApplication app( argc, argv );
+    const auto pixelSize = QString( argv[2] ).toDouble( &ok );
+    if ( !ok || ( pixelSize <= 0 ) )
+    {
+        qWarning() << "invalid pixel size:" << argv[2];
+        return -3;
+    }
 
-    QRawFont font( QString( argv[1] ), sz );
+    const auto glyphIndex = QString( argv[3] ).toUInt( &ok );
+    if ( !ok )
+    {
+        qWarning() << "invalid glyph index:" << argv[3];
+        return -3;
+    }
+
+    QRawFont font( QString( argv[1] ), pixelSize );
     if ( !font.isValid() )
     {
         qWarning() << "invalid font name:" << argv[1];
         return -2;
     }
 
-    bool ok;
-
-    const auto glyphIndex = QString( argv[2] ).toUInt( &ok );
-    if ( !ok )
-    {
-        qWarning() << "invalid glyph index:" << argv[2];
-        return -3;
-    }
-
-    const auto path = font.pathForGlyph( glyphIndex );
+    const auto path = glyphPath( font, pixelSize, glyphIndex );
     if ( path.isEmpty() )
     {
-        qWarning() << "no glyph for index:" << argv[2];
+        qWarning() << "no glyph for index:" << argv[3];
         return -3;
     }
 
-    QskGraphic graphic;
-
-    // vertical glyph coordinates are in the range [-sz, 0.0]
-    graphic.setViewBox( QRectF( 0.0, -sz, sz, sz ) );
-
-    QPainter painter( &graphic );
-    painter.setRenderHint( QPainter::Antialiasing, true );
-    painter.fillPath( path, Qt::black );
-
-    QskGraphicIO::write( graphic, argv[3] );
+    const auto graphic = icon( path, pixelSize, ViewBox | Antialiasing );
+    QskGraphicIO::write( graphic, argv[4] );
 
     return 0;
 }

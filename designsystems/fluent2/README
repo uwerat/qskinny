@@ -1,0 +1,26 @@
+Definitions ( where possible ) taken from:
+    - https://www.figma.com/file/NAWMapFlXnoOb86Q2H5GKr/Windows-UI-(Community)
+
+The Figma model uses the "Segoe Fluent Icons" [1]. Unfortunately its license is 
+too restrictive for being included in the QSkinny project.  Fortunately similar
+icons are also available from the "Fluent UI System Icons" project [2].
+
+However glyph names/numbers and the corresponding unicode values do not match
+and can't be taken 1:1 from the Figma model.
+
+"Fluent UI System Icons" offers different icon packages ( as font ):
+
+    - FluentSystemIcons-Light.ttf
+    - FluentSystemIcons-Regular.ttf
+    - FluentSystemIcons-Filled.ttf
+    - FluentSystemIcons-Resizable.ttf
+
+For some reason ( might be a bug in the downloaded version ) the checkmark
+glyph offered from the "Regular" font ( pixelsize 12 ) is different
+( works better ) to the one from the "Resizable" font.
+
+That's why we decided to use the "Regular" font for now.
+
+[1] https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-fluent-icons-font
+[2] https://github.com/microsoft/fluentui-system-icons
+
