@@ -29,6 +29,25 @@ QRhi* qskRenderingHardwareInterface( const QQuickWindow* window )
     return nullptr;
 }
 
+bool qskIsOpenGLWindow( const QQuickWindow* window )
+{       
+    if ( window == nullptr )
+        return false;
+    
+    const auto renderer = window->rendererInterface();
+    switch( renderer->graphicsApi() )
+    {
+        case QSGRendererInterface::OpenGL:
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+        case QSGRendererInterface::OpenGLRhi:
+#endif
+            return true;
+
+        default:
+            return false;
+    }   
+}
+
 QRectF qskItemRect( const QQuickItem* item )
 {
     auto d = QQuickItemPrivate::get( item );
