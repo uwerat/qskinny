@@ -232,5 +232,5 @@ quint32 QskPaintedNode::createTextureGL(
     };
 
     PaintHelper helper( this, nodeData );
-    return createPaintedTextureGL( window, size, &helper );
+    return QskTextureRenderer::createPaintedTextureGL( window, size, &helper );
 }
