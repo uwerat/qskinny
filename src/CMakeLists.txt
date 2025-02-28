@@ -233,6 +233,7 @@ list(APPEND HEADERS
     controls/QskListViewSkinlet.h
     controls/QskMenu.h
     controls/QskMenuSkinlet.h
+    controls/QskModelObjectBinder.h
     controls/QskObjectTree.h
     controls/QskPageIndicator.h
     controls/QskPageIndicatorSkinlet.h
@@ -345,6 +346,7 @@ list(APPEND SOURCES
     controls/QskListViewSkinlet.cpp
     controls/QskMenuSkinlet.cpp
     controls/QskMenu.cpp
+    controls/QskModelObjectBinder.cpp
     controls/QskObjectTree.cpp
     controls/QskPageIndicator.cpp
     controls/QskPageIndicatorSkinlet.cpp
