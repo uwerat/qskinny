@@ -31,8 +31,8 @@ class GraphicLabel : public QskGraphicLabel
         Inverted
     };
 
-    GraphicLabel( const QskGraphic& graphic, QQuickItem* parent = nullptr )
-        : QskGraphicLabel( graphic, parent )
+    GraphicLabel( QQuickItem* parent = nullptr )
+        : QskGraphicLabel( parent )
     {
         setMargins( 10 );
         setPanel( true );
@@ -74,7 +74,7 @@ class GraphicLabel : public QskGraphicLabel
 
 MainWindow::MainWindow()
 {
-    auto label = new GraphicLabel( QskGraphicIO::read( QString( ":/qvg/Tux.qvg" ) ) );
+    auto label = new GraphicLabel();
 
     auto invertButton = new QskPushButton( "Inverted" );
     invertButton->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
@@ -96,6 +96,12 @@ MainWindow::MainWindow()
         this, &MainWindow::setGraphicRoles );
 
     setGraphicRoles( qskSkinManager->skin() );
+}
+
+void MainWindow::setGraphic( const QString& path )
+{
+    if ( auto label = findChild< QskGraphicLabel* >() )
+        label->setGraphic( QskGraphicIO::read( path ) );
 }
 
 void MainWindow::setGraphicRoles( QskSkin* skin )

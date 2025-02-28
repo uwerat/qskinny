@@ -15,6 +15,7 @@ class MainWindow : public QskWindow
 
   public:
     MainWindow();
+    void setGraphic( const QString& );
 
   private Q_SLOTS:
     void setGraphicRoles( QskSkin* );

@@ -227,7 +227,6 @@ void Editor::setupCheckBox()
         setStrutSize( Q::Box, 18_px, 18_px );
         setBoxBorderMetrics( Q::Box, 2_px );
         setBoxShape( Q::Box, 2_px );
-        setPadding( Q::Box, 3_px ); // "icon size"
 
         QskShadowMetrics shadowMetrics( 12_px, 0.0 );
         shadowMetrics.setShapeMode( QskShadowMetrics::Ellipse );
@@ -240,7 +239,7 @@ void Editor::setupCheckBox()
         setGraphicRole( Q::Indicator | Q::Disabled | Q::Checked,
             QskMaterial3Skin::GraphicRoleSurface );
 
-        const auto checkMark = symbol( "check_small" );
+        const auto checkMark = symbol( "check" );
         for ( auto state : { A::NoState, Q::Disabled } )
         {
             const auto aspect = Q::Indicator | Q::Checked | state;
@@ -337,7 +336,7 @@ void Editor::setupComboBox()
     setColor( Q::Text, m_pal.onSurface );
     setFontRole( Q::Text, BodyLarge );
 
-    setStrutSize( Q::StatusIndicator, 12_px, 12_px );
+    setStrutSize( Q::StatusIndicator, 24_px, 24_px );
     setGraphicRole( Q::StatusIndicator, QskMaterial3Skin::GraphicRoleOnSurface );
     setAlignment( Q::StatusIndicator, Qt::AlignRight | Qt::AlignVCenter );
 
@@ -346,14 +345,13 @@ void Editor::setupComboBox()
 
     setBoxBorderColors( Q::Panel | Q::Disabled, m_pal.onSurface38 );
 
-    setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleOnSurface38 );
-
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
-    setGraphicRole( Q::StatusIndicator, QskMaterial3Skin::GraphicRoleOnSurface38 );
+    setGraphicRole( Q::StatusIndicator | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
+    setGraphicRole( Q::Icon | Q::Disabled, QskMaterial3Skin::GraphicRoleOnSurface38 );
 
-    setSymbol( Q::StatusIndicator, symbol( "combo-box-arrow-closed" ) );
-    setSymbol( Q::StatusIndicator | Q::PopupOpen, symbol( "combo-box-arrow-open" ) );
+    setSymbol( Q::StatusIndicator, symbol( "arrow_drop_down" ) );
+    setSymbol( Q::StatusIndicator | Q::PopupOpen, symbol( "arrow_drop_up" ) );
 }
 
 void Editor::setupBox()
@@ -1135,8 +1133,8 @@ void Editor::setupSwitchButton()
 
     setStrutSize( Q::Icon, { 16_px, 16_px } );
     setPadding( Q::Icon, 6_px );
-    setSymbol( Q::Icon, symbol( "switchbutton-unchecked" ) );
-    setSymbol( Q::Icon | Q::Checked, symbol( "switchbutton-checked" ) );
+    setSymbol( Q::Icon, symbol( "close" ) );
+    setSymbol( Q::Icon | Q::Checked, symbol( "check" ) );
 
     setGraphicRole( Q::Icon, QskMaterial3Skin::GraphicRoleSurfaceContainerHighest );
 

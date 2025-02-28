@@ -703,9 +703,10 @@ void Editor::setupListViewMetrics()
 
     for ( auto state : { A::NoState, Q::Hovered, Q::Pressed } )
         setBoxBorderMetrics( Q::Cell | state | Q::Selected, { 3_px, 0, 0, 0 } );
+
 #if 1
-    // taken from M3 - what are the actual values, TODO ...
-    setPadding( Q::Cell, { 16_px, 12_px, 16_px, 12_px } );
+    setPadding( Q::Cell, 4_px );
+    setStrutSize( Q::Cell, -1, 40_px );
 #endif
 }
 
@@ -1561,9 +1562,6 @@ void Editor::setupSpinBoxMetrics()
     setSymbol( Q::UpIndicator, symbol( "chevron_up" ) );
     setSymbol( Q::DownIndicator, symbol( "chevron_down" ) );
 
-    setPadding( Q::UpPanel, { 0, 1_px, 0, 0 } );
-    setPadding( Q::DownPanel, { 0, 0, 0, 1_px } );
-
 #if 0
     // QskSpinBox::Pressed is missing yet
     setBoxBorderMetrics( Q::Panel | Q::Pressed, { 1_px, 1_px, 1_px, 2_px } );
@@ -1880,7 +1878,6 @@ void Editor::setupTextFieldColors(
 {
     using Q = QskTextField;
     using A = QskAspect;
-    using W = QskFluent2Skin;
 
     const auto& pal = theme.palette;
 

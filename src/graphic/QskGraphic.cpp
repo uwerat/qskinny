@@ -907,7 +907,7 @@ void QskGraphic::drawPath( const QPainterPath& path )
     if ( painter == nullptr )
         return;
 
-    m_data->addCommand( QskPainterCommand( path ) );
+    addCommand( QskPainterCommand( path ) );
     m_data->commandTypes |= QskGraphic::VectorData;
 
     if ( !path.isEmpty() )
@@ -938,7 +938,7 @@ void QskGraphic::drawPixmap( const QRectF& rect,
     if ( painter == nullptr )
         return;
 
-    m_data->addCommand( QskPainterCommand( rect, pixmap, subRect ) );
+    addCommand( QskPainterCommand( rect, pixmap, subRect ) );
     m_data->commandTypes |= QskGraphic::RasterData;
 
     const QRectF r = painter->transform().mapRect( rect );
@@ -953,7 +953,7 @@ void QskGraphic::drawImage( const QRectF& rect, const QImage& image,
     if ( painter == nullptr )
         return;
 
-    m_data->addCommand( QskPainterCommand( rect, image, subRect, flags ) );
+    addCommand( QskPainterCommand( rect, image, subRect, flags ) );
     m_data->commandTypes |= QskGraphic::RasterData;
 
     const QRectF r = painter->transform().mapRect( rect );
@@ -964,7 +964,7 @@ void QskGraphic::drawImage( const QRectF& rect, const QImage& image,
 
 void QskGraphic::updateState( const QPaintEngineState& state )
 {
-    m_data->addCommand( QskPainterCommand( state ) );
+    addCommand( QskPainterCommand( state ) );
 
     if ( state.state() & QPaintEngine::DirtyTransform )
     {
@@ -979,6 +979,11 @@ void QskGraphic::updateState( const QPaintEngineState& state )
                 m_data->commandTypes |= QskGraphic::Transformation;
         }
     }
+}
+
+void QskGraphic::addCommand( const QskPainterCommand& command )
+{
+    m_data->addCommand( command );
 }
 
 void QskGraphic::updateBoundingRect( const QRectF& rect )
