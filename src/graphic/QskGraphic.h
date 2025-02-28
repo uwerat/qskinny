@@ -146,7 +146,9 @@ class QSK_EXPORT QskGraphic : public QPaintDevice
     virtual void drawImage( const QRectF&,
         const QImage&, const QRectF&, Qt::ImageConversionFlags );
 
-    virtual void updateState( const QPaintEngineState& state );
+    virtual void updateState( const QPaintEngineState& );
+
+    virtual void addCommand( const QskPainterCommand& );
 
   private:
     void updateBoundingRect( const QRectF& );
