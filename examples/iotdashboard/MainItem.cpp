@@ -14,7 +14,6 @@
 #include <QskStackBoxAnimator.h>
 #include <QskPanGestureRecognizer.h>
 
-#include <QQuickFramebufferObject>
 #include <QGuiApplication>
 #include <QQuickWindow>
 #include <QtMath>

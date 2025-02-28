@@ -12,7 +12,7 @@
 #include <QFontMetricsF>
 #include <QRawFont>
 
-constexpr int glyphSize = 100;
+constexpr int glyphSize = 20;
 
 GlyphListView::GlyphListView( QQuickItem* parentItem )
     : Inherited( parentItem )
@@ -85,7 +85,13 @@ qreal GlyphListView::columnWidth( int col ) const
         }
 
         case 1:
-            return glyphSize;
+        {
+            const auto hint = strutSizeHint( Cell );
+            const auto padding = paddingHint( Cell );
+
+            const qreal w = glyphSize + padding.left() + padding.right();
+            return qMax( w, hint.width() );
+        }
 
         case 2:
             return m_maxNameWidth;
@@ -96,7 +102,11 @@ qreal GlyphListView::columnWidth( int col ) const
 
 qreal GlyphListView::rowHeight() const
 {
-    return glyphSize + 20;
+    const auto hint = strutSizeHint( Cell );
+    const auto padding = paddingHint( Cell );
+
+    const qreal h = glyphSize + padding.top() + padding.bottom();
+    return qMax( h, hint.height() );
 }
 
 QVariant GlyphListView::valueAt( int row, int col ) const
