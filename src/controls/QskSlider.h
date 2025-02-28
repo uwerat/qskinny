@@ -22,6 +22,9 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     Q_PROPERTY( bool tracking READ isTracking
         WRITE setTracking NOTIFY trackingChanged )
 
+    Q_PROPERTY( Qsk::Policy tickPolicy READ tickPolicy
+        WRITE setTickPolicy RESET resetTickPolicy NOTIFY tickPolicyChanged )
+
     Q_PROPERTY( qreal origin READ origin
         WRITE setOrigin RESET resetOrigin NOTIFY originChanged )
 
@@ -38,6 +41,10 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
 
     void setOrientation( Qt::Orientation );
     Qt::Orientation orientation() const;
+
+    void setTickPolicy( Qsk::Policy );
+    void resetTickPolicy();
+    Qsk::Policy tickPolicy() const;
 
     void setInverted( bool );
     bool isInverted() const;
@@ -61,6 +68,7 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void invertedChanged( bool );
     void trackingChanged( bool );
     void originChanged( qreal );
+    void tickPolicyChanged( Qsk::Policy );
 
   protected:
     void mousePressEvent( QMouseEvent* ) override;

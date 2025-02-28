@@ -197,6 +197,23 @@ bool QskSlider::hasOrigin() const
     return m_data->hasOrigin;
 }
 
+void QskSlider::setTickPolicy( Qsk::Policy policy )
+{
+    if ( setFlagHint( Tick | QskAspect::Option, policy ) )
+        Q_EMIT tickPolicyChanged( policy );
+}
+
+void QskSlider::resetTickPolicy()
+{
+    if ( resetSkinHint( Tick | QskAspect::Option ) )
+        Q_EMIT tickPolicyChanged( tickPolicy() );
+}
+
+Qsk::Policy QskSlider::tickPolicy() const
+{
+    return flagHint< Qsk::Policy >( Tick | QskAspect::Option, Qsk::Maybe );
+}
+
 QskAspect::Variation QskSlider::effectiveVariation() const
 {
     return static_cast< QskAspect::Variation >( m_data->orientation );
