@@ -40,8 +40,7 @@ direction - please contact support@qskinny.org.
 
 ![IOT dashboard](/doc/images/iotdashboard.png)
 
-
-# Contributing to QSkinny
+# Contributing
 
 QSkinny is licensed under the BSD 3 Clause License ( https://opensource.org/license/bsd-3-clause ). However we want to be able to offer more licenses on request.
 
