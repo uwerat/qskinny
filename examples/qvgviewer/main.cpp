@@ -27,6 +27,7 @@ int main( int argc, char* argv[] )
     focusIndicator->setObjectName( "FocusIndicator" );
 
     MainWindow window;
+    window.setGraphic( ( argc > 1 ) ? argv[1] : ":/qvg/Tux.qvg" );
     window.resize( 600, 400 );
     window.addItem( focusIndicator );
     window.show();
