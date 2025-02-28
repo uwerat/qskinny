@@ -5,8 +5,37 @@
 
 #include "QskGraphicTextureFactory.h"
 #include "QskTextureRenderer.h"
+#include "QskQuick.h"
+#include "QskInternalMacros.h"
 
 #include <qquickwindow.h>
+
+QSK_QT_PRIVATE_BEGIN
+#include <private/qsgplaintexture_p.h>
+QSK_QT_PRIVATE_END
+
+static QSGTexture* qskCreatePaintedTexture( QQuickWindow* window,
+    const QSize& size, QskTextureRenderer::PaintHelper* helper )
+{
+    using namespace QskTextureRenderer;
+
+    if ( qskIsOpenGLWindow( window ) )
+    {
+        const auto textureId = createTextureGL( window, size, helper );
+
+        auto texture = new QSGPlainTexture;
+        texture->setHasAlphaChannel( true );
+        texture->setOwnsTexture( true );
+
+        setTextureId( window, textureId, size, texture );
+
+        return texture;
+    }
+    else
+    {
+        return createTextureRaster( window, size, helper );
+    }
+}
 
 QskGraphicTextureFactory::QskGraphicTextureFactory()
 {
@@ -77,7 +106,7 @@ QSGTexture* QskGraphicTextureFactory::createTexture( QQuickWindow* window ) cons
     };
 
     PaintHelper helper( m_graphic, m_colorFilter );
-    return QskTextureRenderer::createPaintedTexture( window, m_size, &helper );
+    return qskCreatePaintedTexture( window, m_size, &helper );
 }
 
 QSize QskGraphicTextureFactory::textureSize() const
