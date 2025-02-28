@@ -27,6 +27,7 @@ template< typename T > class QList;
  */
 
 QSK_EXPORT QRhi* qskRenderingHardwareInterface( const QQuickWindow* );
+QSK_EXPORT bool qskIsOpenGLWindow( const QQuickWindow* );
 
 QSK_EXPORT bool qskIsItemInDestructor( const QQuickItem* );
 QSK_EXPORT bool qskIsItemComplete( const QQuickItem* );

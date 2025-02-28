@@ -7,6 +7,7 @@
 #include "QskSGNode.h"
 #include "QskTextureRenderer.h"
 #include "QskInternalMacros.h"
+#include "QskQuick.h"
 
 #include <qsgimagenode.h>
 #include <qquickwindow.h>
@@ -160,7 +161,7 @@ void QskPaintedNode::updateTexture( QQuickWindow* window,
 {
     auto imageNode = findImageNode( this );
 
-    if ( ( m_renderHint == OpenGL ) && QskTextureRenderer::isOpenGLWindow( window ) )
+    if ( ( m_renderHint == OpenGL ) && qskIsOpenGLWindow( window ) )
     {
         const auto textureId = createTextureGL( window, size, nodeData );
 
@@ -232,5 +233,5 @@ quint32 QskPaintedNode::createTextureGL(
     };
 
     PaintHelper helper( this, nodeData );
-    return createPaintedTextureGL( window, size, &helper );
+    return QskTextureRenderer::createTextureGL( window, size, &helper );
 }
