@@ -1,10 +1,10 @@
 <RCC>
     <qresource prefix="/iconfonts">
 
-        <file alias="FluentIcons.ttf">fonts/FluentSystemIcons-Resizable.ttf</file>
+        <file alias="FluentIcons.ttf">../../designsystems/fluent2/icons/FluentSystemIcons-Regular.ttf</file>
         <file alias="FontAwesomeIcons.otf">fonts/Font Awesome 6 Free-Regular-400.otf</file>
         <file alias="IcoMoonIcons.ttf">fonts/IcoMoon-Free.ttf</file>
-        <file alias="MaterialIcons.ttf">fonts/MaterialSymbolsOutlined.ttf</file>
+        <file alias="MaterialIcons.ttf">../../designsystems/material3/icons/MaterialSymbolsOutlined.ttf</file>
         <file alias="OctIcons.ttf">fonts/Octicons.ttf</file>
 
     </qresource>

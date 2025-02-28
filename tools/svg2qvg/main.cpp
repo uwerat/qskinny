@@ -41,6 +41,28 @@ static QRectF viewBox( QSvgRenderer& renderer )
     return hasViewBox ? viewBox : QRectF( 0.0, 0.0, -1.0, -1.0 );
 }
 
+class Graphic : public QskGraphic
+{
+  protected:
+    void addCommand( const QskPainterCommand& cmd ) override
+    {
+#if 0
+        if ( cmd.type() == QskPainterCommand::State )
+        {
+            /*
+                QSvgRenderer enables QPainter::Antialiasing initially
+                However this is something we might want to decide,
+                when replaying the commands.
+             */
+            auto sd = const_cast< QskPainterCommand::StateData* >( cmd.stateData() );
+            sd->renderHints &= ~QPainter::Antialiasing;
+        }
+#endif
+
+        QskGraphic::addCommand( cmd );
+    }
+};
+
 int main( int argc, char* argv[] )
 {
     if ( argc != 3 )
@@ -71,7 +93,7 @@ int main( int argc, char* argv[] )
     if ( !renderer.load( QString( argv[1] ) ) )
         return -2;
 
-    QskGraphic graphic;
+    Graphic graphic;
     graphic.setViewBox( ::viewBox( renderer ) );
 
     QPainter painter( &graphic );

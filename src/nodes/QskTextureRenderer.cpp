@@ -30,8 +30,12 @@ static GLuint qskTakeTexture( QOpenGLFramebufferObject& fbo )
     /*
         See https://bugreports.qt.io/browse/QTBUG-103929
 
-        As we create a FBO for each update of a node we can't live
-        without having this ( ugly ) workaround.
+        QOpenGLFramebufferObject::takeTexture produces a memory leak
+        that can't be accepted as we create an FBO each time we update
+        a texture.
+
+        The suggested workarond is to call QOpenGLSharedResourceGuard::invalidateResource()
+        manually. Unfortunately this is a protected method and we need this nasty hack.
      */
     class MyFBO
     {
@@ -62,25 +66,6 @@ static GLuint qskTakeTexture( QOpenGLFramebufferObject& fbo )
     attachment.guard = guard;
 
     return textureId;
-}
-
-bool QskTextureRenderer::isOpenGLWindow( const QQuickWindow* window )
-{
-    if ( window == nullptr )
-        return false;
-
-    const auto renderer = window->rendererInterface();
-    switch( renderer->graphicsApi() )
-    {
-        case QSGRendererInterface::OpenGL:
-#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
-        case QSGRendererInterface::OpenGLRhi:
-#endif
-            return true;
-
-        default:
-            return false;
-    }
 }
 
 void QskTextureRenderer::setTextureId( QQuickWindow* window,
@@ -116,8 +101,8 @@ void QskTextureRenderer::setTextureId( QQuickWindow* window,
 #endif
 }
 
-quint32 QskTextureRenderer::createPaintedTextureGL(
-    QQuickWindow* window, const QSize& size, QskTextureRenderer::PaintHelper* helper )
+quint32 QskTextureRenderer::createTextureGL(
+    QQuickWindow* window, const QSize& size, PaintHelper* helper )
 {
     /*
         Binding GL_ARRAY_BUFFER/GL_ELEMENT_ARRAY_BUFFER to 0 seems to be enough.
@@ -194,8 +179,8 @@ quint32 QskTextureRenderer::createPaintedTextureGL(
     return qskTakeTexture( fbo );
 }
 
-static QSGTexture* qskCreateTextureRaster( QQuickWindow* window,
-    const QSize& size, QskTextureRenderer::PaintHelper* helper )
+QSGTexture* QskTextureRenderer::createTextureRaster( QQuickWindow* window,
+    const QSize& size, PaintHelper* helper )
 {
     const auto ratio = window ? window->effectiveDevicePixelRatio() : 1.0;
 
@@ -215,25 +200,4 @@ static QSGTexture* qskCreateTextureRaster( QQuickWindow* window,
     }
 
     return window->createTextureFromImage( image, QQuickWindow::TextureHasAlphaChannel );
-}
-
-QSGTexture* QskTextureRenderer::createPaintedTexture(
-    QQuickWindow* window, const QSize& size, PaintHelper* helper )
-{
-    if ( isOpenGLWindow( window ) )
-    {
-        const auto textureId = createPaintedTextureGL( window, size, helper );
-
-        auto texture = new QSGPlainTexture;
-        texture->setHasAlphaChannel( true );
-        texture->setOwnsTexture( true );
-
-        setTextureId( window, textureId, size, texture );
-
-        return texture;
-    }
-    else
-    {
-        return qskCreateTextureRaster( window, size, helper );
-    }
 }

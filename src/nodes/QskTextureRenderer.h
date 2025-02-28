@@ -27,16 +27,11 @@ namespace QskTextureRenderer
         Q_DISABLE_COPY( PaintHelper )
     };
 
-    bool isOpenGLWindow( const QQuickWindow* );
-
     void setTextureId( QQuickWindow*,
         quint32 textureId, const QSize&, QSGTexture* );
 
-    quint32 createPaintedTextureGL(
-        QQuickWindow*, const QSize&, QskTextureRenderer::PaintHelper* );
-
-    QSK_EXPORT QSGTexture* createPaintedTexture(
-        QQuickWindow* window, const QSize& size, PaintHelper* helper );
+    quint32 createTextureGL( QQuickWindow*, const QSize&, PaintHelper* );
+    QSGTexture* createTextureRaster( QQuickWindow*, const QSize&, PaintHelper* );
 }
 
 #endif
