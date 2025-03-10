@@ -21,6 +21,7 @@ Slider::Slider( const QString& text, qreal min, qreal max,
     m_slider->setBoundaries( min, max );
     m_slider->setStepSize( step );
     m_slider->setSnapping( true );
+    m_slider->setTickPolicy( Qsk::Never ); // too many steps
     m_slider->setValue( value );
 
     m_valueLabel = new QskTextLabel( this );

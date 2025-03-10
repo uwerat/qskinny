@@ -388,10 +388,7 @@ bool QskSliderSkinlet::hasGraduation( const QskSlider* slider ) const
 {
     if ( slider->stepSize() )
     {
-        const auto policy = slider->flagHint< Qsk::Policy >(
-            Q::Tick | QskAspect::Option, Qsk::Never );
-
-        switch( policy )
+        switch( slider->tickPolicy() )
         {
             case Qsk::Always:
                 return true;
