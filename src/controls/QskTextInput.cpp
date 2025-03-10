@@ -161,7 +161,7 @@ QskTextInput::QskTextInput( QQuickItem* parent )
     setAcceptedMouseButtons( wrappedInput->acceptedMouseButtons() );
     wrappedInput->setAcceptedMouseButtons( Qt::NoButton );
 
-    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
+    initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Minimum );
 
     setup( wrappedInput );
 

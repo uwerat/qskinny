@@ -19,7 +19,6 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
   public:
     enum NodeRole : quint8
     {
-        PanelRole,
         TextPanelRole,
 
         HeaderRole,
@@ -45,7 +44,14 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-    virtual QString effectivePlaceholderText( const QskTextField* ) const;
+    virtual QString effectiveText( const QskTextField*,
+        QskAspect::Subcontrol ) const;
+
+    qreal effectiveHeaderHeight( const QskTextField* ) const;
+    virtual qreal effectiveFooterHeight( const QskTextField* ) const;
+
+  private:
+    QRectF inputPanelRect( const QskTextField*, const QRectF& ) const;
 };
 
 #endif

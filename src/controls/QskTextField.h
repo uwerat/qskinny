@@ -35,10 +35,8 @@ class QSK_EXPORT QskTextField : public QskTextInput
 
     enum Style : quint8
     {
-        PlainStyle,
-
-        OutlinedStyle,
-        FilledStyle
+        FilledStyle,
+        OutlinedStyle
     };
     Q_ENUM( Style )
 

@@ -18,8 +18,7 @@ class QSK_MATERIAL3_EXPORT QskMaterial3TextFieldSkinlet : public QskTextFieldSki
   public:
     enum NodeRole : quint8
     {
-        SupportingTextRole = Inherited::RoleCount,
-        CharacterCountRole
+        CharacterCountRole = Inherited::RoleCount
     };
 
     Q_INVOKABLE QskMaterial3TextFieldSkinlet( QskSkin* = nullptr );
@@ -35,7 +34,10 @@ class QSK_MATERIAL3_EXPORT QskMaterial3TextFieldSkinlet : public QskTextFieldSki
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-    QString effectivePlaceholderText( const QskTextField* ) const override;
+    QString effectiveText( const QskTextField*,
+        QskAspect::Subcontrol ) const override;
+
+    qreal effectiveFooterHeight( const QskTextField* ) const override;
 };
 
 #endif

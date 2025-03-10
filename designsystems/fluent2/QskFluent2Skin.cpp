@@ -47,7 +47,6 @@
  */
 #include "QskFluent2Skin.h"
 #include "QskFluent2Theme.h"
-#include "QskFluent2TextFieldSkinlet.h"
 
 #include <QskTextAreaSkinlet.h>
 #include <QskSkinHintTableEditor.h>
@@ -1854,11 +1853,13 @@ void Editor::setupTextAreaColors(
         setBoxBorderGradient( panel, borderColor1, borderColor2, panelColor );
     }
 }
+
 void Editor::setupTextFieldMetrics()
 {
     using Q = QskTextField;
 
-    setFontRole( Q::Text, Fluent2::Body );
+    setFontRole( Q::Header, Fluent2::Body );
+    setFontRole( Q::Footer, Fluent2::Caption );
 
     setStrutSize( Q::TextPanel, { -1, 30_px } );
     setPadding( Q::TextPanel, { 11_px, 0, 11_px, 0 } );
@@ -1869,15 +1870,14 @@ void Editor::setupTextFieldMetrics()
 
     setBoxShape( Q::TextPanel, 3_px );
 
-    setAlignment( Q::Placeholder, Qt::AlignLeft | Qt::AlignVCenter );
-    setFontRole( Q::Placeholder, fontRole( Q::Text ) );
+    for ( const auto subControl : { Q::Text, Q::Placeholder } )
+    {
+        setFontRole( subControl, Fluent2::Body );
+        setAlignment( subControl, Qt::AlignLeft | Qt::AlignVCenter );
+    }
 
-    setStrutSize( Q::Header, { -1, 30_px } );
-    setFontRole( Q::Header, Fluent2::Body );
-
-    setAlignment( Q::Text, Qt::AlignLeft | Qt::AlignVCenter );
-    setFontRole( Q::Text, Fluent2::Body );
-
+    //setStrutSize( Q::Header, { -1, 30_px } );
+    //setStrutSize( Q::Footer, { -1, 30_px } );
 
     setSymbol( Q::Icon, symbol( "search" ) );
     setSymbol( Q::Button, symbol( "dismiss" ) );
@@ -2141,8 +2141,6 @@ void Editor::setupVirtualKeyboardColors(
 QskFluent2Skin::QskFluent2Skin( QObject* parent )
     : Inherited( parent )
 {
-    declareSkinlet< QskTextField, QskFluent2TextFieldSkinlet >();
-
     setupFonts();
 
     Editor editor( &hintTable() );

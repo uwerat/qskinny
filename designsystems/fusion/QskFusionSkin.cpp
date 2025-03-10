@@ -425,6 +425,9 @@ void Editor::setupTextField()
 
     setBoxShape( Q::TextPanel, 2_px );
     setPadding( Q::TextPanel, 4_px );
+
+    setFontRole( Q::Header, QskFontRole::Body );
+    setFontRole( Q::Footer, QskFontRole::Caption );
 }
 
 void Editor::setupTextArea()

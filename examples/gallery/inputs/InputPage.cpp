@@ -158,9 +158,8 @@ namespace
         StyleComboBox( QQuickItem* parent = nullptr )
             : QskComboBox( parent )
         {
-            addOption( QString(), "Plain" );
-            addOption( QString(), "Outlined" );
             addOption( QString(), "Filled" );
+            addOption( QString(), "Outlined" );
         }
     };
 }

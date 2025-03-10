@@ -29,7 +29,7 @@ class QskTextField::PrivateData
     QString footerText;
     QString placeholderText;
 
-    Style style = PlainStyle;
+    Style style = FilledStyle;
     QskAspect::States buttonStates;
 };
 
@@ -60,6 +60,7 @@ void QskTextField::setStyle( Style style )
         m_data->style = style;
 
         resetImplicitSize();
+        polish();
         update();
 
         Q_EMIT styleChanged( style );

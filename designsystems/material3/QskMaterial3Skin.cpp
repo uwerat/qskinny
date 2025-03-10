@@ -489,66 +489,55 @@ void Editor::setupTextField()
     const auto activeStates = Q::Focused | Q::Editing;
 
     {
-        // Text
+        // TextPanel
 
         setAnimation( Q::TextPanel | A::Color, qskDuration );
         setAnimation( Q::TextPanel | A::Metric, qskDuration );
     }
 
-    for ( const auto variation : { A::NoVariation, Filled, Outlined } )
     {
-        const auto Panel = Q::Panel | variation;
+        const auto aspect = Q::TextPanel | Filled;
 
-        QskBoxBorderMetrics borderMetrics[2];
+        setBoxBorderColors( aspect, m_pal.onSurfaceVariant );
+        setGradient( aspect, m_pal.surfaceVariant );
 
-        if ( variation == Filled )
-        {
-            setBoxShape( Panel, m_pal.shapeExtraSmallTop );
+        setGradient( aspect | Q::Hovered,
+            m_pal.hoverColor( m_pal.onSurfaceVariant, m_pal.surfaceVariant ),
+            { QskStateCombination::CombinationNoState, activeStates | Q::Error } );
 
-            borderMetrics[0].setBottom( 1 );
-            borderMetrics[1].setBottom( 2 );
+        setGradient( aspect | Q::Disabled,
+            QskRgb::toTransparentF( m_pal.onSurface, 0.04 ) );
 
-            setBoxBorderColors( Panel, m_pal.onSurfaceVariant );
-
-            setGradient( Panel, m_pal.surfaceVariant );
-
-            setGradient( Panel | Q::Hovered,
-                m_pal.hoverColor( m_pal.onSurfaceVariant, m_pal.surfaceVariant ),
-                { QskStateCombination::CombinationNoState, activeStates | Q::Error } );
-
-            setGradient( Panel | Q::Disabled,
-                QskRgb::toTransparentF( m_pal.onSurface, 0.04 ) );
-        }
-        else
-        {
-            setBoxShape( Panel, m_pal.shapeExtraSmall );
-
-            borderMetrics[0].setWidths( 1 );
-            borderMetrics[1].setWidths( 2 );
-
-            setBoxBorderColors( Panel, m_pal.outline );
-        }
-
-        if ( variation != A::NoVariation )
-        {
-            setStrutSize( Panel,  -1.0, 56_px );
-            setPadding( Panel, 16_px, 8_px, 16_px, 8_px );
-        }
-
-        setBoxBorderMetrics( Panel, borderMetrics[0] );
-        setBoxBorderMetrics( Panel, borderMetrics[1], activeStates | Q::Hovered );
-        setBoxBorderMetrics( Panel | Q::Error, borderMetrics[1], activeStates | Q::Hovered );
-
-        setBoxBorderColors( Panel, m_pal.primary, activeStates );
-        setBoxBorderColors( Panel | Q::Hovered, m_pal.primary, activeStates );
-        setBoxBorderColors( Panel | Q::Hovered, m_pal.onSurface );
-        setBoxBorderColors( Panel | Q::Disabled, m_pal.onSurface38 );
-
-        setBoxBorderColors( Panel | Q::Error, m_pal.error,
-            { QskStateCombination::CombinationNoState, activeStates | Q::Hovered } );
-
-        setColor( Q::TextPanel | variation | Q::Selected, m_pal.primary12 );
+        setBoxShape( aspect, m_pal.shapeExtraSmallTop );
+        setBoxBorderMetrics( aspect, { 0, 0, 0, 1 } );
+        setBoxBorderMetrics( aspect, { 0, 0, 0, 2 }, activeStates | Q::Hovered );
+        setBoxBorderMetrics( aspect | Q::Error, { 0, 0, 0, 2 }, activeStates | Q::Hovered );
     }
+    {
+        const auto aspect = Q::TextPanel | Outlined;
+
+        setBoxBorderColors( aspect, m_pal.outline );
+
+        setBoxShape( aspect, m_pal.shapeExtraSmall );
+        setBoxBorderMetrics( aspect, 1 );
+        setBoxBorderMetrics( aspect, 2, activeStates | Q::Hovered );
+        setBoxBorderMetrics( aspect | Q::Error, 2, activeStates | Q::Hovered );
+
+        setGradient( aspect, QColor() );
+    }
+
+    setStrutSize( Q::TextPanel,  -1.0, 56_px );
+    setPadding( Q::TextPanel, 16_px, 8_px, 16_px, 8_px );
+
+    setBoxBorderColors(  Q::TextPanel, m_pal.primary, activeStates );
+    setBoxBorderColors(  Q::TextPanel | Q::Hovered, m_pal.primary, activeStates );
+    setBoxBorderColors(  Q::TextPanel | Q::Hovered, m_pal.onSurface );
+    setBoxBorderColors(  Q::TextPanel | Q::Disabled, m_pal.onSurface38 );
+
+    setBoxBorderColors(  Q::TextPanel | Q::Error, m_pal.error,
+        { QskStateCombination::CombinationNoState, activeStates | Q::Hovered } );
+
+    setColor( Q::TextPanel | Q::Selected, m_pal.primary12 );
 
     // Icon
 
@@ -560,39 +549,6 @@ void Editor::setupTextField()
     setGraphicRole( Q::Icon | Q::Error, M3::GraphicRoleOnSurfaceVariant );
 
     setGraphicRole( Q::Icon | Q::Disabled, M3::GraphicRoleOnSurface38 );
-
-    {
-        setAlignment( Q::Header, Qt::AlignLeft | Qt::AlignVCenter );
-        setFontRole( Q::Header, BodySmall );
-
-        setColor( Q::Header, m_pal.onSurfaceVariant );
-        setColor( Q::Header, m_pal.primary, activeStates );
-        setColor( Q::Header | Q::Error, m_pal.error );
-        setColor( Q::Header | Q::Disabled, m_pal.onSurface38 );
-    }
-
-#if 0
-    setMargin( Q::Header | Outlined, 4_px, 0, 4_px, 0 );
-#endif
-
-    for ( const auto subControl : { Q::Text, Q::Placeholder } )
-    {
-        setAlignment( subControl, Qt::AlignLeft | Qt::AlignVCenter );
-
-        setFontRole( subControl, BodyLarge );
-
-        setColor( subControl | Q::Disabled, m_pal.onSurface38 );
-
-        if ( subControl == Q::Text )
-        {
-            setColor( subControl, m_pal.onSurface );
-        }
-        else
-        {
-            setColor( subControl | Q::Error, m_pal.error );
-            setColor( subControl | Q::Error | Q::Hovered, m_pal.onSurface );
-        }
-    }
 
     // Button
 
@@ -613,24 +569,48 @@ void Editor::setupTextField()
     setGradient( Q::ButtonPanel | Q::Hovered, m_pal.onSurface8 );
     setBoxShape( Q::ButtonPanel, 100, Qt::RelativeSize );
 
+    // Header
 
-    // SupportingText
+    setAlignment( Q::Header, Qt::AlignLeft | Qt::AlignVCenter );
+    setFontRole( Q::Header, BodySmall );
 
-    setMargin( Q::Footer, { 16_px, 4_px, 16_px, 4_px } );
-    setColor( Q::Footer, m_pal.onSurfaceVariant );
-    setColor( Q::Footer | Q::Error, m_pal.error );
-    setFontRole( Q::Footer, BodySmall );
+    setColor( Q::Header, m_pal.onSurfaceVariant );
+    setColor( Q::Header, m_pal.primary, activeStates );
+    setColor( Q::Header | Q::Error, m_pal.error );
+    setColor( Q::Header | Q::Disabled, m_pal.onSurface38 );
+
+    for ( const auto subControl : { Q::Text, Q::Placeholder } )
+    {
+        setAlignment( subControl, Qt::AlignLeft | Qt::AlignVCenter );
+
+        setFontRole( subControl, BodyLarge );
+
+        setColor( subControl | Q::Disabled, m_pal.onSurface38 );
+
+        if ( subControl == Q::Text )
+        {
+            setColor( subControl, m_pal.onSurface );
+        }
+        else
+        {
+            setColor( subControl | Q::Error, m_pal.error );
+            setColor( subControl | Q::Error | Q::Hovered, m_pal.onSurface );
+        }
+    }
+
+    // Footer, CharacterCount
+    for ( const auto subControl : { Q::Footer, Q::CharacterCount } )
+    {
+        setMargin( subControl, { 16_px, 4_px, 16_px, 4_px } );
+        setFontRole( subControl, BodySmall );
+
+        setColor( subControl, m_pal.onSurfaceVariant );
+        setColor( subControl | Q::Error, m_pal.error );
+        setColor( subControl | Q::Disabled, m_pal.onSurface38 );
+    }
+
     setAlignment( Q::Footer, Qt::AlignLeft | Qt::AlignVCenter );
-
-    setColor( Q::Footer | Q::Disabled, m_pal.onSurface38 );
-
-    // CharacterCount
-
-    setMargin( Q::CharacterCount, margin( Q::Footer ) );
-    setColor( Q::CharacterCount, color( Q::Footer ) );
-    setFontRole( Q::CharacterCount, fontRole( Q::Footer ) );
     setAlignment( Q::CharacterCount, Qt::AlignRight | Qt::AlignVCenter );
-    setColor( Q::CharacterCount | Q::Disabled, color( Q::Footer | Q::Disabled ) );
 }
 
 void Editor::setupProgressBar()

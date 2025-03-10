@@ -7,15 +7,10 @@ list(APPEND HEADERS
     QskFluent2Global.h QskFluent2Theme.h QskFluent2SkinFactory.h
 )
 
-list(APPEND PRIVATE_HEADERS
-    QskFluent2TextFieldSkinlet.h
-)
-
 list(APPEND SOURCES
     QskFluent2Theme.cpp
     QskFluent2Skin.cpp
     QskFluent2SkinFactory.cpp
-    QskFluent2TextFieldSkinlet.cpp
 )
 
 qt_add_resources(SOURCES QskFluent2Icons.qrc)

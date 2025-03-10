@@ -51,11 +51,13 @@ namespace
             new QskTextLabel( label, this );
 
             m_textField = new QskTextField( this );
+
+            m_textField->setText( "-0.000" );
+            m_textField->setPreferredWidth( m_textField->sizeHint().width() );
+            m_textField->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
+
             m_textField->setValidator( new InputValidator( m_textField ) );
             m_textField->setText( QString::number( value ) );
-
-            const QFontMetricsF fm( m_textField->font() );
-            m_textField->setFixedWidth( fm.horizontalAdvance( "-0.000" ) );
 
             connect( m_textField, &QskTextField::editingChanged,
                 this, [ this ]( bool on ) { if ( !on ) Q_EMIT valueChanged(); } );

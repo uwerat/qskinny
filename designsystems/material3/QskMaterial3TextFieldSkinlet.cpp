@@ -8,7 +8,7 @@
 
 #include <QskTextField.h>
 #include <QskBoxBorderColors.h>
-#include <QskBoxBorderMetrics.h>
+#include <QskBoxHints.h>
 #include <QskFunctions.h>
 
 #include <QFontMetricsF>
@@ -19,23 +19,10 @@ namespace
 {
     const int spacingV = 0; // skin hint !
 
-    QString effectiveHeaderText( const QskTextField* textField )
-    {
-        if ( !textField->isEditing() && textField->text().isEmpty() )
-            return QString();
-
-        return textField->headerText();
-    }
-
     inline bool hasCharacterCount( const QskTextField* textField )
     {
         // magic number hardcoded in qquicktextinput.cpp
         return textField->maxLength() < 32767;
-    }
-
-    inline bool hasBottomText( const QskTextField* textField )
-    {
-        return !textField->footerText().isEmpty() || hasCharacterCount( textField );
     }
 
     QString maxLengthString( const QskTextField* textField )
@@ -79,7 +66,7 @@ namespace
 QskMaterial3TextFieldSkinlet::QskMaterial3TextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
-    appendNodeRoles( { SupportingTextRole, CharacterCountRole } );
+    appendNodeRoles( { CharacterCountRole } );
 }
 
 QskMaterial3TextFieldSkinlet::~QskMaterial3TextFieldSkinlet()
@@ -91,92 +78,47 @@ QRectF QskMaterial3TextFieldSkinlet::subControlRect( const QskSkinnable* skinnab
 {
     const auto textField = static_cast< const Q* >( skinnable );
 
-    if ( subControl == Q::Panel )
-    {
-        auto rect = contentsRect;
-
-        if( textField->style() == QskTextField::OutlinedStyle )
-        {
-            const auto h = textField->effectiveFontHeight( Q::Header );
-            rect.setTop( rect.top() + 0.5 * h );
-        }
-
-        if( hasBottomText( textField ) )
-        {
-            const auto margins = textField->marginHint( Q::Footer );
-
-            const auto h = textField->effectiveFontHeight( Q::Footer )
-                + margins.top() + margins.bottom();
-
-            rect.setHeight( rect.height() - h );
-        }
-
-        return rect;
-    }
-
-    if ( subControl == Q::Text )
-    {
-        auto rect = Inherited::subControlRect( skinnable, contentsRect, Q::Text );
-
-        if ( !rect.isEmpty() && ( textField->style() == QskTextField::FilledStyle ) )
-        {
-            const auto text = effectiveHeaderText( textField );
-            if ( !text.isEmpty() )
-            {
-                const auto h = skinnable->effectiveFontHeight( Q::Header );
-                rect.translate( 0.0, 0.5 * ( h + spacingV ) );
-            }
-        }
-
-        return rect;
-    }
-
     if ( subControl == Q::Header )
     {
-        const auto text = effectiveHeaderText( textField );
+        const auto text = effectiveText( textField, Q::Header );
         if( text.isEmpty() )
             return QRectF();
 
         const QFontMetrics fm( textField->effectiveFont( Q::Header ) );
         const auto textSize = fm.size( Qt::TextSingleLine | Qt::TextExpandTabs, text );
 
-        qreal x, y;
+        if ( textField->style() == QskTextField::OutlinedStyle )
+        {
+            const auto r = subControlRect( skinnable, contentsRect, Q::TextPanel );
 
-        if ( textField->style() == QskTextField::FilledStyle )
+            const auto x = r.left() + skinnable->paddingHint( Q::TextPanel ).left();
+            const auto y = r.top() - 0.5 * textSize.height();
+
+            return QRectF( x, y, textSize.width(), textSize.height() );
+        }
+        else
         {
             const auto r = subControlRect( skinnable, contentsRect, Q::Text );
 
-            x = r.left();
-            y = r.top() - spacingV - textSize.height();
+            return QRectF( r.x(), r.top() - textSize.height(),
+                textSize.width(), textSize.height() );
         }
-        else if ( textField->style() == QskTextField::OutlinedStyle )
-        {
-            const auto r = subControlRect( skinnable, contentsRect, Q::Panel );
-
-            x = r.left() + skinnable->paddingHint( Q::Panel ).left();
-            y = r.top() - 0.5 * textSize.height();
-        }
-
-        return QRectF( x, y, textSize.width(), textSize.height() );
     }
 
-    if ( subControl == Q::Footer )
+    if ( subControl == Q::TextPanel )
     {
-        if( !textField->footerText().isEmpty() )
+        auto rect = skinnable->subControlRect( contentsRect, Q::Panel );
+
+        if ( textField->style() == QskTextField::OutlinedStyle )
         {
-            auto rect = contentsRect;
-
-            const auto margins = textField->marginHint( subControl );
-            const auto h = textField->effectiveFontHeight( subControl )
-                + margins.top() + margins.bottom();
-
-            rect.setTop( rect.bottom() - h );
-            rect.setLeft( rect.left() + margins.left() );
-
-            return rect;
+            const QFontMetrics fm( textField->effectiveFont( Q::Header ) );
+            rect.setTop( rect.top() + 0.5 * fm.height() );
         }
 
-        return QRectF();
+        const auto h = skinnable->strutSizeHint( Q::TextPanel ).height();
+        rect.setHeight( h );
+
+        return rect;
     }
 
     if ( subControl == Q::CharacterCount )
@@ -212,43 +154,29 @@ QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
 
     switch ( nodeRole )
     {
-        case PanelRole:
+        case TextPanelRole:
         {
-            if( ( textField->style() == QskTextField::OutlinedStyle ) &&
-                !effectiveHeaderText( textField ).isEmpty() )
+            const auto rect = textField->subControlRect( Q::TextPanel );
+
+            auto hints = textField->boxHints( Q::TextPanel );
+
+            if( textField->style() == QskTextField::OutlinedStyle )
             {
-                auto clipRect = textField->subControlRect( Q::Header );
+                const auto clipRect = textField->subControlRect( Q::Header );
                 if ( !clipRect.isEmpty() )
                 {
-                    const auto subControl = Q::Panel;
-
-                    const auto panelRect = textField->subControlRect( subControl );
-
-                    auto borderColors = textField->boxBorderColorsHint( subControl );
-                    borderColors = outlineColors( borderColors, panelRect, clipRect );
-
-                    return updateBoxNode( skinnable, node,
-                        panelRect,
-                        skinnable->boxShapeHint( subControl ),
-                        skinnable->boxBorderMetricsHint( subControl ),
-                        borderColors,
-                        skinnable->gradientHint( subControl ) );
+                    hints.borderColors = outlineColors(
+                        hints.borderColors, rect, clipRect );
                 }
             }
 
-            return updateBoxNode( skinnable, node, Q::Panel );
+            return updateBoxNode( skinnable, node, rect, hints );
         }
 
         case CharacterCountRole:
         {
             return updateTextNode( skinnable, node,
                 maxLengthString( textField ), Q::CharacterCount );
-        }
-
-        case HeaderRole:
-        {
-            return updateTextNode( skinnable, node,
-                effectiveHeaderText( textField ), Q::Header );
         }
     }
 
@@ -258,40 +186,68 @@ QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
 QSizeF QskMaterial3TextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
     Qt::SizeHint which, const QSizeF& constraint ) const
 {
+    Q_UNUSED( constraint ); // TODO ...
+
     if ( which != Qt::PreferredSize )
         return QSizeF();
 
-    auto hint = Inherited::sizeHint( skinnable, which, constraint );
-    
     const auto textField = static_cast< const QskTextField* >( skinnable );
 
-    if( textField->style() != QskTextField::PlainStyle )
-        hint.rheight() += textField->effectiveFontHeight( Q::Header ) + spacingV;
+    auto hint = textField->unwrappedTextSize();
+    hint = hint.expandedTo( skinnable->strutSizeHint( Q::TextPanel ) );
 
-    if( hasBottomText( textField ) )
+    if ( textField->style() == QskTextField::OutlinedStyle )
     {
-        const auto margins = textField->marginHint( Q::Footer );
-        hint.rheight() += textField->effectiveFontHeight( Q::Footer )
-            + margins.top() + margins.bottom();
+        const QFontMetrics fm( textField->effectiveFont( Q::Header ) );
+        hint.rheight() += 0.5 * fm.height();
     }
+
+    hint.rheight() += effectiveFooterHeight( textField );
+    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Panel ) );
 
     return hint;
 }
 
-QString QskMaterial3TextFieldSkinlet::effectivePlaceholderText(
-    const QskTextField* textField ) const
+QString QskMaterial3TextFieldSkinlet::effectiveText(
+    const QskTextField* textField, QskAspect::Subcontrol subControl ) const
 {
-    if ( textField->text().isEmpty() &&
-        !( textField->isReadOnly() || textField->isEditing() ) )
-    {
-        auto text = textField->placeholderText();
-        if ( text.isEmpty() )
-            text = textField->headerText();
+    const bool showHeaderAsPlaceholder =
+        textField->text().isEmpty() && !textField->isEditing();
 
-        return text;
+    if ( subControl == Q::Header )
+    {
+        if ( showHeaderAsPlaceholder )
+            return QString();
+    }
+    else if ( subControl == Q::Placeholder )
+    {
+        if ( showHeaderAsPlaceholder )
+        {
+            auto text = Inherited::effectiveText( textField, Q::Placeholder );
+            if ( text.isEmpty() )
+                text = Inherited::effectiveText( textField, Q::Header );
+
+            return text;
+        }
+
+        return QString();
     }
 
-    return QString();
+    return Inherited::effectiveText( textField, subControl );
+}
+
+qreal QskMaterial3TextFieldSkinlet::effectiveFooterHeight(
+    const QskTextField* textField ) const
+{
+    if ( hasCharacterCount( textField ) )
+    {
+        const auto h = textField->effectiveFontHeight( Q::Footer );
+        const auto margins = textField->marginHint( Q::Footer );
+
+        return h + margins.top() + margins.bottom();
+    }
+
+    return Inherited::effectiveFooterHeight( textField );
 }
 
 #include "moc_QskMaterial3TextFieldSkinlet.cpp"
