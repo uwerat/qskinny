@@ -5,9 +5,7 @@
 
 #include "QskMaterial3ProgressBarSkinlet.h"
 #include <QskProgressBar.h>
-#include <QskBoxShapeMetrics.h>
-#include <QskBoxBorderMetrics.h>
-#include <QskBoxBorderColors.h>
+#include <QskBoxHints.h>
 #include <QskMargins.h>
 #include <QskClipNode.h>
 #include <QskSGNode.h>
@@ -65,11 +63,11 @@ QSGNode* QskMaterial3ProgressBarSkinlet::updateStopIndicatorNode(
     else         
         rect.setBottom( rect.top() + rect.width() );
 
-    const auto color = progressBar->gradientHint( Q::Fill ).endColor();
-    const auto shape = progressBar->boxShapeHint( Q::Fill );
+    QskBoxHints hints;
+    hints.shape = progressBar->boxShapeHint( Q::Fill );
+    hints.gradient = progressBar->gradientHint( Q::Fill ).endColor();
 
-    return updateBoxNode( progressBar, node, rect, shape,
-        QskBoxBorderMetrics(), QskBoxBorderColors(), color );
+    return updateBoxNode( progressBar, node, rect, hints );
 }
 
 QSGNode* QskMaterial3ProgressBarSkinlet::updateGrooveClipNode(
