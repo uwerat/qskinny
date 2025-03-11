@@ -6,7 +6,7 @@
 #include "QskProgressBarSkinlet.h"
 #include "QskProgressBar.h"
 #include "QskIntervalF.h"
-#include "QskBoxBorderMetrics.h"
+#include "QskBoxHints.h"
 
 #include <qeasingcurve.h>
 #include <cmath>
@@ -50,41 +50,6 @@ static QskIntervalF qskFillInterval( const QskProgressIndicator* indicator )
     return QskIntervalF( pos1, pos2 );
 }
 
-static QskGradient qskFillGradient( const QskProgressBar* progressBar )
-{
-    auto gradient = progressBar->gradientHint( Q::Fill );
-
-    if ( gradient.isVisible() && !gradient.isMonochrome()
-        && ( gradient.type() == QskGradient::Stops ) )
-    {
-        /*
-            When having stops only we use a linear gradient,
-            where the colors are increasing in direction of the
-            progress value. We interprete the gradient as a
-            definition for the 100% situation and have to adjust
-            the stops for smaller bars.
-
-            For this situation it would be more convenient to
-            adjust the start/stop positions, but the box renderer is
-            not supporting this yet. TODO ...
-         */
-
-        const auto intv = qskFillInterval( progressBar );
-
-        const auto stops = qskExtractedGradientStops(
-            gradient.stops(), intv.lowerBound(), intv.upperBound() );
-
-        gradient.setStops( stops );
-
-        gradient.setLinearDirection( progressBar->orientation() );
-
-        if ( progressBar->orientation() == Qt::Vertical || progressBar->layoutMirroring() )
-            gradient.reverse();
-    }
-
-    return gradient;
-}
-
 QskProgressBarSkinlet::QskProgressBarSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
@@ -122,9 +87,40 @@ QSGNode* QskProgressBarSkinlet::updateFillNode(
     if ( rect.isEmpty() )
         return nullptr;
 
-    const auto progressBar = static_cast< const Q* >( indicator );
-    return updateBoxNode( indicator, node, rect,
-        qskFillGradient( progressBar ), Q::Fill );
+    auto hints = indicator->boxHints( Q::Fill );
+
+    auto& gradient = hints.gradient;
+
+    if ( gradient.isVisible() && !gradient.isMonochrome()
+         && ( gradient.type() == QskGradient::Stops ) )
+    {
+        /*
+            When having stops only we use a linear gradient,
+            where the colors are increasing in direction of the
+            progress value. We interprete the gradient as a
+            definition for the 100% situation and have to adjust
+            the stops for smaller bars.
+
+            For this situation it would be more convenient to
+            adjust the start/stop positions, but the box renderer is
+            not supporting this yet. TODO ...
+         */
+
+        const auto intv = qskFillInterval( indicator );
+
+        const auto stops = qskExtractedGradientStops(
+            gradient.stops(), intv.lowerBound(), intv.upperBound() );
+
+        gradient.setStops( stops );
+
+        const auto orientation = static_cast< const Q* >( indicator )->orientation();
+        gradient.setLinearDirection( orientation );
+
+        if ( orientation == Qt::Vertical || indicator->layoutMirroring() )
+            gradient.reverse();
+    }
+
+    return updateBoxNode( indicator, node, rect, hints );
 }
 
 QRectF QskProgressBarSkinlet::grooveRect(

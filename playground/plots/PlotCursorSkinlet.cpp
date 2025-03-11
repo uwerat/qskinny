@@ -9,6 +9,7 @@
 #include <QskSGNode.h>
 #include <QskTextOptions.h>
 #include <QskTextColors.h>
+#include <QskBoxHints.h>
 
 #include <QskPlotCurve.h>
 #include <QskPlotCorridor.h>
@@ -143,8 +144,10 @@ QSGNode* PlotCursorSkinlet::updateSampleNode( const QskSkinnable* skinnable,
 
     if ( subControl == Q::LabelPanel )
     {
-        const auto gradient = skinnable->gradientHint( aspect );
-        return updateBoxNode( skinnable, node, rect, gradient, subControl );
+        auto hints = skinnable->boxHints( subControl );
+        hints.gradient = skinnable->gradientHint( aspect );
+
+        return updateBoxNode( skinnable, node, rect, hints );
     }
 
     if ( subControl == Q::LabelText )

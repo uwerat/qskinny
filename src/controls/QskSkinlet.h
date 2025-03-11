@@ -77,13 +77,6 @@ class QSK_EXPORT QskSkinlet
         const QRectF&, QskAspect::Subcontrol );
 
     static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, const QskGradient&, QskAspect::Subcontrol );
-
-    static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
-        const QskBoxBorderColors&, const QskGradient& );
-
-    static QSGNode* updateBoxNode( const QskSkinnable*, QSGNode*,
         const QRectF&, const QskBoxHints& );
 
     static QSGNode* updateInterpolatedBoxNode(
