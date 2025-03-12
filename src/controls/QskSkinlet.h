@@ -23,10 +23,8 @@ class QskColorFilter;
 class QskGraphic;
 class QskTextOptions;
 class QskTextColors;
-class QskBoxShapeMetrics;
-class QskBoxBorderMetrics;
-class QskBoxBorderColors;
 class QskBoxHints;
+class QskArcHints;
 
 class QSGNode;
 
@@ -87,18 +85,7 @@ class QSK_EXPORT QskSkinlet
         const QRectF&, QskAspect::Subcontrol );
 
     static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, const QskGradient&, QskAspect::Subcontrol );
-
-    static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, qreal borderWidth, const QColor& borderColor,
-        const QskGradient&, const QskArcMetrics& );
-
-    static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, qreal startAngle, qreal spanAngle, QskAspect::Subcontrol );
-
-    static QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
-        const QRectF&, const QskGradient&, qreal startAngle, qreal spanAngle,
-        QskAspect::Subcontrol );
+        const QRectF&, const QskArcHints& );
 
     static QSGNode* updateLineNode( const QskSkinnable*, QSGNode*,
         const QLineF&, QskAspect::Subcontrol );
@@ -147,10 +134,6 @@ class QSK_EXPORT QskSkinlet
         QskAspect::Subcontrol ) const;
 
     QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
-        QskAspect::Subcontrol ) const;
-
-    QSGNode* updateArcNode( const QskSkinnable*, QSGNode*,
-        qreal startAngle, qreal spanAngle,
         QskAspect::Subcontrol ) const;
 
     QSGNode* updateBoxClipNode( const QskSkinnable*, QSGNode*,

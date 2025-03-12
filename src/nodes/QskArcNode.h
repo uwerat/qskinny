@@ -9,8 +9,7 @@
 #include "QskGlobal.h"
 #include <qsgnode.h>
 
-class QskArcMetrics;
-class QskGradient;
+class QskArcHints;
 
 class QSK_EXPORT QskArcNode : public QSGNode
 {
@@ -18,10 +17,7 @@ class QSK_EXPORT QskArcNode : public QSGNode
     QskArcNode();
     ~QskArcNode() override;
 
-    void setArcData( const QRectF&, const QskArcMetrics&, const QskGradient& );
-
-    void setArcData( const QRectF&, const QskArcMetrics&,
-        qreal borderWidth, const QColor& borderColor, const QskGradient& );
+    void setArcData( const QRectF&, const QskArcHints& );
 };
 
 #endif

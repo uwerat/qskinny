@@ -4,11 +4,10 @@
  *****************************************************************************/
 
 #include "QskArcNode.h"
-#include "QskArcMetrics.h"
+#include "QskArcHints.h"
 #include "QskArcRenderNode.h"
 #include "QskArcRenderer.h"
 #include "QskMargins.h"
-#include "QskGradient.h"
 #include "QskSGNode.h"
 #include "QskRgbValue.h"
 
@@ -58,24 +57,21 @@ QskArcNode::~QskArcNode()
 {
 }
 
-void QskArcNode::setArcData( const QRectF& rect,
-    const QskArcMetrics& arcMetrics, const QskGradient& gradient )
-{
-    setArcData( rect, arcMetrics, 0.0, QColor(), gradient );
-}
-
-void QskArcNode::setArcData( const QRectF& rect, const QskArcMetrics& arcMetrics,
-    const qreal borderWidth, const QColor& borderColor, const QskGradient& gradient )
+void QskArcNode::setArcData( const QRectF& rect, const QskArcHints& hints )
 {
     using namespace QskSGNode;
 
     QskArcRenderNode* arcNode = nullptr;
     QskArcRenderNode* fillNode = nullptr;
 
-    if ( !( rect.isEmpty() || arcMetrics.isNull() ) )
+    if ( !rect.isEmpty() && hints.isVisible() )
     {
+        const auto& gradient = hints.gradient;
+        const auto borderWidth = hints.borderWidth;
+        const auto borderColor = hints.borderColor;
+
         const bool radial = false;
-        const auto metricsArc = arcMetrics.toAbsolute( rect.size() );
+        const auto metricsArc = hints.metrics.toAbsolute( rect.size() );
 
         const auto hasFilling = gradient.isVisible();
         const auto hasBorder = ( borderWidth > 0.0 ) && QskRgb::isVisible( borderColor );

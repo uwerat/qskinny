@@ -22,6 +22,7 @@ class QDebug;
 class QSGNode;
 class QQuickItem;
 
+class QskArcHints;
 class QskArcMetrics;
 class QskControl;
 class QskAnimationHint;
@@ -226,6 +227,7 @@ class QSK_EXPORT QskSkinnable
     QColor shadowColorHint( QskAspect, QskSkinHintStatus* = nullptr ) const;
 
     QskBoxHints boxHints( QskAspect ) const;
+    QskArcHints arcHints( QskAspect ) const;
 
     bool setArcMetricsHint( QskAspect, const QskArcMetrics& );
     bool resetArcMetricsHint( QskAspect );

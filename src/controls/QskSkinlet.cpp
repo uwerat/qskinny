@@ -7,9 +7,7 @@
 
 #include "QskArcNode.h"
 #include "QskAspect.h"
-#include "QskArcMetrics.h"
-#include "QskBoxBorderColors.h"
-#include "QskBoxBorderMetrics.h"
+#include "QskArcHints.h"
 #include "QskBoxNode.h"
 #include "QskBoxRectangleNode.h"
 #include "QskBoxShapeMetrics.h"
@@ -156,18 +154,6 @@ static inline bool qskIsBoxVisible( const QskBoxBorderMetrics& borderMetrics,
     return !borderMetrics.isNull() && borderColors.isVisible();
 }
 
-static inline bool qskIsArcVisible( const QskArcMetrics& arcMetrics,
-    qreal borderWidth, const QColor borderColor, const QskGradient& gradient )
-{
-    if ( arcMetrics.isNull() )
-        return false;
-
-    if ( borderWidth > 0.0 && borderColor.isValid() && borderColor.alpha() > 0 )
-        return true;
-
-    return gradient.isVisible();
-}
-
 static inline bool qskIsLineVisible( const QColor& lineColor, qreal lineWidth )
 {
     return ( lineWidth > 0.0 ) && lineColor.isValid() && ( lineColor.alpha() > 0 );
@@ -223,21 +209,20 @@ static inline QSGNode* qskUpdateBoxNode( const QskSkinnable* skinnable,
     return nullptr;
 }
 
-static inline QSGNode* qskUpdateArcNode(
-    const QskSkinnable*, QSGNode* node, const QRectF& rect,
-    qreal borderWidth, const QColor borderColor,
-    const QskGradient& gradient, const QskArcMetrics& metrics )
+static inline QSGNode* qskUpdateArcNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QRectF& rect, const QskArcHints& hints )
 {
-    if ( rect.isEmpty() )
-        return nullptr;
+    Q_UNUSED( skinnable );
 
-    if ( !qskIsArcVisible( metrics, borderWidth, borderColor, gradient ) )
-        return nullptr;
+    if ( !rect.isEmpty() && hints.isVisible() )
+    {
+        auto arcNode = QskSGNode::ensureNode< QskArcNode >( node );
+        arcNode->setArcData( rect, hints );
 
-    auto arcNode = QskSGNode::ensureNode< QskArcNode >( node );
-    arcNode->setArcData( rect, metrics, borderWidth, borderColor, gradient );
+        return arcNode;
+    }
 
-    return arcNode;
+    return nullptr;
 }
 
 static inline QSGNode* qskUpdateLineNode(
@@ -496,79 +481,24 @@ QSGNode* QskSkinlet::updateInterpolatedBoxNode(
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     QSGNode* node, QskAspect::Subcontrol subControl ) const
 {
-    const auto rect = qskSubControlRect( this, skinnable, subControl );
-    return updateArcNode( skinnable, node, rect, subControl );
+    auto rect = qskSubControlRect( this, skinnable, subControl );
+    rect = rect.marginsRemoved( skinnable->marginHint( subControl ) );
+
+    return qskUpdateArcNode( skinnable,
+        node, rect, skinnable->arcHints( subControl ) );
+}
+
+QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
+    QSGNode* node, const QRectF& rect, const QskArcHints& hints )
+{
+    return qskUpdateArcNode( skinnable, node, rect, hints );
 }
 
 QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
     QSGNode* node, const QRectF& rect, QskAspect::Subcontrol subControl )
 {
-    const auto fillGradient = skinnable->gradientHint( subControl );
-    return updateArcNode( skinnable, node, rect, fillGradient, subControl );
-}
-
-QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
-    QSGNode* node, const QRectF& rect, const QskGradient& fillGradient,
-    QskAspect::Subcontrol subControl )
-{
-    const auto metrics = skinnable->arcMetricsHint( subControl );
-    const auto r = rect.marginsRemoved( skinnable->marginHint( subControl ) );
-
-    const qreal borderWidth = skinnable->metric( subControl | QskAspect::Border );
-
-    QColor borderColor;
-    if ( borderWidth > 0.0 )
-        borderColor = skinnable->color( subControl | QskAspect::Border );
-
     return qskUpdateArcNode( skinnable, node,
-        r, borderWidth, borderColor, fillGradient, metrics );
-}
-
-QSGNode* QskSkinlet::updateArcNode(
-    const QskSkinnable* skinnable, QSGNode* node, const QRectF& rect,
-    qreal borderWidth, const QColor& borderColor,
-    const QskGradient& fillGradient, const QskArcMetrics& metrics )
-{
-    return qskUpdateArcNode( skinnable, node, rect,
-        borderWidth, borderColor, fillGradient, metrics );
-}
-
-QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
-    QSGNode* node, qreal startAngle, qreal spanAngle,
-    QskAspect::Subcontrol subControl ) const
-{
-    const auto rect = qskSubControlRect( this, skinnable, subControl );
-
-    return updateArcNode( skinnable, node,
-        rect, startAngle, spanAngle, subControl );
-}
-
-QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
-    QSGNode* node, const QRectF& rect, qreal startAngle, qreal spanAngle,
-    QskAspect::Subcontrol subControl )
-{
-    const auto fillGradient = skinnable->gradientHint( subControl );
-    return updateArcNode( skinnable, node, rect,
-        fillGradient, startAngle, spanAngle, subControl );
-}
-
-QSGNode* QskSkinlet::updateArcNode( const QskSkinnable* skinnable,
-    QSGNode* node, const QRectF& rect, const QskGradient& fillGradient,
-    qreal startAngle, qreal spanAngle, QskAspect::Subcontrol subControl )
-{
-    auto arcMetrics = skinnable->arcMetricsHint( subControl );
-    arcMetrics.setStartAngle( startAngle );
-    arcMetrics.setSpanAngle( spanAngle );
-
-    const qreal borderWidth = skinnable->metric( subControl | QskAspect::Border );
-
-    QColor borderColor;
-    if ( borderWidth > 0.0 )
-        borderColor = skinnable->color( subControl | QskAspect::Border );
-
-    const auto r = rect.marginsRemoved( skinnable->marginHint( subControl ) );
-    return updateArcNode( skinnable, node, r,
-        borderWidth, borderColor, fillGradient, arcMetrics );
+        rect, skinnable->arcHints( subControl ) );
 }
 
 QSGNode* QskSkinlet::updateLineNode( const QskSkinnable* skinnable,

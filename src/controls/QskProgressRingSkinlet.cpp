@@ -4,7 +4,7 @@
  *****************************************************************************/
 
 #include "QskProgressRingSkinlet.h"
-#include "QskArcMetrics.h"
+#include "QskArcHints.h"
 #include "QskProgressRing.h"
 #include "QskIntervalF.h"
 
@@ -85,8 +85,12 @@ QSGNode* QskProgressRingSkinlet::updateGrooveNode(
                 endAngle = fillAngles.first - 360.0 + spacing;
             }
 
-            return updateArcNode( ring, node,
-                startAngle, endAngle - startAngle, Q::Groove );
+            auto hints = indicator->arcHints( Q::Groove );
+            hints.metrics.setStartAngle( startAngle );
+            hints.metrics.setSpanAngle( endAngle - startAngle );
+
+            const auto rect = indicator->subControlRect( Q::Groove );
+            return updateArcNode( ring, node, rect, hints );
         }
     }
 
@@ -104,15 +108,13 @@ QSGNode* QskProgressRingSkinlet::updateFillNode(
     if ( rect.isEmpty() )
         return nullptr;
 
-    const auto metrics = ring->arcMetricsHint( subControl );
-    if ( metrics.isNull() )
-        return nullptr;
-
-    auto gradient = ring->gradientHint( subControl );
-    if ( !gradient.isVisible() )
+    auto hints = ring->arcHints( subControl );
+    if ( !hints.isVisible() )
         return nullptr;
 
     const auto intv = qskFillInterval( ring );
+
+    auto& gradient = hints.gradient;
 
     if ( ( gradient.type() == QskGradient::Stops ) && !gradient.isMonochrome() )
     {
@@ -121,14 +123,15 @@ QSGNode* QskProgressRingSkinlet::updateFillNode(
 
         gradient.setStops( stops );
 
-        if ( metrics.spanAngle() < 0.0 )
+        if ( hints.metrics.spanAngle() < 0.0 )
             gradient.reverse();
     }
 
-    const auto angles = qskFillAngles( metrics, intv );
+    const auto angles = qskFillAngles( hints.metrics, intv );
+    hints.metrics.setStartAngle( angles.first );
+    hints.metrics.setSpanAngle( angles.second - angles.first );
 
-    return updateArcNode( ring, node, rect, gradient,
-        angles.first, angles.second - angles.first, subControl );
+    return updateArcNode( ring, node, rect, hints );
 }
 
 QSizeF QskProgressRingSkinlet::sizeHint( const QskSkinnable* skinnable,

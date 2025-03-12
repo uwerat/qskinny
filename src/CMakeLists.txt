@@ -5,6 +5,7 @@
 
 list(APPEND HEADERS
     common/QskArcMetrics.h
+    common/QskArcHints.h
     common/QskAspect.h
     common/QskBoxBorderColors.h
     common/QskBoxBorderMetrics.h
@@ -41,6 +42,7 @@ list(APPEND HEADERS
 
 list(APPEND SOURCES
     common/QskArcMetrics.cpp
+    common/QskArcHints.cpp
     common/QskAspect.cpp
     common/QskBoxBorderColors.cpp
     common/QskBoxBorderMetrics.cpp

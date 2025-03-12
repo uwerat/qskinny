@@ -6,7 +6,7 @@
 #include "QskSkinnable.h"
 
 #include "QskAnimationHint.h"
-#include "QskArcMetrics.h"
+#include "QskArcHints.h"
 #include "QskAspect.h"
 #include "QskColorFilter.h"
 #include "QskControl.h"
@@ -637,9 +637,23 @@ QColor QskSkinnable::shadowColorHint( QskAspect aspect, QskSkinHintStatus* statu
 QskBoxHints QskSkinnable::boxHints( QskAspect aspect ) const
 {
     return QskBoxHints(
-        boxShapeHint( aspect ), boxBorderMetricsHint( aspect ),
-        boxBorderColorsHint( aspect ), gradientHint( aspect ),
-        shadowMetricsHint( aspect ), shadowColorHint( aspect ) );
+        boxShapeHint( aspect ),
+        boxBorderMetricsHint( aspect ),
+        boxBorderColorsHint( aspect ),
+        gradientHint( aspect ),
+        shadowMetricsHint( aspect ),
+        shadowColorHint( aspect )
+    );
+}
+
+QskArcHints QskSkinnable::arcHints( QskAspect aspect ) const
+{
+    return QskArcHints(
+        arcMetricsHint( aspect ),
+        metric( aspect | QskAspect::Border ),
+        color( aspect | QskAspect::Border ),
+        gradientHint( aspect )
+    );
 }
 
 bool QskSkinnable::setArcMetricsHint(
