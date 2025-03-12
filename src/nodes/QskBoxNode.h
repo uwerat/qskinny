@@ -9,14 +9,8 @@
 #include "QskGlobal.h"
 #include <qsgnode.h>
 
-class QskShadowMetrics;
-class QskBoxShapeMetrics;
-class QskBoxBorderMetrics;
-class QskBoxBorderColors;
-class QskGradient;
-class QskShadowMetrics;
+class QskBoxHints;
 class QQuickWindow;
-class QColor;
 
 class QSK_EXPORT QskBoxNode : public QSGNode
 {
@@ -24,10 +18,7 @@ class QSK_EXPORT QskBoxNode : public QSGNode
     QskBoxNode();
     ~QskBoxNode() override;
 
-    void updateNode( const QQuickWindow*, const QRectF&,
-        const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
-        const QskBoxBorderColors&, const QskGradient&,
-        const QskShadowMetrics&, const QColor& shadowColor );
+    void updateNode( const QQuickWindow*, const QRectF&, const QskBoxHints& );
 };
 
 #endif

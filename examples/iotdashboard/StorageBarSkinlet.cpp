@@ -14,8 +14,8 @@ StorageBarSkinlet::StorageBarSkinlet( QskSkin* skin )
     setNodeRoles( { Pictures, Music, Videos, Documents, Others, Free } );
 }
 
-QRectF StorageBarSkinlet::subControlRect( const QskSkinnable* skinnable, const QRectF& contentsRect,
-    QskAspect::Subcontrol subControl ) const
+QRectF StorageBarSkinlet::subControlRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl ) const
 {
     const auto* const bar = static_cast< const S* >( skinnable );
 
@@ -70,35 +70,29 @@ QRectF StorageBarSkinlet::subControlRect( const QskSkinnable* skinnable, const Q
     return Inherited::subControlRect( skinnable, contentsRect, subControl );
 }
 
-namespace
-{
-    inline QSGNode* updateSegmentBoxNode(
-        const S* const skinnable, const QskAspect::Subcontrol& subcontrol, QSGNode* const node )
-    {
-        return QskSkinlet::updateBoxNode( skinnable, node, skinnable->subControlRect( subcontrol ),
-            skinnable->gradientHint( subcontrol ), subcontrol );
-    }
-}
-
 QSGNode* StorageBarSkinlet::updateSubNode(
     const QskSkinnable* const skinnable, const quint8 nodeRole, QSGNode* const node ) const
 {
-    const auto* const bar = static_cast< const S* >( skinnable );
-
     switch ( nodeRole )
     {
         case Pictures:
-            return updateSegmentBoxNode( bar, S::Pictures, node );
+            return updateBoxNode( skinnable, node, S::Pictures );
+
         case Music:
-            return updateSegmentBoxNode( bar, S::Music, node );
+            return updateBoxNode( skinnable, node, S::Music );
+
         case Videos:
-            return updateSegmentBoxNode( bar, S::Videos, node );
+            return updateBoxNode( skinnable, node, S::Videos );
+
         case Documents:
-            return updateSegmentBoxNode( bar, S::Documents, node );
+            return updateBoxNode( skinnable, node, S::Documents );
+
         case Others:
-            return updateSegmentBoxNode( bar, S::Others, node );
+            return updateBoxNode( skinnable, node, S::Others );
+
         case Free:
-            return updateSegmentBoxNode( bar, S::Free, node );
+            return updateBoxNode( skinnable, node, S::Free );
+
         default:
             return Inherited::updateSubNode( skinnable, nodeRole, node );
     }

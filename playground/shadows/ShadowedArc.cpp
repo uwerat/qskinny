@@ -8,7 +8,7 @@
 
 #include <QskSkinlet.h>
 #include <QskArcNode.h>
-#include <QskArcMetrics.h>
+#include <QskArcHints.h>
 #include <QskShadowMetrics.h>
 #include <QskSGNode.h>
 #include <QskRgbValue.h>
@@ -107,14 +107,7 @@ namespace
             return nullptr;
 
         auto arcNode = QskSGNode::ensureNode< QskArcNode >( node );
-
-        const auto metrics = arc->arcMetricsHint( Q::Arc );
-        const auto fillGradient = arc->gradientHint( Q::Arc );
-
-        const auto borderColor = arc->color( Q::Arc | QskAspect::Border );
-        const auto borderWidth = arc->metric( Q::Arc | QskAspect::Border );
-
-        arcNode->setArcData( rect, metrics, borderWidth, borderColor, fillGradient );
+        arcNode->setArcData( rect, arc->arcHints( Q::Arc ) );
 
         return arcNode;
     }

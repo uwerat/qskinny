@@ -8,12 +8,8 @@
 #include "QskBoxRectangleNode.h"
 #include "QskSGNode.h"
 
-#include "QskGradient.h"
+#include "QskBoxHints.h"
 #include "QskGradientDirection.h"
-#include "QskShadowMetrics.h"
-#include "QskBoxBorderMetrics.h"
-#include "QskBoxBorderColors.h"
-#include "QskBoxShapeMetrics.h"
 #include "QskRgbValue.h"
 
 namespace
@@ -60,10 +56,8 @@ QskBoxNode::~QskBoxNode()
 {
 }
 
-void QskBoxNode::updateNode( const QQuickWindow* window, const QRectF& rect,
-    const QskBoxShapeMetrics& shapeMetrics, const QskBoxBorderMetrics& borderMetrics,
-    const QskBoxBorderColors& borderColors, const QskGradient& gradient,
-    const QskShadowMetrics& shadowMetrics, const QColor& shadowColor )
+void QskBoxNode::updateNode( const QQuickWindow* window,
+    const QRectF& rect, const QskBoxHints& hints )
 {
     using namespace QskSGNode;
 
@@ -74,6 +68,13 @@ void QskBoxNode::updateNode( const QQuickWindow* window, const QRectF& rect,
 
     if ( !rect.isEmpty() )
     {
+        const auto& shapeMetrics = hints.shape;
+        const auto& borderMetrics = hints.borderMetrics;
+        const auto& borderColors = hints.borderColors;
+        const auto& gradient = hints.gradient;
+        const auto& shadowMetrics = hints.shadowMetrics;
+        const auto& shadowColor = hints.shadowColor;
+
         const auto hasFilling = gradient.isVisible();
         const auto hasBorder = !borderMetrics.isNull() && borderColors.isVisible();
         const auto hasShadow = !shadowMetrics.isNull() && QskRgb::isVisible( shadowColor );

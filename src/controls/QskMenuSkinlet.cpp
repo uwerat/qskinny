@@ -9,6 +9,7 @@
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
 #include "QskTextOptions.h"
+#include "QskBoxHints.h"
 #include "QskFunctions.h"
 #include "QskMargins.h"
 #include "QskFunctions.h"
@@ -572,11 +573,13 @@ QSGNode* QskMenuSkinlet::updateSampleNode( const QskSkinnable* skinnable,
 
     if ( subControl == Q::Separator )
     {
-        auto gradient = menu->gradientHint( subControl );
+        auto hints = skinnable->boxHints( subControl );
+
+        auto& gradient = hints.gradient;
         if ( ( gradient.type() == QskGradient::Stops ) && !gradient.isMonochrome() )
             gradient.setLinearDirection( Qt::Vertical );
 
-        return updateBoxNode( menu, node, rect, gradient, subControl );
+        return updateBoxNode( menu, node, rect, hints );
     }
 
     return nullptr;

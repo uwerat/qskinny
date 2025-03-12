@@ -6,6 +6,7 @@
 #include "QskPopupSkinlet.h"
 #include "QskPopup.h"
 #include "QskRgbValue.h"
+#include "QskBoxHints.h"
 
 static inline QRgb qskInterpolatedRgb( QRgb rgb, qreal factor )
 {
@@ -58,7 +59,9 @@ QSGNode* QskPopupSkinlet::updateOverlayNode(
     if ( rect.isEmpty() )
         return nullptr;
 
-    auto gradient = popup->gradientHint( Q::Overlay );
+    auto hints = popup->boxHints( Q::Overlay );
+
+    auto& gradient = hints.gradient;
 
     if ( gradient.isVisible() && factor != 1.0 )
     {
@@ -70,7 +73,7 @@ QSGNode* QskPopupSkinlet::updateOverlayNode(
         gradient.setStops( stops );
     }
 
-    return updateBoxNode( popup, node, rect, gradient, QskPopup::Overlay );
+    return updateBoxNode( popup, node, rect, hints );
 }
 
 #include "moc_QskPopupSkinlet.cpp"
