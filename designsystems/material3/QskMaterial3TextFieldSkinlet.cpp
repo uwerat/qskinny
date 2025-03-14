@@ -15,6 +15,11 @@
 
 using Q = QskTextField;
 
+static inline bool isOutlined( const QskTextField* textField )
+{
+    return textField->effectiveVariation() == QskAspect::NoVariation;
+}
+
 namespace
 {
     const int spacingV = 0; // skin hint !
@@ -87,7 +92,7 @@ QRectF QskMaterial3TextFieldSkinlet::subControlRect( const QskSkinnable* skinnab
         const QFontMetrics fm( textField->effectiveFont( Q::Header ) );
         const auto textSize = fm.size( Qt::TextSingleLine | Qt::TextExpandTabs, text );
 
-        if ( textField->style() == QskTextField::OutlinedStyle )
+        if ( isOutlined( textField ) )
         {
             const auto r = subControlRect( skinnable, contentsRect, Q::TextPanel );
 
@@ -109,7 +114,7 @@ QRectF QskMaterial3TextFieldSkinlet::subControlRect( const QskSkinnable* skinnab
     {
         auto rect = skinnable->subControlRect( contentsRect, Q::Panel );
 
-        if ( textField->style() == QskTextField::OutlinedStyle )
+        if ( isOutlined( textField ) )
         {
             const QFontMetrics fm( textField->effectiveFont( Q::Header ) );
             rect.setTop( rect.top() + 0.5 * fm.height() );
@@ -160,7 +165,7 @@ QSGNode* QskMaterial3TextFieldSkinlet::updateSubNode(
 
             auto hints = textField->boxHints( Q::TextPanel );
 
-            if( textField->style() == QskTextField::OutlinedStyle )
+            if ( isOutlined( textField ) )
             {
                 const auto clipRect = textField->subControlRect( Q::Header );
                 if ( !clipRect.isEmpty() )
@@ -196,7 +201,7 @@ QSizeF QskMaterial3TextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
     auto hint = textField->unwrappedTextSize();
     hint = hint.expandedTo( skinnable->strutSizeHint( Q::TextPanel ) );
 
-    if ( textField->style() == QskTextField::OutlinedStyle )
+    if ( isOutlined( textField ) )
     {
         const QFontMetrics fm( textField->effectiveFont( Q::Header ) );
         hint.rheight() += 0.5 * fm.height();

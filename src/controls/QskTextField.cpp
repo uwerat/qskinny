@@ -29,7 +29,6 @@ class QskTextField::PrivateData
     QString footerText;
     QString placeholderText;
 
-    Style style = FilledStyle;
     QskAspect::States buttonStates;
 };
 
@@ -51,25 +50,6 @@ QskTextField::QskTextField( const QString& text, QQuickItem* parent )
 
 QskTextField::~QskTextField()
 {
-}
-
-void QskTextField::setStyle( Style style )
-{
-    if ( style != m_data->style )
-    {
-        m_data->style = style;
-
-        resetImplicitSize();
-        polish();
-        update();
-
-        Q_EMIT styleChanged( style );
-    }
-}
-
-QskTextField::Style QskTextField::style() const
-{
-    return m_data->style;
 }
 
 QString QskTextField::headerText() const
@@ -134,11 +114,6 @@ void QskTextField::setPlaceholderText( const QString& text )
 QString QskTextField::placeholderText() const
 {
     return m_data->placeholderText;
-}
-
-QskAspect::Variation QskTextField::effectiveVariation() const
-{
-    return static_cast< QskAspect::Variation >( m_data->style );
 }
 
 void QskTextField::handleButtonClick()

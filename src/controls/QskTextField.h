@@ -22,9 +22,6 @@ class QSK_EXPORT QskTextField : public QskTextInput
     Q_PROPERTY( QString placeholderText READ placeholderText
         WRITE setPlaceholderText NOTIFY placeholderTextChanged )
 
-    Q_PROPERTY( Style style READ style
-        WRITE setStyle NOTIFY styleChanged )
-
     using Inherited = QskTextInput;
 
   public:
@@ -33,20 +30,10 @@ class QSK_EXPORT QskTextField : public QskTextInput
     QSK_SUBCONTROLS( Panel, Header, Footer, Placeholder,
         Icon, Button, ButtonPanel, CharacterCount )
 
-    enum Style : quint8
-    {
-        FilledStyle,
-        OutlinedStyle
-    };
-    Q_ENUM( Style )
-
     QskTextField( QQuickItem* parent = nullptr );
     QskTextField( const QString& text, QQuickItem* parent = nullptr );
 
     ~QskTextField() override;
-
-    void setStyle( Style );
-    Style style() const;
 
     void setHeaderText( const QString& );
     QString headerText() const;
@@ -60,8 +47,6 @@ class QSK_EXPORT QskTextField : public QskTextInput
     void setPlaceholderText( const QString& );
     QString placeholderText() const;
 
-    QskAspect::Variation effectiveVariation() const override;
-
 #if 1
     QskAspect::States buttonStates() const;
 #endif
@@ -70,7 +55,6 @@ class QSK_EXPORT QskTextField : public QskTextInput
     void headerTextChanged( const QString& );
     void footerTextChanged( const QString& );
     void placeholderTextChanged( const QString& );
-    void styleChanged( Style );
 
   protected:
     void hoverEnterEvent( QHoverEvent* ) override;

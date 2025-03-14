@@ -483,8 +483,8 @@ void Editor::setupTextField()
     setFontRole( Q::Text, BodyLarge );
     setColor( Q::Text | Q::Disabled, m_pal.onSurface38 );
 
-    const auto Outlined = static_cast< A::Variation >( Q::OutlinedStyle );
-    const auto Filled = static_cast< A::Variation >( Q::FilledStyle );
+    const auto Outlined = A::NoVariation;
+    const auto Filled = static_cast< A::Variation >( 1 );
 
     const auto activeStates = Q::Focused | Q::Editing;
 

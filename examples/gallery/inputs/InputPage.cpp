@@ -68,6 +68,46 @@ namespace
         }
     };
 
+    class TextField : public QskTextField
+    {
+      public:
+        enum Style
+        {
+            OutlinedStyle,
+            FilledStyle
+        };
+        
+        TextField( QQuickItem* parent = nullptr )
+            : QskTextField( parent )
+        {
+        }
+
+        void setStyle( Style style ) 
+        {
+            if ( style != m_style )
+            {
+                m_style = style;
+
+                resetImplicitSize();
+                polish();
+                update();
+            }
+        }
+
+        Style style() const
+        {
+            return m_style;
+        }
+
+        QskAspect::Variation effectiveVariation() const override
+        {
+            return static_cast< QskAspect::Variation >( m_style );
+        }
+
+      private:
+        Style m_style = OutlinedStyle;
+    };
+
     class TextInputBox : public QskLinearBox
     {
       public:
@@ -78,7 +118,7 @@ namespace
             setDefaultAlignment( Qt::AlignHCenter | Qt::AlignTop );
 
             {
-                auto field = new QskTextField( this );
+                auto field = new TextField( this );
                 field->setHeaderText( "Name" );
                 field->setText( "John Doe" );
                 field->setPlaceholderText( "<Name>" );
@@ -86,19 +126,19 @@ namespace
             }
 
             {
-                auto field = new QskTextField( this );
+                auto field = new TextField( this );
                 field->setHeaderText( "Nickname" );
                 field->setPlaceholderText( "<Nickname>" );
                 field->setFooterText( "Optional" );
             }
             {
-                auto field = new QskTextField( this );
+                auto field = new TextField( this );
                 field->setIcon( {} );
                 field->setPlaceholderText( "<no header>" );
             }
 
             {
-                auto field = new QskTextField( this );
+                auto field = new TextField( this );
                 field->setSkinStateFlag( QskTextField::Error );
                 field->setText( "Error Text" );
                 field->setHeaderText( "error" );
@@ -107,7 +147,7 @@ namespace
             }
 
             {
-                auto field = new QskTextField( this );
+                auto field = new TextField( this );
                 field->setReadOnly( true );
                 field->setText( "Read Only" );
                 field->setHeaderText( "read only" );
@@ -115,7 +155,7 @@ namespace
             }
 
             {
-                auto field = new QskTextField( this );
+                auto field = new TextField( this );
                 field->setMaxLength( 15 );
                 field->setHeaderText( "password" );
                 field->setEchoMode( QskTextField::Password );
@@ -123,11 +163,14 @@ namespace
             }
         }
 
-        void setStyle( int style )
+        void setStyle( int value )
         {
             auto textFields = findChildren< QskTextField* >();
             for ( auto field : textFields )
-                field->setStyle( static_cast< QskTextField::Style >( style ) );
+            {
+                const auto style = static_cast< TextField::Style >( value );
+                dynamic_cast< TextField* >(field)->setStyle( style );
+            }
         }
     };
 
@@ -158,8 +201,8 @@ namespace
         StyleComboBox( QQuickItem* parent = nullptr )
             : QskComboBox( parent )
         {
-            addOption( QString(), "Filled" );
             addOption( QString(), "Outlined" );
+            addOption( QString(), "Filled" );
         }
     };
 }
@@ -240,7 +283,7 @@ InputPage::InputPage( QQuickItem* parent )
     connect( styleBox, &QskComboBox::currentIndexChanged,
         textInputBox, &TextInputBox::setStyle );
 
-    styleBox->setCurrentIndex( QskTextField::OutlinedStyle );
+    styleBox->setCurrentIndex( TextField::OutlinedStyle );
 }
 
 void InputPage::syncValues( qreal value )
