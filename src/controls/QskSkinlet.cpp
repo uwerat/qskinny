@@ -415,12 +415,14 @@ void QskSkinlet::replaceChildNode( quint8 role,
 QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
     QSGNode* node, QskAspect::Subcontrol subControl ) const
 {
-    const auto rect = qskSubControlRect( this, skinnable, subControl );
-    if ( rect.isEmpty() )
+    auto r = qskSubControlRect( this, skinnable, subControl );
+    if ( r.isEmpty() )
         return nullptr;
 
+    r = r.marginsRemoved( skinnable->marginHint( subControl ) );
+
     return qskUpdateBoxNode( skinnable, node,
-        rect, skinnable->boxHints( subControl ) );
+        r, skinnable->boxHints( subControl ) );
 }
 
 QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
@@ -429,8 +431,8 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
     if ( rect.isEmpty() )
         return nullptr;
 
-    const auto hints = skinnable->boxHints( subControl );
-    return qskUpdateBoxNode( skinnable, node, rect, hints );
+    const auto r = rect.marginsRemoved( skinnable->marginHint( subControl ) );
+    return qskUpdateBoxNode( skinnable, node, r, skinnable->boxHints( subControl ) );
 }
 
 QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
