@@ -9,19 +9,6 @@
 
 using Q = QskTextField;
 
-static qreal qskEffectiveTextHeight( const QskTextField* textField,
-    QskAspect::Subcontrol subControl )
-{
-    auto h = textField->effectiveFontHeight( subControl );
-
-    const auto margins = textField->marginHint( subControl );
-    h += margins.top() + margins.bottom();
-
-    const auto sz = textField->strutSizeHint( subControl );
-
-    return qMax( h, sz.height() );
-}
-
 QskTextFieldSkinlet::QskTextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
@@ -221,8 +208,8 @@ QRectF QskTextFieldSkinlet::inputPanelRect(
         Q::Header/Q::Footer being available.
      */
 
-    auto top = qskEffectiveTextHeight( textField, Q::Header );
-    auto bottom = qskEffectiveTextHeight( textField, Q::Footer );
+    auto top = textHeight( textField, Q::Header );
+    auto bottom = textHeight( textField, Q::Footer );
 
     if ( rect.height() < top + h + bottom )
     {
@@ -270,6 +257,19 @@ QSizeF QskTextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
     return hint;
 }
 
+qreal QskTextFieldSkinlet::textHeight( const QskTextField* textField,
+    QskAspect::Subcontrol subControl ) const
+{
+    auto h = textField->effectiveFontHeight( subControl );
+
+    const auto margins = textField->marginHint( subControl );
+    h += margins.top() + margins.bottom();
+
+    const auto sz = textField->strutSizeHint( subControl );
+
+    return qMax( h, sz.height() );
+}
+
 QString QskTextFieldSkinlet::effectiveText(
     const QskTextField* textField, QskAspect::Subcontrol subcontrol ) const
 {
@@ -299,13 +299,13 @@ QString QskTextFieldSkinlet::effectiveText(
 qreal QskTextFieldSkinlet::effectiveHeaderHeight( const QskTextField* textField ) const
 {
     const auto text = effectiveText( textField, Q::Header );
-    return text.isEmpty() ? 0.0 : qskEffectiveTextHeight( textField, Q::Header );
+    return text.isEmpty() ? 0.0 : textHeight( textField, Q::Header );
 }
 
 qreal QskTextFieldSkinlet::effectiveFooterHeight( const QskTextField* textField ) const
 {
     const auto text = effectiveText( textField, Q::Footer );
-    return text.isEmpty() ? 0.0 : qskEffectiveTextHeight( textField, Q::Footer );
+    return text.isEmpty() ? 0.0 : textHeight( textField, Q::Footer );
 }
 
 #include "moc_QskTextFieldSkinlet.cpp"

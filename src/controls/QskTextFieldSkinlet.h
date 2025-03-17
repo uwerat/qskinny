@@ -47,11 +47,14 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
     virtual QString effectiveText( const QskTextField*,
         QskAspect::Subcontrol ) const;
 
-    qreal effectiveHeaderHeight( const QskTextField* ) const;
-    virtual qreal effectiveFooterHeight( const QskTextField* ) const;
+    qreal textHeight( const QskTextField*, QskAspect::Subcontrol ) const;
 
   private:
     QRectF inputPanelRect( const QskTextField*, const QRectF& ) const;
+
+    qreal effectiveFooterHeight( const QskTextField* ) const;
+    qreal effectiveHeaderHeight( const QskTextField* ) const;
+
 };
 
 #endif

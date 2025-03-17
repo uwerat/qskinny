@@ -203,11 +203,15 @@ QSizeF QskMaterial3TextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     if ( isOutlined( textField ) )
     {
-        const QFontMetrics fm( textField->effectiveFont( Q::Header ) );
-        hint.rheight() += 0.5 * fm.height();
+        hint.rheight() += 0.5 * textField->effectiveFontHeight( Q::Header );
     }
 
-    hint.rheight() += effectiveFooterHeight( textField );
+    if ( hasCharacterCount( textField )
+        || !effectiveText( textField, Q::Footer ).isEmpty() )
+    {
+        hint.rheight() += textHeight( textField, Q::Footer );
+    }
+
     hint = hint.expandedTo( skinnable->strutSizeHint( Q::Panel ) );
 
     return hint;
@@ -239,20 +243,6 @@ QString QskMaterial3TextFieldSkinlet::effectiveText(
     }
 
     return Inherited::effectiveText( textField, subControl );
-}
-
-qreal QskMaterial3TextFieldSkinlet::effectiveFooterHeight(
-    const QskTextField* textField ) const
-{
-    if ( hasCharacterCount( textField ) )
-    {
-        const auto h = textField->effectiveFontHeight( Q::Footer );
-        const auto margins = textField->marginHint( Q::Footer );
-
-        return h + margins.top() + margins.bottom();
-    }
-
-    return Inherited::effectiveFooterHeight( textField );
 }
 
 #include "moc_QskMaterial3TextFieldSkinlet.cpp"

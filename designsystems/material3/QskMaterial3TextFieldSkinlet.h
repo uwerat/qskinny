@@ -36,8 +36,6 @@ class QSK_MATERIAL3_EXPORT QskMaterial3TextFieldSkinlet : public QskTextFieldSki
 
     QString effectiveText( const QskTextField*,
         QskAspect::Subcontrol ) const override;
-
-    qreal effectiveFooterHeight( const QskTextField* ) const override;
 };
 
 #endif
