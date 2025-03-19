@@ -753,6 +753,12 @@ QVariant QskSkinlet::sampleAt( const QskSkinnable*,
     return QVariant();
 }
 
+QSizeF QskSkinlet::sampleSizeHint( const QskSkinnable*,
+    Qt::SizeHint, const QSizeF&, QskAspect::Subcontrol, int ) const
+{
+    return QSizeF();
+}
+
 QSizeF QskSkinlet::hintWithoutConstraint(
     const QSizeF& hint, const QSizeF& constraint ) const
 {
