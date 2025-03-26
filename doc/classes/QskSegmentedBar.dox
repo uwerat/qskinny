@@ -1,0 +1,7 @@
+/*!
+    \class QskSegmentedBar QskSegmentedBar.h
+
+    \embedWasm
+
+    \skinlet QskSegmentedBarSkinlet
+*/
