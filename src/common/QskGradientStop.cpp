@@ -367,7 +367,7 @@ QskGradientStops qskRevertedGradientStops( const QskGradientStops& stops )
     return s;
 }
 
-QVector< QskGradientStop > qskBuildGradientStops( const QGradientStops& qtStops )
+QVector< QskGradientStop > qskFromQGradientStops( const QGradientStops& qtStops )
 {
     QVector< QskGradientStop > stops;
     stops.reserve( qtStops.count() );

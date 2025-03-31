@@ -81,7 +81,7 @@ QskGradient::QskGradient( const QColor& color1, const QColor& color2 )
 QskGradient::QskGradient( QGradient::Preset preset )
     : QskGradient()
 {
-    setStops( qskBuildGradientStops( QGradient( preset ).stops() ) );
+    setStops( qskFromQGradientStops( QGradient( preset ).stops() ) );
 }
 
 QskGradient::QskGradient( const QVector< QskGradientStop >& stops )
@@ -165,7 +165,7 @@ QskGradient::QskGradient( const QGradient& qGradient )
         }
     }
 
-    setStops( qskBuildGradientStops( qGradient.stops() ) );
+    setStops( qskFromQGradientStops( qGradient.stops() ) );
 }
 
 QskGradient::QskGradient( const QskGradient& other ) noexcept
@@ -305,7 +305,7 @@ void QskGradient::setStops( const QColor& color1, const QColor& color2 )
 
 void QskGradient::setStops( QGradient::Preset preset )
 {
-    const auto stops = qskBuildGradientStops( QGradient( preset ).stops() );
+    const auto stops = qskFromQGradientStops( QGradient( preset ).stops() );
     setStops( stops );
 }
 
