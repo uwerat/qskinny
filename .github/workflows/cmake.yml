@@ -202,7 +202,6 @@ jobs:
           install-deps: "true"
           modules: "qtwebengine"
           cached: ${{ steps.cache-qt-5-15.outputs.cache-hit }}
-          setup-python: "false"
           tools: ""
           set-env: "true"
           tools-only: "false"
@@ -216,7 +215,6 @@ jobs:
           install-deps: "true"
           modules: "qtwebengine qtshadertools"
           cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
-          setup-python: "false"
           tools: ""
           set-env: "true"
           tools-only: "false"
