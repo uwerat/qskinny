@@ -129,7 +129,7 @@ namespace
         {
             if ( qskIsAncestorOf( this, item ) )
             {
-                const auto pos = mapFromItem( item, QPointF() );
+                const auto pos = mapFromItem( item, QPointF() ) + scrollPos();
                 ensureVisible( QRectF( pos.x(), pos.y(), item->width(), item->height() ) );
             }
         }
