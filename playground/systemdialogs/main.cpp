@@ -11,6 +11,7 @@
 #include <QskCheckBox.h>
 #include <QskLinearBox.h>
 #include <QskMainView.h>
+#include <QskDialog.h>
 
 #include <QGuiApplication>
 
@@ -19,34 +20,6 @@
 #include <private/qquickfolderdialog_p.h>
 #include <private/qquickfontdialog_p.h>
 #include <private/qquickmessagedialog_p.h>
-
-#include <QtQml>
-
-static QQuickAbstractDialog* createQml( const char* className )
-{
-    static QQmlEngine engine( nullptr );
-
-    QByteArray qmlCode = "import QtQuick.Dialogs\n";
-    qmlCode += className;
-    qmlCode += " {}";
-
-    auto component = new QQmlComponent( &engine );
-    component->setData( qmlCode.constData(), QUrl() );
-
-    if ( component->status() != QQmlComponent::Ready )
-    {
-        qWarning() << component->errorString();
-        delete component;
-
-        return nullptr;
-    }
-
-    auto dialog = qobject_cast< QQuickAbstractDialog* >( component->create() );
-    QObject::connect( dialog, &QObject::destroyed,
-        component, &QObject::deleteLater );
-
-    return dialog;
-}
 
 namespace
 {
@@ -108,10 +81,38 @@ namespace
 
             if ( qGuiApp->testAttribute( Qt::AA_DontUseNativeDialogs ) )
             {
-                const auto metaEnum = QMetaEnum::fromType<DialogType>();
-                m_dialog = createQml( metaEnum.key( dialogType ) );
-                if ( m_dialog )
-                    m_dialog->setParentWindow( window() );
+                switch( dialogType )
+                {
+                    case ColorDialog:
+                    {
+                        qskDialog->selectColor( "select color" );
+                        break;
+                    }
+                    case FileDialog:
+                    {
+                        qskDialog->selectFile( "select file", QDir::currentPath() );
+                        break;
+                    }
+                    case FolderDialog:
+                    {
+                        qskDialog->selectDirectory( "select directory", QDir::currentPath() );
+                        break;
+                    }
+                    case FontDialog:
+                    {
+                        qskDialog->selectFont( "select font" );
+                        break;
+                    }
+                    case MessageDialog:
+                    {
+                        qskDialog->message( "message", "The quick brown fox jumps over the lazy dog" );
+                        break;
+                    }
+                    default:
+                    {
+                        qWarning() << "unknown dialog type detected";
+                    }
+                }
             }
             else
             {
