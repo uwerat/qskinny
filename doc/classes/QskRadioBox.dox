@@ -1,0 +1,7 @@
+/*!
+    \class QskRadioBox QskRadioBox.h
+
+    \embedWasm
+
+    \skinlet QskRadioBoxSkinlet
+*/

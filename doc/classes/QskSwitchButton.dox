@@ -1,0 +1,7 @@
+/*!
+    \class QskSwitchButton QskSwitchButton.h
+
+    \embedWasm
+
+    \skinlet QskSwitchButtonSkinlet
+*/

@@ -30,12 +30,53 @@ doxygen
 ```
 This will generate the documentation into the `api` folder.
 
+### Generating specific header and footer files for doxygen
+
+*This needs to be done only when the doxygen version changes.*
+
+```
+cd ~/dev/qskinny/doc
+doxygen -w html api/header.html api/footer.html
+```
+
+Now open `api/header.html` and copy the code block starting with
+the comment `<!-- QSkinny WASM code -->` into the new header file.
+
+*Also*, change the `<body>` tag to load the WASM code at
+startup:
+
+```
+<body onLoad="docSampleInit()">
+```
+
+### Generating a doxygen layout page
+
+*This needs to be done only when the doxygen version changes.*
+
+```
+doxygen -l
+```
+
+Make sure that the tag labeled `<detaileddescription>` comes before
+the tag `<inheritancegraph>`, because the former contains the WASM
+code, which should be displayed near the top of the page.
+
+
+### Using a different stylesheet for doxygen
+```
+git clone git clone git@github.com:jothepro/doxygen-awesome-css.git
+cd doxygen-awesome-css
+git checkout v2.3.4
+cp doxygen-awesome.css ~/dev/qskinny/doc/
+```
+
 ### Testing and building the website locally
 
 First copy the generated files from above to the website repo:
 
 ```
-cp -r api ~/dev/qskinny-website/docs/
+cp -r html ~/dev/qskinny-website/docs/
+cp -r images ~/dev/qskinny-website/docs/
 ```
 
 Then test the website locally:
@@ -62,7 +103,7 @@ new version of the homepage:
 cp -r _site/* ~/dev/qskinny.github.io/
 cd ~/dev/qskinny.github.io/
 git commit -a -m "new version"  # you might want to add new files
-gith push
+git push
 ```
 
 That's it, the new website is now published at https://qskinny.github.io/ .
