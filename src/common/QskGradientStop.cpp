@@ -23,6 +23,31 @@ static void qskRegisterGradientStop()
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterGradientStop )
 
+static inline qreal qskBoundedStopPos( qreal pos )
+{
+    if ( ( pos < 0.0 ) || qFuzzyIsNull( pos ) )
+        return 0.0;
+
+    if ( ( pos > 1.0 ) || qFuzzyCompare( pos, 1.0 ) )
+        return 1.0;
+
+    return pos;
+}
+
+static inline QVector< QskGradientStop >
+qskNormalizedStops( const QVector< QskGradientStop >& stops )
+{
+    auto s = stops;
+
+    if ( s.first().position() > 0.0 )
+        s.prepend( QskGradientStop( 0.0, s.first().color() ) );
+
+    if ( s.last().position() < 1.0 )
+        s.append( QskGradientStop( 1.0, s.last().color() ) );
+
+    return s;
+}
+
 void QskGradientStop::setPosition( qreal position ) noexcept
 {
     m_position = position;
@@ -90,30 +115,15 @@ QDebug operator<<( QDebug debug, const QskGradientStop& stop )
 
 // some helper functions around QskGradientStops
 
-static inline QColor qskInterpolatedColor(
-    const QskGradientStops& stops, int index1, int index2, qreal position )
+static inline QColor qskColorAtPosition(
+    const QskGradientStop& s1, const QskGradientStop& s2, qreal pos )
 {
-    {
-        const auto max = static_cast< int >( stops.count() ) - 1;
-
-        index1 = qBound( 0, index1, max );
-        index2 = qBound( 0, index2, max );
-    }
-
-    const auto& s1 = stops[ index1 ];
-    const auto& s2 = stops[ index2 ];
-
-    if ( s1.color() == s2.color() )
+    const auto dp = s2.position() - s1.position();
+    if ( qFuzzyIsNull( dp ) )
         return s1.color();
 
-    if ( position <= s1.position() )
-        return s1.color();
-
-    if ( position >= s2.position() )
-        return s2.color();
-
-    const qreal r = ( position - s1.position() ) / ( s2.position() - s1.position() );
-    return QskRgb::interpolated( s1.color(), s2.color(), r );
+    return QskRgb::interpolated(
+        s1.color(), s2.color(), ( pos - s1.position() ) / dp );
 }
 
 bool qskIsVisible( const QskGradientStops& stops ) noexcept
@@ -284,43 +294,48 @@ QColor qskInterpolatedColorAt( const QskGradientStops& stops, qreal pos ) noexce
     if ( stops.isEmpty() )
         return QColor();
 
-    pos = qBound( 0.0, pos, 1.0 );
-
     if ( pos <= stops.first().position() )
         return stops.first().color();
 
     for ( int i = 1; i < stops.count(); i++ )
     {
-        if ( pos <= stops[i].position() )
-            return qskInterpolatedColor( stops, i - 1, i, pos );
+        if ( pos <= stops[ i ].position() )
+            return qskColorAtPosition( stops[ i - 1 ], stops[ i ], pos );
     }
 
     return stops.last().color();
 }
 
 QskGradientStops qskExtractedGradientStops(
-    const QskGradientStops& gradientStops, qreal from, qreal to )
+    const QskGradientStops& stops, qreal from, qreal to )
 {
-    if ( ( from > to ) || ( from > 1.0 ) || gradientStops.isEmpty() )
+    if ( ( from > to ) || ( to > 1.0 ) || ( from < 0.0 ) || stops.isEmpty() )
         return QskGradientStops();
 
-    if ( ( from <= 0.0 ) && ( to >= 1.0 ) )
-        return gradientStops;
+    from = qskBoundedStopPos( from );
+    to = qskBoundedStopPos( to );
 
-    from = qMax( from, 0.0 );
-    to = qMin( to, 1.0 );
+    if ( ( from == 0.0 ) && ( to == 1.0 ) )
+        return stops;
 
-    QVector< QskGradientStop > stops1 = gradientStops;
+    if ( from == to )
+    {
+        const auto color = qskInterpolatedColorAt( stops, from );
 
-#if 1
-    // not the most efficient implementation - maybe later TODO ...
+        QVector< QskGradientStop > s;
+        s.reserve( 2 );
+        s += QskGradientStop( 0.0, color );
+        s += QskGradientStop( 1.0, color );
 
-    if ( stops1.first().position() > 0.0 )
-        stops1.prepend( QskGradientStop( 0.0, stops1.first().color() ) );
+        return s;
+    }
 
-    if ( stops1.last().position() < 1.0 )
-        stops1.append( QskGradientStop( 1.0, stops1.last().color() ) );
-#endif
+    /*
+        For situations where we have no stops at 0.0 and 1.0 we insert them
+        manually. Not the most efficient implementation, but we avoid having
+        to deal with these situations for the moment. TODO ...
+     */
+    const auto stops1 = qskNormalizedStops( stops );
 
     QVector< QskGradientStop > stops2;
     stops2.reserve( stops1.count() );
@@ -337,26 +352,26 @@ QskGradientStops qskExtractedGradientStops(
     {
         int i = 0;
 
-        for ( ; i < stops1.count(); i++ )
+        if ( from == 0.0 )
         {
-            if ( stops1[i].position() > from )
-                break;
+            stops2 += stops1[i++];
+        }
+        else
+        {
+            while( stops1[++i].position() <= from ); // skip leading stops
+
+            stops2 += QskGradientStop( 0.0,
+                qskColorAtPosition( stops1[i - 1], stops1[ i ], from ) );
         }
 
-        stops2 += QskGradientStop( 0.0,
-            qskInterpolatedColor( stops1, i - 1, i, from ) );
-
-        for ( ; i < stops1.count(); i++ )
+        while ( stops1[i].position() < to )
         {
-            if ( stops1[i].position() >= to )
-                break;
-
             const auto pos = ( stops1[i].position() - from ) / ( to - from );
-            stops2 += QskGradientStop( pos, stops1[i].color() );
+            stops2 += QskGradientStop( pos, stops1[i++].color() );
         }
 
         stops2 += QskGradientStop( 1.0,
-            qskInterpolatedColor( stops1, i, i + 1, to ) );
+            qskColorAtPosition( stops1[i - 1], stops1[ i ], to ) );
     }
 
     return stops2;

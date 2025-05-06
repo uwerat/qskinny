@@ -143,7 +143,7 @@ QSK_EXPORT QskGradientStops qskInterpolatedGradientStops(
 QSK_EXPORT QskGradientStops qskTransparentGradientStops(
     const QskGradientStops&, qreal ratio );
 
-// extracting the colors of [from, to ] and stretching them to [0.0, 1.0] 
+// extracting the colors of [from, to ] and stretching them to [0.0, 1.0]
 QSK_EXPORT QskGradientStops qskExtractedGradientStops(
     const QskGradientStops&, qreal from, qreal to );
 
