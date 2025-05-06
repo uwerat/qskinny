@@ -45,8 +45,10 @@ class QSK_EXPORT QskGradientStop
     void setRgb( QRgb ) noexcept;
     QRgb rgb() const noexcept;
 
-    static QColor interpolated(
-        const QskGradientStop&, const QskGradientStop&, qreal position ) noexcept;
+    QskGradientStop interpolated( const QskGradientStop&, qreal ) const;
+
+    static QVariant interpolate( const QskGradientStop&,
+        const QskGradientStop&, qreal );
 
     QskHashValue hash( QskHashValue seed ) const noexcept;
 

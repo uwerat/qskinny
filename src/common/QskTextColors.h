@@ -41,7 +41,7 @@ class QSK_EXPORT QskTextColors
     void setLinkColor( QRgb );
     void setLinkColor( Qt::GlobalColor );
 
-    QskTextColors interpolated( const QskTextColors&, qreal value ) const;
+    QskTextColors interpolated( const QskTextColors&, qreal ratio ) const;
 
     static QVariant interpolate( const QskTextColors&,
         const QskTextColors&, qreal ratio );

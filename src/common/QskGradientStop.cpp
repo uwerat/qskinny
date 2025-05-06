@@ -56,26 +56,19 @@ QskHashValue QskGradientStop::hash( QskHashValue seed ) const noexcept
     return qHashBits( &m_color, sizeof( m_color ), hash );
 }
 
-QColor QskGradientStop::interpolated(
-    const QskGradientStop& s1, const QskGradientStop& s2, qreal position ) noexcept
+QskGradientStop QskGradientStop::interpolated(
+    const QskGradientStop& to, qreal ratio ) const
 {
-    if ( s1.color() == s2.color() )
-        return s1.color();
+    return QskGradientStop(
+        m_position + ( to.m_position - m_position ) * ratio,
+        QskRgb::interpolated( m_color, to.m_color, ratio )
+    );
+}
 
-    auto min = &s1;
-    auto max = &s2;
-
-    if ( min->position() > max->position() )
-        std::swap( min, max );
-
-    if ( position <= min->position() )
-        return min->color();
-
-    if ( position >= max->position() )
-        return max->color();
-
-    const qreal r = ( position - min->position() ) / ( max->position() - min->position() );
-    return QskRgb::interpolated( min->color(), max->color(), r );
+QVariant QskGradientStop::interpolate(
+    const QskGradientStop& from, const QskGradientStop& to, qreal ratio )
+{
+    return QVariant::fromValue( from.interpolated( to, ratio ) );
 }
 
 #ifndef QT_NO_DEBUG_STREAM
@@ -95,19 +88,32 @@ QDebug operator<<( QDebug debug, const QskGradientStop& stop )
 
 #endif
 
-#include "moc_QskGradientStop.cpp"
-
 // some helper functions around QskGradientStops
 
 static inline QColor qskInterpolatedColor(
     const QskGradientStops& stops, int index1, int index2, qreal position )
 {
-    const auto max = static_cast< int >( stops.count() ) - 1;
+    {
+        const auto max = static_cast< int >( stops.count() ) - 1;
 
-    index1 = qBound( 0, index1, max );
-    index2 = qBound( 0, index2, max );
+        index1 = qBound( 0, index1, max );
+        index2 = qBound( 0, index2, max );
+    }
 
-    return QskGradientStop::interpolated( stops[ index1 ], stops[ index2 ], position );
+    const auto& s1 = stops[ index1 ];
+    const auto& s2 = stops[ index2 ];
+
+    if ( s1.color() == s2.color() )
+        return s1.color();
+
+    if ( position <= s1.position() )
+        return s1.color();
+
+    if ( position >= s2.position() )
+        return s2.color();
+
+    const qreal r = ( position - s1.position() ) / ( s2.position() - s1.position() );
+    return QskRgb::interpolated( s1.color(), s2.color(), r );
 }
 
 bool qskIsVisible( const QskGradientStops& stops ) noexcept
@@ -463,3 +469,5 @@ QGradientStops qskToQGradientStops( const QskGradientStops& stops )
 
     return qStops;
 }
+
+#include "moc_QskGradientStop.cpp"
