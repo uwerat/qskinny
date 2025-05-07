@@ -510,7 +510,7 @@ else()
 endif()
 
 if (QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
-    qsk_add_shaders( ${target} FILES ${SHADERS} OUTPUT_TARGETS shader_target)
+    qsk_add_shaders( ${target} "qskshaders" FILES ${SHADERS} OUTPUT_TARGETS shader_target)
 endif()
 
 target_include_directories(${target} PUBLIC
