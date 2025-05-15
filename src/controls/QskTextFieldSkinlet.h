@@ -23,6 +23,8 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
 
         HeaderRole,
         FooterRole,
+        CharacterCountRole,
+
         PlaceholderRole,
         IconRole,
         ButtonPanelRole,
@@ -31,8 +33,19 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
         RoleCount
     };
 
+    enum RenderHint
+    {
+        UseHeaderAsPlaceholder = 1 << 0
+    };
+
+    Q_ENUM( RenderHint )
+    Q_DECLARE_FLAGS( RenderHints, RenderHint )
+
     Q_INVOKABLE QskTextFieldSkinlet( QskSkin* = nullptr );
     ~QskTextFieldSkinlet() override;
+
+    void setRenderHints( RenderHints );
+    RenderHints renderHints() const;
 
     QRectF subControlRect( const QskSkinnable*,
         const QRectF& rect, QskAspect::Subcontrol ) const override;
@@ -44,17 +57,35 @@ class QSK_EXPORT QskTextFieldSkinlet : public QskSkinlet
     QSGNode* updateSubNode( const QskSkinnable*,
         quint8 nodeRole, QSGNode* ) const override;
 
-    virtual QString effectiveText( const QskTextField*,
+    QSGNode* updateLabelNode( const QskSkinnable*,
+        QSGNode*, QskAspect::Subcontrol ) const;
+
+    QString effectiveText( const QskSkinnable*,
         QskAspect::Subcontrol ) const;
 
-    qreal textHeight( const QskTextField*, QskAspect::Subcontrol ) const;
+    QString text( const QskSkinnable*, QskAspect::Subcontrol ) const;
+
+    qreal textHeight( const QskSkinnable*, QskAspect::Subcontrol ) const;
+    bool hasText( const QskSkinnable*, QskAspect::Subcontrol ) const;
+
+    QSizeF effectiveTextSize( const QskSkinnable*, QskAspect::Subcontrol ) const;
+    qreal effectiveTextHeight( const QskSkinnable*, QskAspect::Subcontrol ) const;
 
   private:
-    QRectF inputPanelRect( const QskTextField*, const QRectF& ) const;
+    QRectF headerRect( const QskSkinnable*, const QRectF& ) const;
+    QRectF inputPanelRect( const QskSkinnable*, const QRectF& ) const;
+    QSGNode* updateInputPanelNode( const QskSkinnable*, QSGNode* ) const;
 
-    qreal effectiveFooterHeight( const QskTextField* ) const;
-    qreal effectiveHeaderHeight( const QskTextField* ) const;
+    QRectF alignedLabelRect( const QskSkinnable*, const QRectF&,
+        QskAspect::Subcontrol, Qt::Alignment ) const;
 
+    bool isPlaceholderVisible( const QskSkinnable* ) const;
+
+    virtual int panelMode( const QskSkinnable* ) const { return 0; }
+
+    RenderHints m_renderHints;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( QskTextFieldSkinlet::RenderHints )
 
 #endif

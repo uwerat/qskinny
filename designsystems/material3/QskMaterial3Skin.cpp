@@ -611,6 +611,8 @@ void Editor::setupTextField()
 
     setAlignment( Q::Footer, Qt::AlignLeft | Qt::AlignVCenter );
     setAlignment( Q::CharacterCount, Qt::AlignRight | Qt::AlignVCenter );
+
+    setFlag( Q::CharacterCount | A::Option, Qsk::Maybe ); 
 }
 
 void Editor::setupProgressBar()

@@ -6,18 +6,51 @@
 #include "QskTextFieldSkinlet.h"
 #include "QskTextField.h"
 #include "QskFunctions.h"
+#include "QskBoxHints.h"
+
+#include <qfontmetrics.h>
 
 using Q = QskTextField;
+
+static QString qskEffectiveCharacterCountText( const QskTextField* textField )
+{
+    auto policy = textField->flagHint< Qsk::Policy >(
+        Q::CharacterCount | QskAspect::Option, Qsk::Never );
+
+    const auto maxLength = textField->maxLength();
+    const bool isLimited = maxLength < 32767; // magic number hardcoded in qquicktextinput.cpp
+
+    if ( policy == Qsk::Always || ( policy == Qsk::Maybe && isLimited ) )
+    {
+        auto s = QString::number( textField->text().length() );
+        if ( isLimited )
+            s += " / " + QString::number( maxLength );
+
+        return s;
+    }
+
+    return QString();
+}
 
 QskTextFieldSkinlet::QskTextFieldSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
     setNodeRoles( { TextPanelRole, IconRole, ButtonPanelRole, ButtonRole,
-        PlaceholderRole, HeaderRole, FooterRole } );
+        PlaceholderRole, HeaderRole, FooterRole, CharacterCountRole } );
 }
 
 QskTextFieldSkinlet::~QskTextFieldSkinlet()
 {
+}
+
+void QskTextFieldSkinlet::setRenderHints( RenderHints hints )
+{
+    m_renderHints = hints;
+}
+
+QskTextFieldSkinlet::RenderHints QskTextFieldSkinlet::renderHints() const
+{
+    return m_renderHints;
 }
 
 QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
@@ -26,43 +59,19 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
     const auto textField = static_cast< const QskTextField* >( skinnable );
 
     if ( subControl == Q::Panel )
-    {
         return contentsRect;
-    }
 
     if ( subControl == Q::Header )
-    {
-        if ( auto h = effectiveHeaderHeight( textField ) )
-        {
-            const auto m = textField->marginHint( Q::Header );
-            const auto r = subControlRect( skinnable, contentsRect, Q::TextPanel );
-
-            return QRectF( r.left() + m.left(),
-                r.top() - m.bottom() - h, r.width() - m.left() - m.right(), h );
-        }
-
-        return QRectF();
-    }
+        return headerRect( skinnable, contentsRect );
 
     if ( subControl == Q::Footer )
-    {
-        if ( const auto h = effectiveFooterHeight( textField ) )
-        {
-            const auto m = textField->marginHint( Q::Footer );
-            const auto r = subControlRect( skinnable, contentsRect, Q::TextPanel );
+        return alignedLabelRect( skinnable, contentsRect, subControl, Qt::AlignBottom );
 
-            return QRectF( r.left() + m.left(),
-                r.bottom() + m.top(), r.width() - m.left() - m.right(), h );
-        }
-
-        return QRectF();
-    }
+    if ( subControl == Q::CharacterCount )
+        return alignedLabelRect( skinnable, contentsRect, subControl, Qt::AlignBottom );
 
     if ( subControl == Q::TextPanel )
-    {
-        const auto rect = textField->subControlContentsRect( contentsRect, Q::Panel );
-        return inputPanelRect( textField, rect );
-    }
+        return inputPanelRect( skinnable, contentsRect );
 
     if ( subControl == Q::Text )
     {
@@ -85,7 +94,7 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
 
     if ( subControl == Q::Placeholder )
     {
-        if( textField->text().isEmpty() )
+        if ( hasText( skinnable, Q::Placeholder ) )
             return subControlRect( skinnable, contentsRect, Q::Text );
 
         return QRectF();
@@ -142,45 +151,22 @@ QRectF QskTextFieldSkinlet::subControlRect( const QskSkinnable* skinnable,
 QSGNode* QskTextFieldSkinlet::updateSubNode(
     const QskSkinnable* skinnable, quint8 nodeRole, QSGNode* node ) const
 {
-    const auto textField = static_cast< const QskTextField* >( skinnable );
-
     switch ( nodeRole )
     {
         case TextPanelRole:
-        {
-            return updateBoxNode( skinnable, node, Q::TextPanel );
-        }
+            return updateInputPanelNode( skinnable, node );
+
         case PlaceholderRole:
-        {
-            const auto subControl = Q::Placeholder;
-
-            const auto text = effectiveText( textField, subControl );
-            if ( text.isEmpty() )
-                return nullptr;
-
-            QskSkinHintStatus status;
-
-            auto options = skinnable->textOptionsHint( subControl, &status );
-            if ( !status.isValid() )
-                options.setElideMode( Qt::ElideRight );
-
-            return updateTextNode( skinnable, node,
-                textField->subControlRect( subControl ),
-                textField->alignmentHint( subControl, Qt::AlignLeft ),
-                options, text, subControl );
-        }
+            return updateLabelNode( skinnable, node, Q::Placeholder );
 
         case HeaderRole:
-        {
-            return updateTextNode( skinnable, node,
-                effectiveText( textField, Q::Header ), Q::Header );
-        }
+            return updateLabelNode( skinnable, node, Q::Header );
 
         case FooterRole:
-        {
-            return updateTextNode( skinnable, node,
-                effectiveText( textField, Q::Footer ), Q::Footer );
-        }
+            return updateLabelNode( skinnable, node, Q::Footer );
+
+        case CharacterCountRole:
+            return updateLabelNode( skinnable, node, Q::CharacterCount );
 
         case IconRole:
             return updateSymbolNode( skinnable, node, Q::Icon );
@@ -195,35 +181,157 @@ QSGNode* QskTextFieldSkinlet::updateSubNode(
     return Inherited::updateSubNode( skinnable, nodeRole, node );
 }
 
-QRectF QskTextFieldSkinlet::inputPanelRect(
-    const QskTextField* textField, const QRectF& rect ) const
+QSGNode* QskTextFieldSkinlet::updateInputPanelNode(
+    const QskSkinnable* skinnable, QSGNode* node ) const
 {
-    qreal h = textField->effectiveFontHeight( Q::Text );
-    h = textField->outerBoxSize( Q::TextPanel, QSizeF( rect.width(), h ) ).height();
-    h = qMax( h, textField->strutSizeHint( Q::TextPanel ).height() );
+    const auto control = static_cast< const QskControl* >( skinnable );
 
-    /*
-        when having textfields in horizontal layouts you usually want
-        the text panels being vertically aligned - regardless of having
-        Q::Header/Q::Footer being available.
-     */
+    const auto rect = control->subControlRect( Q::TextPanel );
 
-    auto top = textHeight( textField, Q::Header );
-    auto bottom = textHeight( textField, Q::Footer );
+    auto hints = skinnable->boxHints( Q::TextPanel );
 
-    if ( rect.height() < top + h + bottom )
+    if ( panelMode( skinnable ) == 2 )
     {
-        if ( effectiveText( textField, Q::Footer ).isEmpty() )
-            bottom = 0.0;
+        const auto clipRect = control->subControlRect( Q::Header );
+        if ( !clipRect.isEmpty() )
+        {
+            // "cutting a hole" in the upper gradient for the header
+            const auto margin = 6; // ->skin
+            auto s1 = ( clipRect.left() - margin - rect.left() ) / rect.width();
+            auto s2 = ( clipRect.right() - rect.left() ) / rect.width();
+
+            auto gradient = hints.borderColors.top();
+            gradient.setStops( qskClippedGradientStops( gradient.stops(), s1, s2 ) );
+            hints.borderColors.setTop( gradient );
+        }
     }
 
-    if ( rect.height() < top + h + bottom )
-    {
-        if ( effectiveText( textField, Q::Header ).isEmpty() )
-            top = 0.0;
-    }
+    return updateBoxNode( skinnable, node, rect, hints );
+}
 
-    return QRectF( rect.left(), rect.top() + top, rect.width(), h );
+QSGNode* QskTextFieldSkinlet::updateLabelNode( const QskSkinnable* skinnable,
+    QSGNode* node, QskAspect::Subcontrol subControl  ) const
+{
+    const auto text = effectiveText( skinnable, subControl );
+    if ( text.isEmpty() )
+        return nullptr;
+
+    QskSkinHintStatus status;
+
+    auto options = skinnable->textOptionsHint( subControl, &status );
+    if ( !status.isValid() )
+        options.setElideMode( Qt::ElideRight );
+
+    auto rect = skinnable->controlCast()->contentsRect();
+    rect = subControlRect( skinnable, rect, subControl );
+
+    return updateTextNode( skinnable, node, rect,
+        skinnable->alignmentHint( subControl, Qt::AlignLeft ),
+        options, text, subControl );
+}
+
+QRectF QskTextFieldSkinlet::headerRect(
+    const QskSkinnable* skinnable, const QRectF& contentsRect ) const
+{
+    switch( panelMode( skinnable ) )
+    {
+        case 1:
+        {
+            const auto sz = effectiveTextSize( skinnable, Q::Header );
+
+            const auto r = subControlRect( skinnable, contentsRect, Q::Text );
+            return QRectF( r.x(), r.top() - sz.height(), sz.width(), sz.height() );
+        }
+        case 2:
+        {
+            const auto sz = effectiveTextSize( skinnable, Q::Header );
+
+            const auto r = subControlRect( skinnable, contentsRect, Q::TextPanel );
+
+            const auto x = r.left() + skinnable->paddingHint( Q::TextPanel ).left();
+            const auto y = r.top() - 0.5 * sz.height();
+
+            return QRectF( x, y, sz.width(), sz.height() );
+        }
+        default:
+            return alignedLabelRect( skinnable, contentsRect, Q::Header, Qt::AlignTop );
+    }
+}
+
+QRectF QskTextFieldSkinlet::inputPanelRect(
+    const QskSkinnable* skinnable, const QRectF& contentsRect ) const
+{
+    auto rect = skinnable->subControlContentsRect( contentsRect, Q::Panel );
+
+    const auto mode = panelMode( skinnable );
+
+    if ( mode == 0 )
+    {
+        qreal h = skinnable->effectiveFontHeight( Q::Text );
+        h = skinnable->outerBoxSize( Q::TextPanel, QSizeF( rect.width(), h ) ).height();
+        h = qMax( h, skinnable->strutSizeHint( Q::TextPanel ).height() );
+
+        /*
+            when having textfields in horizontal layouts you usually want
+            the text panels being vertically aligned - regardless of having
+            Q::Header/Q::Footer being available.
+         */
+
+        auto top = textHeight( skinnable, Q::Header );
+        auto bottom = textHeight( skinnable, Q::Footer );
+
+        if ( rect.height() < top + h + bottom )
+        {
+            if ( effectiveText( skinnable, Q::Footer ).isEmpty() )
+                bottom = 0.0;
+        }
+
+        if ( rect.height() < top + h + bottom )
+        {
+            if ( effectiveText( skinnable, Q::Header ).isEmpty() )
+                top = 0.0;
+        }
+
+        return QRectF( rect.left(), rect.top() + top, rect.width(), h );
+    }
+    else
+    {
+        if ( mode == 2 )
+        {
+            qreal h = 0.0;
+#if 0
+            h = effectiveTextHeight( skinnable, Q::Header );
+#else
+            if ( !text( skinnable, Q::Header ).isEmpty() )
+                h = skinnable->effectiveFontHeight( Q::Header );
+#endif
+            rect.setTop( rect.top() + 0.5 * h );
+        }
+
+        const auto h = skinnable->strutSizeHint( Q::TextPanel ).height();
+        rect.setHeight( h );
+
+        return rect;
+    }
+}
+
+QRectF QskTextFieldSkinlet::alignedLabelRect( const QskSkinnable* skinnable,
+    const QRectF& contentsRect, QskAspect::Subcontrol subControl,
+    Qt::Alignment alignment ) const
+{
+    const auto h = effectiveTextHeight( skinnable, subControl );
+    if ( h <= 0.0 )
+        return QRectF();
+
+    const auto m = skinnable->marginHint( subControl );
+
+    auto r = subControlRect( skinnable, contentsRect, Q::TextPanel );
+
+    const auto y = ( alignment & Qt::AlignTop )
+        ? r.top() - m.bottom() - h : r.bottom() + m.top();
+
+    return QRectF( r.left() + m.left(), y,
+        r.width() - m.left() - m.right(), h );
 }
 
 QSizeF QskTextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
@@ -237,75 +345,161 @@ QSizeF QskTextFieldSkinlet::sizeHint( const QskSkinnable* skinnable,
     const auto textField = static_cast< const QskTextField* >( skinnable );
 
     auto hint = textField->unwrappedTextSize();
+    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Text ) );
+
+    if( !skinnable->symbolHint( Q::Icon ).isEmpty() )
+    {
+        const auto sz = skinnable->strutSizeHint( Q::Icon );
+        if ( sz.width() > 0.0 )
+            hint.rwidth() += sz.width();
+
+        hint.rheight() = qMax( hint.height(), sz.height() );
+    }
 
     if( !skinnable->symbolHint( Q::Button ).isEmpty() )
     {
         const auto sz = skinnable->strutSizeHint( Q::Button );
         if ( sz.width() > 0.0 )
             hint.rwidth() += sz.width();
+
+        hint.rheight() = qMax( hint.height(), sz.height() );
     }
 
-    hint = skinnable->outerBoxSize( Q::TextPanel, hint );
-    hint = hint.expandedTo( skinnable->strutSizeHint( Q::TextPanel ) );
+    switch( panelMode( skinnable ) )
+    {
+        case 0:
+        {
+            hint = skinnable->outerBoxSize( Q::TextPanel, hint );
+            hint = hint.expandedTo( skinnable->strutSizeHint( Q::TextPanel ) );
 
-    hint.rheight() += effectiveHeaderHeight( textField );
-    hint.rheight() += effectiveFooterHeight( textField );
+            hint.rheight() += effectiveTextHeight( skinnable, Q::Header );
+            break;
+        }
+        case 1:
+        {
+            hint = hint.expandedTo( skinnable->strutSizeHint( Q::TextPanel ) );
+            break;
+        }
+        case 2:
+        {
+            hint = hint.expandedTo( skinnable->strutSizeHint( Q::TextPanel ) );
+            hint.rheight() += 0.5 * skinnable->effectiveFontHeight( Q::Header );
+            break;
+        }
+    }
+
+    hint.rheight() += qMax(
+        effectiveTextHeight( skinnable, Q::Footer ),
+        effectiveTextHeight( skinnable, Q::CharacterCount )
+    );
 
     hint = skinnable->outerBoxSize( Q::Panel, hint );
-    hint = hint.expandedTo( skinnable->strutSizeHint( Q::Panel ) );
-
-    return hint;
+    return hint.expandedTo( skinnable->strutSizeHint( Q::Panel ) );
 }
 
-qreal QskTextFieldSkinlet::textHeight( const QskTextField* textField,
+qreal QskTextFieldSkinlet::textHeight( const QskSkinnable* skinnable,
     QskAspect::Subcontrol subControl ) const
 {
-    auto h = textField->effectiveFontHeight( subControl );
+    auto h = skinnable->effectiveFontHeight( subControl );
 
-    const auto margins = textField->marginHint( subControl );
+    const auto margins = skinnable->marginHint( subControl );
     h += margins.top() + margins.bottom();
 
-    const auto sz = textField->strutSizeHint( subControl );
+    const auto sz = skinnable->strutSizeHint( subControl );
 
     return qMax( h, sz.height() );
 }
 
-QString QskTextFieldSkinlet::effectiveText(
-    const QskTextField* textField, QskAspect::Subcontrol subcontrol ) const
+QSizeF QskTextFieldSkinlet::effectiveTextSize( const QskSkinnable* skinnable,
+    QskAspect::Subcontrol subControl ) const
 {
-    if ( subcontrol == Q::Text )
+    const auto text = effectiveText( skinnable, subControl );
+
+    const QFontMetricsF fm( skinnable->effectiveFont( subControl ) );
+
+    auto w = qskHorizontalAdvance( fm, effectiveText( skinnable, subControl ) );
+    auto h = fm.height();
+
+    const auto margins = skinnable->marginHint( subControl );
+    w += margins.left() + margins.right();
+    h += margins.top() + margins.bottom();
+
+    QSizeF sz( w, h );
+    sz = sz.expandedTo( skinnable->strutSizeHint( subControl ) );
+
+    return sz;
+}
+
+QString QskTextFieldSkinlet::text(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+{
+    const auto textField = static_cast< const QskTextField* >( skinnable );
+
+    if ( subControl == Q::Text )
         return textField->text();
 
-    if ( subcontrol == Q::Placeholder )
-    {
-        if ( textField->text().isEmpty() &&
-            !( textField->isReadOnly() || textField->isEditing() ) )
-        {
-            return textField->placeholderText();
-        }
+    if ( subControl == Q::Placeholder )
+        return textField->placeholderText();
 
-        return QString();
-    }
-
-    if ( subcontrol == Q::Header )
+    if ( subControl == Q::Header )
         return textField->headerText();
 
-    if ( subcontrol == Q::Footer )
+    if ( subControl == Q::Footer )
         return textField->footerText();
+
+    if ( subControl == Q::CharacterCount )
+        return qskEffectiveCharacterCountText( textField );
 
     return QString();
 }
 
-qreal QskTextFieldSkinlet::effectiveHeaderHeight( const QskTextField* textField ) const
+bool QskTextFieldSkinlet::isPlaceholderVisible(
+    const QskSkinnable* skinnable ) const
 {
-    const auto text = effectiveText( textField, Q::Header );
-    return text.isEmpty() ? 0.0 : textHeight( textField, Q::Header );
+    return !skinnable->hasSkinState( Q::Editing )
+        && text( skinnable, Q::Text ).isEmpty();
 }
 
-qreal QskTextFieldSkinlet::effectiveFooterHeight( const QskTextField* textField ) const
+bool QskTextFieldSkinlet::hasText(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
 {
-    const auto text = effectiveText( textField, Q::Footer );
-    return text.isEmpty() ? 0.0 : textHeight( textField, Q::Footer );
+    return !effectiveText( skinnable, subControl ).isEmpty();
+}
+
+QString QskTextFieldSkinlet::effectiveText(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subControl ) const
+{
+    if ( subControl == Q::Placeholder )
+    {
+        if ( !isPlaceholderVisible( skinnable ) )
+            return QString();
+
+        auto txt = text( skinnable, Q::Placeholder );
+        if ( txt.isEmpty() && ( renderHints() & UseHeaderAsPlaceholder ) )
+            txt = text( skinnable, Q::Header );
+
+        return txt;
+    }
+
+    if ( subControl == Q::Header )
+    {
+        if ( isPlaceholderVisible( skinnable )
+            && ( renderHints() & UseHeaderAsPlaceholder ) )
+        {
+            return QString();
+        }
+     
+        return text( skinnable, Q::Header );
+    }
+
+    return text( skinnable, subControl );
+}
+
+qreal QskTextFieldSkinlet::effectiveTextHeight(
+    const QskSkinnable* skinnable, QskAspect::Subcontrol subcontrol ) const
+{
+    const auto text = effectiveText( skinnable, subcontrol );
+    return text.isEmpty() ? 0.0 : textHeight( skinnable, subcontrol );
 }
 
 #include "moc_QskTextFieldSkinlet.cpp"
