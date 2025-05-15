@@ -150,6 +150,12 @@ QSK_EXPORT QskGradientStops qskExtractedGradientStops(
 // reverting the color stops
 QSK_EXPORT QskGradientStops qskRevertedGradientStops( const QskGradientStops& );
 
+QSK_EXPORT QskGradientStops qskReplacedGradientStops(
+    const QskGradientStops&, const QskGradientStop&, const QskGradientStop& );
+
+QSK_EXPORT QskGradientStops qskClippedGradientStops(
+    const QskGradientStops&, qreal from, qreal to );
+
 /*
    creating equidistant color stops from a list of colors.
    when discrete is true the result will contain 2 stops at each position

@@ -126,6 +126,12 @@ static inline QColor qskColorAtPosition(
         s1.color(), s2.color(), ( pos - s1.position() ) / dp );
 }
 
+static inline QskGradientStop qskCreateStopAtPosition(
+    const QskGradientStop& s1, const QskGradientStop& s2, qreal pos )
+{
+    return { pos, qskColorAtPosition( s1, s2, pos ) };
+}
+
 bool qskIsVisible( const QskGradientStops& stops ) noexcept
 {
     for ( const auto& stop : stops )
@@ -304,6 +310,84 @@ QColor qskInterpolatedColorAt( const QskGradientStops& stops, qreal pos ) noexce
     }
 
     return stops.last().color();
+}
+
+QskGradientStops qskReplacedGradientStops( const QskGradientStops& gradientStops,
+    const QskGradientStop& stop1, const QskGradientStop& stop2 )
+{
+    if ( stop1.position() >= stop2.position() )
+        return gradientStops;
+
+    const auto s1 = QskGradientStop( qskBoundedStopPos( stop1.position() ), stop1.color() );
+    const auto s2 = QskGradientStop( qskBoundedStopPos( stop2.position() ), stop2.color() );
+
+    QskGradientStops stops;
+
+    if ( s1.position() == 0.0 && s2.position() == 1.0 )
+    {
+        stops = { s1, s2 };
+    }
+    else if ( qskIsMonochrome( gradientStops ) )
+    {
+        stops.reserve( 4 );
+
+        const auto c = gradientStops.isEmpty()
+            ? QColor::fromRgba( 0 ) : gradientStops.first().color();
+
+        if ( s1.position() > 0.0 )
+            stops += { s1.position(), c };
+
+        stops += s1;
+        stops += s2;
+
+        if ( s2.position() < 1.0 )
+            stops += { s2.position(), c };
+    }
+    else
+    {
+        // not the most efficient implementation - maybe later TODO ...
+        const auto stops0 = qskNormalizedStops( gradientStops );
+
+        int i = 0;
+
+        if ( s1.position() > 0.0 )
+        {
+            while ( s1.position() > stops0[i].position() )
+                stops += stops0[i++];
+
+            if ( s1.position() == stops0[i].position() )
+                stops += stops0[i++];
+            else
+                stops += qskCreateStopAtPosition( stops0[i - 1], stops0[i], s1.position() );
+        }
+
+        stops += s1;
+
+        while ( s2.position() > stops0[i].position() )
+            i++;
+
+        stops += s2;
+
+        if ( s2.position() < 1.0 )
+        {
+            while ( stops0[i + 1].position() == s2.position() )
+                i++;
+
+            if ( s2.position() != stops0[i].position() )
+                stops += qskCreateStopAtPosition( stops0[i - 1], stops0[i], s2.position() );
+
+            while( i < stops0.count() )
+                stops += stops0[i++];
+        }
+    }
+
+    return stops;
+}
+
+QskGradientStops qskClippedGradientStops(
+    const QskGradientStops& stops, qreal from, qreal to )
+{
+    return qskReplacedGradientStops( stops, { from, 0 }, { to, 0 } );
 }
 
 QskGradientStops qskExtractedGradientStops(
