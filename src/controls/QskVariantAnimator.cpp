@@ -13,6 +13,7 @@
 #include "QskGraduationMetrics.h"
 #include "QskColorFilter.h"
 #include "QskGradient.h"
+#include "QskGradientStop.h"
 #include "QskMargins.h"
 #include "QskIntervalF.h"
 #include "QskTextColors.h"
@@ -43,6 +44,7 @@ static void qskRegisterInterpolator()
     qRegisterAnimationInterpolator< QskColorFilter >( QskColorFilter::interpolate );
     qRegisterAnimationInterpolator< QskIntervalF >( QskIntervalF::interpolate );
     qRegisterAnimationInterpolator< QskMargins >( QskMargins::interpolate );
+    qRegisterAnimationInterpolator< QskGradientStop >( QskGradientStop::interpolate );
     qRegisterAnimationInterpolator< QskGradient >( QskGradient::interpolate );
     qRegisterAnimationInterpolator< QskBoxShapeMetrics >( QskBoxShapeMetrics::interpolate );
     qRegisterAnimationInterpolator< QskBoxBorderMetrics >( QskBoxBorderMetrics::interpolate );

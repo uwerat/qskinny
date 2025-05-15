@@ -45,8 +45,10 @@ class QSK_EXPORT QskGradientStop
     void setRgb( QRgb ) noexcept;
     QRgb rgb() const noexcept;
 
-    static QColor interpolated(
-        const QskGradientStop&, const QskGradientStop&, qreal position ) noexcept;
+    QskGradientStop interpolated( const QskGradientStop&, qreal ) const;
+
+    static QVariant interpolate( const QskGradientStop&,
+        const QskGradientStop&, qreal );
 
     QskHashValue hash( QskHashValue seed ) const noexcept;
 
@@ -129,27 +131,48 @@ QSK_EXPORT QskGradientStops qskInterpolatedGradientStops(
     const QskGradientStops&, bool, const QskGradientStops&, bool,
     qreal ratio );
 
+// interpolating colors in direction of a color.
 QSK_EXPORT QskGradientStops qskInterpolatedGradientStops(
     const QskGradientStops&, const QColor&, qreal ratio );
 
+// interpolating colors starting from a color.
 QSK_EXPORT QskGradientStops qskInterpolatedGradientStops(
     const QColor&, const QskGradientStops&, qreal ratio );
 
+// interpolating the opacity of the colors
 QSK_EXPORT QskGradientStops qskTransparentGradientStops(
     const QskGradientStops&, qreal ratio );
 
+// extracting the colors of [from, to ] and stretching them to [0.0, 1.0]
 QSK_EXPORT QskGradientStops qskExtractedGradientStops(
     const QskGradientStops&, qreal from, qreal to );
 
+// reverting the color stops
+QSK_EXPORT QskGradientStops qskRevertedGradientStops( const QskGradientStops& );
+
+QSK_EXPORT QskGradientStops qskReplacedGradientStops(
+    const QskGradientStops&, const QskGradientStop&, const QskGradientStop& );
+
+QSK_EXPORT QskGradientStops qskClippedGradientStops(
+    const QskGradientStops&, qreal from, qreal to );
+
+/*
+   creating equidistant color stops from a list of colors.
+   when discrete is true the result will contain 2 stops at each position
+   one with the previous and one with the following color so that the
+   interval [pos1-pos2] will be monochrome.
+ */
 QSK_EXPORT QskGradientStops qskBuildGradientStops(
     const QVector< QRgb >&, bool discrete = false );
 
 QSK_EXPORT QskGradientStops qskBuildGradientStops(
     const QVector< QColor >&, bool discrete = false );
 
-QSK_EXPORT QskGradientStops qskRevertedGradientStops( const QskGradientStops& );
-
-QSK_EXPORT QskGradientStops qskBuildGradientStops( const QVector< QGradientStop >& );
+/*
+   convert color stops from/to a vector of QGradientStop, that can be
+   used for QGradients.
+ */
+QSK_EXPORT QskGradientStops qskFromQGradientStops( const QVector< QGradientStop >& );
 QSK_EXPORT QVector< QGradientStop > qskToQGradientStops( const QVector< QskGradientStop >& );
 
 #endif
