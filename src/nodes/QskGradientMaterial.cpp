@@ -54,16 +54,16 @@ namespace
         }
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-        // make Qt 5/6 APIs matching
-
         QSGMaterialShader* createShader(
             QSGRendererInterface::RenderMode ) const override final
+#else
+        QSGMaterialShader* createShader() const override final
+#endif
         {
-            return createShader();
+            return createMaterialShader();
         }
 
-        virtual QSGMaterialShader* createShader() const = 0;
-#endif
+        virtual QSGMaterialShader* createMaterialShader() const = 0;
 
         virtual bool setGradient( const QskGradient& ) = 0;
     };
@@ -217,7 +217,7 @@ namespace
                 return GradientMaterial::compare( other );
         }
 
-        QSGMaterialShader* createShader() const override;
+        QSGMaterialShader* createMaterialShader() const override;
 
         /*
             xy: position
@@ -299,7 +299,7 @@ namespace
     };
 #endif
 
-    QSGMaterialShader* LinearMaterial::createShader() const
+    QSGMaterialShader* LinearMaterial::createMaterialShader() const
     {
 #if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
         if ( !( flags() & QSGMaterial::RhiShaderWanted ) )
@@ -371,7 +371,7 @@ namespace
             }
         }
 
-        QSGMaterialShader* createShader() const override;
+        QSGMaterialShader* createMaterialShader() const override;
 
         QVector2D m_center;
         QVector2D m_radius;
@@ -465,7 +465,7 @@ namespace
     };
 #endif
 
-    QSGMaterialShader* RadialMaterial::createShader() const
+    QSGMaterialShader* RadialMaterial::createMaterialShader() const
     {
 #ifdef SHADER_GL
         if ( !( flags() & QSGMaterial::RhiShaderWanted ) )
@@ -575,7 +575,7 @@ namespace
             return GradientMaterial::compare( other );
         }
 
-        QSGMaterialShader* createShader() const override;
+        QSGMaterialShader* createMaterialShader() const override;
 
         QVector2D m_center;
         float m_aspectRatio = 1.0;
@@ -685,7 +685,7 @@ namespace
     };
 #endif
 
-    QSGMaterialShader* ConicMaterial::createShader() const
+    QSGMaterialShader* ConicMaterial::createMaterialShader() const
     {
 #ifdef SHADER_GL
         if ( !( flags() & QSGMaterial::RhiShaderWanted ) )

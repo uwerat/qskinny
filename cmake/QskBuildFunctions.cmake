@@ -149,7 +149,7 @@ function(qsk_add_example target)
 
 endfunction()
 
-function(qsk_add_shaders target)
+function(qsk_add_shaders target shader_name)
 
     cmake_parse_arguments( arg "" "" "FILES" ${ARGN} )
 
@@ -160,7 +160,7 @@ function(qsk_add_shaders target)
         list(APPEND outfiles "${qsbname}.qsb")
     endforeach()
 
-    qt6_add_shaders( ${target} "qskshaders" BATCHABLE PRECOMPILE QUIET
+    qt6_add_shaders( ${target} ${shader_name} BATCHABLE PRECOMPILE QUIET
         PREFIX "/qskinny/shaders" ${ARGV} OUTPUTS ${outfiles} )
 
     # pass on OUTPUT_TARGETS to the caller of this function
