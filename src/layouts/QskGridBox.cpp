@@ -287,6 +287,22 @@ QRect QskGridBox::effectiveGridOfIndex( int index ) const
     return m_data->engine.effectiveGridAt( index );
 }
 
+void QskGridBox::setExtraSpacingAt( Qt::Edges edges )
+{
+    if ( edges != m_data->engine.extraSpacingAt() )
+    {
+        m_data->engine.setExtraSpacingAt( edges );
+        polish();
+
+        Q_EMIT extraSpacingAtChanged();
+    }
+}
+
+Qt::Edges QskGridBox::extraSpacingAt() const
+{
+    return m_data->engine.extraSpacingAt();
+}
+
 void QskGridBox::setDefaultAlignment( Qt::Alignment alignment )
 {
     if ( m_data->engine.setDefaultAlignment( alignment ) )
