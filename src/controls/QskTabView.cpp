@@ -151,8 +151,8 @@ void QskTabView::removeTab( int index )
 
 void QskTabView::clear( bool autoDelete )
 {
-    m_data->tabBar->clear( autoDelete );
     m_data->stackBox->clear( autoDelete );
+    m_data->tabBar->clear( autoDelete );
 }
 
 void QskTabView::setTabEnabled( int index, bool enabled )
