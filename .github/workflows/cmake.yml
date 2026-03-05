@@ -99,7 +99,7 @@ jobs:
             }
           - {
               name: "macOS Latest Clang Qt5",
-              os: macos-13,
+              os: macos-latest,
               artifact: "macos_clang.7z",
               build_type: "Release",
               cc: "clang",
