@@ -98,24 +98,6 @@ jobs:
               screenshot_filename: "ubuntu-latest-gcc-qt-6.5.0.jpg",
             }
           - {
-              name: "macOS Latest Clang Qt5",
-              os: macos-latest,
-              artifact: "macos_clang.7z",
-              build_type: "Release",
-              cc: "clang",
-              cxx: "clang++",
-              archiver: "7za a",
-              generators: "Ninja",
-              cmake:
-                {
-                  qtversion: "5.15.2",
-                  qtdirkey: "Qt5_DIR",
-                  qtdirvalue: "../Qt/5.15.2/clang_64/lib/cmake/Qt5",
-                  qtprefixpath: "../Qt/5.15.2/clang_64",
-                },
-              screenshot_filename: "macos-latest-clang-qt-5-15-2.jpg",
-            }
-          - {
               name: "macOS Latest Clang Qt6",
               os: macos-latest,
               artifact: "macos_clang.7z",
