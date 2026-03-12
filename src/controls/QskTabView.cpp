@@ -117,9 +117,6 @@ int QskTabView::insertTab( int index, const QString& text, QQuickItem* page )
 {
     index = m_data->tabBar->insertTab( index, text );
 
-    if ( page && page->parent() == nullptr )
-        page->setParent( this );
-
     m_data->stackBox->insertItem( index, page );
 
     return index;
@@ -316,9 +313,6 @@ int QskTabView::addTab( QskTabButton* button, QQuickItem* page )
 
 int QskTabView::insertTab( int index, QskTabButton* button, QQuickItem* page )
 {
-    if ( page && page->parent() == nullptr )
-        page->setParent( this );
-
     index = m_data->tabBar->insertTab( index, button );
     m_data->stackBox->insertItem( index, page );
 
