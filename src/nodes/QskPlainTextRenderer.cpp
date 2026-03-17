@@ -18,23 +18,6 @@ QSK_QT_PRIVATE_END
 
 #define GlyphFlag static_cast< QSGNode::Flag >( 0x800 )
 
-QSizeF QskPlainTextRenderer::textSize(
-    const QString& text, const QFont& font, const QskTextOptions& options )
-{
-    // result differs from QQuickText::implicitSizeHint ???
-    return textRect( text, font, options, QSizeF( 10e6, 10e6 ) ).size();
-}
-
-QRectF QskPlainTextRenderer::textRect(
-    const QString& text, const QFont& font, const QskTextOptions& options,
-    const QSizeF& size )
-{
-    const QFontMetricsF fm( font );
-    const QRectF r( 0, 0, size.width(), size.height() );
-
-    return fm.boundingRect( r, options.textFlags(), text );
-}
-
 static qreal qskLayoutText( QTextLayout* layout,
     qreal lineWidth, const QskTextOptions& options )
 {
@@ -93,6 +76,62 @@ static qreal qskLayoutText( QTextLayout* layout,
     }
 
     return y;
+}
+
+static int qskSetupLayout( QTextLayout& layout, const QString& text, const QFont& font,
+    const QskTextOptions& options, Qt::Alignment alignment, qreal width )
+{
+    QTextOption textOption( alignment );
+    textOption.setWrapMode( static_cast< QTextOption::WrapMode >( options.wrapMode() ) );
+
+    QString tmp = text;
+
+#if 0
+    const int pos = tmp.indexOf( QLatin1Char( '\x9c' ) );
+    if ( pos != -1 )
+    {
+        // ST: string termination
+
+        tmp = tmp.mid( 0, pos );
+        tmp.replace( QLatin1Char( '\n' ), QChar::LineSeparator );
+    }
+    else
+#endif
+    if ( tmp.contains( QLatin1Char( '\n' ) ) )
+    {
+        tmp.replace( QLatin1Char( '\n' ), QChar::LineSeparator );
+    }
+
+
+    layout.setFont( font );
+    layout.setTextOption( textOption );
+    layout.setText( tmp );
+
+    layout.beginLayout();
+    const qreal height = qskLayoutText( &layout, width, options );
+    layout.endLayout();
+
+    return height;
+}
+
+QSizeF QskPlainTextRenderer::textSize(
+    const QString& text, const QFont& font, const QskTextOptions& options )
+{
+    // result differs from QQuickText::implicitSizeHint ???
+    return textRect( text, font, options, QSizeF( 10e6, 10e6 ) ).size();
+}
+
+QRectF QskPlainTextRenderer::textRect(
+    const QString& text, const QFont& font, const QskTextOptions& options,
+    const QSizeF& size )
+{
+    QTextLayout layout;
+
+    // if we ever make this function public, we will have to add an alignment parameter:
+    const auto alignment = Qt::AlignLeft;
+
+    qskSetupLayout( layout, text, font, options, alignment, size.width() );
+    return layout.boundingRect();
 }
 
 static void qskRenderText(
@@ -183,36 +222,8 @@ void QskPlainTextRenderer::updateNode( const QString& text,
     Qt::Alignment alignment, const QRectF& rect,
     const QQuickItem* item, QSGTransformNode* node )
 {
-    QTextOption textOption( alignment );
-    textOption.setWrapMode( static_cast< QTextOption::WrapMode >( options.wrapMode() ) );
-
-    QString tmp = text;
-
-#if 0
-    const int pos = tmp.indexOf( QLatin1Char( '\x9c' ) );
-    if ( pos != -1 )
-    {
-        // ST: string termination
-
-        tmp = tmp.mid( 0, pos );
-        tmp.replace( QLatin1Char( '\n' ), QChar::LineSeparator );
-    }
-    else
-#endif
-    if ( tmp.contains( QLatin1Char( '\n' ) ) )
-    {
-        tmp.replace( QLatin1Char('\n'), QChar::LineSeparator );
-    }
-
-
     QTextLayout layout;
-    layout.setFont( font );
-    layout.setTextOption( textOption );
-    layout.setText( tmp );
-
-    layout.beginLayout();
-    const qreal textHeight = qskLayoutText( &layout, rect.width(), options );
-    layout.endLayout();
+    const qreal textHeight = qskSetupLayout( layout, text, font, options, alignment, rect.width() );
 
     const qreal y0 = QFontMetricsF( font ).ascent();
 
