@@ -59,6 +59,7 @@ list(APPEND SOURCES
     common/QskIntervalF.cpp
     common/QskLabelData.cpp
     common/QskMargins.cpp
+    common/QskMetaCallEvent.cpp
     common/QskMetaFunction.cpp
     common/QskMetaInvokable.cpp
     common/QskObjectCounter.cpp
@@ -75,6 +76,7 @@ list(APPEND SOURCES
 
 list(APPEND PRIVATE_HEADERS
     common/QskInternalMacros.h
+    common/QskMetaCallEvent.h
 )
 
 list(APPEND HEADERS

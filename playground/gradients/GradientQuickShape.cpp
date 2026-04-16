@@ -16,6 +16,10 @@ QSK_QT_PRIVATE_BEGIN
     #define signals Q_SIGNALS
 #endif
 
+#ifndef emit
+    #define emit Q_EMIT
+#endif
+
 #include <private/qquickshape_p.h>
 #include <private/qquickshape_p_p.h>
 

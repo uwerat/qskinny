@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "QskMetaInvokable.h"
+#include "QskMetaCallEvent.h"
 #include "QskMetaFunction.h"
 #include "QskInternalMacros.h"
 
@@ -11,10 +12,6 @@
 #include <qobject.h>
 #include <qcoreapplication.h>
 #include <qthread.h>
-
-#if QT_CONFIG(thread)
-#include <qsemaphore.h>
-#endif
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>
@@ -50,42 +47,6 @@ namespace
             if ( functionCall )
                 static_cast< FunctionCall* >( functionCall )->destroyIfLastRef();
         }
-    };
-
-    class MetaCallEvent final : public QMetaCallEvent
-    {
-      public:
-        MetaCallEvent( QMetaObject::Call call, const QMetaObject* metaObject,
-                ushort offset, ushort index, void* args[], QSemaphore* semaphore )
-            : QMetaCallEvent( offset, index,
-                metaObject->d.static_metacall, nullptr, -1, args, semaphore )
-            , m_call( call )
-            , m_callFunction( metaObject->d.static_metacall )
-            , m_index( index )
-        {
-        }
-
-        MetaCallEvent( QMetaObject::Call call, const QMetaObject* metaObject,
-                ushort offset, ushort index, int argc )
-            : QMetaCallEvent( offset, index,
-                metaObject->d.static_metacall, nullptr, -1, argc )
-            , m_call( call )
-            , m_callFunction( metaObject->d.static_metacall )
-            , m_index( index )
-        {
-        }
-
-        void placeMetaCall( QObject* object ) override
-        {
-            m_callFunction( object, m_call, m_index, args() );
-        }
-
-      private:
-        const QMetaObject::Call m_call;
-
-        // as those members from QMetaCallEvent are not accessible
-        CallFunction m_callFunction;
-        const ushort m_index;
     };
 }
 
@@ -170,11 +131,6 @@ static void qskInvokeMetaCall(
 #endif
             }
 
-            /*
-                QMetaObject::metacall seems to be made for situations we don't have.
-                Need to dive deeper into the Qt code to be 100% sure TODO ...
-             */
-
             metaObject->d.static_metacall( receiver, call, index, args );
             break;
         }
@@ -188,100 +144,37 @@ static void qskInvokeMetaCall(
             }
 
 #if QT_CONFIG(thread)
-            QSemaphore semaphore;
+            QskMetaCallLatch latch;
 
-            auto event = new MetaCallEvent( call, metaObject,
-                offset, index, args, &semaphore );
-
-#else
-            auto event = new MetaCallEvent( call, metaObject,
-                offset, index, args, nullptr );
-#endif
+            auto event = qskCreateMetaObjectCallEvent( call, metaObject,
+                offset, index, args, &latch );
 
             QCoreApplication::postEvent( receiver, event );
 
-#if QT_CONFIG(thread)
-            semaphore.acquire();
+            latch.wait();
 #endif
 
             break;
         }
         case Qt::QueuedConnection:
         {
-            if ( receiver == nullptr )
+            if ( receiver.isNull() )
                 return;
 
-            MetaCallEvent* event = nullptr;
+            QMetaCallEvent* event = nullptr;
 
             if ( call == QMetaObject::InvokeMetaMethod )
             {
-#if 1
-                // should be doable without QMetaMethod. TODO ...
-                const auto method = metaObject->method( offset + index );
-#endif
-                const int argc = method.parameterCount() + 1;
-
-                event = new MetaCallEvent( call, metaObject, offset, index, argc );
-
-                /*
-                    The first one is the return type, one that is always
-                    invalid for Queued Connections.
-                 */
-
-                auto types = event->types();
-                auto arguments = event->args();
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-                types[0] = QMetaType();
-                arguments[ 0 ] = nullptr;
-#else
-                types[0] = 0;
-                arguments[ 0 ] = nullptr;
-#endif
-                for ( int i = 1; i < argc; i++ )
-                {
-                    if ( args[ i ] == nullptr )
-                    {
-                        Q_ASSERT( args[ i ] != nullptr );
-                        receiver = nullptr;
-                        break;
-                    }
-
-                    const auto type = method.parameterType( i - 1 );
-                    const auto arg = args[ i ];
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-                    types[ i ] = QMetaType( type );
-                    arguments[ i ] = QMetaType( type ).create( arg );
-#else
-                    types[ i ] = type;
-                    arguments[ i ] = QMetaType::create( type, arg );
-#endif
-                }
+                event = qskCreateQueuedMethodCallEvent(
+                    metaObject, offset, index, args );
             }
             else
             {
-                // should be doable without QMetaMethod. TODO ...
-                const auto property = metaObject->property( offset + index );
-
-                event = new MetaCallEvent( call, metaObject, offset, index, 1 );
-
-                const auto type = property.userType();
-                const auto arg = args[ 0 ];
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-                event->types()[0] = QMetaType( type );
-                event->args()[ 0 ] = QMetaType( type ).create( arg );
-#else
-                event->types()[0] = type;
-                event->args()[ 0 ] = QMetaType::create( type, arg );
-#endif
+                event = qskCreateQueuedWritePropertyCallEvent(
+                    metaObject, offset, index, args );
             }
 
-            if ( receiver )
-                QCoreApplication::postEvent( receiver, event );
-            else
-                delete event;
+            QCoreApplication::postEvent( receiver, event );
 
             break;
         }

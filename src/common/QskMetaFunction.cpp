@@ -5,14 +5,11 @@
 
 #include "QskMetaFunction.h"
 #include "QskInternalMacros.h"
+#include "QskMetaCallEvent.h"
 
 #include <qcoreapplication.h>
 #include <qobject.h>
 #include <qthread.h>
-
-#if QT_CONFIG(thread)
-#include <qsemaphore.h>
-#endif
 
 QSK_QT_PRIVATE_BEGIN
 #include <private/qobject_p.h>
@@ -170,13 +167,6 @@ QskMetaFunction::Type QskMetaFunction::functionType() const
 void QskMetaFunction::invoke( QObject* object,
     void* argv[], Qt::ConnectionType connectionType )
 {
-#if 1
-    /*
-        Since Qt 5.10 we also have QMetaObject::invokeMethod
-        with functor based callbacks. TODO ...
-     */
-#endif
-
     // code is not thread safe - TODO ...
 
     if ( m_functionCall == nullptr )
@@ -209,14 +199,14 @@ void QskMetaFunction::invoke( QObject* object,
             }
 
 #if QT_CONFIG(thread)
-            QSemaphore semaphore;
+            QskMetaCallLatch latch;
 
             auto event = new QMetaCallEvent(
-                m_functionCall, nullptr, 0, argv, &semaphore );
+                m_functionCall, nullptr, -1, argv, &latch );
 
             QCoreApplication::postEvent( receiver, event );
 
-            semaphore.acquire();
+            latch.wait();
 #endif
 
             break;
@@ -226,46 +216,10 @@ void QskMetaFunction::invoke( QObject* object,
             if ( receiver.isNull() )
                 return;
 
-            const auto argc = parameterCount() + 1; // return value + arguments
+            const int argc = parameterCount() + 1; // return value + arguments
 
-            auto event = new QMetaCallEvent( m_functionCall, nullptr, 0, argc );
-
-            auto types = event->types();
-            auto arguments = event->args();
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-            types[0] = QMetaType();
-            arguments[ 0 ] = nullptr;
-#else
-            types[0] = 0;
-            arguments[ 0 ] = nullptr;
-#endif
-
-            const int* parameterTypes = m_functionCall->parameterTypes();
-            for ( uint i = 1; i < argc; i++ )
-            {
-                if ( argv[ i ] == nullptr )
-                {
-                    Q_ASSERT( arguments[ i ] != nullptr );
-                    receiver = nullptr;
-                    break;
-                }
-
-                const auto type = parameterTypes[i - 1];
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-                types[ i ] = QMetaType( type );
-                arguments[ i ] = QMetaType( type ).create( argv[ i ] );
-#else
-                types[ i ] = type;
-                arguments[ i ] = QMetaType::create( type, argv[ i ] );
-#endif
-            }
-
-            if ( receiver )
-                QCoreApplication::postEvent( receiver, event );
-            else
-                delete event;
+            auto event = qskCreateQueuedFunctorCallEvent( m_functionCall, argc, argv );
+            QCoreApplication::postEvent( receiver, event );
 
             break;
         }
