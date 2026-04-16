@@ -16,88 +16,112 @@ QSK_QT_PRIVATE_END
 
 namespace
 {
-    class MetaCallEvent final : public QMetaCallEvent
+    using CallFunction = QObjectPrivate::StaticMetaCallFunction;
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 11, 0 )
+
+    using TypeInterface = QtPrivate::QMetaTypeInterface;
+
+    class UnqueuedMetaCallEvent final : public QMetaCallEvent
     {
       public:
-        MetaCallEvent( QMetaObject::Call call, const QMetaObject* metaObject,
-                ushort offset, ushort index, void* args[], QskMetaCallLatch* latch )
-            : QMetaCallEvent( offset, index,
-                metaObject->d.static_metacall, nullptr, -1, args, latch )
+        UnqueuedMetaCallEvent( QMetaObject::Call call, CallFunction callFunction,
+                ushort offset, ushort index, void* args[], QLatch* latch )
+            : QMetaCallEvent( offset, index, callFunction, nullptr, -1, args, latch )
             , m_call( call )
-            , m_callFunction( metaObject->d.static_metacall )
-            , m_index( index )
         {
         }
 
         void placeMetaCall( QObject* object ) override
         {
-            m_callFunction( object, m_call, m_index, args() );
+            d.callFunction_( object, m_call, d.method_relative_, d.args_ );
         }
 
       private:
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 11, 0 )
-        inline void** args() { return d.args_; }
-#endif
-
         const QMetaObject::Call m_call;
-
-        QObjectPrivate::StaticMetaCallFunction m_callFunction;
-        const ushort m_index;
     };
 
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 11, 0 )
-    using MyMetaCallEvent = QQueuedMetaCallEvent;
-#else
-    using MyMetaCallEvent = QMetaCallEvent;
-#endif
-
-    class QueuedMetaCallEvent final : public MyMetaCallEvent
+    class QueuedMetaCallEvent final : public QQueuedMetaCallEvent
     {
       public:
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 11, 0 )
-        QueuedMetaCallEvent( QMetaObject::Call call, const QMetaObject* metaObject,
+        QueuedMetaCallEvent( QMetaObject::Call call, CallFunction callFunction,
                 ushort offset, ushort index, int argc,
-                const QtPrivate::QMetaTypeInterface* const* ifaces, void* args[] )
-            : MyMetaCallEvent( offset, index, metaObject->d.static_metacall,
+                const TypeInterface* const * ifaces, void* args[] )
+            : QQueuedMetaCallEvent( offset, index, callFunction,
                 nullptr, -1, argc, ifaces, args )
             , m_call( call )
-            , m_callFunction( metaObject->d.static_metacall )
-            , m_index( index )
         {
         }
-#else
-        QueuedMetaCallEvent( QMetaObject::Call call, const QMetaObject* metaObject,
-                ushort offset, ushort index, int argc )
-            : MyMetaCallEvent( offset, index, metaObject->d.static_metacall,
-                nullptr, -1, argc )
-            , m_call( call )
-            , m_callFunction( metaObject->d.static_metacall )
-            , m_index( index )
-        {
-        }
-#endif
 
         void placeMetaCall( QObject* object ) override
         {
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 11, 0 )
             auto args = d.args_;
             if ( m_call == QMetaObject::WriteProperty )
                 args++;
 
-            m_callFunction( object, m_call, m_index, args );
-#else
-            auto args = this->args();
-#endif
-
-            m_callFunction( object, m_call, m_index, args );
+            d.callFunction_( object, m_call, d.method_relative_, args );
         }
 
       private:
         const QMetaObject::Call m_call;
-
-        QObjectPrivate::StaticMetaCallFunction m_callFunction;
-        const ushort m_index;
     };
+
+#else
+    class MetaCallEvent : public QMetaCallEvent
+    {
+      public:
+        MetaCallEvent( QMetaObject::Call call, CallFunction callFunction,
+                ushort offset, ushort index, void* args[], QSemaphore* semaphore )
+            : QMetaCallEvent( offset, index, callFunction, nullptr, -1, args, semaphore )
+            , m_call( call )
+            , m_callFunction( callFunction )
+            , m_index( index )
+        {
+        }
+
+        MetaCallEvent( QMetaObject::Call call, CallFunction callFunction,
+                ushort offset, ushort index, int argc )
+            : QMetaCallEvent( offset, index, callFunction, nullptr, -1, argc )
+            , m_call( call )
+            , m_callFunction( callFunction )
+            , m_index( index )
+        {
+        }
+
+        MetaCallEvent( QtPrivate::QSlotObjectBase* slotObj, int argc )
+            : QMetaCallEvent( slotObj, nullptr, -1, argc )
+        {
+        }
+
+        inline void setArgument( int index, int type, void* arg )
+        {
+    #if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
+            types()[ index ] = QMetaType( type );
+            args()[ index ] = QMetaType( type ).create( arg );
+    #else
+            types()[ index ] = type;
+            args()[ index ] = QMetaType::create( type, arg );
+    #endif
+        }
+
+        void placeMetaCall( QObject* object ) override final
+        {
+            if ( m_callFunction )
+            {
+                m_callFunction( object, m_call, m_index, args() );
+                return;
+            }
+            QMetaCallEvent::placeMetaCall( object );
+        }
+
+      private:
+        const QMetaObject::Call m_call = QMetaObject::InvokeMetaMethod;
+
+        CallFunction m_callFunction;
+        const ushort m_index = -1;
+    };
+
+#endif
 }
 
 QMetaCallEvent* qskCreateQueuedMethodCallEvent(
@@ -105,6 +129,8 @@ QMetaCallEvent* qskCreateQueuedMethodCallEvent(
 {
     const auto method = metaObject->method( offset + index );
     const int argc = method.parameterCount() + 1;
+
+    auto callFunction = metaObject->d.static_metacall;
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 11, 0 )
     QVarLengthArray< const QtPrivate::QMetaTypeInterface* > ifaces( argc );
@@ -117,40 +143,19 @@ QMetaCallEvent* qskCreateQueuedMethodCallEvent(
     }
 
     auto event = new QueuedMetaCallEvent( QMetaObject::InvokeMetaMethod,
-        metaObject, offset, index, argc, ifaces.constData(), args );
+        callFunction, offset, index, argc, ifaces.constData(), args );
 #else
-    auto event = new QueuedMetaCallEvent(
-        QMetaObject::InvokeMetaMethod, metaObject, offset, index, argc );
+    auto event = new MetaCallEvent( QMetaObject::InvokeMetaMethod,
+        callFunction, offset, index, argc );
 
     /*
         The first one is the return type, one that is always
         invalid for Queued Connections.
      */
 
-    auto types = event->types();
-    auto arguments = event->args();
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    types[0] = QMetaType();
-    arguments[ 0 ] = nullptr;
-#else
-    types[0] = 0;
-    arguments[ 0 ] = nullptr;
-#endif
-
+    event->setArgument( 0, QMetaType::UnknownType, nullptr );
     for ( int i = 1; i < argc; i++ )
-    {
-        const auto type = method.parameterType( i - 1 );
-        const auto arg = args[ i ];
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-        types[ i ] = QMetaType( type );
-        arguments[ i ] = QMetaType( type ).create( arg );
-#else
-        types[ i ] = type;
-        arguments[ i ] = QMetaType::create( type, arg );
-#endif
-    }
+        event->setArgument( i, method.parameterType( i - 1 ), args[ i ] );
 
 #endif
 
@@ -161,6 +166,7 @@ QMetaCallEvent* qskCreateQueuedWritePropertyCallEvent(
     const QMetaObject* metaObject, ushort offset, ushort index, void* args[] )
 {
     const auto property = metaObject->property( offset + index );
+    auto callFunction = metaObject->d.static_metacall;
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 11, 0 )
     const QtPrivate::QMetaTypeInterface* ifaces[2];
@@ -170,22 +176,12 @@ QMetaCallEvent* qskCreateQueuedWritePropertyCallEvent(
     void* argv[2] = { nullptr, args[0] };
 
     auto event = new QueuedMetaCallEvent( QMetaObject::WriteProperty,
-        metaObject, offset, index, 2, ifaces, argv );
+        callFunction, offset, index, 2, ifaces, argv );
 #else
-    auto event = new QueuedMetaCallEvent( QMetaObject::WriteProperty,
-        metaObject, offset, index, 1 );
+    auto event = new MetaCallEvent( QMetaObject::WriteProperty,
+        callFunction, offset, index, 1 );
 
-    const auto type = property.userType();
-    const auto arg = args[ 0 ];
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    event->types()[0] = QMetaType( type );
-    event->args()[ 0 ] = QMetaType( type ).create( arg );
-#else
-    event->types()[0] = type;
-    event->args()[ 0 ] = QMetaType::create( type, arg );
-#endif
-
+    event->setArgument( 0, property.userType(), args[ 0 ] );
 #endif
 
     return event;
@@ -210,31 +206,11 @@ QMetaCallEvent* qskCreateQueuedFunctorCallEvent(
     auto event = new QQueuedMetaCallEvent( functionCall, nullptr, -1,
         argc, ifaces.constData(), args );
 #else
-    auto event = new QMetaCallEvent( functionCall, nullptr, 0, argc );
+    auto event = new MetaCallEvent( functionCall, argc );
 
-    auto typesEv = event->types();
-    auto argsEv = event->args();
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-    typesEv[0] = QMetaType();
-    argsEv[ 0 ] = nullptr;
-#else
-    typesEv[0] = 0;
-    argsEv[ 0 ] = nullptr;
-#endif
-
+    event->setArgument( 0, QMetaType::UnknownType, nullptr );
     for ( int i = 1; i < argc; i++ )
-    {
-        const auto type = parameterTypes[i - 1];
-
-#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
-        typesEv[ i ] = QMetaType( type );
-        argsEv[ i ] = QMetaType( type ).create( args[ i ] );
-#else
-        typesEv[ i ] = type;
-        argsEv[ i ] = QMetaType::create( type, args[ i ] );
-#endif
-    }
+        event->setArgument( i, parameterTypes[i - 1], args[ i ] );
 #endif
 
     return event;
@@ -244,5 +220,11 @@ QMetaCallEvent* qskCreateMetaObjectCallEvent(
     QMetaObject::Call call, const QMetaObject* metaObject,
     ushort offset, ushort index, void* args[], QskMetaCallLatch* latch )
 {
-    return new MetaCallEvent( call, metaObject, offset, index, args, latch );
+    auto callFunction = metaObject->d.static_metacall;
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 11, 0 )
+    return new UnqueuedMetaCallEvent( call, callFunction, offset, index, args, latch );
+#else
+    return new MetaCallEvent( call, callFunction, offset, index, args, latch );
+#endif
 }
