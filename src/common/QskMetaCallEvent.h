@@ -10,6 +10,12 @@
 #include "QskInternalMacros.h"
 #include <qmetaobject.h>
 
+/*
+    The API for sending QMetaCallEvents has significantly changed
+    with Qt 6.11. The methods below ( only internal ! ) hide
+    those differences.
+ */
+
 class QMetaCallEvent;
 
 #if QT_CONFIG(thread)

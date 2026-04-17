@@ -57,7 +57,16 @@ namespace
         {
             auto args = d.args_;
             if ( m_call == QMetaObject::WriteProperty )
+            {
+                /*
+                    Qt uses QQueuedMetaCallEvent for QMetaObject::InvokeMetaMethod,
+                    where you always have the return value as first parameter.
+
+                    However we also support QMetaObject::WriteProperty, where the
+                    first parameter filled in by the Ctor is wrong.
+                 */
                 args++;
+            }
 
             d.callFunction_( object, m_call, d.method_relative_, args );
         }
