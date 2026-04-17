@@ -178,9 +178,10 @@ QMetaCallEvent* qskCreateQueuedWritePropertyCallEvent(
     auto callFunction = metaObject->d.static_metacall;
 
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 11, 0 )
-    const QtPrivate::QMetaTypeInterface* ifaces[2];
-    ifaces[0] = nullptr;
-    ifaces[1] = QMetaType( property.userType() ).iface();
+
+    // The first argument is a dummy return value
+    const QtPrivate::QMetaTypeInterface* ifaces[2] =
+        { nullptr, QMetaType( property.userType() ).iface() };
 
     void* argv[2] = { nullptr, args[0] };
 
