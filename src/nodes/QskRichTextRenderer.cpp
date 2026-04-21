@@ -211,9 +211,8 @@ QSizeF QskRichTextRenderer::textSize(
     return sz;
 }
 
-QRectF QskRichTextRenderer::textRect(
-    const QString& text, const QFont& font,
-    const QskTextOptions& options, const QSizeF& size )
+QRectF QskRichTextRenderer::textRect( const QString& text, const QFont& font,
+    const QskTextOptions& options, Qt::Alignment alignment, const QSizeF& size )
 {
     auto& textItem = *qskTextItemMap->item();
 
@@ -221,7 +220,7 @@ QRectF QskRichTextRenderer::textRect(
 
     textItem.setFont( font );
     textItem.setOptions( options );
-    textItem.setAlignment( Qt::Alignment() );
+    textItem.setAlignment( alignment );
 
     textItem.setWidth( size.width() );
     textItem.setHeight( size.height() );

@@ -18,117 +18,94 @@ QSK_QT_PRIVATE_END
 
 #define GlyphFlag static_cast< QSGNode::Flag >( 0x800 )
 
-static qreal qskLayoutText( QTextLayout* layout,
-    qreal lineWidth, const QskTextOptions& options )
-{
-    if ( layout->text().isEmpty() )
-        return 0.0;
-
-    qreal y = 0;
-
-    const auto elideMode = options.effectiveElideMode();
-
-    if ( elideMode == Qt::ElideNone )
-    {
-        for ( int i = 0; i < options.maximumLineCount(); i++ )
-        {
-            auto line = layout->createLine();
-            if ( !line.isValid() )
-                break;
-
-            line.setPosition( QPointF( 0, y ) );
-            line.setLineWidth( lineWidth );
-
-            y += line.leading() + line.height();
-        }
-    }
-    else
-    {
-        const auto engine = layout->engine();
-
-        auto text = engine->elidedText(
-            elideMode, QFixed::fromReal( lineWidth ),
-            Qt::TextShowMnemonic, 0 );
-
-        // why do we need this padding ???
-        text = text.leftJustified( engine->text.length() );
-        engine->text = text;
-
-        auto line = layout->createLine();
-
-        if ( line.isValid() )
-        {
-            /*
-                For some reason the position of the text is wrong,
-                with QTextOption::NoWrap - even if word wrapping
-                for elided text does not make any sense.
-                Needs some debugging of QTextLine::layout_helper, TODO ...
-             */
-            auto option = layout->textOption();
-            option.setWrapMode( QTextOption::WrapAnywhere );
-            layout->setTextOption( option );
-
-            line.setPosition( QPointF( 0, y ) );
-            line.setLineWidth( lineWidth );
-
-            y += line.leading() + line.height();
-        }
-    }
-
-    return y;
-}
-
-static int qskSetupLayout( QTextLayout& layout, const QString& text, const QFont& font,
+static void qskSetupLayout( QTextLayout& layout, const QString& text, const QFont& font,
     const QskTextOptions& options, Qt::Alignment alignment, qreal width )
 {
+    if ( text.isEmpty() )
+        return;
+
     QTextOption textOption( alignment );
     textOption.setWrapMode( static_cast< QTextOption::WrapMode >( options.wrapMode() ) );
 
     QString tmp = text;
 
-#if 0
-    const int pos = tmp.indexOf( QLatin1Char( '\x9c' ) );
-    if ( pos != -1 )
-    {
-        // ST: string termination
-
-        tmp = tmp.mid( 0, pos );
-        tmp.replace( QLatin1Char( '\n' ), QChar::LineSeparator );
-    }
-    else
-#endif
     if ( tmp.contains( QLatin1Char( '\n' ) ) )
-    {
         tmp.replace( QLatin1Char( '\n' ), QChar::LineSeparator );
-    }
-
 
     layout.setFont( font );
     layout.setTextOption( textOption );
     layout.setText( tmp );
 
     layout.beginLayout();
-    const qreal height = qskLayoutText( &layout, width, options );
-    layout.endLayout();
 
-    return height;
+    {
+        const auto elideMode = options.effectiveElideMode();
+
+        if ( elideMode == Qt::ElideNone )
+        {
+            qreal y = 0;
+
+            for ( int i = 0; i < options.maximumLineCount(); i++ )
+            {
+                auto line = layout.createLine();
+                if ( !line.isValid() )
+                    break;
+
+                line.setPosition( QPointF( 0, y ) );
+                line.setLineWidth( width );
+
+                y += line.leading() + line.height();
+            }
+        }
+        else
+        {
+            const auto engine = layout.engine();
+
+            auto text = engine->elidedText(
+                elideMode, QFixed::fromReal( width ),
+                Qt::TextShowMnemonic, 0 );
+
+            // why do we need this padding ???
+            text = text.leftJustified( engine->text.length() );
+            engine->text = text;
+
+            auto line = layout.createLine();
+
+            if ( line.isValid() )
+            {
+                /*
+                    For some reason the position of the text is wrong,
+                    with QTextOption::NoWrap - even if word wrapping
+                    for elided text does not make any sense.
+                    Needs some debugging of QTextLine::layout_helper, TODO ...
+                 */
+                auto option = layout.textOption();
+                option.setWrapMode( QTextOption::WrapAnywhere );
+                layout.setTextOption( option );
+
+                line.setPosition( QPointF( 0, 0 ) );
+                line.setLineWidth( width );
+            }
+        }
+    }
+
+    layout.endLayout();
 }
 
 QSizeF QskPlainTextRenderer::textSize(
     const QString& text, const QFont& font, const QskTextOptions& options )
 {
-    // result differs from QQuickText::implicitSizeHint ???
-    return textRect( text, font, options, QSizeF( 10e6, 10e6 ) ).size();
+    QTextLayout layout;
+
+    qskSetupLayout( layout, text, font, options, Qt::Alignment(), 10e6 );
+    return layout.boundingRect().size();
 }
 
 QRectF QskPlainTextRenderer::textRect(
     const QString& text, const QFont& font, const QskTextOptions& options,
-    const QSizeF& size )
+    Qt::Alignment alignment, const QSizeF& size )
 {
     QTextLayout layout;
-
-    // if we ever make this function public, we will have to add an alignment parameter:
-    const auto alignment = Qt::AlignLeft;
 
     qskSetupLayout( layout, text, font, options, alignment, size.width() );
     return layout.boundingRect();
@@ -223,7 +200,9 @@ void QskPlainTextRenderer::updateNode( const QString& text,
     const QQuickItem* item, QSGTransformNode* node )
 {
     QTextLayout layout;
-    const qreal textHeight = qskSetupLayout( layout, text, font, options, alignment, rect.width() );
+    qskSetupLayout( layout, text, font, options, alignment, rect.width() );
+
+    const qreal textHeight = layout.boundingRect().height();
 
     const qreal y0 = QFontMetricsF( font ).ascent();
 
@@ -246,7 +225,7 @@ void QskPlainTextRenderer::updateNode( const QString& text,
             between margins/paddings.
          */
 
-        const int bh = int( layout.boundingRect().height() );
+        const int bh = int( textHeight );
         yBaseline = ( bh % 2 ) ? qFloor( yBaseline ) : qCeil( yBaseline );
     }
 

@@ -27,10 +27,19 @@ QSizeF QskTextRenderer::textSize(
     const QString& text, const QFont& font, const QskTextOptions& options,
     const QSizeF& size )
 {
+    QRectF r;
+
     if ( options.effectiveFormat( text ) == QskTextOptions::PlainText )
-        return QskPlainTextRenderer::textRect( text, font, options, size ).size();
+    {
+        r = QskPlainTextRenderer::textRect(
+            text, font, options, Qt::Alignment(), size );
+    }
     else
-        return QskRichTextRenderer::textRect( text, font, options, size ).size();
+    {
+        r = QskRichTextRenderer::textRect(
+            text, font, options, Qt::Alignment(), size );
+    }
+    return r.size();
 }
 
 void QskTextRenderer::updateNode(
