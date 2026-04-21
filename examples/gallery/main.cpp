@@ -3,6 +3,10 @@
  *           SPDX-License-Identifier: BSD-3-Clause
  *****************************************************************************/
 
+#include "QskFontRole.h"
+#include "QskListView.h"
+#include "QskSimpleListBox.h"
+#include "QskTextOptions.h"
 #include "progressbar/ProgressBarPage.h"
 #include "inputs/InputPage.h"
 #include "button/ButtonPage.h"
@@ -39,6 +43,8 @@
 #include <QskGraphic.h>
 
 #include <QGuiApplication>
+#include <qnamespace.h>
+#include <qquickwindow.h>
 
 namespace
 {
@@ -258,30 +264,24 @@ namespace
         MainView( QQuickItem* parent = nullptr )
             : QskMainView( parent )
         {
-            auto tabView = new TabView( this );
-            tabView->addPage( "Buttons", new ButtonPage() );
-            tabView->addPage( "Inputs", new InputPage() );
-            tabView->addPage( "Indicators", new ProgressBarPage() );
-            tabView->addPage( "Selectors", new SelectorPage() );
-            tabView->addPage( "Dialogs", new DialogPage() );
-            tabView->addPage( "ListBox", new ListBoxPage() );
+            setPadding( 20 );
 
-            auto header = new Header( tabView->count(), this );
+            auto* l = new QskTextLabel("1Leave2 Gschupfte Nudla, saure Kuddla, Häbresmuas a Flädlessuppe, Grundbiara mit Mill und Käs, a Moscht vom Kealar gar it räs!");
+            
+            QskTextOptions to;
+            to.setWrapMode(QskTextOptions::Wrap);
+            to.setElideMode(Qt::ElideNone);
+            l->setTextOptionsHint(QskTextLabel::Text, to);
 
-            connect( header, &Header::enabledToggled,
-                tabView, &TabView::setPagesEnabled );
+#if 1
+            QFont font( "Roboto" );
+            font.setPointSize( 22 );
+            l->effectiveSkin()->setFont({}, font);
+#endif
 
-            connect( tabView, &TabView::currentIndexChanged,
-                header, &Header::setCurrentTab );
+            l->setSizePolicy( QskSizePolicy::Ignored, QskSizePolicy::Constrained );
 
-            auto drawer = new Drawer( tabView );
-            drawer->setEdge( Qt::RightEdge );
-
-            connect( header, &Header::drawerRequested,
-                drawer, &QskPopup::toggle );
-
-            setHeader( header );
-            setBody( tabView );
+            setBody(l);
         }
     };
 }
@@ -311,7 +311,7 @@ int main( int argc, char* argv[] )
     window.addItem( mainView );
     window.addItem( new QskFocusIndicator() );
 
-    window.resize( 800, 600 );
+    window.resize( 589, 600 );
     window.show();
 
     return app.exec();
