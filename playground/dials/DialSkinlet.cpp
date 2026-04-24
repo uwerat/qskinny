@@ -15,7 +15,6 @@
 #include <QskFunctions.h>
 #include <QskSGNode.h>
 
-#include <QFontMetrics>
 #include <QLineF>
 #include <QtMath>
 
@@ -98,7 +97,6 @@ QSGNode* DialSkinlet::updateLabelsNode(
     const auto spacing = dial->spacingHint( Q::TickLabels );
 
     const auto font = dial->effectiveFont( Q::TickLabels );
-    const QFontMetricsF fontMetrics( font );
 
     auto angle = startAngle;
 
@@ -127,8 +125,9 @@ QSGNode* DialSkinlet::updateLabelsNode(
 
         if ( !text.isEmpty() )
         {
-            const auto w = qskHorizontalAdvance( fontMetrics, text );
-            const auto h = fontMetrics.height();
+            const auto w = qskHorizontalAdvance( font, text );
+            const auto h = qskTextHeight( font );
+
             const auto adjustX = ( -0.5 * cos - 0.5 ) * w;
             const auto adjustY = ( -0.5 * sin - 0.5 ) * h;
 

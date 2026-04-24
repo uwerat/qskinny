@@ -7,17 +7,15 @@
 #include "QskAspect.h"
 #include "QskFunctions.h"
 
-#include <qfontmetrics.h>
+#include <qfont.h>
 
 static inline qreal qskMaxWidth(
     const QFont& font, const QStringList& list )
 {
-    const QFontMetricsF fm( font );
-
     qreal max = 0.0;
     for ( int i = 0; i < list.size(); i++ )
     {
-        const qreal w = qskHorizontalAdvance( fm, list[ i ] );
+        const qreal w = qskHorizontalAdvance( font, list[ i ] );
         if ( w > max )
             max = w;
     }

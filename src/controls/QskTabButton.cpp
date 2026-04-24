@@ -9,7 +9,6 @@
 #include "QskTextOptions.h"
 #include "QskQuick.h"
 
-#include <qfontmetrics.h>
 #include <qpointer.h>
 
 QSK_SUBCONTROL( QskTabButton, Panel )

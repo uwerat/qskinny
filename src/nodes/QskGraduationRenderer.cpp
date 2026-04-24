@@ -18,7 +18,6 @@
 #include "QskFunctions.h"
 
 #include <qstring.h>
-#include <qfontmetrics.h>
 #include <qquickwindow.h>
 
 namespace
@@ -342,8 +341,6 @@ QSGNode* QskGraduationRenderer::updateLabelsNode( const QskSkinnable* skinnable,
     if( node == nullptr )
         node = new QSGNode;
 
-    const QFontMetricsF fm( m_data->font );
-
     auto nextNode = node->firstChild();
 
     QRectF lastRect; // to skip overlapping label
@@ -361,14 +358,14 @@ QSGNode* QskGraduationRenderer::updateLabelsNode( const QskSkinnable* skinnable,
 
         if ( label.canConvert< QString >() )
         {
-            size = qskTextRenderSize( fm, label.toString() );
+            size = qskTextRenderSize( m_data->font, label.toString() );
         }
         else if ( label.canConvert< QskGraphic >() )
         {
             const auto graphic = label.value< QskGraphic >();
             if ( !graphic.isNull() )
             {
-                size.rheight() = fm.height();
+                size.rheight() = qskTextHeight( m_data->font );
                 size.rwidth() = graphic.widthForHeight( size.height() );
             }
         }
@@ -432,9 +429,7 @@ QSizeF QskGraduationRenderer::boundingLabelSize() const
     if ( ticks.isEmpty() )
         return boundingSize;
 
-    const QFontMetricsF fm( m_data->font );
-
-    const qreal h = fm.height();
+    const qreal h = qskTextHeight( m_data->font );
 
     for ( auto tick : ticks )
     {
@@ -445,7 +440,7 @@ QSizeF QskGraduationRenderer::boundingLabelSize() const
         if ( label.canConvert< QString >() )
         {
             boundingSize = boundingSize.expandedTo(
-                qskTextRenderSize( fm, label.toString() ) );
+                qskTextRenderSize( m_data->font, label.toString() ) );
         }
         else if ( label.canConvert< QskGraphic >() )
         {

@@ -9,7 +9,6 @@
 #include <QskGraphic.h>
 #include <QskFontRole.h>
 
-#include <QFontMetricsF>
 #include <QRawFont>
 
 constexpr int glyphSize = 20;
@@ -43,13 +42,13 @@ void GlyphListView::setFont( const QRawFont& font )
     m_maxNameWidth = 0;
 
     {
-        const QFontMetricsF fm( effectiveFont( Text ) );
+        const auto font = effectiveFont( Text );
 
         for ( auto it = names.constBegin(); it != names.constEnd(); ++it )
         {
             m_nameTable.insert( it.value(), it.key() );
 
-            const qreal w = qskHorizontalAdvance( fm, it.key() );
+            const qreal w = qskHorizontalAdvance( font, it.key() );
             if ( w > m_maxNameWidth )
                 m_maxNameWidth = w;
         }
@@ -80,8 +79,7 @@ qreal GlyphListView::columnWidth( int col ) const
     {
         case 0:
         {
-            const QFontMetricsF fm( effectiveFont( Text ) );
-            return qskHorizontalAdvance( fm, "999999" );
+            return qskHorizontalAdvance( effectiveFont( Text ), "999999" );
         }
 
         case 1:

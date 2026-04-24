@@ -7,8 +7,8 @@
 #include "QskLinearBox.h"
 #include "QskPushButton.h"
 #include "QskTextOptions.h"
+#include "QskFunctions.h"
 
-#include <qfontmetrics.h>
 #include <qstringlist.h>
 
 QSK_SUBCONTROL( QskInputPredictionBar, Panel )
@@ -35,7 +35,7 @@ namespace
             if ( which != Qt::PreferredSize )
                 return QSizeF();
 
-            auto size = QFontMetricsF( font() ).size( Qt::TextSingleLine, text() );
+            auto size = qskTextRenderSize2( Qt::TextSingleLine, font(), text() );
 
             size = size.expandedTo( strutSizeHint( Panel ) );
             size = outerBoxSize( Panel, size );

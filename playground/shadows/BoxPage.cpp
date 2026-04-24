@@ -8,7 +8,6 @@
 #include "Slider.h"
 
 #include <QskRgbValue.h>
-#include <QFontMetrics>
 
 namespace
 {

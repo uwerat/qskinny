@@ -12,7 +12,6 @@
 #include <qrect.h>
 
 class QFont;
-class QFontMetricsF;
 class QString;
 
 QSK_EXPORT QRect qskAlignedRect( const QRect& outerRect,
@@ -28,8 +27,9 @@ QSK_EXPORT QRectF qskValidOrEmptyInnerRect(
     const QRectF& rect, const QMarginsF& margins );
 
 QSK_EXPORT qreal qskHorizontalAdvance( const QFont&, const QString& );
-QSK_EXPORT qreal qskHorizontalAdvance( const QFontMetricsF&, const QString& );
-QSK_EXPORT QSizeF qskTextRenderSize( const QFontMetricsF&, const QString& );
+QSK_EXPORT QSizeF qskTextRenderSize( const QFont&, const QString& );
+QSK_EXPORT QSizeF qskTextRenderSize2( int, const QFont&, const QString& );
+QSK_EXPORT qreal qskTextHeight( const QFont& );
 
 QSK_EXPORT QRectF qskInterpolatedRect(
     const QRectF& from, const QRectF& to, qreal progress );

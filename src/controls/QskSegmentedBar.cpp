@@ -14,7 +14,6 @@
 
 #include <qguiapplication.h>
 #include <qstylehints.h>
-#include <qfontmetrics.h>
 
 QSK_SUBCONTROL( QskSegmentedBar, Panel )
 QSK_SUBCONTROL( QskSegmentedBar, Splash )

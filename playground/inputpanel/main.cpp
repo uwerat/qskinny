@@ -20,7 +20,6 @@
 #include <QskVirtualKeyboard.h>
 #include <QskWindow.h>
 
-#include <QFontMetricsF>
 #include <QGuiApplication>
 
 namespace
@@ -278,10 +277,10 @@ class LocaleListView final : public QskListView
     {
         if ( m_maxWidth == 0.0 )
         {
-            const QFontMetricsF fm( effectiveFont( Text ) );
+            const auto font = effectiveFont( Text );
 
             for ( const auto& entry : m_values )
-                m_maxWidth = qMax( m_maxWidth, qskHorizontalAdvance( fm, entry.first ) );
+                m_maxWidth = qMax( m_maxWidth, qskHorizontalAdvance( font, entry.first ) );
 
             const auto padding = paddingHint( Cell );
             m_maxWidth += padding.left() + padding.right();
@@ -292,10 +291,10 @@ class LocaleListView final : public QskListView
 
     qreal rowHeight() const override
     {
-        const QFontMetricsF fm( effectiveFont( Text ) );
+        const auto font = effectiveFont( Text );
         const auto padding = paddingHint( Cell );
 
-        return fm.height() + padding.top() + padding.bottom();
+        return qskTextHeight( font ) + padding.top() + padding.bottom();
     }
 
     QVariant valueAt( int row, int ) const override

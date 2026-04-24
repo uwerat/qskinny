@@ -8,8 +8,8 @@
 
 #include "QskTextOptions.h"
 #include "QskTextRenderer.h"
+#include "QskFunctions.h"
 
-#include <qfontmetrics.h>
 #include <qmath.h>
 
 QskTextLabelSkinlet::QskTextLabelSkinlet( QskSkin* skin )
@@ -84,7 +84,7 @@ QSizeF QskTextLabelSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     QSizeF hint;
 
-    const qreal lineHeight = QFontMetricsF( font ).height();
+    const qreal lineHeight = qskTextHeight( font );
 
     if ( text.isEmpty() )
     {

@@ -18,7 +18,7 @@
 #include <QskFunctions.h>
 
 #include <qtransform.h>
-#include <qfontmetrics.h>
+#include <qfont.h>
 #include <qcolor.h>
 
 enum { Lower, Upper, Value };
@@ -120,10 +120,10 @@ QRectF PlotCursorSkinlet::sampleRect( const QskSkinnable* skinnable,
 
     pos = cursor->transformation().map( pos );
 
-    const QFontMetricsF fm( cursor->effectiveFont( Q::LabelText ) );
+    const auto font = cursor->effectiveFont( Q::LabelText );
 
-    const qreal w = qskHorizontalAdvance( fm, "100.0" );
-    const qreal h = fm.height();
+    const qreal w = qskHorizontalAdvance( font, "100.0" );
+    const qreal h = qskTextHeight( font );
 
     QRectF r( 0, 0, w, h );
     r = r.marginsAdded( cursor->paddingHint( Q::LabelPanel ) );

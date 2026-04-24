@@ -14,7 +14,6 @@
 #include <QskBoxShadowNode.h>
 #include <QskSGNode.h>
 
-#include <QFontMetrics>
 #include <QtMath>
 
 LightDisplaySkinlet::LightDisplaySkinlet( QskSkin* skin )
@@ -70,13 +69,16 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     else if( subControl == LightDisplay::ValueText )
     {
         QRectF valueTextRect = subControlRect( skinnable, contentsRect, LightDisplay::Panel );
-        const QFontMetricsF fm( skinnable->effectiveFont( subControl ) );
-        const qreal fontWidth = qskHorizontalAdvance( fm, QStringLiteral( "100 %" ) );
-        const QPointF center = valueTextRect.center();
+        const auto font = skinnable->effectiveFont( subControl );
 
-        return QRectF(
-            center.x() - fontWidth / 2, center.y() - fm.height() / 2,
-            fontWidth, fm.height() );
+        const qreal w = qskHorizontalAdvance( font, QStringLiteral( "100 %" ) );
+        const qreal h = qskTextHeight( font );
+
+#if 1
+        // qskAlignedRect !
+        const QPointF center = valueTextRect.center();
+        return QRectF( center.x() - w / 2, center.y() - h / 2, w, h );
+#endif
     }
     else if( subControl == LightDisplay::LeftLabel )
     {
@@ -192,10 +194,10 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
 
 QSizeF LightDisplaySkinlet::textLabelsSize( const LightDisplay* display ) const
 {
-    const QFontMetricsF fm( display->effectiveFont( LightDisplay::LeftLabel ) );
+    const auto font = display->effectiveFont( LightDisplay::LeftLabel );
 
-    qreal w = qskHorizontalAdvance( fm, QStringLiteral( "  100" ) );
-    qreal h = fm.height();
+    qreal w = qskHorizontalAdvance( font, QStringLiteral( "  100" ) );
+    qreal h = qskTextHeight( font );
 
     return { w, h };
 }

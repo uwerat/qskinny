@@ -10,10 +10,10 @@
 #include "QskSkinnable.h"
 #include "QskMargins.h"
 #include "QskTextOptions.h"
+#include "QskFunctions.h"
 
 #include <qdebug.h>
 #include <qfont.h>
-#include <qfontmetrics.h>
 #include <qmath.h>
 
 QskSubcontrolLayoutEngine::LayoutElement::LayoutElement(
@@ -150,7 +150,7 @@ QSizeF QskSubcontrolLayoutEngine::TextElement::implicitSize( const QSizeF& const
 
     QSizeF hint;
 
-    const qreal lineHeight = QFontMetricsF( font ).height();
+    const qreal lineHeight = qskTextHeight( font );
 
     if ( m_text.isEmpty() )
     {

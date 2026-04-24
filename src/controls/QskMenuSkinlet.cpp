@@ -17,7 +17,6 @@
 
 #include "QskSGNode.h"
 
-#include <qfontmetrics.h>
 #include <qmath.h>
 
 static inline int qskActionIndex( const QskMenu* menu, int optionIndex )
@@ -149,7 +148,7 @@ class QskMenuSkinlet::PrivateData
 
     qreal textWidthInternal( const QskMenu* menu ) const
     {
-        const QFontMetricsF fm( menu->effectiveFont( QskMenu::Text ) );
+        const auto font = menu->effectiveFont( QskMenu::Text );
 
         auto maxWidth = 0.0;
 
@@ -158,7 +157,7 @@ class QskMenuSkinlet::PrivateData
         {
             if( !option.text().isEmpty() )
             {
-                const auto w = qskHorizontalAdvance( fm, option.text() );
+                const auto w = qskHorizontalAdvance( font, option.text() );
                 if( w > maxWidth )
                     maxWidth = w;
             }

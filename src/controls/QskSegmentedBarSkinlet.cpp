@@ -16,7 +16,6 @@
 #include "QskSubcontrolLayoutEngine.h"
 #include "QskBoxHints.h"
 
-#include <qfontmetrics.h>
 #include <qmath.h>
 
 namespace

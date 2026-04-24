@@ -7,8 +7,9 @@
 
 #include <QskSlider.h>
 #include <QskTextLabel.h>
+#include <QskFunctions.h>
 
-#include <qfontmetrics.h>
+#include <qfont.h>
 
 Slider::Slider( const QString& text, qreal min, qreal max,
         qreal step, qreal value, QQuickItem* parent )
@@ -28,8 +29,8 @@ Slider::Slider( const QString& text, qreal min, qreal max,
     m_valueLabel->setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
     updateLabel( value );
 
-    const QFontMetricsF fm( m_valueLabel->font() );
-    m_valueLabel->setFixedWidth( fm.horizontalAdvance( "-100" ) );
+    const auto width = qskHorizontalAdvance( m_valueLabel->font(), "-100" );
+    m_valueLabel->setFixedWidth( width );
 
     connect( m_slider, &QskSlider::valueChanged, this, &Slider::updateLabel );
     connect( m_slider, &QskSlider::valueChanged, this, &Slider::valueChanged );

@@ -14,8 +14,6 @@
 #include "QskSubcontrolLayoutEngine.h"
 #include "QskTextRenderer.h"
 
-#include <qfontmetrics.h>
-
 static int qskWidestIndex( const QskComboBox* box )
 {
     const auto font = box->effectiveFont( QskComboBox::Text );

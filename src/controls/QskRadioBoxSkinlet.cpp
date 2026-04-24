@@ -8,21 +8,20 @@
 #include "QskRadioBox.h"
 #include "QskFunctions.h"
 
-#include <qfontmetrics.h>
 #include <qmath.h>
 
 namespace
 {
     QSizeF buttonSizeHint( const QskSkinnable* skinnable,
-        const QFontMetricsF& fm, const QString& text )
+        const QFont& font, const QString& text )
     {
         using Q = QskRadioBox;
 
         auto hint = skinnable->strutSizeHint( Q::CheckIndicatorPanel );
 
         hint.rwidth() += skinnable->spacingHint( Q::Button )
-            + qskHorizontalAdvance( fm, text );
-        hint.rheight() = qMax( hint.height(), fm.height() );
+            + qskHorizontalAdvance( font, text );
+        hint.rheight() = qMax( hint.height(), qskTextHeight( font ) );
 
         hint = hint.grownBy( skinnable->paddingHint( Q::Button ) );
         hint = hint.expandedTo( skinnable->strutSizeHint( Q::Button ) );
@@ -32,8 +31,8 @@ namespace
 
     QSizeF buttonSizeHint( const QskRadioBox* radioBox, int index )
     {
-        const QFontMetrics fm( radioBox->effectiveFont( QskRadioBox::Text ) );
-        return buttonSizeHint( radioBox, fm, radioBox->optionAt( index ) );
+        const auto font = radioBox->effectiveFont( QskRadioBox::Text );
+        return buttonSizeHint( radioBox, font, radioBox->optionAt( index ) );
     }
 }
 
@@ -246,15 +245,16 @@ QSizeF QskRadioBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     const auto radioBox = static_cast< const QskRadioBox* >( skinnable );
 
-    const QFontMetrics fm( radioBox->effectiveFont( QskRadioBox::Text ) );
 
     qreal w = 0.0;
     qreal h = 0.0;
 
     const auto options = radioBox->options();
+    const auto font = radioBox->effectiveFont( QskRadioBox::Text );
+
     for( const auto& option : options )
     {
-        const auto buttonSize = buttonSizeHint( radioBox, fm, option );
+        const auto buttonSize = buttonSizeHint( radioBox, font, option );
 
         w = qMax( w, buttonSize.width() );
         h += buttonSize.height();

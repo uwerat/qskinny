@@ -8,7 +8,6 @@
 #include "QskFunctions.h"
 #include "QskSkinStateChanger.h"
 
-#include <qfontmetrics.h>
 #include <qcursor.h>
 
 static bool qskIsButtonHovered(
@@ -282,17 +281,17 @@ QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
     QSizeF hint;
 
     {
-        const QFontMetricsF fm( spinBox->effectiveFont( Q::Text ) );
+        const auto font = spinBox->effectiveFont( Q::Text );
 
         // 18: QAbstractSpinBox does this
-        const auto w1 = qskHorizontalAdvance( fm,
+        const auto w1 = qskHorizontalAdvance( font,
             spinBox->textFromValue( spinBox->minimum() ).left( 18 ) );
 
-        const auto w2 = qskHorizontalAdvance( fm,
+        const auto w2 = qskHorizontalAdvance( font,
             spinBox->textFromValue( spinBox->maximum() ).left( 18 ) );
 
         hint.setWidth( std::max( w1, w2 ) );
-        hint.setHeight( fm.height() );
+        hint.setHeight( qskTextHeight( font ) );
 
         hint = hint.grownBy( spinBox->paddingHint( Q::TextPanel ) );
         hint = hint.expandedTo( spinBox->strutSizeHint( Q::TextPanel ) );
