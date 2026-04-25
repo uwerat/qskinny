@@ -5,7 +5,7 @@
 
 #include "GlyphListView.h"
 
-#include <QskFunctions.h>
+#include <QskPlainTextRenderer.h>
 #include <QskGraphic.h>
 #include <QskFontRole.h>
 
@@ -48,7 +48,7 @@ void GlyphListView::setFont( const QRawFont& font )
         {
             m_nameTable.insert( it.value(), it.key() );
 
-            const qreal w = qskHorizontalAdvance( font, it.key() );
+            const qreal w = QskPlainTextRenderer::textWidth( it.key(), font );
             if ( w > m_maxNameWidth )
                 m_maxNameWidth = w;
         }
@@ -79,7 +79,8 @@ qreal GlyphListView::columnWidth( int col ) const
     {
         case 0:
         {
-            return qskHorizontalAdvance( effectiveFont( Text ), "999999" );
+            return QskPlainTextRenderer::textWidth(
+                "999999", effectiveFont( Text ) );
         }
 
         case 1:

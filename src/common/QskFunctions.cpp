@@ -158,31 +158,6 @@ QSizeF qskInterpolatedSize( const QSizeF& from, const QSizeF& to, qreal progress
     return QSizeF( w, h );
 }
 
-qreal qskHorizontalAdvance( const QFont& font, const QString& text )
-{
-    const QFontMetricsF fm( font );
-    return fm.horizontalAdvance( text );
-}
-
-QSizeF qskTextRenderSize( const QFont& font, const QString& text )
-{
-    if ( text.isEmpty() )
-        return QSizeF( 0.0, 0.0 );
-
-    QRectF r( 0.0, 0.0, 10e6, 10e6 );
-
-    const QFontMetricsF fm( font );
-    r = fm.boundingRect( r, 0, text );
-
-    return r.size();
-}
-
-QSizeF qskTextRenderSize2( int options, const QFont& font, const QString& text )
-{
-    const QFontMetricsF fm( font );
-    return fm.size( options, text );
-}
-
 qreal qskTextHeight( const QFont& font )
 {
     const QFontMetricsF fm( font );

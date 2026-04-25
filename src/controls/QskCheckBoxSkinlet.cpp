@@ -5,8 +5,6 @@
 
 #include "QskCheckBoxSkinlet.h"
 #include "QskCheckBox.h"
-#include "QskTextOptions.h"
-#include "QskFunctions.h"
 
 QskCheckBoxSkinlet::QskCheckBoxSkinlet( QskSkin* skin )
     : QskSkinlet( skin )
@@ -139,8 +137,7 @@ QSizeF QskCheckBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
         if ( which == Qt::MinimumSize )
             text = 'W';
 
-        const auto font = skinnable->effectiveFont( Q::Text );
-        extra += qskHorizontalAdvance( font, text );
+        extra += checkBox->effectiveTextSize( Q::Text, text ).width();
 
         size.setWidth( size.width() + extra );
     }

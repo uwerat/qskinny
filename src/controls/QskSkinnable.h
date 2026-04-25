@@ -90,6 +90,8 @@ class QSK_EXPORT QskSkinnable
     qreal effectiveFontHeight( QskAspect ) const;
     QskColorFilter effectiveGraphicFilter( QskAspect::Subcontrol ) const;
 
+    QSizeF effectiveTextSize( QskAspect, const QString& ) const;
+
     void setSubcontrolProxy( QskAspect::Subcontrol, QskAspect::Subcontrol proxy );
     void resetSubcontrolProxy( QskAspect::Subcontrol );
     QskAspect::Subcontrol subcontrolProxy( QskAspect::Subcontrol ) const;

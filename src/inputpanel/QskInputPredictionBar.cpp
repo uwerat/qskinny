@@ -7,7 +7,6 @@
 #include "QskLinearBox.h"
 #include "QskPushButton.h"
 #include "QskTextOptions.h"
-#include "QskFunctions.h"
 
 #include <qstringlist.h>
 
@@ -35,7 +34,7 @@ namespace
             if ( which != Qt::PreferredSize )
                 return QSizeF();
 
-            auto size = qskTextRenderSize2( Qt::TextSingleLine, font(), text() );
+            auto size = effectiveTextSize( Text, text() );
 
             size = size.expandedTo( strutSizeHint( Panel ) );
             size = outerBoxSize( Panel, size );

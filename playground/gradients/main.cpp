@@ -16,7 +16,7 @@
 #include <QskWindow.h>
 #include <QskRgbValue.h>
 #include <QskSkinManager.h>
-#include <QskFunctions.h>
+#include <QskPlainTextRenderer.h>
 
 #include <QDoubleValidator>
 #include <QGuiApplication>
@@ -54,8 +54,9 @@ namespace
             m_textField->setValidator( new InputValidator( m_textField ) );
             m_textField->setText( QString::number( value ) );
 
-            const auto width = qskHorizontalAdvance( m_textField->font(), "-0.000" );
-            m_textField->setFixedWidth( width );
+            const auto sz = QskPlainTextRenderer::textSize(
+                QStringLiteral( "-0.000" ), m_textField->font() );
+            m_textField->setFixedWidth( sz.width() );
 
             connect( m_textField, &QskTextField::editingChanged,
                 this, [ this ]( bool on ) { if ( !on ) Q_EMIT valueChanged(); } );

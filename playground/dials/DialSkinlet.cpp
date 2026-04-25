@@ -14,6 +14,7 @@
 #include <QskLinesNode.h>
 #include <QskFunctions.h>
 #include <QskSGNode.h>
+#include <QskPlainTextRenderer.h>
 
 #include <QLineF>
 #include <QtMath>
@@ -125,16 +126,15 @@ QSGNode* DialSkinlet::updateLabelsNode(
 
         if ( !text.isEmpty() )
         {
-            const auto w = qskHorizontalAdvance( font, text );
-            const auto h = qskTextHeight( font );
+            const auto sz = QskPlainTextRenderer::textSize( text, font );
 
-            const auto adjustX = ( -0.5 * cos - 0.5 ) * w;
-            const auto adjustY = ( -0.5 * sin - 0.5 ) * h;
+            const auto adjustX = ( -0.5 * cos - 0.5 ) * sz.width();
+            const auto adjustY = ( -0.5 * sin - 0.5 ) * sz.height();
 
             const auto numbersX = xEnd - ( spacing * cos ) + adjustX;
             const auto numbersY = yEnd - ( spacing * sin ) + adjustY;
 
-            const QRectF numbersRect( numbersX, numbersY, w, h );
+            const QRectF numbersRect( numbersX, numbersY, sz.width(), sz.height() );
 
             labelNode = QskSkinlet::updateTextNode(
                 dial, labelNode, numbersRect, Qt::AlignCenter | Qt::AlignHCenter,

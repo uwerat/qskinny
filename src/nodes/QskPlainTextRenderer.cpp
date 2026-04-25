@@ -92,6 +92,12 @@ static void qskSetupLayout( QTextLayout& layout, const QString& text, const QFon
     layout.endLayout();
 }
 
+qreal QskPlainTextRenderer::textWidth(
+    const QString& text, const QFont& font, const QskTextOptions& options )
+{
+    return textSize( text, font, options ).width();
+}
+
 QSizeF QskPlainTextRenderer::textSize(
     const QString& text, const QFont& font, const QskTextOptions& options )
 {

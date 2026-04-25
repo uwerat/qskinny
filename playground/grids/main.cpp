@@ -371,7 +371,7 @@ class MainWidget : public QWidget
         const auto r = contentsRect();
         const int spacing = 5;
 
-        const int w1 = qskHorizontalAdvance( m_listBox->font(), "Test 100" ) + 20;
+        const int w1 = listWidth();
         const int w2 = r.width() - w1 - spacing;
 
         m_listBox->setGeometry( r.left(), r.top(), w1, r.height() );
@@ -381,6 +381,12 @@ class MainWidget : public QWidget
     }
 
   private:
+    qreal listWidth() const
+    {
+        const QFontMetricsF fm( m_listBox->font() );
+        return fm.horizontalAdvance( QStringLiteral( "Test 100" ) ) + 20; 
+    }
+
     QListWidget* m_listBox;
     Box* m_box;
 };

@@ -6,9 +6,6 @@
 #include "QskTabButtonSkinlet.h"
 #include "QskTabButton.h"
 
-#include "QskTextOptions.h"
-#include "QskFunctions.h"
-
 QskTabButtonSkinlet::QskTabButtonSkinlet( QskSkin* skin )
     : Inherited( skin )
 {
@@ -68,10 +65,7 @@ QSizeF QskTabButtonSkinlet::sizeHint( const QskSkinnable* skinnable,
     const auto text = tabButton->text();
 
     if ( !text.isEmpty() )
-    {
-        const auto font = tabButton->effectiveFont( QskTabButton::Text );
-        size = qskTextRenderSize2( Qt::TextShowMnemonic, font, text );
-    }
+        size = skinnable->effectiveTextSize( QskTabButton::Text, text );
 
     size = tabButton->outerBoxSize( Q::Panel, size );
     size = size.expandedTo( tabButton->strutSizeHint( Q::Panel ) );

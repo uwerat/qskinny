@@ -6,6 +6,7 @@
 #include "QskSpinBoxSkinlet.h"
 #include "QskSpinBox.h"
 #include "QskFunctions.h"
+#include "QskPlainTextRenderer.h"
 #include "QskSkinStateChanger.h"
 
 #include <qcursor.h>
@@ -284,11 +285,12 @@ QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
         const auto font = spinBox->effectiveFont( Q::Text );
 
         // 18: QAbstractSpinBox does this
-        const auto w1 = qskHorizontalAdvance( font,
-            spinBox->textFromValue( spinBox->minimum() ).left( 18 ) );
 
-        const auto w2 = qskHorizontalAdvance( font,
-            spinBox->textFromValue( spinBox->maximum() ).left( 18 ) );
+        const auto textMin = spinBox->textFromValue( spinBox->minimum() ).left( 18 );
+        const auto textMax = spinBox->textFromValue( spinBox->maximum() ).left( 18 );
+
+        const auto w1 = QskPlainTextRenderer::textWidth( textMin, font );
+        const auto w2 = QskPlainTextRenderer::textWidth( textMax, font );
 
         hint.setWidth( std::max( w1, w2 ) );
         hint.setHeight( qskTextHeight( font ) );

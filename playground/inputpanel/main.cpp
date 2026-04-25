@@ -17,6 +17,7 @@
 #include <QskFunctions.h>
 #include <QskInputPanelBox.h>
 #include <QskObjectCounter.h>
+#include <QskPlainTextRenderer.h>
 #include <QskVirtualKeyboard.h>
 #include <QskWindow.h>
 
@@ -280,7 +281,10 @@ class LocaleListView final : public QskListView
             const auto font = effectiveFont( Text );
 
             for ( const auto& entry : m_values )
-                m_maxWidth = qMax( m_maxWidth, qskHorizontalAdvance( font, entry.first ) );
+            {
+                const auto w = QskPlainTextRenderer::textWidth( entry.first, font );
+                m_maxWidth = qMax( m_maxWidth, w );
+            }
 
             const auto padding = paddingHint( Cell );
             m_maxWidth += padding.left() + padding.right();

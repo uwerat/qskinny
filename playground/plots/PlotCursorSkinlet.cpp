@@ -16,6 +16,7 @@
 #include <QskPlotCorridorData.h>
 #include <QskPlotView.h>
 #include <QskFunctions.h>
+#include <QskPlainTextRenderer.h>
 
 #include <qtransform.h>
 #include <qfont.h>
@@ -120,12 +121,10 @@ QRectF PlotCursorSkinlet::sampleRect( const QskSkinnable* skinnable,
 
     pos = cursor->transformation().map( pos );
 
-    const auto font = cursor->effectiveFont( Q::LabelText );
+    const auto textSize = QskPlainTextRenderer::textSize(
+        QStringLiteral( "100.0" ), cursor->effectiveFont( Q::LabelText ) );
 
-    const qreal w = qskHorizontalAdvance( font, "100.0" );
-    const qreal h = qskTextHeight( font );
-
-    QRectF r( 0, 0, w, h );
+    QRectF r( 0, 0, textSize.width(), textSize.height() );
     r = r.marginsAdded( cursor->paddingHint( Q::LabelPanel ) );
 
     r.moveRight( pos.x() - 5 );

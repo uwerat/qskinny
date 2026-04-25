@@ -9,10 +9,10 @@
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
 #include "QskTextOptions.h"
+#include "QskTextRenderer.h"
 #include "QskBoxHints.h"
 #include "QskFunctions.h"
 #include "QskMargins.h"
-#include "QskFunctions.h"
 #include "QskLabelData.h"
 
 #include "QskSGNode.h"
@@ -149,6 +149,7 @@ class QskMenuSkinlet::PrivateData
     qreal textWidthInternal( const QskMenu* menu ) const
     {
         const auto font = menu->effectiveFont( QskMenu::Text );
+        const auto textOptions = menu->textOptionsHint( QskMenu::Text );
 
         auto maxWidth = 0.0;
 
@@ -157,7 +158,9 @@ class QskMenuSkinlet::PrivateData
         {
             if( !option.text().isEmpty() )
             {
-                const auto w = qskHorizontalAdvance( font, option.text() );
+                const auto w = QskTextRenderer::textSize(
+                    option.text(), font, textOptions ).width();
+
                 if( w > maxWidth )
                     maxWidth = w;
             }

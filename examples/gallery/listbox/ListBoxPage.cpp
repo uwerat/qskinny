@@ -5,7 +5,7 @@
 
 #include "ListBoxPage.h"
 #include <QskSimpleListBox.h>
-#include <QskFunctions.h>
+#include <QskPlainTextRenderer.h>
 
 namespace
 {
@@ -40,8 +40,10 @@ namespace
             // can prevent the list box from having to find it out
             // the expensive way.
 
-            const qreal maxWidth = qskHorizontalAdvance( effectiveFont( Cell ), entries.last() );
-            setColumnWidthHint( 0, maxWidth );
+            const auto textSize = QskPlainTextRenderer::textSize(
+                entries.last(), effectiveFont( Text ), QskTextOptions() );
+
+            setColumnWidthHint( 0, textSize.width() );
 
             append( entries );
         }

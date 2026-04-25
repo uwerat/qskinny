@@ -7,10 +7,10 @@
 #define QSK_PLAIN_TEXT_RENDERER_H
 
 #include "QskNamespace.h"
+#include "QskTextOptions.h"
 #include <qnamespace.h>
 
 class QskTextColors;
-class QskTextOptions;
 
 class QString;
 class QFont;
@@ -32,8 +32,11 @@ namespace QskPlainTextRenderer
         QSGNode* parentNode, const QColor& textColor,
         Qsk::TextStyle, const QColor& styleColor );
 
+    QSK_EXPORT qreal textWidth( const QString&,
+        const QFont&, const QskTextOptions& = QskTextOptions() );
+
     QSK_EXPORT QSizeF textSize( const QString&,
-        const QFont&, const QskTextOptions& );
+        const QFont&, const QskTextOptions& = QskTextOptions() );
 
     QSK_EXPORT QRectF textRect( const QString&, const QFont&,
         const QskTextOptions&, Qt::Alignment, const QSizeF& );

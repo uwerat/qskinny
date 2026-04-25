@@ -11,6 +11,7 @@
 #include "QskGraduationNode.h"
 #include "QskTextOptions.h"
 #include "QskTextColors.h"
+#include "QskTextRenderer.h"
 #include "QskGraphic.h"
 #include "QskColorFilter.h"
 #include "QskControl.h"
@@ -71,6 +72,14 @@ static inline QTransform qskScaleTransform( Qt::Edge edge,
 
         return transform;
     }
+}
+
+static QSizeF qskTextLabelSize( const QFont& font, const QString& text )
+{
+    QskTextOptions options;
+    options.setFormat( QskTextOptions::PlainText );
+
+    return QskTextRenderer::textSize( text, font, options );
 }
 
 static inline quint8 qskLabelNodeRole( const QVariant& label )
@@ -358,7 +367,7 @@ QSGNode* QskGraduationRenderer::updateLabelsNode( const QskSkinnable* skinnable,
 
         if ( label.canConvert< QString >() )
         {
-            size = qskTextRenderSize( m_data->font, label.toString() );
+            size = qskTextLabelSize( m_data->font, label.toString() );
         }
         else if ( label.canConvert< QskGraphic >() )
         {
@@ -440,7 +449,7 @@ QSizeF QskGraduationRenderer::boundingLabelSize() const
         if ( label.canConvert< QString >() )
         {
             boundingSize = boundingSize.expandedTo(
-                qskTextRenderSize( m_data->font, label.toString() ) );
+                qskTextLabelSize( m_data->font, label.toString() ) );
         }
         else if ( label.canConvert< QskGraphic >() )
         {

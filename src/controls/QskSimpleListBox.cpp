@@ -5,19 +5,22 @@
 
 #include "QskSimpleListBox.h"
 #include "QskAspect.h"
-#include "QskFunctions.h"
+#include "QskTextRenderer.h"
 
 #include <qfont.h>
 
-static inline qreal qskMaxWidth(
-    const QFont& font, const QStringList& list )
+static inline qreal qskMaxTextWidth(
+    const QskSimpleListBox* listBox, const QStringList& entries )
 {
+    const auto font = listBox->effectiveFont( QskSimpleListBox::Text );
+    const auto textOptions = listBox->textOptionsHint( QskSimpleListBox::Text );
+
     qreal max = 0.0;
-    for ( int i = 0; i < list.size(); i++ )
+    for ( const auto& text : entries )
     {
-        const qreal w = qskHorizontalAdvance( font, list[ i ] );
-        if ( w > max )
-            max = w;
+        const auto sz = QskTextRenderer::textSize( text, font, textOptions );
+        if ( sz.width() > max )
+            max = sz.width();
     }
 
     return max;
@@ -79,7 +82,7 @@ void QskSimpleListBox::setColumnWidthHint( int column, qreal width )
         if ( m_data->columnWidthHint > 0.0 )
             m_data->maxTextWidth = m_data->columnWidthHint;
         else
-            m_data->maxTextWidth = qskMaxWidth( effectiveFont( Text ), m_data->entries );
+            m_data->maxTextWidth = qskMaxTextWidth( this, m_data->entries );
 
         updateScrollableSize();
     }
@@ -100,7 +103,7 @@ void QskSimpleListBox::insert( const QStringList& list, int index )
 
     if ( m_data->columnWidthHint <= 0.0 )
     {
-        const auto w = qskMaxWidth( effectiveFont( Text ), list );
+        const auto w = qskMaxTextWidth( this, list );
         if ( w > m_data->maxTextWidth )
             m_data->maxTextWidth = w;
     }
@@ -145,7 +148,7 @@ void QskSimpleListBox::insert( const QString& text, int index )
 {
     if ( m_data->columnWidthHint <= 0.0 )
     {
-        const auto w = qskHorizontalAdvance( effectiveFont( Cell ), text );
+        const auto w = effectiveTextSize( Text, text ).width();
         if ( w > m_data->maxTextWidth )
             m_data->maxTextWidth = w;
     }
@@ -167,9 +170,9 @@ void QskSimpleListBox::removeAt( int index )
 
     if ( m_data->columnWidthHint <= 0.0 )
     {
-        const auto w = qskHorizontalAdvance( effectiveFont( Cell ), entries[ index ] );
+        const auto w = effectiveTextSize( Text, entries[ index ] ).width();
         if ( w >= m_data->maxTextWidth )
-            m_data->maxTextWidth = qskMaxWidth( effectiveFont( Text ), entries );
+            m_data->maxTextWidth = qskMaxTextWidth( this, entries );
     }
 
     entries.removeAt( index );
@@ -203,7 +206,7 @@ void QskSimpleListBox::removeBulk( int from, int to )
         m_data->entries.removeAt( i );
 
     if ( m_data->columnWidthHint <= 0.0 )
-        m_data->maxTextWidth = qskMaxWidth( effectiveFont( Text ), m_data->entries );
+        m_data->maxTextWidth = qskMaxTextWidth( this, m_data->entries );
 
     propagateEntries();
 
