@@ -76,7 +76,6 @@ QSizeF QskTextLabelSkinlet::sizeHint( const QskSkinnable* skinnable,
     const auto label = static_cast< const QskTextLabel* >( skinnable );
 
     const auto font = label->effectiveFont( QskTextLabel::Text );
-
     auto textOptions = label->textOptions();
     textOptions.setFormat( label->effectiveTextFormat() );
 
@@ -84,7 +83,7 @@ QSizeF QskTextLabelSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     QSizeF hint;
 
-    const qreal lineHeight = qskTextHeight( font );
+    const qreal lineHeight = label->effectiveFontHeight( QskTextLabel::Text );
 
     if ( text.isEmpty() )
     {

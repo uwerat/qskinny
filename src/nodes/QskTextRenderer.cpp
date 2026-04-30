@@ -42,6 +42,18 @@ QSizeF QskTextRenderer::textSize(
     return r.size();
 }
 
+qreal QskTextRenderer::textWidth(
+    const QString& text, const QFont& font, const QskTextOptions& options )
+{
+    return textSize( text, font, options ).width();
+}
+
+qreal QskTextRenderer::textHeight(
+    const QString& text, const QFont& font, const QskTextOptions& options )
+{
+    return textSize( text, font, options ).height();
+}
+
 void QskTextRenderer::updateNode(
     const QString& text, const QFont& font, const QskTextOptions& options,
     Qsk::TextStyle style, const QskTextColors& colors, Qt::Alignment alignment,

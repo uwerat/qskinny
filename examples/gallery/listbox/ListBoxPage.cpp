@@ -5,7 +5,6 @@
 
 #include "ListBoxPage.h"
 #include <QskSimpleListBox.h>
-#include <QskPlainTextRenderer.h>
 
 namespace
 {
@@ -32,18 +31,14 @@ namespace
             entries.reserve( count );
 
             for ( int i = 0; i < count; i++ )
-            {
                 entries += format.arg( i + 1 );
-            }
 
             // we know, that the last entry is the longest one and
             // can prevent the list box from having to find it out
             // the expensive way.
 
-            const auto textSize = QskPlainTextRenderer::textSize(
-                entries.last(), effectiveFont( Text ), QskTextOptions() );
-
-            setColumnWidthHint( 0, textSize.width() );
+            const auto width = effectiveTextSize( Text, entries.last() ).width();
+            setColumnWidthHint( 0, width );
 
             append( entries );
         }

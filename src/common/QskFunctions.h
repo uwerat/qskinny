@@ -26,7 +26,7 @@ QSK_EXPORT QRectF qskInnerRectF( const QRectF& rect );
 QSK_EXPORT QRectF qskValidOrEmptyInnerRect(
     const QRectF& rect, const QMarginsF& margins );
 
-QSK_EXPORT qreal qskTextHeight( const QFont& );
+QSK_EXPORT qreal qskFontHeight( const QFont& );
 
 QSK_EXPORT QRectF qskInterpolatedRect(
     const QRectF& from, const QRectF& to, qreal progress );

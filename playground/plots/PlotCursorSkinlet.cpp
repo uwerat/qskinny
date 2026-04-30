@@ -16,10 +16,8 @@
 #include <QskPlotCorridorData.h>
 #include <QskPlotView.h>
 #include <QskFunctions.h>
-#include <QskPlainTextRenderer.h>
 
 #include <qtransform.h>
-#include <qfont.h>
 #include <qcolor.h>
 
 enum { Lower, Upper, Value };
@@ -121,8 +119,8 @@ QRectF PlotCursorSkinlet::sampleRect( const QskSkinnable* skinnable,
 
     pos = cursor->transformation().map( pos );
 
-    const auto textSize = QskPlainTextRenderer::textSize(
-        QStringLiteral( "100.0" ), cursor->effectiveFont( Q::LabelText ) );
+    const auto textSize = cursor->effectiveTextSize(
+        Q::LabelText, QStringLiteral( "100.0" ) );
 
     QRectF r( 0, 0, textSize.width(), textSize.height() );
     r = r.marginsAdded( cursor->paddingHint( Q::LabelPanel ) );

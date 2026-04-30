@@ -18,9 +18,9 @@ static inline qreal qskMaxTextWidth(
     qreal max = 0.0;
     for ( const auto& text : entries )
     {
-        const auto sz = QskTextRenderer::textSize( text, font, textOptions );
-        if ( sz.width() > max )
-            max = sz.width();
+        const auto w = QskTextRenderer::textWidth( text, font, textOptions );
+        if ( w > max )
+            max = w;
     }
 
     return max;

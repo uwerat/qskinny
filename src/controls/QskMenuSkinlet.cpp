@@ -158,8 +158,8 @@ class QskMenuSkinlet::PrivateData
         {
             if( !option.text().isEmpty() )
             {
-                const auto w = QskTextRenderer::textSize(
-                    option.text(), font, textOptions ).width();
+                const auto w = QskTextRenderer::textWidth(
+                    option.text(), font, textOptions );
 
                 if( w > maxWidth )
                     maxWidth = w;

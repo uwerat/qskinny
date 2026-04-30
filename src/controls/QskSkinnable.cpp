@@ -780,15 +780,18 @@ QFont QskSkinnable::effectiveFont( QskAspect aspect ) const
 
 qreal QskSkinnable::effectiveFontHeight( const QskAspect aspect ) const
 {
-    return qskTextHeight( effectiveFont( aspect ) );
+    return qskFontHeight( effectiveFont( aspect ) );
 }
 
 QSizeF QskSkinnable::effectiveTextSize(
     const QskAspect aspect, const QString& text ) const
 {
     const auto font = effectiveFont( aspect );
-    const auto textOptions = textOptionsHint( aspect );
 
+    if ( text.isEmpty() )
+        return QSizeF( 0.0, qskFontHeight( font ) );
+
+    const auto textOptions = textOptionsHint( aspect );
     return QskTextRenderer::textSize( text, font, textOptions );
 }
 

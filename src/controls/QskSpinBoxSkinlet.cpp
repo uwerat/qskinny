@@ -5,9 +5,10 @@
 
 #include "QskSpinBoxSkinlet.h"
 #include "QskSpinBox.h"
-#include "QskFunctions.h"
-#include "QskPlainTextRenderer.h"
 #include "QskSkinStateChanger.h"
+#include "QskTextRenderer.h"
+#include "QskTextOptions.h"
+#include "QskFunctions.h"
 
 #include <qcursor.h>
 
@@ -61,6 +62,17 @@ static inline QskAspect::States qskButtonStates(
     }
 
     return states;
+}
+
+static inline qreal qskValueWidthHint( const QskSpinBox* spinBox,
+    bool isMaximum, const QFont& font, const QskTextOptions& textOptions )
+{
+    const qreal value = isMaximum ? spinBox->maximum() : spinBox->minimum();
+
+    auto text = spinBox->textFromValue( value );
+    text = text.left( 18 ); // QAbstractSpinBox does this
+
+    return QskTextRenderer::textSize( text, font, textOptions ).width();
 }
 
 QskSpinBoxSkinlet::QskSpinBoxSkinlet( QskSkin* )
@@ -283,17 +295,13 @@ QSizeF QskSpinBoxSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     {
         const auto font = spinBox->effectiveFont( Q::Text );
+        const auto textOptions = spinBox->textOptionsHint( Q::Text );
 
-        // 18: QAbstractSpinBox does this
+        const auto wMin = qskValueWidthHint( spinBox, false, font, textOptions );
+        const auto wMax = qskValueWidthHint( spinBox, true, font, textOptions );
 
-        const auto textMin = spinBox->textFromValue( spinBox->minimum() ).left( 18 );
-        const auto textMax = spinBox->textFromValue( spinBox->maximum() ).left( 18 );
-
-        const auto w1 = QskPlainTextRenderer::textWidth( textMin, font );
-        const auto w2 = QskPlainTextRenderer::textWidth( textMax, font );
-
-        hint.setWidth( std::max( w1, w2 ) );
-        hint.setHeight( qskTextHeight( font ) );
+        hint.setWidth( qMax( wMin, wMax ) );
+        hint.setHeight( qskFontHeight( font ) );
 
         hint = hint.grownBy( spinBox->paddingHint( Q::TextPanel ) );
         hint = hint.expandedTo( spinBox->strutSizeHint( Q::TextPanel ) );

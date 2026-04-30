@@ -13,8 +13,6 @@
 #include <QskTickmarks.h>
 #include <QskBoxShadowNode.h>
 #include <QskSGNode.h>
-#include <QskPlainTextRenderer.h>
-#include <QskFunctions.h>
 
 #include <QtMath>
 
@@ -63,6 +61,7 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     {
         const auto arcRect = subControlRect(
             skinnable, contentsRect, LightDisplay::ColdAndWarmArc );
+
         const qreal ticksWidth = display->arcMetricsHint(
             LightDisplay::Tickmarks ).thickness() + ticksSpacing;
 
@@ -70,21 +69,19 @@ QRectF LightDisplaySkinlet::subControlRect( const QskSkinnable* skinnable,
     }
     else if( subControl == LightDisplay::ValueText )
     {
-        const auto valueTextRect = subControlRect(
+        const auto r = subControlRect(
             skinnable, contentsRect, LightDisplay::Panel );
 
-        const auto font = skinnable->effectiveFont( subControl );
+        const auto size = skinnable->effectiveTextSize(
+             subControl, QStringLiteral( "100 %" ) );
 
-        const auto size = QskPlainTextRenderer::textSize(
-             QStringLiteral( "100 %" ), font );
-
-        return qskAlignedRectF( valueTextRect,
-            size.width(), size.height(), Qt::AlignCenter );
+        return qskAlignedRectF( r, size.width(), size.height(), Qt::AlignCenter );
     }
     else if( subControl == LightDisplay::LeftLabel )
     {
         const QRectF ticksRect = subControlRect(
             skinnable, contentsRect, LightDisplay::Tickmarks );
+
         const auto size = textLabelsSize( display );
 
         auto rect = contentsRect;
@@ -195,8 +192,8 @@ QSGNode* LightDisplaySkinlet::updateSubNode(
 
 QSizeF LightDisplaySkinlet::textLabelsSize( const LightDisplay* display ) const
 {
-    const auto font = display->effectiveFont( LightDisplay::LeftLabel );
-    return QskPlainTextRenderer::textSize( QStringLiteral( "  100" ), font );
+    return display->effectiveTextSize(
+        LightDisplay::LeftLabel, QStringLiteral( "  100" ) );
 }
 
 #include "moc_LightDisplaySkinlet.cpp"

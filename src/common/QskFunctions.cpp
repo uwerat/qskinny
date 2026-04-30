@@ -158,10 +158,9 @@ QSizeF qskInterpolatedSize( const QSizeF& from, const QSizeF& to, qreal progress
     return QSizeF( w, h );
 }
 
-qreal qskTextHeight( const QFont& font )
+qreal qskFontHeight( const QFont& font )
 {
-    const QFontMetricsF fm( font );
-    return fm.height();
+    return QFontMetricsF( font ).height();
 }
 
 qreal qskFuzzyFloor( qreal value, qreal stepSize )

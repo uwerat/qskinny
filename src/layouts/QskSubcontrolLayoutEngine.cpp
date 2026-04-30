@@ -150,7 +150,7 @@ QSizeF QskSubcontrolLayoutEngine::TextElement::implicitSize( const QSizeF& const
 
     QSizeF hint;
 
-    const qreal lineHeight = qskTextHeight( font );
+    const qreal lineHeight = qskFontHeight( font );
 
     if ( m_text.isEmpty() )
     {

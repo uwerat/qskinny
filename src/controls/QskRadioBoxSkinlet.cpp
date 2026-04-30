@@ -22,9 +22,11 @@ namespace
         auto hint = skinnable->strutSizeHint( Q::CheckIndicatorPanel );
 
         hint.rwidth() += skinnable->spacingHint( Q::Button );
-        hint.rwidth() += QskTextRenderer::textSize( text, font, textOption ).width();
 
-        hint.rheight() = qMax( hint.height(), qskTextHeight( font ) );
+        const auto textSize = QskTextRenderer::textSize( text, font, textOption );
+
+        hint.rwidth() += textSize.width();
+        hint.rheight() = qMax( hint.height(), textSize.height() );
 
         hint = hint.grownBy( skinnable->paddingHint( Q::Button ) );
         hint = hint.expandedTo( skinnable->strutSizeHint( Q::Button ) );

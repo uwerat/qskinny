@@ -9,8 +9,6 @@
 #include "QskAspect.h"
 #include "QskBoxBorderMetrics.h"
 #include "QskGraphic.h"
-#include "QskTextOptions.h"
-#include "QskFunctions.h"
 
 QskSubWindowSkinlet::QskSubWindowSkinlet( QskSkin* skin )
     : Inherited( skin )
@@ -134,9 +132,10 @@ qreal QskSubWindowSkinlet::titleBarHeight( const QskSubWindow* subWindow ) const
     if ( decorations & Q::Title )
     {
         const auto padding = subWindow->paddingHint( Q::TitleBarPanel );
-        const auto font = subWindow->effectiveFont( Q::TitleBarText );
 
-        const qreal h = qskTextHeight( font ) + padding.top() + padding.bottom();
+        const auto h = padding.top() + padding.bottom()
+            + subWindow->effectiveFontHeight( Q::TitleBarPanel );
+
         if ( h > height )
             height = h;
     }

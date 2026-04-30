@@ -374,7 +374,7 @@ QSGNode* QskGraduationRenderer::updateLabelsNode( const QskSkinnable* skinnable,
             const auto graphic = label.value< QskGraphic >();
             if ( !graphic.isNull() )
             {
-                size.rheight() = qskTextHeight( m_data->font );
+                size.rheight() = qskFontHeight( m_data->font );
                 size.rwidth() = graphic.widthForHeight( size.height() );
             }
         }
@@ -438,7 +438,7 @@ QSizeF QskGraduationRenderer::boundingLabelSize() const
     if ( ticks.isEmpty() )
         return boundingSize;
 
-    const qreal h = qskTextHeight( m_data->font );
+    const qreal h = qskFontHeight( m_data->font );
 
     for ( auto tick : ticks )
     {

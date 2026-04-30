@@ -42,5 +42,5 @@ class LightDisplaySkinlet : public QskSkinlet
         quint8 nodeRole, QSGNode* ) const override;
 
   private:
-    QSizeF textLabelsSize( const LightDisplay* display ) const;
+    QSizeF textLabelsSize( const LightDisplay* ) const;
 };
