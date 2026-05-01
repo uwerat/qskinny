@@ -23,7 +23,7 @@ QSizeF QskTextRenderer::textSize(
         return QskRichTextRenderer::textSize( text, font, options );
 }
 
-QSizeF QskTextRenderer::textSize(
+QSizeF QskTextRenderer::textSizeConstrained(
     const QString& text, const QFont& font, const QskTextOptions& options,
     const QSizeF& size )
 {

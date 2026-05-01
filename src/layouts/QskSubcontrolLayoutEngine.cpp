@@ -179,7 +179,7 @@ QSizeF QskSubcontrolLayoutEngine::TextElement::implicitSize( const QSizeF& const
             }
 
             QSizeF size( constraint.width(), maxHeight );
-            size = QskTextRenderer::textSize( m_text, font, textOptions, size );
+            size = QskTextRenderer::textSizeConstrained( m_text, font, textOptions, size );
 
             hint.setHeight( qCeil( size.height() ) );
         }
@@ -189,7 +189,7 @@ QSizeF QskSubcontrolLayoutEngine::TextElement::implicitSize( const QSizeF& const
         const qreal maxWidth = std::numeric_limits< qreal >::max();
 
         QSizeF size( maxWidth, constraint.height() );
-        size = QskTextRenderer::textSize( m_text, font, textOptions, size );
+        size = QskTextRenderer::textSizeConstrained( m_text, font, textOptions, size );
 
         hint.setWidth( qCeil( size.width() ) );
     }

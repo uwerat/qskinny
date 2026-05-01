@@ -112,7 +112,7 @@ QSizeF QskTextLabelSkinlet::sizeHint( const QskSkinnable* skinnable,
 
             QSizeF size( constraint.width(), maxHeight );
 
-            size = QskTextRenderer::textSize( text, font, textOptions, size );
+            size = QskTextRenderer::textSizeConstrained( text, font, textOptions, size );
 
             if ( label->hasPanel() )
                 size = label->outerBoxSize( QskTextLabel::Panel, size );
@@ -126,7 +126,7 @@ QSizeF QskTextLabelSkinlet::sizeHint( const QskSkinnable* skinnable,
 
         QSizeF size( maxWidth, constraint.height() );
 
-        size = QskTextRenderer::textSize( text, font, textOptions, size );
+        size = QskTextRenderer::textSizeConstrained( text, font, textOptions, size );
 
         if ( label->hasPanel() )
             size = label->outerBoxSize( QskTextLabel::Panel, size );
