@@ -29,8 +29,8 @@ namespace QskRichTextRenderer
     QSK_EXPORT QSizeF textSize(
         const QString&, const QFont&, const QskTextOptions& );
 
-    QSK_EXPORT QRectF textRect( const QString&, const QFont&,
-        const QskTextOptions&, Qt::Alignment, const QSizeF& );
+    QSK_EXPORT qreal textHeightForWidth( const QString&, const QFont&,
+        const QskTextOptions&, qreal width );
 }
 
 #endif

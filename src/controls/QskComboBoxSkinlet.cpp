@@ -26,8 +26,8 @@ static int qskWidestIndex( const QskComboBox* box )
     {
         const auto option = box->optionAt( i );
 
-        const auto textWidth = QskTextRenderer::textWidth(
-            option.text(), font, textOptions );
+        const auto textWidth = QskTextRenderer::textSize(
+            option.text(), font, textOptions ).width();
 
         if ( textWidth > w )
         {

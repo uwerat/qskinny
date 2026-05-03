@@ -7,6 +7,7 @@
 #include "QskPlainTextRenderer.h"
 #include "QskRichTextRenderer.h"
 #include "QskTextOptions.h"
+#include "QskFunctions.h"
 
 #include <qrect.h>
 
@@ -23,35 +24,35 @@ QSizeF QskTextRenderer::textSize(
         return QskRichTextRenderer::textSize( text, font, options );
 }
 
-QSizeF QskTextRenderer::textSizeConstrained(
-    const QString& text, const QFont& font, const QskTextOptions& options,
-    const QSizeF& size )
+qreal QskTextRenderer::textHeightForWidth( const QString& text,
+    const QFont& font, const QskTextOptions& options, qreal width )
 {
-    QRectF r;
+    qreal height;
 
     if ( options.effectiveFormat( text ) == QskTextOptions::PlainText )
     {
-        r = QskPlainTextRenderer::textRect(
-            text, font, options, Qt::Alignment(), size );
+        height = QskPlainTextRenderer::textHeightForWidth(
+            text, font, options, width );
     }
     else
     {
-        r = QskRichTextRenderer::textRect(
-            text, font, options, Qt::Alignment(), size );
+        height = QskRichTextRenderer::textHeightForWidth(
+            text, font, options, width );
     }
-    return r.size();
+    return height;
 }
 
-qreal QskTextRenderer::textWidth(
-    const QString& text, const QFont& font, const QskTextOptions& options )
+qreal QskTextRenderer::textWidthForHeight( const QString& text,
+    const QFont& font, const QskTextOptions& options, qreal height )
 {
-    return textSize( text, font, options ).width();
-}
+    const qreal lineHeight = qskFontHeight( font );
+    const int lineCount = qFloor( height / lineHeight );
 
-qreal QskTextRenderer::textHeight(
-    const QString& text, const QFont& font, const QskTextOptions& options )
-{
-    return textSize( text, font, options ).height();
+    auto textOptions = options;
+    if ( lineCount < textOptions.maximumLineCount() )
+        textOptions.setMaximumLineCount( lineCount );
+
+    return textSize( text, font, textOptions ).width();
 }
 
 void QskTextRenderer::updateNode(

@@ -83,55 +83,42 @@ QSizeF QskTextLabelSkinlet::sizeHint( const QskSkinnable* skinnable,
 
     QSizeF hint;
 
-    const qreal lineHeight = label->effectiveFontHeight( QskTextLabel::Text );
+    const qreal lineHeight = qCeil( qskFontHeight( font ) );
 
     if ( text.isEmpty() )
     {
         if ( constraint.height() < 0.0 )
-            hint.setHeight( qCeil( lineHeight ) );
+            hint.setHeight( lineHeight );
     }
     else if ( constraint.width() >= 0.0 )
     {
         if ( textOptions.effectiveElideMode() != Qt::ElideNone )
         {
-            hint.setHeight( qCeil( lineHeight ) );
+            // wrong for text with newlines TODO ...
+            hint.setHeight( lineHeight );
         }
         else
         {
-            /*
-                In case of QskTextOptions::NoWrap we could count
-                the line numbers and calculate the height from
-                lineHeight. TODO ...
-             */
-            qreal maxHeight = std::numeric_limits< qreal >::max();
-            if ( maxHeight / lineHeight > textOptions.maximumLineCount() )
-            {
-                // be careful with overflows
-                maxHeight = textOptions.maximumLineCount() * lineHeight;
-            }
+            auto height = QskTextRenderer::textHeightForWidth(
+                text, font, textOptions, constraint.width() );
 
-            QSizeF size( constraint.width(), maxHeight );
-
-            size = QskTextRenderer::textSizeConstrained( text, font, textOptions, size );
-
+            QSizeF size( constraint.width(), height );
             if ( label->hasPanel() )
                 size = label->outerBoxSize( QskTextLabel::Panel, size );
 
-            hint.setHeight( qCeil( size.height() ) );
+            hint.setHeight( size.height() );
         }
     }
     else if ( constraint.height() >= 0.0 )
     {
-        const qreal maxWidth = std::numeric_limits< qreal >::max();
+        auto width = QskTextRenderer::textWidthForHeight(
+            text, font, textOptions, constraint.height() );
 
-        QSizeF size( maxWidth, constraint.height() );
-
-        size = QskTextRenderer::textSizeConstrained( text, font, textOptions, size );
-
+        QSizeF size( width, constraint.height() );
         if ( label->hasPanel() )
             size = label->outerBoxSize( QskTextLabel::Panel, size );
 
-        hint.setWidth( qCeil( size.width() ) );
+        hint.setWidth( size.width() );
     }
     else
     {

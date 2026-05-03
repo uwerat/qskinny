@@ -211,8 +211,8 @@ QSizeF QskRichTextRenderer::textSize(
     return sz;
 }
 
-QRectF QskRichTextRenderer::textRect( const QString& text, const QFont& font,
-    const QskTextOptions& options, Qt::Alignment alignment, const QSizeF& size )
+qreal QskRichTextRenderer::textHeightForWidth( const QString& text, const QFont& font,
+    const QskTextOptions& options, qreal width )
 {
     auto& textItem = *qskTextItemMap->item();
 
@@ -220,10 +220,10 @@ QRectF QskRichTextRenderer::textRect( const QString& text, const QFont& font,
 
     textItem.setFont( font );
     textItem.setOptions( options );
-    textItem.setAlignment( alignment );
+    textItem.setAlignment( Qt::Alignment() );
 
-    textItem.setWidth( size.width() );
-    textItem.setHeight( size.height() );
+    textItem.setWidth( width );
+    textItem.setHeight( std::numeric_limits< qreal >::max() );
 
     textItem.setText( text );
 
@@ -233,7 +233,7 @@ QRectF QskRichTextRenderer::textRect( const QString& text, const QFont& font,
 
     textItem.reset();
 
-    return rect;
+    return rect.height();
 }
 
 void QskRichTextRenderer::updateNode(

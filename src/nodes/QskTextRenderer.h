@@ -29,14 +29,11 @@ namespace QskTextRenderer
     QSK_EXPORT QSizeF textSize(
         const QString&, const QFont&, const QskTextOptions& );
 
-    QSK_EXPORT QSizeF textSizeConstrained(
-        const QString&, const QFont&, const QskTextOptions&, const QSizeF& );
+    QSK_EXPORT qreal textHeightForWidth(
+        const QString&, const QFont&, const QskTextOptions&, qreal );
 
-    QSK_EXPORT qreal textWidth(
-        const QString&, const QFont&, const QskTextOptions& );
-
-    QSK_EXPORT qreal textHeight(
-        const QString&, const QFont&, const QskTextOptions& );
+    QSK_EXPORT qreal textWidthForHeight(
+        const QString&, const QFont&, const QskTextOptions&, qreal );
 }
 
 #endif

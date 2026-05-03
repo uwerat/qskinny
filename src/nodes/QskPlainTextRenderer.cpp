@@ -92,12 +92,6 @@ static void qskSetupLayout( QTextLayout& layout, const QString& text, const QFon
     layout.endLayout();
 }
 
-qreal QskPlainTextRenderer::textWidth(
-    const QString& text, const QFont& font, const QskTextOptions& options )
-{
-    return textSize( text, font, options ).width();
-}
-
 QSizeF QskPlainTextRenderer::textSize(
     const QString& text, const QFont& font, const QskTextOptions& options )
 {
@@ -107,14 +101,13 @@ QSizeF QskPlainTextRenderer::textSize(
     return layout.boundingRect().size();
 }
 
-QRectF QskPlainTextRenderer::textRect(
-    const QString& text, const QFont& font, const QskTextOptions& options,
-    Qt::Alignment alignment, const QSizeF& size )
+qreal QskPlainTextRenderer::textHeightForWidth( const QString& text,
+    const QFont& font, const QskTextOptions& options, qreal width )
 {
     QTextLayout layout;
 
-    qskSetupLayout( layout, text, font, options, alignment, size.width() );
-    return layout.boundingRect();
+    qskSetupLayout( layout, text, font, options, Qt::Alignment(), width );
+    return layout.boundingRect().height();
 }
 
 static void qskRenderText(

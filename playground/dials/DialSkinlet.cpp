@@ -98,6 +98,7 @@ QSGNode* DialSkinlet::updateLabelsNode(
     const auto spacing = dial->spacingHint( Q::TickLabels );
 
     const auto font = dial->effectiveFont( Q::TickLabels );
+    const auto textOptions = dial->textOptionsHint( Q::TickLabels );
 
     auto angle = startAngle;
 
@@ -126,7 +127,8 @@ QSGNode* DialSkinlet::updateLabelsNode(
 
         if ( !text.isEmpty() )
         {
-            const auto sz = QskPlainTextRenderer::textSize( text, font );
+            const auto sz = QskPlainTextRenderer::textSize(
+                text, font, textOptions );
 
             const auto adjustX = ( -0.5 * cos - 0.5 ) * sz.width();
             const auto adjustY = ( -0.5 * sin - 0.5 ) * sz.height();
