@@ -78,8 +78,6 @@ class QSK_EXPORT QskTextOptions
 
     QskHashValue hash( QskHashValue seed ) const noexcept;
 
-    int textFlags() const noexcept;
-
   private:
     int m_maximumLineCount;
     FontSizeMode m_fontSizeMode : 2;

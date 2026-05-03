@@ -17,39 +17,6 @@ static void qskRegisterTextOptions()
 
 Q_CONSTRUCTOR_FUNCTION( qskRegisterTextOptions )
 
-int QskTextOptions::textFlags() const noexcept
-{
-    int flags = 0;
-
-    switch ( m_wrapMode )
-    {
-        case QskTextOptions::NoWrap:
-        {
-            // flags |= Qt::TextSingleLine;
-            break;
-        }
-        case QskTextOptions::WordWrap:
-        {
-            flags |= Qt::TextWordWrap;
-            break;
-        }
-        case QskTextOptions::WrapAnywhere:
-        {
-            flags |= Qt::TextWrapAnywhere;
-            break;
-        }
-        case QskTextOptions::Wrap:
-        {
-            // ???
-            flags |= Qt::TextWrapAnywhere;
-            flags |= Qt::TextWordWrap;
-            break;
-        }
-    }
-
-    return flags;
-}
-
 QskTextOptions::TextFormat QskTextOptions::effectiveFormat( const QString& text ) const
 {
     if ( text.isEmpty() )
