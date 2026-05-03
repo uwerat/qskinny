@@ -259,22 +259,22 @@ bool WindowAnimator::isRunning() const
 {
     if ( !m_animatorMap.empty() )
     {
-        const auto& animator = m_animatorMap.constBegin().value();
-        if ( animator.isRunning() )
+        const auto it = m_animatorMap.constBegin();
+        if ( it.value().isRunning() )
             return true;
     }
 
     if ( !m_graphicFilterAnimatorMap.empty() )
     {
-        const auto& animator = m_graphicFilterAnimatorMap.constBegin().value();
-        if ( animator.isRunning() )
+        const auto it = m_graphicFilterAnimatorMap.constBegin();
+        if ( it.value().isRunning() )
             return true;
     }
 
     if ( !m_fontSizeAnimatorMap.empty() )
     {
-        const auto& animator = m_fontSizeAnimatorMap.constBegin().value();
-        if ( animator.isRunning() )
+        const auto it = m_fontSizeAnimatorMap.constBegin();
+        if ( it.value().isRunning() )
             return true;
     }
 
