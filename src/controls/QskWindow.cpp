@@ -66,7 +66,7 @@ static QQuickItem* qskDefaultFocusItem( QQuickWindow* window )
 
 namespace
 {
-    class ChildListener final : public QQuickItemChangeListener
+    class ChildListener final : public QQuickItemChangeListener, public QObject
     {
       public:
         void setEnabled( QQuickItem* contentItem, bool on )
@@ -75,16 +75,37 @@ namespace
 
             const QQuickItemPrivate::ChangeTypes types = QQuickItemPrivate::Children;
 
-            QQuickItemPrivate* p = QQuickItemPrivate::get( contentItem );
+            auto p = QQuickItemPrivate::get( contentItem );
             if ( on )
+            {
                 p->addItemChangeListener( this, types );
+                contentItem->installEventFilter( this );
+            }
             else
+            {
                 p->removeItemChangeListener( this, types );
+                contentItem->removeEventFilter( this );
+            }
         }
 
         void itemChildAdded( QQuickItem*, QQuickItem* ) override
         {
-            QskWindow* window = static_cast< QskWindow* >( m_contentItem->window() );
+            requestLayout();
+        }
+
+      protected:
+        bool eventFilter( QObject* object, QEvent* event) override
+        {
+            if ( event->type() == QEvent::LayoutRequest && object == m_contentItem )
+                requestLayout();
+
+            return false;
+        }
+
+      private:
+        void requestLayout()
+        {
+            auto window = static_cast< QskWindow* >( m_contentItem->window() );
             if ( window->isExposed() )
             {
                 // the child is not fully constructed
@@ -92,7 +113,6 @@ namespace
             }
         }
 
-      private:
         QQuickItem* m_contentItem = nullptr;
     };
 }
