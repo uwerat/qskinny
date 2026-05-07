@@ -7,6 +7,7 @@ add_subdirectory(iconbrowser)
 add_subdirectory(invoker)
 add_subdirectory(shadows)
 add_subdirectory(shapes)
+add_subdirectory(textengine)
 add_subdirectory(charts)
 add_subdirectory(plots)
 
