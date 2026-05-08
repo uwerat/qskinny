@@ -59,6 +59,9 @@ class QSK_EXPORT QskGridBox : public QskBox
     Q_INVOKABLE QRect gridOfIndex( int index ) const;
     Q_INVOKABLE QRect effectiveGridOfIndex( int index ) const;
 
+    void setExtraSpacingAt( Qt::Edges );
+    Qt::Edges extraSpacingAt() const;
+
     void setDefaultAlignment( Qt::Alignment );
     Qt::Alignment defaultAlignment() const;
 
@@ -94,6 +97,7 @@ class QSK_EXPORT QskGridBox : public QskBox
 
   Q_SIGNALS:
     void defaultAlignmentChanged();
+    void extraSpacingAtChanged();
 
   protected:
     bool event( QEvent* ) override;
