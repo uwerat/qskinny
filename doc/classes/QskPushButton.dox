@@ -1,0 +1,7 @@
+/*!
+    \class QskPushButton QskPushButton.h
+
+    \embedWasm
+
+    \skinlet QskPushButtonSkinlet
+*/

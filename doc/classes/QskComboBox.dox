@@ -1,0 +1,7 @@
+/*!
+    \class QskComboBox QskComboBox.h
+
+    \embedWasm
+
+    \skinlet QskComboBoxSkinlet
+*/

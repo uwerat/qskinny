@@ -1,6 +1,8 @@
 /*!
     \class QskSpinBox QskSpinBox.h
 
+    \embedWasm
+
     \brief A control to edit, increment and decrement number values
 
 	QskSpinBox allows the user to choose a value by:

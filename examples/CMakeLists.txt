@@ -11,6 +11,7 @@ add_subdirectory(qvgviewer)
 add_subdirectory(thumbnails)
 add_subdirectory(tabview)
 add_subdirectory(iotdashboard)
+add_subdirectory(apiDocumentationSamples)
 
 if( BUILD_QML_EXPORT )
     add_subdirectory(boxes)

@@ -1,0 +1,42 @@
+# Tutorials {#tutorials}
+
+## Building QSkinny for WebAssembly (Wasm)
+
+### Build Qt for Wasm
+
+Build Qt for Wasm from source as described here: https://doc.qt.io/qt-6/wasm.html#building-qt-from-source ; The verified Qt version for QSkinny as of this writing was 6.6.0. It might also work to use a downloaded version of Qt for Wasm, but some additional libraries will need to be built.
+After configuring Qt as described in the link above, for QSkinny you will need the qtbase, qtdeclarative, qtshadertools and qtsvg modules.
+Assuming the Emscripten SDK in `~/dev/emscripten` and Qt in `~/dev/qt6`, Qt can be compiled the following way:
+
+```
+cd ~/dev/qt6
+source "~/dev/emsdk/emsdk_env.sh"
+./configure -platform wasm-emscripten -qt-host-path ~/Qt/6.6.0/gcc_64/ -prefix $PWD/qtbase -submodules qtbase,qtdeclarative,qtshadertools,qtsvg
+cmake --build . -t qtbase -t qtdeclarative -t qtshadertools -t qtsvg
+```
+
+This will install all required libs in `~/dev/qt6/qtbase/lib`.
+
+### Build QSkinny for Wasm
+
+With the Qt version from above QSkinny can be built for WAsm, assuming it has been checked out at `~/dev/qskinny`. Note the configuration option `BUILD_QSKDLL=OFF` for static
+ builds:
+
+```
+mkdir -p ~/dev/qskinny-wasm-build
+source "~/dev/emsdk/emsdk_env.sh"
+~/dev/qt6/qtbase/bin/qt-cmake -S ~/dev/qskinny -B ~/dev/qskinny-wasm-build -DBUILD_QSKDLL=OFF
+make
+```
+
+### Run QSkinny for Wasm
+
+Qt creates the HTML wrappers automatically, so there is not much to do except letting Emscripten start the server and open our app in the browser:
+
+```
+/usr/bin/python3 ~/dev/emsdk/upstream/emscripten/emrun.py --browser firefox --port 30001 --no_emrun_detect  ~/dev/qskinny-wasm-build/examples/bin/iotdashboard.html
+```
+
+**The IOT dashboard example in a browser**
+
+![The IOT dashboard example in a browser](/doc/images/tutorials/iotdashboard-wasm.png)

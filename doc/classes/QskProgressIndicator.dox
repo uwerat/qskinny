@@ -1,0 +1,283 @@
+/*!
+    \class QskProgressIndicator QskProgressIndicator.h
+    \ingroup Framework Controls
+
+    \brief Base class for progress indicators
+
+    QskProgressIndicator is the base class for circular (QskProgressRing) and linear (QskProgressBar)
+    progress indicators, and should not be instantiated directly.
+
+    There are two modes for progress indicators:
+    - **Determinate**, which means the user has to set a progress value to advance the indicator
+    - **Indeterminate**, which means the indicator will loop forever without the need for updating its value
+
+    By default progress indicators are determinate.
+
+    \subcontrols QskProgressIndicator::Groove, QskProgressIndicator::Fill
+
+    \skinlet QskProgressIndicatorSkinlet
+
+    \sa QskProgressBar, QskProgressRing
+*/
+
+/*!
+    \var QskProgressIndicator::Groove
+
+    Indicating the value range that the indicator can have; is drawn below the QskProgressIndicator::Fill.
+*/
+
+/*!
+    \var QskProgressIndicator::Fill
+
+    Showing the current value of the indicator; is drawn above the QskProgressIndicator::Groove.
+*/
+
+/*!
+    \property qreal QskProgressIndicator::extent
+
+    The extent of the indicator.
+
+    \accessors extent(), setExtent(), extentChanged(), resetExtent()
+*/
+
+/*!
+    \property bool QskProgressIndicator::indeterminate
+
+    Whether the indicator is indeterminate or not.
+
+    \accessors isIndeterminate(), setIndeterminate(), indeterminateChanged()
+*/
+
+/*!
+    \property qreal QskProgressIndicator::origin
+
+    The origin of the indicator.
+
+    \accessors qreal origin(), setOrigin(), originChanged(), resetOrigin()
+*/
+
+/*!
+    \property qreal QskProgressIndicator::value
+
+    The value of the indicator.
+
+    \accessors value(), setValue(), valueChanged()
+*/
+
+/*!
+    \property qreal QskProgressIndicator::valueAsRatio
+
+    The value of the indicator as ratio.
+
+    \accessors valueAsRatio(), setValueAsRatio(), valueChanged()
+*/
+
+/*!
+    \fn QskProgressIndicator::QskProgressIndicator( QQuickItem* )
+
+    Creates a new progress indicator with the given \a parent.
+*/
+
+/*!
+    \fn QskProgressIndicator::QskProgressIndicator( qreal, qreal, QQuickItem* )
+
+    Creates a new progress indicator with the progress interval [\a min, \a max] and the given \a parent.
+*/
+
+/*!
+    \fn QskProgressIndicator::QskProgressIndicator( const QskIntervalF& interval, QQuickItem* parent )
+
+    Creates a new progress indicator with the given progress \a interval and the given \a parent.
+*/
+
+/*!
+    \fn QskProgressIndicator::~QskProgressIndicator()
+
+    Destructor.
+*/
+
+/*!
+    \fn QskProgressIndicator::isIndeterminate() const
+
+    Returns whether the progress indicator is indeterminate, i.e. will loop forever.
+
+    \sa setIndeterminate(), indeterminateChanged()
+*/
+
+/*!
+    \fn QskProgressIndicator::setIndeterminate( bool )
+
+    Sets whether the progress indicator is indeterminate.
+
+    \sa isIndeterminate(), indeterminateChanged()
+*/
+
+/*!
+    \fn QskProgressIndicator::setFillGradient( const QskGradient& )
+
+    Sets the fill gradient by setting the gradient hint of the QskProgressIndicator::Fill subcontrol.
+
+    \sa fillGradient(), resetFillGradient()
+*/
+
+/*!
+    \fn QskProgressIndicator::resetFillGradient()
+
+    Resets the fill gradient.
+
+    \sa fillGradient(), setFillGradient()
+*/
+
+/*!
+    \fn QskProgressIndicator::fillGradient() const
+
+    Returns the fill gradient.
+
+    \sa setFillGradient(), resetFillGradient()
+*/
+
+/*!
+    \fn QskProgressIndicator::setExtent( qreal )
+
+    Sets the size of the extent, i.e. the QskProgressIndicator::Groove subcontrol.
+
+    \sa extent(), extentChanged(), resetExtent()
+*/
+
+/*!
+    \fn QskProgressIndicator::resetExtent()
+
+    Resets the extent.
+
+    \sa extent(), setExtent(), extentChanged()
+*/
+
+/*!
+    \fn QskProgressIndicator::extent() const
+
+    Returns the extent, i.e. the size of the QskProgressIndicator::Groove subcontrol.
+
+    \sa setExtent(), extentChanged(), resetExtent()
+*/
+
+/*!
+    \fn QskProgressIndicator::resetOrigin()
+
+    Resets the origin.
+
+    \sa hasOrigin(), origin( void ), setOrigin(), originChanged()
+*/
+
+/*!
+    \fn QskProgressIndicator::origin() const
+
+    Returns the origin, i.e. the value where the progress will start.
+    If no origin has been set via setOrigin(), the minimum value is returned.
+
+    \sa hasOrigin(), setOrigin(), originChanged(), resetOrigin(), QskBoundedControl::minimum()
+*/
+
+/*!
+    \fn QskProgressIndicator::hasOrigin() const
+
+    Returns true if an origin has been set via setOrigin().
+
+    \sa origin(), setOrigin(), originChanged(), resetOrigin()
+*/
+
+/*!
+    \fn QskProgressIndicator::value() const
+
+    Returns the current value.
+
+    \sa valueAsRatio(), setValue(), valueChanged()
+*/
+
+/*!
+    \fn QskProgressIndicator::valueAsRatio() const
+
+    Returns the current value as ratio, i.e. as percentage in the range of [0.0, 1.0].
+
+    The ratio is calculated like this: ratio = (value() - minimum()) / (maximum() - minimum()).
+
+    \sa value(), setValueAsRatio(), valueChanged()
+*/
+
+/*!
+    \fn QskProgressIndicator::setValue( qreal )
+
+    Sets the value to \a value. If \a value is outside of the boundaries(), it will be bound to this
+    range.
+
+    \sa setValueAsRatio(), value(), valueChanged()
+*/
+
+/*!
+    \fn QskProgressIndicator::setValueAsRatio( qreal )
+
+    Sets the value as ratio of [0.0, 1.0].
+
+    If \a ratio is outside of this range, it will be bound to the interval [0.0, 1.0], i.e. if it is
+    smaller than 0, it will be set to 0, and if it is greater than 1, it will be set to 1.
+
+    \sa valueAsRatio(), value(), setValue(), valueChanged()
+*/
+
+/*!
+    \fn QskProgressIndicator::setOrigin( qreal )
+
+    Sets the origin.
+
+    \sa origin(), hasOrigin(), originChanged(), resetOrigin()
+*/
+
+/*!
+    \fn QskProgressIndicator::extentChanged( qreal )
+
+    Will be emitted when the extent changes.
+
+    \sa extent(), setExtent(), resetExtent()
+*/
+
+/*!
+    \fn QskProgressIndicator::indeterminateChanged( bool )
+
+    Will be emitted when the indicator changes from indeterminate to determinate or vice versa.
+
+    \sa isIndeterminate(), setIndeterminate()
+*/
+
+/*!
+    \fn QskProgressIndicator::valueChanged( qreal )
+
+    Will be emitted when the value changes.
+
+    \sa value(), valueAsRatio(), setValue(), setValueAsRatio()
+*/
+
+/*!
+    \fn QskProgressIndicator::originChanged( qreal )
+
+    Will be emitted when the origin changes.
+
+    \sa origin(), hasOrigin(), setOrigin(), resetOrigin()
+*/
+
+/*!
+    \fn QskProgressIndicator::componentComplete() override
+
+    This will adjust the value appropriately when the component is complete.
+
+    Derived classes overriding this function should call it in their implementation.
+*/
+
+/*!
+    \fn QskProgressIndicator::itemChange( ItemChange, const ItemChangeData& )
+
+    Checks whether the visibility has changed and animates the indicator in case it is indeterminate.
+    I.e. when the indicator becomes visible it will start the animator, and when it becomes invisible
+    it will stop it.
+
+    Derived classes overriding this function should call it in their implementation.
+*/
+
