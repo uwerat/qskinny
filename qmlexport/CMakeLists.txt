@@ -74,3 +74,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         DESTINATION
             ${QSK_INSTALL_LIBS} OPTIONAL)
 endif()
+
+get_filename_component(compiler ${CMAKE_CXX_COMPILER} NAME_WE)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_SYSTEM_NAME STREQUAL "Windows" AND compiler STREQUAL "g++")
+    set_source_files_properties(QskQml.cpp PROPERTIES COMPILE_FLAGS "-Wa,-mbig-obj")
+endif()
