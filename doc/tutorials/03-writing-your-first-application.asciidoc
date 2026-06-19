@@ -135,7 +135,7 @@ int main( int argc, char* argv[] )
 {
     QGuiApplication app( argc, argv );
 
-    auto box = new QskLinearBox( Qt::Horizontal );
+    auto horizontalBox = new QskLinearBox( Qt::Horizontal );
 
     /*
         some design systems work with transparencies ( f.e Fluent2 )
