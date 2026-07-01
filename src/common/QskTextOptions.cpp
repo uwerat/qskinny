@@ -38,7 +38,7 @@ int QskTextOptions::textFlags() const noexcept
             flags |= Qt::TextWrapAnywhere;
             break;
         }
-        case QskTextOptions::Wrap:
+        case QskTextOptions::WrapAtWordBoundaryOrAnywhere:
         {
             // ???
             flags |= Qt::TextWrapAnywhere;

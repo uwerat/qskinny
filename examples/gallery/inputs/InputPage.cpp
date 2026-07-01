@@ -110,7 +110,7 @@ namespace
 
             {
                 auto textArea = new QskTextArea( "here enter longer text\nwith multiple lines", this );
-                textArea->setWrapMode( QskTextOptions::Wrap );
+                textArea->setWrapMode( QskTextOptions::WrapAtWordBoundaryOrAnywhere );
                 textArea->setPlaceholderText( "placeholder text" );
 
 #if 0

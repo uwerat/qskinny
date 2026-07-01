@@ -38,7 +38,7 @@ class QSK_EXPORT QskTextOptions
         NoWrap = QTextOption::NoWrap,
         WordWrap = QTextOption::WordWrap,
         WrapAnywhere = QTextOption::WrapAnywhere,
-        Wrap = QTextOption::WrapAtWordBoundaryOrAnywhere
+        WrapAtWordBoundaryOrAnywhere = QTextOption::WrapAtWordBoundaryOrAnywhere
     };
     Q_ENUM( WrapMode )
 
