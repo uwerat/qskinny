@@ -180,15 +180,7 @@ static inline QskTextColors qskTextColors(
         skinnable->color( subControl | QskAspect::LinkColor ) );
 }
 
-static inline QQuickWindow* qskWindowOfSkinnable( const QskSkinnable* skinnable )
-{
-    if ( auto item = skinnable->owningItem() )
-        return item->window();
-
-    return nullptr;
-}
-
-static inline QSGNode* qskUpdateBoxNode( const QskSkinnable* skinnable,
+static inline QSGNode* qskUpdateBoxNode(
     QSGNode* node, const QRectF& rect, const QskBoxHints& hints )
 {
     if ( !rect.isEmpty() )
@@ -196,13 +188,10 @@ static inline QSGNode* qskUpdateBoxNode( const QskSkinnable* skinnable,
         if ( qskIsBoxVisible( hints.borderMetrics, hints.borderColors, hints.gradient )
             || qskIsShadowVisible( hints.shadowMetrics, hints.shadowColor ) )
         {
-            if ( auto window = qskWindowOfSkinnable( skinnable ) )
-            {
-                auto boxNode = QskSGNode::ensureNode< QskBoxNode >( node );
-                boxNode->updateNode( window, rect, hints );
+            auto boxNode = QskSGNode::ensureNode< QskBoxNode >( node );
+            boxNode->updateNode( rect, hints );
 
-                return boxNode;
-            }
+            return boxNode;
         }
     }
 
@@ -363,7 +352,7 @@ QSGNode* QskSkinlet::updateBackgroundNode(
         return nullptr;
 
     auto rectNode = QskSGNode::ensureNode< QskBoxRectangleNode >( node );
-    rectNode->updateFilling( control->window(), rect, gradient );
+    rectNode->updateFilling( rect, gradient );
 
     return rectNode;
 }
@@ -421,8 +410,7 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
 
     r = r.marginsRemoved( skinnable->marginHint( subControl ) );
 
-    return qskUpdateBoxNode( skinnable, node,
-        r, skinnable->boxHints( subControl ) );
+    return qskUpdateBoxNode( node, r, skinnable->boxHints( subControl ) );
 }
 
 QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
@@ -432,13 +420,13 @@ QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
         return nullptr;
 
     const auto r = rect.marginsRemoved( skinnable->marginHint( subControl ) );
-    return qskUpdateBoxNode( skinnable, node, r, skinnable->boxHints( subControl ) );
+    return qskUpdateBoxNode( node, r, skinnable->boxHints( subControl ) );
 }
 
-QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable* skinnable,
+QSGNode* QskSkinlet::updateBoxNode( const QskSkinnable*,
     QSGNode* node, const QRectF& rect, const QskBoxHints& hints )
 {
-    return qskUpdateBoxNode( skinnable, node, rect, hints );
+    return qskUpdateBoxNode( node, rect, hints );
 }
 
 QSGNode* QskSkinlet::updateInterpolatedBoxNode(
@@ -558,8 +546,7 @@ QSGNode* QskSkinlet::updateBoxClipNode( const QskSkinnable* skinnable,
         auto shape = skinnable->boxShapeHint( subControl );
         shape = shape.toAbsolute( clipRect.size() );
 
-        const auto window = qskWindowOfSkinnable( skinnable );
-        clipNode->setBox( window, clipRect, shape, borderMetrics );
+        clipNode->setBox( clipRect, shape, borderMetrics );
     }
 
     return clipNode;

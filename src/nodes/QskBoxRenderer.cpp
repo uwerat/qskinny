@@ -70,8 +70,7 @@ static inline bool qskMaybeSpreading( const QskGradient& gradient )
     return true;
 }
 
-QskBoxRenderer::QskBoxRenderer( const QQuickWindow* window )
-    : m_window( window )
+QskBoxRenderer::QskBoxRenderer()
 {
 }
 

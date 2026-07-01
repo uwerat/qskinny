@@ -13,14 +13,13 @@ class QskBoxBorderColors;
 class QskBoxShapeMetrics;
 class QskGradient;
 
-class QQuickWindow;
 class QSGGeometry;
 class QRectF;
 
 class QSK_EXPORT QskBoxRenderer
 {
   public:
-    QskBoxRenderer( const QQuickWindow* );
+    QskBoxRenderer();
     ~QskBoxRenderer();
 
     /*
@@ -61,10 +60,6 @@ class QSK_EXPORT QskBoxRenderer
 
     static bool isGradientSupported( const QskGradient& );
     static QskGradient effectiveGradient( const QskGradient& );
-
-  private:
-    // for adjustments to the target ( f.e devicePixelRatio )
-    const QQuickWindow* m_window;
 };
 
 #endif

@@ -12,8 +12,6 @@
 class QskBoxShapeMetrics;
 class QskBoxBorderMetrics;
 
-class QQuickWindow;
-
 class QSK_EXPORT QskClipNode : public QSGClipNode
 {
     using Inherited = QSGClipNode;
@@ -25,7 +23,7 @@ class QSK_EXPORT QskClipNode : public QSGClipNode
     void setRect( const QRectF& );
     void setRegion( const QRectF&, const QRectF& excludedRect );
 
-    void setBox( const QQuickWindow*, const QRectF&,
+    void setBox( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics& );
 
     QRectF boundingRectangle() const;
