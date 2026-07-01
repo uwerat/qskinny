@@ -59,15 +59,17 @@ static void qskSetupLayout( QTextLayout& layout, const QString& text, const QFon
         }
         else
         {
-            const auto engine = layout.engine();
+            {
+                const auto engine = layout.engine();
 
-            auto text = engine->elidedText(
-                elideMode, QFixed::fromReal( width ),
-                Qt::TextShowMnemonic, 0 );
+                auto elidedText = engine->elidedText(
+                    elideMode, QFixed::fromReal( width ),
+                    Qt::TextShowMnemonic, 0 );
 
-            // why do we need this padding ???
-            text = text.leftJustified( engine->text.length() );
-            engine->text = text;
+                // why do we need this padding ???
+                elidedText = elidedText.leftJustified( engine->text.length() );
+                engine->text = elidedText;
+            }
 
             auto line = layout.createLine();
 
