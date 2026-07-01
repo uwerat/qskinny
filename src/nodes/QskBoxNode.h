@@ -10,7 +10,6 @@
 #include <qsgnode.h>
 
 class QskBoxHints;
-class QQuickWindow;
 
 class QSK_EXPORT QskBoxNode : public QSGNode
 {
@@ -18,7 +17,7 @@ class QSK_EXPORT QskBoxNode : public QSGNode
     QskBoxNode();
     ~QskBoxNode() override;
 
-    void updateNode( const QQuickWindow*, const QRectF&, const QskBoxHints& );
+    void updateNode( const QRectF&, const QskBoxHints& );
 };
 
 #endif

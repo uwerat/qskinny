@@ -15,8 +15,6 @@ class QskBoxBorderColors;
 class QskGradient;
 class QskBoxRectangleNodePrivate;
 
-class QQuickWindow;
-
 class QSK_EXPORT QskBoxRectangleNode : public QskFillNode
 {
     using Inherited = QskFillNode;
@@ -25,20 +23,20 @@ class QSK_EXPORT QskBoxRectangleNode : public QskFillNode
     QskBoxRectangleNode();
     ~QskBoxRectangleNode() override;
 
-    void updateBox( const QQuickWindow*, const QRectF&,
+    void updateBox( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors&, const QskGradient& );
 
-    void updateBorder( const QQuickWindow*, const QRectF&,
+    void updateBorder( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&,
         const QskBoxBorderColors& );
 
-    void updateFilling( const QQuickWindow*, const QRectF&, const QskGradient& );
+    void updateFilling( const QRectF&, const QskGradient& );
 
-    void updateFilling( const QQuickWindow*, const QRectF&,
+    void updateFilling( const QRectF&,
         const QskBoxShapeMetrics&, const QskGradient& );
 
-    void updateFilling( const QQuickWindow*, const QRectF&,
+    void updateFilling( const QRectF&,
         const QskBoxShapeMetrics&, const QskBoxBorderMetrics&, const QskGradient& );
 
     /*

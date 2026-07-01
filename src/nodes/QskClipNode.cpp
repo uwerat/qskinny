@@ -109,7 +109,7 @@ void QskClipNode::setRegion( const QRectF& rect, const QRectF& excludedRect )
     markDirty( QSGNode::DirtyGeometry );
 }
 
-void QskClipNode::setBox( const QQuickWindow* window, const QRectF& rect,
+void QskClipNode::setBox( const QRectF& rect,
     const QskBoxShapeMetrics& shape, const QskBoxBorderMetrics& border )
 {
     if ( rect.isEmpty() )
@@ -125,7 +125,7 @@ void QskClipNode::setBox( const QQuickWindow* window, const QRectF& rect,
     qskSetBoundingRect( this, rect );
     m_hash = hash;
 
-    QskBoxRenderer renderer( window );
+    QskBoxRenderer renderer;
     renderer.setFillLines( rect, shape, border, m_geometry );
 
     m_geometry.markVertexDataDirty();

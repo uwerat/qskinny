@@ -29,7 +29,7 @@ QSkinny is supposed to run on all platforms being supported by Qt/Quick.
 It might support other versions of Qt, but you can rely on:
 
 - Qt 5.15
-- current long term supported ( LTS ) version of Qt ( at the moment Qt 6.5.x )
+- current long term supported ( LTS ) version of Qt ( at the moment Qt 6.8.x )
 - current version of Qt
 
 How to build, install and use QSkinny is described in this

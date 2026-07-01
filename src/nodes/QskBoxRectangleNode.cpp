@@ -79,20 +79,19 @@ QskBoxRectangleNode::~QskBoxRectangleNode()
 {
 }
 
-void QskBoxRectangleNode::updateFilling( const QQuickWindow* window,
+void QskBoxRectangleNode::updateFilling(
     const QRectF& rect, const QskGradient& gradient )
 {
-    updateFilling( window, rect,
-        QskBoxShapeMetrics(), QskBoxBorderMetrics(), gradient );
+    updateFilling( rect, QskBoxShapeMetrics(), QskBoxBorderMetrics(), gradient );
 }
 
-void QskBoxRectangleNode::updateFilling( const QQuickWindow* window,
+void QskBoxRectangleNode::updateFilling(
     const QRectF& rect, const QskBoxShapeMetrics& shape, const QskGradient& gradient )
 {
-    updateFilling( window, rect, shape, QskBoxBorderMetrics(), gradient );
+    updateFilling( rect, shape, QskBoxBorderMetrics(), gradient );
 }
 
-void QskBoxRectangleNode::updateFilling( const QQuickWindow* window,
+void QskBoxRectangleNode::updateFilling(
     const QRectF& rect, const QskBoxShapeMetrics& shapeMetrics,
     const QskBoxBorderMetrics& borderMetrics, const QskGradient& gradient )
 {
@@ -118,7 +117,7 @@ void QskBoxRectangleNode::updateFilling( const QQuickWindow* window,
 
     if ( dirtyGeometry || dirtyMaterial )
     {
-        QskBoxRenderer renderer( window );
+        QskBoxRenderer renderer;
 
         if ( coloredGeometry )
         {
@@ -142,7 +141,7 @@ void QskBoxRectangleNode::updateFilling( const QQuickWindow* window,
     }
 }
 
-void QskBoxRectangleNode::updateBorder( const QQuickWindow* window,
+void QskBoxRectangleNode::updateBorder(
     const QRectF& rect, const QskBoxShapeMetrics& shapeMetrics,
     const QskBoxBorderMetrics& borderMetrics, const QskBoxBorderColors& borderColors )
 {
@@ -167,7 +166,7 @@ void QskBoxRectangleNode::updateBorder( const QQuickWindow* window,
 
     if ( dirtyGeometry || dirtyMaterial )
     {
-        QskBoxRenderer renderer( window );
+        QskBoxRenderer renderer;
 
         if ( coloredGeometry )
         {
@@ -193,7 +192,7 @@ void QskBoxRectangleNode::updateBorder( const QQuickWindow* window,
     }
 }
 
-void QskBoxRectangleNode::updateBox( const QQuickWindow* window, const QRectF& rect,
+void QskBoxRectangleNode::updateBox( const QRectF& rect,
     const QskBoxShapeMetrics& shapeMetrics, const QskBoxBorderMetrics& borderMetrics,
     const QskBoxBorderColors& borderColors, const QskGradient& gradient )
 {
@@ -231,7 +230,7 @@ void QskBoxRectangleNode::updateBox( const QQuickWindow* window, const QRectF& r
                 fillGradient.setDirection( QskGradient::Linear );
             }
 
-            QskBoxRenderer renderer( window );
+            QskBoxRenderer renderer;
             renderer.setColoredBorderAndFillLines( rect, shape, borderMetrics,
                 borderColors, fillGradient, *geometry() );
 
@@ -240,11 +239,11 @@ void QskBoxRectangleNode::updateBox( const QQuickWindow* window, const QRectF& r
     }
     else if ( hasFill )
     {
-        updateFilling( window, rect, shapeMetrics, borderMetrics, gradient );
+        updateFilling( rect, shapeMetrics, borderMetrics, gradient );
     }
     else if ( hasBorder )
     {
-        updateBorder( window, rect, shapeMetrics, borderMetrics, borderColors );
+        updateBorder( rect, shapeMetrics, borderMetrics, borderColors );
     }
     else
     {

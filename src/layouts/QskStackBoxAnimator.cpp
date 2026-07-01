@@ -38,7 +38,7 @@ namespace
             }
         }
 
-        void applyTo( QMatrix4x4* matrix) const override
+        void applyTo( QMatrix4x4* matrix ) const override
         {
             if ( const auto item = qobject_cast< QQuickItem* >( parent() ) )
             {
@@ -81,8 +81,7 @@ namespace
 
         void applyTo( QMatrix4x4* matrix ) const override
         {
-            if ( const auto item = qobject_cast< QQuickItem* >( parent() ) )
-                *matrix *= m_transform;
+            *matrix *= m_transform;
         }
 
       private:

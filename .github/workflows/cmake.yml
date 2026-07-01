@@ -21,25 +21,6 @@ jobs:
       matrix:
         config:
           - {
-              name: "Windows Latest MSVC Qt5",
-              os: windows-latest,
-              artifact: "windows_msvc.7z",
-              build_type: "Release",
-              cc: "cl",
-              cxx: "cl",
-              environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
-              archiver: "7z a",
-              generators: "Visual Studio 17 2022",
-              cmake:
-                {
-                  qtversion: "5.15.2",
-                  qtdirkey: "Qt5_DIR",
-                  qtdirvalue: "../Qt/5.15.2/msvc2019_64/lib/cmake/Qt5",
-                  qtprefixpath: "../Qt/5.15.2/msvc2019_64",
-                },
-              screenshot_filename: "windows-latest-msvc-qt-5-15-2.jpg",
-            }
-          - {
               name: "Windows Latest MSVC Qt6",
               os: windows-latest,
               artifact: "windows_msvc.7z",
@@ -48,15 +29,15 @@ jobs:
               cxx: "cl",
               environment_script: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
               archiver: "7z a",
-              generators: "Visual Studio 17 2022",
+              generators: "Visual Studio 18 2026",
               cmake:
                 {
-                  qtversion: "6.5.0",
+                  qtversion: "6.8.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.5.0/msvc2019_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.5.0/msvc2019_64",
+                  qtdirvalue: "../Qt/6.8.0/msvc2019_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.8.0/msvc2019_64",
                 },
-              screenshot_filename: "windows-latest-msvc-qt-6.5.0.jpg",
+              screenshot_filename: "windows-latest-msvc-qt-6.8.0.jpg",
             }
           - {
               name: "Ubuntu Latest GCC Qt5",
@@ -90,12 +71,12 @@ jobs:
               env: { DISPLAY: ":1" },
               cmake:
                 {
-                  qtversion: "6.5.0",
+                  qtversion: "6.8.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.5.0/gcc_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.5.0/gcc_64",
+                  qtdirvalue: "../Qt/6.8.0/gcc_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.8.0/gcc_64",
                 },
-              screenshot_filename: "ubuntu-latest-gcc-qt-6.5.0.jpg",
+              screenshot_filename: "ubuntu-latest-gcc-qt-6.8.0.jpg",
             }
           - {
               name: "macOS Latest Clang Qt6",
@@ -108,12 +89,12 @@ jobs:
               generators: "Ninja",
               cmake:
                 {
-                  qtversion: "6.5.0",
+                  qtversion: "6.8.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.5.0/clang_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.5.0/clang_64",
+                  qtdirvalue: "../Qt/6.8.0/clang_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.8.0/clang_64",
                 },
-              screenshot_filename: "macos-latest-clang-qt-6.5.0.jpg",
+              screenshot_filename: "macos-latest-clang-qt-6.8.0.jpg",
             }
 
     steps:
@@ -192,7 +173,7 @@ jobs:
         if: endsWith(matrix.config.name, 'Qt6')
         uses: jurplel/install-qt-action@v4
         with:
-          version: "6.5.0"
+          version: "6.8.0"
           target: "desktop"
           install-deps: "true"
           modules: "qtwebengine qtshadertools"
