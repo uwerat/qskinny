@@ -32,12 +32,12 @@ jobs:
               generators: "Visual Studio 18 2026",
               cmake:
                 {
-                  qtversion: "6.10.0",
+                  qtversion: "6.8.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.10.0/msvc2019_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.10.0/msvc2019_64",
+                  qtdirvalue: "../Qt/6.8.0/msvc2019_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.8.0/msvc2019_64",
                 },
-              screenshot_filename: "windows-latest-msvc-qt-6.10.0.jpg",
+              screenshot_filename: "windows-latest-msvc-qt-6.8.0.jpg",
             }
           - {
               name: "Ubuntu Latest GCC Qt5",
@@ -71,12 +71,12 @@ jobs:
               env: { DISPLAY: ":1" },
               cmake:
                 {
-                  qtversion: "6.10.0",
+                  qtversion: "6.8.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.10.0/gcc_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.10.0/gcc_64",
+                  qtdirvalue: "../Qt/6.8.0/gcc_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.8.0/gcc_64",
                 },
-              screenshot_filename: "ubuntu-latest-gcc-qt-6.10.0.jpg",
+              screenshot_filename: "ubuntu-latest-gcc-qt-6.8.0.jpg",
             }
           - {
               name: "macOS Latest Clang Qt6",
@@ -89,12 +89,12 @@ jobs:
               generators: "Ninja",
               cmake:
                 {
-                  qtversion: "6.10.0",
+                  qtversion: "6.8.0",
                   qtdirkey: "Qt6_DIR",
-                  qtdirvalue: "../Qt/6.10.0/clang_64/lib/cmake/Qt6",
-                  qtprefixpath: "../Qt/6.10.0/clang_64",
+                  qtdirvalue: "../Qt/6.8.0/clang_64/lib/cmake/Qt6",
+                  qtprefixpath: "../Qt/6.8.0/clang_64",
                 },
-              screenshot_filename: "macos-latest-clang-qt-6.10.0.jpg",
+              screenshot_filename: "macos-latest-clang-qt-6.8.0.jpg",
             }
 
     steps:
@@ -173,7 +173,7 @@ jobs:
         if: endsWith(matrix.config.name, 'Qt6')
         uses: jurplel/install-qt-action@v4
         with:
-          version: "6.10.0"
+          version: "6.8.0"
           target: "desktop"
           install-deps: "true"
           modules: "qtwebengine qtshadertools"
