@@ -73,6 +73,12 @@ macro(qsk_setup_Qt)
             find_package(Qt${QT_VERSION_MAJOR} QUIET
                 OPTIONAL_COMPONENTS WebEngineCore WebEngineQuick)
 
+            if(QT_VERSION_MINOR VERSION_GREATER_EQUAL 10)
+                if( Qt${QT_VERSION_MAJOR}WebEngineQuick_FOUND)
+                    find_package(Qt6 REQUIRED COMPONENTS WebEngineQuickPrivate )
+                endif()
+            endif()
+
             find_package(Qt${QT_VERSION_MAJOR} QUIET
                 OPTIONAL_COMPONENTS QuickShapesPrivate)
 
