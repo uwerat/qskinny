@@ -58,17 +58,12 @@ static inline QQuickAnchors* qskGetOrCreateAnchors( QQuickItem* item )
     return QQuickItemPrivate::get( item )->anchors();
 }
 
-static inline QQuickAnchors* qskGetAnchors( QQuickItem* item )
+static inline QQuickAnchors* qskGetAnchors( const QQuickItem* item )
 {
     if ( item == nullptr )
         return nullptr;
 
     return QQuickItemPrivate::get( item )->_anchors;
-}
-
-static inline const QQuickAnchors* qskGetAnchors( const QQuickItem* item )
-{
-    return qskGetAnchors( const_cast< QQuickItem* >( item ) );
 }
 
 static inline QQuickAnchors::Anchor qskToQuickAnchor( Qt::AnchorPoint edge )

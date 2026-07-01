@@ -1103,7 +1103,7 @@ QVariant QskSkinnable::interpolatedHint(
         {
             if ( const auto topState = aspect.topState() )
             {
-                aspect.clearState( aspect.topState() );
+                aspect.clearState( topState );
                 continue;
             }
 

@@ -184,7 +184,7 @@ namespace
 
     void Renderer::setTextureSize( const QSize& size )
     {
-        if ( const auto rhi = context()->rhi() )
+        if ( context()->rhi() )
         {
             if ( m_rt.rt && m_rt.rt->pixelSize() != size )
                 clearTarget();
@@ -313,7 +313,7 @@ namespace
 
     void Renderer::clearTarget()
     {
-        if ( const auto rhi = context()->rhi() )
+        if ( context()->rhi() )
         {
             delete m_rt.rt;
             m_rt.rt = nullptr;
