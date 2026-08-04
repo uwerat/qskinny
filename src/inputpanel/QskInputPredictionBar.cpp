@@ -6,6 +6,7 @@
 #include "QskInputPredictionBar.h"
 #include "QskLinearBox.h"
 #include "QskPushButton.h"
+#include "QskScrollArea.h"
 #include "QskTextOptions.h"
 
 #include <qfontmetrics.h>
@@ -37,7 +38,8 @@ namespace
 
             auto size = QFontMetricsF( font() ).size( Qt::TextSingleLine, text() );
 
-            size = size.expandedTo( strutSizeHint( Panel ) );
+            size = size.expandedTo( strutSizeHint( effectiveSubcontrol( Panel ) ) );
+
             size = outerBoxSize( Panel, size );
 
             return size;
@@ -60,11 +62,12 @@ namespace
 class QskInputPredictionBar::PrivateData
 {
   public:
+    QskScrollArea* scrollArea;
     QskLinearBox* layoutBox;
     QStringList candidates;
 
     int scrollOffset = 0;
-    const int buttonCount = 12;
+    const int maxButtonCount = 12;
 };
 
 QskInputPredictionBar::QskInputPredictionBar( QQuickItem* parent )
@@ -74,13 +77,19 @@ QskInputPredictionBar::QskInputPredictionBar( QQuickItem* parent )
     setAutoLayoutChildren( true );
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
 
-    m_data->layoutBox = new QskLinearBox( Qt::Horizontal, this );
+    m_data->scrollArea = new QskScrollArea( this );
+    m_data->scrollArea->setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
+    m_data->scrollArea->setFlickableOrientations( Qt::Horizontal );
 
-    for ( int i = 0; i < m_data->buttonCount; i++ )
+    m_data->layoutBox = new QskLinearBox( Qt::Horizontal, m_data->scrollArea );
+
+    m_data->scrollArea->setScrolledItem( m_data->layoutBox );
+
+    for ( int i = 0; i < m_data->maxButtonCount; i++ )
     {
         auto button = new Button( m_data->layoutBox );
         button->setVisible( false );
-        button->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
+        button->setSizePolicy( Qt::Horizontal, QskSizePolicy::Fixed );
 
         connect( button, &QskPushButton::clicked,
             this, &QskInputPredictionBar::buttonClicked );
@@ -111,7 +120,24 @@ void QskInputPredictionBar::setPrediction( const QStringList& candidates )
     if ( m_data->candidates != candidates )
     {
         m_data->candidates = candidates;
-        setScrollOffset( 0 );
+        m_data->scrollArea->resetImplicitSize();
+        m_data->scrollArea->setScrollPos( {0, 0} );
+
+        for( int i = 0; i < m_data->maxButtonCount; ++i )
+        {
+            auto* button = qobject_cast< QskPushButton* >(
+                m_data->layoutBox->itemAtIndex( i ) );
+
+            if( candidates.count() > i )
+            {
+                button->setText( candidates.at(i) );
+                button->setVisible( true );
+            }
+            else
+            {
+                button->setVisible( false );
+            }
+        }
     }
 }
 
@@ -120,66 +146,12 @@ QStringList QskInputPredictionBar::candidates() const
     return m_data->candidates;
 }
 
-void QskInputPredictionBar::setScrollOffset( int offset )
-{
-    m_data->scrollOffset = offset;
-
-    const int candidateCount = m_data->candidates.length();
-    const int count = std::min( candidateCount, m_data->buttonCount );
-    const bool continueLeft = m_data->scrollOffset > 0;
-    const bool continueRight = ( candidateCount - m_data->scrollOffset ) > count;
-
-    for ( int i = 0; i < count; i++ )
-    {
-        auto button = qobject_cast< QskPushButton* >(
-            m_data->layoutBox->itemAtIndex( i ) );
-
-        if ( continueLeft && i == 0 )
-        {
-            button->setText( QChar( 0x2B05 ) );
-        }
-        else if ( continueRight && ( i == m_data->buttonCount - 1 ) )
-        {
-            button->setText( QChar( 0x27A1 ) );
-        }
-        else
-        {
-            const int index = i + m_data->scrollOffset;
-            button->setText( m_data->candidates[ index ] );
-        }
-
-        button->setVisible( true );
-    }
-
-    for ( int i = count; i < m_data->buttonCount; ++i )
-        m_data->layoutBox->itemAtIndex( i )->setVisible( false );
-}
-
 void QskInputPredictionBar::buttonClicked()
 {
     const int index = m_data->layoutBox->indexOf(
         qobject_cast< QQuickItem* > ( sender() ) );
 
-    const int offset = m_data->scrollOffset;
-
-    if ( index == 0 )
-    {
-        if ( offset > 0 )
-        {
-            setScrollOffset( offset - 1 );
-            return;
-        }
-    }
-    else if ( index == m_data->buttonCount - 1 )
-    {
-        if ( m_data->candidates.count() - offset > m_data->buttonCount )
-        {
-            setScrollOffset( offset + 1 );
-            return;
-        }
-    }
-
-    Q_EMIT predictiveTextSelected( offset + index );
+    Q_EMIT predictiveTextSelected( index );
 }
 
 #include "moc_QskInputPredictionBar.cpp"
