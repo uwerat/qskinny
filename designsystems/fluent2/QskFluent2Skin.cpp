@@ -60,6 +60,7 @@
 #include <QskDrawer.h>
 #include <QskFocusIndicator.h>
 #include <QskGraphicLabel.h>
+#include <QskInputPredictionBar.h>
 #include <QskListView.h>
 #include <QskMenu.h>
 #include <QskPageIndicator.h>
@@ -251,6 +252,9 @@ namespace
         void setupGraphicLabelMetrics();
         void setupGraphicLabelColors( QskAspect::Section, const QskFluent2Theme& );
 
+        void setupInputPredictionBarMetrics();
+        void setupInputPredictionBarColors( QskAspect::Section, const QskFluent2Theme& );
+
         void setupListViewMetrics();
         void setupListViewColors( QskAspect::Section, const QskFluent2Theme& );
 
@@ -348,6 +352,7 @@ void Editor::setupMetrics()
     setupListViewMetrics();
     setupMenuMetrics();
     setupPageIndicatorMetrics();
+    setupInputPredictionBarMetrics();
     setupProgressBarMetrics();
     setupProgressRingMetrics();
     setupPushButtonMetrics();
@@ -389,6 +394,7 @@ void Editor::setupColors( QskAspect::Section section, const QskFluent2Theme& the
     setupMenuColors( section, theme );
     setupPageIndicatorColors( section, theme );
     setupProgressBarColors( section, theme );
+    setupInputPredictionBarColors( section, theme );
     setupProgressRingColors( section, theme );
     setupPushButtonColors( section, theme );
     setupRadioBoxColors( section, theme );
@@ -694,6 +700,35 @@ void Editor::setupFocusIndicatorColors(
 
     setAnimation( Q::Panel | A::Color, 200 );
     setAnimation( Q::Panel | A::Color | Q::Disabled, 500 );
+}
+
+void Editor::setupInputPredictionBarMetrics()
+{
+    using Q = QskInputPredictionBar;
+
+    setPadding( Q::Panel, 5_px );
+    setPadding( Q::ButtonPanel, 5_px );
+
+    setFontRole( Q::ButtonText, Fluent2::Body );
+}
+
+void Editor::setupInputPredictionBarColors(
+    QskAspect::Section section, const QskFluent2Theme& theme )
+{
+    Q_UNUSED( section );
+
+    using Q = QskInputPredictionBar;
+
+    const auto& pal = theme.palette;
+
+    setGradient( Q::ButtonPanel, pal.fillColor.control.defaultColor );
+    setGradient( Q::ButtonPanel | Q::Hovered, pal.fillColor.control.secondary );
+    setGradient( Q::ButtonPanel | QskPushButton::Pressed, pal.fillColor.control.tertiary );
+
+    setColor( Q::ButtonText, pal.fillColor.text.primary );
+    setColor( Q::ButtonText | QskPushButton::Pressed, pal.fillColor.text.secondary );
+
+    setGradient( Q::Panel, pal.background.solid.tertiary );
 }
 
 void Editor::setupListViewMetrics()

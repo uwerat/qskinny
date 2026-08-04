@@ -80,7 +80,7 @@ QskInputPredictionBar::QskInputPredictionBar( QQuickItem* parent )
     {
         auto button = new Button( m_data->layoutBox );
         button->setVisible( false );
-        button->setSizePolicy( Qt::Horizontal, QskSizePolicy::Maximum );
+        button->setSizePolicy( Qt::Horizontal, QskSizePolicy::Preferred );
 
         connect( button, &QskPushButton::clicked,
             this, &QskInputPredictionBar::buttonClicked );
