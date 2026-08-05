@@ -208,7 +208,12 @@ QString QskVirtualKeyboard::textForKey( int key ) const
             return QChar( 0x27A1 );
 
         default:
+        {
+            if(key < 0 || key > 0x10FFFF)
+                return QString();
+
             return QChar( key );
+        }
     }
 }
 
