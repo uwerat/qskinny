@@ -609,7 +609,10 @@ std::shared_ptr< QskTextPredictor > QskInputContextFactory::setupPredictor( cons
 QskTextPredictor* QskInputContextFactory::createPredictor( const QLocale& locale )
 {
 #if PINYIN
-    return new QskPinyinTextPredictor();
+    if( locale.language() == QLocale::Chinese )
+    {
+        return new QskPinyinTextPredictor();
+    }
 #endif
 
 #if HUNSPELL
