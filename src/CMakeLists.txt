@@ -541,7 +541,11 @@ endif()
 
 if(ENABLE_PINYIN)
     target_compile_definitions(${target} PRIVATE PINYIN)
-    target_link_libraries(${target} PRIVATE pinyin Fcitx5::Utils)
+    find_package(LibIMEPinyin REQUIRED)
+
+    # LibIME::Pinyin carries its include dir and pulls in LibIME::Core,
+    # Fcitx5::Utils and Boost as transitive dependencies.
+    target_link_libraries(${target} PRIVATE LibIME::Pinyin)
 
     target_include_directories(${target}
         PUBLIC $<BUILD_INTERFACE:${QSK_SOURCE_DIR}/inputcontext>)

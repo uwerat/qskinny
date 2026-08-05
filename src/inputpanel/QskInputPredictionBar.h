@@ -33,7 +33,6 @@ class QSK_EXPORT QskInputPredictionBar : public QskBox
         QskAspect::Subcontrol ) const override;
 
     void buttonClicked();
-    void setScrollOffset( int );
 
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;

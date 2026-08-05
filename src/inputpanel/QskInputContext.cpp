@@ -28,6 +28,10 @@
 #include "QskHunspellTextPredictor.h"
 #endif
 
+#if PINYIN
+#include "QskPinyinTextPredictor.h"
+#endif
+
 namespace
 {
     class Popup : public QskPopup
@@ -604,6 +608,13 @@ std::shared_ptr< QskTextPredictor > QskInputContextFactory::setupPredictor( cons
 
 QskTextPredictor* QskInputContextFactory::createPredictor( const QLocale& locale )
 {
+#if PINYIN
+    if( locale.language() == QLocale::Chinese )
+    {
+        return new QskPinyinTextPredictor();
+    }
+#endif
+
 #if HUNSPELL
     return new QskHunspellTextPredictor( locale );
 #else

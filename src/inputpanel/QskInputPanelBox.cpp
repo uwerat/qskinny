@@ -120,9 +120,8 @@ namespace
     class TextFieldProxy final : public QskTextField
     {
       public:
-        TextFieldProxy( QskInputPanelBox* panelBox, QQuickItem* parentItem = nullptr )
+        TextFieldProxy( QQuickItem* parentItem = nullptr )
             : QskTextField( parentItem )
-            , m_panelBox( panelBox )
         {
             setObjectName( QStringLiteral( "InputBoxProxy" ) );
 
@@ -131,18 +130,6 @@ namespace
         }
 
       protected:
-        QskAspect::Subcontrol substitutedSubcontrol(
-            QskAspect::Subcontrol subControl ) const override
-        {
-            if ( subControl == QskTextField::TextPanel )
-                return m_panelBox->effectiveSubcontrol( QskInputPanelBox::ProxyPanel );
-
-            if ( subControl == QskTextField::Text )
-                return m_panelBox->effectiveSubcontrol( QskInputPanelBox::ProxyText );
-
-            return subControl;
-        }
-
         void focusInEvent( QFocusEvent* ) override
         {
         }
@@ -150,9 +137,6 @@ namespace
         void focusOutEvent( QFocusEvent* ) override
         {
         }
-
-      private:
-        QskInputPanelBox* m_panelBox;
     };
 }
 
@@ -183,7 +167,7 @@ QskInputPanelBox::QskInputPanelBox( QQuickItem* parent )
     m_data->prompt = new QskTextLabel();
     m_data->prompt->setVisible( false );
 
-    m_data->inputProxy = new TextFieldProxy( this, nullptr );
+    m_data->inputProxy = new TextFieldProxy( nullptr );
     m_data->inputProxy->setVisible(
         m_data->panelHints & QskInputPanelBox::InputProxy );
 
