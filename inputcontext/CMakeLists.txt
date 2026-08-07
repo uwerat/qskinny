@@ -38,7 +38,9 @@ set(target qskinputcontext)
 qsk_add_plugin(${target} platforminputcontexts QskInputContextPlugin ${SOURCES})
 
 if(ENABLE_PINYIN)
-    target_link_libraries(${target} PRIVATE pinyin Fcitx5::Utils)
+    # LibIME::Pinyin carries its include dir and pulls in LibIME::Core,
+    # Fcitx5::Utils and Boost as transitive dependencies.
+    target_link_libraries(${target} PRIVATE LibIME::Pinyin)
 endif()
 
 if(ENABLE_HUNSPELL)

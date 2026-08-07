@@ -20,14 +20,13 @@ class QSK_INPUTCONTEXT_EXPORT QskPinyinTextPredictor : public QskTextPredictor
     QskPinyinTextPredictor( QObject* = nullptr );
     ~QskPinyinTextPredictor() override;
 
-    int candidateCount() const override;
-    QString candidate( int ) const override;
-
   protected:
     void request( const QString& ) override;
     void reset() override;
 
   private:
+    Q_INVOKABLE void loadDictionary();
+
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
 };

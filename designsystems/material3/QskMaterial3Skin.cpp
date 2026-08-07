@@ -27,6 +27,7 @@
 #include <QskGraphic.h>
 #include <QskGraphicIO.h>
 #include <QskInputPanelBox.h>
+#include <QskInputPredictionBar.h>
 #include <QskListView.h>
 #include <QskMenu.h>
 #include <QskPageIndicator.h>
@@ -167,6 +168,7 @@ namespace
         Q_INVOKABLE void setupDrawer();
         Q_INVOKABLE void setupFocusIndicator();
         Q_INVOKABLE void setupInputPanel();
+        Q_INVOKABLE void setupInputPredictionBar();
         Q_INVOKABLE void setupVirtualKeyboard();
         Q_INVOKABLE void setupListView();
         Q_INVOKABLE void setupMenu();
@@ -1264,6 +1266,33 @@ void Editor::setupTabView()
 
     setGradient( Q::Page, m_pal.background );
     setAnimation( Q::Page, qskDuration );
+}
+
+void Editor::setupInputPredictionBar()
+{
+    using A = QskAspect;
+    using Q = QskInputPredictionBar;
+
+    // key panel
+    setMargin( Q::ButtonPanel, 5_px );
+    setGradient( Q::ButtonPanel, m_pal.surface2 );
+    setGradient( Q::ButtonPanel | QskPushButton::Pressed, m_pal.surface );
+    setColor( Q::ButtonText | QskPushButton::Pressed, m_pal.outlineVariant );
+    setBoxShape( Q::ButtonPanel, 6_px );
+    setPadding(Q::ButtonPanel, 10_px );
+
+    for ( auto state : { A::NoState, Q::Focused } )
+        setBoxBorderColors( Q::ButtonPanel | QskPushButton::Pressed | state,
+            m_pal.secondary );
+
+    setAnimation( Q::ButtonPanel | A::Color, qskDuration );
+    setAnimation( Q::ButtonPanel | A::Metric, qskDuration );
+
+    setColor( Q::ButtonText, m_pal.onBackground );
+    setFontRole( Q::ButtonText, HeadlineSmall );
+
+    // panel
+    setGradient( Q::Panel, m_pal.background );
 }
 
 void Editor::setupInputPanel()

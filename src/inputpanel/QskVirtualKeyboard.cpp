@@ -208,7 +208,12 @@ QString QskVirtualKeyboard::textForKey( int key ) const
             return QChar( 0x27A1 );
 
         default:
+        {
+            if(key < 0 || key > 0x10FFFF)
+                return QString();
+
             return QChar( key );
+        }
     }
 }
 
@@ -593,7 +598,11 @@ void QskVirtualKeyboard::updateLocale( const QLocale& locale )
             break;
 
         case QLocale::Chinese:
+#if PINYIN
+            newLayout = &m_data->layouts.en_US;
+#else
             newLayout = &m_data->layouts.zh;
+#endif
             break;
 #if 1
         case QLocale::C:
