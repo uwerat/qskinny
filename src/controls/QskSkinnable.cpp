@@ -1463,6 +1463,11 @@ void QskSkinnable::setSkinStates( QskAspect::States newStates )
             }
         }
 
+        if ( auto qskItem = qobject_cast< QskItem* >( item ) )
+            qskItem->resetImplicitSize();
+
+        item->polish();
+
         if ( item->flags() & QQuickItem::ItemHasContents )
             item->update();
     }
