@@ -20,7 +20,8 @@ QSK_SYSTEM_STATE( QskSlider, Pressed, QskAspect::FirstSystemState << 2 )
 
 static QRectF qskHandleSelectionRect( const QskSlider* slider )
 {
-    return slider->subControlRect( QskSlider::Handle );
+    const auto t = slider->handleTolerance();
+    return slider->subControlRect( QskSlider::Handle ).marginsAdded( {t, t, t, t} );
 }
 
 static QRectF qskSliderSelectionRect( const QskSlider* slider )
@@ -88,6 +89,7 @@ class QskSlider::PrivateData
     qreal pressedValue;
 
     qreal origin = 0.0;
+    qreal handleTolerance = 0.0;
 
     bool hasOrigin : 1;
     bool inverted : 1;
@@ -231,6 +233,20 @@ void QskSlider::setTracking( bool on )
 bool QskSlider::isTracking() const
 {
     return m_data->tracking;
+}
+
+void QskSlider::setHandleTolerance( qreal tolerance )
+{
+    if( !qskFuzzyCompare(m_data->handleTolerance, tolerance ) )
+    {
+        m_data->handleTolerance = tolerance;
+        Q_EMIT handleToleranceChanged( tolerance );
+    }
+}
+
+qreal QskSlider::handleTolerance() const
+{
+    return m_data->handleTolerance;
 }
 
 void QskSlider::componentComplete()
