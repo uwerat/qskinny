@@ -315,9 +315,15 @@ void QskListView::keyReleaseEvent( QKeyEvent* event )
 
 void QskListView::mousePressEvent( QMouseEvent* event )
 {
+    const int row = qskRowAt( this, qskMousePosition( event ) );
+
+    if( row >= 0 )
+    {
+        Q_EMIT pressed( row );
+    }
+
     if ( m_data->selectionMode != NoSelection )
     {
-        const int row = qskRowAt( this, qskMousePosition( event ) );
         if ( row >= 0 )
         {
             m_data->setRowState( this, row, Pressed );
@@ -331,6 +337,23 @@ void QskListView::mousePressEvent( QMouseEvent* event )
 
 void QskListView::mouseReleaseEvent( QMouseEvent* event )
 {
+    const int row = qskRowAt( this, qskMousePosition( event ) );
+
+    if( row == m_data->selectedRow )
+    {
+        Q_EMIT clicked( row );
+    }
+
+    if ( m_data->selectionMode != NoSelection )
+    {
+        if ( row >= 0 )
+        {
+            m_data->setRowState( this, row, Pressed );
+            setSelectedRow( row );
+            return;
+        }
+    }
+
     m_data->setRowState( this, -1, Pressed );
     Inherited::mouseReleaseEvent( event );
 }
