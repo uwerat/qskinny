@@ -109,6 +109,9 @@
 #include "QskStatusIndicator.h"
 #include "QskStatusIndicatorSkinlet.h"
 
+#include "QskColorPicker.h"
+#include "QskColorPickerSkinlet.h"
+
 #include "QskInternalMacros.h"
 
 #include <qhash.h>
@@ -219,6 +222,7 @@ QskSkin::QskSkin( QObject* parent )
     declareSkinlet< QskProgressBar, QskProgressBarSkinlet >();
     declareSkinlet< QskProgressRing, QskProgressRingSkinlet >();
     declareSkinlet< QskRadioBox, QskRadioBoxSkinlet >();
+    declareSkinlet< QskColorPicker, QskColorPickerSkinlet >();
 
     const QFont font = QGuiApplication::font();
     setupFontTable( font.family(), font.italic() );
