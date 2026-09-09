@@ -451,12 +451,16 @@ void QskStackBoxAnimator3::advanceIndex( qreal value )
 
 void QskStackBoxAnimator3::done()
 {
+    // a tab may have been removed while animating - only
+    // the stack box knows which item has to stay visible
+    const auto currentItem = stackBox()->currentItem();
+
     for ( int i = 0; i < 2; i++ )
     {
         if ( auto item = itemAt( i ) )
         {
             item->setOpacity( 1.0 );
-            item->setVisible( i == 1 ); // not here !!
+            item->setVisible( item == currentItem );
         }
     }
 }
