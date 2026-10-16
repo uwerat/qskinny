@@ -103,11 +103,11 @@ QSizeF QskStatusIndicatorSkinlet::sizeHint( const QskSkinnable* skinnable,
             {
                 if ( constraint.width() >= 0.0 )
                 {
-                    hint.setHeight( sz.height() * constraint.width() / sz.width() );
+                    hint.setHeight( hint.height() * constraint.width() / hint.width() );
                 }
                 else if ( constraint.height() >= 0.0 )
                 {
-                    hint.setWidth( sz.width() * constraint.height() / sz.height() );
+                    hint.setWidth( hint.width() * constraint.height() / hint.height() );
                 }
             }
 
