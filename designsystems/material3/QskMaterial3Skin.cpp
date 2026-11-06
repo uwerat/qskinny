@@ -1293,6 +1293,30 @@ void Editor::setupInputPredictionBar()
 
     // panel
     setGradient( Q::Panel, m_pal.background );
+
+    // scroll area, same as QskScrollView
+    setGradient( Q::ScrollAreaPanel, m_pal.background );
+    setGradient( Q::ScrollAreaViewport, m_pal.secondaryContainer );
+
+    for ( auto subControl : { Q::ScrollAreaHorizontalScrollBar, Q::ScrollAreaVerticalScrollBar } )
+    {
+        setMetric( subControl | A::Size, 6_px );
+        setPadding( subControl, 0 );
+    }
+
+    const auto handleExtent = 40_px;
+    setStrutSize( Q::ScrollAreaHorizontalScrollHandle, handleExtent, 0.0 );
+    setStrutSize( Q::ScrollAreaVerticalScrollHandle, 0.0, handleExtent );
+
+    for ( auto subControl : { Q::ScrollAreaHorizontalScrollHandle, Q::ScrollAreaVerticalScrollHandle } )
+    {
+        setBoxShape( subControl, { 100, Qt::RelativeSize } );
+        setBoxBorderMetrics( subControl, 0 );
+        setGradient( subControl, m_pal.secondary );
+        setAnimation( subControl | A::Color, qskDuration );
+    }
+
+    setAnimation( Q::ScrollAreaViewport | A::Metric, QskAnimationHint( 200, QEasingCurve::InCubic ) );
 }
 
 void Editor::setupInputPanel()

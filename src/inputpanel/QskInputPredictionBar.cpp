@@ -15,6 +15,12 @@
 QSK_SUBCONTROL( QskInputPredictionBar, Panel )
 QSK_SUBCONTROL( QskInputPredictionBar, ButtonPanel )
 QSK_SUBCONTROL( QskInputPredictionBar, ButtonText )
+QSK_SUBCONTROL( QskInputPredictionBar, ScrollAreaPanel )
+QSK_SUBCONTROL( QskInputPredictionBar, ScrollAreaViewport )
+QSK_SUBCONTROL( QskInputPredictionBar, ScrollAreaHorizontalScrollBar )
+QSK_SUBCONTROL( QskInputPredictionBar, ScrollAreaHorizontalScrollHandle )
+QSK_SUBCONTROL( QskInputPredictionBar, ScrollAreaVerticalScrollBar )
+QSK_SUBCONTROL( QskInputPredictionBar, ScrollAreaVerticalScrollHandle )
 
 namespace
 {
@@ -78,6 +84,16 @@ QskInputPredictionBar::QskInputPredictionBar( QQuickItem* parent )
     initSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
 
     m_data->scrollArea = new QskScrollArea( this );
+    m_data->scrollArea->setSubcontrolProxy( QskScrollArea::Panel, ScrollAreaPanel );
+    m_data->scrollArea->setSubcontrolProxy( QskScrollArea::Viewport, ScrollAreaViewport );
+    m_data->scrollArea->setSubcontrolProxy(
+        QskScrollArea::HorizontalScrollBar, ScrollAreaHorizontalScrollBar );
+    m_data->scrollArea->setSubcontrolProxy(
+        QskScrollArea::HorizontalScrollHandle, ScrollAreaHorizontalScrollHandle );
+    m_data->scrollArea->setSubcontrolProxy(
+        QskScrollArea::VerticalScrollBar, ScrollAreaVerticalScrollBar );
+    m_data->scrollArea->setSubcontrolProxy(
+        QskScrollArea::VerticalScrollHandle, ScrollAreaVerticalScrollHandle );
     m_data->scrollArea->setSizePolicy( QskSizePolicy::Expanding, QskSizePolicy::Fixed );
     m_data->scrollArea->setFlickableOrientations( Qt::Horizontal );
 

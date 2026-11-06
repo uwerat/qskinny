@@ -15,7 +15,10 @@ class QSK_EXPORT QskInputPredictionBar : public QskBox
     using Inherited = QskBox;
 
   public:
-    QSK_SUBCONTROLS( Panel, ButtonPanel, ButtonText )
+    QSK_SUBCONTROLS( Panel, ButtonPanel, ButtonText,
+        ScrollAreaPanel, ScrollAreaViewport,
+        ScrollAreaHorizontalScrollBar, ScrollAreaHorizontalScrollHandle,
+        ScrollAreaVerticalScrollBar, ScrollAreaVerticalScrollHandle )
 
     QskInputPredictionBar( QQuickItem* parent = nullptr );
     ~QskInputPredictionBar() override;
