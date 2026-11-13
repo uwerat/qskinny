@@ -710,6 +710,35 @@ void Editor::setupInputPredictionBarMetrics()
     setPadding( Q::ButtonPanel, 5_px );
 
     setFontRole( Q::ButtonText, Fluent2::Body );
+
+    // scroll area, same as QskScrollView
+
+    using A = QskAspect;
+
+    for ( auto subControl : { Q::ScrollAreaHorizontalScrollBar, Q::ScrollAreaVerticalScrollBar } )
+    {
+        setMetric( subControl | A::Size, 6_px );
+
+        const qreal padding = 4_px;
+
+        if ( subControl == Q::ScrollAreaHorizontalScrollBar )
+            setPadding( subControl, 0, padding, 0, 0 );
+        else
+            setPadding( subControl, padding, 0, 0, 0 );
+
+        setPadding( subControl | Q::Hovered, 0 );
+        setPadding( subControl | QskScrollView::Pressed, 0 );
+
+        setBoxShape( subControl, 100, Qt::RelativeSize );
+        setAnimation( subControl | A::Metric, 100 );
+    }
+
+    setBoxShape( Q::ScrollAreaHorizontalScrollHandle, 100, Qt::RelativeSize );
+    setBoxShape( Q::ScrollAreaVerticalScrollHandle, 100, Qt::RelativeSize );
+
+    const auto handleExtent = 40_px;
+    setStrutSize( Q::ScrollAreaHorizontalScrollHandle, handleExtent, 0.0 );
+    setStrutSize( Q::ScrollAreaVerticalScrollHandle, 0.0, handleExtent );
 }
 
 void Editor::setupInputPredictionBarColors(
@@ -729,6 +758,33 @@ void Editor::setupInputPredictionBarColors(
     setColor( Q::ButtonText | QskPushButton::Pressed, pal.fillColor.text.secondary );
 
     setGradient( Q::Panel, pal.background.solid.tertiary );
+
+    // scroll area, same as QskScrollView
+
+    using A = QskAspect;
+
+    {
+        const auto fillColor = pal.fillColor.controlStrong.defaultColor;
+
+        setGradient( Q::ScrollAreaHorizontalScrollHandle | section, fillColor );
+        setGradient( Q::ScrollAreaVerticalScrollHandle | section, fillColor );
+    }
+
+    for ( auto subControl : { Q::ScrollAreaHorizontalScrollBar, Q::ScrollAreaVerticalScrollBar } )
+    {
+        auto fillColor = pal.fillColor.acrylic.background;
+
+        // see setupScrollViewColors()
+        const auto v = qBlue( fillColor );
+        if ( v > 250 && v == qRed( fillColor ) && v == qGreen( fillColor ) )
+            fillColor = qRgba( 240, 240, 240, qAlpha( fillColor ) );
+
+        setGradient( subControl, QskRgb::toTransparent( fillColor, 0 ) );
+        setGradient( subControl | Q::Hovered, fillColor );
+        setGradient( subControl | QskScrollView::Pressed, fillColor );
+
+        setAnimation( subControl | A::Color, 100 );
+    }
 }
 
 void Editor::setupListViewMetrics()
