@@ -22,6 +22,7 @@
 #include <QskGraphicIO.h>
 #include <QskGraphicLabel.h>
 #include <QskInputPanelBox.h>
+#include <QskInputPredictionBar.h>
 #include <QskListView.h>
 #include <QskMenu.h>
 #include <QskPageIndicator.h>
@@ -123,6 +124,7 @@ namespace
         Q_INVOKABLE void setupFocusIndicator();
         Q_INVOKABLE void setupGraphicLabel();
         Q_INVOKABLE void setupInputPanel();
+        Q_INVOKABLE void setupInputPredictionBar();
         Q_INVOKABLE void setupVirtualKeyboard();
         Q_INVOKABLE void setupListView();
         Q_INVOKABLE void setupMenu();
@@ -1222,6 +1224,61 @@ void Editor::setupInputPanel()
 
     setGradient( Q::Panel, m_pal.active( P::Window ) );
     setGradient( Q::Panel | Q::Disabled, m_pal.disabled( P::Window ) );
+}
+
+void Editor::setupInputPredictionBar()
+{
+    // scroll area, same as QskScrollView
+
+    using Q = QskInputPredictionBar;
+    using A = QskAspect;
+    using P = QPalette;
+
+    setMetric( Q::ScrollAreaPanel | A::Spacing, 4 );
+    setGradient( Q::ScrollAreaPanel, QskGradient() );
+
+    setBoxBorderMetrics( Q::ScrollAreaViewport, 1 );
+    setBoxBorderColors( Q::ScrollAreaViewport, m_pal.outline );
+    setBoxShape( Q::ScrollAreaViewport, 2 );
+
+    setGradient( Q::ScrollAreaViewport, m_pal.active( P::Base ) );
+    setGradient( Q::ScrollAreaViewport | Q::Disabled, m_pal.disabled( P::Base ) );
+
+    for ( auto subControl : { Q::ScrollAreaHorizontalScrollBar, Q::ScrollAreaVerticalScrollBar } )
+    {
+        const auto extent = 8_px;
+
+        setMetric( subControl | A::Size, extent );
+        setBoxShape( subControl, 100, Qt::RelativeSize );
+
+        if ( subControl == Q::ScrollAreaHorizontalScrollBar )
+            setPadding( subControl, 0, extent, 0, 0 );
+        else
+            setPadding( subControl, extent, 0, 0, 0 );
+
+        setPadding( subControl | Q::Hovered, 0 );
+        setPadding( subControl | QskScrollView::Pressed, 0 );
+
+        setAnimation( subControl | A::Metric, 100 );
+    }
+
+    for ( auto subControl : { Q::ScrollAreaHorizontalScrollHandle, Q::ScrollAreaVerticalScrollHandle } )
+    {
+        setBoxShape( subControl, 100, Qt::RelativeSize );
+
+        const auto handleExtent = 60.0;
+
+        if ( subControl == Q::ScrollAreaHorizontalScrollHandle )
+            setStrutSize( subControl, handleExtent, 0.0 );
+        else
+            setStrutSize( subControl, 0.0, handleExtent );
+
+        setGradient( subControl, m_pal.active( P::Mid ) );
+        setGradient( subControl | Q::Hovered, m_pal.active( P::Mid ) );
+        setGradient( subControl | QskScrollView::Pressed, m_pal.active( P::Dark ) );
+
+        setAnimation( subControl | A::Color, 100 );
+    }
 }
 
 void Editor::setupVirtualKeyboard()
