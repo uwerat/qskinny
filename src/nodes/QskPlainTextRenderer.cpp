@@ -32,6 +32,24 @@ static void qskSetupLayout( QTextLayout& layout, const QString& text, const QFon
     if ( tmp.contains( QLatin1Char( '\n' ) ) )
         tmp.replace( QLatin1Char( '\n' ), QChar::LineSeparator );
 
+    const auto elideMode = options.effectiveElideMode();
+
+    if ( elideMode != Qt::ElideNone )
+    {
+        QTextLayout scratch( tmp, font );
+
+        tmp = scratch.engine()->elidedText(
+            elideMode, QFixed::fromReal( width ), Qt::TextShowMnemonic, 0 );
+
+        /*
+            For some reason the position of the text is wrong,
+            with QTextOption::NoWrap - even if word wrapping
+            for elided text does not make any sense.
+            Needs some debugging of QTextLine::layout_helper, TODO ...
+         */
+        textOption.setWrapMode( QTextOption::WrapAnywhere );
+    }
+
     layout.setFont( font );
     layout.setTextOption( textOption );
     layout.setText( tmp );
@@ -39,8 +57,6 @@ static void qskSetupLayout( QTextLayout& layout, const QString& text, const QFon
     layout.beginLayout();
 
     {
-        const auto elideMode = options.effectiveElideMode();
-
         if ( elideMode == Qt::ElideNone )
         {
             qreal y = 0;
@@ -59,32 +75,10 @@ static void qskSetupLayout( QTextLayout& layout, const QString& text, const QFon
         }
         else
         {
-            {
-                const auto engine = layout.engine();
-
-                auto elidedText = engine->elidedText(
-                    elideMode, QFixed::fromReal( width ),
-                    Qt::TextShowMnemonic, 0 );
-
-                // why do we need this padding ???
-                elidedText = elidedText.leftJustified( engine->text.length() );
-                engine->text = elidedText;
-            }
-
             auto line = layout.createLine();
 
             if ( line.isValid() )
             {
-                /*
-                    For some reason the position of the text is wrong,
-                    with QTextOption::NoWrap - even if word wrapping
-                    for elided text does not make any sense.
-                    Needs some debugging of QTextLine::layout_helper, TODO ...
-                 */
-                auto option = layout.textOption();
-                option.setWrapMode( QTextOption::WrapAnywhere );
-                layout.setTextOption( option );
-
                 line.setPosition( QPointF( 0, 0 ) );
                 line.setLineWidth( width );
             }
