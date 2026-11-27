@@ -714,6 +714,17 @@ int QskPopup::execPopup()
             qskUngrabMouse( mouseGrabber );
     }
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
+    auto dw = QQuickWindowPrivate::get( window() );
+    dw->touchMouseId = -1;
+#else
+    if ( auto dw = QQuickItemPrivate::get( this ) )
+    {
+        if ( auto agent = dw->deliveryAgentPrivate() )
+            agent->cancelTouchMouseSynthesis();
+    }
+#endif
+
     return EventLoop( this ).exec( QEventLoop::DialogExec );
 }
 
