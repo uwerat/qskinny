@@ -388,7 +388,9 @@ int main( int argc, char* argv[] )
     window2.show();
 #endif
 
-    QskInputContext::instance()->setFactory( new InputContextFactory() );
+    if ( auto inputContext = QskInputContext::instance() )
+        inputContext->setFactory( new InputContextFactory() );
+
     return app.exec();
 }
 
