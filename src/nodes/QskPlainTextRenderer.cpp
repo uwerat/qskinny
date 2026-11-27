@@ -151,6 +151,12 @@ static void qskRenderText(
 #if QT_VERSION >= QT_VERSION_CHECK( 6, 7, 0 )
                 const auto renderType = preferNativeGlyphNode
                     ? QSGTextNode::NativeRendering : QSGTextNode::QtRendering;
+#endif
+
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 12, 0 )
+                glyphNode = sgContext->createGlyphNode( renderContext, renderType );
+                glyphNode->setRenderTypeQuality( renderQuality );
+#elif QT_VERSION >= QT_VERSION_CHECK( 6, 7, 0 )
                 glyphNode = sgContext->createGlyphNode(
                     renderContext, renderType, renderQuality );
 #elif QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
