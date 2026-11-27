@@ -119,6 +119,9 @@ jobs:
       - name: Install dependencies on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu Latest GCC')
         run: |
+          # the Microsoft package repository is not signed for Ubuntu 26.04 yet
+          # and makes apt-get update fail; we don't need it
+          sudo rm -f /etc/apt/sources.list.d/microsoft-prod.*
           sudo apt-get update
           sudo apt-get install ninja-build cmake
           ninja --version
