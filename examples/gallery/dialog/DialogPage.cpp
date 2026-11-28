@@ -9,6 +9,8 @@
 #include <QskLinearBox.h>
 #include <QskPushButton.h>
 
+#include <QDir>
+
 #if QT_CONFIG(thread)
     /*
         WebAssembly without asyncify support does not allow recursive
@@ -96,6 +98,18 @@ namespace
             auto selectButton = new Button( "Selection", this );
             connect( selectButton, &Button::clicked, this, &ButtonBox::execSelection );
 
+            auto fileSelectionButton = new Button( "File selection", this );
+            connect( fileSelectionButton, &Button::clicked, this, &ButtonBox::execFileSelection );
+
+            auto directorySelectionButton = new Button( "Directory selection", this );
+            connect( directorySelectionButton, &Button::clicked, this, &ButtonBox::execDirectorySelection );
+
+            auto colorSelectionButton = new Button( "Color selection", this );
+            connect( colorSelectionButton, &Button::clicked, this, &ButtonBox::execColorSelection );
+
+            auto fontSelectionButton = new Button( "Font selection", this );
+            connect( fontSelectionButton, &Button::clicked, this, &ButtonBox::execFontSelection );
+
             setExtraSpacingAt( Qt::BottomEdge );
         }
 
@@ -155,6 +169,42 @@ namespace
                 QskDialog::Ok | QskDialog::Cancel, QskDialog::Ok, entries, 7 );
 #else
             (void )qskDialog->select( title, entries, 7 );
+#endif
+        }
+
+        void execFileSelection()
+        {
+#ifndef QSK_USE_EXEC
+            // not implemented for now (class is not public)
+#else
+            ( void ) qskDialog->selectFile( "select file", QDir::currentPath() );
+#endif
+        }
+
+        void execDirectorySelection()
+        {
+#ifndef QSK_USE_EXEC
+            // not implemented for now (class is not public)
+#else
+            ( void ) qskDialog->selectDirectory( "select directory", QDir::currentPath() );
+#endif
+        }
+
+        void execColorSelection()
+        {
+#ifndef QSK_USE_EXEC
+            // not implemented for now (class is not public)
+#else
+            ( void ) qskDialog->selectColor( "select color" );
+#endif
+        }
+
+        void execFontSelection()
+        {
+#ifndef QSK_USE_EXEC
+            // not implemented for now (class is not public)
+#else
+            ( void ) qskDialog->selectFont( "select font" );
 #endif
         }
     };

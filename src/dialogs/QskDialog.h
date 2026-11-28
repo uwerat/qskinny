@@ -8,6 +8,7 @@
 
 #include "QskGlobal.h"
 
+#include <qcolor.h>
 #include <qobject.h>
 #include <memory>
 
@@ -129,6 +130,16 @@ class QSK_EXPORT QskDialog : public QObject
 
     Q_INVOKABLE QString select( const QString& title,
         const QStringList& entries, int selectedRow = 0 ) const;
+
+    Q_INVOKABLE QString selectFile( const QString& title,
+        const QString& directory ) const;
+
+    Q_INVOKABLE QString selectDirectory( const QString& title,
+        const QString& directory ) const;
+
+    Q_INVOKABLE QColor selectColor( const QString& title ) const;
+
+    Q_INVOKABLE QFont selectFont( const QString& title ) const;
 
     static ActionRole actionRole( Action action );
 

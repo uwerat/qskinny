@@ -12,6 +12,10 @@
 #include "QskSelectionSubWindow.h"
 #include "QskSelectionWindow.h"
 
+#include "QskColorSelectionWindow.h"
+#include "QskFileSelectionWindow.h"
+#include "QskFontSelectionWindow.h"
+
 #include "QskFocusIndicator.h"
 
 #include <qguiapplication.h>
@@ -207,6 +211,39 @@ static QString qskSelectWindow(
     return selectedEntry;
 }
 
+template< typename W >
+static QString qskSelectPath( QskFileSelectionWindow< W >& window )
+{
+    QString selectedFile = window.selectedPath();
+
+    if( window.exec() == QskDialog::Accepted )
+        selectedFile = window.selectedPath();
+
+    return selectedFile;
+}
+
+template< typename W >
+static QColor qskSelectColor( QskColorSelectionWindow< W >& window )
+{
+    QColor selectedColor = window.selectedColor();
+
+    if( window.exec() == QskDialog::Accepted )
+        selectedColor = window.selectedColor();
+
+    return selectedColor;
+}
+
+template< typename W >
+static QFont qskSelectFont( QskFontSelectionWindow< W >& window )
+{
+    QFont selectedFont = window.selectedFont();
+
+    if( window.exec() == QskDialog::Accepted )
+        selectedFont = window.selectedFont();
+
+    return selectedFont;
+}
+
 class QskDialog::PrivateData
 {
   public:
@@ -319,6 +356,124 @@ QString QskDialog::select( const QString& title,
     return qskSelectWindow( m_data->transientParent, title,
         actions, defaultAction, entries, selectedRow );
 
+}
+
+QString QskDialog::selectFile(
+    const QString& title, const QString& directory ) const
+{
+#if 1
+    // should be parameters
+    const auto actions = QskDialog::Ok | QskDialog::Cancel;
+    const auto defaultAction = QskDialog::Ok;
+#endif
+
+    const auto filters = QDir::AllEntries | QDir::NoDotAndDotDot | QDir::AllDirs;
+
+    if ( m_data->policy == EmbeddedBox )
+    {
+        auto quickWindow = qobject_cast< QQuickWindow* >( m_data->transientParent );
+
+        if ( quickWindow == nullptr )
+            quickWindow = qskSomeQuickWindow();
+
+        if ( quickWindow )
+        {
+            QskFileSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
+                actions, defaultAction, directory, filters );
+            return qskSelectPath< QskDialogSubWindow >( window );
+        }
+    }
+
+    QskFileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
+        actions, defaultAction, directory, filters );
+    return qskSelectPath< QskDialogWindow >( window );
+}
+
+QString QskDialog::selectDirectory(
+    const QString& title, const QString& directory ) const
+{
+#if 1
+    // should be parameters
+    const auto actions = QskDialog::Ok | QskDialog::Cancel;
+    const auto defaultAction = QskDialog::Ok;
+#endif
+
+    const auto filters = QDir::NoDotAndDotDot | QDir::AllDirs;
+
+    if ( m_data->policy == EmbeddedBox )
+    {
+        auto quickWindow = qobject_cast< QQuickWindow* >( m_data->transientParent );
+
+        if ( quickWindow == nullptr )
+            quickWindow = qskSomeQuickWindow();
+
+        if ( quickWindow )
+        {
+            QskFileSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
+                actions, defaultAction, directory, filters );
+            return qskSelectPath< QskDialogSubWindow >( window );
+        }
+    }
+
+    QskFileSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
+        actions, defaultAction, directory, filters );
+    return qskSelectPath< QskDialogWindow >( window );
+}
+
+QColor QskDialog::selectColor( const QString& title ) const
+{
+#if 1
+    // should be parameters
+    const auto actions = QskDialog::Ok | QskDialog::Cancel;
+    const auto defaultAction = QskDialog::Ok;
+#endif
+
+    if ( m_data->policy == EmbeddedBox )
+    {
+        auto quickWindow = qobject_cast< QQuickWindow* >( m_data->transientParent );
+
+        if ( quickWindow == nullptr )
+            quickWindow = qskSomeQuickWindow();
+
+        if ( quickWindow )
+        {
+            QskColorSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
+                actions, defaultAction );
+            return qskSelectColor< QskDialogSubWindow >( window );
+        }
+    }
+
+    QskColorSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
+        actions, defaultAction );
+    return qskSelectColor< QskDialogWindow >( window );
+}
+
+QFont QskDialog::selectFont( const QString& title ) const
+{
+#if 1
+    // should be parameters
+    const auto actions = QskDialog::Ok | QskDialog::Cancel;
+    const auto defaultAction = QskDialog::Ok;
+#endif
+
+    if ( m_data->policy == EmbeddedBox )
+    {
+        auto quickWindow = qobject_cast< QQuickWindow* >( m_data->transientParent );
+
+        if ( quickWindow == nullptr )
+            quickWindow = qskSomeQuickWindow();
+
+        if ( quickWindow )
+        {
+            QskFontSelectionWindow< QskDialogSubWindow > window( quickWindow, title,
+                actions, defaultAction );
+            return qskSelectFont< QskDialogSubWindow >( window );
+        }
+    }
+
+    QskFontSelectionWindow< QskDialogWindow > window( m_data->transientParent, title,
+        actions, defaultAction );
+    return qskSelectFont< QskDialogWindow >( window );
 }
 
 QskDialog::ActionRole QskDialog::actionRole( Action action )
