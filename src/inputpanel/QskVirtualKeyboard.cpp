@@ -388,6 +388,9 @@ void QskVirtualKeyboard::ensureButtons()
                 connect( button, &QskPushButton::pressed,
                     this, &QskVirtualKeyboard::buttonPressed );
 
+                connect( button, &QskPushButton::clicked,
+                    this, &QskVirtualKeyboard::buttonClicked );
+
                 m_data->keyButtons += button;
             }
         }
@@ -403,8 +406,28 @@ void QskVirtualKeyboard::ensureButtons()
 void QskVirtualKeyboard::buttonPressed()
 {
     const auto button = static_cast< const Button* >( sender() );
+
     if ( button == nullptr )
+    {
         return;
+    }
+
+    const int key = button->key();
+
+    if( qskIsAutorepeat( key ) )
+    {
+        Q_EMIT keySelected( key );
+    }
+}
+
+void QskVirtualKeyboard::buttonClicked()
+{
+    auto button = static_cast< Button* >( sender() );
+
+    if( button == nullptr )
+    {
+        return;
+    }
 
     const int key = button->key();
 
@@ -433,9 +456,10 @@ void QskVirtualKeyboard::buttonPressed()
 
             break;
         }
+
         default:
         {
-            Q_EMIT keySelected( key );
+            break;
         }
     }
 }
