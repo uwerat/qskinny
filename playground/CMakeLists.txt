@@ -1,4 +1,5 @@
 add_subdirectory(anchors)
+add_subdirectory(controlsgallery)
 add_subdirectory(dials)
 add_subdirectory(dialogbuttons)
 add_subdirectory(fonts)
