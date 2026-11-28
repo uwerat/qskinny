@@ -70,6 +70,8 @@ class QSK_EXPORT QskListView : public QskScrollView
     void setSelectedRow( int row );
 
   Q_SIGNALS:
+    void pressed( int row );
+    void clicked( int row );
     void selectedRowChanged( int row );
 
     void selectionModeChanged();
