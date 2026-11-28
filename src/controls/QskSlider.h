@@ -56,6 +56,9 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void setTracking( bool );
     bool isTracking() const;
 
+    void setHandleTolerance( qreal );
+    qreal handleTolerance() const;
+
     qreal handlePosition() const; // [0,0, 1.0]
 
     QskAspect::Variation effectiveVariation() const override;
@@ -69,6 +72,7 @@ class QSK_EXPORT QskSlider : public QskBoundedValueInput
     void trackingChanged( bool );
     void originChanged( qreal );
     void tickPolicyChanged( Qsk::Policy );
+    void handleToleranceChanged( qreal );
 
   protected:
     void mousePressEvent( QMouseEvent* ) override;
